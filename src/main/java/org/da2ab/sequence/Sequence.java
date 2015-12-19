@@ -21,6 +21,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return from(singleton(item));
 	}
 
+	@Nonnull
+	static <T> Sequence<T> from(@Nonnull Iterable<T> items) {
+		return items::iterator;
+	}
+
 	@SafeVarargs
 	@Nonnull
 	static <T> Sequence<T> of(@Nonnull T... items) {
@@ -33,8 +38,8 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterable<T> items) {
-		return items::iterator;
+	static <T> Sequence<T> from(@Nonnull Iterator<T> iterator) {
+		return () -> iterator;
 	}
 
 	@SafeVarargs
@@ -48,17 +53,21 @@ public interface Sequence<T> extends Iterable<T> {
 		return iteratorSupplier::get;
 	}
 
-	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterator<T> iterator) {
-		return () -> iterator;
-	}
-
 	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
 		return () -> new RecursiveIterator<>(seed, op);
 	}
 
 	static <T, S> Sequence<S> recurse(T seed, Function<T, S> f, Function<S, T> g) {
 		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
+	}
+
+	static <K, V> Sequence<Pair<K, V>> from(Map<K, V> map) {
+		return from(map.entrySet()).map(Pair::from);
+	}
+
+	@Nonnull
+	default <U> Sequence<U> map(@Nonnull Function<? super T, ? extends U> mapper) {
+		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	@Nonnull
@@ -88,25 +97,12 @@ public interface Sequence<T> extends Iterable<T> {
 		return result::iterator;
 	}
 
-	@Nonnull
-	default <U> Sequence<U> map(@Nonnull Function<? super T, ? extends U> mapper) {
-		return () -> new MappingIterator<>(iterator(), mapper);
-	}
-
 	default Sequence<T> untilNull() {
 		return () -> new TerminalIterator<>(iterator(), null);
 	}
 
 	default Sequence<T> until(T terminal) {
 		return () -> new TerminalIterator<>(iterator(), terminal);
-	}
-
-	default List<T> toList() {
-		return toList(ArrayList::new);
-	}
-
-	default List<T> toList(Supplier<List<T>> constructor) {
-		return toCollection(constructor);
 	}
 
 	default Set<T> toSet() {
@@ -117,12 +113,18 @@ public interface Sequence<T> extends Iterable<T> {
 		return toCollection(constructor);
 	}
 
-	default SortedSet<T> toSortedSet() {
-		return toSet(TreeSet::new);
-	}
-
 	default <U extends Collection<T>> U toCollection(Supplier<U> constructor) {
 		return collect(constructor, Collection::add);
+	}
+
+	default <C> C collect(Supplier<C> constructor, BiConsumer<C, T> adder) {
+		C result = constructor.get();
+		forEach(each -> adder.accept(result, each));
+		return result;
+	}
+
+	default SortedSet<T> toSortedSet() {
+		return toSet(TreeSet::new);
 	}
 
 	default <K, V> Map<K, V> pairsToMap(Function<? super T, ? extends Pair<K, V>> mapper) {
@@ -135,11 +137,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
-	default <K, V> Map<K, V> toMap(Function<T, K> keyMapper, Function<T, V> valueMapper) {
+	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
 		return toMap(HashMap::new, keyMapper, valueMapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<M> constructor, Function<T, K> keyMapper, Function<T, V> valueMapper) {
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
 		M result = constructor.get();
 		forEach(each -> {
 			K key = keyMapper.apply(each);
@@ -160,12 +162,6 @@ public interface Sequence<T> extends Iterable<T> {
 		return collector.finisher().apply(result);
 	}
 
-	default <C> C collect(Supplier<C> constructor, BiConsumer<C, T> adder) {
-		C result = constructor.get();
-		forEach(each -> adder.accept(result, each));
-		return result;
-	}
-
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
@@ -183,15 +179,6 @@ public interface Sequence<T> extends Iterable<T> {
 		}
 		result.append(suffix);
 		return result.toString();
-	}
-
-	default Optional<T> reduce(BinaryOperator<T> operator) {
-		Iterator<T> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		T result = reduce(iterator.next(), operator, iterator);
-		return Optional.of(result);
 	}
 
 	default T reduce(T identity, BinaryOperator<T> operator) {
@@ -223,6 +210,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return Optional.of(iterator.next());
 	}
 
+	default void skip(Iterator<T> iterator) {
+		if (iterator.hasNext())
+			iterator.next();
+	}
+
 	default Optional<T> third() {
 		Iterator<T> iterator = iterator();
 
@@ -232,11 +224,6 @@ public interface Sequence<T> extends Iterable<T> {
 			return Optional.empty();
 
 		return Optional.of(iterator.next());
-	}
-
-	default void skip(Iterator<T> iterator) {
-		if (iterator.hasNext())
-			iterator.next();
 	}
 
 	default Optional<T> last() {
@@ -264,25 +251,29 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
-	static <K, V> Sequence<Pair<K, V>> from(Map<K, V> map) {
-		return from(map.entrySet()).map(Pair::from);
-	}
-
 	default Sequence<T> distinct() {
 		return () -> new DistinctIterator<>(iterator());
 	}
 
 	default <S extends Comparable<? super S>> Sequence<S> sorted() {
-		return () -> new SortingIterator<>((Iterator<S>)iterator());
+		return () -> new SortingIterator<>((Iterator<S>) iterator());
 	}
 
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
 		return () -> new SortingIterator<T>(iterator(), comparator);
 	}
 
-
 	default Optional<T> min(Comparator<? super T> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
+	}
+
+	default Optional<T> reduce(BinaryOperator<T> operator) {
+		Iterator<T> iterator = iterator();
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T result = reduce(iterator.next(), operator, iterator);
+		return Optional.of(result);
 	}
 
 	default Optional<T> max(Comparator<? super T> comparator) {
@@ -301,17 +292,17 @@ public interface Sequence<T> extends Iterable<T> {
 		return toList().toArray();
 	}
 
+	default List<T> toList() {
+		return toList(ArrayList::new);
+	}
+
+	default List<T> toList(Supplier<List<T>> constructor) {
+		return toCollection(constructor);
+	}
+
 	default <A> A[] toArray(IntFunction<A[]> constructor) {
 		List result = toList();
 		return (A[]) result.toArray(constructor.apply(result.size()));
-	}
-
-	default boolean any(Predicate<T> predicate) {
-		for (T each : this) {
-			if (predicate.test(each))
-				return true;
-		}
-		return false;
 	}
 
 	default boolean all(Predicate<T> predicate) {
@@ -324,5 +315,13 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default boolean none(Predicate<T> predicate) {
 		return !any(predicate);
+	}
+
+	default boolean any(Predicate<T> predicate) {
+		for (T each : this) {
+			if (predicate.test(each))
+				return true;
+		}
+		return false;
 	}
 }
