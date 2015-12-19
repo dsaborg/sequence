@@ -1,19 +1,20 @@
 package org.da2ab.sequence;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static java.util.Arrays.asList;
+
 public class ConcatenatingIterator<T> implements Iterator<T> {
-	private final Iterator<Iterable<T>> iterables;
-	private Iterator<T> iterator;
+	private final Iterator<? extends Iterable<? extends T>> iterables;
+	private Iterator<? extends T> iterator;
 
 	@SafeVarargs
-	public ConcatenatingIterator(Iterable<T>... iterables) {
-		this(Arrays.asList(iterables));
+	public ConcatenatingIterator(Iterable<? extends T>... iterables) {
+		this(asList(iterables));
 	}
 
-	public ConcatenatingIterator(Iterable<Iterable<T>> iterables) {
+	public ConcatenatingIterator(Iterable<? extends Iterable<? extends T>> iterables) {
 		this.iterables = iterables.iterator();
 	}
 

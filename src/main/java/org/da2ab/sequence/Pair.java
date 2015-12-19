@@ -19,7 +19,7 @@ public class Pair<A, B> {
 		this.second = second;
 	}
 
-	public static <K, V> Pair<K, V> from(Entry<K, V> entry) {
+	public static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
 		return of(entry.getKey(), entry.getValue());
 	}
 
@@ -36,15 +36,15 @@ public class Pair<A, B> {
 	}
 
 	@Nonnull
-	public <C, D> Pair<C, D> map(@Nonnull Function<A, C> firstMapper, @Nonnull Function<B, D> secondMapper) {
+	public <C, D> Pair<C, D> map(@Nonnull Function<? super A, ? extends C> firstMapper, @Nonnull Function<? super B, ? extends D> secondMapper) {
 		return of(firstMapper.apply(first), secondMapper.apply(second));
 	}
 
-	public <T> T apply(@Nonnull BiFunction<A, B, T> function) {
+	public <T> T apply(@Nonnull BiFunction<? super A, ? super B, ? extends T> function) {
 		return function.apply(first, second);
 	}
 
-	public boolean test(@Nonnull Predicate<A> firstPredicate, @Nonnull Predicate<B> secondPredicate) {
+	public boolean test(@Nonnull Predicate<? super A> firstPredicate, @Nonnull Predicate<? super B> secondPredicate) {
 		return firstPredicate.test(first) && secondPredicate.test(second);
 	}
 

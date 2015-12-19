@@ -45,7 +45,7 @@ public class SequenceTest {
 	@Test
 	@Repeat(times = 2)
 	public void forLoop() throws Exception {
-		for (int i : empty)
+		for (int ignored : empty)
 			fail("Should not get called");
 
 		int expected = 1;
@@ -328,6 +328,53 @@ public class SequenceTest {
 		Sequence<Integer> flatMap = sequence.flatMap(Sequence::of);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
+	}
+
+	@Test
+	public void flattenIterables() {
+		Sequence<Integer> flattened = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6)).flatten();
+		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void flattenLazy() {
+		Sequence<Integer> flattened = Sequence.of(asList(1, 2), null).flatten();
+
+		twice(() -> {
+			// NPE if not lazy - see below
+			Iterator<Integer> iterator = flattened.iterator();
+			assertThat(iterator.next(), is(1));
+			assertThat(iterator.next(), is(2));
+			try {
+				iterator.next();
+				fail("Expected NPE");
+			} catch (NullPointerException ignored) {
+				// expected
+			}
+		});
+	}
+
+	public static void twice(Runnable action) {
+		action.run();
+		action.run();
+	}
+
+	@Test
+	public void flattenIterators() {
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6)
+				                                                                                                     .iterator());
+		Sequence<Integer> flattened = sequence.flatten();
+		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
+		assertThat(flattened, is(emptyIterable()));
+	}
+
+	@Test
+	public void flattenArrays() {
+		Sequence<Integer[]> sequence = Sequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
+
+		Sequence<Integer> flattened = sequence.flatten();
+		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
+		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 	}
 
 	@Test
@@ -616,20 +663,20 @@ public class SequenceTest {
 
 	@Test
 	public void pairs() {
-		assertThat(empty.pairs(), is(emptyIterable()));
-		assertThat(empty.pairs(), is(emptyIterable()));
+		assertThat(empty.pair(), is(emptyIterable()));
+		assertThat(empty.pair(), is(emptyIterable()));
 
-		assertThat(oneOnly.pairs(), is(emptyIterable()));
-		assertThat(oneOnly.pairs(), is(emptyIterable()));
+		assertThat(oneOnly.pair(), is(emptyIterable()));
+		assertThat(oneOnly.pair(), is(emptyIterable()));
 
-		assertThat(oneToTwo.pairs(), contains(Pair.of(1, 2)));
-		assertThat(oneToTwo.pairs(), contains(Pair.of(1, 2)));
+		assertThat(oneToTwo.pair(), contains(Pair.of(1, 2)));
+		assertThat(oneToTwo.pair(), contains(Pair.of(1, 2)));
 
-		assertThat(oneToThree.pairs(), contains(Pair.of(1, 2), Pair.of(2, 3)));
-		assertThat(oneToThree.pairs(), contains(Pair.of(1, 2), Pair.of(2, 3)));
+		assertThat(oneToThree.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
+		assertThat(oneToThree.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
 
-		assertThat(oneToFive.pairs(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
-		assertThat(oneToFive.pairs(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
+		assertThat(oneToFive.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
+		assertThat(oneToFive.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
 	}
 
 	@Test
@@ -781,6 +828,11 @@ public class SequenceTest {
 		assertThat(three.none(x -> x > 4), is(true));
 	}
 
+	@Test
+	public void peek() {
+		oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+	}
+
 	public static class MapBuilder<K, V> {
 		private Map<K, V> map = new HashMap<>();
 
@@ -805,10 +857,5 @@ public class SequenceTest {
 			map = new HashMap<>(result);
 			return result;
 		}
-	}
-
-	@Test
-	public void peek() {
-		oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
 	}
 }

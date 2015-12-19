@@ -5,12 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 public class FilteringIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
-	private final Predicate<T> predicate;
+	private final Iterator<? extends T> iterator;
+	private final Predicate<? super T> predicate;
 	private boolean foundNext;
 	T foundValue;
 
-	public FilteringIterator(Iterator<T> iterator, Predicate<T> predicate) {
+	public FilteringIterator(Iterator<? extends T> iterator, Predicate<? super T> predicate) {
 		this.iterator = iterator;
 		this.predicate = predicate;
 	}

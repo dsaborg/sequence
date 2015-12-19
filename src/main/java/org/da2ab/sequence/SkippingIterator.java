@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 public class SkippingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
 	private final int skip;
-	int count;
+	boolean skipped;
 
 	public SkippingIterator(Iterator<T> iterator, int skip) {
 		this.iterator = iterator;
@@ -15,9 +15,9 @@ public class SkippingIterator<T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		while (count < skip && iterator.hasNext()) {
-			count++;
-			iterator.next();
+		if (!skipped) {
+			Iterators.skip(skip, iterator);
+			skipped = true;
 		}
 
 		return iterator.hasNext();
