@@ -806,4 +806,9 @@ public class SequenceTest {
 			return result;
 		}
 	}
+
+	@Test
+	public void peek() {
+		oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+	}
 }

@@ -324,4 +324,8 @@ public interface Sequence<T> extends Iterable<T> {
 		}
 		return false;
 	}
+
+	default Sequence<T> peek(Consumer<T> action) {
+		return () -> new PeekingIterator(iterator(), action);
+	}
 }
