@@ -1,8 +1,6 @@
 package org.da2ab.sequence;
 
 import junitrepeat.Repeat;
-import junitrepeat.RepeatRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.*;
@@ -20,94 +18,98 @@ public class SequenceTest {
 	private final Sequence<Integer> empty = Sequence.<Integer>empty();
 	private final Sequence<Integer> oneOnly = Sequence.of(1);
 	private final Sequence<Integer> oneToTwo = Sequence.of(1, 2);
-	private final Sequence<Integer> oneToNine = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
 	private final Sequence<Integer> oneToThree = Sequence.of(1, 2, 3);
-	private final Sequence<Integer> three = oneToThree;
+	private final Sequence<Integer> oneToFour = Sequence.of(1, 2, 3, 4);
+	private final Sequence<Integer> oneToFive = Sequence.of(1, 2, 3, 4, 5);
+	private final Sequence<Integer> oneToNine = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
 	private final Sequence<Integer> oneRandom = Sequence.of(17);
 	private final Sequence<Integer> twoRandom = Sequence.of(17, 32);
+	private final Sequence<Integer> threeRandom = Sequence.of(2, 3, 1);
 	private final Sequence<Integer> nineRandom = Sequence.of(67, 5, 43, 3, 5, 7, 24, 5, 67);
-	private final Sequence<Integer> oneToFive = Sequence.of(1, 2, 3, 4, 5);
-	@Rule
-	public RepeatRule repeatRule = new RepeatRule();
 
 	@Test
-	@Repeat(times = 2)
 	public void ofOne() throws Exception {
-		assertThat(oneOnly, contains(1));
+		checkingReuse(() -> assertThat(oneOnly, contains(1)));
+	}
+
+	public static void checkingReuse(Runnable action) {
+		action.run();
+		action.run();
 	}
 
 	@Test
-	@Repeat(times = 2)
 	public void ofMany() throws Exception {
-		assertThat(oneToThree, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(oneToThree, contains(1, 2, 3)));
 	}
 
 	@Test
-	@Repeat(times = 2)
 	public void forLoop() throws Exception {
-		for (int ignored : empty)
-			fail("Should not get called");
+		checkingReuse(() -> {
+			for (int ignored : empty)
+				fail("Should not get called");
+		});
 
-		int expected = 1;
-		for (int i : oneToThree)
-			assertThat(i, is(expected++));
+		checkingReuse(() -> {
+			int expected = 1;
+			for (int i : oneToThree)
+				assertThat(i, is(expected++));
+		});
 	}
 
 	@Test
-	@Repeat(times = 2)
 	public void forEach() throws Exception {
-		empty.forEach(i -> fail("Should not get called"));
-		oneOnly.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
-		oneToTwo.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
-		oneToThree.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
+		checkingReuse(() -> {
+			empty.forEach(i -> fail("Should not get called"));
+			oneOnly.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
+			oneToTwo.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
+			oneToThree.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
+		});
 	}
 
 	@Test
 	@Repeat(times = 2)
 	public void iterator() throws Exception {
-		Iterator iterator = oneToThree.iterator();
+		checkingReuse(() -> {
+			Iterator iterator = oneToThree.iterator();
 
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(1));
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(1));
 
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(2));
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(2));
 
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(3));
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(3));
 
-		assertThat(iterator.hasNext(), is(false));
-		assertThat(iterator.hasNext(), is(false));
+			assertThat(iterator.hasNext(), is(false));
+			assertThat(iterator.hasNext(), is(false));
+		});
 	}
 
 	@Test
 	public void ofNone() throws Exception {
 		Sequence<Integer> sequence = Sequence.<Integer>of();
 
-		assertThat(sequence, is(emptyIterable()));
-		assertThat(sequence, is(emptyIterable()));
+		checkingReuse(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
-	@Repeat(times = 2)
 	public void empty() throws Exception {
-		assertThat(empty, is(emptyIterable()));
+		checkingReuse(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
 	public void ofNulls() throws Exception {
 		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
 
-		assertThat(sequence, contains(1, null, 2, 3, null));
-		assertThat(sequence, contains(1, null, 2, 3, null));
+		checkingReuse(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
 	}
 
 	@Test
 	public void fromSequence() throws Exception {
 		Sequence<Integer> fromSequence = Sequence.from(oneToThree);
 
-		assertThat(fromSequence, contains(1, 2, 3));
-		assertThat(fromSequence, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(fromSequence, contains(1, 2, 3)));
 	}
 
 	@Test
@@ -116,8 +118,7 @@ public class SequenceTest {
 
 		Sequence<Integer> sequenceFromIterable = Sequence.from(iterable);
 
-		assertThat(sequenceFromIterable, contains(1, 2, 3));
-		assertThat(sequenceFromIterable, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(sequenceFromIterable, contains(1, 2, 3)));
 	}
 
 	@Test
@@ -126,8 +127,7 @@ public class SequenceTest {
 
 		Sequence<Integer> sequenceFromIterators = Sequence.from(iterators);
 
-		assertThat(sequenceFromIterators, contains(1, 2, 3));
-		assertThat(sequenceFromIterators, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(sequenceFromIterators, contains(1, 2, 3)));
 	}
 
 	@Test
@@ -138,80 +138,57 @@ public class SequenceTest {
 
 		Sequence<Integer> sequenceFromIterables = Sequence.from(first, second, third);
 
-		assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9));
-		assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9));
+		checkingReuse(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void fromNoIterables() throws Exception {
 		Sequence<Integer> sequenceFromNoIterables = Sequence.from(new Iterable[]{});
 
-		assertThat(sequenceFromNoIterables, is(emptyIterable()));
-		assertThat(sequenceFromNoIterables, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromIterator() throws Exception {
-		Iterator<Integer> iterator = asList(1, 2, 3).iterator();
-
-		Sequence<Integer> sequenceFromIterator = Sequence.from(iterator);
-
-		assertThat(sequenceFromIterator, contains(1, 2, 3));
-		assertThat(sequenceFromIterator, is(emptyIterable()));
+		checkingReuse(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
 	}
 
 	@Test
 	public void skip() {
 		Sequence<Integer> skipNone = oneToThree.skip(0);
-		assertThat(skipNone, contains(1, 2, 3));
-		assertThat(skipNone, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(skipNone, contains(1, 2, 3)));
 
 		Sequence<Integer> skipOne = oneToThree.skip(1);
-		assertThat(skipOne, contains(2, 3));
-		assertThat(skipOne, contains(2, 3));
+		checkingReuse(() -> assertThat(skipOne, contains(2, 3)));
 
 		Sequence<Integer> skipTwo = oneToThree.skip(2);
-		assertThat(skipTwo, contains(3));
-		assertThat(skipTwo, contains(3));
+		checkingReuse(() -> assertThat(skipTwo, contains(3)));
 
 		Sequence<Integer> skipThree = oneToThree.skip(3);
-		assertThat(skipThree, is(emptyIterable()));
-		assertThat(skipThree, is(emptyIterable()));
+		checkingReuse(() -> assertThat(skipThree, is(emptyIterable())));
 
 		Sequence<Integer> skipFour = oneToThree.skip(4);
-		assertThat(skipFour, is(emptyIterable()));
-		assertThat(skipFour, is(emptyIterable()));
+		checkingReuse(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
 	@Test
 	public void limit() {
-		Sequence<Integer> noLimit = oneToThree.limit(0);
-		assertThat(noLimit, is(emptyIterable()));
-		assertThat(noLimit, is(emptyIterable()));
+		Sequence<Integer> limitNone = oneToThree.limit(0);
+		checkingReuse(() -> assertThat(limitNone, is(emptyIterable())));
 
 		Sequence<Integer> limitOne = oneToThree.limit(1);
-		assertThat(limitOne, contains(1));
-		assertThat(limitOne, contains(1));
+		checkingReuse(() -> assertThat(limitOne, contains(1)));
 
 		Sequence<Integer> limitTwo = oneToThree.limit(2);
-		assertThat(limitTwo, contains(1, 2));
-		assertThat(limitTwo, contains(1, 2));
+		checkingReuse(() -> assertThat(limitTwo, contains(1, 2)));
 
 		Sequence<Integer> limitThree = oneToThree.limit(3);
-		assertThat(limitThree, contains(1, 2, 3));
-		assertThat(limitThree, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(limitThree, contains(1, 2, 3)));
 
 		Sequence<Integer> limitFour = oneToThree.limit(4);
-		assertThat(limitFour, contains(1, 2, 3));
-		assertThat(limitFour, contains(1, 2, 3));
+		checkingReuse(() -> assertThat(limitFour, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void then() {
 		Sequence<Integer> then = oneToThree.then(Sequence.of(4, 5, 6)).then(Sequence.of(7, 8));
 
-		assertThat(then, contains(1, 2, 3, 4, 5, 6, 7, 8));
-		assertThat(then, contains(1, 2, 3, 4, 5, 6, 7, 8));
+		checkingReuse(() -> assertThat(then, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
 
 	@Test
@@ -251,8 +228,7 @@ public class SequenceTest {
 	public void filter() {
 		Sequence<Integer> filtered = Sequence.of(1, 2, 3, 4, 5, 6, 7).filter(i -> i % 2 == 0);
 
-		assertThat(filtered, contains(2, 4, 6));
-		assertThat(filtered, contains(2, 4, 6));
+		checkingReuse(() -> assertThat(filtered, contains(2, 4, 6)));
 	}
 
 	@Test
@@ -261,7 +237,8 @@ public class SequenceTest {
 		                             .filter(x -> x % 2 == 0)
 		                             .map(Objects::toString)
 		                             .toList();
-		assertThat(evens, contains("2", "4", "6", "8"));
+
+		checkingReuse(() -> assertThat(evens, contains("2", "4", "6", "8")));
 	}
 
 	@Test
@@ -282,9 +259,10 @@ public class SequenceTest {
 	@Test
 	public void flatMapIterables() {
 		Sequence<List<Integer>> sequence = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
+
 		Sequence<Integer> flatMap = sequence.flatMap(Function.identity());
-		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
-		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
+
+		checkingReuse(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
@@ -325,22 +303,24 @@ public class SequenceTest {
 	@Test
 	public void flatMapArrays() {
 		Sequence<Integer[]> sequence = Sequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
+
 		Sequence<Integer> flatMap = sequence.flatMap(Sequence::of);
-		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
-		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
+
+		checkingReuse(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void flattenIterables() {
 		Sequence<Integer> flattened = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6)).flatten();
-		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
+
+		checkingReuse(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void flattenLazy() {
 		Sequence<Integer> flattened = Sequence.of(asList(1, 2), null).flatten();
 
-		twice(() -> {
+		checkingReuse(() -> {
 			// NPE if not lazy - see below
 			Iterator<Integer> iterator = flattened.iterator();
 			assertThat(iterator.next(), is(1));
@@ -352,11 +332,6 @@ public class SequenceTest {
 				// expected
 			}
 		});
-	}
-
-	public static void twice(Runnable action) {
-		action.run();
-		action.run();
 	}
 
 	@Test
@@ -373,464 +348,442 @@ public class SequenceTest {
 		Sequence<Integer[]> sequence = Sequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
 		Sequence<Integer> flattened = sequence.flatten();
-		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
-		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
+		checkingReuse(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void map() {
-		Sequence<Integer> sequence = oneToThree;
-		assertThat(sequence.map(Object::toString), contains("1", "2", "3"));
+		Sequence<String> mapped = oneToThree.map(Object::toString);
+		checkingReuse(() -> assertThat(mapped, contains("1", "2", "3")));
 	}
 
 	@Test
 	public void mapIsLazy() {
 		Sequence<Integer> sequence = Sequence.of(1, null);
 
-		// NPE if not lazy
-		Iterator<String> iterator = sequence.map(Object::toString).iterator();
-		assertThat(iterator.next(), is("1"));
-		try {
-			iterator.next();
-			fail("Expected NPE");
-		} catch (NullPointerException ignored) {
-			// expected
-		}
+		checkingReuse(() -> {
+			// NPE here if not lazy
+			Iterator<String> iterator = sequence.map(Object::toString).iterator();
 
-		// re-apply
-		Iterator<String> iterator2 = sequence.map(Object::toString).iterator();
-		assertThat(iterator2.next(), is("1"));
-		try {
-			iterator2.next();
-			fail("Expected NPE");
-		} catch (NullPointerException ignored) {
-			// expected
-		}
+			assertThat(iterator.next(), is("1"));
+
+			try {
+				iterator.next();
+				fail("Expected NPE");
+			} catch (NullPointerException ignored) {
+				// expected
+			}
+		});
 	}
 
 	@Test
 	public void recurse() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1);
-		assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-		assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		checkingReuse(() -> assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
 	@Test
-	public void recurseDouble() {
+	public void recurseTwins() {
 		Sequence<String> sequence = Sequence.recurse(1, Object::toString, s -> Integer.parseInt(s) + 1);
-		assertThat(sequence.limit(10), contains("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+		checkingReuse(() -> assertThat(sequence.limit(10), contains("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")));
 	}
 
 	@Test
 	public void recurseUntilNull() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i < 10 ? i + 1 : null).untilNull();
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		checkingReuse(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
 	@Test
 	public void recurseUntil() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(7);
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+		checkingReuse(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void recurseThrowableCause() {
 		Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
+
 		Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).until(null);
-		Iterator<Throwable> iterator = sequence.iterator();
-		assertThat(iterator.next(), is(instanceOf(IllegalStateException.class)));
-		assertThat(iterator.next(), is(instanceOf(IllegalArgumentException.class)));
-		assertThat(iterator.next(), is(instanceOf(NullPointerException.class)));
+
+		checkingReuse(() -> {
+			Iterator<Throwable> iterator = sequence.iterator();
+			assertThat(iterator.next(), is(instanceOf(IllegalStateException.class)));
+			assertThat(iterator.next(), is(instanceOf(IllegalArgumentException.class)));
+			assertThat(iterator.next(), is(instanceOf(NullPointerException.class)));
+		});
 	}
 
 	@Test
 	public void toList() {
 		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
 
-		List<Integer> list = sequence.toList();
-		assertThat(list, instanceOf(ArrayList.class));
-		assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
-
-		List<Integer> list2 = sequence.toList();
-		assertThat(list, instanceOf(ArrayList.class));
-		assertThat(list2, contains(1, 2, 3, 4, 5, 6, 7));
+		checkingReuse(() -> {
+			List<Integer> list = sequence.toList();
+			assertThat(list, instanceOf(ArrayList.class));
+			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
+		});
 	}
 
 	@Test
 	public void toLinkedList() {
 		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
 
-		List<Integer> list = sequence.toList(LinkedList::new);
-		assertThat(list, instanceOf(LinkedList.class));
-		assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
-
-		List<Integer> list2 = sequence.toList(LinkedList::new);
-		assertThat(list, instanceOf(LinkedList.class));
-		assertThat(list2, contains(1, 2, 3, 4, 5, 6, 7));
+		checkingReuse(() -> {
+			List<Integer> list = sequence.toList(LinkedList::new);
+			assertThat(list, instanceOf(LinkedList.class));
+			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
+		});
 	}
 
 	@Test
 	public void toSet() {
 		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
 
-		Set<Integer> set = sequence.toSet();
-		assertThat(set, instanceOf(HashSet.class));
-		assertThat(set, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7));
+		checkingReuse(() -> {
+			Set<Integer> set = sequence.toSet();
+			assertThat(set, instanceOf(HashSet.class));
+			assertThat(set, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7));
+		});
 	}
 
 	@Test
 	public void toSortedSet() {
 		Sequence<Integer> sequence = Sequence.of(1, 5, 2, 6, 3, 4, 7);
 
-		SortedSet<Integer> sortedSet = sequence.toSortedSet();
-		assertThat(sortedSet, instanceOf(TreeSet.class));
-		assertThat(sortedSet, contains(1, 2, 3, 4, 5, 6, 7));
+		checkingReuse(() -> {
+			SortedSet<Integer> sortedSet = sequence.toSortedSet();
+			assertThat(sortedSet, instanceOf(TreeSet.class));
+			assertThat(sortedSet, contains(1, 2, 3, 4, 5, 6, 7));
+		});
 	}
 
 	@Test
 	public void toSetWithType() {
 		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
 
-		Set<Integer> set = sequence.toSet(LinkedHashSet::new);
-		assertThat(set, instanceOf(LinkedHashSet.class));
-		assertThat(set, contains(1, 2, 3, 4, 5, 6, 7));
+		checkingReuse(() -> {
+			Set<Integer> set = sequence.toSet(LinkedHashSet::new);
+			assertThat(set, instanceOf(LinkedHashSet.class));
+			assertThat(set, contains(1, 2, 3, 4, 5, 6, 7));
+		});
 	}
 
 	@Test
 	public void toCollection() {
 		Sequence<Integer> sequence = oneToThree;
 
-		Deque<Integer> deque = sequence.toCollection(ArrayDeque::new);
-
-		assertThat(deque, instanceOf(ArrayDeque.class));
-		assertThat(deque, contains(1, 2, 3));
+		checkingReuse(() -> {
+			Deque<Integer> deque = sequence.toCollection(ArrayDeque::new);
+			assertThat(deque, instanceOf(ArrayDeque.class));
+			assertThat(deque, contains(1, 2, 3));
+		});
 	}
 
 	@Test
 	public void toMapFromPairs() {
 		Map<String, Integer> original = MapBuilder.of("1", 1).and("2", 2).and("3", 3).and("4", 4).build();
 
-		Map<String, Integer> map = Sequence.from(original)
-		                                   .filter(p -> p.test(s -> true, i -> i != 2))
-		                                   .map(p -> p.map(s -> s + " x 2", i -> i * 2))
-		                                   .pairsToMap(Function.identity());
+		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
+		                                                   .filter(p -> p.test((s, i) -> i != 2))
+		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
-		assertThat(map, instanceOf(HashMap.class));
-		assertThat(map, is(equalTo(MapBuilder.of("1 x 2", 2).and("3 x 2", 6).and("4 x 2", 8).build())));
+		checkingReuse(() -> {
+			Map<String, Integer> map = sequence.pairsToMap(Function.identity());
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(MapBuilder.of("1 x 2", 2).and("3 x 2", 6).and("4 x 2", 8).build())));
+		});
 	}
 
 	@Test
 	public void toMapWithTypeFromPairs() {
 		Map<String, Integer> original = MapBuilder.of("1", 1).and("2", 2).and("3", 3).and("4", 4).build();
 
-		Map<String, Integer> map = Sequence.from(original)
-		                                   .filter(p -> p.test(s -> true, i -> i != 2))
-		                                   .map(p -> p.map(s -> s + " x 2", i -> i * 2))
-		                                   .pairsToMap(LinkedHashMap::new, Function.identity());
+		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
+		                                                   .filter(p -> p.test((s, i) -> i != 2))
+		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
-		assertThat(map, instanceOf(HashMap.class));
-		assertThat(map, is(equalTo(MapBuilder.of("1 x 2", 2).and("3 x 2", 6).and("4 x 2", 8).build())));
+		checkingReuse(() -> {
+			Map<String, Integer> map = sequence.pairsToMap(LinkedHashMap::new, Function.identity());
+
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(MapBuilder.of("1 x 2", 2).and("3 x 2", 6).and("4 x 2", 8).build())));
+		});
 	}
 
 	@Test
 	public void toMap() {
-		Map<String, Integer> map = oneToThree.toMap(Object::toString, Function.identity());
+		checkingReuse(() -> {
+			Map<String, Integer> map = oneToThree.toMap(Object::toString, Function.identity());
 
-		assertThat(map, instanceOf(HashMap.class));
-		assertThat(map, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+		});
 	}
 
 	@Test
 	public void toMapWithType() {
-		Map<String, Integer> map = oneToThree.toMap(LinkedHashMap::new, Object::toString, Function.identity());
+		checkingReuse(() -> {
+			Map<String, Integer> map = oneToThree.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
-		assertThat(map, instanceOf(LinkedHashMap.class));
-		assertThat(map, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+			assertThat(map, instanceOf(LinkedHashMap.class));
+			assertThat(map, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+		});
 	}
 
 	@Test
 	public void toSortedMap() {
-		Sequence<Integer> sequence = Sequence.of(1, 3, 2);
+		checkingReuse(() -> {
+			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
 
-		SortedMap<String, Integer> sortedMap = sequence.toSortedMap(Object::toString, Function.identity());
-
-		assertThat(sortedMap, instanceOf(TreeMap.class));
-		assertThat(sortedMap, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+			assertThat(sortedMap, instanceOf(TreeMap.class));
+			assertThat(sortedMap, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+		});
 	}
 
 	@Test
 	public void collect() {
-		Deque<Integer> deque = oneToThree.collect(ArrayDeque::new, ArrayDeque::add);
+		checkingReuse(() -> {
+			Deque<Integer> deque = oneToThree.collect(ArrayDeque::new, ArrayDeque::add);
 
-		assertThat(deque, instanceOf(ArrayDeque.class));
-		assertThat(deque, contains(1, 2, 3));
+			assertThat(deque, instanceOf(ArrayDeque.class));
+			assertThat(deque, contains(1, 2, 3));
+		});
 	}
 
 	@Test
 	public void toArray() {
-		Object[] array = oneToThree.toArray();
-		assertThat(array, arrayContaining(1, 2, 3));
+		checkingReuse(() -> assertThat(oneToThree.toArray(), is(arrayContaining(1, 2, 3))));
 	}
 
 	@Test
 	public void toArrayWithType() {
-		Integer[] array = oneToThree.toArray(Integer[]::new);
-		assertThat(array, arrayContaining(1, 2, 3));
+		checkingReuse(() -> assertThat(oneToThree.toArray(Integer[]::new), arrayContaining(1, 2, 3)));
 	}
 
 	@Test
 	public void collector() {
-		assertThat(oneToThree.collect(Collectors.toList()), contains(1, 2, 3));
+		checkingReuse(() -> assertThat(oneToThree.collect(Collectors.toList()), contains(1, 2, 3)));
 	}
 
 	@Test
 	public void join() {
-		assertThat(oneToThree.join(", "), is("1, 2, 3"));
+		checkingReuse(() -> assertThat(oneToThree.join(", "), is("1, 2, 3")));
 	}
 
 	@Test
 	public void joinWithPrefixAndSuffix() {
-		assertThat(oneToThree.join("<", ", ", ">"), is("<1, 2, 3>"));
+		checkingReuse(() -> assertThat(oneToThree.join("<", ", ", ">"), is("<1, 2, 3>")));
 	}
 
 	@Test
 	public void reduce() {
-		assertThat(empty.reduce(Integer::sum), is(Optional.empty()));
-		assertThat(oneOnly.reduce(Integer::sum), is(Optional.of(1)));
-		assertThat(oneToTwo.reduce(Integer::sum), is(Optional.of(3)));
-		assertThat(oneToThree.reduce(Integer::sum), is(Optional.of(6)));
+		checkingReuse(() -> {
+			assertThat(empty.reduce(Integer::sum), is(Optional.empty()));
+			assertThat(oneOnly.reduce(Integer::sum), is(Optional.of(1)));
+			assertThat(oneToTwo.reduce(Integer::sum), is(Optional.of(3)));
+			assertThat(oneToThree.reduce(Integer::sum), is(Optional.of(6)));
+		});
 	}
 
 	@Test
 	public void reduceWithIdentity() {
-		assertThat(empty.reduce(17, Integer::sum), is(17));
-		assertThat(oneOnly.reduce(17, Integer::sum), is(18));
-		assertThat(oneToTwo.reduce(17, Integer::sum), is(20));
-		assertThat(oneToThree.reduce(17, Integer::sum), is(23));
+		checkingReuse(() -> {
+			assertThat(empty.reduce(17, Integer::sum), is(17));
+			assertThat(oneOnly.reduce(17, Integer::sum), is(18));
+			assertThat(oneToTwo.reduce(17, Integer::sum), is(20));
+			assertThat(oneToThree.reduce(17, Integer::sum), is(23));
+		});
 	}
 
 	@Test
 	public void first() {
-		assertThat(empty.first(), is(Optional.empty()));
-		assertThat(oneOnly.first(), is(Optional.of(1)));
-		assertThat(oneToTwo.first(), is(Optional.of(1)));
-		assertThat(oneToThree.first(), is(Optional.of(1)));
+		checkingReuse(() -> {
+			assertThat(empty.first(), is(Optional.empty()));
+			assertThat(oneOnly.first(), is(Optional.of(1)));
+			assertThat(oneToTwo.first(), is(Optional.of(1)));
+			assertThat(oneToThree.first(), is(Optional.of(1)));
+		});
 	}
 
 	@Test
 	public void second() {
-		assertThat(empty.second(), is(Optional.empty()));
-		assertThat(oneOnly.second(), is(Optional.empty()));
-		assertThat(oneToTwo.second(), is(Optional.of(2)));
-		assertThat(oneToThree.second(), is(Optional.of(2)));
-		assertThat(Sequence.of(1, 2, 3, 4).second(), is(Optional.of(2)));
+		checkingReuse(() -> {
+			assertThat(empty.second(), is(Optional.empty()));
+			assertThat(oneOnly.second(), is(Optional.empty()));
+			assertThat(oneToTwo.second(), is(Optional.of(2)));
+			assertThat(oneToThree.second(), is(Optional.of(2)));
+			assertThat(oneToFour.second(), is(Optional.of(2)));
+		});
 	}
 
 	@Test
 	public void third() {
-		assertThat(empty.third(), is(Optional.empty()));
-		assertThat(oneOnly.third(), is(Optional.empty()));
-		assertThat(oneToTwo.third(), is(Optional.empty()));
-		assertThat(oneToThree.third(), is(Optional.of(3)));
-		assertThat(Sequence.of(1, 2, 3, 4).third(), is(Optional.of(3)));
-		assertThat(oneToFive.third(), is(Optional.of(3)));
+		checkingReuse(() -> {
+			assertThat(empty.third(), is(Optional.empty()));
+			assertThat(oneOnly.third(), is(Optional.empty()));
+			assertThat(oneToTwo.third(), is(Optional.empty()));
+			assertThat(oneToThree.third(), is(Optional.of(3)));
+			assertThat(oneToFour.third(), is(Optional.of(3)));
+			assertThat(oneToFive.third(), is(Optional.of(3)));
+		});
 	}
 
 	@Test
 	public void last() {
-		assertThat(empty.last(), is(Optional.empty()));
-		assertThat(empty.last(), is(Optional.empty()));
-
-		assertThat(oneOnly.last(), is(Optional.of(1)));
-		assertThat(oneOnly.last(), is(Optional.of(1)));
-
-		assertThat(oneToTwo.last(), is(Optional.of(2)));
-		assertThat(oneToTwo.last(), is(Optional.of(2)));
-
-		assertThat(oneToThree.last(), is(Optional.of(3)));
-		assertThat(oneToThree.last(), is(Optional.of(3)));
+		checkingReuse(() -> {
+			assertThat(empty.last(), is(Optional.empty()));
+			assertThat(oneOnly.last(), is(Optional.of(1)));
+			assertThat(oneToTwo.last(), is(Optional.of(2)));
+			assertThat(oneToThree.last(), is(Optional.of(3)));
+		});
 	}
 
 	@Test
 	public void fibonacci() {
 		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> Pair.of(p.second(), p.apply(Integer::sum)))
 		                                      .map(Pair::first);
-		assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
-		assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+		checkingReuse(() -> assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)));
 	}
 
 	@Test
 	public void pairs() {
-		assertThat(empty.pair(), is(emptyIterable()));
-		assertThat(empty.pair(), is(emptyIterable()));
-
-		assertThat(oneOnly.pair(), is(emptyIterable()));
-		assertThat(oneOnly.pair(), is(emptyIterable()));
-
-		assertThat(oneToTwo.pair(), contains(Pair.of(1, 2)));
-		assertThat(oneToTwo.pair(), contains(Pair.of(1, 2)));
-
-		assertThat(oneToThree.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
-		assertThat(oneToThree.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
-
-		assertThat(oneToFive.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
-		assertThat(oneToFive.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
+		checkingReuse(() -> {
+			assertThat(empty.pair(), is(emptyIterable()));
+			assertThat(oneOnly.pair(), is(emptyIterable()));
+			assertThat(oneToTwo.pair(), contains(Pair.of(1, 2)));
+			assertThat(oneToThree.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
+			assertThat(oneToFive.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
+		});
 	}
 
 	@Test
 	public void partition() {
-		assertThat(oneToFive.partition(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5)));
-		assertThat(oneToFive.partition(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5)));
+		checkingReuse(() -> assertThat(oneToFive.partition(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5))));
 	}
 
 	@Test
 	public void step() {
-		assertThat(oneToNine.step(3), contains(1, 4, 7));
-		assertThat(oneToNine.step(3), contains(1, 4, 7));
+		checkingReuse(() -> assertThat(oneToNine.step(3), contains(1, 4, 7)));
 	}
 
 	@Test
 	public void partitionAndStep() {
-		assertThat(oneToFive.partition(3).step(2), contains(asList(1, 2, 3), asList(3, 4, 5)));
-		assertThat(oneToFive.partition(3).step(2), contains(asList(1, 2, 3), asList(3, 4, 5)));
+		Sequence<List<Integer>> partitionAndStep = oneToFive.partition(3).step(2);
+		checkingReuse(() -> assertThat(partitionAndStep, contains(asList(1, 2, 3), asList(3, 4, 5))));
 
 		Sequence<List<Integer>> partitioned = oneToFive.partition(3);
-		assertThat(partitioned.step(2), contains(asList(1, 2, 3), asList(3, 4, 5)));
-		assertThat(partitioned.step(2), contains(asList(1, 2, 3), asList(3, 4, 5)));
+		checkingReuse(() -> assertThat(partitioned.step(2), contains(asList(1, 2, 3), asList(3, 4, 5))));
 	}
 
 	@Test
 	public void distinct() {
-		assertThat(empty.distinct(), emptyIterable());
-		assertThat(empty.distinct(), emptyIterable());
+		Sequence<Integer> emptyDistinct = empty.distinct();
+		checkingReuse(() -> assertThat(emptyDistinct, emptyIterable()));
 
-		assertThat(oneRandom.distinct(), contains(17));
-		assertThat(oneRandom.distinct(), contains(17));
+		Sequence<Integer> oneDistinct = oneRandom.distinct();
+		checkingReuse(() -> assertThat(oneDistinct, contains(17)));
 
-		Sequence<Integer> duplicated = Sequence.of(17, 17);
-		assertThat(duplicated.distinct(), contains(17));
-		assertThat(duplicated.distinct(), contains(17));
+		Sequence<Integer> twoDuplicatesDistinct = Sequence.of(17, 17).distinct();
+		checkingReuse(() -> assertThat(twoDuplicatesDistinct, contains(17)));
 
-		assertThat(nineRandom.distinct(), contains(67, 5, 43, 3, 7, 24));
-		assertThat(nineRandom.distinct(), contains(67, 5, 43, 3, 7, 24));
+		Sequence<Integer> nineDistinct = nineRandom.distinct();
+		checkingReuse(() -> assertThat(nineDistinct, contains(67, 5, 43, 3, 7, 24)));
 	}
 
 	@Test
 	public void sorted() {
-		assertThat(empty.sorted(), emptyIterable());
-		assertThat(empty.sorted(), emptyIterable());
+		Sequence<Integer> emptySorted = empty.sorted();
+		checkingReuse(() -> assertThat(emptySorted, emptyIterable()));
 
-		assertThat(oneRandom.sorted(), contains(17));
-		assertThat(oneRandom.sorted(), contains(17));
+		Sequence<Integer> oneSorted = oneRandom.sorted();
+		checkingReuse(() -> assertThat(oneSorted, contains(17)));
 
-		assertThat(twoRandom.sorted(), contains(17, 32));
-		assertThat(twoRandom.sorted(), contains(17, 32));
+		Sequence<Integer> twoSorted = twoRandom.sorted();
+		checkingReuse(() -> assertThat(twoSorted, contains(17, 32)));
 
-		assertThat(nineRandom.sorted(), contains(3, 5, 5, 5, 7, 24, 43, 67, 67));
-		assertThat(nineRandom.sorted(), contains(3, 5, 5, 5, 7, 24, 43, 67, 67));
+		Sequence<Integer> nineSorted = nineRandom.sorted();
+		checkingReuse(() -> assertThat(nineSorted, contains(3, 5, 5, 5, 7, 24, 43, 67, 67)));
 	}
 
 	@Test
 	public void sortedComparator() {
-		assertThat(empty.sorted(Comparator.reverseOrder()), emptyIterable());
-		assertThat(empty.sorted(Comparator.reverseOrder()), emptyIterable());
+		Sequence<Integer> emptySorted = empty.sorted(Comparator.reverseOrder());
+		checkingReuse(() -> assertThat(emptySorted, emptyIterable()));
 
-		assertThat(oneRandom.sorted(Comparator.reverseOrder()), contains(17));
-		assertThat(oneRandom.sorted(Comparator.reverseOrder()), contains(17));
+		Sequence<Integer> oneSorted = oneRandom.sorted(Comparator.reverseOrder());
+		checkingReuse(() -> assertThat(oneSorted, contains(17)));
 
-		assertThat(twoRandom.sorted(Comparator.reverseOrder()), contains(32, 17));
-		assertThat(twoRandom.sorted(Comparator.reverseOrder()), contains(32, 17));
+		Sequence<Integer> twoSorted = twoRandom.sorted(Comparator.reverseOrder());
+		checkingReuse(() -> assertThat(twoSorted, contains(32, 17)));
 
-		assertThat(nineRandom.sorted(Comparator.reverseOrder()), contains(67, 67, 43, 24, 7, 5, 5, 5, 3));
-		assertThat(nineRandom.sorted(Comparator.reverseOrder()), contains(67, 67, 43, 24, 7, 5, 5, 5, 3));
+		Sequence<Integer> nineSorted = nineRandom.sorted(Comparator.reverseOrder());
+		checkingReuse(() -> assertThat(nineSorted, contains(67, 67, 43, 24, 7, 5, 5, 5, 3)));
 	}
 
 	@Test
 	public void min() {
-		assertThat(empty.min(Comparator.naturalOrder()), is(Optional.empty()));
-		assertThat(empty.min(Comparator.naturalOrder()), is(Optional.empty()));
+		Optional<Integer> emptyMin = empty.min(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(emptyMin, is(Optional.empty())));
 
-		assertThat(oneRandom.min(Comparator.naturalOrder()), is(Optional.of(17)));
-		assertThat(oneRandom.min(Comparator.naturalOrder()), is(Optional.of(17)));
+		Optional<Integer> oneMin = oneRandom.min(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(oneMin, is(Optional.of(17))));
 
-		assertThat(twoRandom.min(Comparator.naturalOrder()), is(Optional.of(17)));
-		assertThat(twoRandom.min(Comparator.naturalOrder()), is(Optional.of(17)));
+		Optional<Integer> twoMin = twoRandom.min(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(twoMin, is(Optional.of(17))));
 
-		assertThat(nineRandom.min(Comparator.naturalOrder()), is(Optional.of(3)));
-		assertThat(nineRandom.min(Comparator.naturalOrder()), is(Optional.of(3)));
+		Optional<Integer> nineMin = nineRandom.min(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(nineMin, is(Optional.of(3))));
 	}
 
 	@Test
 	public void max() {
-		assertThat(empty.max(Comparator.naturalOrder()), is(Optional.empty()));
-		assertThat(empty.max(Comparator.naturalOrder()), is(Optional.empty()));
+		Optional<Integer> emptyMax = empty.max(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(emptyMax, is(Optional.empty())));
 
-		assertThat(oneRandom.max(Comparator.naturalOrder()), is(Optional.of(17)));
-		assertThat(oneRandom.max(Comparator.naturalOrder()), is(Optional.of(17)));
+		Optional<Integer> oneMax = oneRandom.max(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(oneMax, is(Optional.of(17))));
 
-		assertThat(twoRandom.max(Comparator.naturalOrder()), is(Optional.of(32)));
-		assertThat(twoRandom.max(Comparator.naturalOrder()), is(Optional.of(32)));
+		Optional<Integer> twoMax = twoRandom.max(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(twoMax, is(Optional.of(32))));
 
-		assertThat(nineRandom.max(Comparator.naturalOrder()), is(Optional.of(67)));
-		assertThat(nineRandom.max(Comparator.naturalOrder()), is(Optional.of(67)));
+		Optional<Integer> nineMax = nineRandom.max(Comparator.naturalOrder());
+		checkingReuse(() -> assertThat(nineMax, is(Optional.of(67))));
 	}
 
 	@Test
 	public void count() {
-		assertThat(empty.count(), is(0));
-		assertThat(empty.count(), is(0));
-
-		assertThat(oneOnly.count(), is(1));
-		assertThat(oneOnly.count(), is(1));
-
-		assertThat(oneToTwo.count(), is(2));
-		assertThat(oneToTwo.count(), is(2));
-
-		assertThat(oneToNine.count(), is(9));
-		assertThat(oneToNine.count(), is(9));
+		checkingReuse(() -> assertThat(empty.count(), is(0)));
+		checkingReuse(() -> assertThat(oneOnly.count(), is(1)));
+		checkingReuse(() -> assertThat(oneToTwo.count(), is(2)));
+		checkingReuse(() -> assertThat(oneToNine.count(), is(9)));
 	}
 
 	@Test
 	public void any() {
-		assertThat(three.any(x -> x > 0), is(true));
-		assertThat(three.any(x -> x > 0), is(true));
-
-		assertThat(three.any(x -> x > 2), is(true));
-		assertThat(three.any(x -> x > 2), is(true));
-
-		assertThat(three.any(x -> x > 4), is(false));
-		assertThat(three.any(x -> x > 4), is(false));
+		checkingReuse(() -> assertThat(oneToThree.any(x -> x > 0), is(true)));
+		checkingReuse(() -> assertThat(oneToThree.any(x -> x > 2), is(true)));
+		checkingReuse(() -> assertThat(oneToThree.any(x -> x > 4), is(false)));
 	}
 
 	@Test
 	public void all() {
-		assertThat(three.all(x -> x > 0), is(true));
-		assertThat(three.all(x -> x > 0), is(true));
-
-		assertThat(three.all(x -> x > 2), is(false));
-		assertThat(three.all(x -> x > 2), is(false));
-
-		assertThat(three.all(x -> x > 4), is(false));
-		assertThat(three.all(x -> x > 4), is(false));
+		checkingReuse(() -> assertThat(oneToThree.all(x -> x > 0), is(true)));
+		checkingReuse(() -> assertThat(oneToThree.all(x -> x > 2), is(false)));
+		checkingReuse(() -> assertThat(oneToThree.all(x -> x > 4), is(false)));
 	}
 
 	@Test
 	public void none() {
-		assertThat(three.none(x -> x > 0), is(false));
-		assertThat(three.none(x -> x > 0), is(false));
-
-		assertThat(three.none(x -> x > 2), is(false));
-		assertThat(three.none(x -> x > 2), is(false));
-
-		assertThat(three.none(x -> x > 4), is(true));
-		assertThat(three.none(x -> x > 4), is(true));
+		checkingReuse(() -> assertThat(oneToThree.none(x -> x > 0), is(false)));
+		checkingReuse(() -> assertThat(oneToThree.none(x -> x > 2), is(false)));
+		checkingReuse(() -> assertThat(oneToThree.none(x -> x > 4), is(true)));
 	}
 
 	@Test
 	public void peek() {
-		oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+		Sequence<Integer> peek = oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+		checkingReuse(() -> assertThat(peek, contains(1, 2, 3)));
 	}
 
 	public static class MapBuilder<K, V> {
