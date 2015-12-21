@@ -1,14 +1,16 @@
 # Sequence
 ## A lightweight companion to the Java 8 Stream library
 
-The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step, and with
-better integration with the rest of Java.
+**NOTE: PRE-RELEASE VERSION 0.1, INTERFACE _WILL_ CHANGE UNTIL 1.0**
+
+The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
+and with better integration with the rest of Java.
 
 It aims to be roughly feature complete with sequential `Streams`, with some additional convenience methods.
 In particular it allows easier collecting into common `Collections` without having to use `Collectors`,
 better handling of `Maps` by use of the built-in `Pair` class which allows transformation and filtering of
-`Map` `Entries` as first-class citizens,
-and tighter integration with pre-Java 8 `Collection` classes by being implemented in terms of `Iterable` and `Iterators`.
+`Map` `Entries` as first-class citizens, and tighter integration with pre-Java 8 `Collection` classes by being
+implemented in terms of `Iterable` and `Iterators`.
 
 ```
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -30,15 +32,13 @@ Map<Person, Statistics> statisticsByPerson = Sequence.from(countsByName)
 statisticsByPerson.get("John Doe").setCount(732);
 ```
 
-It uses Java 8 lambdas in much the same way as Streams do, but is based on Iterables and Iterators instead of a custom pipeline framework,
-and is built for convenience and integration, which makes it interoperate with the rest of Java beautifully. It's a framework
-for programmers to perform common programming tasks on moderately small collections. If you need parallel iteration use
-Streams.
+It uses Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead of a 
+pipeline, and is built for convenience, which makes it interoperate with the rest of Java. It's for programmers wanting
+to perform common data processing tasks on moderately small collections. If you need parallel iteration use `Streams`.
 
-Because Sequences are Iterables you can for example use Sequences in foreach loops, and re-use them safely
-AFTER you have already traversed them (as long as they're backed by an Iterable/Collection, not an Iterator or Stream, of course).
-They also integrate fine with Mockito's assertThat and hamcrest matchers checking Iterables, and all the tests are written
-in terms of Iterable traversal using e.g. `Matchers.contains(...)`.
+Because `Sequences` are `Iterables` you can for example use them in foreach loops, and re-use them safely AFTER you
+have already traversed them (as long as they're backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`,
+of course).
 
 ```
 Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10);
@@ -54,11 +54,14 @@ for (int square : singulars.map(i -> i * i).skip(3).limit(5))
     assertThat(square, is(squares[y++]));
 ```
 
-Naturally no documentation of a sequential processing library would be complete without an example of how to compute fibonacci in it:
+There is full support for infinite recursive `Sequences`, including termination at a known value. Example of how to 
+compute Fibonacci:
 
 ```
 Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> Pair.of(p.second(), p.apply(Integer::sum)))
-                                      .map(Pair::first);
+                                      .map(Pair::first)
+                                      .until(55);
 assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
-Please go ahead and give it a try, and experience a leaner way to Stream your Sequences!
+
+Go ahead give it a try, and experience a leaner way to Stream your Sequences!
