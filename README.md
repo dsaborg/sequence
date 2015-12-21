@@ -29,7 +29,7 @@ Map<Person, Statistics> statisticsByPerson = Sequence.from(countsByName)
                                                      .map(pair -> pair.map(Person::new, Statistics::new))
                                                      .pairsToMap(Function.identity());
 
-statisticsByPerson.get("John Doe").setCount(732);
+statisticsByPerson.get(new Person("John Doe")).setCount(732);
 ```
 
 It uses Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead of a 
