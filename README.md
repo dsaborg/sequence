@@ -38,7 +38,7 @@ Streams.
 Because Sequences are Iterables you can for example use Sequences in foreach loops, and re-use them safely
 AFTER you have already traversed them (as long as they're backed by an Iterable/Collection, not an Iterator or Stream, of course).
 They also integrate fine with Mockito's assertThat and hamcrest matchers checking Iterables, and all the tests are written
-in terms of Iterable traversal using e.g. `Matchers.contains(...)``.
+in terms of Iterable traversal using e.g. `Matchers.contains(...)`.
 
 ```
 Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10);
