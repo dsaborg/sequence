@@ -1,7 +1,7 @@
 # Sequence
 ## A lightweight companion to the Java 8 Stream library
 
-**NOTE: PRE-RELEASE VERSION 0.1, INTERFACE _WILL_ CHANGE UNTIL 1.0**
+**NOTE: PRE-RELEASE VERSION 0.x, INTERFACE _WILL_ CHANGE UNTIL 1.0**
 
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java.
