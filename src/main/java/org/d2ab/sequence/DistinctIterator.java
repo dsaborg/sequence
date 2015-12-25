@@ -1,4 +1,4 @@
-package org.da2ab.sequence;
+package org.d2ab.sequence;
 
 import java.util.HashSet;
 import java.util.Iterator;

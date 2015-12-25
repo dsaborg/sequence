@@ -1,4 +1,4 @@
-package org.da2ab.sequence;
+package org.d2ab.sequence;
 
 import java.util.Iterator;
 import java.util.function.UnaryOperator;

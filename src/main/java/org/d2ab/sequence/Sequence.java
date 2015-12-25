@@ -1,4 +1,4 @@
-package org.da2ab.sequence;
+package org.d2ab.sequence;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 import static java.util.Collections.singleton;
-import static org.da2ab.sequence.Iterators.skipOne;
 
 /**
  * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and
@@ -209,7 +208,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Optional<T> second() {
 		Iterator<T> iterator = iterator();
 
-		skipOne(iterator);
+		Iterators.skipOne(iterator);
 		if (!iterator.hasNext())
 			return Optional.empty();
 
@@ -219,8 +218,8 @@ public interface Sequence<T> extends Iterable<T> {
 	default Optional<T> third() {
 		Iterator<T> iterator = iterator();
 
-		skipOne(iterator);
-		skipOne(iterator);
+		Iterators.skipOne(iterator);
+		Iterators.skipOne(iterator);
 		if (!iterator.hasNext())
 			return Optional.empty();
 

@@ -1,4 +1,4 @@
-package org.da2ab.sequence;
+package org.d2ab.sequence;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
