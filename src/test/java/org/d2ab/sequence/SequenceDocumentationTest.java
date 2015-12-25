@@ -53,6 +53,17 @@ public class SequenceDocumentationTest {
 	}
 
 	@Test
+	public void toMapFromPairs() {
+		Sequence<Pair<String, Integer>> sequence = Sequence.from(
+				Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build()).map(Pair::from)
+		                                                   .filter(p -> p.test((s, i) -> i != 2))
+		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+
+		assertThat(sequence.<String, Integer>toMap(),
+		           is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+	}
+
+	@Test
 	public void reuseOfSequence() {
 		Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
 
@@ -135,5 +146,15 @@ public class SequenceDocumentationTest {
 		                   .map(c -> (c == '_') ? ' ' : c);
 
 		assertThat(chars.asString(), is("Hello Lexicon"));
+	}
+
+	@Test
+	public void entrySequence() {
+		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+		EntrySequence<String, Integer> sequence = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
+
+		Map<String, Integer> oddValuesOnly = sequence.toMap();
+		assertThat(oddValuesOnly, is(equalTo(Maps.builder("1", 1).put("3", 3).build())));
 	}
 }

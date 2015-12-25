@@ -20,6 +20,7 @@ import org.d2ab.utils.MoreArrays;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -487,18 +488,16 @@ public class SequenceTest {
 	public void toMapFromPairs() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
-		                                                   .filter(p -> p.test((s, i) -> i != 2))
-		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toMap();
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
 
 			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
 			assertThat(linkedMap, instanceOf(HashMap.class));
-			assertThat(linkedMap, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(linkedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
 		});
 	}
 
@@ -927,6 +926,7 @@ public class SequenceTest {
 	public void chars() {
 		assertThat(Sequence.chars().limit(3), contains('\u0000', '\u0001', '\u0002'));
 		assertThat(Sequence.chars().limit(0xC0).last(), is(Optional.of('¿')));
+		assertThat(Sequence.chars().count(), is(65536L));
 	}
 
 	@Test
