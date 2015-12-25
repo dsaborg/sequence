@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -40,12 +41,21 @@ public class Pair<A, B> {
 		return of(firstMapper.apply(first), secondMapper.apply(second));
 	}
 
+	@Nonnull
+	public <C, D> Pair<C, D> map(@Nonnull BiFunction<? super A, ? super B, ? extends Pair<C, D>> mapper) {
+		return mapper.apply(first, second);
+	}
+
 	public <T> T apply(@Nonnull BiFunction<? super A, ? super B, ? extends T> function) {
 		return function.apply(first, second);
 	}
 
 	public boolean test(@Nonnull Predicate<? super A> firstPredicate, @Nonnull Predicate<? super B> secondPredicate) {
 		return firstPredicate.test(first) && secondPredicate.test(second);
+	}
+
+	public boolean test(@Nonnull BiPredicate<? super A, ? super B> predicate) {
+		return predicate.test(first, second);
 	}
 
 	public Map<A, B> put(@Nonnull Map<A, B> map) {
