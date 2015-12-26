@@ -21,16 +21,16 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ConcatenatingIterator<T> implements Iterator<T> {
+public class ChainingIterator<T> implements Iterator<T> {
 	private final Iterator<? extends Iterable<? extends T>> iterables;
 	private Iterator<? extends T> iterator;
 
 	@SafeVarargs
-	public ConcatenatingIterator(Iterable<? extends T>... iterables) {
+	public ChainingIterator(Iterable<? extends T>... iterables) {
 		this(asList(iterables));
 	}
 
-	public ConcatenatingIterator(Iterable<? extends Iterable<? extends T>> iterables) {
+	public ChainingIterator(Iterable<? extends Iterable<? extends T>> iterables) {
 		this.iterables = iterables.iterator();
 	}
 

@@ -16,7 +16,7 @@
 
 package org.d2ab.iterable;
 
-import org.d2ab.iterator.ConcatenatingIterator;
+import org.d2ab.iterator.ChainingIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,22 +24,22 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class ConcatenatingIterable<T> implements Iterable<T> {
+public class ChainingIterable<T> implements Iterable<T> {
 	private final List<Iterable<T>> iterables = new ArrayList<>();
 
-	public ConcatenatingIterable() {
+	public ChainingIterable() {
 	}
 
 	@SafeVarargs
-	public ConcatenatingIterable(Iterable<T>... iterables) {
+	public ChainingIterable(Iterable<T>... iterables) {
 		this.iterables.addAll(asList(iterables));
 	}
 
-	public static <U, T> ConcatenatingIterable<U> from(Iterable<T> iterable) {
-		return new ConcatenatingIterable<U>().addAll(iterable);
+	public static <U, T> ChainingIterable<U> from(Iterable<T> iterable) {
+		return new ChainingIterable<U>().addAll(iterable);
 	}
 
-	public <U> ConcatenatingIterable<T> addAll(Iterable<U> iterable) {
+	public <U> ChainingIterable<T> addAll(Iterable<U> iterable) {
 		for (U each : iterable) {
 			if (each == null || each instanceof Iterable)
 				add((Iterable<T>) each);
@@ -53,22 +53,22 @@ public class ConcatenatingIterable<T> implements Iterable<T> {
 		return this;
 	}
 
-	public ConcatenatingIterable<T> add(Iterable<T> iterable) {
+	public ChainingIterable<T> add(Iterable<T> iterable) {
 		iterables.add(iterable);
 		return this;
 	}
 
-	public ConcatenatingIterable<T> add(Iterator<T> iterator) {
+	public ChainingIterable<T> add(Iterator<T> iterator) {
 		iterables.add(() -> iterator);
 		return this;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return new ConcatenatingIterator<T>(iterables);
+		return new ChainingIterator<T>(iterables);
 	}
 
-	public ConcatenatingIterable<T> add(T[] objects) {
+	public ChainingIterable<T> add(T[] objects) {
 		iterables.add(asList(objects));
 		return this;
 	}
