@@ -16,6 +16,9 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.iterable.ConcatenatingIterable;
+import org.d2ab.iterator.*;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;

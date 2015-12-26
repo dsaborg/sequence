@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 
-public class PeekingIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
-	private final Consumer<T> action;
-
-	public PeekingIterator(Iterator<T> iterator, Consumer<T> action) {
-		this.iterator = iterator;
-		this.action = action;
+public class Iterators {
+	private Iterators() {
 	}
 
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
+	public static void skipOne(Iterator<?> iterator) {
+		skip(1, iterator);
 	}
 
-	@Override
-	public T next() {
-		T next = iterator.next();
-		action.accept(next);
-		return next;
+	public static void skip(int steps, Iterator<?> iterator) {
+		for (int count = 0; count < steps && iterator.hasNext(); count++) {
+			iterator.next();
+		}
 	}
 }

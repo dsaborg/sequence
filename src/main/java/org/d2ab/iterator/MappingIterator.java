@@ -14,36 +14,27 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.function.Function;
 
-public class SkippingIterator<T> implements Iterator<T> {
+public class MappingIterator<T, U> implements Iterator<U> {
 	private final Iterator<T> iterator;
-	private final int skip;
-	boolean skipped;
+	private final Function<? super T, ? extends U> mapper;
 
-	public SkippingIterator(Iterator<T> iterator, int skip) {
+	public MappingIterator(Iterator<T> iterator, Function<? super T, ? extends U> mapper) {
 		this.iterator = iterator;
-		this.skip = skip;
+		this.mapper = mapper;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (!skipped) {
-			Iterators.skip(skip, iterator);
-			skipped = true;
-		}
-
 		return iterator.hasNext();
 	}
 
 	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.next();
+	public U next() {
+		return mapper.apply(iterator.next());
 	}
 }

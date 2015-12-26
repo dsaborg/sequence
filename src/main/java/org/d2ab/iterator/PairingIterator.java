@@ -14,38 +14,42 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
+
+import org.d2ab.sequence.Pair;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.util.Arrays.asList;
+public class PairingIterator<T> implements Iterator<Pair<T, T>> {
+	private Iterator<T> iterator;
+	private T previous;
+	private boolean gotPrevious;
 
-public class ConcatenatingIterator<T> implements Iterator<T> {
-	private final Iterator<? extends Iterable<? extends T>> iterables;
-	private Iterator<? extends T> iterator;
-
-	@SafeVarargs
-	public ConcatenatingIterator(Iterable<? extends T>... iterables) {
-		this(asList(iterables));
-	}
-
-	public ConcatenatingIterator(Iterable<? extends Iterable<? extends T>> iterables) {
-		this.iterables = iterables.iterator();
+	public PairingIterator(Iterator<T> iterator) {
+		this.iterator = iterator;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			iterator = iterables.next().iterator();
+		boolean hasNext = iterator.hasNext();
+		if (gotPrevious || !hasNext) {
+			return hasNext;
 		}
-		return iterator != null && iterator.hasNext();
+
+		previous = iterator.next();
+		gotPrevious = true;
+		return iterator.hasNext();
 	}
 
 	@Override
-	public T next() {
-		if (!hasNext())
+	public Pair<T, T> next() {
+		if (!iterator.hasNext())
 			throw new NoSuchElementException();
-		return iterator.next();
+
+		T next = iterator.next();
+		Pair result = Pair.of(previous, next);
+		previous = next;
+		return result;
 	}
 }

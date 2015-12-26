@@ -14,49 +14,32 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.function.UnaryOperator;
 
-public class SteppingIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
-	private final int step;
-	private boolean gotNext;
-	private T next;
+public class RecursiveIterator<T> implements Iterator<T> {
+	private final T seed;
+	private final UnaryOperator<T> op;
+	private T previous;
+	private boolean hasPrevious;
 
-	public SteppingIterator(Iterator<T> iterator, int step) {
-		this.iterator = iterator;
-		this.step = step;
+	public RecursiveIterator(T seed, UnaryOperator<T> op) {
+		this.seed = seed;
+		this.op = op;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (gotNext)
-			return true;
-
-		if (!iterator.hasNext())
-			return false;
-
-		next = iterator.next();
-
-		// skip steps
-		int i = step;
-		while (--i > 0 && iterator.hasNext())
-			iterator.next();
-		gotNext = true;
-
 		return true;
 	}
 
 	@Override
 	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T result = next;
-		next = null;
-		gotNext = false;
-		return result;
+		T next = hasPrevious ? op.apply(previous) : seed;
+		previous = next;
+		hasPrevious = true;
+		return next;
 	}
 }

@@ -14,32 +14,47 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.function.UnaryOperator;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
-public class RecursiveIterator<T> implements Iterator<T> {
-	private final T seed;
-	private final UnaryOperator<T> op;
-	private T previous;
-	private boolean hasPrevious;
+public class DistinctIterator<T> implements Iterator<T> {
+	private Iterator<T> iterator;
+	private Set<T> seen = new HashSet<T>();
+	private T next;
+	private boolean gotNext;
 
-	public RecursiveIterator(T seed, UnaryOperator<T> op) {
-		this.seed = seed;
-		this.op = op;
+	public DistinctIterator(Iterator<T> iterator) {
+		this.iterator = iterator;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return true;
+		if (gotNext)
+			return true;
+
+		while (!gotNext && iterator.hasNext()) {
+			T next = iterator.next();
+			if (seen.add(next)) {
+				gotNext = true;
+				this.next = next;
+			}
+		}
+
+		return gotNext;
 	}
 
 	@Override
 	public T next() {
-		T next = hasPrevious ? op.apply(previous) : seed;
-		previous = next;
-		hasPrevious = true;
-		return next;
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T result = next;
+		gotNext = false;
+		next = null;
+		return result;
 	}
 }

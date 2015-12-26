@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.*;
 

@@ -14,40 +14,41 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
-public class PairingIterator<T> implements Iterator<Pair<T, T>> {
+public class SortingIterator<T> implements Iterator<T> {
 	private Iterator<T> iterator;
-	private T previous;
-	private boolean gotPrevious;
+	private Comparator<? super T> comparator;
+	private Iterator<T> sortedIterator;
 
-	public PairingIterator(Iterator<T> iterator) {
+	public SortingIterator(Iterator<T> iterator) {
+		this(iterator, (Comparator<? super T>) Comparator.naturalOrder());
+	}
+
+	public SortingIterator(Iterator<T> iterator, Comparator<? super T> comparator) {
 		this.iterator = iterator;
+		this.comparator = comparator;
 	}
 
 	@Override
 	public boolean hasNext() {
-		boolean hasNext = iterator.hasNext();
-		if (gotPrevious || !hasNext) {
-			return hasNext;
+		if (sortedIterator == null) {
+			List<T> elements = new ArrayList<T>();
+			while (iterator.hasNext())
+				elements.add(iterator.next());
+			elements.sort(comparator);
+			sortedIterator = elements.iterator();
 		}
-
-		previous = iterator.next();
-		gotPrevious = true;
-		return iterator.hasNext();
+		return sortedIterator.hasNext();
 	}
 
 	@Override
-	public Pair<T, T> next() {
-		if (!iterator.hasNext())
+	public T next() {
+		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T next = iterator.next();
-		Pair result = Pair.of(previous, next);
-		previous = next;
-		return result;
+		return sortedIterator.next();
 	}
 }

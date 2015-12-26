@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterable;
+
+import org.d2ab.iterator.ConcatenatingIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -14,40 +14,32 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
-public class TerminalIterator<T> implements Iterator<T> {
+public class LimitingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
-	private final T terminal;
-	private T next;
-	private boolean gotNext;
+	private final int limit;
+	int count;
 
-	public TerminalIterator(Iterator<T> iterator, T terminal) {
+	public LimitingIterator(Iterator<T> iterator, int limit) {
 		this.iterator = iterator;
-		this.terminal = terminal;
+		this.limit = limit;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (!gotNext && iterator.hasNext()) {
-			next = iterator.next();
-			gotNext = true;
-		}
-		return gotNext && !Objects.equals(next, terminal);
+		return count < limit && iterator.hasNext();
 	}
 
 	@Override
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-
-		T result = next;
-		gotNext = false;
-		next = null;
-		return result;
+		T next = iterator.next();
+		count++;
+		return next;
 	}
 }

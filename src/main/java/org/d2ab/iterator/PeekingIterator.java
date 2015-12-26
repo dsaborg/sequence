@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
-public class MappingIterator<T, U> implements Iterator<U> {
+public class PeekingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
-	private final Function<? super T, ? extends U> mapper;
+	private final Consumer<T> action;
 
-	public MappingIterator(Iterator<T> iterator, Function<? super T, ? extends U> mapper) {
+	public PeekingIterator(Iterator<T> iterator, Consumer<T> action) {
 		this.iterator = iterator;
-		this.mapper = mapper;
+		this.action = action;
 	}
 
 	@Override
@@ -34,7 +34,9 @@ public class MappingIterator<T, U> implements Iterator<U> {
 	}
 
 	@Override
-	public U next() {
-		return mapper.apply(iterator.next());
+	public T next() {
+		T next = iterator.next();
+		action.accept(next);
+		return next;
 	}
 }

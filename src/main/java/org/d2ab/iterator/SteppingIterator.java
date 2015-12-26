@@ -14,32 +14,49 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LimitingIterator<T> implements Iterator<T> {
+public class SteppingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
-	private final int limit;
-	int count;
+	private final int step;
+	private boolean gotNext;
+	private T next;
 
-	public LimitingIterator(Iterator<T> iterator, int limit) {
+	public SteppingIterator(Iterator<T> iterator, int step) {
 		this.iterator = iterator;
-		this.limit = limit;
+		this.step = step;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
+		if (gotNext)
+			return true;
+
+		if (!iterator.hasNext())
+			return false;
+
+		next = iterator.next();
+
+		// skip steps
+		int i = step;
+		while (--i > 0 && iterator.hasNext())
+			iterator.next();
+		gotNext = true;
+
+		return true;
 	}
 
 	@Override
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-		T next = iterator.next();
-		count++;
-		return next;
+
+		T result = next;
+		next = null;
+		gotNext = false;
+		return result;
 	}
 }

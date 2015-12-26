@@ -14,47 +14,47 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.function.Predicate;
 
-public class DistinctIterator<T> implements Iterator<T> {
-	private Iterator<T> iterator;
-	private Set<T> seen = new HashSet<T>();
-	private T next;
-	private boolean gotNext;
+public class FilteringIterator<T> implements Iterator<T> {
+	private final Iterator<? extends T> iterator;
+	private final Predicate<? super T> predicate;
+	private boolean foundNext;
+	T foundValue;
 
-	public DistinctIterator(Iterator<T> iterator) {
+	public FilteringIterator(Iterator<? extends T> iterator, Predicate<? super T> predicate) {
 		this.iterator = iterator;
+		this.predicate = predicate;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (gotNext)
+		if (foundNext) { // already checked
 			return true;
-
-		while (!gotNext && iterator.hasNext()) {
-			T next = iterator.next();
-			if (seen.add(next)) {
-				gotNext = true;
-				this.next = next;
-			}
 		}
 
-		return gotNext;
+		do { // find next matching, bail out if EOF
+			foundNext = iterator.hasNext();
+			if (!foundNext)
+				return false;
+		} while (!predicate.test(foundValue = iterator.next()));
+
+		// found matching value
+		return true;
 	}
 
 	@Override
 	public T next() {
-		if (!hasNext())
+		if (!hasNext()) {
 			throw new NoSuchElementException();
-
-		T result = next;
-		gotNext = false;
-		next = null;
-		return result;
+		}
+		T nextValue = foundValue;
+		foundNext = false;
+		foundValue = null;
+		return nextValue;
 	}
 }

@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.iterator;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-public class SortingIterator<T> implements Iterator<T> {
-	private Iterator<T> iterator;
-	private Comparator<? super T> comparator;
-	private Iterator<T> sortedIterator;
+import static java.util.Arrays.asList;
 
-	public SortingIterator(Iterator<T> iterator) {
-		this(iterator, (Comparator<? super T>) Comparator.naturalOrder());
+public class ConcatenatingIterator<T> implements Iterator<T> {
+	private final Iterator<? extends Iterable<? extends T>> iterables;
+	private Iterator<? extends T> iterator;
+
+	@SafeVarargs
+	public ConcatenatingIterator(Iterable<? extends T>... iterables) {
+		this(asList(iterables));
 	}
 
-	public SortingIterator(Iterator<T> iterator, Comparator<? super T> comparator) {
-		this.iterator = iterator;
-		this.comparator = comparator;
+	public ConcatenatingIterator(Iterable<? extends Iterable<? extends T>> iterables) {
+		this.iterables = iterables.iterator();
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (sortedIterator == null) {
-			List<T> elements = new ArrayList<T>();
-			while (iterator.hasNext())
-				elements.add(iterator.next());
-			elements.sort(comparator);
-			sortedIterator = elements.iterator();
+		if ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
+			iterator = iterables.next().iterator();
 		}
-		return sortedIterator.hasNext();
+		return iterator != null && iterator.hasNext();
 	}
 
 	@Override
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-
-		return sortedIterator.next();
+		return iterator.next();
 	}
 }
