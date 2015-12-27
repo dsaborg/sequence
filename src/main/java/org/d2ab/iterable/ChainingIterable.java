@@ -70,6 +70,6 @@ public class ChainingIterable<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new ChainingIterator<T>(iterables);
+		return new ChainingIterator<>(iterables);
 	}
 }

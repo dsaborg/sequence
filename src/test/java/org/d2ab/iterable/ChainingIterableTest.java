@@ -16,11 +16,11 @@
 package org.d2ab.iterable;
 
 import org.junit.Test;
-import org.d2ab.test.Tests;
 
 import java.util.Iterator;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -63,7 +63,7 @@ public class ChainingIterableTest {
 		assertThat(iterator.next(), is("a"));
 		assertThat(iterator.next(), is("b"));
 		assertThat(iterator.next(), is("c"));
-		Tests.expecting(NullPointerException.class, iterator::hasNext);
+		expecting(NullPointerException.class, iterator::hasNext);
 	}
 
 	@Test
@@ -78,8 +78,9 @@ public class ChainingIterableTest {
 	public void appendIterator() {
 		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"));
 		chainingIterable.append(asList("d", "e", "f").iterator());
-		assertThat(chainingIterable, contains("a", "b", "c", "d", "e", "f"));
-		assertThat(chainingIterable, contains("a", "b", "c"));
+		chainingIterable.append(asList("g", "h", "i"));
+		assertThat(chainingIterable, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+		assertThat(chainingIterable, contains("a", "b", "c", "g", "h", "i"));
 	}
 
 	@Test

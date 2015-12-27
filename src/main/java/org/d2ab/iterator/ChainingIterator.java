@@ -36,7 +36,7 @@ public class ChainingIterator<T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
+		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
 			iterator = iterables.next().iterator();
 		}
 		return iterator != null && iterator.hasNext();
