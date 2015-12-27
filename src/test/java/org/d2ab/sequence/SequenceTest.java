@@ -796,4 +796,13 @@ public class SequenceTest {
 		Sequence<Integer> peek = oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
 		twice(() -> assertThat(peek, contains(1, 2, 3)));
 	}
+
+	@Test
+	public void stream() {
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(oneToThree.stream().collect(Collectors.toList()), contains(1, 2, 3));
+		assertThat(oneToThree, contains(1, 2, 3));
+	}
 }

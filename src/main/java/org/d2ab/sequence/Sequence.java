@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
@@ -322,6 +323,10 @@ public interface Sequence<T> extends Iterable<T> {
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
 		List result = toList();
 		return (A[]) result.toArray(constructor.apply(result.size()));
+	}
+
+	default Stream<T> stream() {
+		return StreamSupport.stream(spliterator(), false);
 	}
 
 	default boolean all(Predicate<? super T> predicate) {
