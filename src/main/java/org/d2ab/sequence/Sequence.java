@@ -74,6 +74,10 @@ public interface Sequence<T> extends Iterable<T> {
 		return iteratorSupplier::get;
 	}
 
+	static <T> Sequence<T> from(Stream<T> stream) {
+		return stream::iterator;
+	}
+
 	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
 		return () -> new RecursiveIterator<>(seed, op);
 	}

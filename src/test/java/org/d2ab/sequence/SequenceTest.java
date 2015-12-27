@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 
 public class SequenceTest {
@@ -130,6 +131,22 @@ public class SequenceTest {
 		Sequence<Integer> sequenceFromIterable = Sequence.from(iterable);
 
 		twice(() -> assertThat(sequenceFromIterable, contains(1, 2, 3)));
+	}
+
+	@Test
+	public void fromStream() throws Exception {
+		Sequence<Integer> sequenceFromStream = Sequence.from(asList(1, 2, 3).stream());
+
+		assertThat(sequenceFromStream, contains(1, 2, 3));
+		expecting(IllegalStateException.class, sequenceFromStream::iterator);
+	}
+
+	@Test
+	public void fromEmptyStream() throws Exception {
+		Sequence<Integer> sequenceFromStream = Sequence.from(Collections.<Integer>emptyList().stream());
+
+		assertThat(sequenceFromStream, is(emptyIterable()));
+		expecting(IllegalStateException.class, sequenceFromStream::iterator);
 	}
 
 	@Test
