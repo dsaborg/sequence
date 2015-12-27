@@ -21,6 +21,7 @@ import org.d2ab.iterator.ChainingIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
@@ -45,6 +46,8 @@ public class ChainingIterable<T> implements Iterable<T> {
 				append((Iterable<T>) each);
 			else if (each instanceof Iterator)
 				append((Iterator<T>) each);
+			else if (each instanceof Stream)
+				append((Stream<T>) each);
 			else if (each instanceof Object[])
 				append((T[]) each);
 			else
@@ -65,6 +68,11 @@ public class ChainingIterable<T> implements Iterable<T> {
 
 	public ChainingIterable<T> append(T... objects) {
 		iterables.add(asList(objects));
+		return this;
+	}
+
+	public ChainingIterable<T> append(Stream<T> stream) {
+		iterables.add(stream::iterator);
 		return this;
 	}
 

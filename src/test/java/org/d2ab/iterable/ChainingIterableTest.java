@@ -92,6 +92,14 @@ public class ChainingIterableTest {
 	}
 
 	@Test
+	public void appendStream() {
+		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"));
+		chainingIterable.append(asList("d", "e", "f").stream());
+		chainingIterable.append(asList("g", "h", "i"));
+		assertThat(chainingIterable, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+	}
+
+	@Test
 	public void appendAllIterables() {
 		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"));
 		chainingIterable.appendAll(asList(asList("d", "e", "f"), asList("g", "h", "i")));
@@ -112,6 +120,13 @@ public class ChainingIterableTest {
 		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"));
 		chainingIterable.appendAll(asList(new String[]{"d", "e", "f"}, new String[]{"g", "h", "i"}));
 		assertThat(chainingIterable, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+		assertThat(chainingIterable, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+	}
+
+	@Test
+	public void appendAllStreams() {
+		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"));
+		chainingIterable.appendAll(asList(asList("d", "e", "f").stream(), asList("g", "h", "i").stream()));
 		assertThat(chainingIterable, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
