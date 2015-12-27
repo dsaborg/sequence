@@ -101,7 +101,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	@Nonnull
-	default Sequence<T> then(@Nonnull Sequence<? extends T> then) {
+	default Sequence<T> append(@Nonnull Sequence<? extends T> then) {
 		return () -> new ChainingIterator<>(this, then);
 	}
 
@@ -113,7 +113,7 @@ public interface Sequence<T> extends Iterable<T> {
 	@Nonnull
 	default <U> Sequence<U> flatMap(@Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
 		ChainingIterable<U> result = new ChainingIterable<>();
-		forEach(each -> result.add(mapper.apply(each)));
+		forEach(each -> result.append(mapper.apply(each)));
 		return result::iterator;
 	}
 

@@ -35,41 +35,41 @@ public class ChainingIterable<T> implements Iterable<T> {
 		this.iterables.addAll(asList(iterables));
 	}
 
-	public static <U, T> ChainingIterable<U> from(Iterable<T> iterable) {
-		return new ChainingIterable<U>().addAll(iterable);
+	public static <U, T> ChainingIterable<U> from(Iterable<T> iterablesIteratorsOrArrays) {
+		return new ChainingIterable<U>().appendAll(iterablesIteratorsOrArrays);
 	}
 
-	public <U> ChainingIterable<T> addAll(Iterable<U> iterable) {
-		for (U each : iterable) {
+	public <U> ChainingIterable<T> appendAll(Iterable<U> iterablesIteratorsOrArrays) {
+		for (U each : iterablesIteratorsOrArrays) {
 			if (each == null || each instanceof Iterable)
-				add((Iterable<T>) each);
+				append((Iterable<T>) each);
 			else if (each instanceof Iterator)
-				add((Iterator<T>) each);
+				append((Iterator<T>) each);
 			else if (each instanceof Object[])
-				add(asList((T[]) each));
+				append((T[]) each);
 			else
 				throw new ClassCastException("Required an Iterable, Iterator or Array but got: " + each.getClass());
 		}
 		return this;
 	}
 
-	public ChainingIterable<T> add(Iterable<T> iterable) {
+	public ChainingIterable<T> append(Iterable<T> iterable) {
 		iterables.add(iterable);
 		return this;
 	}
 
-	public ChainingIterable<T> add(Iterator<T> iterator) {
+	public ChainingIterable<T> append(Iterator<T> iterator) {
 		iterables.add(() -> iterator);
+		return this;
+	}
+
+	public ChainingIterable<T> append(T... objects) {
+		iterables.add(asList(objects));
 		return this;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
 		return new ChainingIterator<T>(iterables);
-	}
-
-	public ChainingIterable<T> add(T[] objects) {
-		iterables.add(asList(objects));
-		return this;
 	}
 }
