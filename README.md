@@ -32,11 +32,14 @@ Map<Person, Statistics> statisticsByPerson = Sequence.from(countsByName)
 statisticsByPerson.get(new Person("John Doe")).setCount(732);
 ```
 
-It uses Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead of a 
-pipeline, and is built for convenience, which makes it interoperate with the rest of Java. It's for programmers wanting
-to perform common data processing tasks on moderately small collections. If you need parallel iteration use `Streams`.
+`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
+of a pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers wanting
+to perform common data processing tasks on moderately small collections. If you need parallel iteration or Very
+Large collection processing (> 2G entries) use `Streams`. If your data doesn't fit in an array you probably need
+`Streams` instead. Having said that, `Sequences` go to great lengths to be as lazy and late-evaluating as possible,
+with minimal overhead.
 
-Because `Sequences` are `Iterables` you can for example use them in foreach loops, and re-use them safely AFTER you
+Because `Sequences` are `Iterables` you can for example use them in foreach loops, and re-use them safely after you
 have already traversed them (as long as they're backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`,
 of course).
 
@@ -52,6 +55,15 @@ for (int odd : singulars.step(2))
 int y = 0, squares[] = {16, 25, 36, 49, 64};
 for (int square : singulars.map(i -> i * i).skip(3).limit(5))
     assertThat(square, is(squares[y++]));
+```
+
+`Sequences` interoperate beautifully with `Streams`, through the expected `from(Stream)` and `.stream()` methods.
+
+```
+Stream<String> abcd = asList("a", "b", "c", "d").stream();
+Stream<Pair<String, String>> abbccd = Sequence.from(abcd).pair().stream();
+assertThat(abbccd.collect(Collectors.toList()),
+           contains(Pair.of("a", "b"), Pair.of("b", "c"), Pair.of("c", "d")));
 ```
 
 There is full support for infinite recursive `Sequences`, including termination at a known value. Example of how to 

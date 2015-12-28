@@ -23,14 +23,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.test.Tests.expecting;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.d2ab.test.Tests.expecting;
-import static org.d2ab.test.Tests.twice;
 
 public class SequenceTest {
 	private final Sequence<Integer> empty = Sequence.<Integer>empty();
@@ -821,5 +822,13 @@ public class SequenceTest {
 
 		assertThat(oneToThree.stream().collect(Collectors.toList()), contains(1, 2, 3));
 		assertThat(oneToThree, contains(1, 2, 3));
+	}
+
+	@Test
+	public void streamToSequenceAndBack() {
+		Stream<String> abcd = asList("a", "b", "c", "d").stream();
+		Stream<Pair<String, String>> abbccd = Sequence.from(abcd).pair().stream();
+		assertThat(abbccd.collect(Collectors.toList()),
+		           contains(Pair.of("a", "b"), Pair.of("b", "c"), Pair.of("c", "d")));
 	}
 }
