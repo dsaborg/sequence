@@ -289,33 +289,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void filterAndMap() {
-		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
-		                             .filter(x -> x % 2 == 0)
-		                             .map(Objects::toString)
-		                             .toList();
-
-		twice(() -> assertThat(evens, contains("2", "4", "6", "8")));
-	}
-
-	@Test
-	public void reuseOfSequence() {
-		Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10); // Digits 1..10
-
-		// using sequence of ints 1..10 first time to get odd numbers between 1 and 10
-		Sequence<Integer> odds = singulars.step(2);
-		int x = 0, expectedOdds[] = {1, 3, 5, 7, 9};
-		for (int odd : odds)
-			assertThat(odd, is(expectedOdds[x++]));
-
-		// re-using the same sequence again to get squares of numbers between 4 and 9
-		Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
-		int y = 0, expectedSquares[] = {16, 25, 36, 49, 64};
-		for (int square : squares)
-			assertThat(square, is(expectedSquares[y++]));
-	}
-
-	@Test
 	public void flatMapIterables() {
 		Sequence<List<Integer>> sequence = Sequence.of(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6));
 
@@ -678,14 +651,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
-		                                               p -> Pair.of(p.getSecond(), p.apply(Integer::sum)))
-		                                      .map(Pair::getFirst);
-		twice(() -> assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)));
-	}
-
-	@Test
 	public void pairs() {
 		twice(() -> {
 			assertThat(empty.pair(), is(emptyIterable()));
@@ -836,13 +801,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void streamToSequenceAndBack() {
-		Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
-		Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
-		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
-	}
-
-	@Test
 	public void delimit() {
 		Sequence<Object> delimited = _123.delimit(", ");
 		twice(() -> assertThat(delimited, contains(1, ", ", 2, ", ", 3)));
@@ -900,15 +858,5 @@ public class SequenceTest {
 		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(null, 4), Pair.of(null, 5)));
 		assertThat(_12345.interleave(_123),
 		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null), Pair.of(5, null)));
-	}
-
-	@Test
-	public void toMapFromSeparateSequences() {
-		Sequence<Integer> keys = Sequence.of(1, 2, 3);
-		Sequence<String> values = Sequence.of("1", "2", "3");
-
-		Map<Integer, String> map = keys.interleave(values).toMap();
-
-		assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 	}
 }
