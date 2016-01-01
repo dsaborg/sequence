@@ -106,8 +106,8 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	@Nonnull
-	default Sequence<T> append(@Nonnull Sequence<? extends T> then) {
-		return () -> new ChainingIterator<>(this, then);
+	default Sequence<T> append(@Nonnull Sequence<? extends T> that) {
+		return () -> new ChainingIterator<>(this, that);
 	}
 
 	@Nonnull

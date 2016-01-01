@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.sequence;
 
 import org.d2ab.collection.MapBuilder;
@@ -298,32 +297,18 @@ public class SequenceTest {
 	public void flatMapLazy() {
 		Sequence<Integer> flatMap = Sequence.of(asList(1, 2), null).flatMap(Function.identity());
 
-		// NPE if not lazy - see below
-		Iterator<Integer> iterator = flatMap.iterator();
-		assertThat(iterator.next(), is(1));
-		assertThat(iterator.next(), is(2));
-		try {
-			iterator.next();
-			fail("Expected NPE");
-		} catch (NullPointerException ignored) {
-			// expected
-		}
-
-		Iterator<Integer> iterator2 = flatMap.iterator();
-		assertThat(iterator2.next(), is(1));
-		assertThat(iterator2.next(), is(2));
-		try {
-			iterator2.next();
-			fail("Expected NPE");
-		} catch (NullPointerException ignored) {
-			// expected
-		}
+		twice(() -> {
+			Iterator<Integer> iterator = flatMap.iterator(); // NPE if not lazy - expected later below
+			assertThat(iterator.next(), is(1));
+			assertThat(iterator.next(), is(2));
+			expecting(NullPointerException.class, iterator::next);
+		});
 	}
 
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6)
-				                                                                                                     .iterator());
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
+		                                                   asList(5, 6).iterator());
 		Sequence<Integer> flatMap = sequence.flatMap(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -347,26 +332,23 @@ public class SequenceTest {
 
 	@Test
 	public void flattenLazy() {
-		Sequence<Integer> flattened = Sequence.of(asList(1, 2), null).flatten();
+		Sequence<Integer> flattened = Sequence.of(asList(1, 2), (Iterable<Integer>) () -> {
+			throw new IllegalStateException();
+		}).flatten();
 
 		twice(() -> {
 			// NPE if not lazy - see below
 			Iterator<Integer> iterator = flattened.iterator();
 			assertThat(iterator.next(), is(1));
 			assertThat(iterator.next(), is(2));
-			try {
-				iterator.next();
-				fail("Expected NPE");
-			} catch (NullPointerException ignored) {
-				// expected
-			}
+			expecting(IllegalStateException.class, iterator::next);
 		});
 	}
 
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6)
-				                                                                                                     .iterator());
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
+		                                                   asList(5, 6).iterator());
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -391,17 +373,9 @@ public class SequenceTest {
 		Sequence<Integer> sequence = Sequence.of(1, null);
 
 		twice(() -> {
-			// NPE here if not lazy
-			Iterator<String> iterator = sequence.map(Object::toString).iterator();
-
+			Iterator<String> iterator = sequence.map(Object::toString).iterator(); // NPE here if not lazy
 			assertThat(iterator.next(), is("1"));
-
-			try {
-				iterator.next();
-				fail("Expected NPE");
-			} catch (NullPointerException ignored) {
-				// expected
-			}
+			expecting(NullPointerException.class, iterator::next);
 		});
 	}
 

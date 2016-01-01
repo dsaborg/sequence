@@ -36,13 +36,15 @@ public class ChainingIterable<T> implements Iterable<T> {
 		this.iterables.addAll(asList(iterables));
 	}
 
-	public static <U, T> ChainingIterable<U> from(Iterable<T> iterablesIteratorsOrArrays) {
-		return new ChainingIterable<U>().appendAll(iterablesIteratorsOrArrays);
+	public static <U, T> ChainingIterable<U> from(Iterable<T> containers) {
+		return new ChainingIterable<U>().appendAll(containers);
 	}
 
-	public <U> ChainingIterable<T> appendAll(Iterable<U> iterablesIteratorsOrArrays) {
-		for (U each : iterablesIteratorsOrArrays) {
-			if (each == null || each instanceof Iterable)
+	public <U> ChainingIterable<T> appendAll(Iterable<U> containers) {
+		for (U each : containers)
+			if (each == null)
+				throw new NullPointerException();
+			else if (each instanceof Iterable)
 				append((Iterable<T>) each);
 			else if (each instanceof Iterator)
 				append((Iterator<T>) each);
@@ -52,7 +54,6 @@ public class ChainingIterable<T> implements Iterable<T> {
 				append((T[]) each);
 			else
 				throw new ClassCastException("Required an Iterable, Iterator or Array but got: " + each.getClass());
-		}
 		return this;
 	}
 
