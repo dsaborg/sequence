@@ -117,4 +117,9 @@ public class PairTest {
 		pair.putInto(map);
 		assertThat(map.get(1), is(2));
 	}
+
+	@Test
+	public void swapped() {
+		assertThat(pair.swapped(), is(Pair.of(2, 1)));
+	}
 }

@@ -74,6 +74,20 @@ public interface Pair<T, U> extends Entry<T, U> {
 		throw new UnsupportedOperationException();
 	}
 
+	default Pair<U, T> swapped() {
+		return new Base<U, T>() {
+			@Override
+			public U getFirst() {
+				return Pair.this.getSecond();
+			}
+
+			@Override
+			public T getSecond() {
+				return Pair.this.getFirst();
+			}
+		};
+	}
+
 	@Nonnull
 	default <V, W> Pair<V, W> map(@Nonnull Function<? super T, ? extends V> firstMapper,
 	                              @Nonnull Function<? super U, ? extends W> secondMapper) {
@@ -116,30 +130,8 @@ public interface Pair<T, U> extends Entry<T, U> {
 		return map;
 	}
 
-	default <T> Iterator<T> iterator() {
-		return new Iterator<T>() {
-			int index = 0;
-
-			@Override
-			public boolean hasNext() {
-				return index < 2;
-			}
-
-			@Override
-			public T next() {
-				if (!hasNext())
-					throw new NoSuchElementException();
-				switch (++index) {
-					case 1:
-						return (T) getFirst();
-					case 2:
-						return (T) getSecond();
-					default:
-						// Can't happen due to above check
-						throw new IllegalStateException();
-				}
-			}
-		};
+	default <R> Iterator<R> iterator() {
+		return new PairIterator(this);
 	}
 
 	abstract class Base<T, U> implements Pair<T, U> {
@@ -166,6 +158,35 @@ public interface Pair<T, U> extends Entry<T, U> {
 		@Override
 		public String toString() {
 			return "(" + getFirst() + ',' + getSecond() + ')';
+		}
+	}
+
+	class PairIterator<T extends R, U extends R, R> implements Iterator<R> {
+		private final Pair<T, U> pair;
+		int index;
+
+		public PairIterator(Pair<T, U> pair) {
+			this.pair = pair;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return index < 2;
+		}
+
+		@Override
+		public R next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			switch (++index) {
+				case 1:
+					return pair.getFirst();
+				case 2:
+					return pair.getSecond();
+				default:
+					// Can't happen due to above check
+					throw new IllegalStateException();
+			}
 		}
 	}
 }
