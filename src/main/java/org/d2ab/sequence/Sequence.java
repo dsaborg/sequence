@@ -390,4 +390,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.empty(),
 		                                      Optional.of(suffix));
 	}
+
+	default <U> Sequence<U> interleave(Sequence<? extends U> that) {
+		return () -> new InterleavingIterator(this, that);
+	}
 }

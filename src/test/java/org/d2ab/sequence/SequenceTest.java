@@ -517,7 +517,7 @@ public class SequenceTest {
 
 	@Test
 	public void toMapFromPairs() {
-		Map<String, Integer> original = Maps.builderWith("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+		Map<String, Integer> original = Maps.put("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
@@ -532,7 +532,7 @@ public class SequenceTest {
 
 	@Test
 	public void toMapWithTypeFromPairs() {
-		Map<String, Integer> original = Maps.builderWith("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+		Map<String, Integer> original = Maps.put("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
@@ -888,5 +888,12 @@ public class SequenceTest {
 
 		Sequence<Object> delimited = _123.delimit("[", ", ", "]");
 		twice(() -> assertThat(delimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
+	}
+
+	@Test
+	public void interleave() {
+		assertThat(empty.interleave(empty), is(emptyIterable()));
+		assertThat(_123.interleave(_12345), contains(1, 1, 2, 2, 3, 3, 4, 5));
+		assertThat(_12345.interleave(_123), contains(1, 1, 2, 2, 3, 3, 4, 5));
 	}
 }

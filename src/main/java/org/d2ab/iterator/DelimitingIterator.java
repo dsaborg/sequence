@@ -24,15 +24,15 @@ import java.util.Optional;
  */
 public class DelimitingIterator<T> implements Iterator<T> {
 	private Iterator<? extends T> iterator;
-	private Optional<T> prefix;
-	private Optional<T> delimiter;
-	private Optional<T> suffix;
+	private Optional<? extends T> prefix;
+	private Optional<? extends T> delimiter;
+	private Optional<? extends T> suffix;
 	private boolean delimiterNext;
 	private boolean prefixDone;
 	private boolean suffixDone;
 
-	public DelimitingIterator(Iterator<? extends T> iterator, Optional<T> prefix, Optional<T> delimiter,
-	                          Optional<T> suffix) {
+	public DelimitingIterator(Iterator<? extends T> iterator, Optional<? extends T> prefix,
+	                          Optional<? extends T> delimiter, Optional<? extends T> suffix) {
 		this.iterator = iterator;
 		this.prefix = prefix;
 		this.delimiter = delimiter;
