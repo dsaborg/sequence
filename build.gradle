@@ -15,6 +15,9 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'distribution'
+
+version = '0.2.0'
 
 repositories {
     jcenter()
@@ -25,4 +28,14 @@ dependencies {
     testCompile 'junit:junit:4.12+'
     testCompile 'org.hamcrest:java-hamcrest:2+'
     compile 'com.google.code.findbugs:jsr305:2+'
+}
+
+distributions {
+    main {
+        contents {
+            from { 'README.md' }
+            from { 'LICENSE' }
+            from { 'build/libs/sequence.jar' }
+        }
+    }
 }
