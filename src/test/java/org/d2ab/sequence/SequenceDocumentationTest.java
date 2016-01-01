@@ -46,7 +46,8 @@ public class SequenceDocumentationTest {
 		Sequence<Integer> keys = Sequence.of(1, 2, 3);
 		Sequence<String> values = Sequence.of("1", "2", "3");
 
-		Map<Integer, String> map = keys.interleave(values).toMap();
+		Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
+		Map<Integer, String> map = keyValueSequence.toMap();
 
 		assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 	}

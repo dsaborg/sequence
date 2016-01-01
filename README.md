@@ -8,9 +8,8 @@ and with better integration with the rest of Java.
 
 It aims to be roughly feature complete with sequential `Streams`, with some additional convenience methods.
 In particular it allows easier collecting into common `Collections` without having to use `Collectors`,
-better handling of `Maps` by use of the built-in `Pair` class which allows transformation and filtering of
-`Map` `Entries` as first-class citizens, and tighter integration with pre-Java 8 `Collection` classes by being
-implemented in terms of `Iterable` and `Iterators`.
+better handling of `Maps` which allows transformation and filtering of `Map` `Entries` as first-class citizens,
+and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterators`.
 
 ```
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -27,7 +26,8 @@ assertThat(evens, contains("2", "4", "6", "8"));
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
 Sequence<String> values = Sequence.of("1", "2", "3");
 
-Map<Integer, String> map = keys.interleave(values).toMap();
+Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
+Map<Integer, String> map = keyValueSequence.toMap();
 
 assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 ```
