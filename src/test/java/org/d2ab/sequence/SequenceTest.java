@@ -517,32 +517,33 @@ public class SequenceTest {
 
 	@Test
 	public void toMapFromPairs() {
-		Map<String, Integer> original = Maps.put("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
 		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
 		twice(() -> {
-			Map<String, Integer> map = sequence.pairsToMap(Function.identity());
+			Map<String, Integer> map = sequence.toMap();
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
 	@Test
 	public void toMapWithTypeFromPairs() {
-		Map<String, Integer> original = Maps.put("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
 		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
 		twice(() -> {
-			Map<String, Integer> map = sequence.pairsToMap(LinkedHashMap::new, Function.identity());
+			Supplier<Map<String, Integer>> supplier = LinkedHashMap::new;
+			Map<String, Integer> map = sequence.toMap(supplier, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
@@ -552,7 +553,7 @@ public class SequenceTest {
 			Map<String, Integer> map = _123.toMap(Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.put("1", 1).put("2", 2).put("3", 3).build())));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -562,7 +563,7 @@ public class SequenceTest {
 			Map<String, Integer> map = _123.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(LinkedHashMap.class));
-			assertThat(map, is(equalTo(Maps.put("1", 1).put("2", 2).put("3", 3).build())));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -572,7 +573,7 @@ public class SequenceTest {
 			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
 
 			assertThat(sortedMap, instanceOf(TreeMap.class));
-			assertThat(sortedMap, is(equalTo(Maps.put("1", 1).put("2", 2).put("3", 3).build())));
+			assertThat(sortedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -900,10 +901,10 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void mapFromSeparateSequences() {
+	public void toMapFromSeparateSequences() {
 		Sequence<Integer> keys = Sequence.of(1, 2, 3);
 		Sequence<String> values = Sequence.of("1", "2", "3");
-		Map<Integer, String> map = keys.interleave(values).pairsToMap(Function.identity());
-		assertThat(map, is(equalTo(Maps.put(1, "1").put(2, "2").put(3, "3").build())));
+		Map<Integer, String> map = keys.interleave(values).toMap();
+		assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 	}
 }

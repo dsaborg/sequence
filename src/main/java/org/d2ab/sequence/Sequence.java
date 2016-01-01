@@ -165,12 +165,22 @@ public interface Sequence<T> extends Iterable<T> {
 		return toSet(TreeSet::new);
 	}
 
-	default <K, V> Map<K, V> pairsToMap(Function<? super T, ? extends Pair<K, V>> mapper) {
-		return pairsToMap(HashMap::new, mapper);
+	/**
+	 * Convert this {@code Sequence} of {@code Pairs} into a map, or throw {@code ClassCastException} if this
+	 * {@code Sequence} is not of {@code Pair}.
+	 */
+	default <K, V> Map<K, V> toMap() {
+		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
+		return toMap(mapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M pairsToMap(Supplier<? extends M> constructor,
-	                                                 Function<? super T, ? extends Pair<K, V>> mapper) {
+	default <K, V> Map<K, V> toMap(Function<? super T, ? extends Pair<K, V>> mapper) {
+		Supplier<Map<K, V>> supplier = HashMap::new;
+		return toMap(supplier, mapper);
+	}
+
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
+	                                            Function<? super T, ? extends Pair<K, V>> mapper) {
 		M result = constructor.get();
 		forEach(each -> mapper.apply(each).putInto(result));
 		return result;

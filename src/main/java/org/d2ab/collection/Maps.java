@@ -50,7 +50,7 @@ public class Maps {
 		return new Builder<>(() -> constructor.apply(initialCapacity));
 	}
 
-	public static <K, V> Builder<K, V> put(K key, V value) {
+	public static <K, V> Builder<K, V> builder(K key, V value) {
 		return Maps.<K, V>builder().put(key, value);
 	}
 

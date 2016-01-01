@@ -24,8 +24,8 @@ assertThat(evens, contains("2", "4", "6", "8"));
 ```
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
 Sequence<String> values = Sequence.of("1", "2", "3");
-Map<Integer, String> map = keys.interleave(values).pairsToMap(Function.identity());
-assertThat(map, is(equalTo(Maps.put(1, "1").put(2, "2").put(3, "3").build())));
+Map<Integer, String> map = keys.interleave(values).toMap();
+assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 ```
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
