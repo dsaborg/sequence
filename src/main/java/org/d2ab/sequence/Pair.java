@@ -26,16 +26,30 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface Pair<T, U> extends Entry<T, U> {
+public interface Pair<L, R> extends Entry<L, R> {
+	static <T, U> Pair<T, U> of(@Nullable T left, @Nullable U right) {
+		return new Base<T, U>() {
+			@Override
+			public T getLeft() {
+				return left;
+			}
+
+			@Override
+			public U getRight() {
+				return right;
+			}
+		};
+	}
+
 	static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
 		return new Base<K, V>() {
 			@Override
-			public K getFirst() {
+			public K getLeft() {
 				return entry.getKey();
 			}
 
 			@Override
-			public V getSecond() {
+			public V getRight() {
 				return entry.getValue();
 			}
 		};
@@ -44,157 +58,153 @@ public interface Pair<T, U> extends Entry<T, U> {
 	static <T> Pair<T, T> unary(@Nullable T item) {
 		return new Base<T, T>() {
 			@Override
-			public T getFirst() {
+			public T getLeft() {
 				return item;
 			}
 
 			@Override
-			public T getSecond() {
+			public T getRight() {
 				return item;
 			}
 		};
 	}
 
 	@Override
-	default T getKey() {
-		return getFirst();
+	default L getKey() {
+		return getLeft();
 	}
 
-	T getFirst();
+	L getLeft();
 
 	@Override
-	default U getValue() {
-		return getSecond();
+	default R getValue() {
+		return getRight();
 	}
 
-	U getSecond();
+	R getRight();
 
 	@Override
-	default U setValue(U value) {
+	default R setValue(R value) {
 		throw new UnsupportedOperationException();
 	}
 
-	default Pair<U, T> swapped() {
-		return new Base<U, T>() {
+	default Pair<R, L> swapped() {
+		return new Base<R, L>() {
 			@Override
-			public U getFirst() {
-				return Pair.this.getSecond();
+			public R getLeft() {
+				return Pair.this.getRight();
 			}
 
 			@Override
-			public T getSecond() {
-				return Pair.this.getFirst();
-			}
-		};
-	}
-
-	default <V> Pair<V, U> withFirst(V first) {
-		return new Base<V, U>() {
-			@Override
-			public V getFirst() {
-				return first;
-			}
-
-			@Override
-			public U getSecond() {
-				return Pair.this.getSecond();
+			public L getRight() {
+				return Pair.this.getLeft();
 			}
 		};
 	}
 
-	default <V> Pair<T, V> withSecond(V second) {
-		return new Base<T, V>() {
+	default <LL> Pair<LL, R> withLeft(LL left) {
+		return new Base<LL, R>() {
 			@Override
-			public T getFirst() {
-				return Pair.this.getFirst();
+			public LL getLeft() {
+				return left;
 			}
 
 			@Override
-			public V getSecond() {
-				return second;
+			public R getRight() {
+				return Pair.this.getRight();
 			}
 		};
 	}
 
-	default <V> Pair<V, T> shiftRight(V replacement) {
-		return new Base<V, T>() {
+	default <RR> Pair<L, RR> withRight(RR right) {
+		return new Base<L, RR>() {
 			@Override
-			public V getFirst() {
+			public L getLeft() {
+				return Pair.this.getLeft();
+			}
+
+			@Override
+			public RR getRight() {
+				return right;
+			}
+		};
+	}
+
+	default <LL> Pair<LL, L> shiftedRight(LL replacement) {
+		return new Base<LL, L>() {
+			@Override
+			public LL getLeft() {
 				return replacement;
 			}
 
 			@Override
-			public T getSecond() {
-				return Pair.this.getFirst();
+			public L getRight() {
+				return Pair.this.getLeft();
 			}
 		};
 	}
 
-	default <V> Pair<U, V> shiftLeft(V replacement) {
-		return new Base<U, V>() {
+	default <RR> Pair<R, RR> shiftedLeft(RR replacement) {
+		return new Base<R, RR>() {
 			@Override
-			public U getFirst() {
-				return Pair.this.getSecond();
+			public R getLeft() {
+				return Pair.this.getRight();
 			}
 
 			@Override
-			public V getSecond() {
+			public RR getRight() {
 				return replacement;
 			}
 		};
 	}
 
 	@Nonnull
-	default <V, W> Pair<V, W> map(@Nonnull Function<? super T, ? extends V> firstMapper,
-	                              @Nonnull Function<? super U, ? extends W> secondMapper) {
-		return of(firstMapper.apply(getFirst()), secondMapper.apply(getSecond()));
-	}
-
-	static <A, B> Pair<A, B> of(@Nullable A first, @Nullable B sceond) {
-		return new Base<A, B>() {
+	default <LL, RR> Pair<LL, RR> map(@Nonnull Function<? super L, ? extends LL> leftMapper,
+	                                  @Nonnull Function<? super R, ? extends RR> rightMapper) {
+		return new Base<LL, RR>() {
 			@Override
-			public A getFirst() {
-				return first;
+			public LL getLeft() {
+				return leftMapper.apply(Pair.this.getLeft());
 			}
 
 			@Override
-			public B getSecond() {
-				return sceond;
+			public RR getRight() {
+				return rightMapper.apply(Pair.this.getRight());
 			}
 		};
 	}
 
 	@Nonnull
-	default <V, W> Pair<V, W> map(@Nonnull BiFunction<? super T, ? super U, ? extends Pair<V, W>> mapper) {
-		return mapper.apply(getFirst(), getSecond());
+	default <LL, RR> Pair<LL, RR> map(@Nonnull BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
+		return mapper.apply(getLeft(), getRight());
 	}
 
-	default <R> R apply(@Nonnull BiFunction<? super T, ? super U, ? extends R> function) {
-		return function.apply(getFirst(), getSecond());
+	default <T> T apply(@Nonnull BiFunction<? super L, ? super R, ? extends T> function) {
+		return function.apply(getLeft(), getRight());
 	}
 
-	default boolean test(@Nonnull Predicate<? super T> firstPredicate, @Nonnull Predicate<? super U> secondPredicate) {
-		return firstPredicate.test(getFirst()) && secondPredicate.test(getSecond());
+	default boolean test(@Nonnull Predicate<? super L> leftPredicate, @Nonnull Predicate<? super R> rightPredicate) {
+		return leftPredicate.test(getLeft()) && rightPredicate.test(getRight());
 	}
 
-	default boolean test(@Nonnull BiPredicate<? super T, ? super U> predicate) {
-		return predicate.test(getFirst(), getSecond());
+	default boolean test(@Nonnull BiPredicate<? super L, ? super R> predicate) {
+		return predicate.test(getLeft(), getRight());
 	}
 
-	default Map<T, U> putInto(@Nonnull Map<T, U> map) {
-		map.put(getFirst(), getSecond());
+	default Map<L, R> putInto(@Nonnull Map<L, R> map) {
+		map.put(getLeft(), getRight());
 		return map;
 	}
 
-	default <R> Iterator<R> iterator() {
+	default <T> Iterator<T> iterator() {
 		return new PairIterator(this);
 	}
 
-	abstract class Base<T, U> implements Pair<T, U> {
+	abstract class Base<L, R> implements Pair<L, R> {
 		@Override
 		public int hashCode() {
-			int result = getFirst() != null ? getFirst().hashCode() : 0;
-			result = 31 * result + (getSecond() != null ? getSecond().hashCode() : 0);
+			int result = getLeft() != null ? getLeft().hashCode() : 0;
+			result = 31 * result + (getRight() != null ? getRight().hashCode() : 0);
 			return result;
 		}
 
@@ -207,21 +217,21 @@ public interface Pair<T, U> extends Entry<T, U> {
 
 			Pair<?, ?> that = (Pair<?, ?>) o;
 
-			return (getFirst() != null ? getFirst().equals(that.getFirst()) : that.getFirst() == null) &&
-			       (getSecond() != null ? getSecond().equals(that.getSecond()) : that.getSecond() == null);
+			return (getLeft() != null ? getLeft().equals(that.getLeft()) : that.getLeft() == null) &&
+			       (getRight() != null ? getRight().equals(that.getRight()) : that.getRight() == null);
 		}
 
 		@Override
 		public String toString() {
-			return "(" + getFirst() + ',' + getSecond() + ')';
+			return "(" + getLeft() + ',' + getRight() + ')';
 		}
 	}
 
-	class PairIterator<T extends R, U extends R, R> implements Iterator<R> {
-		private final Pair<T, U> pair;
+	class PairIterator<L extends T, R extends T, T> implements Iterator<T> {
+		private final Pair<L, R> pair;
 		int index;
 
-		public PairIterator(Pair<T, U> pair) {
+		public PairIterator(Pair<L, R> pair) {
 			this.pair = pair;
 		}
 
@@ -231,14 +241,14 @@ public interface Pair<T, U> extends Entry<T, U> {
 		}
 
 		@Override
-		public R next() {
+		public T next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			switch (++index) {
 				case 1:
-					return pair.getFirst();
+					return pair.getLeft();
 				case 2:
-					return pair.getSecond();
+					return pair.getRight();
 				default:
 					// Can't happen due to above check
 					throw new IllegalStateException();

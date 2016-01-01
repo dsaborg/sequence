@@ -32,8 +32,8 @@ public class PairTest {
 
 	@Test
 	public void of() {
-		assertThat(pair.getFirst(), is(1));
-		assertThat(pair.getSecond(), is("2"));
+		assertThat(pair.getLeft(), is(1));
+		assertThat(pair.getRight(), is("2"));
 		assertThat(pair.toString(), is("(1,2)"));
 	}
 
@@ -58,12 +58,12 @@ public class PairTest {
 			}
 		});
 
-		assertThat(pairFromEntry.getFirst(), is(1));
-		assertThat(pairFromEntry.getSecond(), is(2));
+		assertThat(pairFromEntry.getLeft(), is(1));
+		assertThat(pairFromEntry.getRight(), is(2));
 
 		// Test assignment is pass-through
-		assertThat(pairFromEntry.getFirst(), is(3));
-		assertThat(pairFromEntry.getSecond(), is(4));
+		assertThat(pairFromEntry.getLeft(), is(3));
+		assertThat(pairFromEntry.getRight(), is(4));
 
 		assertThat(pairFromEntry.toString(), is("(5,6)"));
 	}
@@ -71,8 +71,8 @@ public class PairTest {
 	@Test
 	public void unary() {
 		Pair<Integer, Integer> unaryPair = Pair.unary(1);
-		assertThat(unaryPair.getFirst(), is(1));
-		assertThat(unaryPair.getSecond(), is(1));
+		assertThat(unaryPair.getLeft(), is(1));
+		assertThat(unaryPair.getRight(), is(1));
 		assertThat(unaryPair.toString(), is("(1,1)"));
 	}
 
@@ -125,21 +125,21 @@ public class PairTest {
 
 	@Test
 	public void shiftLeft() {
-		assertThat(pair.shiftLeft(17), is(Pair.of("2", 17)));
+		assertThat(pair.shiftedLeft(17), is(Pair.of("2", 17)));
 	}
 
 	@Test
 	public void shiftRight() {
-		assertThat(pair.shiftRight("17"), is(Pair.of("17", 1)));
+		assertThat(pair.shiftedRight("17"), is(Pair.of("17", 1)));
 	}
 
 	@Test
 	public void withFirst() {
-		assertThat(pair.withFirst(17), is(Pair.of(17, "2")));
+		assertThat(pair.withLeft(17), is(Pair.of(17, "2")));
 	}
 
 	@Test
 	public void withSecond() {
-		assertThat(pair.withSecond("17"), is(Pair.of(1, "17")));
+		assertThat(pair.withRight("17"), is(Pair.of(1, "17")));
 	}
 }
