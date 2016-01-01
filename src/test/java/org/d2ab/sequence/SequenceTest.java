@@ -502,23 +502,25 @@ public class SequenceTest {
 			Map<String, Integer> map = sequence.toMap();
 			assertThat(map, instanceOf(HashMap.class));
 			assertThat(map, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+
+			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
+			assertThat(linkedMap, instanceOf(HashMap.class));
+			assertThat(linkedMap, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
 	@Test
-	public void toMapWithTypeFromPairs() {
-		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
-
-		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
-		                                                   .filter(p -> p.test((s, i) -> i != 2))
-		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+	public void toMapFromPairsWithMapper() {
+		Function<Integer, Pair<Integer, String>> mapper = i -> Pair.of(i, String.valueOf(i));
 
 		twice(() -> {
-			Supplier<Map<String, Integer>> supplier = LinkedHashMap::new;
-			Map<String, Integer> map = sequence.toMap(supplier, Function.identity());
-
+			Map<Integer, String> map = _123.toMap(mapper);
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
+
+			Map<Integer, String> linkedMap = _123.toMap((Supplier<Map<Integer, String>>) LinkedHashMap::new, mapper);
+			assertThat(linkedMap, instanceOf(HashMap.class));
+			assertThat(linkedMap, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 		});
 	}
 

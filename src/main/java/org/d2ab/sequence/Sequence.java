@@ -186,6 +186,10 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
+	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier) {
+		return toMap(supplier, (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity());
+	}
+
 	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
 	                               Function<? super T, ? extends V> valueMapper) {
 		return toMap(HashMap::new, keyMapper, valueMapper);
@@ -381,22 +385,22 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PeekingIterator(iterator(), action);
 	}
 
-	default <U> Sequence<U> delimit(U delimiter) {
+	default <U extends R, V extends R, R> Sequence<R> delimit(V delimiter) {
 		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.of(delimiter),
 		                                      Optional.empty());
 	}
 
-	default <U> Sequence<U> delimit(U prefix, U delimiter, U suffix) {
+	default <U extends R, V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
 		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.of(delimiter),
 		                                      Optional.of(suffix));
 	}
 
-	default <U> Sequence<U> prefix(U prefix) {
+	default <U extends R, V extends R, R> Sequence<R> prefix(V prefix) {
 		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.empty(),
 		                                      Optional.empty());
 	}
 
-	default <U> Sequence<U> suffix(U suffix) {
+	default <U extends R, V extends R, R> Sequence<R> suffix(V suffix) {
 		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.empty(),
 		                                      Optional.of(suffix));
 	}
