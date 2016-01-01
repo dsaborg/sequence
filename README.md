@@ -71,10 +71,9 @@ There is full support for infinite recursive `Sequences`, including termination 
 compute Fibonacci:
 
 ```
-Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
-                                               pair -> Pair.of(pair.getSecond(), pair.apply(Integer::sum)))
+Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), pair -> pair.shiftLeft(pair.apply(Integer::sum)))
                                       .map(Pair::getFirst);
-twice(() -> assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)));
+assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
 Go ahead give it a try, and experience a leaner way to Stream your Sequences!

@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,7 +38,7 @@ public class SequenceDocumentationTest {
 		                             .map(Objects::toString)
 		                             .toList();
 
-		twice(() -> assertThat(evens, contains("2", "4", "6", "8")));
+		assertThat(evens, contains("2", "4", "6", "8"));
 	}
 
 	@Test
@@ -69,6 +68,7 @@ public class SequenceDocumentationTest {
 			assertThat(square, is(expectedSquares[y++]));
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
 		Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
@@ -78,9 +78,8 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
-		                                               pair -> Pair.of(pair.getSecond(), pair.apply(Integer::sum)))
+		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), pair -> pair.shiftLeft(pair.apply(Integer::sum)))
 		                                      .map(Pair::getFirst);
-		twice(() -> assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)));
+		assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 	}
 }

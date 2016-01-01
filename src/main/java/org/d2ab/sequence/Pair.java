@@ -88,6 +88,62 @@ public interface Pair<T, U> extends Entry<T, U> {
 		};
 	}
 
+	default <V> Pair<V, U> withFirst(V first) {
+		return new Base<V, U>() {
+			@Override
+			public V getFirst() {
+				return first;
+			}
+
+			@Override
+			public U getSecond() {
+				return Pair.this.getSecond();
+			}
+		};
+	}
+
+	default <V> Pair<T, V> withSecond(V second) {
+		return new Base<T, V>() {
+			@Override
+			public T getFirst() {
+				return Pair.this.getFirst();
+			}
+
+			@Override
+			public V getSecond() {
+				return second;
+			}
+		};
+	}
+
+	default <V> Pair<V, T> shiftRight(V replacement) {
+		return new Base<V, T>() {
+			@Override
+			public V getFirst() {
+				return replacement;
+			}
+
+			@Override
+			public T getSecond() {
+				return Pair.this.getFirst();
+			}
+		};
+	}
+
+	default <V> Pair<U, V> shiftLeft(V replacement) {
+		return new Base<U, V>() {
+			@Override
+			public U getFirst() {
+				return Pair.this.getSecond();
+			}
+
+			@Override
+			public V getSecond() {
+				return replacement;
+			}
+		};
+	}
+
 	@Nonnull
 	default <V, W> Pair<V, W> map(@Nonnull Function<? super T, ? extends V> firstMapper,
 	                              @Nonnull Function<? super U, ? extends W> secondMapper) {
