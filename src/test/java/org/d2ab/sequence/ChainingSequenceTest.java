@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.sequence;
 
 import org.junit.Test;
@@ -66,7 +65,8 @@ public class ChainingSequenceTest {
 		assertThat(iterator.next(), is("b"));
 		assertThat(iterator.next(), is("c"));
 
-		expecting(IllegalStateException.class, iterator::hasNext); // Exception not thrown until iterator is encountered
+		expecting(IllegalStateException.class, iterator::hasNext); // Exception not thrown until iterator is
+		// encountered
 	}
 
 	@Test
@@ -107,7 +107,8 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void flatAppendIterators() {
-		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f").iterator(), Arrays.asList("g", "h", "i").iterator()));
+		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f").iterator(), Arrays.asList("g", "h", "i").iterator
+				                                                                                                   ()));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c"));
 	}
@@ -133,7 +134,8 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void flatAppendMixed() {
-		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f"), Arrays.asList("g", "h", "i").iterator(), new String[]{"j", "k", "l"}));
+		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f"), Arrays.asList("g", "h", "i").iterator(),
+		                             new String[]{"j", "k", "l"}));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "j", "k", "l"));
 	}

@@ -77,7 +77,7 @@ public class Iterables {
 			return from((T[]) container);
 
 		if (container instanceof Pair)
-			return from((Iterable<T>) () -> ((Pair)container).iterator());
+			return from((Iterable<T>) () -> ((Pair) container).iterator());
 
 		throw new ClassCastException("Required an Iterable, Iterator, Array or Stream but got: " +
 		                             container.getClass());

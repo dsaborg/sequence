@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.sequence;
 
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.ChainingIterator;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -45,6 +47,12 @@ public class ChainingSequence<T> implements Sequence<T> {
 		return new ChainingSequence<U>().flatAppend(containers);
 	}
 
+	public ChainingSequence<T> flatAppend(@Nonnull Iterable<?> containers) {
+		for (Object each : containers)
+			append(Iterables.from(each));
+		return this;
+	}
+
 	@Nonnull
 	public static <T, U> ChainingSequence<U> flatMap(@Nonnull Iterable<? extends T> iterable,
 	                                                 @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
@@ -53,20 +61,14 @@ public class ChainingSequence<T> implements Sequence<T> {
 		return result;
 	}
 
-	public ChainingSequence<T> flatAppend(@Nonnull Iterable<?> containers) {
-		for (Object each : containers)
-			append(Iterables.from(each));
-		return this;
+	public ChainingSequence<T> append(Iterator<T> iterator) {
+		return append(Iterables.from(iterator));
 	}
 
 	@Nonnull
 	public ChainingSequence<T> append(@Nonnull Iterable<T> iterable) {
 		iterables.add(iterable);
 		return this;
-	}
-
-	public ChainingSequence<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(iterator));
 	}
 
 	public ChainingSequence<T> append(T... objects) {
@@ -83,6 +85,11 @@ public class ChainingSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public int hashCode() {
+		return iterables.hashCode();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
@@ -92,11 +99,6 @@ public class ChainingSequence<T> implements Sequence<T> {
 		ChainingSequence<?> that = (ChainingSequence<?>) o;
 
 		return iterables.equals(that.iterables);
-	}
-
-	@Override
-	public int hashCode() {
-		return iterables.hashCode();
 	}
 
 	@Override

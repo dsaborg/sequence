@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.test;
 
 import static org.junit.Assert.fail;
 
 public class Tests {
-	private Tests() {}
+	private Tests() {
+	}
 
 	public static void expecting(Class<? extends Throwable> exceptionClass, Runnable action) {
 		try {

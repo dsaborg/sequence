@@ -676,7 +676,8 @@ public class SequenceTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> Pair.of(p.getSecond(), p.apply(Integer::sum)))
+		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
+		                                               p -> Pair.of(p.getSecond(), p.apply(Integer::sum)))
 		                                      .map(Pair::getFirst);
 		twice(() -> assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)));
 	}

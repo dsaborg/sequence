@@ -41,20 +41,6 @@ public interface Pair<T, U> extends Entry<T, U> {
 		};
 	}
 
-	static <A, B> Pair<A, B> of(@Nullable A first, @Nullable B sceond) {
-		return new Base<A, B>() {
-			@Override
-			public A getFirst() {
-				return first;
-			}
-
-			@Override
-			public B getSecond() {
-				return sceond;
-			}
-		};
-	}
-
 	static <T> Pair<T, T> unary(@Nullable T item) {
 		return new Base<T, T>() {
 			@Override
@@ -69,19 +55,19 @@ public interface Pair<T, U> extends Entry<T, U> {
 		};
 	}
 
-	T getFirst();
-
-	U getSecond();
-
 	@Override
 	default T getKey() {
 		return getFirst();
 	}
 
+	T getFirst();
+
 	@Override
 	default U getValue() {
 		return getSecond();
 	}
+
+	U getSecond();
 
 	@Override
 	default U setValue(U value) {
@@ -92,6 +78,20 @@ public interface Pair<T, U> extends Entry<T, U> {
 	default <V, W> Pair<V, W> map(@Nonnull Function<? super T, ? extends V> firstMapper,
 	                              @Nonnull Function<? super U, ? extends W> secondMapper) {
 		return of(firstMapper.apply(getFirst()), secondMapper.apply(getSecond()));
+	}
+
+	static <A, B> Pair<A, B> of(@Nullable A first, @Nullable B sceond) {
+		return new Base<A, B>() {
+			@Override
+			public A getFirst() {
+				return first;
+			}
+
+			@Override
+			public B getSecond() {
+				return sceond;
+			}
+		};
 	}
 
 	@Nonnull

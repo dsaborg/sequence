@@ -46,20 +46,20 @@ public class Maps {
 		};
 	}
 
-	public static <K, V> Builder<K, V> builder() {
-		return builder(HashMap::new);
-	}
-
-	public static <K, V> Builder<K, V> builder(Supplier<Map<K, V>> constructor) {
-		return new Builder<>(constructor);
-	}
-
 	public static <K, V> Builder<K, V> builder(IntFunction<Map<K, V>> constructor, int initialCapacity) {
 		return new Builder<>(() -> constructor.apply(initialCapacity));
 	}
 
 	public static <K, V> Builder<K, V> builderWith(K key, V value) {
 		return Maps.<K, V>builder().put(key, value);
+	}
+
+	public static <K, V> Builder<K, V> builder() {
+		return builder(HashMap::new);
+	}
+
+	public static <K, V> Builder<K, V> builder(Supplier<Map<K, V>> constructor) {
+		return new Builder<>(constructor);
 	}
 
 	public static class Builder<K, V> {

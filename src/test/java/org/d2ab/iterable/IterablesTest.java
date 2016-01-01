@@ -18,10 +18,8 @@ package org.d2ab.iterable;
 import org.junit.Test;
 
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class IterablesTest {
 	@Test

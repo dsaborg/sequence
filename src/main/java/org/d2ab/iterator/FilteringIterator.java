@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.iterator;
 
 import java.util.Iterator;
@@ -23,8 +22,8 @@ import java.util.function.Predicate;
 public class FilteringIterator<T> implements Iterator<T> {
 	private final Iterator<? extends T> iterator;
 	private final Predicate<? super T> predicate;
-	private boolean foundNext;
 	T foundValue;
+	private boolean foundNext;
 
 	public FilteringIterator(Iterator<? extends T> iterator, Predicate<? super T> predicate) {
 		this.iterator = iterator;

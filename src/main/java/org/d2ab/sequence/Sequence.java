@@ -104,13 +104,13 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
+	default Sequence<T> append(Iterator<T> iterator) {
+		return append(Iterables.from(iterator));
+	}
+
 	@Nonnull
 	default Sequence<T> append(@Nonnull Iterable<T> that) {
 		return new ChainingSequence<>(this, that);
-	}
-
-	default Sequence<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(iterator));
 	}
 
 	default Sequence<T> append(T... objects) {
