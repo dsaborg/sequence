@@ -16,24 +16,33 @@
 
 package org.d2ab.iterator;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
-public class Iterators {
-	private Iterators() {
-	}
-
-	public static void skipOne(Iterator<?> iterator) {
-		skip(1, iterator);
-	}
-
-	public static void skip(int steps, Iterator<?> iterator) {
-		for (int count = 0; count < steps && iterator.hasNext(); count++) {
-			iterator.next();
-		}
-	}
+/**
+ * An {@link Iterator} over an array of items.
+ */
+public class ArrayIterator<T> implements Iterator<T> {
+	private List<T> items;
+	private int index;
 
 	@SafeVarargs
-	public static <T> Iterator<T> of(T... items) {
-		return new ArrayIterator(items);
+	public ArrayIterator(T... items) {
+		this.items = Arrays.asList(items);
+	}
+
+	@Override
+	public boolean hasNext() {
+		return index < items.size();
+	}
+
+	@Override
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return items.get(index++);
 	}
 }

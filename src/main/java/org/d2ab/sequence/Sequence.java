@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterable.ChainingIterable;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
 
 import javax.annotation.Nonnull;
@@ -65,8 +65,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	@SafeVarargs
 	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterable<? extends T>... iterables) {
-		return () -> new ChainingIterator<>(iterables);
+	static <T> Sequence<T> from(@Nonnull Iterable<T>... iterables) {
+		return new ChainingSequence<>(iterables);
 	}
 
 	@Nonnull
@@ -106,8 +106,20 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	@Nonnull
-	default Sequence<T> append(@Nonnull Sequence<? extends T> that) {
-		return () -> new ChainingIterator<>(this, that);
+	default Sequence<T> append(@Nonnull Iterable<T> that) {
+		return new ChainingSequence<>(this, that);
+	}
+
+	default Sequence<T> append(Iterator<T> iterator) {
+		return append(Iterables.from(iterator));
+	}
+
+	default Sequence<T> append(T... objects) {
+		return append(Iterables.from(objects));
+	}
+
+	default Sequence<T> append(Stream<T> stream) {
+		return append(Iterables.from(stream));
 	}
 
 	@Nonnull
@@ -117,13 +129,11 @@ public interface Sequence<T> extends Iterable<T> {
 
 	@Nonnull
 	default <U> Sequence<U> flatMap(@Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
-		ChainingIterable<U> result = new ChainingIterable<>();
-		forEach(each -> result.append(mapper.apply(each)));
-		return result::iterator;
+		return ChainingSequence.flatMap(this, mapper);
 	}
 
 	default <U> Sequence<U> flatten() {
-		return ChainingIterable.<U, T>from(this)::iterator;
+		return ChainingSequence.flatten(this);
 	}
 
 	default Sequence<T> untilNull() {
