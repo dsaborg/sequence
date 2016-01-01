@@ -78,3 +78,5 @@ assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
 Go ahead give it a try, and experience a leaner way to Stream your Sequences!
+
+Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)!
