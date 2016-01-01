@@ -353,8 +353,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
-		List result = toList();
-		return (A[]) result.toArray(constructor.apply(result.size()));
+		List list = toList();
+		A[] array = constructor.apply(list.size());
+		return (A[]) list.toArray(array);
 	}
 
 	default Stream<T> stream() {
