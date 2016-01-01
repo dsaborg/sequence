@@ -15,7 +15,7 @@
  */
 package org.d2ab.sequence;
 
-import org.d2ab.collection.MapBuilder;
+import org.d2ab.collection.Maps;
 import org.d2ab.iterator.Iterators;
 import org.junit.Test;
 
@@ -517,7 +517,7 @@ public class SequenceTest {
 
 	@Test
 	public void toMapFromPairs() {
-		Map<String, Integer> original = MapBuilder.of("1", 1).and("2", 2).and("3", 3).and("4", 4).build();
+		Map<String, Integer> original = Maps.builderWith("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
@@ -526,13 +526,13 @@ public class SequenceTest {
 		twice(() -> {
 			Map<String, Integer> map = sequence.pairsToMap(Function.identity());
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(MapBuilder.of("1 x 2", 2).and("3 x 2", 6).and("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.builder().put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
 	@Test
 	public void toMapWithTypeFromPairs() {
-		Map<String, Integer> original = MapBuilder.of("1", 1).and("2", 2).and("3", 3).and("4", 4).build();
+		Map<String, Integer> original = Maps.builderWith("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(original)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
@@ -542,7 +542,7 @@ public class SequenceTest {
 			Map<String, Integer> map = sequence.pairsToMap(LinkedHashMap::new, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(MapBuilder.of("1 x 2", 2).and("3 x 2", 6).and("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.builder().put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
@@ -552,7 +552,7 @@ public class SequenceTest {
 			Map<String, Integer> map = oneToThree.toMap(Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+			assertThat(map, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -562,7 +562,7 @@ public class SequenceTest {
 			Map<String, Integer> map = oneToThree.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(LinkedHashMap.class));
-			assertThat(map, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+			assertThat(map, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -572,7 +572,7 @@ public class SequenceTest {
 			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
 
 			assertThat(sortedMap, instanceOf(TreeMap.class));
-			assertThat(sortedMap, is(equalTo(MapBuilder.of("1", 1).and("2", 2).and("3", 3).build())));
+			assertThat(sortedMap, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -676,8 +676,8 @@ public class SequenceTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> Pair.of(p.second(), p.apply(Integer::sum)))
-		                                      .map(Pair::first);
+		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> Pair.of(p.getSecond(), p.apply(Integer::sum)))
+		                                      .map(Pair::getFirst);
 		twice(() -> assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)));
 	}
 

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.sequence;
 
 import javax.annotation.Nonnull;
@@ -25,83 +24,120 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class Pair<A, B> {
-	@Nullable
-	private final A first;
-	@Nullable
-	private final B second;
+public interface Pair<T, U> extends Entry<T, U> {
+	static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
+		return new Base<K, V>() {
+			@Override
+			public K getFirst() {
+				return entry.getKey();
+			}
 
-	private Pair(@Nullable A first, @Nullable B second) {
-		this.first = first;
-		this.second = second;
+			@Override
+			public V getSecond() {
+				return entry.getValue();
+			}
+		};
 	}
 
-	public static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
-		return of(entry.getKey(), entry.getValue());
+	static <A, B> Pair<A, B> of(@Nullable A first, @Nullable B sceond) {
+		return new Base<A, B>() {
+			@Override
+			public A getFirst() {
+				return first;
+			}
+
+			@Override
+			public B getSecond() {
+				return sceond;
+			}
+		};
 	}
 
-	public static <A, B> Pair<A, B> of(@Nullable A a, @Nullable B b) {
-		return new Pair<>(a, b);
+	static <T> Pair<T, T> unary(@Nullable T item) {
+		return new Base<T, T>() {
+			@Override
+			public T getFirst() {
+				return item;
+			}
+
+			@Override
+			public T getSecond() {
+				return item;
+			}
+		};
 	}
 
-	public A first() {
-		return first;
+	T getFirst();
+
+	U getSecond();
+
+	@Override
+	default T getKey() {
+		return getFirst();
 	}
 
-	public B second() {
-		return second;
+	@Override
+	default U getValue() {
+		return getSecond();
+	}
+
+	@Override
+	default U setValue(U value) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Nonnull
-	public <C, D> Pair<C, D> map(@Nonnull Function<? super A, ? extends C> firstMapper, @Nonnull Function<? super B, ? extends D> secondMapper) {
-		return of(firstMapper.apply(first), secondMapper.apply(second));
+	default <V, W> Pair<V, W> map(@Nonnull Function<? super T, ? extends V> firstMapper,
+	                              @Nonnull Function<? super U, ? extends W> secondMapper) {
+		return of(firstMapper.apply(getFirst()), secondMapper.apply(getSecond()));
 	}
 
 	@Nonnull
-	public <C, D> Pair<C, D> map(@Nonnull BiFunction<? super A, ? super B, ? extends Pair<C, D>> mapper) {
-		return mapper.apply(first, second);
+	default <V, W> Pair<V, W> map(@Nonnull BiFunction<? super T, ? super U, ? extends Pair<V, W>> mapper) {
+		return mapper.apply(getFirst(), getSecond());
 	}
 
-	public <T> T apply(@Nonnull BiFunction<? super A, ? super B, ? extends T> function) {
-		return function.apply(first, second);
+	default <R> R apply(@Nonnull BiFunction<? super T, ? super U, ? extends R> function) {
+		return function.apply(getFirst(), getSecond());
 	}
 
-	public boolean test(@Nonnull Predicate<? super A> firstPredicate, @Nonnull Predicate<? super B> secondPredicate) {
-		return firstPredicate.test(first) && secondPredicate.test(second);
+	default boolean test(@Nonnull Predicate<? super T> firstPredicate, @Nonnull Predicate<? super U> secondPredicate) {
+		return firstPredicate.test(getFirst()) && secondPredicate.test(getSecond());
 	}
 
-	public boolean test(@Nonnull BiPredicate<? super A, ? super B> predicate) {
-		return predicate.test(first, second);
+	default boolean test(@Nonnull BiPredicate<? super T, ? super U> predicate) {
+		return predicate.test(getFirst(), getSecond());
 	}
 
-	public Map<A, B> put(@Nonnull Map<A, B> map) {
-		map.put(first, second);
+	default Map<T, U> putInto(@Nonnull Map<T, U> map) {
+		map.put(getFirst(), getSecond());
 		return map;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = first != null ? first.hashCode() : 0;
-		result = 31 * result + (second != null ? second.hashCode() : 0);
-		return result;
-	}
+	abstract class Base<T, U> implements Pair<T, U> {
+		@Override
+		public int hashCode() {
+			int result = getFirst() != null ? getFirst().hashCode() : 0;
+			result = 31 * result + (getSecond() != null ? getSecond().hashCode() : 0);
+			return result;
+		}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (o == null || !(o instanceof Pair))
+				return false;
 
-		Pair<?, ?> pair = (Pair<?, ?>) o;
+			Pair<?, ?> that = (Pair<?, ?>) o;
 
-		if (first != null ? !first.equals(pair.first) : pair.first != null)
-			return false;
-		return second != null ? second.equals(pair.second) : pair.second == null;
-	}
+			return (getFirst() != null ? getFirst().equals(that.getFirst()) : that.getFirst() == null) &&
+			       (getSecond() != null ? getSecond().equals(that.getSecond()) : that.getSecond() == null);
+		}
 
-	@Override
-	public String toString() {
-		return "(" + first + ',' + second + ')';
+		@Override
+		public String toString() {
+			return "(" + getFirst() + ',' + getSecond() + ')';
+		}
 	}
 }

@@ -172,7 +172,7 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <M extends Map<K, V>, K, V> M pairsToMap(Supplier<? extends M> constructor, Function<? super T, ? extends Pair<K, V>> mapper) {
 		M result = constructor.get();
-		forEach(each -> mapper.apply(each).put(result));
+		forEach(each -> mapper.apply(each).putInto(result));
 		return result;
 	}
 
