@@ -34,12 +34,12 @@ import static org.junit.Assert.fail;
 
 public class SequenceTest {
 	private final Sequence<Integer> empty = Sequence.<Integer>empty();
-	private final Sequence<Integer> oneOnly = Sequence.of(1);
-	private final Sequence<Integer> oneToTwo = Sequence.of(1, 2);
-	private final Sequence<Integer> oneToThree = Sequence.of(1, 2, 3);
-	private final Sequence<Integer> oneToFour = Sequence.of(1, 2, 3, 4);
-	private final Sequence<Integer> oneToFive = Sequence.of(1, 2, 3, 4, 5);
-	private final Sequence<Integer> oneToNine = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+	private final Sequence<Integer> _1 = Sequence.of(1);
+	private final Sequence<Integer> _12 = Sequence.of(1, 2);
+	private final Sequence<Integer> _123 = Sequence.of(1, 2, 3);
+	private final Sequence<Integer> _1234 = Sequence.of(1, 2, 3, 4);
+	private final Sequence<Integer> _12345 = Sequence.of(1, 2, 3, 4, 5);
+	private final Sequence<Integer> _123456789 = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
 	private final Sequence<Integer> oneRandom = Sequence.of(17);
 	private final Sequence<Integer> twoRandom = Sequence.of(17, 32);
 	private final Sequence<Integer> threeRandom = Sequence.of(2, 3, 1);
@@ -47,12 +47,12 @@ public class SequenceTest {
 
 	@Test
 	public void ofOne() throws Exception {
-		twice(() -> assertThat(oneOnly, contains(1)));
+		twice(() -> assertThat(_1, contains(1)));
 	}
 
 	@Test
 	public void ofMany() throws Exception {
-		twice(() -> assertThat(oneToThree, contains(1, 2, 3)));
+		twice(() -> assertThat(_123, contains(1, 2, 3)));
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class SequenceTest {
 
 		twice(() -> {
 			int expected = 1;
-			for (int i : oneToThree)
+			for (int i : _123)
 				assertThat(i, is(expected++));
 		});
 	}
@@ -73,16 +73,16 @@ public class SequenceTest {
 	public void forEach() throws Exception {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
-			oneOnly.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
-			oneToTwo.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
-			oneToThree.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
+			_1.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
+			_12.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
+			_123.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
 		});
 	}
 
 	@Test
 	public void iterator() throws Exception {
 		twice(() -> {
-			Iterator iterator = oneToThree.iterator();
+			Iterator iterator = _123.iterator();
 
 			assertThat(iterator.hasNext(), is(true));
 			assertThat(iterator.next(), is(1));
@@ -119,7 +119,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromSequence() throws Exception {
-		Sequence<Integer> fromSequence = Sequence.from(oneToThree);
+		Sequence<Integer> fromSequence = Sequence.from(_123);
 
 		twice(() -> assertThat(fromSequence, contains(1, 2, 3)));
 	}
@@ -178,50 +178,50 @@ public class SequenceTest {
 
 	@Test
 	public void skip() {
-		Sequence<Integer> skipNone = oneToThree.skip(0);
+		Sequence<Integer> skipNone = _123.skip(0);
 		twice(() -> assertThat(skipNone, contains(1, 2, 3)));
 
-		Sequence<Integer> skipOne = oneToThree.skip(1);
+		Sequence<Integer> skipOne = _123.skip(1);
 		twice(() -> assertThat(skipOne, contains(2, 3)));
 
-		Sequence<Integer> skipTwo = oneToThree.skip(2);
+		Sequence<Integer> skipTwo = _123.skip(2);
 		twice(() -> assertThat(skipTwo, contains(3)));
 
-		Sequence<Integer> skipThree = oneToThree.skip(3);
+		Sequence<Integer> skipThree = _123.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
-		Sequence<Integer> skipFour = oneToThree.skip(4);
+		Sequence<Integer> skipFour = _123.skip(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
 	@Test
 	public void limit() {
-		Sequence<Integer> limitNone = oneToThree.limit(0);
+		Sequence<Integer> limitNone = _123.limit(0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
-		Sequence<Integer> limitOne = oneToThree.limit(1);
+		Sequence<Integer> limitOne = _123.limit(1);
 		twice(() -> assertThat(limitOne, contains(1)));
 
-		Sequence<Integer> limitTwo = oneToThree.limit(2);
+		Sequence<Integer> limitTwo = _123.limit(2);
 		twice(() -> assertThat(limitTwo, contains(1, 2)));
 
-		Sequence<Integer> limitThree = oneToThree.limit(3);
+		Sequence<Integer> limitThree = _123.limit(3);
 		twice(() -> assertThat(limitThree, contains(1, 2, 3)));
 
-		Sequence<Integer> limitFour = oneToThree.limit(4);
+		Sequence<Integer> limitFour = _123.limit(4);
 		twice(() -> assertThat(limitFour, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void append() {
-		Sequence<Integer> appended = oneToThree.append(Sequence.of(4, 5, 6)).append(Sequence.of(7, 8));
+		Sequence<Integer> appended = _123.append(Sequence.of(4, 5, 6)).append(Sequence.of(7, 8));
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
 
 	@Test
 	public void appendIterator() {
-		Sequence<Integer> appended = oneToThree.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
+		Sequence<Integer> appended = _123.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));
@@ -229,7 +229,7 @@ public class SequenceTest {
 
 	@Test
 	public void appendStream() {
-		Sequence<Integer> appended = oneToThree.append(Stream.of(4, 5, 6)).append(Stream.of(7, 8));
+		Sequence<Integer> appended = _123.append(Stream.of(4, 5, 6)).append(Stream.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 
@@ -243,7 +243,7 @@ public class SequenceTest {
 
 	@Test
 	public void appendArray() {
-		Sequence<Integer> appended = oneToThree.append(4, 5, 6).append(7, 8);
+		Sequence<Integer> appended = _123.append(4, 5, 6).append(7, 8);
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
@@ -396,7 +396,7 @@ public class SequenceTest {
 
 	@Test
 	public void map() {
-		Sequence<String> mapped = oneToThree.map(Object::toString);
+		Sequence<String> mapped = _123.map(Object::toString);
 		twice(() -> assertThat(mapped, contains("1", "2", "3")));
 	}
 
@@ -506,7 +506,7 @@ public class SequenceTest {
 
 	@Test
 	public void toCollection() {
-		Sequence<Integer> sequence = oneToThree;
+		Sequence<Integer> sequence = _123;
 
 		twice(() -> {
 			Deque<Integer> deque = sequence.toCollection(ArrayDeque::new);
@@ -549,7 +549,7 @@ public class SequenceTest {
 	@Test
 	public void toMap() {
 		twice(() -> {
-			Map<String, Integer> map = oneToThree.toMap(Object::toString, Function.identity());
+			Map<String, Integer> map = _123.toMap(Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
 			assertThat(map, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
@@ -559,7 +559,7 @@ public class SequenceTest {
 	@Test
 	public void toMapWithType() {
 		twice(() -> {
-			Map<String, Integer> map = oneToThree.toMap(LinkedHashMap::new, Object::toString, Function.identity());
+			Map<String, Integer> map = _123.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(LinkedHashMap.class));
 			assertThat(map, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
@@ -579,7 +579,7 @@ public class SequenceTest {
 	@Test
 	public void collect() {
 		twice(() -> {
-			Deque<Integer> deque = oneToThree.collect(ArrayDeque::new, ArrayDeque::add);
+			Deque<Integer> deque = _123.collect(ArrayDeque::new, ArrayDeque::add);
 
 			assertThat(deque, instanceOf(ArrayDeque.class));
 			assertThat(deque, contains(1, 2, 3));
@@ -588,36 +588,36 @@ public class SequenceTest {
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(oneToThree.toArray(), is(arrayContaining(1, 2, 3))));
+		twice(() -> assertThat(_123.toArray(), is(arrayContaining(1, 2, 3))));
 	}
 
 	@Test
 	public void toArrayWithType() {
-		twice(() -> assertThat(oneToThree.toArray(Integer[]::new), arrayContaining(1, 2, 3)));
+		twice(() -> assertThat(_123.toArray(Integer[]::new), arrayContaining(1, 2, 3)));
 	}
 
 	@Test
 	public void collector() {
-		twice(() -> assertThat(oneToThree.collect(Collectors.toList()), contains(1, 2, 3)));
+		twice(() -> assertThat(_123.collect(Collectors.toList()), contains(1, 2, 3)));
 	}
 
 	@Test
 	public void join() {
-		twice(() -> assertThat(oneToThree.join(", "), is("1, 2, 3")));
+		twice(() -> assertThat(_123.join(", "), is("1, 2, 3")));
 	}
 
 	@Test
 	public void joinWithPrefixAndSuffix() {
-		twice(() -> assertThat(oneToThree.join("<", ", ", ">"), is("<1, 2, 3>")));
+		twice(() -> assertThat(_123.join("<", ", ", ">"), is("<1, 2, 3>")));
 	}
 
 	@Test
 	public void reduce() {
 		twice(() -> {
 			assertThat(empty.reduce(Integer::sum), is(Optional.empty()));
-			assertThat(oneOnly.reduce(Integer::sum), is(Optional.of(1)));
-			assertThat(oneToTwo.reduce(Integer::sum), is(Optional.of(3)));
-			assertThat(oneToThree.reduce(Integer::sum), is(Optional.of(6)));
+			assertThat(_1.reduce(Integer::sum), is(Optional.of(1)));
+			assertThat(_12.reduce(Integer::sum), is(Optional.of(3)));
+			assertThat(_123.reduce(Integer::sum), is(Optional.of(6)));
 		});
 	}
 
@@ -625,9 +625,9 @@ public class SequenceTest {
 	public void reduceWithIdentity() {
 		twice(() -> {
 			assertThat(empty.reduce(17, Integer::sum), is(17));
-			assertThat(oneOnly.reduce(17, Integer::sum), is(18));
-			assertThat(oneToTwo.reduce(17, Integer::sum), is(20));
-			assertThat(oneToThree.reduce(17, Integer::sum), is(23));
+			assertThat(_1.reduce(17, Integer::sum), is(18));
+			assertThat(_12.reduce(17, Integer::sum), is(20));
+			assertThat(_123.reduce(17, Integer::sum), is(23));
 		});
 	}
 
@@ -635,9 +635,9 @@ public class SequenceTest {
 	public void first() {
 		twice(() -> {
 			assertThat(empty.first(), is(Optional.empty()));
-			assertThat(oneOnly.first(), is(Optional.of(1)));
-			assertThat(oneToTwo.first(), is(Optional.of(1)));
-			assertThat(oneToThree.first(), is(Optional.of(1)));
+			assertThat(_1.first(), is(Optional.of(1)));
+			assertThat(_12.first(), is(Optional.of(1)));
+			assertThat(_123.first(), is(Optional.of(1)));
 		});
 	}
 
@@ -645,10 +645,10 @@ public class SequenceTest {
 	public void second() {
 		twice(() -> {
 			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(oneOnly.second(), is(Optional.empty()));
-			assertThat(oneToTwo.second(), is(Optional.of(2)));
-			assertThat(oneToThree.second(), is(Optional.of(2)));
-			assertThat(oneToFour.second(), is(Optional.of(2)));
+			assertThat(_1.second(), is(Optional.empty()));
+			assertThat(_12.second(), is(Optional.of(2)));
+			assertThat(_123.second(), is(Optional.of(2)));
+			assertThat(_1234.second(), is(Optional.of(2)));
 		});
 	}
 
@@ -656,11 +656,11 @@ public class SequenceTest {
 	public void third() {
 		twice(() -> {
 			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(oneOnly.third(), is(Optional.empty()));
-			assertThat(oneToTwo.third(), is(Optional.empty()));
-			assertThat(oneToThree.third(), is(Optional.of(3)));
-			assertThat(oneToFour.third(), is(Optional.of(3)));
-			assertThat(oneToFive.third(), is(Optional.of(3)));
+			assertThat(_1.third(), is(Optional.empty()));
+			assertThat(_12.third(), is(Optional.empty()));
+			assertThat(_123.third(), is(Optional.of(3)));
+			assertThat(_1234.third(), is(Optional.of(3)));
+			assertThat(_12345.third(), is(Optional.of(3)));
 		});
 	}
 
@@ -668,9 +668,9 @@ public class SequenceTest {
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
-			assertThat(oneOnly.last(), is(Optional.of(1)));
-			assertThat(oneToTwo.last(), is(Optional.of(2)));
-			assertThat(oneToThree.last(), is(Optional.of(3)));
+			assertThat(_1.last(), is(Optional.of(1)));
+			assertThat(_12.last(), is(Optional.of(2)));
+			assertThat(_123.last(), is(Optional.of(3)));
 		});
 	}
 
@@ -685,30 +685,30 @@ public class SequenceTest {
 	public void pairs() {
 		twice(() -> {
 			assertThat(empty.pair(), is(emptyIterable()));
-			assertThat(oneOnly.pair(), is(emptyIterable()));
-			assertThat(oneToTwo.pair(), contains(Pair.of(1, 2)));
-			assertThat(oneToThree.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
-			assertThat(oneToFive.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
+			assertThat(_1.pair(), is(emptyIterable()));
+			assertThat(_12.pair(), contains(Pair.of(1, 2)));
+			assertThat(_123.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
+			assertThat(_12345.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
 		});
 	}
 
 	@Test
 	public void partition() {
-		twice(() -> assertThat(oneToFive.partition(3),
+		twice(() -> assertThat(_12345.partition(3),
 		                       contains(Arrays.asList(1, 2, 3), Arrays.asList(2, 3, 4), Arrays.asList(3, 4, 5))));
 	}
 
 	@Test
 	public void step() {
-		twice(() -> assertThat(oneToNine.step(3), contains(1, 4, 7)));
+		twice(() -> assertThat(_123456789.step(3), contains(1, 4, 7)));
 	}
 
 	@Test
 	public void partitionAndStep() {
-		Sequence<List<Integer>> partitionAndStep = oneToFive.partition(3).step(2);
+		Sequence<List<Integer>> partitionAndStep = _12345.partition(3).step(2);
 		twice(() -> assertThat(partitionAndStep, contains(Arrays.asList(1, 2, 3), Arrays.asList(3, 4, 5))));
 
-		Sequence<List<Integer>> partitioned = oneToFive.partition(3);
+		Sequence<List<Integer>> partitioned = _12345.partition(3);
 		twice(() -> assertThat(partitioned.step(2), contains(Arrays.asList(1, 2, 3), Arrays.asList(3, 4, 5))));
 	}
 
@@ -790,35 +790,35 @@ public class SequenceTest {
 	@Test
 	public void count() {
 		twice(() -> assertThat(empty.count(), is(0)));
-		twice(() -> assertThat(oneOnly.count(), is(1)));
-		twice(() -> assertThat(oneToTwo.count(), is(2)));
-		twice(() -> assertThat(oneToNine.count(), is(9)));
+		twice(() -> assertThat(_1.count(), is(1)));
+		twice(() -> assertThat(_12.count(), is(2)));
+		twice(() -> assertThat(_123456789.count(), is(9)));
 	}
 
 	@Test
 	public void any() {
-		twice(() -> assertThat(oneToThree.any(x -> x > 0), is(true)));
-		twice(() -> assertThat(oneToThree.any(x -> x > 2), is(true)));
-		twice(() -> assertThat(oneToThree.any(x -> x > 4), is(false)));
+		twice(() -> assertThat(_123.any(x -> x > 0), is(true)));
+		twice(() -> assertThat(_123.any(x -> x > 2), is(true)));
+		twice(() -> assertThat(_123.any(x -> x > 4), is(false)));
 	}
 
 	@Test
 	public void all() {
-		twice(() -> assertThat(oneToThree.all(x -> x > 0), is(true)));
-		twice(() -> assertThat(oneToThree.all(x -> x > 2), is(false)));
-		twice(() -> assertThat(oneToThree.all(x -> x > 4), is(false)));
+		twice(() -> assertThat(_123.all(x -> x > 0), is(true)));
+		twice(() -> assertThat(_123.all(x -> x > 2), is(false)));
+		twice(() -> assertThat(_123.all(x -> x > 4), is(false)));
 	}
 
 	@Test
 	public void none() {
-		twice(() -> assertThat(oneToThree.none(x -> x > 0), is(false)));
-		twice(() -> assertThat(oneToThree.none(x -> x > 2), is(false)));
-		twice(() -> assertThat(oneToThree.none(x -> x > 4), is(true)));
+		twice(() -> assertThat(_123.none(x -> x > 0), is(false)));
+		twice(() -> assertThat(_123.none(x -> x > 2), is(false)));
+		twice(() -> assertThat(_123.none(x -> x > 4), is(true)));
 	}
 
 	@Test
 	public void peek() {
-		Sequence<Integer> peek = oneToThree.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+		Sequence<Integer> peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
 		twice(() -> assertThat(peek, contains(1, 2, 3)));
 	}
 
@@ -827,8 +827,8 @@ public class SequenceTest {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(oneToThree.stream().collect(Collectors.toList()), contains(1, 2, 3));
-		assertThat(oneToThree, contains(1, 2, 3));
+		assertThat(_123.stream().collect(Collectors.toList()), contains(1, 2, 3));
+		assertThat(_123, contains(1, 2, 3));
 	}
 
 	@Test
@@ -836,5 +836,56 @@ public class SequenceTest {
 		Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
 		Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
 		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
+	}
+
+	@Test
+	public void delimit() {
+		Sequence<Object> delimited = _123.delimit(", ");
+		twice(() -> assertThat(delimited, contains(1, ", ", 2, ", ", 3)));
+	}
+
+	@Test
+	public void prefix() {
+		Sequence<Object> delimitedEmpty = empty.prefix("[");
+		twice(() -> assertThat(delimitedEmpty, contains("[")));
+
+		Sequence<Object> delimited = _123.prefix("[");
+		twice(() -> assertThat(delimited, contains("[", 1, 2, 3)));
+	}
+
+	@Test
+	public void suffix() {
+		Sequence<Object> delimitedEmpty = empty.suffix("]");
+		twice(() -> assertThat(delimitedEmpty, contains("]")));
+
+		Sequence<Object> delimited = _123.suffix("]");
+		twice(() -> assertThat(delimited, contains(1, 2, 3, "]")));
+	}
+
+	@Test
+	public void delimitPrefixSuffix() {
+		Sequence<Object> delimitedEmpty = empty.delimit(", ").prefix("[").suffix("]");
+		twice(() -> assertThat(delimitedEmpty, contains("[", "]")));
+
+		Sequence<Object> delimited = _123.delimit(", ").prefix("[").suffix("]");
+		twice(() -> assertThat(delimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
+	}
+
+	@Test
+	public void suffixPrefixDelimit() {
+		Sequence<Object> delimitedEmpty = empty.suffix("]").prefix("[").delimit(", ");
+		twice(() -> assertThat(delimitedEmpty, contains("[", ", ", "]")));
+
+		Sequence<Object> delimited = _123.suffix("]").prefix("[").delimit(", ");
+		twice(() -> assertThat(delimited, contains("[", ", ", 1, ", ", 2, ", ", 3, ", ", "]")));
+	}
+
+	@Test
+	public void surround() {
+		Sequence<Object> delimitedEmpty = empty.delimit("[", ", ", "]");
+		twice(() -> assertThat(delimitedEmpty, contains("[", "]")));
+
+		Sequence<Object> delimited = _123.delimit("[", ", ", "]");
+		twice(() -> assertThat(delimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
 	}
 }

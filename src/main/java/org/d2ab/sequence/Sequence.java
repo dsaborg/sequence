@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.d2ab.sequence;
 
 import org.d2ab.iterable.Iterables;
@@ -170,17 +169,21 @@ public interface Sequence<T> extends Iterable<T> {
 		return pairsToMap(HashMap::new, mapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M pairsToMap(Supplier<? extends M> constructor, Function<? super T, ? extends Pair<K, V>> mapper) {
+	default <M extends Map<K, V>, K, V> M pairsToMap(Supplier<? extends M> constructor,
+	                                                 Function<? super T, ? extends Pair<K, V>> mapper) {
 		M result = constructor.get();
 		forEach(each -> mapper.apply(each).putInto(result));
 		return result;
 	}
 
-	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
+	                               Function<? super T, ? extends V> valueMapper) {
 		return toMap(HashMap::new, keyMapper, valueMapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
+	                                            Function<? super T, ? extends K> keyMapper,
+	                                            Function<? super T, ? extends V> valueMapper) {
 		M result = constructor.get();
 		forEach(each -> {
 			K key = keyMapper.apply(each);
@@ -190,7 +193,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
-	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
+	                                           Function<? super T, ? extends V> valueMapper) {
 		return toMap(TreeMap::new, keyMapper, valueMapper);
 	}
 
@@ -365,5 +369,25 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default Sequence<T> peek(Consumer<? super T> action) {
 		return () -> new PeekingIterator(iterator(), action);
+	}
+
+	default <U> Sequence<U> delimit(U delimiter) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.of(delimiter),
+		                                      Optional.empty());
+	}
+
+	default <U> Sequence<U> delimit(U prefix, U delimiter, U suffix) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.of(delimiter),
+		                                      Optional.of(suffix));
+	}
+
+	default <U> Sequence<U> prefix(U prefix) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.empty(),
+		                                      Optional.empty());
+	}
+
+	default <U> Sequence<U> suffix(U suffix) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.empty(),
+		                                      Optional.of(suffix));
 	}
 }
