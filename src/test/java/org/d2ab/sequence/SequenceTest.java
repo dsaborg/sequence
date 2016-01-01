@@ -300,17 +300,19 @@ public class SequenceTest {
 
 	@Test
 	public void reuseOfSequence() {
-		Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10);
+		Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10); // Digits 1..10
 
-		// using sequence of ints 1..10 first time
-		int x = 0, odds[] = {1, 3, 5, 7, 9};
-		for (int odd : singulars.step(2))
-			assertThat(odd, is(odds[x++]));
+		// using sequence of ints 1..10 first time to get odd numbers between 1 and 10
+		Sequence<Integer> odds = singulars.step(2);
+		int x = 0, expectedOdds[] = {1, 3, 5, 7, 9};
+		for (int odd : odds)
+			assertThat(odd, is(expectedOdds[x++]));
 
-		// re-using the same sequence again
-		int y = 0, squares[] = {16, 25, 36, 49, 64};
-		for (int square : singulars.map(i -> i * i).skip(3).limit(5))
-			assertThat(square, is(squares[y++]));
+		// re-using the same sequence again to get squares of numbers between 4 and 9
+		Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
+		int y = 0, expectedSquares[] = {16, 25, 36, 49, 64};
+		for (int square : squares)
+			assertThat(square, is(expectedSquares[y++]));
 	}
 
 	@Test
@@ -904,7 +906,9 @@ public class SequenceTest {
 	public void toMapFromSeparateSequences() {
 		Sequence<Integer> keys = Sequence.of(1, 2, 3);
 		Sequence<String> values = Sequence.of("1", "2", "3");
+
 		Map<Integer, String> map = keys.interleave(values).toMap();
+
 		assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 	}
 }
