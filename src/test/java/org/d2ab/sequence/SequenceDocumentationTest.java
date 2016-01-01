@@ -80,7 +80,14 @@ public class SequenceDocumentationTest {
 	public void fibonacci() {
 		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
 		                                               pair -> pair.shiftedLeft(pair.apply(Integer::sum)))
-		                                      .map(Pair::getLeft);
-		assertThat(fibonacci.limit(10), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+		                                      .map(Pair::getLeft)
+		                                      .until(55);
+		assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+	}
+
+	@Test
+	public void factorial() {
+		Sequence<Long> sequence = Sequence.recurse(1L, i -> i + 1).limit(13);
+		assertThat(sequence.reduce(1L, (r, i) -> r * i), is(6227020800L));
 	}
 }
