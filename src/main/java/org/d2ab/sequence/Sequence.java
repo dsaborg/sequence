@@ -391,7 +391,7 @@ public interface Sequence<T> extends Iterable<T> {
 		                                      Optional.of(suffix));
 	}
 
-	default <U> Sequence<U> interleave(Sequence<? extends U> that) {
-		return () -> new InterleavingIterator(this, that);
+	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
+		return () -> new InterleavingPairingIterator(iterator(), that.iterator());
 	}
 }

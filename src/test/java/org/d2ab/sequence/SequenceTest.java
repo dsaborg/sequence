@@ -526,7 +526,7 @@ public class SequenceTest {
 		twice(() -> {
 			Map<String, Integer> map = sequence.pairsToMap(Function.identity());
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.builder().put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
@@ -542,7 +542,7 @@ public class SequenceTest {
 			Map<String, Integer> map = sequence.pairsToMap(LinkedHashMap::new, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.builder().put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+			assertThat(map, is(equalTo(Maps.put("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 		});
 	}
 
@@ -552,7 +552,7 @@ public class SequenceTest {
 			Map<String, Integer> map = _123.toMap(Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
+			assertThat(map, is(equalTo(Maps.put("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -562,7 +562,7 @@ public class SequenceTest {
 			Map<String, Integer> map = _123.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
 			assertThat(map, instanceOf(LinkedHashMap.class));
-			assertThat(map, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
+			assertThat(map, is(equalTo(Maps.put("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -572,7 +572,7 @@ public class SequenceTest {
 			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
 
 			assertThat(sortedMap, instanceOf(TreeMap.class));
-			assertThat(sortedMap, is(equalTo(Maps.builder().put("1", 1).put("2", 2).put("3", 3).build())));
+			assertThat(sortedMap, is(equalTo(Maps.put("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
@@ -893,7 +893,17 @@ public class SequenceTest {
 	@Test
 	public void interleave() {
 		assertThat(empty.interleave(empty), is(emptyIterable()));
-		assertThat(_123.interleave(_12345), contains(1, 1, 2, 2, 3, 3, 4, 5));
-		assertThat(_12345.interleave(_123), contains(1, 1, 2, 2, 3, 3, 4, 5));
+		assertThat(_123.interleave(_12345),
+		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(null, 4), Pair.of(null, 5)));
+		assertThat(_12345.interleave(_123),
+		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null), Pair.of(5, null)));
+	}
+
+	@Test
+	public void mapFromSeparateSequences() {
+		Sequence<Integer> keys = Sequence.of(1, 2, 3);
+		Sequence<String> values = Sequence.of("1", "2", "3");
+		Map<Integer, String> map = keys.interleave(values).pairsToMap(Function.identity());
+		assertThat(map, is(equalTo(Maps.put(1, "1").put(2, "2").put(3, "3").build())));
 	}
 }
