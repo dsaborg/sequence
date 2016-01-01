@@ -17,8 +17,10 @@ package org.d2ab.sequence;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -112,6 +114,32 @@ public interface Pair<T, U> extends Entry<T, U> {
 	default Map<T, U> putInto(@Nonnull Map<T, U> map) {
 		map.put(getFirst(), getSecond());
 		return map;
+	}
+
+	default <T> Iterator<T> iterator() {
+		return new Iterator<T>() {
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < 2;
+			}
+
+			@Override
+			public T next() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				switch (++index) {
+					case 1:
+						return (T) getFirst();
+					case 2:
+						return (T) getSecond();
+					default:
+						// Can't happen due to above check
+						throw new IllegalStateException();
+				}
+			}
+		};
 	}
 
 	abstract class Base<T, U> implements Pair<T, U> {

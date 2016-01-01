@@ -834,8 +834,7 @@ public class SequenceTest {
 	@Test
 	public void streamToSequenceAndBack() {
 		Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
-		Stream<Pair<String, String>> abbccd = Sequence.from(abcd).pair().stream();
-		assertThat(abbccd.collect(Collectors.toList()),
-		           contains(Pair.of("a", "b"), Pair.of("b", "c"), Pair.of("c", "d")));
+		Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
+		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 	}
 }

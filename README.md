@@ -60,10 +60,9 @@ for (int square : singulars.map(i -> i * i).skip(3).limit(5))
 `Sequences` interoperate beautifully with `Streams`, through the expected `from(Stream)` and `.stream()` methods.
 
 ```
-Stream<String> abcd = asList("a", "b", "c", "d").stream();
-Stream<Pair<String, String>> abbccd = Sequence.from(abcd).pair().stream();
-assertThat(abbccd.collect(Collectors.toList()),
-           contains(Pair.of("a", "b"), Pair.of("b", "c"), Pair.of("c", "d")));
+Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
+Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
+assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```
 
 There is full support for infinite recursive `Sequences`, including termination at a known value. Example of how to 

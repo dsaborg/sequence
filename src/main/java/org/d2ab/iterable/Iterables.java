@@ -16,6 +16,7 @@
 package org.d2ab.iterable;
 
 import org.d2ab.iterator.ArrayIterator;
+import org.d2ab.sequence.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -74,6 +75,9 @@ public class Iterables {
 
 		if (container instanceof Object[])
 			return from((T[]) container);
+
+		if (container instanceof Pair)
+			return from((Iterable<T>) () -> ((Pair)container).iterator());
 
 		throw new ClassCastException("Required an Iterable, Iterator, Array or Stream but got: " +
 		                             container.getClass());

@@ -16,12 +16,11 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.sequence.ChainingSequence;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -29,12 +28,12 @@ import static org.junit.Assert.assertThat;
 
 public class ChainingSequenceTest {
 	private final ChainingSequence<String> empty = new ChainingSequence<>();
-	private final ChainingSequence<String> abc = new ChainingSequence<>(asList("a", "b", "c"));
-	private final ChainingSequence<String> abc_def = new ChainingSequence<>(asList("a", "b", "c"),
-	                                                                        asList("d", "e", "f"));
-	private final ChainingSequence<String> abc_def_ghi = new ChainingSequence<>(asList("a", "b", "c"),
-	                                                                            asList("d", "e", "f"),
-	                                                                            asList("g", "h", "i"));
+	private final ChainingSequence<String> abc = new ChainingSequence<>(Arrays.asList("a", "b", "c"));
+	private final ChainingSequence<String> abc_def = new ChainingSequence<>(Arrays.asList("a", "b", "c"),
+	                                                                        Arrays.asList("d", "e", "f"));
+	private final ChainingSequence<String> abc_def_ghi = new ChainingSequence<>(Arrays.asList("a", "b", "c"),
+	                                                                            Arrays.asList("d", "e", "f"),
+	                                                                            Arrays.asList("g", "h", "i"));
 
 	@Test
 	public void empty() {
@@ -58,7 +57,7 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void lazy() {
-		ChainingSequence<String> chainingSequence = new ChainingSequence<>(asList("a", "b", "c"), () -> {
+		ChainingSequence<String> chainingSequence = new ChainingSequence<>(Arrays.asList("a", "b", "c"), () -> {
 			throw new IllegalStateException(); // Not thrown yet, until below when iterator is requested
 		});
 
@@ -72,15 +71,15 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void appendIterable() {
-		abc.append(asList("d", "e", "f"));
+		abc.append(Arrays.asList("d", "e", "f"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f"));
 	}
 
 	@Test
 	public void appendIterator() {
-		abc.append(asList("d", "e", "f").iterator());
-		abc.append(asList("g", "h", "i"));
+		abc.append(Arrays.asList("d", "e", "f").iterator());
+		abc.append(Arrays.asList("g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "g", "h", "i"));
 	}
@@ -94,41 +93,47 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void appendStream() {
-		abc.append(asList("d", "e", "f").stream());
-		abc.append(asList("g", "h", "i"));
+		abc.append(Arrays.asList("d", "e", "f").stream());
+		abc.append(Arrays.asList("g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendIterables() {
-		abc.flatAppend(asList(asList("d", "e", "f"), asList("g", "h", "i")));
+		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f"), Arrays.asList("g", "h", "i")));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendIterators() {
-		abc.flatAppend(asList(asList("d", "e", "f").iterator(), asList("g", "h", "i").iterator()));
+		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f").iterator(), Arrays.asList("g", "h", "i").iterator()));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c"));
 	}
 
 	@Test
 	public void flatAppendArrays() {
-		abc.flatAppend(asList(new String[]{"d", "e", "f"}, new String[]{"g", "h", "i"}));
+		abc.flatAppend(Arrays.asList(new String[]{"d", "e", "f"}, new String[]{"g", "h", "i"}));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendStreams() {
-		abc.flatAppend(asList(asList("d", "e", "f").stream(), asList("g", "h", "i").stream()));
+		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f").stream(), Arrays.asList("g", "h", "i").stream()));
+		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+	}
+
+	@Test
+	public void flatAppendPairs() {
+		abc.flatAppend(Arrays.asList(Pair.of("d", "e"), Pair.of("f", "g"), Pair.of("h", "i")));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendMixed() {
-		abc.flatAppend(asList(asList("d", "e", "f"), asList("g", "h", "i").iterator(), new String[]{"j", "k", "l"}));
+		abc.flatAppend(Arrays.asList(Arrays.asList("d", "e", "f"), Arrays.asList("g", "h", "i").iterator(), new String[]{"j", "k", "l"}));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "j", "k", "l"));
 	}
@@ -141,7 +146,7 @@ public class ChainingSequenceTest {
 	@Test
 	public void testEquals() {
 		assertThat(abc.equals(abc), is(true));
-		assertThat(abc.equals(new ChainingSequence<>(asList("a", "b", "c"))), is(true));
+		assertThat(abc.equals(new ChainingSequence<>(Arrays.asList("a", "b", "c"))), is(true));
 		assertThat(abc.equals(empty), is(false));
 		assertThat(abc.equals(abc_def), is(false));
 		assertThat(abc.equals(abc_def_ghi), is(false));
@@ -150,7 +155,7 @@ public class ChainingSequenceTest {
 	@Test
 	public void testHashCode() {
 		assertThat(abc.hashCode(), is(abc.hashCode()));
-		assertThat(abc.hashCode(), is(new ChainingSequence<>(asList("a", "b", "c")).hashCode()));
+		assertThat(abc.hashCode(), is(new ChainingSequence<>(Arrays.asList("a", "b", "c")).hashCode()));
 		assertThat(abc.hashCode(), is(not(empty.hashCode())));
 		assertThat(abc.hashCode(), is(not(abc_def.hashCode())));
 		assertThat(abc.hashCode(), is(not(abc_def_ghi.hashCode())));
