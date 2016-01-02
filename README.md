@@ -48,12 +48,14 @@ Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10); // Digi
 
 // using sequence of ints 1..10 first time to get odd numbers between 1 and 10
 Sequence<Integer> odds = singulars.step(2);
+
 int x = 0, expectedOdds[] = {1, 3, 5, 7, 9};
 for (int odd : odds)
     assertThat(odd, is(expectedOdds[x++]));
 
 // re-using the same sequence again to get squares of numbers between 4 and 9
 Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
+
 int y = 0, expectedSquares[] = {16, 25, 36, 49, 64};
 for (int square : squares)
     assertThat(square, is(expectedSquares[y++]));
@@ -64,25 +66,28 @@ for (int square : squares)
 ```
 Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
 Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
+
 assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```
 
-There is full support for infinite recursive `Sequences`, including termination at a known value. Example of how to 
-compute Fibonacci:
+There is full support for infinite recursive `Sequences`, including termination at a known value.
 
 ```
 Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
                                                pair -> pair.shiftedLeft(pair.apply(Integer::sum)))
                                       .map(Pair::getLeft)
                                       .until(55);
+
 assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
 Also the standard reduction operations are available as per `Stream`:
 
 ```
-Sequence<Long> sequence = Sequence.recurse(1L, i -> i + 1).limit(13);
-assertThat(sequence.reduce(1L, (r, i) -> r * i), is(6227020800L));
+Sequence<Long> thirteen = Sequence.recurse(1L, i -> i + 1).limit(13);
+Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
+
+assertThat(factorial, is(6227020800L));
 ```
 
 Go ahead give it a try, and experience a leaner way to Stream your Sequences!
