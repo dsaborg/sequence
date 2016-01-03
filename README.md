@@ -44,7 +44,7 @@ have already traversed them (as long as they're backed by an `Iterable`/`Collect
 of course).
 
 ```
-Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10); // Digits 1..10
+Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
 
 // using sequence of ints 1..10 first time to get odd numbers between 1 and 10
 Sequence<Integer> odds = singulars.step(2);
@@ -90,6 +90,22 @@ Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 assertThat(factorial, is(6227020800L));
 ```
 
-Go ahead give it a try, and experience a leaner way to Stream your Sequences!
+Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` method of `Iterable` to be implemented,
+it's very easy to create your own full-fledged `Sequence` instances that can be operated on like any other `Sequence`
+through the default methods on the interface that carry the bulk of the burden.
+
+```
+List list = Arrays.asList(1, 2, 3, 4, 5);
+
+// Sequence as @FunctionalInterface of list's Iterator
+Sequence<Integer> sequence = list::iterator;
+
+// Operate on sequence as any other sequence using default methods
+List<String> transformed = sequence.map(Object::toString).limit(3).toList();
+
+assertThat(transformed, is(Arrays.asList("1", "2", "3")));
+```
+
+Give it a try and experience a leaner way to `Stream` your `Sequences`!
 
 Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)!

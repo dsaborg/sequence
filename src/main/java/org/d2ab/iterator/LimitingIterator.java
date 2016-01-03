@@ -20,10 +20,10 @@ import java.util.NoSuchElementException;
 
 public class LimitingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
-	private final int limit;
+	private final long limit;
 	int count;
 
-	public LimitingIterator(Iterator<T> iterator, int limit) {
+	public LimitingIterator(Iterator<T> iterator, long limit) {
 		this.iterator = iterator;
 		this.limit = limit;
 	}

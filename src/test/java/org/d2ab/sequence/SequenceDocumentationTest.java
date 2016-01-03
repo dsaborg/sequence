@@ -54,7 +54,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void reuseOfSequence() {
-		Sequence<Integer> singulars = Sequence.recurse(1, i -> i + 1).limit(10); // Digits 1..10
+		Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
 
 		// using sequence of ints 1..10 first time to get odd numbers between 1 and 10
 		Sequence<Integer> odds = singulars.step(2);
@@ -82,8 +82,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
-		                                               pair -> pair.shiftedLeft(pair.apply(Integer::sum)))
+		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), pair -> pair.shiftLeft(pair.apply(Integer::sum)))
 		                                      .map(Pair::getLeft)
 		                                      .until(55);
 
@@ -92,9 +91,22 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void factorial() {
-		Sequence<Long> thirteen = Sequence.recurse(1L, i -> i + 1).limit(13);
+		Sequence<Long> thirteen = Sequence.longs().limit(13);
 		Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 		assertThat(factorial, is(6227020800L));
+	}
+
+	@Test
+	public void functionalInterface() {
+		List list = Arrays.asList(1, 2, 3, 4, 5);
+
+		// Sequence as @FunctionalInterface of list's Iterator
+		Sequence<Integer> sequence = list::iterator;
+
+		// Operate on sequence as any other sequence using default methods
+		List<String> transformed = sequence.map(Object::toString).limit(3).toList();
+
+		assertThat(transformed, is(Arrays.asList("1", "2", "3")));
 	}
 }

@@ -36,9 +36,8 @@ public class RecursiveIterator<T> implements Iterator<T> {
 
 	@Override
 	public T next() {
-		T next = hasPrevious ? op.apply(previous) : seed;
-		previous = next;
+		previous = hasPrevious ? op.apply(previous) : seed;
 		hasPrevious = true;
-		return next;
+		return previous;
 	}
 }

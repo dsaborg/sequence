@@ -411,6 +411,12 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void recurseEndingAt() {
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(7);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
+	}
+
+	@Test
 	public void recurseThrowableCause() {
 		Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
 
@@ -760,10 +766,10 @@ public class SequenceTest {
 
 	@Test
 	public void count() {
-		twice(() -> assertThat(empty.count(), is(0)));
-		twice(() -> assertThat(_1.count(), is(1)));
-		twice(() -> assertThat(_12.count(), is(2)));
-		twice(() -> assertThat(_123456789.count(), is(9)));
+		twice(() -> assertThat(empty.count(), is(0L)));
+		twice(() -> assertThat(_1.count(), is(1L)));
+		twice(() -> assertThat(_12.count(), is(2L)));
+		twice(() -> assertThat(_123456789.count(), is(9L)));
 	}
 
 	@Test
@@ -860,5 +866,100 @@ public class SequenceTest {
 		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(null, 4), Pair.of(null, 5)));
 		assertThat(_12345.interleave(_123),
 		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null), Pair.of(5, null)));
+	}
+
+	@Test
+	public void reverse() {
+		Sequence<Integer> emptyReversed = empty.reverse();
+		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+
+		Sequence<Integer> oneReversed = _1.reverse();
+		twice(() -> assertThat(oneReversed, contains(1)));
+
+		Sequence<Integer> twoReversed = _12.reverse();
+		twice(() -> assertThat(twoReversed, contains(2, 1)));
+
+		Sequence<Integer> threeReversed = _123.reverse();
+		twice(() -> assertThat(threeReversed, contains(3, 2, 1)));
+
+		Sequence<Integer> nineReversed = _123456789.reverse();
+		twice(() -> assertThat(nineReversed, contains(9, 8, 7, 6, 5, 4, 3, 2, 1)));
+	}
+
+	@Test
+	public void shuffle() {
+		assertThat(empty.shuffle(), is(emptyIterable()));
+		assertThat(_1.shuffle(), contains(1));
+		assertThat(_12.shuffle(), containsInAnyOrder(1, 2));
+		assertThat(_123.shuffle(), containsInAnyOrder(1, 2, 3));
+		assertThat(_123456789.shuffle(), containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9));
+	}
+
+	@Test
+	public void shuffleWithRandomSource() {
+		Random stableSeed = new Random(17);
+
+		assertThat(empty.shuffle(stableSeed), is(emptyIterable()));
+		assertThat(_1.shuffle(stableSeed), contains(1));
+		assertThat(_12.shuffle(stableSeed), contains(1, 2));
+		assertThat(_123.shuffle(stableSeed), contains(3, 2, 1));
+		assertThat(_123456789.shuffle(stableSeed), contains(2, 9, 4, 6, 8, 7, 5, 1, 3));
+	}
+
+	@Test
+	public void ints() {
+		assertThat(Sequence.ints().limit(3), contains(1, 2, 3));
+		assertThat(Sequence.ints().limit(7777).last(), is(Optional.of(7777)));
+	}
+
+	@Test
+	public void longs() {
+		assertThat(Sequence.longs().limit(3), contains(1L, 2L, 3L));
+		assertThat(Sequence.longs().limit(7777).last(), is(Optional.of(7777L)));
+	}
+
+	@Test
+	public void chars() {
+		assertThat(Sequence.chars().limit(3), contains('\u0000', '\u0001', '\u0002'));
+		assertThat(Sequence.chars().limit(0xC0).last(), is(Optional.of('¿')));
+	}
+
+	@Test
+	public void intsStartingAt() {
+		assertThat(Sequence.ints(17).limit(3), contains(17, 18, 19));
+		assertThat(Sequence.ints(777).limit(7000).last(), is(Optional.of(7776)));
+		assertThat(Sequence.ints(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
+	}
+
+	@Test
+	public void longsStartingAt() {
+		assertThat(Sequence.longs(17).limit(3), contains(17L, 18L, 19L));
+		assertThat(Sequence.longs(777).limit(7000).last(), is(Optional.of(7776L)));
+		assertThat(Sequence.longs(Long.MAX_VALUE), contains(Long.MAX_VALUE));
+	}
+
+	@Test
+	public void charsStartingAt() {
+		assertThat(Sequence.chars('A').limit(3), contains('A', 'B', 'C'));
+		assertThat(Sequence.chars('\u1400').limit(3).last(), is(Optional.of('\u1402')));
+		assertThat(Sequence.chars(Character.MAX_VALUE), contains(Character.MAX_VALUE));
+	}
+
+	@Test
+	public void intRange() {
+		assertThat(Sequence.range(17, 20), contains(17, 18, 19, 20));
+		assertThat(Sequence.range(20, 17), contains(20, 19, 18, 17));
+	}
+
+	@Test
+	public void longRange() {
+		assertThat(Sequence.range(17L, 20L), contains(17L, 18L, 19L, 20L));
+		assertThat(Sequence.range(20L, 17L), contains(20L, 19L, 18L, 17L));
+	}
+
+	@Test
+	public void charRange() {
+		assertThat(Sequence.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
+		assertThat(Sequence.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
 	}
 }

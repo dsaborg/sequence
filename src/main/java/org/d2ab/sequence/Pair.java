@@ -88,7 +88,7 @@ public interface Pair<L, R> extends Entry<L, R> {
 		throw new UnsupportedOperationException();
 	}
 
-	default Pair<R, L> swapped() {
+	default Pair<R, L> swap() {
 		return new Base<R, L>() {
 			@Override
 			public R getLeft() {
@@ -130,7 +130,7 @@ public interface Pair<L, R> extends Entry<L, R> {
 		};
 	}
 
-	default <LL> Pair<LL, L> shiftedRight(LL replacement) {
+	default <LL> Pair<LL, L> shiftRight(LL replacement) {
 		return new Base<LL, L>() {
 			@Override
 			public LL getLeft() {
@@ -144,7 +144,7 @@ public interface Pair<L, R> extends Entry<L, R> {
 		};
 	}
 
-	default <RR> Pair<R, RR> shiftedLeft(RR replacement) {
+	default <RR> Pair<R, RR> shiftLeft(RR replacement) {
 		return new Base<R, RR>() {
 			@Override
 			public R getLeft() {

@@ -120,17 +120,17 @@ public class PairTest {
 
 	@Test
 	public void swapped() {
-		assertThat(pair.swapped(), is(Pair.of("2", 1)));
+		assertThat(pair.swap(), is(Pair.of("2", 1)));
 	}
 
 	@Test
 	public void shiftLeft() {
-		assertThat(pair.shiftedLeft(17), is(Pair.of("2", 17)));
+		assertThat(pair.shiftLeft(17), is(Pair.of("2", 17)));
 	}
 
 	@Test
 	public void shiftRight() {
-		assertThat(pair.shiftedRight("17"), is(Pair.of("17", 1)));
+		assertThat(pair.shiftRight("17"), is(Pair.of("17", 1)));
 	}
 
 	@Test

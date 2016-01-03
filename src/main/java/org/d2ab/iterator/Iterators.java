@@ -25,8 +25,9 @@ public class Iterators {
 		skip(1, iterator);
 	}
 
-	public static void skip(int steps, Iterator<?> iterator) {
-		for (int count = 0; count < steps && iterator.hasNext(); count++) {
+	public static void skip(long steps, Iterator<?> iterator) {
+		long count = 0;
+		while (count++ < steps && iterator.hasNext()) {
 			iterator.next();
 		}
 	}

@@ -31,54 +31,83 @@ import static java.util.Collections.emptyIterator;
 import static java.util.Collections.singleton;
 
 /**
- * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and
- * collating the list of elements.
+ * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and collating
+ * the list of elements.
  */
 @FunctionalInterface
 public interface Sequence<T> extends Iterable<T> {
+	/**
+	 * Create an empty {@code Sequence} with no items.
+	 */
+	@Nonnull
+	static <T> Sequence<T> empty() {
+		return from(emptyIterator());
+	}
+
+	/**
+	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
+	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
+	 */
+	@Nonnull
+	static <T> Sequence<T> from(@Nonnull Iterator<T> iterator) {
+		return () -> iterator;
+	}
+
+	/**
+	 * Create a {@code Sequence} with one item.
+	 */
 	@Nonnull
 	static <T> Sequence<T> of(@Nullable T item) {
 		return from(singleton(item));
 	}
 
+	/**
+	 * Create a {@code Sequence} from an {@link Iterable} of items.
+	 */
 	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterable<T> items) {
-		return items::iterator;
+	static <T> Sequence<T> from(@Nonnull Iterable<T> iterable) {
+		return iterable::iterator;
 	}
 
+	/**
+	 * Create a {@code Sequence} with the given items.
+	 */
 	@SafeVarargs
 	@Nonnull
 	static <T> Sequence<T> of(@Nonnull T... items) {
 		return from(asList(items));
 	}
 
-	@Nonnull
-	static <T> Sequence<T> empty() {
-		return from(emptyIterator());
-	}
-
-	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterator<T> iterator) {
-		return () -> iterator;
-	}
-
+	/**
+	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
+	 * the
+	 * stream of items in the {@code Sequence}.
+	 */
 	@SafeVarargs
 	@Nonnull
 	static <T> Sequence<T> from(@Nonnull Iterable<T>... iterables) {
 		return new ChainingSequence<>(iterables);
 	}
 
+	/**
+	 * Create a {@code Sequence} from {@link Iterator}s of items supplied by the given {@link Supplier}. Every time the
+	 * {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of elements.
+	 * This is similar to creating a {@code Sequence} from an {@link Iterable}.
+	 */
 	@Nonnull
 	static <T> Sequence<T> from(@Nonnull Supplier<? extends Iterator<T>> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
+	/**
+	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
+	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException} when
+	 * the {@link Stream} is requested again.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 */
 	static <T> Sequence<T> from(Stream<T> stream) {
 		return stream::iterator;
-	}
-
-	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
-		return () -> new RecursiveIterator<>(seed, op);
 	}
 
 	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
@@ -94,13 +123,101 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * A {@code Sequence} of all the positive {@link Integer} numbers starting at {@code 1} and ending at {@link
+	 * Integer#MAX_VALUE}.
+	 */
+	static Sequence<Integer> ints() {
+		return range(1, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Integer} numbers between the given start and end positions, inclusive.
+	 */
+	static Sequence<Integer> range(int start, int end) {
+		UnaryOperator<Integer> next = end > start ? i -> i + 1 : i -> i - 1;
+		return recurse(start, next).endingAt(end);
+	}
+
+	default Sequence<T> endingAt(T terminal) {
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
+	}
+
+	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
+		return () -> new RecursiveIterator<>(seed, op);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Integer} numbers starting at the given start and ending at {@link
+	 * Integer#MAX_VALUE}.
+	 * <p>
+	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
+	 * eventually
+	 * {@link Integer#MAX_VALUE}.
+	 */
+	static Sequence<Integer> ints(int start) {
+		return range(start, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * A {@code Sequence} of all the positive {@link Long} numbers starting at {@code 1} and ending at {@link
+	 * Long#MAX_VALUE}.
+	 */
+	static Sequence<Long> longs() {
+		return range(1, Long.MAX_VALUE);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Long} numbers between the given start and end positions, inclusive.
+	 */
+	static Sequence<Long> range(long start, long end) {
+		UnaryOperator<Long> next = end > start ? i -> i + 1 : i -> i - 1;
+		return recurse(start, next).endingAt(end);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Long} numbers starting at the given value and ending at {@link
+	 * Long#MAX_VALUE}.
+	 * <p>
+	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
+	 * eventually
+	 * {@link Long#MAX_VALUE}.
+	 */
+	static Sequence<Long> longs(long start) {
+		return range(start, Long.MAX_VALUE);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
+	 * {@link Character#MAX_VALUE}.
+	 */
+	static Sequence<Character> chars() {
+		return range((char) 0, Character.MAX_VALUE);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Character} values between the given start and end positions, inclusive.
+	 */
+	static Sequence<Character> range(char start, char end) {
+		UnaryOperator<Character> next = end > start ? c -> (char) (c + 1) : c -> (char) (c - 1);
+		return recurse(start, next).endingAt(end);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
+	 * Character#MAX_VALUE}.
+	 */
+	static Sequence<Character> chars(char start) {
+		return range(start, Character.MAX_VALUE);
+	}
+
 	@Nonnull
-	default Sequence<T> skip(int skip) {
+	default Sequence<T> skip(long skip) {
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
 	@Nonnull
-	default Sequence<T> limit(int limit) {
+	default Sequence<T> limit(long limit) {
 		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
@@ -136,11 +253,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> untilNull() {
-		return () -> new TerminalIterator<>(iterator(), null);
+		return () -> new ExclusiveTerminalIterator<>(iterator(), null);
 	}
 
 	default Sequence<T> until(T terminal) {
-		return () -> new TerminalIterator<>(iterator(), terminal);
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default Set<T> toSet() {
@@ -166,8 +283,8 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} of {@code Pairs} into a map, or throw {@code ClassCastException} if this
-	 * {@code Sequence} is not of {@code Pair}.
+	 * Convert this {@code Sequence} of {@code Pairs} into a map, or throw {@code ClassCastException} if this {@code
+	 * Sequence} is not of {@code Pair}.
 	 */
 	default <K, V> Map<K, V> toMap() {
 		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
@@ -299,7 +416,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PartitioningIterator<>(iterator(), window);
 	}
 
-	default Sequence<T> step(int step) {
+	default Sequence<T> step(long step) {
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
@@ -332,9 +449,9 @@ public interface Sequence<T> extends Iterable<T> {
 		return reduce(BinaryOperator.maxBy(comparator));
 	}
 
-	default int count() {
-		int count = 0;
-		for (T ignored : this) {
+	default long count() {
+		long count = 0;
+		for (Iterator iterator = iterator(); iterator.hasNext(); iterator.next()) {
 			count++;
 		}
 		return count;
@@ -408,5 +525,21 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
 		return () -> new InterleavingPairingIterator(iterator(), that.iterator());
+	}
+
+	default Sequence<T> reverse() {
+		return () -> new ReverseIterator(iterator());
+	}
+
+	default Sequence<T> shuffle() {
+		List list = toList();
+		Collections.shuffle(list);
+		return from(list);
+	}
+
+	default Sequence<T> shuffle(@Nonnull Random md) {
+		List list = toList();
+		Collections.shuffle(list, md);
+		return from(list);
 	}
 }
