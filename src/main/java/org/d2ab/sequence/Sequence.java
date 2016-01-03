@@ -86,7 +86,7 @@ public interface Sequence<T> extends Iterable<T> {
 	@SafeVarargs
 	@Nonnull
 	static <T> Sequence<T> from(@Nonnull Iterable<T>... iterables) {
-		return new ChainingSequence<>(iterables);
+		return new ChainingIterable<>(iterables)::iterator;
 	}
 
 	/**
@@ -108,10 +108,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> from(Stream<T> stream) {
 		return stream::iterator;
-	}
-
-	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
-		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
 	}
 
 	static <K, V> Sequence<Pair<K, V>> from(Map<? extends K, ? extends V> map) {
@@ -145,6 +141,10 @@ public interface Sequence<T> extends Iterable<T> {
 
 	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
 		return () -> new RecursiveIterator<>(seed, op);
+	}
+
+	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
+		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
 	}
 
 	/**
@@ -228,8 +228,8 @@ public interface Sequence<T> extends Iterable<T> {
 	@Nonnull
 	default Sequence<T> append(@Nonnull Iterable<T> that) {
 		@SuppressWarnings("unchecked")
-		ChainingSequence<T> chainingSequence = new ChainingSequence<>(this, that);
-		return chainingSequence;
+		Iterable<T> chainingSequence = new ChainingIterable<>(this, that);
+		return chainingSequence::iterator;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -248,11 +248,11 @@ public interface Sequence<T> extends Iterable<T> {
 
 	@Nonnull
 	default <U> Sequence<U> flatMap(@Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
-		return ChainingSequence.flatMap(this, mapper);
+		return ChainingIterable.flatMap(this, mapper)::iterator;
 	}
 
 	default <U> Sequence<U> flatten() {
-		return ChainingSequence.flatten(this);
+		return ChainingIterable.<U>flatten(this)::iterator;
 	}
 
 	default Sequence<T> untilNull() {

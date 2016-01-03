@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -73,8 +74,8 @@ public class SequenceTest {
 	public void forEach() throws Exception {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
-			_1.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
-			_12.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
+			_1.forEach(i -> assertThat(i, is(in(singletonList(1)))));
+			_12.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2)))));
 			_123.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
 		});
 	}
@@ -143,7 +144,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromEmptyStream() throws Exception {
-		Sequence<Integer> sequenceFromStream = Sequence.from(Collections.<Integer>emptyList().stream());
+		Sequence<Integer> sequenceFromStream = Sequence.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -267,8 +268,8 @@ public class SequenceTest {
 
 	@Test
 	public void thenIsLazyWhenSkippingHasNext() {
-		Iterator<Integer> first = Collections.singletonList(1).iterator();
-		Iterator<Integer> second = Collections.singletonList(2).iterator();
+		Iterator<Integer> first = singletonList(1).iterator();
+		Iterator<Integer> second = singletonList(2).iterator();
 
 		Sequence<Integer> sequence = Sequence.from(first).append(() -> second);
 

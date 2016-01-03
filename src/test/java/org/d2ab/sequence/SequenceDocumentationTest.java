@@ -16,6 +16,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.sequence.PrimitiveSequence.Chars;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Character.toUpperCase;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -118,5 +120,22 @@ public class SequenceDocumentationTest {
 		assertThat(sequence,
 		           contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
 		                    instanceOf(NullPointerException.class)));
+	}
+
+	@Test
+	public void snakeCase() {
+		Chars chars = Chars.from("Hello Lexicon").map((char c) -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+
+		assertThat(chars.asString(), is("hello_lexicon"));
+	}
+
+	@Test
+	public void capitalize() {
+		Chars chars = Chars.from("hello_lexicon")
+		                   .mapBack((int p, char c) -> ((p == -1) || (p == '_')) ?
+		                                               toUpperCase(c) :
+		                                               ((c == '_') ? ' ' : c));
+
+		assertThat(chars.asString(), is("Hello Lexicon"));
 	}
 }
