@@ -131,8 +131,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void capitalize() {
-		Chars chars = Chars.from("hello_lexicon")
-		                   .mapBack((p, c) -> ((p == -1) || (p == '_')) ? toUpperCase(c) : c)
+		Chars chars = Chars.from("hello_lexicon").mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
 		                   .map(c -> (c == '_') ? ' ' : c);
 
 		assertThat(chars.asString(), is("Hello Lexicon"));
