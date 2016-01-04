@@ -25,15 +25,15 @@ import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class ChainingSequenceTest {
-	private final ChainingSequence<String> empty = new ChainingSequence<>();
+public class ChainingIterableTest {
+	private final ChainingIterable<String> empty = new ChainingIterable<>();
 	@SuppressWarnings("unchecked")
-	private final ChainingSequence<String> abc = new ChainingSequence<>(asList("a", "b", "c"));
+	private final ChainingIterable<String> abc = new ChainingIterable<>(asList("a", "b", "c"));
 	@SuppressWarnings("unchecked")
-	private final ChainingSequence<String> abc_def = new ChainingSequence<>(asList("a", "b", "c"),
+	private final ChainingIterable<String> abc_def = new ChainingIterable<>(asList("a", "b", "c"),
 	                                                                        asList("d", "e", "f"));
 	@SuppressWarnings("unchecked")
-	private final ChainingSequence<String> abc_def_ghi = new ChainingSequence<>(asList("a", "b", "c"),
+	private final ChainingIterable<String> abc_def_ghi = new ChainingIterable<>(asList("a", "b", "c"),
 	                                                                            asList("d", "e", "f"),
 	                                                                            asList("g", "h", "i"));
 
@@ -60,11 +60,11 @@ public class ChainingSequenceTest {
 	@Test
 	public void lazy() {
 		@SuppressWarnings("unchecked")
-		ChainingSequence<String> chainingSequence = new ChainingSequence<>(asList("a", "b", "c"), () -> {
+		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"), () -> {
 			throw new IllegalStateException(); // Not thrown yet, until below when iterator is requested
 		});
 
-		Iterator<String> iterator = chainingSequence.iterator();
+		Iterator<String> iterator = chainingIterable.iterator();
 		assertThat(iterator.next(), is("a"));
 		assertThat(iterator.next(), is("b"));
 		assertThat(iterator.next(), is("c"));
@@ -144,13 +144,13 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void testToString() {
-		assertThat(abc_def_ghi.toString(), is("ChainingSequence[[a, b, c], [d, e, f], [g, h, i]]"));
+		assertThat(abc_def_ghi.toString(), is("ChainingIterable[[a, b, c], [d, e, f], [g, h, i]]"));
 	}
 
 	@Test
 	public void testEquals() {
 		assertThat(abc.equals(abc), is(true));
-		assertThat(abc.equals(new ChainingSequence<>(asList("a", "b", "c"))), is(true));
+		assertThat(abc.equals(new ChainingIterable<>(asList("a", "b", "c"))), is(true));
 		assertThat(abc.equals(empty), is(false));
 		assertThat(abc.equals(abc_def), is(false));
 		assertThat(abc.equals(abc_def_ghi), is(false));
@@ -159,7 +159,7 @@ public class ChainingSequenceTest {
 	@Test
 	public void testHashCode() {
 		assertThat(abc.hashCode(), is(abc.hashCode()));
-		assertThat(abc.hashCode(), is(new ChainingSequence<>(asList("a", "b", "c")).hashCode()));
+		assertThat(abc.hashCode(), is(new ChainingIterable<>(asList("a", "b", "c")).hashCode()));
 		assertThat(abc.hashCode(), is(not(empty.hashCode())));
 		assertThat(abc.hashCode(), is(not(abc_def.hashCode())));
 		assertThat(abc.hashCode(), is(not(abc_def_ghi.hashCode())));

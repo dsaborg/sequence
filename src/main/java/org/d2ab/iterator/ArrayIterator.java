@@ -17,31 +17,54 @@ package org.d2ab.iterator;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayIterator<T> implements Iterator<T> {
-	private List<T> items;
+	private T[] items;
 	private int index;
 
 	@SafeVarargs
 	public ArrayIterator(T... items) {
-		this.items = Arrays.asList(items);
+		this.items = items;
 	}
 
 	@Override
+	public int hashCode() {
+		int result = Arrays.hashCode(items);
+		result = 31 * result + index;
+		return result;
+	}	@Override
 	public boolean hasNext() {
-		return index < items.size();
+		return index < items.length;
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		ArrayIterator<?> that = (ArrayIterator<?>) o;
+
+		return index == that.index && Arrays.equals(items, that.items);
+	}	@Override
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		return items.get(index++);
+		return items[index++];
 	}
+
+	@Override
+	public String toString() {
+		return "ArrayIterator(" + Arrays.toString(items) + '@' + index + ')';
+	}
+
+
+
+
 }

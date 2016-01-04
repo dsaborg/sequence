@@ -46,8 +46,8 @@ public class Iterables {
 	/**
 	 * Converts a container of some kind into a possibly once-only {@link Iterable}.
 	 *
-	 * @param container the non-null container to turn into an {@link Iterable}, can be one of {@link Iterable},
-	 *                  {@link Iterator}, {@link Stream} or {@code Array}.
+	 * @param container the non-null container to turn into an {@link Iterable}, can be one of {@link Iterable}, {@link
+	 *                  Iterator}, {@link Stream} or {@code Array}.
 	 *
 	 * @return the container as an iterable.
 	 *
@@ -61,20 +61,16 @@ public class Iterables {
 
 		if (container instanceof Iterable)
 			return (Iterable<T>) container;
-
-		if (container instanceof Iterator)
+		else if (container instanceof Iterator)
 			return from((Iterator<T>) container);
-
-		if (container instanceof Stream)
+		else if (container instanceof Stream)
 			return from((Stream<T>) container);
-
-		if (container instanceof Object[])
+		else if (container instanceof Object[])
 			return from((T[]) container);
-
-		if (container instanceof Pair)
+		else if (container instanceof Pair)
 			return from((Iterable<T>) ((Pair<T, T>) container)::iterator);
-
-		throw new ClassCastException("Required an Iterable, Iterator, Array or Stream but got: " +
-		                             container.getClass());
+		else
+			throw new ClassCastException("Required an Iterable, Iterator, Array or Stream but got: " +
+			                             container.getClass());
 	}
 }

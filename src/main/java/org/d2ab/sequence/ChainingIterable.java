@@ -27,59 +27,54 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ChainingSequence<T> implements Sequence<T> {
+public class ChainingIterable<T> implements Iterable<T> {
 	private final Collection<Iterable<? extends T>> iterables = new ArrayList<>();
 
-	public ChainingSequence() {
+	public ChainingIterable() {
 	}
 
-	public ChainingSequence(@Nonnull Iterable<T> iterable) {
+	public ChainingIterable(@Nonnull Iterable<T> iterable) {
 		iterables.add(Objects.requireNonNull(iterable));
 	}
 
 	@SafeVarargs
-	public ChainingSequence(@Nonnull Iterable<T>... iterables) {
+	public ChainingIterable(@Nonnull Iterable<T>... iterables) {
 		MoreArrays.forEach(e -> this.iterables.add(Objects.requireNonNull(e)), iterables);
 	}
 
-	public static <U> ChainingSequence<U> flatten(@Nonnull Iterable<?> containers) {
-		return new ChainingSequence<U>().flatAppend(containers);
+	public static <U> Iterable<U> flatten(@Nonnull Iterable<?> containers) {
+		return new ChainingIterable<U>().flatAppend(containers);
 	}
 
-	public ChainingSequence<T> flatAppend(@Nonnull Iterable<?> containers) {
+	public Iterable<T> flatAppend(@Nonnull Iterable<?> containers) {
 		for (Object each : containers)
 			append(Iterables.from(each));
 		return this;
 	}
 
 	@Nonnull
-	public static <T, U> ChainingSequence<U> flatMap(@Nonnull Iterable<? extends T> iterable,
-	                                                 @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
-		ChainingSequence<U> result = new ChainingSequence<>();
+	public static <T, U> Iterable<U> flatMap(@Nonnull Iterable<? extends T> iterable,
+	                                         @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
+		ChainingIterable<U> result = new ChainingIterable<>();
 		iterable.forEach(each -> result.append(mapper.apply(each)));
 		return result;
 	}
 
-	@Override
-	public ChainingSequence<T> append(Iterator<T> iterator) {
+	public Iterable<T> append(Iterator<T> iterator) {
 		return append(Iterables.from(iterator));
 	}
 
-	@Override
 	@Nonnull
-	public ChainingSequence<T> append(@Nonnull Iterable<T> iterable) {
+	public Iterable<T> append(@Nonnull Iterable<T> iterable) {
 		iterables.add(iterable);
 		return this;
 	}
 
-	@SafeVarargs
-	@Override
-	public final ChainingSequence<T> append(T... objects) {
+	public Iterable<T> append(T... objects) {
 		return append(Iterables.from(objects));
 	}
 
-	@Override
-	public ChainingSequence<T> append(Stream<T> stream) {
+	public Iterable<T> append(Stream<T> stream) {
 		return append(Iterables.from(stream));
 	}
 
@@ -100,13 +95,13 @@ public class ChainingSequence<T> implements Sequence<T> {
 		if ((o == null) || (getClass() != o.getClass()))
 			return false;
 
-		ChainingSequence<?> that = (ChainingSequence<?>) o;
+		ChainingIterable<?> that = (ChainingIterable<?>) o;
 
 		return iterables.equals(that.iterables);
 	}
 
 	@Override
 	public String toString() {
-		return "ChainingSequence" + iterables;
+		return "ChainingIterable" + iterables;
 	}
 }

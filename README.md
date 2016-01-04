@@ -116,6 +116,23 @@ List<String> transformed = sequence.map(Object::toString).limit(3).toList();
 assertThat(transformed, is(Arrays.asList("1", "2", "3")));
 ```
 
+There is also a primitive version of Sequence for char processing, called PrimitiveSequence.Chars:
+
+```
+Chars chars = Chars.from("Hello Lexicon").map((char c) -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+
+assertThat(chars.asString(), is("hello_lexicon"));
+```
+
+```
+Chars chars = Chars.from("hello_lexicon")
+                   .mapBack((int p, char c) -> ((p == -1) || (p == '_')) ?
+                                               toUpperCase(c) :
+                                               ((c == '_') ? ' ' : c));
+
+assertThat(chars.asString(), is("Hello Lexicon"));
+```
+
 Give it a try and experience a leaner way to `Stream` your `Sequences`!
 
 Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)!
