@@ -526,6 +526,7 @@ public class PrimitiveSequenceCharsTest {
 	public void chars() {
 		assertThat(Chars.all().limit(3), contains('\u0000', '\u0001', '\u0002'));
 		assertThat(Chars.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
+		assertThat(Chars.all().count(), is(65536L));
 	}
 
 	@Test
@@ -533,11 +534,13 @@ public class PrimitiveSequenceCharsTest {
 		assertThat(Chars.startingAt('A').limit(3), contains('A', 'B', 'C'));
 		assertThat(Chars.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
 		assertThat(Chars.startingAt(Character.MAX_VALUE), contains(Character.MAX_VALUE));
+		assertThat(Chars.startingAt('\u8000').count(), is(32768L));
 	}
 
 	@Test
 	public void charRange() {
 		assertThat(Chars.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(Chars.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
+		assertThat(Chars.range('A', 'F').count(), is(6L));
 	}
 }
