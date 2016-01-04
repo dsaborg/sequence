@@ -27,13 +27,8 @@ public class Iterators {
 
 	public static void skip(long steps, Iterator<?> iterator) {
 		long count = 0;
-		while (count++ < steps && iterator.hasNext()) {
+		while ((count++ < steps) && iterator.hasNext()) {
 			iterator.next();
 		}
-	}
-
-	@SafeVarargs
-	public static <T> Iterator<T> of(T... items) {
-		return new ArrayIterator(items);
 	}
 }

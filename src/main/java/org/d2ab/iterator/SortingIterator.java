@@ -23,12 +23,18 @@ public class SortingIterator<T> implements Iterator<T> {
 	private Iterator<T> sortedIterator;
 
 	public SortingIterator(Iterator<T> iterator) {
-		this(iterator, (Comparator<? super T>) Comparator.naturalOrder());
+		this(iterator, naturalOrder());
 	}
 
 	public SortingIterator(Iterator<T> iterator, Comparator<? super T> comparator) {
 		this.iterator = iterator;
 		this.comparator = comparator;
+	}
+
+	private static <T> Comparator<? super T> naturalOrder() {
+		@SuppressWarnings("unchecked")
+		Comparator<? super T> comparator = (Comparator<? super T>) Comparator.naturalOrder();
+		return comparator;
 	}
 
 	@Override

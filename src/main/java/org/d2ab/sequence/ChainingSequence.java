@@ -17,6 +17,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.ChainingIterator;
+import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -25,8 +26,6 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
-import static java.util.Arrays.asList;
 
 public class ChainingSequence<T> implements Sequence<T> {
 	private final Collection<Iterable<? extends T>> iterables = new ArrayList<>();
@@ -40,7 +39,7 @@ public class ChainingSequence<T> implements Sequence<T> {
 
 	@SafeVarargs
 	public ChainingSequence(@Nonnull Iterable<T>... iterables) {
-		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
+		MoreArrays.forEach(e -> this.iterables.add(Objects.requireNonNull(e)), iterables);
 	}
 
 	public static <U> ChainingSequence<U> flatten(@Nonnull Iterable<?> containers) {
@@ -61,20 +60,25 @@ public class ChainingSequence<T> implements Sequence<T> {
 		return result;
 	}
 
+	@Override
 	public ChainingSequence<T> append(Iterator<T> iterator) {
 		return append(Iterables.from(iterator));
 	}
 
+	@Override
 	@Nonnull
 	public ChainingSequence<T> append(@Nonnull Iterable<T> iterable) {
 		iterables.add(iterable);
 		return this;
 	}
 
-	public ChainingSequence<T> append(T... objects) {
+	@SafeVarargs
+	@Override
+	public final ChainingSequence<T> append(T... objects) {
 		return append(Iterables.from(objects));
 	}
 
+	@Override
 	public ChainingSequence<T> append(Stream<T> stream) {
 		return append(Iterables.from(stream));
 	}
@@ -93,7 +97,7 @@ public class ChainingSequence<T> implements Sequence<T> {
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if ((o == null) || (getClass() != o.getClass()))
 			return false;
 
 		ChainingSequence<?> that = (ChainingSequence<?>) o;

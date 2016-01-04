@@ -13,29 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.iterator;
+package org.d2ab.utils;
 
+import org.d2ab.iterator.ArrayIterator;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class PeekingIterator<T> implements Iterator<T> {
-	private final Iterator<? extends T> iterator;
-	private final Consumer<? super T> action;
-
-	public PeekingIterator(Iterator<? extends T> iterator, Consumer<? super T> action) {
-		this.iterator = iterator;
-		this.action = action;
+/**
+ * Utilities for arrays, similar to {@link Arrays} with a few extras like iterators and {@link #forEach}.
+ */
+public class MoreArrays {
+	private MoreArrays() {
 	}
 
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
+	@SafeVarargs
+	public static <T> void forEach(Consumer<? super T> action, @Nonnull T... array) {
+		for (T item : array)
+			action.accept(item);
 	}
 
-	@Override
-	public T next() {
-		T next = iterator.next();
-		action.accept(next);
-		return next;
+	@SafeVarargs
+	public static <T> Iterator<T> iterator(T... items) {
+		return new ArrayIterator<>(items);
+	}
+
+	@SafeVarargs
+	@Nonnull
+	public static <T> Iterable<T> iterable(T... items) {
+		return () -> new ArrayIterator<>(items);
 	}
 }

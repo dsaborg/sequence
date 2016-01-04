@@ -197,14 +197,15 @@ public interface Pair<L, R> extends Entry<L, R> {
 	}
 
 	default <T> Iterator<T> iterator() {
-		return new PairIterator(this);
+		@SuppressWarnings("unchecked") PairIterator<?, ?, T> pairIterator = new PairIterator(this);
+		return pairIterator;
 	}
 
 	abstract class Base<L, R> implements Pair<L, R> {
 		@Override
 		public int hashCode() {
-			int result = getLeft() != null ? getLeft().hashCode() : 0;
-			result = 31 * result + (getRight() != null ? getRight().hashCode() : 0);
+			int result = (getLeft() != null) ? getLeft().hashCode() : 0;
+			result = (31 * result) + ((getRight() != null) ? getRight().hashCode() : 0);
 			return result;
 		}
 
@@ -212,13 +213,13 @@ public interface Pair<L, R> extends Entry<L, R> {
 		public boolean equals(Object o) {
 			if (this == o)
 				return true;
-			if (o == null || !(o instanceof Pair))
+			if (!(o instanceof Pair))
 				return false;
 
 			Pair<?, ?> that = (Pair<?, ?>) o;
 
-			return (getLeft() != null ? getLeft().equals(that.getLeft()) : that.getLeft() == null) &&
-			       (getRight() != null ? getRight().equals(that.getRight()) : that.getRight() == null);
+			return ((getLeft() != null) ? getLeft().equals(that.getLeft()) : (that.getLeft() == null)) &&
+			       ((getRight() != null) ? getRight().equals(that.getRight()) : (that.getRight() == null));
 		}
 
 		@Override

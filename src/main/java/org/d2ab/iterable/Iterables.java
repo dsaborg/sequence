@@ -15,7 +15,6 @@
  */
 package org.d2ab.iterable;
 
-import org.d2ab.iterator.ArrayIterator;
 import org.d2ab.sequence.Pair;
 
 import javax.annotation.Nonnull;
@@ -26,11 +25,6 @@ import static java.util.Arrays.asList;
 
 public class Iterables {
 	private Iterables() {
-	}
-
-	@Nonnull
-	public static <T> Iterable<T> of(T... items) {
-		return () -> new ArrayIterator(items);
 	}
 
 	@Nonnull
@@ -60,6 +54,7 @@ public class Iterables {
 	 * @throws ClassCastException if the container is not one of {@link Iterable}, {@link Iterator}, {@link Stream} or
 	 *                            {@code Array}
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> Iterable<T> from(Object container) {
 		if (container == null)
 			throw new NullPointerException();
@@ -77,7 +72,7 @@ public class Iterables {
 			return from((T[]) container);
 
 		if (container instanceof Pair)
-			return from((Iterable<T>) () -> ((Pair) container).iterator());
+			return from((Iterable<T>) ((Pair<T, T>) container)::iterator);
 
 		throw new ClassCastException("Required an Iterable, Iterator, Array or Stream but got: " +
 		                             container.getClass());

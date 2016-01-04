@@ -135,7 +135,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * A {@code Sequence} of all the {@link Integer} numbers between the given start and end positions, inclusive.
 	 */
 	static Sequence<Integer> range(int start, int end) {
-		UnaryOperator<Integer> next = end > start ? i -> i + 1 : i -> i - 1;
+		UnaryOperator<Integer> next = (end > start) ? i -> i + 1 : i -> i - 1;
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -171,7 +171,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * A {@code Sequence} of all the {@link Long} numbers between the given start and end positions, inclusive.
 	 */
 	static Sequence<Long> range(long start, long end) {
-		UnaryOperator<Long> next = end > start ? i -> i + 1 : i -> i - 1;
+		UnaryOperator<Long> next = (end > start) ? i -> i + 1 : i -> i - 1;
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -199,7 +199,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * A {@code Sequence} of all the {@link Character} values between the given start and end positions, inclusive.
 	 */
 	static Sequence<Character> range(char start, char end) {
-		UnaryOperator<Character> next = end > start ? c -> (char) (c + 1) : c -> (char) (c - 1);
+		UnaryOperator<Character> next = (end > start) ? c -> (char) (c + 1) : c -> (char) (c - 1);
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -227,9 +227,11 @@ public interface Sequence<T> extends Iterable<T> {
 
 	@Nonnull
 	default Sequence<T> append(@Nonnull Iterable<T> that) {
-		return new ChainingSequence<>(this, that);
+		@SuppressWarnings("unchecked") ChainingSequence<T> chainingSequence = new ChainingSequence<>(this, that);
+		return chainingSequence;
 	}
 
+	@SuppressWarnings("unchecked")
 	default Sequence<T> append(T... objects) {
 		return append(Iterables.from(objects));
 	}
@@ -287,6 +289,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Sequence} is not of {@code Pair}.
 	 */
 	default <K, V> Map<K, V> toMap() {
+		@SuppressWarnings("unchecked")
 		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
 		return toMap(mapper);
 	}
@@ -304,7 +307,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier) {
-		return toMap(supplier, (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity());
+		@SuppressWarnings("unchecked")
+		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
+		return toMap(supplier, mapper);
 	}
 
 	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
@@ -425,7 +430,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default <S extends Comparable<? super S>> Sequence<S> sorted() {
-		return () -> new SortingIterator<>((Iterator<S>) iterator());
+		return () -> {
+			@SuppressWarnings("unchecked") Iterator<S> comparableIterator = (Iterator<S>) iterator();
+			return new SortingIterator<>(comparableIterator);
+		};
 	}
 
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
@@ -471,8 +479,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
 		List list = toList();
-		A[] array = constructor.apply(list.size());
-		return (A[]) list.toArray(array);
+		@SuppressWarnings("unchecked") A[] array = (A[]) list.toArray(constructor.apply(list.size()));
+		return array;
 	}
 
 	default Stream<T> stream() {
@@ -500,45 +508,56 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> peek(Consumer<? super T> action) {
-		return () -> new PeekingIterator(iterator(), action);
+		return () -> new PeekingIterator<>(iterator(), action);
 	}
 
 	default <U extends R, V extends R, R> Sequence<R> delimit(V delimiter) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.of(delimiter),
-		                                      Optional.empty());
+		return () -> {
+			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			return new DelimitingIterator<>(delimitedIterator, Optional.empty(), Optional.of(delimiter),
+			                                Optional.empty());
+		};
 	}
 
 	default <U extends R, V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.of(delimiter),
-		                                      Optional.of(suffix));
+		return () -> {
+			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			return new DelimitingIterator<>(delimitedIterator, Optional.of(prefix), Optional.of(delimiter),
+			                                Optional.of(suffix));
+		};
 	}
 
 	default <U extends R, V extends R, R> Sequence<R> prefix(V prefix) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.empty(),
-		                                      Optional.empty());
+		return () -> {
+			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			return new DelimitingIterator<>(delimitedIterator, Optional.of(prefix), Optional.empty(), Optional.empty
+					                                                                                                   ());
+		};
 	}
 
 	default <U extends R, V extends R, R> Sequence<R> suffix(V suffix) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.empty(),
-		                                      Optional.of(suffix));
+		return () -> {
+			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			return new DelimitingIterator<>(delimitedIterator, Optional.empty(), Optional.empty(), Optional.of(suffix));
+		};
 	}
 
 	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
-		return () -> new InterleavingPairingIterator(iterator(), that.iterator());
+		return () -> new InterleavingPairingIterator<>(iterator(), that.iterator());
 	}
 
 	default Sequence<T> reverse() {
-		return () -> new ReverseIterator(iterator());
+		return () -> new ReverseIterator<>(iterator());
 	}
 
 	default Sequence<T> shuffle() {
-		List list = toList();
+		List<T> list = toList();
 		Collections.shuffle(list);
 		return from(list);
 	}
 
 	default Sequence<T> shuffle(@Nonnull Random md) {
-		List list = toList();
+		List<T> list = toList();
 		Collections.shuffle(list, md);
 		return from(list);
 	}

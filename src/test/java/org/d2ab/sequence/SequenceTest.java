@@ -16,7 +16,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.iterator.Iterators;
+import org.d2ab.utils.MoreArrays;
 import org.junit.Test;
 
 import java.util.*;
@@ -171,7 +171,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromNoIterables() throws Exception {
-		Sequence<Integer> sequenceFromNoIterables = Sequence.from(new Iterable[]{});
+		Sequence<Integer> sequenceFromNoIterables = Sequence.<Integer>from();
 
 		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
 	}
@@ -221,7 +221,7 @@ public class SequenceTest {
 
 	@Test
 	public void appendIterator() {
-		Sequence<Integer> appended = _123.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
+		Sequence<Integer> appended = _123.append(MoreArrays.iterator(4, 5, 6)).append(MoreArrays.iterator(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));
@@ -283,7 +283,7 @@ public class SequenceTest {
 
 	@Test
 	public void filter() {
-		Sequence<Integer> filtered = Sequence.of(1, 2, 3, 4, 5, 6, 7).filter(i -> i % 2 == 0);
+		Sequence<Integer> filtered = Sequence.of(1, 2, 3, 4, 5, 6, 7).filter(i -> (i % 2) == 0);
 
 		twice(() -> assertThat(filtered, contains(2, 4, 6)));
 	}
@@ -400,7 +400,7 @@ public class SequenceTest {
 
 	@Test
 	public void recurseUntilNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i < 10 ? i + 1 : null).untilNull();
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).untilNull();
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
@@ -658,17 +658,26 @@ public class SequenceTest {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void pairs() {
-		twice(() -> {
-			assertThat(empty.pair(), is(emptyIterable()));
-			assertThat(_1.pair(), is(emptyIterable()));
-			assertThat(_12.pair(), contains(Pair.of(1, 2)));
-			assertThat(_123.pair(), contains(Pair.of(1, 2), Pair.of(2, 3)));
-			assertThat(_12345.pair(), contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5)));
-		});
+		Sequence<Pair<Integer, Integer>> emptyPaired = empty.pair();
+		twice(() -> assertThat(emptyPaired, is(emptyIterable())));
+
+		Sequence<Pair<Integer, Integer>> onePaired = _1.pair();
+		twice(() -> assertThat(onePaired, contains(Pair.of(1, null))));
+
+		Sequence<Pair<Integer, Integer>> twoPaired = _12.pair();
+		twice(() -> assertThat(twoPaired, contains(Pair.of(1, 2))));
+
+		Sequence<Pair<Integer, Integer>> threePaired = _123.pair();
+		twice(() -> assertThat(threePaired, contains(Pair.of(1, 2), Pair.of(2, 3))));
+
+		Sequence<Pair<Integer, Integer>> fivePaired = _12345.pair();
+		twice(() -> assertThat(fivePaired, contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5))));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void partition() {
 		twice(() -> assertThat(_12345.partition(3),
@@ -680,6 +689,7 @@ public class SequenceTest {
 		twice(() -> assertThat(_123456789.step(3), contains(1, 4, 7)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void partitionAndStep() {
 		Sequence<List<Integer>> partitionAndStep = _12345.partition(3).step(2);
@@ -859,13 +869,21 @@ public class SequenceTest {
 		twice(() -> assertThat(delimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void interleave() {
-		assertThat(empty.interleave(empty), is(emptyIterable()));
-		assertThat(_123.interleave(_12345),
-		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(null, 4), Pair.of(null, 5)));
-		assertThat(_12345.interleave(_123),
-		           contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null), Pair.of(5, null)));
+		Sequence<Pair<Integer, Integer>> emptyInterleaved = empty.interleave(empty);
+		twice(() -> assertThat(emptyInterleaved, is(emptyIterable())));
+
+		Sequence<Pair<Integer, Integer>> interleavedShortFirst = _123.interleave(_12345);
+		twice(() -> assertThat(interleavedShortFirst,
+		                       contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(null, 4),
+		                                Pair.of(null, 5))));
+
+		Sequence<Pair<Integer, Integer>> interleavedShortLast = _12345.interleave(_123);
+		twice(() -> assertThat(interleavedShortLast,
+		                       contains(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null),
+		                                Pair.of(5, null))));
 	}
 
 	@Test

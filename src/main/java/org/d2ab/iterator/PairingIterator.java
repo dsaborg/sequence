@@ -24,6 +24,7 @@ public class PairingIterator<T> implements Iterator<Pair<T, T>> {
 	private Iterator<T> iterator;
 	private T previous;
 	private boolean gotPrevious;
+	private boolean started;
 
 	public PairingIterator(Iterator<T> iterator) {
 		this.iterator = iterator;
@@ -32,23 +33,31 @@ public class PairingIterator<T> implements Iterator<Pair<T, T>> {
 	@Override
 	public boolean hasNext() {
 		boolean hasNext = iterator.hasNext();
-		if (gotPrevious || !hasNext) {
-			return hasNext;
+
+		// Ensure first element is processed with a trailing null if iterator contains only one item
+		if (gotPrevious) {
+			return !started || hasNext;
 		}
 
-		previous = iterator.next();
-		gotPrevious = true;
-		return iterator.hasNext();
+		// First time hasNext() is called (may be from next), get the first element so we have a base for the first
+		// pair
+		if (hasNext) {
+			previous = iterator.next();
+			gotPrevious = true;
+		}
+
+		return hasNext;
 	}
 
 	@Override
 	public Pair<T, T> next() {
-		if (!iterator.hasNext())
+		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T next = iterator.next();
-		Pair result = Pair.of(previous, next);
+		T next = iterator.hasNext() ? iterator.next() : null;
+		Pair<T, T> result = Pair.of(previous, next);
 		previous = next;
+		started = true;
 		return result;
 	}
 }
