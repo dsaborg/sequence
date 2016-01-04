@@ -26,15 +26,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
-		                             .filter(x -> x % 2 == 0)
+		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0)
 		                             .map(Objects::toString)
 		                             .toList();
 
@@ -108,5 +106,17 @@ public class SequenceDocumentationTest {
 		List<String> transformed = sequence.map(Object::toString).limit(3).toList();
 
 		assertThat(transformed, is(Arrays.asList("1", "2", "3")));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void recurseThrowableCause() {
+		Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
+
+		Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).until(null);
+
+		assertThat(sequence,
+		           contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
+		                    instanceOf(NullPointerException.class)));
 	}
 }

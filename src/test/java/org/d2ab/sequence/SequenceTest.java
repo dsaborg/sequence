@@ -417,20 +417,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void recurseThrowableCause() {
-		Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
-
-		Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).until(null);
-
-		twice(() -> {
-			Iterator<Throwable> iterator = sequence.iterator();
-			assertThat(iterator.next(), is(instanceOf(IllegalStateException.class)));
-			assertThat(iterator.next(), is(instanceOf(IllegalArgumentException.class)));
-			assertThat(iterator.next(), is(instanceOf(NullPointerException.class)));
-		});
-	}
-
-	@Test
 	public void toList() {
 		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
 

@@ -81,6 +81,16 @@ Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
 assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
+```
+Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
+
+Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).until(null);
+
+assertThat(sequence,
+           contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
+                    instanceOf(NullPointerException.class)));
+```
+
 Also the standard reduction operations are available as per `Stream`:
 
 ```
