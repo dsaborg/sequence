@@ -124,7 +124,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void snakeCase() {
-		Chars chars = Chars.from("Hello Lexicon").map((char c) -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+		Chars chars = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
 		assertThat(chars.asString(), is("hello_lexicon"));
 	}
@@ -132,9 +132,8 @@ public class SequenceDocumentationTest {
 	@Test
 	public void capitalize() {
 		Chars chars = Chars.from("hello_lexicon")
-		                   .mapBack((int p, char c) -> ((p == -1) || (p == '_')) ?
-		                                               toUpperCase(c) :
-		                                               ((c == '_') ? ' ' : c));
+		                   .mapBack((p, c) -> ((p == -1) || (p == '_')) ? toUpperCase(c) : c)
+		                   .map(c -> (c == '_') ? ' ' : c);
 
 		assertThat(chars.asString(), is("Hello Lexicon"));
 	}

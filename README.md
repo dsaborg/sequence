@@ -116,19 +116,20 @@ List<String> transformed = sequence.map(Object::toString).limit(3).toList();
 assertThat(transformed, is(Arrays.asList("1", "2", "3")));
 ```
 
-There is also a primitive version of Sequence for char processing, called PrimitiveSequence.Chars:
+There is also a primitive version of `Sequence` for `char` processing, `PrimitiveSequence.Chars`:
 
 ```
-Chars chars = Chars.from("Hello Lexicon").map((char c) -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+Chars chars = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
 assertThat(chars.asString(), is("hello_lexicon"));
 ```
 
+The `Chars` `Sequences` also have methods that peek on the previous and next elements when performing a mapping:
+
 ```
 Chars chars = Chars.from("hello_lexicon")
-                   .mapBack((int p, char c) -> ((p == -1) || (p == '_')) ?
-                                               toUpperCase(c) :
-                                               ((c == '_') ? ' ' : c));
+                   .mapBack((p, c) -> ((p == -1) || (p == '_')) ? toUpperCase(c) : c)
+                   .map(c -> (c == '_') ? ' ' : c);
 
 assertThat(chars.asString(), is("Hello Lexicon"));
 ```

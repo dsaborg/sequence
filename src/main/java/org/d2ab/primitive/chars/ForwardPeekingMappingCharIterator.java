@@ -32,26 +32,6 @@ public class ForwardPeekingMappingCharIterator implements CharIterator {
 	}
 
 	@Override
-	public boolean hasNext() {
-		if (!started) {
-			if (iterator.hasNext())
-				current = iterator.next();
-			started = true;
-		}
-		return current != -1;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!started) {
-			if (iterator.hasNext())
-				current = iterator.next();
-			started = true;
-		}
-		return current != -1;
-	}
-
-	@Override
 	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -60,5 +40,15 @@ public class ForwardPeekingMappingCharIterator implements CharIterator {
 		char result = mapper.applyAsCharAndInt((char) current, next);
 		current = next;
 		return result;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (!started) {
+			if (iterator.hasNext())
+				current = iterator.next();
+			started = true;
+		}
+		return current != -1;
 	}
 }
