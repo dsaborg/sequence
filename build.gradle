@@ -15,7 +15,7 @@
  */
 
 apply plugin: 'java'
-apply plugin: 'distribution'
+apply plugin: 'java-library-distribution'
 
 version = '0.2.0'
 
@@ -35,7 +35,6 @@ distributions {
         contents {
             from { 'README.md' }
             from { 'LICENSE' }
-            from { 'build/libs/sequence.jar' }
         }
     }
 }
