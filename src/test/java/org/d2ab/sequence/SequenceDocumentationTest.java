@@ -58,7 +58,7 @@ public class SequenceDocumentationTest {
 
 		// using sequence of ints 1..10 first time to get odd numbers between 1 and 10
 		Sequence<Integer> odds = singulars.step(2);
-		
+
 		int x = 0, expectedOdds[] = {1, 3, 5, 7, 9};
 		for (int odd : odds)
 			assertThat(odd, is(expectedOdds[x++]));

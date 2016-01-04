@@ -197,7 +197,8 @@ public interface Pair<L, R> extends Entry<L, R> {
 	}
 
 	default <T> Iterator<T> iterator() {
-		@SuppressWarnings("unchecked") PairIterator<?, ?, T> pairIterator = new PairIterator(this);
+		@SuppressWarnings("unchecked")
+		PairIterator<?, ?, T> pairIterator = new PairIterator(this);
 		return pairIterator;
 	}
 

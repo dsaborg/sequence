@@ -227,7 +227,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	@Nonnull
 	default Sequence<T> append(@Nonnull Iterable<T> that) {
-		@SuppressWarnings("unchecked") ChainingSequence<T> chainingSequence = new ChainingSequence<>(this, that);
+		@SuppressWarnings("unchecked")
+		ChainingSequence<T> chainingSequence = new ChainingSequence<>(this, that);
 		return chainingSequence;
 	}
 
@@ -431,7 +432,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <S extends Comparable<? super S>> Sequence<S> sorted() {
 		return () -> {
-			@SuppressWarnings("unchecked") Iterator<S> comparableIterator = (Iterator<S>) iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<S> comparableIterator = (Iterator<S>) iterator();
 			return new SortingIterator<>(comparableIterator);
 		};
 	}
@@ -479,7 +481,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
 		List list = toList();
-		@SuppressWarnings("unchecked") A[] array = (A[]) list.toArray(constructor.apply(list.size()));
+		@SuppressWarnings("unchecked")
+		A[] array = (A[]) list.toArray(constructor.apply(list.size()));
 		return array;
 	}
 
@@ -513,7 +516,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <U extends R, V extends R, R> Sequence<R> delimit(V delimiter) {
 		return () -> {
-			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
 			return new DelimitingIterator<>(delimitedIterator, Optional.empty(), Optional.of(delimiter),
 			                                Optional.empty());
 		};
@@ -521,7 +525,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <U extends R, V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
 		return () -> {
-			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
 			return new DelimitingIterator<>(delimitedIterator, Optional.of(prefix), Optional.of(delimiter),
 			                                Optional.of(suffix));
 		};
@@ -529,7 +534,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <U extends R, V extends R, R> Sequence<R> prefix(V prefix) {
 		return () -> {
-			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
 			return new DelimitingIterator<>(delimitedIterator, Optional.of(prefix), Optional.empty(), Optional.empty
 					                                                                                                   ());
 		};
@@ -537,7 +543,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <U extends R, V extends R, R> Sequence<R> suffix(V suffix) {
 		return () -> {
-			@SuppressWarnings("unchecked") Iterator<U> delimitedIterator = (Iterator<U>) iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
 			return new DelimitingIterator<>(delimitedIterator, Optional.empty(), Optional.empty(), Optional.of(suffix));
 		};
 	}

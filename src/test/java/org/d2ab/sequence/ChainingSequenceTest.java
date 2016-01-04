@@ -59,10 +59,8 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void lazy() {
-		@SuppressWarnings("unchecked") ChainingSequence<String> chainingSequence = new ChainingSequence<>(asList("a",
-		                                                                                                         "b",
-		                                                                                                         "c"),
-		                                                                                                  () -> {
+		@SuppressWarnings("unchecked")
+		ChainingSequence<String> chainingSequence = new ChainingSequence<>(asList("a", "b", "c"), () -> {
 			throw new IllegalStateException(); // Not thrown yet, until below when iterator is requested
 		});
 
@@ -113,8 +111,7 @@ public class ChainingSequenceTest {
 
 	@Test
 	public void flatAppendIterators() {
-		abc.flatAppend(asList(asList("d", "e", "f").iterator(), asList("g", "h", "i").iterator
-				                                                                                                   ()));
+		abc.flatAppend(asList(asList("d", "e", "f").iterator(), asList("g", "h", "i").iterator()));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c"));
 	}
