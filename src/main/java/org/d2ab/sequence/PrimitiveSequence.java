@@ -202,7 +202,7 @@ public class PrimitiveSequence {
 
 		default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
 			C result = constructor.get();
-			forEachChar((char each) -> adder.accept(result, each));
+			forEachChar(c -> adder.accept(result, c));
 			return result;
 		}
 
@@ -211,19 +211,17 @@ public class PrimitiveSequence {
 		}
 
 		default String join(String prefix, String delimiter, String suffix) {
-			StringBuilder result = new StringBuilder();
-			result.append(prefix);
-			boolean first = true;
-			for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			StringBuilder result = new StringBuilder(prefix);
+
+			boolean started = false;
+			for (CharIterator iterator = iterator(); iterator.hasNext(); started = true) {
 				char each = iterator.nextChar();
-				if (first)
-					first = false;
-				else
+				if (started)
 					result.append(delimiter);
 				result.append(each);
 			}
-			result.append(suffix);
-			return result.toString();
+
+			return result.append(suffix).toString();
 		}
 
 		default char reduce(char identity, CharBinaryOperator operator) {
