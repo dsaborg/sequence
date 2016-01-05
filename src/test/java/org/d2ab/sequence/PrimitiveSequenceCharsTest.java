@@ -45,7 +45,6 @@ public class PrimitiveSequenceCharsTest {
 	private final Chars abcdefghi = Chars.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i');
 	private final Chars oneRandom = Chars.of('q');
 	private final Chars twoRandom = Chars.of('q', 'w');
-	private final Chars threeRandom = Chars.of('b', 'c', 'a');
 	private final Chars nineRandom = Chars.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
 
 	@Test
@@ -542,5 +541,14 @@ public class PrimitiveSequenceCharsTest {
 		assertThat(Chars.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(Chars.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
 		assertThat(Chars.range('A', 'F').count(), is(6L));
+	}
+
+	@Test
+	public void asString() {
+		twice(() -> assertThat(empty.asString(), is("")));
+		twice(() -> assertThat(a.asString(), is("a")));
+		twice(() -> assertThat(ab.asString(), is("ab")));
+		twice(() -> assertThat(abc.asString(), is("abc")));
+		twice(() -> assertThat(abcde.asString(), is("abcde")));
 	}
 }
