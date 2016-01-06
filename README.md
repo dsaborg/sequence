@@ -1,6 +1,7 @@
 # Sequence
 ## A lightweight companion to the Java 8 Stream library
-### By Daniel Skogquist Åborg -- [d2ab.org](http://www.d2ab.org/)
+##### By Daniel Skogquist Åborg
+###### [d2ab.org](http://www.d2ab.org/)
 
 **NOTE: PRE-RELEASE VERSION 0.x, INTERFACE _WILL_ CHANGE UNTIL 1.0**
 
