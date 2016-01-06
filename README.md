@@ -112,9 +112,9 @@ List list = Arrays.asList(1, 2, 3, 4, 5);
 Sequence<Integer> sequence = list::iterator;
 
 // Operate on sequence as any other sequence using default methods
-List<String> transformed = sequence.map(Object::toString).limit(3).toList();
+Sequence<String> transformed = sequence.map(Object::toString).limit(3);
 
-assertThat(transformed, is(Arrays.asList("1", "2", "3")));
+assertThat(transformed, contains("1", "2", "3"));
 ```
 
 There is also a primitive version of `Sequence` for `char` processing, `PrimitiveSequence.Chars`:
