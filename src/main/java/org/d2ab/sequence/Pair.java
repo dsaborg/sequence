@@ -17,16 +17,16 @@ package org.d2ab.sequence;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
-public interface Pair<L, R> extends Entry<L, R> {
+import static java.util.Comparator.*;
+
+public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	static <T, U> Pair<T, U> of(@Nullable T left, @Nullable U right) {
 		return new Base<T, U>() {
 			@Override
@@ -69,19 +69,42 @@ public interface Pair<L, R> extends Entry<L, R> {
 		};
 	}
 
+	static <T, U> Consumer<? super Pair<T, U>> consumer(BiConsumer<? super T, ? super U> action) {
+		return p -> action.accept(p.getLeft(), p.getRight());
+	}
+
+	L getLeft();
+
+	R getRight();
+
+	static <KK, VV, K, V> Entry<KK, VV> map(Entry<K, V> entry, Function<? super K, ? extends KK> keyMapper,
+	                                        Function<? super V, ? extends VV> valueMapper) {
+		return new Base<KK, VV>() {
+			@Override
+			public KK getLeft() {
+				return keyMapper.apply(entry.getKey());
+			}
+
+			@Override
+			public VV getRight() {
+				return valueMapper.apply(entry.getValue());
+			}
+		};
+	}
+
+	static <K, V> boolean test(@Nonnull Entry<K, V> entry, @Nonnull BiPredicate<? super K, ? super V> predicate) {
+		return predicate.test(entry.getKey(), entry.getValue());
+	}
+
 	@Override
 	default L getKey() {
 		return getLeft();
 	}
 
-	L getLeft();
-
 	@Override
 	default R getValue() {
 		return getRight();
 	}
-
-	R getRight();
 
 	@Override
 	default R setValue(R value) {
@@ -192,8 +215,12 @@ public interface Pair<L, R> extends Entry<L, R> {
 	}
 
 	default Map<L, R> putInto(@Nonnull Map<L, R> map) {
-		map.put(getLeft(), getRight());
-		return map;
+		return putEntry(map, this);
+	}
+
+	static <K, V> Map<K, V> putEntry(Map<K, V> result, Entry<K, V> each) {
+		result.put(each.getKey(), each.getValue());
+		return result;
 	}
 
 	default <T> Iterator<T> iterator() {
@@ -203,6 +230,11 @@ public interface Pair<L, R> extends Entry<L, R> {
 	}
 
 	abstract class Base<L, R> implements Pair<L, R> {
+		public static final Comparator NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
+		private final Comparator<Entry> COMPARATOR = comparing((Function<Entry, Object>) Entry::getKey,
+		                                                       NULLS_FIRST).thenComparing(
+				(Function<Entry, Object>) Entry::getValue, NULLS_FIRST);
+
 		@Override
 		public int hashCode() {
 			int result = (getLeft() != null) ? getLeft().hashCode() : 0;
@@ -214,18 +246,30 @@ public interface Pair<L, R> extends Entry<L, R> {
 		public boolean equals(Object o) {
 			if (this == o)
 				return true;
-			if (!(o instanceof Pair))
+			if (!(o instanceof Entry))
 				return false;
 
-			Pair<?, ?> that = (Pair<?, ?>) o;
+			Entry<?, ?> that = (Entry<?, ?>) o;
 
-			return ((getLeft() != null) ? getLeft().equals(that.getLeft()) : (that.getLeft() == null)) &&
-			       ((getRight() != null) ? getRight().equals(that.getRight()) : (that.getRight() == null));
+			return ((getKey() != null) ? getKey().equals(that.getKey()) : (that.getKey() == null)) &&
+			       ((getValue() != null) ? getValue().equals(that.getValue()) : (that.getValue() == null));
 		}
 
 		@Override
 		public String toString() {
-			return "(" + getLeft() + ',' + getRight() + ')';
+			return "(" + format(getLeft()) + ", " + format(getRight()) + ')';
+		}
+
+		public static String format(Object o) {
+			if (o instanceof String) {
+				return '"' + (String) o + '"';
+			}
+			return String.valueOf(o);
+		}
+
+		@Override
+		public int compareTo(@Nonnull Entry<L, R> that) {
+			return COMPARATOR.compare(this, that);
 		}
 	}
 

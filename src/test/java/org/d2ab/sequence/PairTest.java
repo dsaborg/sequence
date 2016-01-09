@@ -34,7 +34,7 @@ public class PairTest {
 	public void of() {
 		assertThat(pair.getLeft(), is(1));
 		assertThat(pair.getRight(), is("2"));
-		assertThat(pair.toString(), is("(1,2)"));
+		assertThat(pair.toString(), is("(1, \"2\")"));
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class PairTest {
 		assertThat(pairFromEntry.getLeft(), is(3));
 		assertThat(pairFromEntry.getRight(), is(4));
 
-		assertThat(pairFromEntry.toString(), is("(5,6)"));
+		assertThat(pairFromEntry.toString(), is("(5, 6)"));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class PairTest {
 		Pair<Integer, Integer> unaryPair = Pair.unary(1);
 		assertThat(unaryPair.getLeft(), is(1));
 		assertThat(unaryPair.getRight(), is(1));
-		assertThat(unaryPair.toString(), is("(1,1)"));
+		assertThat(unaryPair.toString(), is("(1, 1)"));
 	}
 
 	@Test

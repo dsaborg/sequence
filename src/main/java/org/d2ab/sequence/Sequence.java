@@ -21,6 +21,7 @@ import org.d2ab.iterator.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
@@ -110,13 +111,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return stream::iterator;
 	}
 
-	static <K, V> Sequence<Pair<K, V>> from(Map<? extends K, ? extends V> map) {
-		return from(map.entrySet()).map(Pair::from);
-	}
-
-	@Nonnull
-	default <U> Sequence<U> map(@Nonnull Function<? super T, ? extends U> mapper) {
-		return () -> new MappingIterator<>(iterator(), mapper);
+	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
+		return from(map.entrySet());
 	}
 
 	/**
@@ -212,6 +208,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	@Nonnull
+	default <U> Sequence<U> map(@Nonnull Function<? super T, ? extends U> mapper) {
+		return () -> new MappingIterator<>(iterator(), mapper);
+	}
+
+	@Nonnull
 	default Sequence<T> skip(long skip) {
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
@@ -286,24 +287,25 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} of {@code Pairs} into a map, or throw {@code ClassCastException} if this {@code
-	 * Sequence} is not of {@code Pair}.
+	 * Convert this {@code Sequence} of {@link Entry} values into a map, or throw {@code ClassCastException} if this
+	 * {@code Sequence} is not of {@link Entry}.
 	 */
 	default <K, V> Map<K, V> toMap() {
 		@SuppressWarnings("unchecked")
-		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
+		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
+				                                                                                                 .<Entry<K, V>>identity();
 		return toMap(mapper);
 	}
 
-	default <K, V> Map<K, V> toMap(Function<? super T, ? extends Pair<K, V>> mapper) {
+	default <K, V> Map<K, V> toMap(Function<? super T, ? extends Entry<K, V>> mapper) {
 		Supplier<Map<K, V>> supplier = HashMap::new;
 		return toMap(supplier, mapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
-	                                            Function<? super T, ? extends Pair<K, V>> mapper) {
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends
+			                                                                                                   Entry<K, V>> mapper) {
 		M result = constructor.get();
-		forEach(each -> mapper.apply(each).putInto(result));
+		forEach(each -> Pair.putEntry(result, mapper.apply(each)));
 		return result;
 	}
 

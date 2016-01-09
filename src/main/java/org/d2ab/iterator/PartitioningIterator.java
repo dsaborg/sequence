@@ -18,11 +18,11 @@ package org.d2ab.iterator;
 import java.util.*;
 
 public class PartitioningIterator<T> implements Iterator<List<T>> {
-	private final Iterator<T> iterator;
+	private final Iterator<? extends T> iterator;
 	private final int window;
 	private Deque<T> partition = new LinkedList<>();
 
-	public PartitioningIterator(Iterator<T> iterator, int window) {
+	public PartitioningIterator(Iterator<? extends T> iterator, int window) {
 		this.iterator = iterator;
 		this.window = window;
 	}

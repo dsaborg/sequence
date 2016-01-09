@@ -21,7 +21,7 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
 
-`Maps` are handled as `Sequences` of `Pairs` of values, with special transformation methods that convert to/from `Maps`.
+`Maps` are handled as `Sequences` of `Entry` values, with special transformation methods that convert to/from `Maps`.
 
 ```
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
@@ -31,6 +31,30 @@ Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
 Map<Integer, String> map = keyValueSequence.toMap();
 
 assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
+```
+
+You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
+
+```
+Sequence<Pair<String, Integer>> sequence = Sequence.from(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4)
+                                                             .build())
+                                                   .map(Pair::from)
+                                                   .filter(p -> p.test((s, i) -> i != 2))
+                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+
+assertThat(sequence.<String, Integer>toMap(),
+           is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+```
+
+You can also work directly on `Entry` keys and values using `EntrySequence`.
+
+```
+Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+EntrySequence<String, Integer> sequence = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
+
+Map<String, Integer> oddValuesOnly = sequence.toMap();
+assertThat(oddValuesOnly, is(equalTo(Maps.builder("1", 1).put("3", 3).build())));
 ```
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
