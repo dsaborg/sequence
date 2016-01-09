@@ -21,7 +21,8 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
 
-`Maps` are handled as `Sequences` of `Entry` values, with special transformation methods that convert to/from `Maps`.
+`Maps` are handled as `Sequences` of `Entry` or `Pair`, with special transformation methods that convert 
+to/from `Maps`. `Pair` implements `Entry` and provides extra transformation methods.
 
 ```
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
