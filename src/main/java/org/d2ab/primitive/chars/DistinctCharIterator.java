@@ -26,7 +26,7 @@ public class DistinctCharIterator implements CharIterator {
 	private Set<Character> seenHigh = new HashSet<Character>();
 	private BitSet seenLow = new BitSet(THRESHOLD);
 	private char next;
-	private boolean gotNext;
+	private boolean hasNext;
 
 	public DistinctCharIterator(CharIterator iterator) {
 		this.iterator = iterator;
@@ -37,26 +37,26 @@ public class DistinctCharIterator implements CharIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		gotNext = false;
+		hasNext = false;
 		return next;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (gotNext)
+		if (hasNext)
 			return true;
 
-		while (!gotNext && iterator.hasNext()) {
+		while (!hasNext && iterator.hasNext()) {
 			char next = iterator.nextChar();
 			if (next < THRESHOLD)
-				gotNext = add(seenLow, next);
+				hasNext = add(seenLow, next);
 			else
-				gotNext = seenHigh.add(next);
-			if (gotNext)
+				hasNext = seenHigh.add(next);
+			if (hasNext)
 				this.next = next;
 		}
 
-		return gotNext;
+		return hasNext;
 	}
 
 	private static boolean add(BitSet bitSet, int index) {

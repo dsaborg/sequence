@@ -22,7 +22,7 @@ public class ExclusiveTerminalCharIterator implements CharIterator {
 	private final CharIterator iterator;
 	private final char terminal;
 	private char next;
-	private boolean gotNext;
+	private boolean hasNext;
 
 	public ExclusiveTerminalCharIterator(CharIterator iterator, char terminal) {
 		this.iterator = iterator;
@@ -34,16 +34,16 @@ public class ExclusiveTerminalCharIterator implements CharIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		gotNext = false;
+		hasNext = false;
 		return next;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (!gotNext && iterator.hasNext()) {
+		if (!hasNext && iterator.hasNext()) {
 			next = iterator.next();
-			gotNext = true;
+			hasNext = true;
 		}
-		return gotNext && !Objects.equals(next, terminal);
+		return hasNext && !Objects.equals(next, terminal);
 	}
 }

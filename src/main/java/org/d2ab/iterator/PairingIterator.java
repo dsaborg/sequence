@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 public class PairingIterator<T> implements Iterator<Pair<T, T>> {
 	private Iterator<T> iterator;
 	private T previous;
-	private boolean gotPrevious;
+	private boolean hasPrevious;
 	private boolean started;
 
 	public PairingIterator(Iterator<T> iterator) {
@@ -35,7 +35,7 @@ public class PairingIterator<T> implements Iterator<Pair<T, T>> {
 		boolean hasNext = iterator.hasNext();
 
 		// Ensure first element is processed with a trailing null if iterator contains only one item
-		if (gotPrevious) {
+		if (hasPrevious) {
 			return !started || hasNext;
 		}
 
@@ -43,7 +43,7 @@ public class PairingIterator<T> implements Iterator<Pair<T, T>> {
 		// pair
 		if (hasNext) {
 			previous = iterator.next();
-			gotPrevious = true;
+			hasPrevious = true;
 		}
 
 		return hasNext;

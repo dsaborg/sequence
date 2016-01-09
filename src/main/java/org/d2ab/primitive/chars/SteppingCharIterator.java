@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 public class SteppingCharIterator implements CharIterator {
 	private final CharIterator iterator;
 	private final long step;
-	private boolean gotNext;
+	private boolean hasNext;
 	private char next;
 
 	public SteppingCharIterator(CharIterator iterator, long step) {
@@ -33,13 +33,13 @@ public class SteppingCharIterator implements CharIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		gotNext = false;
+		hasNext = false;
 		return next;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (gotNext)
+		if (hasNext)
 			return true;
 
 		if (!iterator.hasNext())
@@ -51,7 +51,7 @@ public class SteppingCharIterator implements CharIterator {
 		long i = step;
 		while (--i > 0 && iterator.hasNext())
 			iterator.nextChar();
-		gotNext = true;
+		hasNext = true;
 
 		return true;
 	}

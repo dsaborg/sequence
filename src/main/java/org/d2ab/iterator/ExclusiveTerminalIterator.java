@@ -23,7 +23,7 @@ public class ExclusiveTerminalIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
 	private final T terminal;
 	private T next;
-	private boolean gotNext;
+	private boolean hasNext;
 
 	public ExclusiveTerminalIterator(Iterator<T> iterator, T terminal) {
 		this.iterator = iterator;
@@ -32,11 +32,11 @@ public class ExclusiveTerminalIterator<T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (!gotNext && iterator.hasNext()) {
+		if (!hasNext && iterator.hasNext()) {
 			next = iterator.next();
-			gotNext = true;
+			hasNext = true;
 		}
-		return gotNext && !Objects.equals(next, terminal);
+		return hasNext && !Objects.equals(next, terminal);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ExclusiveTerminalIterator<T> implements Iterator<T> {
 			throw new NoSuchElementException();
 
 		T result = next;
-		gotNext = false;
+		hasNext = false;
 		next = null;
 		return result;
 	}

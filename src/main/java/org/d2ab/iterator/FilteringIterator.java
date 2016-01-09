@@ -22,8 +22,8 @@ import java.util.function.Predicate;
 public class FilteringIterator<T> implements Iterator<T> {
 	private final Iterator<? extends T> iterator;
 	private final Predicate<? super T> predicate;
-	T foundValue;
-	private boolean foundNext;
+	T next;
+	private boolean hasNext;
 
 	public FilteringIterator(Iterator<? extends T> iterator, Predicate<? super T> predicate) {
 		this.iterator = iterator;
@@ -32,15 +32,16 @@ public class FilteringIterator<T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (foundNext) { // already checked
+		if (hasNext) { // already checked
 			return true;
 		}
 
 		do { // find next matching, bail out if EOF
-			foundNext = iterator.hasNext();
-			if (!foundNext)
+			hasNext = iterator.hasNext();
+			if (!hasNext)
 				return false;
-		} while (!predicate.test(foundValue = iterator.next()));
+			next = iterator.next();
+		} while (!predicate.test(next));
 
 		// found matching value
 		return true;
@@ -51,9 +52,9 @@ public class FilteringIterator<T> implements Iterator<T> {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
-		T nextValue = foundValue;
-		foundNext = false;
-		foundValue = null;
+		T nextValue = next;
+		hasNext = false;
+		next = null;
 		return nextValue;
 	}
 }

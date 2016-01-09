@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 public class SteppingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
 	private final long step;
-	private boolean gotNext;
+	private boolean hasNext;
 	private T next;
 
 	public SteppingIterator(Iterator<T> iterator, long step) {
@@ -31,7 +31,7 @@ public class SteppingIterator<T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (gotNext)
+		if (hasNext)
 			return true;
 
 		if (!iterator.hasNext())
@@ -43,7 +43,7 @@ public class SteppingIterator<T> implements Iterator<T> {
 		long i = step;
 		while (--i > 0 && iterator.hasNext())
 			iterator.next();
-		gotNext = true;
+		hasNext = true;
 
 		return true;
 	}
@@ -55,7 +55,7 @@ public class SteppingIterator<T> implements Iterator<T> {
 
 		T result = next;
 		next = null;
-		gotNext = false;
+		hasNext = false;
 		return result;
 	}
 }

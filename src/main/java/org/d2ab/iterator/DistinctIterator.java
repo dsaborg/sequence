@@ -24,7 +24,7 @@ public class DistinctIterator<T> implements Iterator<T> {
 	private Iterator<T> iterator;
 	private Set<T> seen = new HashSet<T>();
 	private T next;
-	private boolean gotNext;
+	private boolean hasNext;
 
 	public DistinctIterator(Iterator<T> iterator) {
 		this.iterator = iterator;
@@ -32,18 +32,18 @@ public class DistinctIterator<T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (gotNext)
+		if (hasNext)
 			return true;
 
-		while (!gotNext && iterator.hasNext()) {
+		while (!hasNext && iterator.hasNext()) {
 			T next = iterator.next();
 			if (seen.add(next)) {
-				gotNext = true;
+				hasNext = true;
 				this.next = next;
 			}
 		}
 
-		return gotNext;
+		return hasNext;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class DistinctIterator<T> implements Iterator<T> {
 			throw new NoSuchElementException();
 
 		T result = next;
-		gotNext = false;
+		hasNext = false;
 		next = null;
 		return result;
 	}

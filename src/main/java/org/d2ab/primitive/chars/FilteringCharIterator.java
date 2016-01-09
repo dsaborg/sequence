@@ -20,8 +20,8 @@ import java.util.NoSuchElementException;
 public class FilteringCharIterator implements CharIterator {
 	private final CharIterator iterator;
 	private final CharPredicate predicate;
-	char nextValue;
-	private boolean foundNext;
+	char next;
+	private boolean hasNext;
 
 	public FilteringCharIterator(CharIterator iterator, CharPredicate predicate) {
 		this.iterator = iterator;
@@ -34,22 +34,22 @@ public class FilteringCharIterator implements CharIterator {
 			throw new NoSuchElementException();
 		}
 
-		foundNext = false;
-		return nextValue;
+		hasNext = false;
+		return next;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (foundNext) { // already checked
+		if (hasNext) { // already checked
 			return true;
 		}
 
 		do { // find next matching, bail out if EOF
-			foundNext = iterator.hasNext();
-			if (!foundNext)
+			hasNext = iterator.hasNext();
+			if (!hasNext)
 				return false;
-			nextValue = iterator.nextChar();
-		} while (!predicate.test(nextValue));
+			next = iterator.nextChar();
+		} while (!predicate.test(next));
 
 		// found matching value
 		return true;
