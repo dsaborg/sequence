@@ -36,14 +36,14 @@ assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())
 You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
 
 ```
-Sequence<Pair<String, Integer>> sequence = Sequence.from(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4)
-                                                             .build())
+Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
                                                    .map(Pair::from)
                                                    .filter(p -> p.test((s, i) -> i != 2))
                                                    .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
-assertThat(sequence.<String, Integer>toMap(),
-           is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 ```
 
 You can also work directly on `Entry` keys and values using `EntrySequence`.

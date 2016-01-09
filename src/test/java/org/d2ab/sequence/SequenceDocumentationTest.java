@@ -54,13 +54,13 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void toMapFromPairs() {
-		Sequence<Pair<String, Integer>> sequence = Sequence.from(
-				Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build()).map(Pair::from)
+		Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+		Sequence<Pair<String, Integer>> sequence = Sequence.from(map).map(Pair::from)
 		                                                   .filter(p -> p.test((s, i) -> i != 2))
 		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
-		assertThat(sequence.<String, Integer>toMap(),
-		           is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+		assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 	}
 
 	@Test
@@ -152,9 +152,8 @@ public class SequenceDocumentationTest {
 	public void entrySequence() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		EntrySequence<String, Integer> sequence = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
+		EntrySequence<String, Integer> odds = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
 
-		Map<String, Integer> oddValuesOnly = sequence.toMap();
-		assertThat(oddValuesOnly, is(equalTo(Maps.builder("1", 1).put("3", 3).build())));
+		assertThat(odds.toMap(), is(equalTo(Maps.builder("1", 1).put("3", 3).build())));
 	}
 }
