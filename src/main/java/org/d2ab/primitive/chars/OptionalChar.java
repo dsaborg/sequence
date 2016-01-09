@@ -15,6 +15,7 @@
  */
 package org.d2ab.primitive.chars;
 
+import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
@@ -33,6 +34,8 @@ import java.util.function.Supplier;
  * @since 1.8
  */
 public final class OptionalChar {
+	private static final int CACHE_THRESHOLD = 0x100;
+	private static final OptionalChar[] CACHE = buildCache(CACHE_THRESHOLD);
 	/**
 	 * Common instance for {@code empty()}.
 	 */
@@ -40,7 +43,7 @@ public final class OptionalChar {
 	/**
 	 * If true then the value is present, otherwise indicates no value is present
 	 */
-	private final boolean isPresent;
+	private final boolean present;
 	private final char value;
 
 	/**
@@ -49,7 +52,7 @@ public final class OptionalChar {
 	 * @implNote Generally only one empty instance, {@link OptionalChar#EMPTY}, should exist per VM.
 	 */
 	private OptionalChar() {
-		this.isPresent = false;
+		this.present = false;
 		this.value = 0;
 	}
 
@@ -59,8 +62,17 @@ public final class OptionalChar {
 	 * @param value the char value to be present
 	 */
 	private OptionalChar(char value) {
-		this.isPresent = true;
+		this.present = true;
 		this.value = value;
+	}
+
+	@Nonnull
+	private static OptionalChar[] buildCache(int threshold) {
+		OptionalChar[] cache = new OptionalChar[threshold];
+		for (int i = 0; i < threshold; i++) {
+			cache[i] = new OptionalChar((char) i);
+		}
+		return cache;
 	}
 
 	/**
@@ -84,7 +96,7 @@ public final class OptionalChar {
 	 * @return an {@code OptionalChar} with the value present
 	 */
 	public static OptionalChar of(char value) {
-		return new OptionalChar(value);
+		return value < CACHE_THRESHOLD ? CACHE[(int) value] : new OptionalChar(value);
 	}
 
 	/**
@@ -97,9 +109,8 @@ public final class OptionalChar {
 	 * @see OptionalChar#isPresent()
 	 */
 	public char getAsChar() {
-		if (!isPresent) {
+		if (!present)
 			throw new NoSuchElementException("No value present");
-		}
 		return value;
 	}
 
@@ -109,7 +120,7 @@ public final class OptionalChar {
 	 * @return {@code true} if there is a value present, otherwise {@code false}
 	 */
 	public boolean isPresent() {
-		return isPresent;
+		return present;
 	}
 
 	/**
@@ -120,7 +131,7 @@ public final class OptionalChar {
 	 * @throws NullPointerException if value is present and {@code consumer} is null
 	 */
 	public void ifPresent(CharConsumer consumer) {
-		if (isPresent)
+		if (present)
 			consumer.accept(value);
 	}
 
@@ -132,7 +143,7 @@ public final class OptionalChar {
 	 * @return the value, if present, otherwise {@code other}
 	 */
 	public char orElse(char other) {
-		return isPresent ? value : other;
+		return present ? value : other;
 	}
 
 	/**
@@ -145,7 +156,7 @@ public final class OptionalChar {
 	 * @throws NullPointerException if value is not present and {@code other} is null
 	 */
 	public char orElseGet(CharSupplier other) {
-		return isPresent ? value : other.getAsChar();
+		return present ? value : other.getAsChar();
 	}
 
 	/**
@@ -163,11 +174,10 @@ public final class OptionalChar {
 	 * For example, {@code IllegalStateException::new}
 	 */
 	public <X extends Throwable> char orElseThrow(Supplier<X> exceptionSupplier) throws X {
-		if (isPresent) {
+		if (present)
 			return value;
-		} else {
+		else
 			throw exceptionSupplier.get();
-		}
 	}
 
 	/**
@@ -177,7 +187,7 @@ public final class OptionalChar {
 	 */
 	@Override
 	public int hashCode() {
-		return isPresent ? Character.hashCode(value) : 0;
+		return present ? Character.hashCode(value) : 0;
 	}
 
 	/**
@@ -191,16 +201,14 @@ public final class OptionalChar {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
 
-		if (!(obj instanceof OptionalChar)) {
+		if (!(obj instanceof OptionalChar))
 			return false;
-		}
 
 		OptionalChar other = (OptionalChar) obj;
-		return (isPresent && other.isPresent) ? value == other.value : isPresent == other.isPresent;
+		return (present && other.present) ? value == other.value : present == other.present;
 	}
 
 	/**
@@ -217,6 +225,6 @@ public final class OptionalChar {
 	 */
 	@Override
 	public String toString() {
-		return isPresent ? String.format("OptionalChar[%s]", value) : "OptionalChar.empty";
+		return present ? String.format("OptionalChar[%s]", value) : "OptionalChar.empty";
 	}
 }
