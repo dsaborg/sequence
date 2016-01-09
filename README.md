@@ -51,9 +51,11 @@ You can also work directly on `Entry` keys and values using `EntrySequence`.
 ```
 Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-EntrySequence<String, Integer> odds = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
+EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
+                                                           .filter((k, v) -> v % 2 != 0)
+                                                           .map((k, v) -> Pair.of(v, k));
 
-assertThat(odds.toMap(), is(equalTo(Maps.builder("1", 1).put("3", 3).build())));
+assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead

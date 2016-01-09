@@ -152,8 +152,10 @@ public class SequenceDocumentationTest {
 	public void entrySequence() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		EntrySequence<String, Integer> odds = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
+		EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
+		                                                           .filter((k, v) -> v % 2 != 0)
+		                                                           .map((k, v) -> Pair.of(v, k));
 
-		assertThat(odds.toMap(), is(equalTo(Maps.builder("1", 1).put("3", 3).build())));
+		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}
 }
