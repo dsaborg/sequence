@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
+
+package org.d2ab.primitive.ints;
+
+import java.util.function.IntUnaryOperator;
 
 /**
- * An iterator over chars that also maps each element by looking at the current AND the previous element.
+ * Created by danie_000 on 2016-01-03.
  */
-public class BackPeekingMappingCharIterator implements CharIterator {
-	private final CharIterator iterator;
-	private final IntCharToCharBinaryFunction mapper;
-	private int previous = -1;
+public class MappingIntIterator implements IntIterator {
+	private final IntIterator iterator;
+	private final IntUnaryOperator mapper;
 
-	public BackPeekingMappingCharIterator(CharIterator iterator, IntCharToCharBinaryFunction mapper) {
+	public MappingIntIterator(IntIterator iterator, IntUnaryOperator mapper) {
 		this.iterator = iterator;
 		this.mapper = mapper;
 	}
@@ -34,12 +36,7 @@ public class BackPeekingMappingCharIterator implements CharIterator {
 	}
 
 	@Override
-	public char nextChar() {
-		char next = iterator.nextChar();
-
-		char result = mapper.applyAsIntAndChar(previous, next);
-
-		previous = next;
-		return result;
+	public int nextInt() {
+		return mapper.applyAsInt(iterator.nextInt());
 	}
 }

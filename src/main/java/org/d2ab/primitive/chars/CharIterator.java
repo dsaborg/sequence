@@ -22,9 +22,7 @@ import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 
 /**
- * An Iterator specialized for {@code int} values.
- *
- * @since 1.8
+ * An Iterator specialized for {@code char} values. Adapted from {@link PrimitiveIterator}.
  */
 public interface CharIterator extends PrimitiveIterator<Character, CharConsumer> {
 	static CharIterator of(char... cs) {
@@ -129,12 +127,8 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default void forEachRemaining(Consumer<? super Character> action) {
-		if (action instanceof CharConsumer) {
-			forEachRemaining((CharConsumer) action);
-		} else {
-			// The method reference action::accept is never null
-			Objects.requireNonNull(action);
-			forEachRemaining((CharConsumer) action::accept);
-		}
+		Objects.requireNonNull(action);
+
+		forEachRemaining((action instanceof CharConsumer) ? (CharConsumer) action : action::accept);
 	}
 }

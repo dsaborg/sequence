@@ -12,6 +12,11 @@ In particular it allows easier collecting into common `Collections` without havi
 better handling of `Maps` which allows transformation and filtering of `Map` `Entries` as first-class citizens,
 and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterators`.
 
+`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
+of a pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers wanting
+to perform common data processing tasks on moderately small collections. If you need parallel iteration use `Streams`.
+`Sequences` go to great lengths to be as lazy and late-evaluating as possible, with minimal overhead.
+
 ```
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
                              .filter(x -> x % 2 == 0)
@@ -20,6 +25,8 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
+
+### Maps
 
 `Maps` are handled as `Sequences` of `Entry` or `Pair`, with special transformation methods that convert 
 to/from `Maps`. `Pair` implements `Entry` and provides extra transformation methods.
@@ -59,34 +66,50 @@ EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
 assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
 
-`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
-of a pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers wanting
-to perform common data processing tasks on moderately small collections. If you need parallel iteration or Very
-Large collection processing (> 2G entries) use `Streams`. If your data doesn't fit in an array you probably need
-`Streams` instead. Having said that, `Sequences` go to great lengths to be as lazy and late-evaluating as possible,
-with minimal overhead.
+### Iterable
 
-Because `Sequences` are `Iterables` you can for example use them in foreach loops, and re-use them safely after you
-have already traversed them (as long as they're backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`,
-of course).
+Because `Sequences` are `Iterables` you can re-use them safely after you have already traversed them, as long as they're
+backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`, of course.
 
 ```
 Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
 
 // using sequence of ints 1..10 first time to get odd numbers between 1 and 10
 Sequence<Integer> odds = singulars.step(2);
-
-int x = 0, expectedOdds[] = {1, 3, 5, 7, 9};
-for (int odd : odds)
-    assertThat(odd, is(expectedOdds[x++]));
+assertThat(odds, contains(1, 3, 5, 7, 9));
 
 // re-using the same sequence again to get squares of numbers between 4 and 9
 Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
-
-int y = 0, expectedSquares[] = {16, 25, 36, 49, 64};
-for (int square : squares)
-    assertThat(square, is(expectedSquares[y++]));
+assertThat(squares, contains(16, 25, 36, 49, 64));
 ```
+
+Also because `Sequences` are `Iterables` they work beautifully in foreach loops:
+
+```
+Sequence<Integer> sequence = Sequence.ints().limit(3);
+
+int x = 1;
+for (int i : sequence)
+    assertThat(i, is(x++));
+```
+
+Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` method of `Iterable` to be implemented,
+it's very easy to create your own full-fledged `Sequence` instances that can be operated on like any other `Sequence`
+through the default methods on the interface that carry the bulk of the burden.
+
+```
+List list = Arrays.asList(1, 2, 3, 4, 5);
+
+// Sequence as @FunctionalInterface of list's Iterator
+Sequence<Integer> sequence = list::iterator;
+
+// Operate on sequence as any other sequence using default methods
+Sequence<String> transformed = sequence.map(Object::toString).limit(3);
+
+assertThat(transformed, contains("1", "2", "3"));
+```
+
+### Streams
 
 `Sequences` interoperate beautifully with `Streams`, through the expected `from(Stream)` and `.stream()` methods.
 
@@ -96,6 +119,8 @@ Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
 
 assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```
+
+### Recursion
 
 There is full support for infinite recursive `Sequences`, including termination at a known value.
 
@@ -118,6 +143,8 @@ assertThat(sequence,
                     instanceOf(NullPointerException.class)));
 ```
 
+### Reduction
+
 Also the standard reduction operations are available as per `Stream`:
 
 ```
@@ -127,39 +154,35 @@ Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 assertThat(factorial, is(6227020800L));
 ```
 
-Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` method of `Iterable` to be implemented,
-it's very easy to create your own full-fledged `Sequence` instances that can be operated on like any other `Sequence`
-through the default methods on the interface that carry the bulk of the burden.
-
-```
-List list = Arrays.asList(1, 2, 3, 4, 5);
-
-// Sequence as @FunctionalInterface of list's Iterator
-Sequence<Integer> sequence = list::iterator;
-
-// Operate on sequence as any other sequence using default methods
-Sequence<String> transformed = sequence.map(Object::toString).limit(3);
-
-assertThat(transformed, contains("1", "2", "3"));
-```
+### Primitive
 
 There is also a primitive version of `Sequence` for `char` processing, `Chars`:
 
 ```
-Chars chars = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
-assertThat(chars.asString(), is("hello_lexicon"));
+assertThat(snakeCase.asString(), is("hello_lexicon"));
+```
+
+... and a primitive version of `Sequence`for `int` processing, `Ints`:
+
+```
+Ints squares = Ints.all().map(i -> i * i);
+
+assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 ```
 
 The `Chars` `Sequences` also have methods that peek on the previous and next elements when performing a mapping:
 
 ```
-Chars chars = Chars.from("hello_lexicon")
-                   .mapBack((p, c) -> ((p == -1) || (p == '_')) ? toUpperCase(c) : c)
-                   .map(c -> (c == '_') ? ' ' : c);
+Chars titleCase = Chars.from("hello_lexicon")
+                       .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
+                       .map(c -> (c == '_') ? ' ' : c);
 
-assertThat(chars.asString(), is("Hello Lexicon"));
+assertThat(titleCase.asString(), is("Hello Lexicon"));
 ```
+
+### Conclusion
 
 Give it a try and experience a leaner way to `Stream` your `Sequences`!
 

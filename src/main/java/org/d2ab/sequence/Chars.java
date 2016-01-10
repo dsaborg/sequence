@@ -115,7 +115,15 @@ public interface Chars extends CharIterable {
 	 * {@link Character#MAX_VALUE}.
 	 */
 	static Chars all() {
-		return range((char) 0, Character.MAX_VALUE);
+		return startingAt((char) 0);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
+	 * Character#MAX_VALUE}.
+	 */
+	static Chars startingAt(char start) {
+		return range(start, Character.MAX_VALUE);
 	}
 
 	/**
@@ -132,14 +140,6 @@ public interface Chars extends CharIterable {
 
 	static Chars recurse(char seed, CharUnaryOperator op) {
 		return () -> new RecursiveCharIterator(seed, op);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
-	 * Character#MAX_VALUE}.
-	 */
-	static Chars startingAt(char start) {
-		return range(start, Character.MAX_VALUE);
 	}
 
 	@Nonnull

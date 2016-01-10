@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
 
-import org.d2ab.collection.ThresholdBitSet;
+package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
-public class DistinctCharIterator implements CharIterator {
-	private static final int THRESHOLD = 256;
-
-	private final CharIterator iterator;
-	private final ThresholdBitSet seen = new ThresholdBitSet(THRESHOLD);
-
-	private char next;
+public class ExclusiveTerminalIntIterator implements IntIterator {
+	private final IntIterator iterator;
+	private final int terminal;
+	private int next;
 	private boolean hasNext;
 
-	public DistinctCharIterator(CharIterator iterator) {
+	public ExclusiveTerminalIntIterator(IntIterator iterator, int terminal) {
 		this.iterator = iterator;
+		this.terminal = terminal;
 	}
 
 	@Override
-	public char nextChar() {
+	public int nextInt() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
@@ -43,16 +41,10 @@ public class DistinctCharIterator implements CharIterator {
 
 	@Override
 	public boolean hasNext() {
-		if (hasNext)
-			return true;
-
-		while (!hasNext && iterator.hasNext()) {
-			char next = iterator.nextChar();
-			hasNext = seen.add(next);
-			if (hasNext)
-				this.next = next;
+		if (!hasNext && iterator.hasNext()) {
+			next = iterator.next();
+			hasNext = true;
 		}
-
-		return hasNext;
+		return hasNext && !Objects.equals(next, terminal);
 	}
 }

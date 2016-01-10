@@ -68,17 +68,20 @@ public class SequenceDocumentationTest {
 
 		// using sequence of ints 1..10 first time to get odd numbers between 1 and 10
 		Sequence<Integer> odds = singulars.step(2);
-
-		int x = 0, expectedOdds[] = {1, 3, 5, 7, 9};
-		for (int odd : odds)
-			assertThat(odd, is(expectedOdds[x++]));
+		assertThat(odds, contains(1, 3, 5, 7, 9));
 
 		// re-using the same sequence again to get squares of numbers between 4 and 9
 		Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
+		assertThat(squares, contains(16, 25, 36, 49, 64));
+	}
 
-		int y = 0, expectedSquares[] = {16, 25, 36, 49, 64};
-		for (int square : squares)
-			assertThat(square, is(expectedSquares[y++]));
+	@Test
+	public void sequenceInForeach() {
+		Sequence<Integer> sequence = Sequence.ints().limit(3);
+
+		int x = 1;
+		for (int i : sequence)
+			assertThat(i, is(x++));
 	}
 
 	@SuppressWarnings("SpellCheckingInspection")
@@ -134,17 +137,18 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void snakeCase() {
-		Chars chars = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+		Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
-		assertThat(chars.asString(), is("hello_lexicon"));
+		assertThat(snakeCase.asString(), is("hello_lexicon"));
 	}
 
 	@Test
 	public void capitalize() {
-		Chars chars = Chars.from("hello_lexicon").mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
-		                   .map(c -> (c == '_') ? ' ' : c);
+		Chars titleCase = Chars.from("hello_lexicon")
+		                       .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
+		                       .map(c -> (c == '_') ? ' ' : c);
 
-		assertThat(chars.asString(), is("Hello Lexicon"));
+		assertThat(titleCase.asString(), is("Hello Lexicon"));
 	}
 
 	@Test
@@ -157,4 +161,12 @@ public class SequenceDocumentationTest {
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}
+
+	@Test
+	public void intsSequence() {
+		Ints squares = Ints.all().map(i -> i * i);
+
+		assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
+	}
+
 }

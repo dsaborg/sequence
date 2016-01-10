@@ -13,33 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
+
+package org.d2ab.primitive.ints;
+
+import javax.annotation.Nonnull;
+import java.util.Iterator;
 
 /**
- * An iterator over chars that also maps each element by looking at the current AND the previous element.
+ * An {@link Iterator} over an array of items.
  */
-public class BackPeekingMappingCharIterator implements CharIterator {
-	private final CharIterator iterator;
-	private final IntCharToCharBinaryFunction mapper;
-	private int previous = -1;
+public class ArrayIntIterator implements IntIterator {
+	@Nonnull
+	private int[] values;
+	private int index;
 
-	public BackPeekingMappingCharIterator(CharIterator iterator, IntCharToCharBinaryFunction mapper) {
-		this.iterator = iterator;
-		this.mapper = mapper;
+	public ArrayIntIterator(@Nonnull int... values) {
+		this.values = values;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext();
+		return index < values.length;
 	}
 
 	@Override
-	public char nextChar() {
-		char next = iterator.nextChar();
-
-		char result = mapper.applyAsIntAndChar(previous, next);
-
-		previous = next;
-		return result;
+	public int nextInt() {
+		return values[index++];
 	}
 }

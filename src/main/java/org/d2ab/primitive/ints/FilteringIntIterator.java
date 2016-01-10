@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
 
-import org.d2ab.collection.ThresholdBitSet;
+package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
+import java.util.function.IntPredicate;
 
-public class DistinctCharIterator implements CharIterator {
-	private static final int THRESHOLD = 256;
-
-	private final CharIterator iterator;
-	private final ThresholdBitSet seen = new ThresholdBitSet(THRESHOLD);
-
-	private char next;
+public class FilteringIntIterator implements IntIterator {
+	private final IntIterator iterator;
+	private final IntPredicate predicate;
+	int next;
 	private boolean hasNext;
 
-	public DistinctCharIterator(CharIterator iterator) {
+	public FilteringIntIterator(IntIterator iterator, IntPredicate predicate) {
 		this.iterator = iterator;
+		this.predicate = predicate;
 	}
 
 	@Override
-	public char nextChar() {
-		if (!hasNext())
+	public int nextInt() {
+		if (!hasNext()) {
 			throw new NoSuchElementException();
+		}
 
 		hasNext = false;
 		return next;
@@ -43,16 +42,18 @@ public class DistinctCharIterator implements CharIterator {
 
 	@Override
 	public boolean hasNext() {
-		if (hasNext)
+		if (hasNext) { // already checked
 			return true;
-
-		while (!hasNext && iterator.hasNext()) {
-			char next = iterator.nextChar();
-			hasNext = seen.add(next);
-			if (hasNext)
-				this.next = next;
 		}
 
-		return hasNext;
+		do { // find next matching, bail out if EOF
+			hasNext = iterator.hasNext();
+			if (!hasNext)
+				return false;
+			next = iterator.nextInt();
+		} while (!predicate.test(next));
+
+		// found matching value
+		return true;
 	}
 }

@@ -13,44 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
+
+package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
 
-/**
- * An iterator over chars that also maps each element by looking at the current AND the next element.
- */
-public class ForwardPeekingMappingCharIterator implements CharIterator {
-	private final CharIterator iterator;
-	private final CharIntToCharBinaryFunction mapper;
-	private int current = -1;
-	private boolean started;
+public class SteppingIntIterator implements IntIterator {
+	private final IntIterator iterator;
+	private final long step;
+	private boolean hasNext;
+	private int next;
 
-	public ForwardPeekingMappingCharIterator(CharIterator iterator, CharIntToCharBinaryFunction mapper) {
+	public SteppingIntIterator(IntIterator iterator, long step) {
 		this.iterator = iterator;
-		this.mapper = mapper;
+		this.step = step;
 	}
 
 	@Override
-	public char nextChar() {
+	public int nextInt() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int next = iterator.hasNext() ? iterator.nextChar() : -1;
-
-		char result = mapper.applyAsCharAndInt((char) current, next);
-
-		current = next;
-		return result;
+		hasNext = false;
+		return next;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (!started) {
-			if (iterator.hasNext())
-				current = iterator.next();
-			started = true;
-		}
-		return current != -1;
+		if (hasNext)
+			return true;
+
+		if (!iterator.hasNext())
+			return false;
+
+		next = iterator.nextInt();
+
+		// skip steps
+		long i = step;
+		while (--i > 0 && iterator.hasNext())
+			iterator.nextInt();
+		hasNext = true;
+
+		return true;
 	}
 }
