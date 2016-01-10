@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
+import static java.lang.Math.sqrt;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -176,4 +177,10 @@ public class SequenceDocumentationTest {
 		assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
 	}
 
+	@Test
+	public void doublesSequence() {
+		Doubles squareRoots = Doubles.positive().limit(3).map(Math::sqrt);
+
+		assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
+	}
 }

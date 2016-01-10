@@ -156,7 +156,7 @@ assertThat(factorial, is(6227020800L));
 
 ### Primitive
 
-There are also primitive versions of `Sequence` for `char`, `int` and `long` processing, `Chars`, `Ints` and `Longs`:
+There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `Chars`, `Ints`, `Longs` and `Doubles`:
 
 ```
 Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
@@ -174,6 +174,12 @@ assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 Longs negativeOdds = Longs.negative().step(2);
 
 assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
+```
+
+```
+Doubles squareRoots = Doubles.positive().limit(3).map(Math::sqrt);
+
+assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
 
 The primitive `Sequences` also have mapping methods that peek on the previous and next elements:

@@ -25,8 +25,8 @@ import java.util.function.Consumer;
  * An Iterator specialized for {@code char} values. Adapted from {@link PrimitiveIterator}.
  */
 public interface CharIterator extends PrimitiveIterator<Character, CharConsumer> {
-	static CharIterator of(char... cs) {
-		return new ArrayCharIterator(cs);
+	static CharIterator of(char... chars) {
+		return new ArrayCharIterator(chars);
 	}
 
 	static CharIterator from(Iterable<Character> iterable) {

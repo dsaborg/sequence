@@ -63,4 +63,10 @@ public class MoreArrays {
 		array[i] = array[j];
 		array[j] = temp;
 	}
+
+	public static void swap(double[] array, int i, int j) {
+		double temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
 }

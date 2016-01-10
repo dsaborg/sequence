@@ -127,7 +127,7 @@ public interface Ints extends IntIterable {
 	 * A {@code Sequence} of all the {@link Integer} values between the given start and end positions, inclusive.
 	 */
 	static Ints range(int start, int end) {
-		IntUnaryOperator next = (end > start) ? c -> (int) (c + 1) : c -> (int) (c - 1);
+		IntUnaryOperator next = (end > start) ? x -> x + 1 : x -> x - 1;
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -202,7 +202,7 @@ public interface Ints extends IntIterable {
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {
 		C result = constructor.get();
-		forEachInt(c -> adder.accept(result, c));
+		forEachInt(x -> adder.accept(result, x));
 		return result;
 	}
 

@@ -23,8 +23,8 @@ import java.util.PrimitiveIterator;
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
  */
 public interface IntIterator extends PrimitiveIterator.OfInt {
-	static IntIterator of(int... cs) {
-		return new ArrayIntIterator(cs);
+	static IntIterator of(int... ints) {
+		return new ArrayIntIterator(ints);
 	}
 
 	static IntIterator from(Iterable<Integer> iterable) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.longs;
+package org.d2ab.primitive.doubles;
 
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
@@ -22,24 +22,24 @@ import java.util.PrimitiveIterator;
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
  */
-public interface LongIterator extends PrimitiveIterator.OfLong {
-	static LongIterator of(long... longs) {
-		return new ArrayLongIterator(longs);
+public interface DoubleIterator extends PrimitiveIterator.OfDouble {
+	static DoubleIterator of(double... doubles) {
+		return new ArrayDoubleIterator(doubles);
 	}
 
-	static LongIterator from(Iterable<Long> iterable) {
+	static DoubleIterator from(Iterable<Double> iterable) {
 		return from(iterable.iterator());
 	}
 
-	static LongIterator from(Iterator<Long> iterator) {
-		return new LongIterator() {
+	static DoubleIterator from(Iterator<Double> iterator) {
+		return new DoubleIterator() {
 			@Override
 			public boolean hasNext() {
 				return iterator.hasNext();
 			}
 
 			@Override
-			public long nextLong() {
+			public double nextDouble() {
 				return iterator.next();
 			}
 		};
@@ -49,14 +49,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		skip(1);
 	}
 
-	default void skip(long steps) {
-		long count = 0;
+	default void skip(double steps) {
+		double count = 0;
 		while ((count++ < steps) && hasNext()) {
-			nextLong();
+			nextDouble();
 		}
 	}
 
-	default LongIterable asIterable() {
+	default DoubleIterable asIterable() {
 		return () -> this;
 	}
 }

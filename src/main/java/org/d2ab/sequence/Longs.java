@@ -127,7 +127,7 @@ public interface Longs extends LongIterable {
 	 * A {@code Sequence} of all the {@link Long} values between the given start and end positions, inclusive.
 	 */
 	static Longs range(long start, long end) {
-		LongUnaryOperator next = (end > start) ? c -> (long) (c + 1) : c -> (long) (c - 1);
+		LongUnaryOperator next = (end > start) ? x -> x + 1 : x -> x - 1;
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -202,7 +202,7 @@ public interface Longs extends LongIterable {
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
 		C result = constructor.get();
-		forEachLong(c -> adder.accept(result, c));
+		forEachLong(x -> adder.accept(result, x));
 		return result;
 	}
 

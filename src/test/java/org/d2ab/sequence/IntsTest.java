@@ -532,7 +532,7 @@ public class IntsTest {
 	@Test
 	public void intsStartingAt() {
 		assertThat(Ints.startingAt(1).limit(3), contains(1, 2, 3));
-		assertThat(Ints.startingAt('\u1400').limit(3).last(), is(OptionalInt.of('\u1402')));
+		assertThat(Ints.startingAt(0x1400).limit(3).last(), is(OptionalInt.of(0x1402)));
 		assertThat(Ints.startingAt(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
 		assertThat(Ints.startingAt(Integer.MAX_VALUE - 32767).count(), is(32768L));
 	}
