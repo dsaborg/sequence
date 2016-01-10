@@ -421,4 +421,31 @@ public interface Longs extends LongIterable {
 			}
 		};
 	}
+
+	default Chars toChars(LongToCharFunction mapper) {
+		return () -> new BaseCharIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.nextLong());
+			}
+		};
+	}
+
+	default Ints toInts(LongToIntFunction mapper) {
+		return () -> new BaseIntIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.nextLong());
+			}
+		};
+	}
+
+	default Doubles toDoubles(LongToDoubleFunction mapper) {
+		return () -> new BaseDoubleIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.nextLong());
+			}
+		};
+	}
 }

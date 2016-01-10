@@ -562,4 +562,24 @@ public class IntsTest {
 		Doubles doubles = Ints.positive().limit(5).toDoubles();
 		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
+
+	@Test
+	public void toCharsMapped() {
+		Chars chars = Ints.positive().limit(5).toChars(i -> (char) (0x60 + i));
+		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void toLongsMapped() {
+		long maxInt = Integer.MAX_VALUE;
+
+		Longs longs = Ints.positive().limit(5).toLongs(i -> i * maxInt);
+		twice(() -> assertThat(longs, contains(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
+	}
+
+	@Test
+	public void toDoublesMapped() {
+		Doubles doubles = Ints.positive().limit(5).toDoubles(i -> i / 2.0);
+		twice(() -> assertThat(doubles, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
+	}
 }

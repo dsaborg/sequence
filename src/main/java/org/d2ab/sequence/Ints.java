@@ -421,4 +421,31 @@ public interface Ints extends IntIterable {
 			}
 		};
 	}
+
+	default Chars toChars(IntToCharFunction mapper) {
+		return () -> new BaseCharIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.nextInt());
+			}
+		};
+	}
+
+	default Longs toLongs(IntToLongFunction mapper) {
+		return () -> new BaseLongIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public long nextLong() {
+				return mapper.applyAsLong(iterator.nextInt());
+			}
+		};
+	}
+
+	default Doubles toDoubles(IntToDoubleFunction mapper) {
+		return () -> new BaseDoubleIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.nextInt());
+			}
+		};
+	}
 }

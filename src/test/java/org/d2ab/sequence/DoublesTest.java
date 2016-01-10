@@ -529,6 +529,9 @@ public class DoublesTest {
 
 	@Test
 	public void toInts() {
+		Ints empty = Doubles.empty().toInts();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
 		Ints _0 = Doubles.startingAt(0).limit(5).toInts();
 		twice(() -> assertThat(_0, contains(0, 1, 2, 3, 4)));
 
@@ -544,6 +547,9 @@ public class DoublesTest {
 
 	@Test
 	public void toLongs() {
+		Longs empty = Doubles.empty().toLongs();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
 		Longs _0 = Doubles.startingAt(0).limit(5).toLongs();
 		twice(() -> assertThat(_0, contains(0L, 1L, 2L, 3L, 4L)));
 
@@ -558,7 +564,10 @@ public class DoublesTest {
 	}
 
 	@Test
-	public void toIntsRounded() {
+	public void toRoundedInts() {
+		Ints empty = Doubles.empty().toRoundedInts();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
 		Ints _1 = Doubles.startingAt(1).limit(5).toRoundedInts();
 		twice(() -> assertThat(_1, contains(1, 2, 3, 4, 5)));
 
@@ -576,7 +585,10 @@ public class DoublesTest {
 	}
 
 	@Test
-	public void toLongsRounded() {
+	public void toRoundedLongs() {
+		Longs empty = Doubles.empty().toRoundedLongs();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
 		Longs _1 = Doubles.startingAt(1).limit(5).toRoundedLongs();
 		twice(() -> assertThat(_1, contains(1L, 2L, 3L, 4L, 5L)));
 
@@ -591,5 +603,23 @@ public class DoublesTest {
 
 		Longs _0 = Doubles.startingAt(0).limit(5).toRoundedLongs();
 		twice(() -> assertThat(_0, contains(0L, 1L, 2L, 3L, 4L)));
+	}
+
+	@Test
+	public void toIntsMapped() {
+		Ints empty = Doubles.empty().toInts(d -> (int) (d * 2));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Ints doubledHalves = Doubles.range(0.5, 1.5, 0.5).toInts(d -> (int) (d * 2));
+		twice(() -> assertThat(doubledHalves, contains(1, 2, 3)));
+	}
+
+	@Test
+	public void toLongsMapped() {
+		Longs empty = Doubles.empty().toLongs(d -> (long) (d * 2));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Longs doubledHalves = Doubles.range(0.5, 1.5, 0.5).toLongs(d -> (long) (d * 2));
+		twice(() -> assertThat(doubledHalves, contains(1L, 2L, 3L)));
 	}
 }

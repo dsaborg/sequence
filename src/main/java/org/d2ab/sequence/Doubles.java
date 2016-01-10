@@ -131,7 +131,14 @@ public interface Doubles extends DoubleIterable {
 	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive.
 	 */
 	static Doubles range(double start, double end) {
-		DoubleUnaryOperator next = (end > start) ? c -> (double) (c + 1) : c -> (double) (c - 1);
+		return range(start, end, 1);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive.
+	 */
+	static Doubles range(double start, double end, double step) {
+		DoubleUnaryOperator next = (end > start) ? c -> (double) (c + step) : c -> (double) (c - step);
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -425,6 +432,10 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	default Ints toRoundedInts() {
+		return toInts(d -> (int) round(d));
+	}
+
+	default Ints toInts(DoubleToIntFunction mapper) {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -435,12 +446,16 @@ public interface Doubles extends DoubleIterable {
 
 			@Override
 			public int nextInt() {
-				return (int) round(iterator.nextDouble());
+				return mapper.applyAsInt(iterator.nextDouble());
 			}
 		};
 	}
 
 	default Longs toRoundedLongs() {
+		return toLongs(Math::round);
+	}
+
+	default Longs toLongs(DoubleToLongFunction mapper) {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -451,7 +466,7 @@ public interface Doubles extends DoubleIterable {
 
 			@Override
 			public long nextLong() {
-				return round(iterator.nextDouble());
+				return mapper.applyAsLong(iterator.nextDouble());
 			}
 		};
 	}
