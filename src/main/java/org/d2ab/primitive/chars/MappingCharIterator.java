@@ -15,9 +15,6 @@
  */
 package org.d2ab.primitive.chars;
 
-/**
- * Created by danie_000 on 2016-01-03.
- */
 public class MappingCharIterator implements CharIterator {
 	private final CharIterator iterator;
 	private final CharUnaryOperator mapper;

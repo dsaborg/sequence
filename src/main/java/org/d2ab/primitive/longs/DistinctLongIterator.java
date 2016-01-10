@@ -14,31 +14,46 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.ints;
+package org.d2ab.primitive.longs;
+
+import org.d2ab.collection.ThresholdBitSet;
 
 import java.util.NoSuchElementException;
 
-public class LimitingIntIterator implements IntIterator {
-	private final IntIterator iterator;
-	private final long limit;
-	long count;
+public class DistinctLongIterator implements LongIterator {
+	private static final int THRESHOLD = 256;
 
-	public LimitingIntIterator(IntIterator iterator, long limit) {
+	private final LongIterator iterator;
+	private final ThresholdBitSet seen = new ThresholdBitSet(THRESHOLD);
+
+	private long next;
+	private boolean hasNext;
+
+	public DistinctLongIterator(LongIterator iterator) {
 		this.iterator = iterator;
-		this.limit = limit;
 	}
 
 	@Override
-	public int nextInt() {
+	public long nextLong() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-		int next = iterator.nextInt();
-		count++;
+
+		hasNext = false;
 		return next;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
+		if (hasNext)
+			return true;
+
+		while (!hasNext && iterator.hasNext()) {
+			long next = iterator.nextLong();
+			hasNext = seen.add(next);
+			if (hasNext)
+				this.next = next;
+		}
+
+		return hasNext;
 	}
 }

@@ -45,4 +45,22 @@ public class MoreArrays {
 	public static <T> Iterable<T> iterable(T... items) {
 		return () -> new ArrayIterator<>(items);
 	}
+
+	public static void swap(long[] array, int i, int j) {
+		long temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	public static void swap(int[] array, int i, int j) {
+		int temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	public static void swap(char[] array, int i, int j) {
+		char temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
 }

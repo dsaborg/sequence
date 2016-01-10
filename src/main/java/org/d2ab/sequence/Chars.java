@@ -16,6 +16,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
+import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -375,15 +376,9 @@ public interface Chars extends CharIterable {
 	default Chars reverse() {
 		char[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
-			swap(array, i, array.length - 1 - i);
+			MoreArrays.swap(array, i, array.length - 1 - i);
 		}
 		return CharIterable.of(array)::iterator;
-	}
-
-	default void swap(char[] array, int i, int j) {
-		char tempChar = array[i];
-		array[i] = array[j];
-		array[j] = tempChar;
 	}
 
 	default String asString() {

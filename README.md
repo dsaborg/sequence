@@ -156,7 +156,7 @@ assertThat(factorial, is(6227020800L));
 
 ### Primitive
 
-There is also a primitive version of `Sequence` for `char` processing, `Chars`:
+There are also primitive versions of `Sequence` for `char`, `int` and `long` processing, `Chars`, `Ints` and `Longs`:
 
 ```
 Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
@@ -164,15 +164,19 @@ Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map
 assertThat(snakeCase.asString(), is("hello_lexicon"));
 ```
 
-... and a primitive version of `Sequence`for `int` processing, `Ints`:
-
 ```
 Ints squares = Ints.all().map(i -> i * i);
 
 assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 ```
 
-The `Chars` `Sequences` also have methods that peek on the previous and next elements when performing a mapping:
+```
+Longs odds = Longs.all().step(2);
+
+assertThat(odds.skip(3).limit(5), contains(7L, 9L, 11L, 13L, 15L));
+```
+
+The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
 
 ```
 Chars titleCase = Chars.from("hello_lexicon")

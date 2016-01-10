@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.ints;
+package org.d2ab.primitive.longs;
 
-import java.util.NoSuchElementException;
+import java.util.function.LongUnaryOperator;
 
-public class LimitingIntIterator implements IntIterator {
-	private final IntIterator iterator;
-	private final long limit;
-	long count;
+public class MappingLongIterator implements LongIterator {
+	private final LongIterator iterator;
+	private final LongUnaryOperator mapper;
 
-	public LimitingIntIterator(IntIterator iterator, long limit) {
+	public MappingLongIterator(LongIterator iterator, LongUnaryOperator mapper) {
 		this.iterator = iterator;
-		this.limit = limit;
-	}
-
-	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		int next = iterator.nextInt();
-		count++;
-		return next;
+		this.mapper = mapper;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
+		return iterator.hasNext();
+	}
+
+	@Override
+	public long nextLong() {
+		return mapper.applyAsLong(iterator.nextLong());
 	}
 }

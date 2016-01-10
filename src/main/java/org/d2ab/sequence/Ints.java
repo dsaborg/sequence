@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.ints.*;
+import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -372,15 +373,9 @@ public interface Ints extends IntIterable {
 	default Ints reverse() {
 		int[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
-			swap(array, i, array.length - 1 - i);
+			MoreArrays.swap(array, i, array.length - 1 - i);
 		}
 		return IntIterable.of(array)::iterator;
-	}
-
-	default void swap(int[] array, int i, int j) {
-		int tempInt = array[i];
-		array[i] = array[j];
-		array[j] = tempInt;
 	}
 
 	default Ints mapBack(BackPeekingIntFunction mapper) {

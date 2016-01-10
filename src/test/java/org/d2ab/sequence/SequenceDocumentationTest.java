@@ -169,4 +169,11 @@ public class SequenceDocumentationTest {
 		assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 	}
 
+	@Test
+	public void longsSequence() {
+		Longs odds = Longs.all().step(2);
+
+		assertThat(odds.skip(3).limit(5), contains(7L, 9L, 11L, 13L, 15L));
+	}
+
 }

@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.ints;
+package org.d2ab.primitive.longs;
 
-import java.util.function.IntUnaryOperator;
+/**
+ * An iterator over longs that also maps each element by looking at the current AND the previous element.
+ */
+public class BackPeekingLongIterator implements LongIterator {
+	private final LongIterator iterator;
+	private final BackPeekingLongFunction mapper;
+	boolean hasPrevious;
+	private long previous = -1;
 
-public class MappingIntIterator implements IntIterator {
-	private final IntIterator iterator;
-	private final IntUnaryOperator mapper;
-
-	public MappingIntIterator(IntIterator iterator, IntUnaryOperator mapper) {
+	public BackPeekingLongIterator(LongIterator iterator, BackPeekingLongFunction mapper) {
 		this.iterator = iterator;
 		this.mapper = mapper;
 	}
@@ -33,7 +36,13 @@ public class MappingIntIterator implements IntIterator {
 	}
 
 	@Override
-	public int nextInt() {
-		return mapper.applyAsInt(iterator.nextInt());
+	public long nextLong() {
+		long next = iterator.nextLong();
+
+		long result = mapper.applyAndPeek(hasPrevious, previous, next);
+
+		previous = next;
+		hasPrevious = true;
+		return result;
 	}
 }

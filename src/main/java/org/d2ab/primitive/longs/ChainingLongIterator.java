@@ -14,31 +14,38 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.ints;
+package org.d2ab.primitive.longs;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LimitingIntIterator implements IntIterator {
-	private final IntIterator iterator;
-	private final long limit;
-	long count;
+import static java.util.Arrays.asList;
 
-	public LimitingIntIterator(IntIterator iterator, long limit) {
-		this.iterator = iterator;
-		this.limit = limit;
+public class ChainingLongIterator implements LongIterator {
+	private final Iterator<LongIterable> iterables;
+	private LongIterator iterator;
+
+	public ChainingLongIterator(LongIterable... iterables) {
+		this(asList(iterables));
+	}
+
+	public ChainingLongIterator(Iterable<LongIterable> iterables) {
+		this.iterables = iterables.iterator();
 	}
 
 	@Override
-	public int nextInt() {
+	public long nextLong() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-		int next = iterator.nextInt();
-		count++;
-		return next;
+
+		return iterator.nextLong();
 	}
 
 	@Override
 	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
+		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
+			iterator = iterables.next().iterator();
+		}
+		return iterator != null && iterator.hasNext();
 	}
 }

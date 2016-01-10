@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 public class LimitingIterator<T> implements Iterator<T> {
 	private final Iterator<T> iterator;
 	private final long limit;
-	int count;
+	long count;
 
 	public LimitingIterator(Iterator<T> iterator, long limit) {
 		this.iterator = iterator;

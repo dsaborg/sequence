@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 public class LimitingCharIterator implements CharIterator {
 	private final CharIterator iterator;
 	private final long limit;
-	int count;
+	long count;
 
 	public LimitingCharIterator(CharIterator iterator, long limit) {
 		this.iterator = iterator;

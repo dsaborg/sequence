@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.ints;
+package org.d2ab.primitive.longs;
 
-import java.util.NoSuchElementException;
-
-public class LimitingIntIterator implements IntIterator {
-	private final IntIterator iterator;
-	private final long limit;
-	long count;
-
-	public LimitingIntIterator(IntIterator iterator, long limit) {
-		this.iterator = iterator;
-		this.limit = limit;
-	}
-
-	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		int next = iterator.nextInt();
-		count++;
-		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
-	}
+/**
+ *
+ */
+@FunctionalInterface
+public interface ForwardPeekingLongFunction {
+	long applyAndPeek(long current, boolean hasNext, long next);
 }
