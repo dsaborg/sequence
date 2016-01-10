@@ -16,7 +16,6 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.sequence.PrimitiveSequence.Chars;
 import org.junit.Test;
 
 import java.util.Arrays;

@@ -143,7 +143,7 @@ Sequence<String> transformed = sequence.map(Object::toString).limit(3);
 assertThat(transformed, contains("1", "2", "3"));
 ```
 
-There is also a primitive version of `Sequence` for `char` processing, `PrimitiveSequence.Chars`:
+There is also a primitive version of `Sequence` for `char` processing, `Chars`:
 
 ```
 Chars chars = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);

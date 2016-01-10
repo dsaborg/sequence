@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.sequence;
+package org.d2ab.iterable;
 
-import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.ChainingIterator;
 import org.d2ab.utils.MoreArrays;
 
@@ -53,6 +52,12 @@ public class ChainingIterable<T> implements Iterable<T> {
 	}
 
 	@Nonnull
+	public Iterable<T> append(@Nonnull Iterable<T> iterable) {
+		iterables.add(iterable);
+		return this;
+	}
+
+	@Nonnull
 	public static <T, U> Iterable<U> flatMap(@Nonnull Iterable<? extends T> iterable,
 	                                         @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
 		ChainingIterable<U> result = new ChainingIterable<>();
@@ -62,12 +67,6 @@ public class ChainingIterable<T> implements Iterable<T> {
 
 	public Iterable<T> append(Iterator<T> iterator) {
 		return append(Iterables.from(iterator));
-	}
-
-	@Nonnull
-	public Iterable<T> append(@Nonnull Iterable<T> iterable) {
-		iterables.add(iterable);
-		return this;
 	}
 
 	public Iterable<T> append(T... objects) {

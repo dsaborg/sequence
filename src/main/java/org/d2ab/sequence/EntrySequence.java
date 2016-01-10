@@ -15,6 +15,7 @@
  */
 package org.d2ab.sequence;
 
+import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterator.*;
 
 import javax.annotation.Nonnull;

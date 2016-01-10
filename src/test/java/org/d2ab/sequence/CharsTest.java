@@ -18,7 +18,6 @@ package org.d2ab.sequence;
 import org.d2ab.primitive.chars.CharBinaryOperator;
 import org.d2ab.primitive.chars.CharIterator;
 import org.d2ab.primitive.chars.OptionalChar;
-import org.d2ab.sequence.PrimitiveSequence.Chars;
 import org.d2ab.utils.MoreArrays;
 import org.junit.Test;
 
@@ -35,14 +34,16 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class PrimitiveSequenceCharsTest {
+public class CharsTest {
 	private final Chars empty = Chars.empty();
+
 	private final Chars a = Chars.of('a');
 	private final Chars ab = Chars.of('a', 'b');
 	private final Chars abc = Chars.of('a', 'b', 'c');
 	private final Chars abcd = Chars.of('a', 'b', 'c', 'd');
 	private final Chars abcde = Chars.of('a', 'b', 'c', 'd', 'e');
 	private final Chars abcdefghi = Chars.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i');
+	
 	private final Chars oneRandom = Chars.of('q');
 	private final Chars twoRandom = Chars.of('q', 'w');
 	private final Chars nineRandom = Chars.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
