@@ -165,15 +165,15 @@ assertThat(snakeCase.asString(), is("hello_lexicon"));
 ```
 
 ```
-Ints squares = Ints.all().map(i -> i * i);
+Ints squares = Ints.positive().map(i -> i * i);
 
 assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 ```
 
 ```
-Longs odds = Longs.all().step(2);
+Longs negativeOdds = Longs.negative().step(2);
 
-assertThat(odds.skip(3).limit(5), contains(7L, 9L, 11L, 13L, 15L));
+assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
 ```
 
 The primitive `Sequences` also have mapping methods that peek on the previous and next elements:

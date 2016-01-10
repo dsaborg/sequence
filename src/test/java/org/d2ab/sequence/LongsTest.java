@@ -525,8 +525,8 @@ public class LongsTest {
 
 	@Test
 	public void longs() {
-		assertThat(Longs.all().limit(3L), contains(1L, 2L, 3L));
-		assertThat(Longs.all().limit(127).last(), is(OptionalLong.of(127)));
+		assertThat(Longs.positive().limit(3L), contains(1L, 2L, 3L));
+		assertThat(Longs.positive().limit(127).last(), is(OptionalLong.of(127)));
 	}
 
 	@Test

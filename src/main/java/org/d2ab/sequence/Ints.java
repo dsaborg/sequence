@@ -109,10 +109,9 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Integer} values starting at {@link Integer#MIN_VALUE} and ending at
-	 * {@link Integer#MAX_VALUE}.
+	 * A {@code Sequence} of all the positive {@link Integer} values starting at {@code 1} and ending at {@link Integer#MAX_VALUE}.
 	 */
-	static Ints all() {
+	static Ints positive() {
 		return startingAt(1);
 	}
 
@@ -138,6 +137,13 @@ public interface Ints extends IntIterable {
 
 	static Ints recurse(int seed, IntUnaryOperator op) {
 		return () -> new RecursiveIntIterator(seed, op);
+	}
+
+	/**
+	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at {@link Integer#MIN_VALUE}.
+	 */
+	static Ints negative() {
+		return range(-1, Integer.MIN_VALUE);
 	}
 
 	@Nonnull

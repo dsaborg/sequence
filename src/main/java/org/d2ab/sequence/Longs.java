@@ -109,10 +109,9 @@ public interface Longs extends LongIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Long} values starting at {@link Long#MIN_VALUE} and ending at
-	 * {@link Long#MAX_VALUE}.
+	 * A {@code Sequence} of all the positive {@link Long} values starting at {@code 1} and ending at {@link Long#MAX_VALUE}.
 	 */
-	static Longs all() {
+	static Longs positive() {
 		return startingAt(1);
 	}
 
@@ -138,6 +137,13 @@ public interface Longs extends LongIterable {
 
 	static Longs recurse(long seed, LongUnaryOperator op) {
 		return () -> new RecursiveLongIterator(seed, op);
+	}
+
+	/**
+	 * A {@code Sequence} of all the negative {@link Long} values starting at {@code -1} and ending at {@link Long#MIN_VALUE}.
+	 */
+	static Longs negative() {
+		return range(-1L, Long.MIN_VALUE);
 	}
 
 	@Nonnull

@@ -525,8 +525,8 @@ public class IntsTest {
 
 	@Test
 	public void ints() {
-		assertThat(Ints.all().limit(3), contains(1, 2, 3));
-		assertThat(Ints.all().limit(127).last(), is(OptionalInt.of(127)));
+		assertThat(Ints.positive().limit(3), contains(1, 2, 3));
+		assertThat(Ints.positive().limit(127).last(), is(OptionalInt.of(127)));
 	}
 
 	@Test
