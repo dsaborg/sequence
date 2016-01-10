@@ -24,6 +24,7 @@ import java.util.*;
 public class InterleavingCharIterator implements CharIterator {
 	@Nonnull
 	private final List<CharIterator> iterators = new ArrayList<>();
+
 	private int current;
 
 	public InterleavingCharIterator(@Nonnull CharIterable... iterables) {

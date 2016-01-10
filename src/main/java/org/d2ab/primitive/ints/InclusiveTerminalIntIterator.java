@@ -19,14 +19,14 @@ package org.d2ab.primitive.ints;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class InclusiveTerminalIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class InclusiveTerminalIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final int terminal;
+
 	private int previous;
 	private boolean hasPrevious;
 
 	public InclusiveTerminalIntIterator(IntIterator iterator, int terminal) {
-		this.iterator = iterator;
+		super(iterator);
 		this.terminal = terminal;
 	}
 

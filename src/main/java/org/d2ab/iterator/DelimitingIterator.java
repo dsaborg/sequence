@@ -22,28 +22,21 @@ import java.util.Optional;
 /**
  * An {@link Iterator} that delimits the items of another {@link Iterator} with a delimiter object.
  */
-public class DelimitingIterator<T extends R, U extends R, R> implements Iterator<R> {
-	private Iterator<? extends T> iterator;
+public class DelimitingIterator<T extends R, U extends R, R> extends BaseIterator<R, R> {
 	private Optional<? extends U> prefix;
 	private Optional<? extends U> delimiter;
 	private Optional<? extends U> suffix;
+
 	private boolean delimiterNext;
 	private boolean prefixDone;
 	private boolean suffixDone;
 
 	public DelimitingIterator(Iterator<? extends T> iterator, Optional<? extends U> prefix,
 	                          Optional<? extends U> delimiter, Optional<? extends U> suffix) {
-		this.iterator = iterator;
+		super(iterator);
 		this.prefix = prefix;
 		this.delimiter = delimiter;
 		this.suffix = suffix;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return prefix.isPresent() && !prefixDone ||
-		       iterator.hasNext() ||
-		       suffix.isPresent() && !suffixDone;
 	}
 
 	@Override
@@ -63,5 +56,12 @@ public class DelimitingIterator<T extends R, U extends R, R> implements Iterator
 
 		boolean sendDelimiter = delimiter.isPresent() && !(delimiterNext = !delimiterNext);
 		return sendDelimiter ? delimiter.get() : iterator.next();
+	}
+
+	@Override
+	public boolean hasNext() {
+		return prefix.isPresent() && !prefixDone ||
+		       iterator.hasNext() ||
+		       suffix.isPresent() && !suffixDone;
 	}
 }

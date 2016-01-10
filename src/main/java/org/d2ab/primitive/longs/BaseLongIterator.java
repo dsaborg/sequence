@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
 
-public class PeekingCharIterator extends BaseCharIterator<Character, CharIterator> {
-	private final CharConsumer action;
+package org.d2ab.primitive.longs;
 
-	public PeekingCharIterator(CharIterator iterator, CharConsumer action) {
-		super(iterator);
-		this.action = action;
+import java.util.Iterator;
+
+/**
+ * A superclass for delegating {@link LongIterator}s.
+ */
+public abstract class BaseLongIterator<T, I extends Iterator<T>> implements LongIterator {
+	protected I iterator;
+
+	protected BaseLongIterator() {
+	}
+
+	protected BaseLongIterator(I iterator) {
+		this.iterator = iterator;
 	}
 
 	@Override
-	public char nextChar() {
-		char next = iterator.nextChar();
-		action.accept(next);
-		return next;
+	public boolean hasNext() {
+		return iterator.hasNext();
 	}
 }

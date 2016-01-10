@@ -18,13 +18,13 @@ package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
 
-public class SkippingIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class SkippingIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final long skip;
+
 	boolean skipped;
 
 	public SkippingIntIterator(IntIterator iterator, long skip) {
-		this.iterator = iterator;
+		super(iterator);
 		this.skip = skip;
 	}
 

@@ -18,24 +18,14 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class SkippingIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
+public class SkippingIterator<T> extends BaseIterator<T, T> {
 	private final long skip;
+
 	boolean skipped;
 
-	public SkippingIterator(Iterator<T> iterator, long skip) {
-		this.iterator = iterator;
+	public SkippingIterator(Iterator<? extends T> iterator, long skip) {
+		super(iterator);
 		this.skip = skip;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!skipped) {
-			Iterators.skip(skip, iterator);
-			skipped = true;
-		}
-
-		return iterator.hasNext();
 	}
 
 	@Override
@@ -44,5 +34,15 @@ public class SkippingIterator<T> implements Iterator<T> {
 			throw new NoSuchElementException();
 
 		return iterator.next();
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (!skipped) {
+			skip(skip);
+			skipped = true;
+		}
+
+		return iterator.hasNext();
 	}
 }

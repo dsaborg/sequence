@@ -20,14 +20,25 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class DistinctIterator<T> implements Iterator<T> {
-	private Iterator<T> iterator;
+public class DistinctIterator<T> extends BaseIterator<T, T> {
 	private Set<T> seen = new HashSet<T>();
+
 	private T next;
 	private boolean hasNext;
 
 	public DistinctIterator(Iterator<T> iterator) {
-		this.iterator = iterator;
+		super(iterator);
+	}
+
+	@Override
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T result = next;
+		hasNext = false;
+		next = null;
+		return result;
 	}
 
 	@Override
@@ -44,16 +55,5 @@ public class DistinctIterator<T> implements Iterator<T> {
 		}
 
 		return hasNext;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T result = next;
-		hasNext = false;
-		next = null;
-		return result;
 	}
 }

@@ -18,13 +18,13 @@ package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
 
-public class LimitingIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class LimitingIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final long limit;
+
 	long count;
 
 	public LimitingIntIterator(IntIterator iterator, long limit) {
-		this.iterator = iterator;
+		super(iterator);
 		this.limit = limit;
 	}
 

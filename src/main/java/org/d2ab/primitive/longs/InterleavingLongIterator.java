@@ -25,6 +25,7 @@ import java.util.*;
 public class InterleavingLongIterator implements LongIterator {
 	@Nonnull
 	private final List<LongIterator> iterators = new ArrayList<>();
+
 	private int current;
 
 	public InterleavingLongIterator(@Nonnull LongIterable... iterables) {

@@ -19,20 +19,15 @@ package org.d2ab.primitive.longs;
 /**
  * An iterator over longs that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class BackPeekingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final BackPeekingLongFunction mapper;
+
 	boolean hasPrevious;
 	private long previous = -1;
 
 	public BackPeekingLongIterator(LongIterator iterator, BackPeekingLongFunction mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

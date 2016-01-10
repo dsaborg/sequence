@@ -19,14 +19,14 @@ package org.d2ab.primitive.ints;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
 
-public class FilteringIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class FilteringIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final IntPredicate predicate;
+
 	int next;
 	private boolean hasNext;
 
 	public FilteringIntIterator(IntIterator iterator, IntPredicate predicate) {
-		this.iterator = iterator;
+		super(iterator);
 		this.predicate = predicate;
 	}
 

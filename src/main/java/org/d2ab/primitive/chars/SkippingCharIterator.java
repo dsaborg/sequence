@@ -17,13 +17,13 @@ package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
 
-public class SkippingCharIterator implements CharIterator {
-	private final CharIterator iterator;
+public class SkippingCharIterator extends BaseCharIterator<Character, CharIterator> {
 	private final long skip;
+
 	boolean skipped;
 
 	public SkippingCharIterator(CharIterator iterator, long skip) {
-		this.iterator = iterator;
+		super(iterator);
 		this.skip = skip;
 	}
 

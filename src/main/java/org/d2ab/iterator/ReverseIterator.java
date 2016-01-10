@@ -21,17 +21,11 @@ import java.util.*;
  * An {@link Iterator} that iterates over the elements of another {@link Iterator} in reverse order, by creating a
  * buffer over the elements in the {@link Iterator} and reversing the order of iteration.
  */
-public class ReverseIterator<T> implements Iterator<T> {
-	private final Iterator<? extends T> iterator;
+public class ReverseIterator<T> extends BaseIterator<T, T> {
 	private ListIterator<? extends T> listIterator;
 
 	public ReverseIterator(Iterator<? extends T> iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();
+		super(iterator);
 	}
 
 	@Override
@@ -46,5 +40,10 @@ public class ReverseIterator<T> implements Iterator<T> {
 		}
 
 		return listIterator.previous();
+	}
+
+	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();
 	}
 }

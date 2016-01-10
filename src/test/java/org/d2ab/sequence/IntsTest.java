@@ -527,6 +527,7 @@ public class IntsTest {
 	public void ints() {
 		assertThat(Ints.positive().limit(3), contains(1, 2, 3));
 		assertThat(Ints.positive().limit(127).last(), is(OptionalInt.of(127)));
+		assertThat(Ints.positive().limit(1000000).count(), is(1000000L));
 	}
 
 	@Test
@@ -542,5 +543,23 @@ public class IntsTest {
 		assertThat(Ints.range(1, 6), contains(1, 2, 3, 4, 5, 6));
 		assertThat(Ints.range(6, 1), contains(6, 5, 4, 3, 2, 1));
 		assertThat(Ints.range(1, 6).count(), is(6L));
+	}
+
+	@Test
+	public void toChars() {
+		Chars chars = Ints.startingAt('a').limit(5).toChars();
+		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void toLongs() {
+		Longs longs = Ints.positive().limit(5).toLongs();
+		twice(() -> assertThat(longs, contains(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void toDoubles() {
+		Doubles doubles = Ints.positive().limit(5).toDoubles();
+		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 }

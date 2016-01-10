@@ -16,6 +16,9 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.primitive.chars.BaseCharIterator;
+import org.d2ab.primitive.doubles.BaseDoubleIterator;
+import org.d2ab.primitive.ints.BaseIntIterator;
 import org.d2ab.primitive.longs.*;
 import org.d2ab.utils.MoreArrays;
 
@@ -390,5 +393,32 @@ public interface Longs extends LongIterable {
 
 	default Longs mapForward(ForwardPeekingLongFunction mapper) {
 		return () -> new ForwardPeekingLongIterator(iterator(), mapper);
+	}
+
+	default Chars toChars() {
+		return () -> new BaseCharIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public char nextChar() {
+				return (char) iterator.nextLong();
+			}
+		};
+	}
+
+	default Ints toInts() {
+		return () -> new BaseIntIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public int nextInt() {
+				return (int) iterator.nextLong();
+			}
+		};
+	}
+
+	default Doubles toDoubles() {
+		return () -> new BaseDoubleIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public double nextDouble() {
+				return iterator.nextLong();
+			}
+		};
 	}
 }

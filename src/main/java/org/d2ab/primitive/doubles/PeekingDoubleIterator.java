@@ -18,18 +18,12 @@ package org.d2ab.primitive.doubles;
 
 import java.util.function.DoubleConsumer;
 
-public class PeekingDoubleIterator implements DoubleIterator {
-	private final DoubleIterator iterator;
+public class PeekingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
 	private final DoubleConsumer action;
 
 	public PeekingDoubleIterator(DoubleIterator iterator, DoubleConsumer action) {
-		this.iterator = iterator;
+		super(iterator);
 		this.action = action;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

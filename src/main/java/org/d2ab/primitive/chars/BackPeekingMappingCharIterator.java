@@ -18,19 +18,13 @@ package org.d2ab.primitive.chars;
 /**
  * An iterator over chars that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingMappingCharIterator implements CharIterator {
-	private final CharIterator iterator;
+public class BackPeekingMappingCharIterator extends BaseCharIterator<Character, CharIterator> {
 	private final IntCharToCharBinaryFunction mapper;
 	private int previous = -1;
 
 	public BackPeekingMappingCharIterator(CharIterator iterator, IntCharToCharBinaryFunction mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

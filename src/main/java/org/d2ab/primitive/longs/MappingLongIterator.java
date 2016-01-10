@@ -18,18 +18,12 @@ package org.d2ab.primitive.longs;
 
 import java.util.function.LongUnaryOperator;
 
-public class MappingLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class MappingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final LongUnaryOperator mapper;
 
 	public MappingLongIterator(LongIterator iterator, LongUnaryOperator mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

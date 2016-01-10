@@ -21,15 +21,15 @@ import java.util.NoSuchElementException;
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class ForwardPeekingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final ForwardPeekingLongFunction mapper;
+
 	private boolean hasCurrent;
 	private long current = -1;
 	private boolean started;
 
 	public ForwardPeekingLongIterator(LongIterator iterator, ForwardPeekingLongFunction mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
 	}
 

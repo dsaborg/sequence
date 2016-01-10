@@ -20,9 +20,8 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingIterator<T> implements Iterator<T> {
+public class ChainingIterator<T> extends BaseIterator<T, T> {
 	private final Iterator<? extends Iterable<? extends T>> iterables;
-	private Iterator<? extends T> iterator;
 
 	@SafeVarargs
 	public ChainingIterator(Iterable<? extends T>... iterables) {
@@ -34,17 +33,17 @@ public class ChainingIterator<T> implements Iterator<T> {
 	}
 
 	@Override
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+		return iterator.next();
+	}
+
+	@Override
 	public boolean hasNext() {
 		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
 			iterator = iterables.next().iterator();
 		}
 		return iterator != null && iterator.hasNext();
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		return iterator.next();
 	}
 }

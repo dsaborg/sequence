@@ -21,14 +21,14 @@ public class Iterators {
 	private Iterators() {
 	}
 
-	public static void skipOne(Iterator<?> iterator) {
-		skip(1, iterator);
+	public static void skip(Iterator<?> iterator) {
+		if (iterator.hasNext())
+			iterator.next();
 	}
 
-	public static void skip(long steps, Iterator<?> iterator) {
-		long count = 0;
-		while ((count++ < steps) && iterator.hasNext()) {
+	public static void skip(Iterator<?> iterator, long steps) {
+		long count = steps;
+		while (count-- > 0 && iterator.hasNext())
 			iterator.next();
-		}
 	}
 }

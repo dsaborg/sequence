@@ -18,15 +18,26 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class SteppingIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
+public class SteppingIterator<T> extends BaseIterator<T, T> {
 	private final long step;
+
 	private boolean hasNext;
 	private T next;
 
-	public SteppingIterator(Iterator<T> iterator, long step) {
-		this.iterator = iterator;
+	public SteppingIterator(Iterator<? extends T> iterator, long step) {
+		super(iterator);
 		this.step = step;
+	}
+
+	@Override
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T result = next;
+		next = null;
+		hasNext = false;
+		return result;
 	}
 
 	@Override
@@ -39,23 +50,9 @@ public class SteppingIterator<T> implements Iterator<T> {
 
 		next = iterator.next();
 
-		// skip steps
-		long i = step;
-		while (--i > 0 && iterator.hasNext())
-			iterator.next();
+		skip(step - 1);
 		hasNext = true;
 
 		return true;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T result = next;
-		next = null;
-		hasNext = false;
-		return result;
 	}
 }

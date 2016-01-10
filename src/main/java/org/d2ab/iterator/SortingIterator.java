@@ -17,17 +17,17 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public class SortingIterator<T> implements Iterator<T> {
-	private Iterator<T> iterator;
-	private Comparator<? super T> comparator;
+public class SortingIterator<T> extends BaseIterator<T, T> {
+	private final Comparator<? super T> comparator;
+
 	private Iterator<T> sortedIterator;
 
-	public SortingIterator(Iterator<T> iterator) {
+	public SortingIterator(Iterator<? extends T> iterator) {
 		this(iterator, naturalOrder());
 	}
 
-	public SortingIterator(Iterator<T> iterator, Comparator<? super T> comparator) {
-		this.iterator = iterator;
+	public SortingIterator(Iterator<? extends T> iterator, Comparator<? super T> comparator) {
+		super(iterator);
 		this.comparator = comparator;
 	}
 
@@ -35,6 +35,14 @@ public class SortingIterator<T> implements Iterator<T> {
 		@SuppressWarnings("unchecked")
 		Comparator<? super T> comparator = (Comparator<? super T>) Comparator.naturalOrder();
 		return comparator;
+	}
+
+	@Override
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return sortedIterator.next();
 	}
 
 	@Override
@@ -47,13 +55,5 @@ public class SortingIterator<T> implements Iterator<T> {
 			sortedIterator = elements.iterator();
 		}
 		return sortedIterator.hasNext();
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return sortedIterator.next();
 	}
 }

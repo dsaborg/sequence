@@ -18,14 +18,14 @@ package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
 
-public class SteppingIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class SteppingIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final long step;
+
 	private boolean hasNext;
 	private int next;
 
 	public SteppingIntIterator(IntIterator iterator, long step) {
-		this.iterator = iterator;
+		super(iterator);
 		this.step = step;
 	}
 
@@ -48,10 +48,7 @@ public class SteppingIntIterator implements IntIterator {
 
 		next = iterator.nextInt();
 
-		// skip steps
-		long i = step;
-		while (--i > 0 && iterator.hasNext())
-			iterator.nextInt();
+		iterator.skip(step - 1);
 		hasNext = true;
 
 		return true;

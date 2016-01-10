@@ -18,13 +18,13 @@ package org.d2ab.primitive.longs;
 
 import java.util.NoSuchElementException;
 
-public class LimitingLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class LimitingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final long limit;
+
 	long count;
 
 	public LimitingLongIterator(LongIterator iterator, long limit) {
-		this.iterator = iterator;
+		super(iterator);
 		this.limit = limit;
 	}
 

@@ -18,18 +18,12 @@ package org.d2ab.primitive.ints;
 
 import java.util.function.IntConsumer;
 
-public class PeekingIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class PeekingIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final IntConsumer action;
 
 	public PeekingIntIterator(IntIterator iterator, IntConsumer action) {
-		this.iterator = iterator;
+		super(iterator);
 		this.action = action;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

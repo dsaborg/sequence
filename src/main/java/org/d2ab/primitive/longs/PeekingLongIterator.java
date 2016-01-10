@@ -18,18 +18,12 @@ package org.d2ab.primitive.longs;
 
 import java.util.function.LongConsumer;
 
-public class PeekingLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class PeekingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final LongConsumer action;
 
 	public PeekingLongIterator(LongIterator iterator, LongConsumer action) {
-		this.iterator = iterator;
+		super(iterator);
 		this.action = action;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

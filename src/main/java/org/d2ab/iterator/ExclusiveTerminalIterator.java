@@ -19,24 +19,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class ExclusiveTerminalIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
+public class ExclusiveTerminalIterator<T> extends BaseIterator<T, T> {
 	private final T terminal;
+
 	private T next;
 	private boolean hasNext;
 
 	public ExclusiveTerminalIterator(Iterator<T> iterator, T terminal) {
-		this.iterator = iterator;
+		super(iterator);
 		this.terminal = terminal;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!hasNext && iterator.hasNext()) {
-			next = iterator.next();
-			hasNext = true;
-		}
-		return hasNext && !Objects.equals(next, terminal);
 	}
 
 	@Override
@@ -48,5 +39,14 @@ public class ExclusiveTerminalIterator<T> implements Iterator<T> {
 		hasNext = false;
 		next = null;
 		return result;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (!hasNext && iterator.hasNext()) {
+			next = iterator.next();
+			hasNext = true;
+		}
+		return hasNext && !Objects.equals(next, terminal);
 	}
 }

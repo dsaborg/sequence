@@ -21,9 +21,8 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingLongIterator implements LongIterator {
+public class ChainingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final Iterator<LongIterable> iterables;
-	private LongIterator iterator;
 
 	public ChainingLongIterator(LongIterable... iterables) {
 		this(asList(iterables));

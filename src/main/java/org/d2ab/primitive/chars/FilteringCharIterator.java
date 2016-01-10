@@ -17,14 +17,14 @@ package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
 
-public class FilteringCharIterator implements CharIterator {
-	private final CharIterator iterator;
+public class FilteringCharIterator extends BaseCharIterator<Character, CharIterator> {
 	private final CharPredicate predicate;
+
 	char next;
 	private boolean hasNext;
 
 	public FilteringCharIterator(CharIterator iterator, CharPredicate predicate) {
-		this.iterator = iterator;
+		super(iterator);
 		this.predicate = predicate;
 	}
 

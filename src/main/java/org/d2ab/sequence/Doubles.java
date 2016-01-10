@@ -17,6 +17,8 @@
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.doubles.*;
+import org.d2ab.primitive.ints.IntIterator;
+import org.d2ab.primitive.longs.LongIterator;
 import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
@@ -27,6 +29,7 @@ import java.util.function.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
+import static java.lang.Math.round;
 import static java.util.Collections.emptyIterator;
 
 /**
@@ -387,5 +390,69 @@ public interface Doubles extends DoubleIterable {
 
 	default Doubles mapForward(ForwardPeekingDoubleFunction mapper) {
 		return () -> new ForwardPeekingDoubleIterator(iterator(), mapper);
+	}
+
+	default Ints toInts() {
+		return () -> new IntIterator() {
+			DoubleIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public int nextInt() {
+				return (int) iterator.nextDouble();
+			}
+		};
+	}
+
+	default Longs toLongs() {
+		return () -> new LongIterator() {
+			DoubleIterator iterator = iterator();
+
+			@Override
+			public long nextLong() {
+				return (long) iterator.nextDouble();
+			}
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+		};
+	}
+
+	default Ints toRoundedInts() {
+		return () -> new IntIterator() {
+			DoubleIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public int nextInt() {
+				return (int) round(iterator.nextDouble());
+			}
+		};
+	}
+
+	default Longs toRoundedLongs() {
+		return () -> new LongIterator() {
+			DoubleIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public long nextLong() {
+				return round(iterator.nextDouble());
+			}
+		};
 	}
 }

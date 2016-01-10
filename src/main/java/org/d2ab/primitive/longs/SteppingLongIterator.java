@@ -18,14 +18,14 @@ package org.d2ab.primitive.longs;
 
 import java.util.NoSuchElementException;
 
-public class SteppingLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class SteppingLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final long step;
+
 	private boolean hasNext;
 	private long next;
 
 	public SteppingLongIterator(LongIterator iterator, long step) {
-		this.iterator = iterator;
+		super(iterator);
 		this.step = step;
 	}
 
@@ -48,10 +48,7 @@ public class SteppingLongIterator implements LongIterator {
 
 		next = iterator.nextLong();
 
-		// skip steps
-		long i = step;
-		while (--i > 0 && iterator.hasNext())
-			iterator.nextLong();
+		iterator.skip(step - 1);
 		hasNext = true;
 
 		return true;

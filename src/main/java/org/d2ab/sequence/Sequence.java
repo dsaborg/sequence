@@ -386,7 +386,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Optional<T> second() {
 		Iterator<T> iterator = iterator();
 
-		Iterators.skipOne(iterator);
+		Iterators.skip(iterator);
 		if (!iterator.hasNext())
 			return Optional.empty();
 
@@ -396,8 +396,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Optional<T> third() {
 		Iterator<T> iterator = iterator();
 
-		Iterators.skipOne(iterator);
-		Iterators.skipOne(iterator);
+		Iterators.skip(iterator, 2);
 		if (!iterator.hasNext())
 			return Optional.empty();
 

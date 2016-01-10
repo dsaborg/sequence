@@ -19,14 +19,14 @@ package org.d2ab.primitive.doubles;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class InclusiveTerminalDoubleIterator implements DoubleIterator {
-	private final DoubleIterator iterator;
+public class InclusiveTerminalDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
 	private final double terminal;
+
 	private double previous;
 	private boolean hasPrevious;
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal) {
-		this.iterator = iterator;
+		super(iterator);
 		this.terminal = terminal;
 	}
 

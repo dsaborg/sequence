@@ -552,4 +552,10 @@ public class CharsTest {
 		twice(() -> assertThat(abc.asString(), is("abc")));
 		twice(() -> assertThat(abcde.asString(), is("abcde")));
 	}
+
+	@Test
+	public void toInts() {
+		Ints ints = Chars.all().limit(5).toInts();
+		twice(() -> assertThat(ints, contains(0, 1, 2, 3, 4)));
+	}
 }

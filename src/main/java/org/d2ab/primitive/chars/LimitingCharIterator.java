@@ -17,13 +17,13 @@ package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
 
-public class LimitingCharIterator implements CharIterator {
-	private final CharIterator iterator;
+public class LimitingCharIterator extends BaseCharIterator<Character, CharIterator> {
 	private final long limit;
+
 	long count;
 
 	public LimitingCharIterator(CharIterator iterator, long limit) {
-		this.iterator = iterator;
+		super(iterator);
 		this.limit = limit;
 	}
 

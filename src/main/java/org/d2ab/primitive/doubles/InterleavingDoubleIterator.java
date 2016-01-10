@@ -25,6 +25,7 @@ import java.util.*;
 public class InterleavingDoubleIterator implements DoubleIterator {
 	@Nonnull
 	private final List<DoubleIterator> iterators = new ArrayList<>();
+
 	private int current;
 
 	public InterleavingDoubleIterator(@Nonnull DoubleIterable... iterables) {

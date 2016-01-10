@@ -18,18 +18,12 @@ package org.d2ab.primitive.doubles;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class MappingDoubleIterator implements DoubleIterator {
-	private final DoubleIterator iterator;
+public class MappingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
 	private final DoubleUnaryOperator mapper;
 
 	public MappingDoubleIterator(DoubleIterator iterator, DoubleUnaryOperator mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

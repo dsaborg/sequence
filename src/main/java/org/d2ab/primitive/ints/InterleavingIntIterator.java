@@ -25,6 +25,7 @@ import java.util.*;
 public class InterleavingIntIterator implements IntIterator {
 	@Nonnull
 	private final List<IntIterator> iterators = new ArrayList<>();
+
 	private int current;
 
 	public InterleavingIntIterator(@Nonnull IntIterable... iterables) {

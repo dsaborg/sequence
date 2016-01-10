@@ -20,17 +20,16 @@ import org.d2ab.collection.ThresholdBitSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctLongIterator implements LongIterator {
+public class DistinctLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private static final int THRESHOLD = 256;
 
-	private final LongIterator iterator;
 	private final ThresholdBitSet seen = new ThresholdBitSet(THRESHOLD);
 
 	private long next;
 	private boolean hasNext;
 
 	public DistinctLongIterator(LongIterator iterator) {
-		this.iterator = iterator;
+		super(iterator);
 	}
 
 	@Override

@@ -18,14 +18,14 @@ package org.d2ab.primitive.doubles;
 
 import java.util.NoSuchElementException;
 
-public class SteppingDoubleIterator implements DoubleIterator {
-	private final DoubleIterator iterator;
+public class SteppingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
 	private final double step;
+
 	private boolean hasNext;
 	private double next;
 
 	public SteppingDoubleIterator(DoubleIterator iterator, double step) {
-		this.iterator = iterator;
+		super(iterator);
 		this.step = step;
 	}
 
@@ -48,10 +48,7 @@ public class SteppingDoubleIterator implements DoubleIterator {
 
 		next = iterator.nextDouble();
 
-		// skip steps
-		double i = step;
-		while (--i > 0 && iterator.hasNext())
-			iterator.nextDouble();
+		iterator.skip(step - 1);
 		hasNext = true;
 
 		return true;

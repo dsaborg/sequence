@@ -225,7 +225,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	default Optional<Entry<T, U>> second() {
 		Iterator<Entry<T, U>> iterator = iterator();
 
-		Iterators.skipOne(iterator);
+		Iterators.skip(iterator);
 		if (!iterator.hasNext())
 			return Optional.empty();
 
@@ -235,8 +235,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	default Optional<Entry<T, U>> third() {
 		Iterator<Entry<T, U>> iterator = iterator();
 
-		Iterators.skipOne(iterator);
-		Iterators.skipOne(iterator);
+		Iterators.skip(iterator, 2);
 		if (!iterator.hasNext())
 			return Optional.empty();
 

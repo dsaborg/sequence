@@ -19,20 +19,14 @@ package org.d2ab.primitive.ints;
 /**
  * An iterator over ints that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class BackPeekingIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final BackPeekingIntFunction mapper;
 	boolean hasPrevious;
 	private int previous = -1;
 
 	public BackPeekingIntIterator(IntIterator iterator, BackPeekingIntFunction mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

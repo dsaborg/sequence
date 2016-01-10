@@ -21,9 +21,8 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingDoubleIterator implements DoubleIterator {
+public class ChainingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
 	private final Iterator<DoubleIterable> iterables;
-	private DoubleIterator iterator;
 
 	public ChainingDoubleIterator(DoubleIterable... iterables) {
 		this(asList(iterables));

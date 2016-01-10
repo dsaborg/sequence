@@ -19,15 +19,26 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public class FilteringIterator<T> implements Iterator<T> {
-	private final Iterator<? extends T> iterator;
+public class FilteringIterator<T> extends BaseIterator<T, T> {
 	private final Predicate<? super T> predicate;
+
 	T next;
 	private boolean hasNext;
 
 	public FilteringIterator(Iterator<? extends T> iterator, Predicate<? super T> predicate) {
-		this.iterator = iterator;
+		super(iterator);
 		this.predicate = predicate;
+	}
+
+	@Override
+	public T next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		T nextValue = next;
+		hasNext = false;
+		next = null;
+		return nextValue;
 	}
 
 	@Override
@@ -45,16 +56,5 @@ public class FilteringIterator<T> implements Iterator<T> {
 
 		// found matching value
 		return true;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext()) {
-			throw new NoSuchElementException();
-		}
-		T nextValue = next;
-		hasNext = false;
-		next = null;
-		return nextValue;
 	}
 }

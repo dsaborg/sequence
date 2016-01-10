@@ -15,18 +15,12 @@
  */
 package org.d2ab.primitive.chars;
 
-public class MappingCharIterator implements CharIterator {
-	private final CharIterator iterator;
+public class MappingCharIterator extends BaseCharIterator<Character, CharIterator> {
 	private final CharUnaryOperator mapper;
 
 	public MappingCharIterator(CharIterator iterator, CharUnaryOperator mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

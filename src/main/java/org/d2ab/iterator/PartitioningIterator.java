@@ -17,22 +17,14 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public class PartitioningIterator<T> implements Iterator<List<T>> {
-	private final Iterator<? extends T> iterator;
+public class PartitioningIterator<T> extends BaseIterator<T, List<T>> {
 	private final int window;
+
 	private Deque<T> partition = new LinkedList<>();
 
 	public PartitioningIterator(Iterator<? extends T> iterator, int window) {
-		this.iterator = iterator;
+		super(iterator);
 		this.window = window;
-	}
-
-	@Override
-	public boolean hasNext() {
-		while (partition.size() < window && iterator.hasNext())
-			partition.add(iterator.next());
-
-		return partition.size() == window;
 	}
 
 	@Override
@@ -43,5 +35,13 @@ public class PartitioningIterator<T> implements Iterator<List<T>> {
 		List<T> result = new ArrayList<>(partition);
 		partition.removeFirst();
 		return result;
+	}
+
+	@Override
+	public boolean hasNext() {
+		while (partition.size() < window && iterator.hasNext())
+			partition.add(iterator.next());
+
+		return partition.size() == window;
 	}
 }

@@ -16,6 +16,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
+import org.d2ab.primitive.ints.BaseIntIterator;
 import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
@@ -391,5 +392,14 @@ public interface Chars extends CharIterable {
 
 	default Chars mapForward(CharIntToCharBinaryFunction mapper) {
 		return () -> new ForwardPeekingMappingCharIterator(iterator(), mapper);
+	}
+
+	default Ints toInts() {
+		return () -> new BaseIntIterator<Character, CharIterator>(iterator()) {
+			@Override
+			public int nextInt() {
+				return iterator.nextChar();
+			}
+		};
 	}
 }

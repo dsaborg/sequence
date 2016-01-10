@@ -18,19 +18,14 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LimitingIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
+public class LimitingIterator<T> extends BaseIterator<T, T> {
 	private final long limit;
+
 	long count;
 
 	public LimitingIterator(Iterator<T> iterator, long limit) {
-		this.iterator = iterator;
+		super(iterator);
 		this.limit = limit;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
 	}
 
 	@Override
@@ -40,5 +35,10 @@ public class LimitingIterator<T> implements Iterator<T> {
 		T next = iterator.next();
 		count++;
 		return next;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return count < limit && iterator.hasNext();
 	}
 }

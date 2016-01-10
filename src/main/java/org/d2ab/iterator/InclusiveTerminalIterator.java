@@ -19,20 +19,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class InclusiveTerminalIterator<T> implements Iterator<T> {
-	private final Iterator<T> iterator;
+public class InclusiveTerminalIterator<T> extends BaseIterator<T, T> {
 	private final T terminal;
+
 	private T previous;
 	private boolean hasPrevious;
 
 	public InclusiveTerminalIterator(Iterator<T> iterator, T terminal) {
-		this.iterator = iterator;
+		super(iterator);
 		this.terminal = terminal;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
 	}
 
 	@Override
@@ -42,5 +37,10 @@ public class InclusiveTerminalIterator<T> implements Iterator<T> {
 
 		hasPrevious = true;
 		return previous = iterator.next();
+	}
+
+	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
 	}
 }

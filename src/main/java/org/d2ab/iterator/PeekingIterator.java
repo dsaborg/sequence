@@ -18,18 +18,12 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class PeekingIterator<T> implements Iterator<T> {
-	private final Iterator<? extends T> iterator;
+public class PeekingIterator<T> extends BaseIterator<T, T> {
 	private final Consumer<? super T> action;
 
 	public PeekingIterator(Iterator<? extends T> iterator, Consumer<? super T> action) {
-		this.iterator = iterator;
+		super(iterator);
 		this.action = action;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

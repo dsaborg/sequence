@@ -526,4 +526,70 @@ public class DoublesTest {
 		assertThat(Doubles.range(6.0, 1.0), contains(6.0, 5.0, 4.0, 3.0, 2.0, 1.0));
 		assertThat(Doubles.range(1.0, 6.0).count(), is(6.0));
 	}
+
+	@Test
+	public void toInts() {
+		Ints _0 = Doubles.startingAt(0).limit(5).toInts();
+		twice(() -> assertThat(_0, contains(0, 1, 2, 3, 4)));
+
+		Ints _0_5 = Doubles.startingAt(0.5).limit(5).toInts();
+		twice(() -> assertThat(_0_5, contains(0, 1, 2, 3, 4)));
+
+		Ints _0_9999 = Doubles.startingAt(0.9999).limit(5).toInts();
+		twice(() -> assertThat(_0_9999, contains(0, 1, 2, 3, 4)));
+
+		Ints _1 = Doubles.startingAt(1).limit(5).toInts();
+		twice(() -> assertThat(_1, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toLongs() {
+		Longs _0 = Doubles.startingAt(0).limit(5).toLongs();
+		twice(() -> assertThat(_0, contains(0L, 1L, 2L, 3L, 4L)));
+
+		Longs _0_5 = Doubles.startingAt(0.5).limit(5).toLongs();
+		twice(() -> assertThat(_0_5, contains(0L, 1L, 2L, 3L, 4L)));
+
+		Longs _0_9999 = Doubles.startingAt(0.9999).limit(5).toLongs();
+		twice(() -> assertThat(_0_9999, contains(0L, 1L, 2L, 3L, 4L)));
+
+		Longs _1 = Doubles.startingAt(1).limit(5).toLongs();
+		twice(() -> assertThat(_1, contains(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void toIntsRounded() {
+		Ints _1 = Doubles.startingAt(1).limit(5).toRoundedInts();
+		twice(() -> assertThat(_1, contains(1, 2, 3, 4, 5)));
+
+		Ints _0_99999 = Doubles.startingAt(0.99999).limit(5).toRoundedInts();
+		twice(() -> assertThat(_0_99999, contains(1, 2, 3, 4, 5)));
+
+		Ints _0_5 = Doubles.startingAt(0.5).limit(5).toRoundedInts();
+		twice(() -> assertThat(_0_5, contains(1, 2, 3, 4, 5)));
+
+		Ints _0_49999 = Doubles.startingAt(0.49999).limit(5).toRoundedInts();
+		twice(() -> assertThat(_0_49999, contains(0, 1, 2, 3, 4)));
+
+		Ints _0 = Doubles.startingAt(0).limit(5).toRoundedInts();
+		twice(() -> assertThat(_0, contains(0, 1, 2, 3, 4)));
+	}
+
+	@Test
+	public void toLongsRounded() {
+		Longs _1 = Doubles.startingAt(1).limit(5).toRoundedLongs();
+		twice(() -> assertThat(_1, contains(1L, 2L, 3L, 4L, 5L)));
+
+		Longs _0_99999 = Doubles.startingAt(0.99999).limit(5).toRoundedLongs();
+		twice(() -> assertThat(_0_99999, contains(1L, 2L, 3L, 4L, 5L)));
+
+		Longs _0_5 = Doubles.startingAt(0.5).limit(5).toRoundedLongs();
+		twice(() -> assertThat(_0_5, contains(1L, 2L, 3L, 4L, 5L)));
+
+		Longs _0_49999 = Doubles.startingAt(0.49999).limit(5).toRoundedLongs();
+		twice(() -> assertThat(_0_49999, contains(0L, 1L, 2L, 3L, 4L)));
+
+		Longs _0 = Doubles.startingAt(0).limit(5).toRoundedLongs();
+		twice(() -> assertThat(_0, contains(0L, 1L, 2L, 3L, 4L)));
+	}
 }

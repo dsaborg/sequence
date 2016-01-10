@@ -18,18 +18,12 @@ package org.d2ab.primitive.ints;
 
 import java.util.function.IntUnaryOperator;
 
-public class MappingIntIterator implements IntIterator {
-	private final IntIterator iterator;
+public class MappingIntIterator extends BaseIntIterator<Integer, IntIterator> {
 	private final IntUnaryOperator mapper;
 
 	public MappingIntIterator(IntIterator iterator, IntUnaryOperator mapper) {
-		this.iterator = iterator;
+		super(iterator);
 		this.mapper = mapper;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
 	}
 
 	@Override

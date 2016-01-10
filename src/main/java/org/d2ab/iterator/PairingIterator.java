@@ -20,14 +20,25 @@ import org.d2ab.sequence.Pair;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class PairingIterator<T> implements Iterator<Pair<T, T>> {
-	private Iterator<T> iterator;
+public class PairingIterator<T> extends BaseIterator<T, Pair<T, T>> {
 	private T previous;
 	private boolean hasPrevious;
 	private boolean started;
 
-	public PairingIterator(Iterator<T> iterator) {
-		this.iterator = iterator;
+	public PairingIterator(Iterator<? extends T> iterator) {
+		super(iterator);
+	}
+
+	@Override
+	public Pair<T, T> next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T next = iterator.hasNext() ? iterator.next() : null;
+		Pair<T, T> result = Pair.of(previous, next);
+		previous = next;
+		started = true;
+		return result;
 	}
 
 	@Override
@@ -47,17 +58,5 @@ public class PairingIterator<T> implements Iterator<Pair<T, T>> {
 		}
 
 		return hasNext;
-	}
-
-	@Override
-	public Pair<T, T> next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T next = iterator.hasNext() ? iterator.next() : null;
-		Pair<T, T> result = Pair.of(previous, next);
-		previous = next;
-		started = true;
-		return result;
 	}
 }

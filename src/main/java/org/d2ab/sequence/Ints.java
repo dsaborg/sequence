@@ -16,7 +16,10 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.primitive.chars.BaseCharIterator;
+import org.d2ab.primitive.doubles.BaseDoubleIterator;
 import org.d2ab.primitive.ints.*;
+import org.d2ab.primitive.longs.BaseLongIterator;
 import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
@@ -390,5 +393,32 @@ public interface Ints extends IntIterable {
 
 	default Ints mapForward(ForwardPeekingIntFunction mapper) {
 		return () -> new ForwardPeekingIntIterator(iterator(), mapper);
+	}
+
+	default Chars toChars() {
+		return () -> new BaseCharIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public char nextChar() {
+				return (char) iterator.nextInt();
+			}
+		};
+	}
+
+	default Longs toLongs() {
+		return () -> new BaseLongIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public long nextLong() {
+				return iterator.nextInt();
+			}
+		};
+	}
+
+	default Doubles toDoubles() {
+		return () -> new BaseDoubleIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public double nextDouble() {
+				return iterator.nextInt();
+			}
+		};
 	}
 }

@@ -543,4 +543,22 @@ public class LongsTest {
 		assertThat(Longs.range(6L, 1L), contains(6L, 5L, 4L, 3L, 2L, 1L));
 		assertThat(Longs.range(1L, 6L).count(), is(6L));
 	}
+
+	@Test
+	public void toChars() {
+		Chars chars = Longs.startingAt('a').limit(5).toChars();
+		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void toInts() {
+		Ints ints = Longs.positive().limit(5).toInts();
+		twice(() -> assertThat(ints, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toDoubles() {
+		Doubles doubles = Longs.positive().limit(5).toDoubles();
+		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+	}
 }

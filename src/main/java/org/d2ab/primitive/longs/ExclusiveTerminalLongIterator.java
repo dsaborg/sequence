@@ -19,14 +19,14 @@ package org.d2ab.primitive.longs;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class ExclusiveTerminalLongIterator implements LongIterator {
-	private final LongIterator iterator;
+public class ExclusiveTerminalLongIterator extends BaseLongIterator<Long, LongIterator> {
 	private final long terminal;
+
 	private long next;
 	private boolean hasNext;
 
 	public ExclusiveTerminalLongIterator(LongIterator iterator, long terminal) {
-		this.iterator = iterator;
+		super(iterator);
 		this.terminal = terminal;
 	}
 
