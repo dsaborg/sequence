@@ -16,10 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterator.SpecializedBaseIterator;
-import org.d2ab.primitive.chars.BaseCharIterator;
-import org.d2ab.primitive.doubles.BaseDoubleIterator;
-import org.d2ab.primitive.ints.BaseIntIterator;
+import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.primitive.chars.DelegatingCharIterator;
+import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
+import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.primitive.longs.*;
 import org.d2ab.utils.MoreArrays;
 
@@ -147,7 +147,7 @@ public interface Longs extends LongIterable {
 	}
 
 	default Longs endingAt(long terminal) {
-		return () -> new InclusiveTerminalLongIterator(terminal).over(iterator());
+		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -157,15 +157,15 @@ public interface Longs extends LongIterable {
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextLong());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Longs mapBack(BackPeekingLongFunction mapper) {
-		return () -> new BackPeekingLongIterator(mapper).over(iterator());
+		return () -> new BackPeekingLongIterator(mapper).backedBy(iterator());
 	}
 
 	default Longs mapForward(ForwardPeekingLongFunction mapper) {
-		return () -> new ForwardPeekingLongIterator(mapper).over(iterator());
+		return () -> new ForwardPeekingLongIterator(mapper).backedBy(iterator());
 	}
 
 	default Sequence<Long> box() {
@@ -174,22 +174,22 @@ public interface Longs extends LongIterable {
 
 	@Nonnull
 	default <T> Sequence<T> toSequence(@Nonnull LongFunction<T> mapper) {
-		return () -> new SpecializedBaseIterator<Long, LongIterator, T, Iterator<T>>() {
+		return () -> new DelegatingIterator<Long, LongIterator, T, Iterator<T>>() {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextLong());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	@Nonnull
 	default Longs skip(long skip) {
-		return () -> new SkippingLongIterator(skip).over(iterator());
+		return () -> new SkippingLongIterator(skip).backedBy(iterator());
 	}
 
 	@Nonnull
 	default Longs limit(long limit) {
-		return () -> new LimitingLongIterator(limit).over(iterator());
+		return () -> new LimitingLongIterator(limit).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -224,11 +224,11 @@ public interface Longs extends LongIterable {
 
 	@Nonnull
 	default Longs filter(@Nonnull LongPredicate predicate) {
-		return () -> new FilteringLongIterator(predicate).over(iterator());
+		return () -> new FilteringLongIterator(predicate).backedBy(iterator());
 	}
 
 	default Longs until(long terminal) {
-		return () -> new ExclusiveTerminalLongIterator(terminal).over(iterator());
+		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
@@ -277,7 +277,7 @@ public interface Longs extends LongIterable {
 	default OptionalLong second() {
 		LongIterator iterator = iterator();
 
-		iterator.skipOne();
+		iterator.skip();
 		if (!iterator.hasNext())
 			return OptionalLong.empty();
 
@@ -287,8 +287,8 @@ public interface Longs extends LongIterable {
 	default OptionalLong third() {
 		LongIterator iterator = iterator();
 
-		iterator.skipOne();
-		iterator.skipOne();
+		iterator.skip();
+		iterator.skip();
 		if (!iterator.hasNext())
 			return OptionalLong.empty();
 
@@ -309,11 +309,11 @@ public interface Longs extends LongIterable {
 	}
 
 	default Longs step(long step) {
-		return () -> new SteppingLongIterator(step).over(iterator());
+		return () -> new SteppingLongIterator(step).backedBy(iterator());
 	}
 
 	default Longs distinct() {
-		return () -> new DistinctLongIterator().over(iterator());
+		return () -> new DistinctLongIterator().backedBy(iterator());
 	}
 
 	default OptionalLong min() {
@@ -369,7 +369,7 @@ public interface Longs extends LongIterable {
 				action.accept(next);
 				return next;
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Longs sorted() {
@@ -394,7 +394,7 @@ public interface Longs extends LongIterable {
 		}
 
 		if (work.length == index) {
-			return work; // Not very likely
+			return work; // Not very likely, but still
 		}
 
 		long[] result = new long[index];
@@ -423,56 +423,56 @@ public interface Longs extends LongIterable {
 	}
 
 	default Chars toChars() {
-		return () -> new BaseCharIterator<Long, LongIterator>() {
+		return () -> new DelegatingCharIterator<Long, LongIterator>() {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextLong();
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Ints toInts() {
-		return () -> new BaseIntIterator<Long, LongIterator>() {
+		return () -> new DelegatingIntIterator<Long, LongIterator>() {
 			@Override
 			public int nextInt() {
 				return (int) iterator.nextLong();
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Doubles toDoubles() {
-		return () -> new BaseDoubleIterator<Long, LongIterator>() {
+		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
 			@Override
 			public double nextDouble() {
 				return iterator.nextLong();
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Chars toChars(LongToCharFunction mapper) {
-		return () -> new BaseCharIterator<Long, LongIterator>() {
+		return () -> new DelegatingCharIterator<Long, LongIterator>() {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextLong());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Ints toInts(LongToIntFunction mapper) {
-		return () -> new BaseIntIterator<Long, LongIterator>() {
+		return () -> new DelegatingIntIterator<Long, LongIterator>() {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextLong());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Doubles toDoubles(LongToDoubleFunction mapper) {
-		return () -> new BaseDoubleIterator<Long, LongIterator>() {
+		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextLong());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 }

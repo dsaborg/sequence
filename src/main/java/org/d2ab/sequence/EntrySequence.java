@@ -100,7 +100,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	@Nonnull
 	default <V, W> EntrySequence<V, W> map(Function<Entry<T, U>, Entry<V, W>> mapper) {
-		return () -> new MappingIterator<>(mapper).over(iterator());
+		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -111,12 +111,12 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	@Nonnull
 	default EntrySequence<T, U> skip(int skip) {
-		return () -> new SkippingIterator<Entry<T, U>>(skip).over(iterator());
+		return () -> new SkippingIterator<Entry<T, U>>(skip).backedBy(iterator());
 	}
 
 	@Nonnull
 	default EntrySequence<T, U> limit(int limit) {
-		return () -> new LimitingIterator<Entry<T, U>>(limit).over(iterator());
+		return () -> new LimitingIterator<Entry<T, U>>(limit).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -126,7 +126,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	@Nonnull
 	default EntrySequence<T, U> filter(@Nonnull BiPredicate<? super T, ? super U> predicate) {
-		return () -> new FilteringIterator<Entry<T, U>>(e -> Pair.test(e, predicate)).over(iterator());
+		return () -> new FilteringIterator<Entry<T, U>>(e -> Pair.test(e, predicate)).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -137,7 +137,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	}
 
 	default EntrySequence<T, U> until(Entry<T, U> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).over(iterator());
+		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
 	default Set<Entry<T, U>> toSet() {
@@ -256,23 +256,23 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	}
 
 	default Sequence<List<Entry<T, U>>> partition(int window) {
-		return () -> new PartitioningIterator<Entry<T, U>>(window).over(iterator());
+		return () -> new PartitioningIterator<Entry<T, U>>(window).backedBy(iterator());
 	}
 
 	default EntrySequence<T, U> step(int step) {
-		return () -> new SteppingIterator<Entry<T, U>>(step).over(iterator());
+		return () -> new SteppingIterator<Entry<T, U>>(step).backedBy(iterator());
 	}
 
 	default EntrySequence<T, U> distinct() {
-		return () -> new DistinctIterator<Entry<T, U>>().over(iterator());
+		return () -> new DistinctIterator<Entry<T, U>>().backedBy(iterator());
 	}
 
 	default EntrySequence<T, U> sorted() {
-		return () -> new SortingIterator<Entry<T, U>>().over(iterator());
+		return () -> new SortingIterator<Entry<T, U>>().backedBy(iterator());
 	}
 
 	default EntrySequence<T, U> sorted(Comparator<? super Entry<? extends T, ? extends U>> comparator) {
-		return () -> new SortingIterator<Entry<T, U>>(comparator).over(iterator());
+		return () -> new SortingIterator<Entry<T, U>>(comparator).backedBy(iterator());
 	}
 
 	default Optional<Entry<T, U>> min(Comparator<? super Entry<? extends T, ? extends U>> comparator) {
@@ -340,6 +340,6 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	}
 
 	default EntrySequence<T, U> peek(BiConsumer<T, U> action) {
-		return () -> new PeekingIterator(Pair.consumer(action)).over(iterator());
+		return () -> new PeekingIterator(Pair.consumer(action)).backedBy(iterator());
 	}
 }

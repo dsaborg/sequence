@@ -19,4 +19,4 @@ package org.d2ab.primitive.doubles;
 /**
  * A {@link DoubleIterator} that converts doubles to other doubles.
  */
-public abstract class UnaryDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {}
+public abstract class UnaryDoubleIterator extends DelegatingDoubleIterator<Double, DoubleIterator> {}

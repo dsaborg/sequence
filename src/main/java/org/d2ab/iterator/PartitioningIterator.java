@@ -17,7 +17,7 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public class PartitioningIterator<T> extends BaseIterator<T, List<T>> {
+public class PartitioningIterator<T> extends DelegatingReferenceIterator<T, List<T>> {
 	private final int window;
 
 	private Deque<T> partition = new LinkedList<>();

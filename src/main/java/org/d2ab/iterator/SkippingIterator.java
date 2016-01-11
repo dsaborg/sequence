@@ -17,7 +17,7 @@ package org.d2ab.iterator;
 
 import java.util.NoSuchElementException;
 
-public class SkippingIterator<T> extends BaseIterator<T, T> {
+public class SkippingIterator<T> extends DelegatingReferenceIterator<T, T> {
 	private final long skip;
 
 	boolean skipped;
@@ -37,7 +37,7 @@ public class SkippingIterator<T> extends BaseIterator<T, T> {
 	@Override
 	public boolean hasNext() {
 		if (!skipped) {
-			skip(skip);
+			Iterators.skip(iterator, skip);
 			skipped = true;
 		}
 

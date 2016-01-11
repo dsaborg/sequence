@@ -61,7 +61,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		};
 	}
 
-	default void skipOne() {
+	default void skip() {
 		skip(1);
 	}
 

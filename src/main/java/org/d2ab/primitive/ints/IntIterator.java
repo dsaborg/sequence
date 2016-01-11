@@ -45,7 +45,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		};
 	}
 
-	default void skipOne() {
+	default void skip() {
 		skip(1);
 	}
 

@@ -19,4 +19,4 @@ package org.d2ab.primitive.longs;
 /**
  * A {@link LongIterator} that converts longs to other longs.
  */
-public abstract class UnaryLongIterator extends BaseLongIterator<Long, LongIterator> {}
+public abstract class UnaryLongIterator extends DelegatingLongIterator<Long, LongIterator> {}

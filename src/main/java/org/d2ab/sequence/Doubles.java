@@ -154,7 +154,7 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	default Doubles endingAt(double terminal) {
-		return () -> new InclusiveTerminalDoubleIterator(terminal).over(iterator());
+		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -164,7 +164,7 @@ public interface Doubles extends DoubleIterable {
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextDouble());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Sequence<Double> box() {
@@ -190,12 +190,12 @@ public interface Doubles extends DoubleIterable {
 
 	@Nonnull
 	default Doubles skip(double skip) {
-		return () -> new SkippingDoubleIterator(skip).over(iterator());
+		return () -> new SkippingDoubleIterator(skip).backedBy(iterator());
 	}
 
 	@Nonnull
 	default Doubles limit(double limit) {
-		return () -> new LimitingDoubleIterator(limit).over(iterator());
+		return () -> new LimitingDoubleIterator(limit).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -230,11 +230,11 @@ public interface Doubles extends DoubleIterable {
 
 	@Nonnull
 	default Doubles filter(@Nonnull DoublePredicate predicate) {
-		return () -> new FilteringDoubleIterator(predicate).over(iterator());
+		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
 	}
 
 	default Doubles until(double terminal) {
-		return () -> new ExclusiveTerminalDoubleIterator(terminal).over(iterator());
+		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {
@@ -283,7 +283,7 @@ public interface Doubles extends DoubleIterable {
 	default OptionalDouble second() {
 		DoubleIterator iterator = iterator();
 
-		iterator.skipOne();
+		iterator.skip();
 		if (!iterator.hasNext())
 			return OptionalDouble.empty();
 
@@ -293,8 +293,8 @@ public interface Doubles extends DoubleIterable {
 	default OptionalDouble third() {
 		DoubleIterator iterator = iterator();
 
-		iterator.skipOne();
-		iterator.skipOne();
+		iterator.skip();
+		iterator.skip();
 		if (!iterator.hasNext())
 			return OptionalDouble.empty();
 
@@ -315,7 +315,7 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	default Doubles step(double step) {
-		return () -> new SteppingDoubleIterator(step).over(iterator());
+		return () -> new SteppingDoubleIterator(step).backedBy(iterator());
 	}
 
 	default OptionalDouble min() {
@@ -371,7 +371,7 @@ public interface Doubles extends DoubleIterable {
 				action.accept(next);
 				return next;
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Doubles sorted() {
@@ -396,7 +396,7 @@ public interface Doubles extends DoubleIterable {
 		}
 
 		if (work.length == index) {
-			return work; // Not very likely
+			return work; // Not very likely, but still
 		}
 
 		double[] result = new double[index];
@@ -425,11 +425,11 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	default Doubles mapBack(BackPeekingDoubleFunction mapper) {
-		return () -> new BackPeekingDoubleIterator(mapper).over(iterator());
+		return () -> new BackPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
 	default Doubles mapForward(ForwardPeekingDoubleFunction mapper) {
-		return () -> new ForwardPeekingDoubleIterator(mapper).over(iterator());
+		return () -> new ForwardPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
 	default Ints toInts() {

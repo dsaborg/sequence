@@ -43,7 +43,7 @@ public class ChainingLongIterator extends UnaryLongIterator {
 	@Override
 	public boolean hasNext() {
 		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			over(iterables.next().iterator());
+			backedBy(iterables.next().iterator());
 		}
 		return iterator != null && iterator.hasNext();
 	}

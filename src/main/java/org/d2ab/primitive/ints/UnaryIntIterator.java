@@ -19,4 +19,4 @@ package org.d2ab.primitive.ints;
 /**
  * An {@link IntIterator} that converts ints to other ints.
  */
-public abstract class UnaryIntIterator extends BaseIntIterator<Integer, IntIterator> {}
+public abstract class UnaryIntIterator extends DelegatingIntIterator<Integer, IntIterator> {}

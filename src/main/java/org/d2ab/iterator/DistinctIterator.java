@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class DistinctIterator<T> extends BaseIterator<T, T> {
-	private Set<T> seen = new HashSet<T>();
+public class DistinctIterator<T> extends DelegatingReferenceIterator<T, T> {
+	private Set<T> seen = new HashSet<>();
 
 	private T next;
 	private boolean hasNext;

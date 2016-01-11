@@ -17,7 +17,7 @@ package org.d2ab.iterator;
 
 import java.util.NoSuchElementException;
 
-public class LimitingIterator<T> extends BaseIterator<T, T> {
+public class LimitingIterator<T> extends DelegatingReferenceIterator<T, T> {
 	private final long limit;
 
 	long count;

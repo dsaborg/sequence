@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.primitive.doubles;
+
+import org.d2ab.iterator.DelegatingIterator;
 
 import java.util.Iterator;
 
 /**
- * Base class for {@link Iterator}s.
+ * A superclass for delegating {@link DoubleIterator}s.
  */
-public abstract class BaseIterator<T, U> extends SpecializedBaseIterator<T, Iterator<T>, U, Iterator<U>> {
-
-	public void skip() {
-		Iterators.skip(iterator);
-	}
-
-	public void skip(long steps) {
-		Iterators.skip(iterator, steps);
-	}
-}
+public abstract class DelegatingDoubleIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Double, DoubleIterator>
+		implements DoubleIterator {}

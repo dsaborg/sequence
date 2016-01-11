@@ -45,7 +45,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		};
 	}
 
-	default void skipOne() {
+	default void skip() {
 		skip(1);
 	}
 

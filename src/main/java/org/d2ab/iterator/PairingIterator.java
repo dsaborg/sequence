@@ -19,7 +19,7 @@ import org.d2ab.sequence.Pair;
 
 import java.util.NoSuchElementException;
 
-public class PairingIterator<T> extends BaseIterator<T, Pair<T, T>> {
+public class PairingIterator<T> extends DelegatingReferenceIterator<T, Pair<T, T>> {
 	private T previous;
 	private boolean hasPrevious;
 	private boolean started;

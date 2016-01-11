@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.primitive.chars;
+
+import org.d2ab.iterator.DelegatingIterator;
 
 import java.util.Iterator;
 
 /**
- * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
+ * A superclass for delegating {@link CharIterator}s.
  */
-public abstract class SpecializedBaseIterator<T, I extends Iterator<? extends T>, U, J extends Iterator<? extends U>>
-		implements Iterator<U> {
-	protected I iterator;
-
-	public J over(I iterator) {
-		this.iterator = iterator;
-		return (J) this;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-}
+public abstract class DelegatingCharIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Character, CharIterator>
+		implements CharIterator {}

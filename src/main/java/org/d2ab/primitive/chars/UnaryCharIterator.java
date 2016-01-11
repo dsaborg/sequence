@@ -19,4 +19,4 @@ package org.d2ab.primitive.chars;
 /**
  * A {@link CharIterator} that converts chars to other chars.
  */
-public abstract class UnaryCharIterator extends BaseCharIterator<Character, CharIterator> {}
+public abstract class UnaryCharIterator extends DelegatingCharIterator<Character, CharIterator> {}

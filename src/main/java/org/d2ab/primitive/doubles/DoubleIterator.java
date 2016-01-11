@@ -45,7 +45,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		};
 	}
 
-	default void skipOne() {
+	default void skip() {
 		skip(1);
 	}
 

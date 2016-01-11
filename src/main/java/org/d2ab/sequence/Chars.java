@@ -16,7 +16,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
-import org.d2ab.primitive.ints.BaseIntIterator;
+import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.utils.MoreArrays;
 
 import javax.annotation.Nonnull;
@@ -141,7 +141,7 @@ public interface Chars extends CharIterable {
 	}
 
 	default Chars endingAt(char terminal) {
-		return () -> new InclusiveTerminalCharIterator(terminal).over(iterator());
+		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -151,7 +151,7 @@ public interface Chars extends CharIterable {
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextChar());
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Sequence<Character> box() {
@@ -177,12 +177,12 @@ public interface Chars extends CharIterable {
 
 	@Nonnull
 	default Chars skip(long skip) {
-		return () -> new SkippingCharIterator(skip).over(iterator());
+		return () -> new SkippingCharIterator(skip).backedBy(iterator());
 	}
 
 	@Nonnull
 	default Chars limit(long limit) {
-		return () -> new LimitingCharIterator(limit).over(iterator());
+		return () -> new LimitingCharIterator(limit).backedBy(iterator());
 	}
 
 	@Nonnull
@@ -217,11 +217,11 @@ public interface Chars extends CharIterable {
 
 	@Nonnull
 	default Chars filter(@Nonnull CharPredicate predicate) {
-		return () -> new FilteringCharIterator(predicate).over(iterator());
+		return () -> new FilteringCharIterator(predicate).backedBy(iterator());
 	}
 
 	default Chars until(char terminal) {
-		return () -> new ExclusiveTerminalCharIterator(terminal).over(iterator());
+		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
@@ -270,7 +270,7 @@ public interface Chars extends CharIterable {
 	default OptionalChar second() {
 		CharIterator iterator = iterator();
 
-		iterator.skipOne();
+		iterator.skip();
 		if (!iterator.hasNext())
 			return OptionalChar.empty();
 
@@ -280,8 +280,8 @@ public interface Chars extends CharIterable {
 	default OptionalChar third() {
 		CharIterator iterator = iterator();
 
-		iterator.skipOne();
-		iterator.skipOne();
+		iterator.skip();
+		iterator.skip();
 		if (!iterator.hasNext())
 			return OptionalChar.empty();
 
@@ -302,11 +302,11 @@ public interface Chars extends CharIterable {
 	}
 
 	default Chars step(long step) {
-		return () -> new SteppingCharIterator(step).over(iterator());
+		return () -> new SteppingCharIterator(step).backedBy(iterator());
 	}
 
 	default Chars distinct() {
-		return () -> new DistinctCharIterator().over(iterator());
+		return () -> new DistinctCharIterator().backedBy(iterator());
 	}
 
 	default OptionalChar min() {
@@ -362,7 +362,7 @@ public interface Chars extends CharIterable {
 				action.accept(next);
 				return next;
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 
 	default Chars sorted() {
@@ -387,7 +387,7 @@ public interface Chars extends CharIterable {
 		}
 
 		if (work.length == index) {
-			return work; // Not very likely
+			return work; // Not very likely, but still
 		}
 
 		char[] result = new char[index];
@@ -420,19 +420,19 @@ public interface Chars extends CharIterable {
 	}
 
 	default Chars mapBack(IntCharToCharBinaryFunction mapper) {
-		return () -> new BackPeekingMappingCharIterator(mapper).over(iterator());
+		return () -> new BackPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
 	default Chars mapForward(CharIntToCharBinaryFunction mapper) {
-		return () -> new ForwardPeekingMappingCharIterator(mapper).over(iterator());
+		return () -> new ForwardPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
 	default Ints toInts() {
-		return () -> new BaseIntIterator<Character, CharIterator>() {
+		return () -> new DelegatingIntIterator<Character, CharIterator>() {
 			@Override
 			public int nextInt() {
 				return iterator.nextChar();
 			}
-		}.over(iterator());
+		}.backedBy(iterator());
 	}
 }
