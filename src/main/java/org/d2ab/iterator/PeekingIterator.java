@@ -17,7 +17,7 @@ package org.d2ab.iterator;
 
 import java.util.function.Consumer;
 
-public class PeekingIterator<T> extends DelegatingReferenceIterator<T, T> {
+public class PeekingIterator<T> extends UnaryReferenceIterator<T> {
 	private final Consumer<? super T> action;
 
 	public PeekingIterator(Consumer<? super T> action) {

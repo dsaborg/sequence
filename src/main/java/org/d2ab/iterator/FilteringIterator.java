@@ -18,7 +18,7 @@ package org.d2ab.iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public class FilteringIterator<T> extends DelegatingReferenceIterator<T, T> {
+public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 	private final Predicate<? super T> predicate;
 
 	T next;

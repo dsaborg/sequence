@@ -18,7 +18,7 @@ package org.d2ab.iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class InclusiveTerminalIterator<T> extends DelegatingReferenceIterator<T, T> {
+public class InclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
 	private final T terminal;
 
 	private T previous;

@@ -17,7 +17,7 @@ package org.d2ab.iterator;
 
 import java.util.NoSuchElementException;
 
-public class SteppingIterator<T> extends DelegatingReferenceIterator<T, T> {
+public class SteppingIterator<T> extends UnaryReferenceIterator<T> {
 	private final long step;
 
 	private boolean hasNext;

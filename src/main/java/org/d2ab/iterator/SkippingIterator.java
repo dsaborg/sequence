@@ -17,7 +17,7 @@ package org.d2ab.iterator;
 
 import java.util.NoSuchElementException;
 
-public class SkippingIterator<T> extends DelegatingReferenceIterator<T, T> {
+public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
 	private final long skip;
 
 	boolean skipped;

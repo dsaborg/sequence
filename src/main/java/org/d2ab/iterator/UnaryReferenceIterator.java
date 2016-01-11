@@ -13,30 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
-import java.util.NoSuchElementException;
+import java.util.Iterator;
 
-public class LimitingIterator<T> extends UnaryReferenceIterator<T> {
-	private final long limit;
-
-	long count;
-
-	public LimitingIterator(long limit) {
-		this.limit = limit;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		T next = iterator.next();
-		count++;
-		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
-	}
-}
+/**
+ * Base class for reference {@link Iterator}s that delegate to another {@link Iterator} of the same type of values.
+ */
+public abstract class UnaryReferenceIterator<T> extends DelegatingReferenceIterator<T, T> {}
