@@ -139,8 +139,8 @@ public interface Doubles extends DoubleIterable {
 	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive.
 	 */
 	static Doubles range(double start, double end, double step) {
-		DoubleUnaryOperator next = (end > start) ? c -> (double) (c + step) : c -> (double) (c - step);
-		return recurse(start, next).endingAt(end);
+		double effectiveStep = end > start ? step : -step;
+		return recurse(start, d -> d + effectiveStep).endingAt(end);
 	}
 
 	static Doubles recurse(double seed, DoubleUnaryOperator op) {

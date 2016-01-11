@@ -133,7 +133,7 @@ public interface Longs extends LongIterable {
 	 * A {@code Sequence} of all the {@link Long} values between the given start and end positions, inclusive.
 	 */
 	static Longs range(long start, long end) {
-		LongUnaryOperator next = (end > start) ? x -> x + 1 : x -> x - 1;
+		LongUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
 		return recurse(start, next).endingAt(end);
 	}
 

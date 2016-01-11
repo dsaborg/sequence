@@ -132,7 +132,7 @@ public interface Chars extends CharIterable {
 	 * A {@code Sequence} of all the {@link Character} values between the given start and end positions, inclusive.
 	 */
 	static Chars range(char start, char end) {
-		CharUnaryOperator next = (end > start) ? c -> (char) (c + 1) : c -> (char) (c - 1);
+		CharUnaryOperator next = (end > start) ? c -> (char) ++c : c -> (char) --c;
 		return recurse(start, next).endingAt(end);
 	}
 
