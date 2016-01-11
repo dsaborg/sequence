@@ -36,9 +36,8 @@ public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
 	public boolean hasNext() {
 		if (iterator == null || !iterator.hasNext()) {
 			iterator = iterable.iterator();
-			return iterator.hasNext();
 		}
-		return true;
+		return iterator.hasNext();
 	}
 
 	@Override
