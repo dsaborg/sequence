@@ -587,13 +587,13 @@ public class CharsTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		Chars repeatOne = a.repeat();
-		twice(() -> assertThat(repeatOne.limit(10), contains('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a')));
+		twice(() -> assertThat(repeatOne.limit(3), contains('a', 'a', 'a')));
 
 		Chars repeatTwo = ab.repeat();
-		twice(() -> assertThat(repeatTwo.limit(10), contains('a', 'b', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b')));
+		twice(() -> assertThat(repeatTwo.limit(5), contains('a', 'b', 'a', 'b', 'a')));
 
 		Chars repeatThree = abc.repeat();
-		twice(() -> assertThat(repeatThree.limit(10), contains('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a')));
+		twice(() -> assertThat(repeatThree.limit(8), contains('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b')));
 
 		Chars repeatVarying = Chars.from(new CharIterable() {
 			private List<Character> list = asList('a', 'b', 'c');

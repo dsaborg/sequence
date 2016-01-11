@@ -605,13 +605,13 @@ public class LongsTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		Longs repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne.limit(10), contains(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L)));
+		twice(() -> assertThat(repeatOne.limit(3), contains(1L, 1L, 1L)));
 
 		Longs repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo.limit(10), contains(1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L)));
+		twice(() -> assertThat(repeatTwo.limit(5), contains(1L, 2L, 1L, 2L, 1L)));
 
 		Longs repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree.limit(10), contains(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 3L, 1L)));
+		twice(() -> assertThat(repeatThree.limit(8), contains(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L)));
 
 		Longs repeatVarying = Longs.from(new LongIterable() {
 			private List<Long> list = asList(1L, 2L, 3L);

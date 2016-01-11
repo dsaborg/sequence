@@ -648,13 +648,13 @@ public class DoublesTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		Doubles repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne.limit(10), contains(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)));
+		twice(() -> assertThat(repeatOne.limit(3), contains(1.0, 1.0, 1.0)));
 
 		Doubles repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo.limit(10), contains(1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0)));
+		twice(() -> assertThat(repeatTwo.limit(5), contains(1.0, 2.0, 1.0, 2.0, 1.0)));
 
 		Doubles repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree.limit(10), contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0)));
+		twice(() -> assertThat(repeatThree.limit(8), contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0)));
 
 		Doubles repeatVarying = Doubles.from(new DoubleIterable() {
 			private List<Double> list = asList(1.0, 2.0, 3.0);

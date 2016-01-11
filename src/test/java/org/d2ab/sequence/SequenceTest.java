@@ -1008,13 +1008,13 @@ public class SequenceTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		Sequence<Integer> repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne.limit(10), contains(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)));
+		twice(() -> assertThat(repeatOne.limit(3), contains(1, 1, 1)));
 
 		Sequence<Integer> repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo.limit(10), contains(1, 2, 1, 2, 1, 2, 1, 2, 1, 2)));
+		twice(() -> assertThat(repeatTwo.limit(5), contains(1, 2, 1, 2, 1)));
 
 		Sequence<Integer> repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree.limit(10), contains(1, 2, 3, 1, 2, 3, 1, 2, 3, 1)));
+		twice(() -> assertThat(repeatThree.limit(8), contains(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
 			private List<Integer> list = asList(1, 2, 3);
