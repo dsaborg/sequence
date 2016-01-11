@@ -81,9 +81,6 @@ public interface IntIterable extends Iterable<Integer> {
 		return () -> IntIterator.from(iterator);
 	}
 
-	@Override
-	IntIterator iterator();
-
 	@Nonnull
 	static IntIterable from(IntStream intStream) {
 		return from(IntIterator.from(intStream.iterator()));
@@ -97,6 +94,28 @@ public interface IntIterable extends Iterable<Integer> {
 	@Nonnull
 	static IntIterable from(Integer... integers) {
 		return from(Arrays.asList(integers));
+	}
+
+	@Nonnull
+	static IntIterable from(Stream<Integer> stream) {
+		return from(stream.iterator());
+	}
+
+	@Override
+	IntIterator iterator();
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @implSpec If the action is an instance of {@code IntConsumer} then it is cast to {@code IntConsumer} and passed
+	 * to {@link #forEachInt}; otherwise the action is adapted to an instance of {@code IntConsumer}, by boxing the
+	 * argument of {@code IntConsumer}, and then passed to {@link #forEachInt}.
+	 */
+	@Override
+	default void forEach(Consumer<? super Integer> action) {
+		Objects.requireNonNull(action);
+
+		forEachInt((action instanceof IntConsumer) ? (IntConsumer) action : action::accept);
 	}
 
 	/**
@@ -120,25 +139,5 @@ public interface IntIterable extends Iterable<Integer> {
 		IntIterator iterator = iterator();
 		while (iterator.hasNext())
 			action.accept(iterator.nextInt());
-	}
-
-	@Nonnull
-	static IntIterable from(Stream<Integer> stream) {
-		return from(stream.iterator());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @implSpec If the action is an instance of {@code IntConsumer} then it is cast to {@code IntConsumer} and
-	 * passed
-	 * to {@link #forEachInt}; otherwise the action is adapted to an instance of {@code IntConsumer}, by boxing the
-	 * argument of {@code IntConsumer}, and then passed to {@link #forEachInt}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Integer> action) {
-		Objects.requireNonNull(action);
-
-		forEachInt((action instanceof IntConsumer) ? (IntConsumer) action : action::accept);
 	}
 }

@@ -73,10 +73,6 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		return p -> action.accept(p.getLeft(), p.getRight());
 	}
 
-	L getLeft();
-
-	R getRight();
-
 	static <KK, VV, K, V> Entry<KK, VV> map(Entry<K, V> entry, Function<? super K, ? extends KK> keyMapper,
 	                                        Function<? super V, ? extends VV> valueMapper) {
 		return new Base<KK, VV>() {
@@ -95,6 +91,15 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	static <K, V> boolean test(@Nonnull Entry<K, V> entry, @Nonnull BiPredicate<? super K, ? super V> predicate) {
 		return predicate.test(entry.getKey(), entry.getValue());
 	}
+
+	static <K, V> Map<K, V> putEntry(Map<K, V> result, Entry<K, V> each) {
+		result.put(each.getKey(), each.getValue());
+		return result;
+	}
+
+	L getLeft();
+
+	R getRight();
 
 	@Override
 	default L getKey() {
@@ -218,11 +223,6 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		return putEntry(map, this);
 	}
 
-	static <K, V> Map<K, V> putEntry(Map<K, V> result, Entry<K, V> each) {
-		result.put(each.getKey(), each.getValue());
-		return result;
-	}
-
 	default <T> Iterator<T> iterator() {
 		@SuppressWarnings("unchecked")
 		PairIterator<?, ?, T> pairIterator = new PairIterator(this);
@@ -234,6 +234,13 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		private final Comparator<Entry> COMPARATOR = comparing((Function<Entry, Object>) Entry::getKey,
 		                                                       NULLS_FIRST).thenComparing(
 				(Function<Entry, Object>) Entry::getValue, NULLS_FIRST);
+
+		public static String format(Object o) {
+			if (o instanceof String) {
+				return '"' + (String) o + '"';
+			}
+			return String.valueOf(o);
+		}
 
 		@Override
 		public int hashCode() {
@@ -258,13 +265,6 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		@Override
 		public String toString() {
 			return "(" + format(getLeft()) + ", " + format(getRight()) + ')';
-		}
-
-		public static String format(Object o) {
-			if (o instanceof String) {
-				return '"' + (String) o + '"';
-			}
-			return String.valueOf(o);
 		}
 
 		@Override

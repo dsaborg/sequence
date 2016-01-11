@@ -36,9 +36,6 @@ public class ArrayIterator<T> implements Iterator<T> {
 		int result = Arrays.hashCode(items);
 		result = 31 * result + index;
 		return result;
-	}	@Override
-	public boolean hasNext() {
-		return index < items.length;
 	}
 
 	@Override
@@ -51,12 +48,6 @@ public class ArrayIterator<T> implements Iterator<T> {
 		ArrayIterator<?> that = (ArrayIterator<?>) o;
 
 		return index == that.index && Arrays.equals(items, that.items);
-	}	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return items[index++];
 	}
 
 	@Override
@@ -64,7 +55,16 @@ public class ArrayIterator<T> implements Iterator<T> {
 		return "ArrayIterator(" + Arrays.toString(items) + '@' + index + ')';
 	}
 
+	@Override
+	public boolean hasNext() {
+		return index < items.length;
+	}
 
+	@Override
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
 
-
+		return items[index++];
+	}
 }

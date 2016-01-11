@@ -21,7 +21,8 @@ import java.util.Iterator;
 /**
  * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
  */
-public abstract class DelegatingIterator<T, I extends Iterator<? extends T>, U, J extends Iterator<? extends U>> implements Iterator<U> {
+public abstract class DelegatingIterator<T, I extends Iterator<? extends T>, U, J extends Iterator<? extends U>>
+		implements Iterator<U> {
 	protected I iterator;
 
 	public J backedBy(I iterator) {

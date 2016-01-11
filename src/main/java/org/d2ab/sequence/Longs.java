@@ -48,8 +48,9 @@ public interface Longs extends LongIterable {
 	}
 
 	/**
-	 * Create an {@code Longs} from an {@link Iterator} of {@code Long} values. Note that {@code Longs} created from {@link Iterator}s
-	 * cannot be passed over more than once. Further attempts will register the {@code Longs} as empty.
+	 * Create an {@code Longs} from an {@link Iterator} of {@code Long} values. Note that {@code Longs} created from
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code Longs} as
+	 * empty.
 	 */
 	@Nonnull
 	static Longs from(@Nonnull Iterator<Long> iterator) {
@@ -113,7 +114,8 @@ public interface Longs extends LongIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the positive {@link Long} values starting at {@code 1} and ending at {@link Long#MAX_VALUE}.
+	 * A {@code Sequence} of all the positive {@link Long} values starting at {@code 1} and ending at
+	 * {@link Long#MAX_VALUE}.
 	 */
 	static Longs positive() {
 		return startingAt(1);
@@ -140,7 +142,8 @@ public interface Longs extends LongIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Long} values starting at {@code -1} and ending at {@link Long#MIN_VALUE}.
+	 * A {@code Sequence} of all the negative {@link Long} values starting at {@code -1} and ending at
+	 * {@link Long#MIN_VALUE}.
 	 */
 	static Longs negative() {
 		return range(-1L, Long.MIN_VALUE);

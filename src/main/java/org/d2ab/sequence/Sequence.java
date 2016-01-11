@@ -298,7 +298,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap() {
 		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
+		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
+				                                                                                                 .<Entry<K, V>>identity();
 		return toMap(mapper);
 	}
 
@@ -320,11 +321,13 @@ public interface Sequence<T> extends Iterable<T> {
 		return toMap(supplier, mapper);
 	}
 
-	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
+	                               Function<? super T, ? extends V> valueMapper) {
 		return toMap(HashMap::new, keyMapper, valueMapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends K> keyMapper,
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
+	                                            Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
 		M result = constructor.get();
 		forEach(each -> {
@@ -335,7 +338,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
-	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
+	                                           Function<? super T, ? extends V> valueMapper) {
 		return toMap(TreeMap::new, keyMapper, valueMapper);
 	}
 
@@ -521,7 +525,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).backedBy(delimitedIterator);
+			return new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).backedBy(
+					delimitedIterator);
 		};
 	}
 
@@ -529,7 +534,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).backedBy(delimitedIterator);
+			return new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).backedBy(
+					delimitedIterator);
 		};
 	}
 
@@ -537,7 +543,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).backedBy(delimitedIterator);
+			return new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).backedBy(
+					delimitedIterator);
 		};
 	}
 
@@ -545,7 +552,8 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).backedBy(delimitedIterator);
+			return new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).backedBy(
+					delimitedIterator);
 		};
 	}
 

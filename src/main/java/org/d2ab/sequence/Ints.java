@@ -47,8 +47,9 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * Create an {@code Ints} from an {@link Iterator} of {@code Integer} values. Note that {@code Ints} created from {@link Iterator}s
-	 * cannot be passed over more than once. Further attempts will register the {@code Ints} as empty.
+	 * Create an {@code Ints} from an {@link Iterator} of {@code Integer} values. Note that {@code Ints} created from
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code Ints} as
+	 * empty.
 	 */
 	@Nonnull
 	static Ints from(@Nonnull Iterator<Integer> iterator) {
@@ -112,7 +113,8 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the positive {@link Integer} values starting at {@code 1} and ending at {@link Integer#MAX_VALUE}.
+	 * A {@code Sequence} of all the positive {@link Integer} values starting at {@code 1} and ending at
+	 * {@link Integer#MAX_VALUE}.
 	 */
 	static Ints positive() {
 		return startingAt(1);
@@ -139,7 +141,8 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at {@link Integer#MIN_VALUE}.
+	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at
+	 * {@link Integer#MIN_VALUE}.
 	 */
 	static Ints negative() {
 		return range(-1, Integer.MIN_VALUE);

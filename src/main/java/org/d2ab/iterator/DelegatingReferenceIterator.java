@@ -19,7 +19,7 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 
 /**
- * A base class for {@link Iterator}s that iterate over object references, as opposed to primitive values, and delegate to another iterator for its source
- * values.
+ * A base class for {@link Iterator}s that iterate over object references, as opposed to primitive values, and
+ * delegate to another iterator for its source values.
  */
 public abstract class DelegatingReferenceIterator<T, U> extends DelegatingIterator<T, Iterator<T>, U, Iterator<U>> {}

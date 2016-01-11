@@ -23,5 +23,5 @@ import java.util.Iterator;
 /**
  * A superclass for delegating {@link DoubleIterator}s.
  */
-public abstract class DelegatingDoubleIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Double, DoubleIterator>
-		implements DoubleIterator {}
+public abstract class DelegatingDoubleIterator<T, I extends Iterator<T>>
+		extends DelegatingIterator<T, I, Double, DoubleIterator> implements DoubleIterator {}

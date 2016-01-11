@@ -91,9 +91,6 @@ public interface DoubleIterable extends Iterable<Double> {
 		return () -> new ArrayDoubleIterator(doubles);
 	}
 
-	@Override
-	DoubleIterator iterator();
-
 	@Nonnull
 	static DoubleIterable from(Double... doubles) {
 		return from(Arrays.asList(doubles));
@@ -102,6 +99,23 @@ public interface DoubleIterable extends Iterable<Double> {
 	@Nonnull
 	static DoubleIterable from(Stream<Double> stream) {
 		return from(stream.iterator());
+	}
+
+	@Override
+	DoubleIterator iterator();
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @implSpec If the action is an instance of {@code DoubleConsumer} then it is cast to {@code DoubleConsumer} and
+	 * passed to {@link #forEachDouble}; otherwise the action is adapted to an instance of {@code DoubleConsumer}, by
+	 * boxing the argument of {@code DoubleConsumer}, and then passed to {@link #forEachDouble}.
+	 */
+	@Override
+	default void forEach(Consumer<? super Double> action) {
+		Objects.requireNonNull(action);
+
+		forEachDouble((action instanceof DoubleConsumer) ? (DoubleConsumer) action : action::accept);
 	}
 
 	/**
@@ -125,20 +139,5 @@ public interface DoubleIterable extends Iterable<Double> {
 		DoubleIterator iterator = iterator();
 		while (iterator.hasNext())
 			action.accept(iterator.nextDouble());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @implSpec If the action is an instance of {@code DoubleConsumer} then it is cast to {@code DoubleConsumer} and
-	 * passed
-	 * to {@link #forEachDouble}; otherwise the action is adapted to an instance of {@code DoubleConsumer}, by boxing the
-	 * argument of {@code DoubleConsumer}, and then passed to {@link #forEachDouble}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Double> action) {
-		Objects.requireNonNull(action);
-
-		forEachDouble((action instanceof DoubleConsumer) ? (DoubleConsumer) action : action::accept);
 	}
 }

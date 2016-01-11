@@ -74,9 +74,6 @@ public interface CharIterable extends Iterable<Character> {
 		return iterator.asIterable();
 	}
 
-	@Override
-	CharIterator iterator();
-
 	@Nonnull
 	static CharIterable from(Iterator<Character> iterator) {
 		return () -> CharIterator.from(iterator);
@@ -85,6 +82,39 @@ public interface CharIterable extends Iterable<Character> {
 	@Nonnull
 	static CharIterable from(IntStream charStream) {
 		return from(CharIterator.from(charStream.iterator()));
+	}
+
+	@Nonnull
+	static CharIterable of(char... characters) {
+		return () -> new ArrayCharIterator(characters);
+	}
+
+	@Nonnull
+	static CharIterable from(Character... characters) {
+		return from(Arrays.asList(characters));
+	}
+
+	@Nonnull
+	static CharIterable from(Stream<Character> stream) {
+		return from(stream.iterator());
+	}
+
+	@Override
+	CharIterator iterator();
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @implSpec If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
+	 * passed
+	 * to {@link #forEachChar}; otherwise the action is adapted to an instance of {@code CharConsumer}, by boxing the
+	 * argument of {@code CharConsumer}, and then passed to {@link #forEachChar}.
+	 */
+	@Override
+	default void forEach(Consumer<? super Character> action) {
+		Objects.requireNonNull(action);
+
+		forEachChar((action instanceof CharConsumer) ? (CharConsumer) action : action::accept);
 	}
 
 	/**
@@ -108,35 +138,5 @@ public interface CharIterable extends Iterable<Character> {
 		CharIterator iterator = iterator();
 		while (iterator.hasNext())
 			action.accept(iterator.nextChar());
-	}
-
-	@Nonnull
-	static CharIterable of(char... characters) {
-		return () -> new ArrayCharIterator(characters);
-	}
-
-	@Nonnull
-	static CharIterable from(Character... characters) {
-		return from(Arrays.asList(characters));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @implSpec If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
-	 * passed
-	 * to {@link #forEachChar}; otherwise the action is adapted to an instance of {@code CharConsumer}, by boxing the
-	 * argument of {@code CharConsumer}, and then passed to {@link #forEachChar}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Character> action) {
-		Objects.requireNonNull(action);
-
-		forEachChar((action instanceof CharConsumer) ? (CharConsumer) action : action::accept);
-	}
-
-	@Nonnull
-	static CharIterable from(Stream<Character> stream) {
-		return from(stream.iterator());
 	}
 }

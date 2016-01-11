@@ -31,7 +31,8 @@ public class DelimitingIterator<U extends R, R> extends UnaryReferenceIterator<R
 	private boolean prefixDone;
 	private boolean suffixDone;
 
-	public DelimitingIterator(Optional<? extends U> prefix, Optional<? extends U> delimiter, Optional<? extends U> suffix) {
+	public DelimitingIterator(Optional<? extends U> prefix, Optional<? extends U> delimiter,
+	                          Optional<? extends U> suffix) {
 		this.prefix = prefix;
 		this.delimiter = delimiter;
 		this.suffix = suffix;

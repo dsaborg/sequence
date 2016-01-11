@@ -130,7 +130,9 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	}
 
 	@Nonnull
-	default <V, W> EntrySequence<V, W> flatMap(@Nonnull BiFunction<? super T, ? super U, ? extends Iterable<Entry<V, W>>> mapper) {
+	default <V, W> EntrySequence<V, W> flatMap(@Nonnull
+	                                           BiFunction<? super T, ? super U, ? extends Iterable<Entry<V, W>>>
+			                                               mapper) {
 		ChainingIterable<Entry<V, W>> result = new ChainingIterable<>();
 		forEach(e -> result.append(mapper.apply(e.getKey(), e.getValue())));
 		return result::iterator;

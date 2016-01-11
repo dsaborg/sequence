@@ -86,9 +86,6 @@ public interface LongIterable extends Iterable<Long> {
 		return from(LongIterator.from(longStream.iterator()));
 	}
 
-	@Override
-	LongIterator iterator();
-
 	@Nonnull
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
@@ -102,6 +99,24 @@ public interface LongIterable extends Iterable<Long> {
 	@Nonnull
 	static LongIterable from(Stream<Long> stream) {
 		return from(stream.iterator());
+	}
+
+	@Override
+	LongIterator iterator();
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @implSpec If the action is an instance of {@code LongConsumer} then it is cast to {@code LongConsumer} and
+	 * passed
+	 * to {@link #forEachLong}; otherwise the action is adapted to an instance of {@code LongConsumer}, by boxing the
+	 * argument of {@code LongConsumer}, and then passed to {@link #forEachLong}.
+	 */
+	@Override
+	default void forEach(Consumer<? super Long> action) {
+		Objects.requireNonNull(action);
+
+		forEachLong((action instanceof LongConsumer) ? (LongConsumer) action : action::accept);
 	}
 
 	/**
@@ -125,20 +140,5 @@ public interface LongIterable extends Iterable<Long> {
 		LongIterator iterator = iterator();
 		while (iterator.hasNext())
 			action.accept(iterator.nextLong());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @implSpec If the action is an instance of {@code LongConsumer} then it is cast to {@code LongConsumer} and
-	 * passed
-	 * to {@link #forEachLong}; otherwise the action is adapted to an instance of {@code LongConsumer}, by boxing the
-	 * argument of {@code LongConsumer}, and then passed to {@link #forEachLong}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Long> action) {
-		Objects.requireNonNull(action);
-
-		forEachLong((action instanceof LongConsumer) ? (LongConsumer) action : action::accept);
 	}
 }

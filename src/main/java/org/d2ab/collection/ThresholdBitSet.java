@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A mix between a {@link Set} and a {@link BitSet} for remembering values. Uses a {@link BitSet} up to a threshold value, then uses a
- * regular {@link Set}.
+ * A mix between a {@link Set} and a {@link BitSet} for remembering values. Uses a {@link BitSet} up to a threshold
+ * value, then uses a regular {@link Set}.
  */
 public class ThresholdBitSet {
 	private final int threshold;

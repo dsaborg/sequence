@@ -66,14 +66,14 @@ public class EntrySequenceTest {
 	private final Entry<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
 	private final Entry<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
-	@Test
-	public void ofOne() throws Exception {
-		twice(() -> assertThat(_1, contains(Pair.of("1", 1))));
-	}
-
 	public static void twice(Runnable action) {
 		action.run();
 		action.run();
+	}
+
+	@Test
+	public void ofOne() throws Exception {
+		twice(() -> assertThat(_1, contains(Pair.of("1", 1))));
 	}
 
 	@Test
@@ -310,8 +310,7 @@ public class EntrySequenceTest {
 	public void mapIsLazy() {
 		EntrySequence<Integer, String> mapped = EntrySequence.of(Pair.of("1", 1), null) // null will be hit when
 		                                                     // mapping
-		                                                     .map((s, i) -> Pair.of(parseInt(s), i.toString
-				                                                                                                   ()));
+		                                                     .map((s, i) -> Pair.of(parseInt(s), i.toString()));
 
 		twice(() -> {
 			// NPE here if not lazy

@@ -113,7 +113,8 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the positive {@link Double} values starting at {@code 1} and ending at {@link Double#MAX_VALUE}.
+	 * A {@code Sequence} of all the positive {@link Double} values starting at {@code 1} and ending at
+	 * {@link Double#MAX_VALUE}.
 	 */
 	static Doubles positive() {
 		return startingAt(1);
@@ -147,7 +148,8 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Double} values starting at {@code -1} and ending at {@link Double#MIN_VALUE}.
+	 * A {@code Sequence} of all the negative {@link Double} values starting at {@code -1} and ending at
+	 * {@link Double#MIN_VALUE}.
 	 */
 	static Doubles negative() {
 		return range(-1L, Double.MIN_VALUE);
