@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -76,8 +77,8 @@ public class SequenceTest {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
 			_1.forEach(i -> assertThat(i, is(in(singletonList(1)))));
-			_12.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2)))));
-			_123.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
+			_12.forEach(i -> assertThat(i, is(in(asList(1, 2)))));
+			_123.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
 		});
 	}
 
@@ -128,7 +129,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromIterable() throws Exception {
-		Iterable<Integer> iterable = () -> Arrays.asList(1, 2, 3).iterator();
+		Iterable<Integer> iterable = () -> asList(1, 2, 3).iterator();
 
 		Sequence<Integer> sequenceFromIterable = Sequence.from(iterable);
 
@@ -137,7 +138,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromStream() throws Exception {
-		Sequence<Integer> sequenceFromStream = Sequence.from(Arrays.asList(1, 2, 3).stream());
+		Sequence<Integer> sequenceFromStream = Sequence.from(asList(1, 2, 3).stream());
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -153,7 +154,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromIteratorSupplier() throws Exception {
-		Supplier<Iterator<Integer>> iterators = () -> Arrays.asList(1, 2, 3).iterator();
+		Supplier<Iterator<Integer>> iterators = () -> asList(1, 2, 3).iterator();
 
 		Sequence<Integer> sequenceFromIterators = Sequence.from(iterators);
 
@@ -162,9 +163,9 @@ public class SequenceTest {
 
 	@Test
 	public void fromIterables() throws Exception {
-		Iterable<Integer> first = Arrays.asList(1, 2, 3);
-		Iterable<Integer> second = Arrays.asList(4, 5, 6);
-		Iterable<Integer> third = Arrays.asList(7, 8, 9);
+		Iterable<Integer> first = asList(1, 2, 3);
+		Iterable<Integer> second = asList(4, 5, 6);
+		Iterable<Integer> third = asList(7, 8, 9);
 
 		Sequence<Integer> sequenceFromIterables = Sequence.from(first, second, third);
 
@@ -252,9 +253,9 @@ public class SequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		Iterator<Integer> first = Arrays.asList(1, 2, 3).iterator();
-		Iterator<Integer> second = Arrays.asList(4, 5, 6).iterator();
-		Iterator<Integer> third = Arrays.asList(7, 8).iterator();
+		Iterator<Integer> first = asList(1, 2, 3).iterator();
+		Iterator<Integer> second = asList(4, 5, 6).iterator();
+		Iterator<Integer> third = asList(7, 8).iterator();
 
 		Sequence<Integer> then = Sequence.from(first).append(() -> second).append(() -> third);
 
@@ -292,7 +293,7 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterables() {
-		Sequence<List<Integer>> sequence = Sequence.of(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6));
+		Sequence<List<Integer>> sequence = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
 
 		Sequence<Integer> flatMap = sequence.flatMap(Function.identity());
 
@@ -301,7 +302,7 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapLazy() {
-		Sequence<Integer> flatMap = Sequence.of(Arrays.asList(1, 2), null).flatMap(Function.identity());
+		Sequence<Integer> flatMap = Sequence.of(asList(1, 2), null).flatMap(Function.identity());
 
 		twice(() -> {
 			Iterator<Integer> iterator = flatMap.iterator(); // NPE if not lazy - expected later below
@@ -313,9 +314,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(Arrays.asList(1, 2).iterator(),
-		                                                   Arrays.asList(3, 4).iterator(),
-		                                                   Arrays.asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
+		                                                   asList(5, 6).iterator());
 		Sequence<Integer> flatMap = sequence.flatMap(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -332,7 +332,7 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterables() {
-		Sequence<Integer> flattened = Sequence.of(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6))
+		Sequence<Integer> flattened = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6))
 		                                      .flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -340,7 +340,7 @@ public class SequenceTest {
 
 	@Test
 	public void flattenLazy() {
-		Sequence<Integer> flattened = Sequence.of(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
+		Sequence<Integer> flattened = Sequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}).flatten();
 
@@ -355,9 +355,8 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(Arrays.asList(1, 2).iterator(),
-		                                                   Arrays.asList(3, 4).iterator(),
-		                                                   Arrays.asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
+		                                                   asList(5, 6).iterator());
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -666,8 +665,7 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void partition() {
-		twice(() -> assertThat(_12345.partition(3),
-		                       contains(Arrays.asList(1, 2, 3), Arrays.asList(2, 3, 4), Arrays.asList(3, 4, 5))));
+		twice(() -> assertThat(_12345.partition(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5))));
 	}
 
 	@Test
@@ -679,10 +677,10 @@ public class SequenceTest {
 	@Test
 	public void partitionAndStep() {
 		Sequence<List<Integer>> partitionAndStep = _12345.partition(3).step(2);
-		twice(() -> assertThat(partitionAndStep, contains(Arrays.asList(1, 2, 3), Arrays.asList(3, 4, 5))));
+		twice(() -> assertThat(partitionAndStep, contains(asList(1, 2, 3), asList(3, 4, 5))));
 
 		Sequence<List<Integer>> partitioned = _12345.partition(3);
-		twice(() -> assertThat(partitioned.step(2), contains(Arrays.asList(1, 2, 3), Arrays.asList(3, 4, 5))));
+		twice(() -> assertThat(partitioned.step(2), contains(asList(1, 2, 3), asList(3, 4, 5))));
 	}
 
 	@Test
@@ -1002,5 +1000,33 @@ public class SequenceTest {
 
 		Doubles doubles = Sequence.ints().limit(5).mapToDouble(i -> (double) i);
 		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+	}
+
+	@Test
+	public void repeat() {
+		Sequence<Integer> repeatEmpty = empty.repeat();
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		Sequence<Integer> repeatOne = _1.repeat();
+		twice(() -> assertThat(repeatOne.limit(10), contains(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)));
+
+		Sequence<Integer> repeatTwo = _12.repeat();
+		twice(() -> assertThat(repeatTwo.limit(10), contains(1, 2, 1, 2, 1, 2, 1, 2, 1, 2)));
+
+		Sequence<Integer> repeatThree = _123.repeat();
+		twice(() -> assertThat(repeatThree.limit(10), contains(1, 2, 3, 1, 2, 3, 1, 2, 3, 1)));
+
+		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
+			private List<Integer> list = asList(1, 2, 3);
+			int end = list.size();
+
+			@Override
+			public Iterator<Integer> iterator() {
+				List<Integer> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				return subList.iterator();
+			}
+		}).repeat();
+		assertThat(repeatVarying, contains(1, 2, 3, 1, 2, 1));
 	}
 }

@@ -612,4 +612,8 @@ public interface Sequence<T> extends Iterable<T> {
 			}
 		}.backedBy(iterator());
 	}
+
+	default Sequence<T> repeat() {
+		return () -> new RepeatingIterator(this);
+	}
 }
