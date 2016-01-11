@@ -16,23 +16,12 @@
 
 package org.d2ab.primitive.chars;
 
+import org.d2ab.iterator.SpecializedBaseIterator;
+
 import java.util.Iterator;
 
 /**
  * A superclass for delegating {@link CharIterator}s.
  */
-public abstract class BaseCharIterator<T, I extends Iterator<T>> implements CharIterator {
-	protected I iterator;
-
-	protected BaseCharIterator() {
-	}
-
-	protected BaseCharIterator(I iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-}
+public abstract class BaseCharIterator<T, I extends Iterator<T>> extends SpecializedBaseIterator<T, I, Character, CharIterator>
+		implements CharIterator {}

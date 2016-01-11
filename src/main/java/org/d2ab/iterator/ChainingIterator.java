@@ -42,7 +42,7 @@ public class ChainingIterator<T> extends BaseIterator<T, T> {
 	@Override
 	public boolean hasNext() {
 		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			iterator = iterables.next().iterator();
+			iterator = (Iterator<T>) iterables.next().iterator();
 		}
 		return iterator != null && iterator.hasNext();
 	}

@@ -20,14 +20,13 @@ import java.util.NoSuchElementException;
 /**
  * An iterator over chars that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingMappingCharIterator extends BaseCharIterator<Character, CharIterator> {
+public class ForwardPeekingMappingCharIterator extends UnaryCharIterator {
 	private final CharIntToCharBinaryFunction mapper;
 
 	private int current = -1;
 	private boolean started;
 
-	public ForwardPeekingMappingCharIterator(CharIterator iterator, CharIntToCharBinaryFunction mapper) {
-		super(iterator);
+	public ForwardPeekingMappingCharIterator(CharIntToCharBinaryFunction mapper) {
 		this.mapper = mapper;
 	}
 

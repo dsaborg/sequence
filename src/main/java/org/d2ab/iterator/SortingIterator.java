@@ -22,12 +22,11 @@ public class SortingIterator<T> extends BaseIterator<T, T> {
 
 	private Iterator<T> sortedIterator;
 
-	public SortingIterator(Iterator<? extends T> iterator) {
-		this(iterator, naturalOrder());
+	public SortingIterator() {
+		this(naturalOrder());
 	}
 
-	public SortingIterator(Iterator<? extends T> iterator, Comparator<? super T> comparator) {
-		super(iterator);
+	public SortingIterator(Comparator<? super T> comparator) {
 		this.comparator = comparator;
 	}
 

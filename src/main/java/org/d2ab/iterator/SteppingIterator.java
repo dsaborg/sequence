@@ -15,7 +15,6 @@
  */
 package org.d2ab.iterator;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SteppingIterator<T> extends BaseIterator<T, T> {
@@ -24,8 +23,7 @@ public class SteppingIterator<T> extends BaseIterator<T, T> {
 	private boolean hasNext;
 	private T next;
 
-	public SteppingIterator(Iterator<? extends T> iterator, long step) {
-		super(iterator);
+	public SteppingIterator(long step) {
 		this.step = step;
 	}
 

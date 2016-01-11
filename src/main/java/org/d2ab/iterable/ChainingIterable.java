@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ChainingIterable<T> implements Iterable<T> {
-	private final Collection<Iterable<? extends T>> iterables = new ArrayList<>();
+	private final Collection<Iterable<T>> iterables = new ArrayList<>();
 
 	public ChainingIterable() {
 	}
@@ -45,6 +45,14 @@ public class ChainingIterable<T> implements Iterable<T> {
 		return new ChainingIterable<U>().flatAppend(containers);
 	}
 
+	@Nonnull
+	public static <T, U> Iterable<U> flatMap(@Nonnull Iterable<? extends T> iterable,
+	                                         @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
+		ChainingIterable<U> result = new ChainingIterable<>();
+		iterable.forEach(each -> result.append(mapper.apply(each)));
+		return result;
+	}
+
 	public Iterable<T> flatAppend(@Nonnull Iterable<?> containers) {
 		for (Object each : containers)
 			append(Iterables.from(each));
@@ -55,14 +63,6 @@ public class ChainingIterable<T> implements Iterable<T> {
 	public Iterable<T> append(@Nonnull Iterable<T> iterable) {
 		iterables.add(iterable);
 		return this;
-	}
-
-	@Nonnull
-	public static <T, U> Iterable<U> flatMap(@Nonnull Iterable<? extends T> iterable,
-	                                         @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
-		ChainingIterable<U> result = new ChainingIterable<>();
-		iterable.forEach(each -> result.append(mapper.apply(each)));
-		return result;
 	}
 
 	public Iterable<T> append(Iterator<T> iterator) {

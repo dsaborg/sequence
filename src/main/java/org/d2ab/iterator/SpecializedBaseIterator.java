@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.doubles;
+package org.d2ab.iterator;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.Iterator;
 
-public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
-	private final double terminal;
+/**
+ * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
+ */
+public abstract class SpecializedBaseIterator<T, I extends Iterator<? extends T>, U, J extends Iterator<? extends U>>
+		implements Iterator<U> {
+	protected I iterator;
 
-	private double previous;
-	private boolean hasPrevious;
-
-	public InclusiveTerminalDoubleIterator(double terminal) {
-		this.terminal = terminal;
-	}
-
-	@Override
-	public double nextDouble() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		hasPrevious = true;
-		return previous = iterator.next();
+	public J over(I iterator) {
+		this.iterator = iterator;
+		return (J) this;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
+		return iterator.hasNext();
 	}
 }

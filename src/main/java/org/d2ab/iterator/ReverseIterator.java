@@ -24,10 +24,6 @@ import java.util.*;
 public class ReverseIterator<T> extends BaseIterator<T, T> {
 	private ListIterator<? extends T> listIterator;
 
-	public ReverseIterator(Iterator<? extends T> iterator) {
-		super(iterator);
-	}
-
 	@Override
 	public T next() {
 		if (!hasNext())

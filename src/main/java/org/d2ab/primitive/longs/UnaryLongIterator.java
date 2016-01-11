@@ -16,28 +16,7 @@
 
 package org.d2ab.primitive.longs;
 
-import java.util.NoSuchElementException;
-
-public class LimitingLongIterator extends UnaryLongIterator {
-	private final long limit;
-
-	long count;
-
-	public LimitingLongIterator(long limit) {
-		this.limit = limit;
-	}
-
-	@Override
-	public long nextLong() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		long next = iterator.nextLong();
-		count++;
-		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
-	}
-}
+/**
+ * A {@link LongIterator} that converts longs to other longs.
+ */
+public abstract class UnaryLongIterator extends BaseLongIterator<Long, LongIterator> {}

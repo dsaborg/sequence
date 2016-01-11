@@ -16,23 +16,12 @@
 
 package org.d2ab.primitive.ints;
 
+import org.d2ab.iterator.SpecializedBaseIterator;
+
 import java.util.Iterator;
 
 /**
  * A superclass for delegating {@link IntIterator}s.
  */
-public abstract class BaseIntIterator<T, I extends Iterator<T>> implements IntIterator {
-	protected I iterator;
-
-	protected BaseIntIterator() {
-	}
-
-	protected BaseIntIterator(I iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-}
+public abstract class BaseIntIterator<T, I extends Iterator<T>> extends SpecializedBaseIterator<T, I, Integer, IntIterator>
+		implements IntIterator {}

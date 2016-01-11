@@ -19,14 +19,13 @@ package org.d2ab.primitive.doubles;
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
 
-public class FilteringDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
+public class FilteringDoubleIterator extends UnaryDoubleIterator {
 	private final DoublePredicate predicate;
 
 	double next;
 	private boolean hasNext;
 
-	public FilteringDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {
-		super(iterator);
+	public FilteringDoubleIterator(DoublePredicate predicate) {
 		this.predicate = predicate;
 	}
 

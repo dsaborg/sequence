@@ -16,23 +16,12 @@
 
 package org.d2ab.primitive.doubles;
 
+import org.d2ab.iterator.SpecializedBaseIterator;
+
 import java.util.Iterator;
 
 /**
  * A superclass for delegating {@link DoubleIterator}s.
  */
-public abstract class BaseDoubleIterator<T, I extends Iterator<T>> implements DoubleIterator {
-	protected I iterator;
-
-	protected BaseDoubleIterator() {
-	}
-
-	protected BaseDoubleIterator(I iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-}
+public abstract class BaseDoubleIterator<T, I extends Iterator<T>> extends SpecializedBaseIterator<T, I, Double, DoubleIterator>
+		implements DoubleIterator {}

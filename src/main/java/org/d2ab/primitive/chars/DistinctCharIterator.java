@@ -19,17 +19,13 @@ import org.d2ab.collection.ThresholdBitSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctCharIterator extends BaseCharIterator<Character, CharIterator> {
+public class DistinctCharIterator extends UnaryCharIterator {
 	private static final int THRESHOLD = 256;
 
 	private final ThresholdBitSet seen = new ThresholdBitSet(THRESHOLD);
 
 	private char next;
 	private boolean hasNext;
-
-	public DistinctCharIterator(CharIterator iterator) {
-		super(iterator);
-	}
 
 	@Override
 	public char nextChar() {

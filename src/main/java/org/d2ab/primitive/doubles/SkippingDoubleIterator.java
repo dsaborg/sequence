@@ -18,13 +18,12 @@ package org.d2ab.primitive.doubles;
 
 import java.util.NoSuchElementException;
 
-public class SkippingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
+public class SkippingDoubleIterator extends UnaryDoubleIterator {
 	private final double skip;
 
 	boolean skipped;
 
-	public SkippingDoubleIterator(DoubleIterator iterator, double skip) {
-		super(iterator);
+	public SkippingDoubleIterator(double skip) {
 		this.skip = skip;
 	}
 

@@ -18,12 +18,11 @@ package org.d2ab.primitive.doubles;
 
 import java.util.NoSuchElementException;
 
-public class LimitingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
+public class LimitingDoubleIterator extends UnaryDoubleIterator {
 	private final double limit;
 	double count;
 
-	public LimitingDoubleIterator(DoubleIterator iterator, double limit) {
-		super(iterator);
+	public LimitingDoubleIterator(double limit) {
 		this.limit = limit;
 	}
 

@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.iterator.SpecializedBaseIterator;
 import org.d2ab.primitive.chars.BaseCharIterator;
 import org.d2ab.primitive.doubles.BaseDoubleIterator;
 import org.d2ab.primitive.ints.BaseIntIterator;
@@ -134,10 +135,6 @@ public interface Longs extends LongIterable {
 		return recurse(start, next).endingAt(end);
 	}
 
-	default Longs endingAt(long terminal) {
-		return () -> new InclusiveTerminalLongIterator(iterator(), terminal);
-	}
-
 	static Longs recurse(long seed, LongUnaryOperator op) {
 		return () -> new RecursiveLongIterator(seed, op);
 	}
@@ -149,14 +146,26 @@ public interface Longs extends LongIterable {
 		return range(-1L, Long.MIN_VALUE);
 	}
 
+	default Longs endingAt(long terminal) {
+		return () -> new InclusiveTerminalLongIterator(terminal).over(iterator());
+	}
+
 	@Nonnull
 	default Longs map(@Nonnull LongUnaryOperator mapper) {
-		return () -> new BaseLongIterator<Long, LongIterator>(iterator()) {
+		return () -> new UnaryLongIterator() {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextLong());
 			}
-		};
+		}.over(iterator());
+	}
+
+	default Longs mapBack(BackPeekingLongFunction mapper) {
+		return () -> new BackPeekingLongIterator(mapper).over(iterator());
+	}
+
+	default Longs mapForward(ForwardPeekingLongFunction mapper) {
+		return () -> new ForwardPeekingLongIterator(mapper).over(iterator());
 	}
 
 	default Sequence<Long> box() {
@@ -165,29 +174,22 @@ public interface Longs extends LongIterable {
 
 	@Nonnull
 	default <T> Sequence<T> toSequence(@Nonnull LongFunction<T> mapper) {
-		return () -> new Iterator<T>() {
-			private final LongIterator iterator = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
+		return () -> new SpecializedBaseIterator<Long, LongIterator, T, Iterator<T>>() {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextLong());
 			}
-		};
+		}.over(iterator());
 	}
 
 	@Nonnull
 	default Longs skip(long skip) {
-		return () -> new SkippingLongIterator(iterator(), skip);
+		return () -> new SkippingLongIterator(skip).over(iterator());
 	}
 
 	@Nonnull
 	default Longs limit(long limit) {
-		return () -> new LimitingLongIterator(iterator(), limit);
+		return () -> new LimitingLongIterator(limit).over(iterator());
 	}
 
 	@Nonnull
@@ -222,11 +224,11 @@ public interface Longs extends LongIterable {
 
 	@Nonnull
 	default Longs filter(@Nonnull LongPredicate predicate) {
-		return () -> new FilteringLongIterator(iterator(), predicate);
+		return () -> new FilteringLongIterator(predicate).over(iterator());
 	}
 
 	default Longs until(long terminal) {
-		return () -> new ExclusiveTerminalLongIterator(iterator(), terminal);
+		return () -> new ExclusiveTerminalLongIterator(terminal).over(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
@@ -307,11 +309,11 @@ public interface Longs extends LongIterable {
 	}
 
 	default Longs step(long step) {
-		return () -> new SteppingLongIterator(iterator(), step);
+		return () -> new SteppingLongIterator(step).over(iterator());
 	}
 
 	default Longs distinct() {
-		return () -> new DistinctLongIterator(iterator());
+		return () -> new DistinctLongIterator().over(iterator());
 	}
 
 	default OptionalLong min() {
@@ -360,14 +362,14 @@ public interface Longs extends LongIterable {
 	}
 
 	default Longs peek(LongConsumer action) {
-		return () -> new BaseLongIterator<Long, LongIterator>(iterator()) {
+		return () -> new UnaryLongIterator() {
 			@Override
 			public long nextLong() {
 				long next = iterator.nextLong();
 				action.accept(next);
 				return next;
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Longs sorted() {
@@ -420,65 +422,57 @@ public interface Longs extends LongIterable {
 		return LongIterable.of(array)::iterator;
 	}
 
-	default Longs mapBack(BackPeekingLongFunction mapper) {
-		return () -> new BackPeekingLongIterator(iterator(), mapper);
-	}
-
-	default Longs mapForward(ForwardPeekingLongFunction mapper) {
-		return () -> new ForwardPeekingLongIterator(iterator(), mapper);
-	}
-
 	default Chars toChars() {
-		return () -> new BaseCharIterator<Long, LongIterator>(iterator()) {
+		return () -> new BaseCharIterator<Long, LongIterator>() {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextLong();
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Ints toInts() {
-		return () -> new BaseIntIterator<Long, LongIterator>(iterator()) {
+		return () -> new BaseIntIterator<Long, LongIterator>() {
 			@Override
 			public int nextInt() {
 				return (int) iterator.nextLong();
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Doubles toDoubles() {
-		return () -> new BaseDoubleIterator<Long, LongIterator>(iterator()) {
+		return () -> new BaseDoubleIterator<Long, LongIterator>() {
 			@Override
 			public double nextDouble() {
 				return iterator.nextLong();
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Chars toChars(LongToCharFunction mapper) {
-		return () -> new BaseCharIterator<Long, LongIterator>(iterator()) {
+		return () -> new BaseCharIterator<Long, LongIterator>() {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextLong());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Ints toInts(LongToIntFunction mapper) {
-		return () -> new BaseIntIterator<Long, LongIterator>(iterator()) {
+		return () -> new BaseIntIterator<Long, LongIterator>() {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextLong());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Doubles toDoubles(LongToDoubleFunction mapper) {
-		return () -> new BaseDoubleIterator<Long, LongIterator>(iterator()) {
+		return () -> new BaseDoubleIterator<Long, LongIterator>() {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextLong());
 			}
-		};
+		}.over(iterator());
 	}
 }

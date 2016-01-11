@@ -18,14 +18,13 @@ package org.d2ab.primitive.doubles;
 
 import java.util.NoSuchElementException;
 
-public class SteppingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
+public class SteppingDoubleIterator extends UnaryDoubleIterator {
 	private final double step;
 
 	private boolean hasNext;
 	private double next;
 
-	public SteppingDoubleIterator(DoubleIterator iterator, double step) {
-		super(iterator);
+	public SteppingDoubleIterator(double step) {
 		this.step = step;
 	}
 

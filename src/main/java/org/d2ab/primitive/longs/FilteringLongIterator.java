@@ -19,14 +19,13 @@ package org.d2ab.primitive.longs;
 import java.util.NoSuchElementException;
 import java.util.function.LongPredicate;
 
-public class FilteringLongIterator extends BaseLongIterator<Long, LongIterator> {
+public class FilteringLongIterator extends UnaryLongIterator {
 	private final LongPredicate predicate;
 
 	long next;
 	private boolean hasNext;
 
-	public FilteringLongIterator(LongIterator iterator, LongPredicate predicate) {
-		super(iterator);
+	public FilteringLongIterator(LongPredicate predicate) {
 		this.predicate = predicate;
 	}
 

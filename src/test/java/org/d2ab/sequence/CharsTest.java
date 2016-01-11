@@ -555,8 +555,8 @@ public class CharsTest {
 
 	@Test
 	public void toInts() {
-		Ints empty = Chars.empty().toInts();
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		Ints emptyInts = empty.toInts();
+		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 
 		Ints ints = Chars.all().limit(5).toInts();
 		twice(() -> assertThat(ints, contains(0, 1, 2, 3, 4)));
@@ -564,19 +564,19 @@ public class CharsTest {
 
 	@Test
 	public void toSequence() {
-		Sequence<Character> empty = Chars.empty().toSequence(c -> (char) (c + 1));
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		Sequence<Character> emptySequence = empty.toSequence(c -> (char) (c + 1));
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
 
-		Sequence<Character> chars = Chars.startingAt('a').limit(5).toSequence(c -> (char) (c + 1));
-		twice(() -> assertThat(chars, contains('b', 'c', 'd', 'e', 'f')));
+		Sequence<Character> charsSequence = abcde.toSequence(c -> (char) (c + 1));
+		twice(() -> assertThat(charsSequence, contains('b', 'c', 'd', 'e', 'f')));
 	}
 
 	@Test
 	public void box() {
-		Sequence<Character> empty = Chars.empty().box();
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		Sequence<Character> emptyBoxed = empty.box();
+		twice(() -> assertThat(emptyBoxed, is(emptyIterable())));
 
-		Sequence<Character> chars = Chars.startingAt('a').limit(5).box();
-		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+		Sequence<Character> charsBoxed = abcde.box();
+		twice(() -> assertThat(charsBoxed, contains('a', 'b', 'c', 'd', 'e')));
 	}
 }

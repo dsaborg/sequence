@@ -137,10 +137,6 @@ public interface Sequence<T> extends Iterable<T> {
 		return recurse(start, next).endingAt(end);
 	}
 
-	default Sequence<T> endingAt(T terminal) {
-		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
-	}
-
 	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
 		return () -> new RecursiveIterator<>(seed, op);
 	}
@@ -213,19 +209,23 @@ public interface Sequence<T> extends Iterable<T> {
 		return range(start, Character.MAX_VALUE);
 	}
 
+	default Sequence<T> endingAt(T terminal) {
+		return () -> new InclusiveTerminalIterator<>(terminal).over(iterator());
+	}
+
 	@Nonnull
 	default <U> Sequence<U> map(@Nonnull Function<? super T, ? extends U> mapper) {
-		return () -> new MappingIterator<>(iterator(), mapper);
+		return () -> new MappingIterator<>(mapper).over(iterator());
 	}
 
 	@Nonnull
 	default Sequence<T> skip(long skip) {
-		return () -> new SkippingIterator<>(iterator(), skip);
+		return () -> new SkippingIterator<T>(skip).over(iterator());
 	}
 
 	@Nonnull
 	default Sequence<T> limit(long limit) {
-		return () -> new LimitingIterator<>(iterator(), limit);
+		return () -> new LimitingIterator<T>(limit).over(iterator());
 	}
 
 	default Sequence<T> append(Iterator<T> iterator) {
@@ -250,7 +250,7 @@ public interface Sequence<T> extends Iterable<T> {
 
 	@Nonnull
 	default Sequence<T> filter(@Nonnull Predicate<? super T> predicate) {
-		return () -> new FilteringIterator<>(iterator(), predicate);
+		return () -> new FilteringIterator<>(predicate).over(iterator());
 	}
 
 	@Nonnull
@@ -263,11 +263,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> untilNull() {
-		return () -> new ExclusiveTerminalIterator<>(iterator(), null);
+		return () -> new ExclusiveTerminalIterator<T>(null).over(iterator());
 	}
 
 	default Sequence<T> until(T terminal) {
-		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
+		return () -> new ExclusiveTerminalIterator<>(terminal).over(iterator());
 	}
 
 	default Set<T> toSet() {
@@ -298,8 +298,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap() {
 		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
-				                                                                                                 .<Entry<K, V>>identity();
+		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
 		return toMap(mapper);
 	}
 
@@ -321,13 +320,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return toMap(supplier, mapper);
 	}
 
-	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
-	                               Function<? super T, ? extends V> valueMapper) {
+	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
 		return toMap(HashMap::new, keyMapper, valueMapper);
 	}
 
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
-	                                            Function<? super T, ? extends K> keyMapper,
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
 		M result = constructor.get();
 		forEach(each -> {
@@ -338,8 +335,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
-	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
-	                                           Function<? super T, ? extends V> valueMapper) {
+	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
 		return toMap(TreeMap::new, keyMapper, valueMapper);
 	}
 
@@ -422,31 +418,31 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<Pair<T, T>> pair() {
-		return () -> new PairingIterator<>(iterator());
+		return () -> new PairingIterator<T>().over(iterator());
 	}
 
 	default Sequence<List<T>> partition(int window) {
-		return () -> new PartitioningIterator<>(iterator(), window);
+		return () -> new PartitioningIterator<T>(window).over(iterator());
 	}
 
 	default Sequence<T> step(long step) {
-		return () -> new SteppingIterator<>(iterator(), step);
+		return () -> new SteppingIterator<T>(step).over(iterator());
 	}
 
 	default Sequence<T> distinct() {
-		return () -> new DistinctIterator<>(iterator());
+		return () -> new DistinctIterator<T>().over(iterator());
 	}
 
 	default <S extends Comparable<? super S>> Sequence<S> sorted() {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<S> comparableIterator = (Iterator<S>) iterator();
-			return new SortingIterator<>(comparableIterator);
+			return new SortingIterator<S>().over(comparableIterator);
 		};
 	}
 
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
-		return () -> new SortingIterator<>(iterator(), comparator);
+		return () -> new SortingIterator<>(comparator).over(iterator());
 	}
 
 	default Optional<T> min(Comparator<? super T> comparator) {
@@ -518,15 +514,14 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> peek(Consumer<? super T> action) {
-		return () -> new PeekingIterator<>(iterator(), action);
+		return () -> new PeekingIterator<>(action).over(iterator());
 	}
 
 	default <U extends R, V extends R, R> Sequence<R> delimit(V delimiter) {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator<>(delimitedIterator, Optional.empty(), Optional.of(delimiter),
-			                                Optional.empty());
+			return new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).over(delimitedIterator);
 		};
 	}
 
@@ -534,8 +529,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator<>(delimitedIterator, Optional.of(prefix), Optional.of(delimiter),
-			                                Optional.of(suffix));
+			return new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).over(delimitedIterator);
 		};
 	}
 
@@ -543,8 +537,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator<>(delimitedIterator, Optional.of(prefix), Optional.empty(), Optional.empty
-					                                                                                                   ());
+			return new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).over(delimitedIterator);
 		};
 	}
 
@@ -552,7 +545,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator<>(delimitedIterator, Optional.empty(), Optional.empty(), Optional.of(suffix));
+			return new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).over(delimitedIterator);
 		};
 	}
 
@@ -561,7 +554,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> reverse() {
-		return () -> new ReverseIterator<>(iterator());
+		return () -> new ReverseIterator<T>().over(iterator());
 	}
 
 	default Sequence<T> shuffle() {
@@ -577,38 +570,38 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Chars mapToChar(@Nonnull ToCharFunction<T> mapper) {
-		return () -> new BaseCharIterator<T, Iterator<T>>(iterator()) {
+		return () -> new BaseCharIterator<T, Iterator<T>>() {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.next());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Ints mapToInt(@Nonnull ToIntFunction<T> mapper) {
-		return () -> new BaseIntIterator<T, Iterator<T>>(iterator()) {
+		return () -> new BaseIntIterator<T, Iterator<T>>() {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.next());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Longs mapToLong(@Nonnull ToLongFunction<T> mapper) {
-		return () -> new BaseLongIterator<T, Iterator<T>>(iterator()) {
+		return () -> new BaseLongIterator<T, Iterator<T>>() {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.next());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Doubles mapToDouble(@Nonnull ToDoubleFunction<T> mapper) {
-		return () -> new BaseDoubleIterator<T, Iterator<T>>(iterator()) {
+		return () -> new BaseDoubleIterator<T, Iterator<T>>() {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.next());
 			}
-		};
+		}.over(iterator());
 	}
 }

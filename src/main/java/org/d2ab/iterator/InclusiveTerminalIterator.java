@@ -15,7 +15,6 @@
  */
 package org.d2ab.iterator;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -25,8 +24,7 @@ public class InclusiveTerminalIterator<T> extends BaseIterator<T, T> {
 	private T previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalIterator(Iterator<T> iterator, T terminal) {
-		super(iterator);
+	public InclusiveTerminalIterator(T terminal) {
 		this.terminal = terminal;
 	}
 

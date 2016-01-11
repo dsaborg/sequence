@@ -16,23 +16,12 @@
 
 package org.d2ab.primitive.longs;
 
+import org.d2ab.iterator.SpecializedBaseIterator;
+
 import java.util.Iterator;
 
 /**
  * A superclass for delegating {@link LongIterator}s.
  */
-public abstract class BaseLongIterator<T, I extends Iterator<T>> implements LongIterator {
-	protected I iterator;
-
-	protected BaseLongIterator() {
-	}
-
-	protected BaseLongIterator(I iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-}
+public abstract class BaseLongIterator<T, I extends Iterator<T>> extends SpecializedBaseIterator<T, I, Long, LongIterator>
+		implements LongIterator {}

@@ -15,7 +15,6 @@
  */
 package org.d2ab.iterator;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
@@ -25,8 +24,7 @@ public class FilteringIterator<T> extends BaseIterator<T, T> {
 	T next;
 	private boolean hasNext;
 
-	public FilteringIterator(Iterator<? extends T> iterator, Predicate<? super T> predicate) {
-		super(iterator);
+	public FilteringIterator(Predicate<? super T> predicate) {
 		this.predicate = predicate;
 	}
 

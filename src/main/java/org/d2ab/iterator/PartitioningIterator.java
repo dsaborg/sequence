@@ -22,8 +22,7 @@ public class PartitioningIterator<T> extends BaseIterator<T, List<T>> {
 
 	private Deque<T> partition = new LinkedList<>();
 
-	public PartitioningIterator(Iterator<? extends T> iterator, int window) {
-		super(iterator);
+	public PartitioningIterator(int window) {
 		this.window = window;
 	}
 

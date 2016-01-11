@@ -15,14 +15,12 @@
  */
 package org.d2ab.iterator;
 
-import java.util.Iterator;
 import java.util.function.Function;
 
 public class MappingIterator<T, U> extends BaseIterator<T, U> {
 	private final Function<? super T, ? extends U> mapper;
 
-	public MappingIterator(Iterator<? extends T> iterator, Function<? super T, ? extends U> mapper) {
-		super(iterator);
+	public MappingIterator(Function<? super T, ? extends U> mapper) {
 		this.mapper = mapper;
 	}
 

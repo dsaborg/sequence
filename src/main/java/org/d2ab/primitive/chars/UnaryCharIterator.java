@@ -14,30 +14,9 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.longs;
+package org.d2ab.primitive.chars;
 
-import java.util.NoSuchElementException;
-
-public class LimitingLongIterator extends UnaryLongIterator {
-	private final long limit;
-
-	long count;
-
-	public LimitingLongIterator(long limit) {
-		this.limit = limit;
-	}
-
-	@Override
-	public long nextLong() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		long next = iterator.nextLong();
-		count++;
-		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
-	}
-}
+/**
+ * A {@link CharIterator} that converts chars to other chars.
+ */
+public abstract class UnaryCharIterator extends BaseCharIterator<Character, CharIterator> {}

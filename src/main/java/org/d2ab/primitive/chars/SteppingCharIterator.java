@@ -17,14 +17,13 @@ package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
 
-public class SteppingCharIterator extends BaseCharIterator<Character, CharIterator> {
+public class SteppingCharIterator extends UnaryCharIterator {
 	private final long step;
 
 	private boolean hasNext;
 	private char next;
 
-	public SteppingCharIterator(CharIterator iterator, long step) {
-		super(iterator);
+	public SteppingCharIterator(long step) {
 		this.step = step;
 	}
 

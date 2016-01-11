@@ -18,14 +18,13 @@ package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
 
-public class SteppingIntIterator extends BaseIntIterator<Integer, IntIterator> {
+public class SteppingIntIterator extends UnaryIntIterator {
 	private final long step;
 
 	private boolean hasNext;
 	private int next;
 
-	public SteppingIntIterator(IntIterator iterator, long step) {
-		super(iterator);
+	public SteppingIntIterator(long step) {
 		this.step = step;
 	}
 

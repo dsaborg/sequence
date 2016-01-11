@@ -15,7 +15,6 @@
  */
 package org.d2ab.iterator;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class LimitingIterator<T> extends BaseIterator<T, T> {
@@ -23,8 +22,7 @@ public class LimitingIterator<T> extends BaseIterator<T, T> {
 
 	long count;
 
-	public LimitingIterator(Iterator<T> iterator, long limit) {
-		super(iterator);
+	public LimitingIterator(long limit) {
 		this.limit = limit;
 	}
 

@@ -134,10 +134,6 @@ public interface Ints extends IntIterable {
 		return recurse(start, next).endingAt(end);
 	}
 
-	default Ints endingAt(int terminal) {
-		return () -> new InclusiveTerminalIntIterator(iterator(), terminal);
-	}
-
 	static Ints recurse(int seed, IntUnaryOperator op) {
 		return () -> new RecursiveIntIterator(seed, op);
 	}
@@ -149,14 +145,18 @@ public interface Ints extends IntIterable {
 		return range(-1, Integer.MIN_VALUE);
 	}
 
+	default Ints endingAt(int terminal) {
+		return () -> new InclusiveTerminalIntIterator(terminal).over(iterator());
+	}
+
 	@Nonnull
 	default Ints map(@Nonnull IntUnaryOperator mapper) {
-		return () -> new BaseIntIterator<Integer, IntIterator>(iterator()) {
+		return () -> new UnaryIntIterator() {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextInt());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Sequence<Integer> box() {
@@ -182,12 +182,12 @@ public interface Ints extends IntIterable {
 
 	@Nonnull
 	default Ints skip(long skip) {
-		return () -> new SkippingIntIterator(iterator(), skip);
+		return () -> new SkippingIntIterator(skip).over(iterator());
 	}
 
 	@Nonnull
 	default Ints limit(long limit) {
-		return () -> new LimitingIntIterator(iterator(), limit);
+		return () -> new LimitingIntIterator(limit).over(iterator());
 	}
 
 	@Nonnull
@@ -222,11 +222,11 @@ public interface Ints extends IntIterable {
 
 	@Nonnull
 	default Ints filter(@Nonnull IntPredicate predicate) {
-		return () -> new FilteringIntIterator(iterator(), predicate);
+		return () -> new FilteringIntIterator(predicate).over(iterator());
 	}
 
 	default Ints until(int terminal) {
-		return () -> new ExclusiveTerminalIntIterator(iterator(), terminal);
+		return () -> new ExclusiveTerminalIntIterator(terminal).over(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {
@@ -307,11 +307,11 @@ public interface Ints extends IntIterable {
 	}
 
 	default Ints step(long step) {
-		return () -> new SteppingIntIterator(iterator(), step);
+		return () -> new SteppingIntIterator(step).over(iterator());
 	}
 
 	default Ints distinct() {
-		return () -> new DistinctIntIterator(iterator());
+		return () -> new DistinctIntIterator().over(iterator());
 	}
 
 	default OptionalInt min() {
@@ -360,14 +360,14 @@ public interface Ints extends IntIterable {
 	}
 
 	default Ints peek(IntConsumer action) {
-		return () -> new BaseIntIterator<Integer, IntIterator>(iterator()) {
+		return () -> new UnaryIntIterator() {
 			@Override
 			public int nextInt() {
 				int next = iterator.nextInt();
 				action.accept(next);
 				return next;
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Ints sorted() {
@@ -421,64 +421,64 @@ public interface Ints extends IntIterable {
 	}
 
 	default Ints mapBack(BackPeekingIntFunction mapper) {
-		return () -> new BackPeekingIntIterator(iterator(), mapper);
+		return () -> new BackPeekingIntIterator(mapper).over(iterator());
 	}
 
 	default Ints mapForward(ForwardPeekingIntFunction mapper) {
-		return () -> new ForwardPeekingIntIterator(iterator(), mapper);
+		return () -> new ForwardPeekingIntIterator(mapper).over(iterator());
 	}
 
 	default Chars toChars() {
-		return () -> new BaseCharIterator<Integer, IntIterator>(iterator()) {
+		return () -> new BaseCharIterator<Integer, IntIterator>() {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextInt();
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Longs toLongs() {
-		return () -> new BaseLongIterator<Integer, IntIterator>(iterator()) {
+		return () -> new BaseLongIterator<Integer, IntIterator>() {
 			@Override
 			public long nextLong() {
 				return iterator.nextInt();
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Doubles toDoubles() {
-		return () -> new BaseDoubleIterator<Integer, IntIterator>(iterator()) {
+		return () -> new BaseDoubleIterator<Integer, IntIterator>() {
 			@Override
 			public double nextDouble() {
 				return iterator.nextInt();
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Chars toChars(IntToCharFunction mapper) {
-		return () -> new BaseCharIterator<Integer, IntIterator>(iterator()) {
+		return () -> new BaseCharIterator<Integer, IntIterator>() {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextInt());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Longs toLongs(IntToLongFunction mapper) {
-		return () -> new BaseLongIterator<Integer, IntIterator>(iterator()) {
+		return () -> new BaseLongIterator<Integer, IntIterator>() {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextInt());
 			}
-		};
+		}.over(iterator());
 	}
 
 	default Doubles toDoubles(IntToDoubleFunction mapper) {
-		return () -> new BaseDoubleIterator<Integer, IntIterator>(iterator()) {
+		return () -> new BaseDoubleIterator<Integer, IntIterator>() {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextInt());
 			}
-		};
+		}.over(iterator());
 	}
 }

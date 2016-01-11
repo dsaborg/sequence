@@ -16,30 +16,7 @@
 
 package org.d2ab.primitive.doubles;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
-
-public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
-	private final double terminal;
-
-	private double previous;
-	private boolean hasPrevious;
-
-	public InclusiveTerminalDoubleIterator(double terminal) {
-		this.terminal = terminal;
-	}
-
-	@Override
-	public double nextDouble() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		hasPrevious = true;
-		return previous = iterator.next();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
-	}
-}
+/**
+ * A {@link DoubleIterator} that converts doubles to other doubles.
+ */
+public abstract class UnaryDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {}

@@ -18,13 +18,12 @@ package org.d2ab.primitive.longs;
 
 import java.util.NoSuchElementException;
 
-public class SkippingLongIterator extends BaseLongIterator<Long, LongIterator> {
+public class SkippingLongIterator extends UnaryLongIterator {
 	private final long skip;
 
 	boolean skipped;
 
-	public SkippingLongIterator(LongIterator iterator, long skip) {
-		super(iterator);
+	public SkippingLongIterator(long skip) {
 		this.skip = skip;
 	}
 

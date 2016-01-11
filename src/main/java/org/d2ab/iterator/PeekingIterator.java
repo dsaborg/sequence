@@ -15,14 +15,12 @@
  */
 package org.d2ab.iterator;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 public class PeekingIterator<T> extends BaseIterator<T, T> {
 	private final Consumer<? super T> action;
 
-	public PeekingIterator(Iterator<? extends T> iterator, Consumer<? super T> action) {
-		super(iterator);
+	public PeekingIterator(Consumer<? super T> action) {
 		this.action = action;
 	}
 

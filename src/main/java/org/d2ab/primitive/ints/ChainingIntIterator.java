@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingIntIterator extends BaseIntIterator<Integer, IntIterator> {
+public class ChainingIntIterator extends UnaryIntIterator {
 	private final Iterator<IntIterable> iterables;
 
 	public ChainingIntIterator(IntIterable... iterables) {

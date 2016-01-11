@@ -21,20 +21,7 @@ import java.util.Iterator;
 /**
  * Base class for {@link Iterator}s.
  */
-public abstract class BaseIterator<T, U> implements Iterator<U> {
-	protected Iterator<? extends T> iterator;
-
-	protected BaseIterator() {
-	}
-
-	protected BaseIterator(Iterator<? extends T> iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
+public abstract class BaseIterator<T, U> extends SpecializedBaseIterator<T, Iterator<T>, U, Iterator<U>> {
 
 	public void skip() {
 		Iterators.skip(iterator);

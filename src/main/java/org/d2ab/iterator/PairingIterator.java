@@ -17,17 +17,12 @@ package org.d2ab.iterator;
 
 import org.d2ab.sequence.Pair;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class PairingIterator<T> extends BaseIterator<T, Pair<T, T>> {
 	private T previous;
 	private boolean hasPrevious;
 	private boolean started;
-
-	public PairingIterator(Iterator<? extends T> iterator) {
-		super(iterator);
-	}
 
 	@Override
 	public Pair<T, T> next() {

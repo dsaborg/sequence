@@ -16,7 +16,6 @@
 package org.d2ab.iterator;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -25,10 +24,6 @@ public class DistinctIterator<T> extends BaseIterator<T, T> {
 
 	private T next;
 	private boolean hasNext;
-
-	public DistinctIterator(Iterator<T> iterator) {
-		super(iterator);
-	}
 
 	@Override
 	public T next() {

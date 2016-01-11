@@ -18,14 +18,13 @@ package org.d2ab.primitive.chars;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class InclusiveTerminalCharIterator extends BaseCharIterator<Character, CharIterator> {
+public class InclusiveTerminalCharIterator extends UnaryCharIterator {
 	private final char terminal;
 
 	private char previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalCharIterator(CharIterator iterator, char terminal) {
-		super(iterator);
+	public InclusiveTerminalCharIterator(char terminal) {
 		this.terminal = terminal;
 	}
 

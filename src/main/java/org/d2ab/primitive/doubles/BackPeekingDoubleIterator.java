@@ -19,13 +19,12 @@ package org.d2ab.primitive.doubles;
 /**
  * An iterator over doubles that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingDoubleIterator extends BaseDoubleIterator<Double, DoubleIterator> {
+public class BackPeekingDoubleIterator extends UnaryDoubleIterator {
 	private final BackPeekingDoubleFunction mapper;
 	boolean hasPrevious;
 	private double previous = -1;
 
-	public BackPeekingDoubleIterator(DoubleIterator iterator, BackPeekingDoubleFunction mapper) {
-		super(iterator);
+	public BackPeekingDoubleIterator(BackPeekingDoubleFunction mapper) {
 		this.mapper = mapper;
 	}
 

@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingCharIterator extends BaseCharIterator<Character, CharIterator> {
+public class ChainingCharIterator extends UnaryCharIterator {
 	private final Iterator<CharIterable> iterables;
 
 	public ChainingCharIterator(CharIterable... iterables) {
