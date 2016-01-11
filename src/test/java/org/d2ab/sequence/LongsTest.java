@@ -632,4 +632,12 @@ public class LongsTest {
 		}).repeat();
 		assertThat(repeatVarying, contains(1L, 2L, 3L, 1L, 2L, 1L));
 	}
+
+	@Test
+	public void generate() {
+		Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
+		Longs sequence = Longs.generate(queue::poll).endingAt(5L);
+
+		assertThat(sequence, contains(1L, 2L, 3L, 4L, 5L));
+	}
 }

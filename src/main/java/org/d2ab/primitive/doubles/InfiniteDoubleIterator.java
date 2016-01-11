@@ -13,28 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.primitive.chars;
 
-public class RecursiveCharIterator implements CharIterator {
-	private final char seed;
-	private final CharUnaryOperator op;
-	private char previous;
-	private boolean hasPrevious;
+package org.d2ab.primitive.doubles;
 
-	public RecursiveCharIterator(char seed, CharUnaryOperator op) {
-		this.seed = seed;
-		this.op = op;
-	}
+import org.d2ab.iterator.InfiniteIterator;
 
-	@Override
-	public boolean hasNext() {
-		return true;
-	}
-
-	@Override
-	public char nextChar() {
-		previous = hasPrevious ? op.applyAsChar(previous) : seed;
-		hasPrevious = true;
-		return previous;
-	}
-}
+/**
+ * Base class for {@link DoubleIterator}s that never run out of elements. The {@link DoubleIterator#hasNext()} method
+ * always returns {@code true} for these iterators.
+ */
+@FunctionalInterface
+public interface InfiniteDoubleIterator extends InfiniteIterator<Double>, DoubleIterator {}

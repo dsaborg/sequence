@@ -137,7 +137,17 @@ public interface Ints extends IntIterable {
 	}
 
 	static Ints recurse(int seed, IntUnaryOperator op) {
-		return () -> new RecursiveIntIterator(seed, op);
+		return () -> new InfiniteIntIterator() {
+			private int previous;
+			private boolean hasPrevious;
+
+			@Override
+			public int nextInt() {
+				previous = hasPrevious ? op.applyAsInt(previous) : seed;
+				hasPrevious = true;
+				return previous;
+			}
+		};
 	}
 
 	/**
@@ -146,6 +156,13 @@ public interface Ints extends IntIterable {
 	 */
 	static Ints negative() {
 		return range(-1, Integer.MIN_VALUE);
+	}
+
+	/**
+	 * @return a sequence of {@code Ints} that is generated from the given supplier and thus never terminates.
+	 */
+	static Ints generate(IntSupplier supplier) {
+		return () -> (InfiniteIntIterator) supplier::getAsInt;
 	}
 
 	default Ints endingAt(int terminal) {

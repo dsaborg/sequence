@@ -137,7 +137,21 @@ public interface Chars extends CharIterable {
 	}
 
 	static Chars recurse(char seed, CharUnaryOperator op) {
-		return () -> new RecursiveCharIterator(seed, op);
+		return () -> new InfiniteCharIterator() {
+			private char previous;
+			private boolean hasPrevious;
+
+			@Override
+			public char nextChar() {
+				previous = hasPrevious ? op.applyAsChar(previous) : seed;
+				hasPrevious = true;
+				return previous;
+			}
+		};
+	}
+
+	static Chars generate(CharSupplier supplier) {
+		return () -> (InfiniteCharIterator) supplier::getAsChar;
 	}
 
 	default Chars endingAt(char terminal) {

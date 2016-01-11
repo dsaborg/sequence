@@ -209,6 +209,10 @@ public interface Sequence<T> extends Iterable<T> {
 		return range(start, Character.MAX_VALUE);
 	}
 
+	static <T> Sequence<T> generate(Supplier<T> supplier) {
+		return () -> (InfiniteIterator<T>) supplier::get;
+	}
+
 	default Sequence<T> endingAt(T terminal) {
 		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}

@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.primitive.doubles;
+package org.d2ab.iterator;
 
-import java.util.function.DoubleUnaryOperator;
+import java.util.Iterator;
 
-public class RecursiveDoubleIterator implements DoubleIterator {
-	private final double seed;
-	private final DoubleUnaryOperator op;
-	private double previous;
-	private boolean hasPrevious;
-
-	public RecursiveDoubleIterator(double seed, DoubleUnaryOperator op) {
-		this.seed = seed;
-		this.op = op;
-	}
-
+/**
+ * Base interface for {@link Iterator}s that never run out of elements. The {@link Iterator#hasNext()} method always
+ * returns {@code true} for these iterators.
+ */
+@FunctionalInterface
+public interface InfiniteIterator<T> extends Iterator<T> {
 	@Override
-	public boolean hasNext() {
+	default boolean hasNext() {
 		return true;
-	}
-
-	@Override
-	public double nextDouble() {
-		previous = hasPrevious ? op.applyAsDouble(previous) : seed;
-		hasPrevious = true;
-		return previous;
 	}
 }

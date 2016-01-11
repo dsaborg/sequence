@@ -16,28 +16,11 @@
 
 package org.d2ab.primitive.ints;
 
-import java.util.function.IntUnaryOperator;
+import org.d2ab.iterator.InfiniteIterator;
 
-public class RecursiveIntIterator implements IntIterator {
-	private final int seed;
-	private final IntUnaryOperator op;
-	private int previous;
-	private boolean hasPrevious;
-
-	public RecursiveIntIterator(int seed, IntUnaryOperator op) {
-		this.seed = seed;
-		this.op = op;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return true;
-	}
-
-	@Override
-	public int nextInt() {
-		previous = hasPrevious ? op.applyAsInt(previous) : seed;
-		hasPrevious = true;
-		return previous;
-	}
-}
+/**
+ * Base class for {@link IntIterator}s that never run out of elements. The {@link IntIterator#hasNext()} method always
+ * returns {@code true} for these iterators.
+ */
+@FunctionalInterface
+public interface InfiniteIntIterator extends InfiniteIterator<Integer>, IntIterator {}

@@ -635,4 +635,12 @@ public class IntsTest {
 		}).repeat();
 		assertThat(repeatVarying, contains(1, 2, 3, 1, 2, 1));
 	}
+
+	@Test
+	public void generate() {
+		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Ints sequence = Ints.generate(queue::poll).endingAt(5);
+
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+	}
 }

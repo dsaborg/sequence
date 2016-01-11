@@ -138,7 +138,17 @@ public interface Longs extends LongIterable {
 	}
 
 	static Longs recurse(long seed, LongUnaryOperator op) {
-		return () -> new RecursiveLongIterator(seed, op);
+		return () -> new InfiniteLongIterator() {
+			private long previous;
+			private boolean hasPrevious;
+
+			@Override
+			public long nextLong() {
+				previous = hasPrevious ? op.applyAsLong(previous) : seed;
+				hasPrevious = true;
+				return previous;
+			}
+		};
 	}
 
 	/**
@@ -147,6 +157,13 @@ public interface Longs extends LongIterable {
 	 */
 	static Longs negative() {
 		return range(-1L, Long.MIN_VALUE);
+	}
+
+	/**
+	 * @return a sequence of {@code Longs} that is generated from the given supplier and thus never terminates.
+	 */
+	static Longs generate(LongSupplier supplier) {
+		return () -> (InfiniteLongIterator) supplier::getAsLong;
 	}
 
 	default Longs endingAt(long terminal) {

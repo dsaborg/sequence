@@ -144,7 +144,17 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	static Doubles recurse(double seed, DoubleUnaryOperator op) {
-		return () -> new RecursiveDoubleIterator(seed, op);
+		return () -> new InfiniteDoubleIterator() {
+			private double previous;
+			private boolean hasPrevious;
+
+			@Override
+			public double nextDouble() {
+				previous = hasPrevious ? op.applyAsDouble(previous) : seed;
+				hasPrevious = true;
+				return previous;
+			}
+		};
 	}
 
 	/**
@@ -153,6 +163,13 @@ public interface Doubles extends DoubleIterable {
 	 */
 	static Doubles negative() {
 		return range(-1L, Double.MIN_VALUE);
+	}
+
+	/**
+	 * @return a sequence of {@code Doubles} that is generated from the given supplier and thus never terminates.
+	 */
+	static Doubles generate(DoubleSupplier supplier) {
+		return () -> (InfiniteDoubleIterator) supplier::getAsDouble;
 	}
 
 	default Doubles endingAt(double terminal) {

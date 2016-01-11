@@ -1029,4 +1029,13 @@ public class SequenceTest {
 		}).repeat();
 		assertThat(repeatVarying, contains(1, 2, 3, 1, 2, 1));
 	}
+
+	@Test
+	public void generate() {
+		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();
+
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+		assertThat(sequence, is(emptyIterable()));
+	}
 }

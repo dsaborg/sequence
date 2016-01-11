@@ -675,4 +675,12 @@ public class DoublesTest {
 		}).repeat();
 		assertThat(repeatVarying, contains(1.0, 2.0, 3.0, 1.0, 2.0, 1.0));
 	}
+
+	@Test
+	public void generate() {
+		Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
+		Doubles sequence = Doubles.generate(queue::poll).endingAt(5.0);
+
+		assertThat(sequence, contains(1.0, 2.0, 3.0, 4.0, 5.0));
+	}
 }

@@ -19,10 +19,7 @@ import org.d2ab.primitive.chars.*;
 import org.d2ab.utils.MoreArrays;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -613,5 +610,13 @@ public class CharsTest {
 			}
 		}).repeat();
 		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b', 'a'));
+	}
+
+	@Test
+	public void generate() {
+		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
+		Chars sequence = Chars.generate(queue::poll).endingAt('e');
+
+		assertThat(sequence, contains('a', 'b', 'c', 'd', 'e'));
 	}
 }

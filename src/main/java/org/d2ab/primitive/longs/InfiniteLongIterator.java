@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.d2ab.iterator;
 
-import java.util.function.UnaryOperator;
+package org.d2ab.primitive.longs;
 
-public class RecursiveIterator<T> implements InfiniteIterator<T> {
-	private final T seed;
-	private final UnaryOperator<T> op;
-	private T previous;
-	private boolean hasPrevious;
+import org.d2ab.iterator.InfiniteIterator;
 
-	public RecursiveIterator(T seed, UnaryOperator<T> op) {
-		this.seed = seed;
-		this.op = op;
-	}
-
-	@Override
-	public T next() {
-		previous = hasPrevious ? op.apply(previous) : seed;
-		hasPrevious = true;
-		return previous;
-	}
-}
+/**
+ * Base class for {@link LongIterator}s that never run out of elements. The {@link LongIterator#hasNext()} method
+ * always returns {@code true} for these iterators.
+ */
+@FunctionalInterface
+public interface InfiniteLongIterator extends InfiniteIterator<Long>, LongIterator {}
