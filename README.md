@@ -194,6 +194,6 @@ assertThat(titleCase.asString(), is("Hello Lexicon"));
 
 ### Conclusion
 
-Give it a try and experience a leaner way to `Stream` your `Sequences`!
+Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`!
 
 Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)!
