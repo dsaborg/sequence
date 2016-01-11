@@ -18,6 +18,11 @@ package org.d2ab.sequence;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
+import org.d2ab.primitive.chars.BaseCharIterator;
+import org.d2ab.primitive.chars.ToCharFunction;
+import org.d2ab.primitive.doubles.BaseDoubleIterator;
+import org.d2ab.primitive.ints.BaseIntIterator;
+import org.d2ab.primitive.longs.BaseLongIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -569,5 +574,41 @@ public interface Sequence<T> extends Iterable<T> {
 		List<T> list = toList();
 		Collections.shuffle(list, md);
 		return from(list);
+	}
+
+	default Chars mapToChar(@Nonnull ToCharFunction<T> mapper) {
+		return () -> new BaseCharIterator<T, Iterator<T>>(iterator()) {
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.next());
+			}
+		};
+	}
+
+	default Ints mapToInt(@Nonnull ToIntFunction<T> mapper) {
+		return () -> new BaseIntIterator<T, Iterator<T>>(iterator()) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.next());
+			}
+		};
+	}
+
+	default Longs mapToLong(@Nonnull ToLongFunction<T> mapper) {
+		return () -> new BaseLongIterator<T, Iterator<T>>(iterator()) {
+			@Override
+			public long nextLong() {
+				return mapper.applyAsLong(iterator.next());
+			}
+		};
+	}
+
+	default Doubles mapToDouble(@Nonnull ToDoubleFunction<T> mapper) {
+		return () -> new BaseDoubleIterator<T, Iterator<T>>(iterator()) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.next());
+			}
+		};
 	}
 }

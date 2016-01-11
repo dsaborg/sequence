@@ -579,4 +579,22 @@ public class LongsTest {
 		Doubles doubles = Longs.positive().limit(5).toDoubles(l -> l / 2.0);
 		twice(() -> assertThat(doubles, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
 	}
+
+	@Test
+	public void toSequence() {
+		Sequence<Long> empty = Longs.empty().toSequence(l -> l + 1);
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Long> longs = Longs.positive().limit(5).toSequence(l -> l + 1);
+		twice(() -> assertThat(longs, contains(2L, 3L, 4L, 5L, 6L)));
+	}
+
+	@Test
+	public void box() {
+		Sequence<Long> empty = Longs.empty().box();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Long> longs = Longs.positive().limit(5).box();
+		twice(() -> assertThat(longs, contains(1L, 2L, 3L, 4L, 5L)));
+	}
 }

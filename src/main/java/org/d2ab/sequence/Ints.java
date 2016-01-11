@@ -151,7 +151,33 @@ public interface Ints extends IntIterable {
 
 	@Nonnull
 	default Ints map(@Nonnull IntUnaryOperator mapper) {
-		return () -> new MappingIntIterator(iterator(), mapper);
+		return () -> new BaseIntIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.nextInt());
+			}
+		};
+	}
+
+	default Sequence<Integer> box() {
+		return toSequence(Integer::valueOf);
+	}
+
+	@Nonnull
+	default <T> Sequence<T> toSequence(@Nonnull IntFunction<T> mapper) {
+		return () -> new Iterator<T>() {
+			private final IntIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextInt());
+			}
+		};
 	}
 
 	@Nonnull
@@ -334,7 +360,14 @@ public interface Ints extends IntIterable {
 	}
 
 	default Ints peek(IntConsumer action) {
-		return () -> new PeekingIntIterator(iterator(), action);
+		return () -> new BaseIntIterator<Integer, IntIterator>(iterator()) {
+			@Override
+			public int nextInt() {
+				int next = iterator.nextInt();
+				action.accept(next);
+				return next;
+			}
+		};
 	}
 
 	default Ints sorted() {

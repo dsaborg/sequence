@@ -282,10 +282,6 @@ public class EntrySequenceTest {
 
 	@Test
 	public void filterAndMap() {
-		//		List<Entry<Integer, String>> evens = _123456789.filter((s, x) -> x % 2 == 0)
-		//		                                             .map(Pair.map(Integer::parseInt,
-		//		                                                           Object::toString))
-		//		                                             .toList();
 		EntrySequence<Integer, String> evens = _123456789.filter((s, x) -> x % 2 == 0)
 		                                                 .map(Integer::parseInt, Object::toString);
 

@@ -43,7 +43,7 @@ public class CharsTest {
 	private final Chars abcd = Chars.of('a', 'b', 'c', 'd');
 	private final Chars abcde = Chars.of('a', 'b', 'c', 'd', 'e');
 	private final Chars abcdefghi = Chars.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i');
-	
+
 	private final Chars oneRandom = Chars.of('q');
 	private final Chars twoRandom = Chars.of('q', 'w');
 	private final Chars nineRandom = Chars.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
@@ -555,7 +555,28 @@ public class CharsTest {
 
 	@Test
 	public void toInts() {
+		Ints empty = Chars.empty().toInts();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
 		Ints ints = Chars.all().limit(5).toInts();
 		twice(() -> assertThat(ints, contains(0, 1, 2, 3, 4)));
+	}
+
+	@Test
+	public void toSequence() {
+		Sequence<Character> empty = Chars.empty().toSequence(c -> (char) (c + 1));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Character> chars = Chars.startingAt('a').limit(5).toSequence(c -> (char) (c + 1));
+		twice(() -> assertThat(chars, contains('b', 'c', 'd', 'e', 'f')));
+	}
+
+	@Test
+	public void box() {
+		Sequence<Character> empty = Chars.empty().box();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Character> chars = Chars.startingAt('a').limit(5).box();
+		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
 	}
 }

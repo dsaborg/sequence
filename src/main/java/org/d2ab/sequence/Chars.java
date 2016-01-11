@@ -146,7 +146,33 @@ public interface Chars extends CharIterable {
 
 	@Nonnull
 	default Chars map(@Nonnull CharUnaryOperator mapper) {
-		return () -> new MappingCharIterator(iterator(), mapper);
+		return () -> new BaseCharIterator<Character, CharIterator>(iterator()) {
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.nextChar());
+			}
+		};
+	}
+
+	default Sequence<Character> box() {
+		return toSequence(Character::valueOf);
+	}
+
+	@Nonnull
+	default <T> Sequence<T> toSequence(@Nonnull CharFunction<T> mapper) {
+		return () -> new Iterator<T>() {
+			private final CharIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextChar());
+			}
+		};
 	}
 
 	@Nonnull
@@ -329,7 +355,14 @@ public interface Chars extends CharIterable {
 	}
 
 	default Chars peek(CharConsumer action) {
-		return () -> new PeekingCharIterator(iterator(), action);
+		return () -> new BaseCharIterator<Character, CharIterator>(iterator()) {
+			@Override
+			public char nextChar() {
+				char next = iterator.nextChar();
+				action.accept(next);
+				return next;
+			}
+		};
 	}
 
 	default Chars sorted() {

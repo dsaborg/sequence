@@ -151,7 +151,33 @@ public interface Longs extends LongIterable {
 
 	@Nonnull
 	default Longs map(@Nonnull LongUnaryOperator mapper) {
-		return () -> new MappingLongIterator(iterator(), mapper);
+		return () -> new BaseLongIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public long nextLong() {
+				return mapper.applyAsLong(iterator.nextLong());
+			}
+		};
+	}
+
+	default Sequence<Long> box() {
+		return toSequence(Long::valueOf);
+	}
+
+	@Nonnull
+	default <T> Sequence<T> toSequence(@Nonnull LongFunction<T> mapper) {
+		return () -> new Iterator<T>() {
+			private final LongIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextLong());
+			}
+		};
 	}
 
 	@Nonnull
@@ -334,7 +360,14 @@ public interface Longs extends LongIterable {
 	}
 
 	default Longs peek(LongConsumer action) {
-		return () -> new PeekingLongIterator(iterator(), action);
+		return () -> new BaseLongIterator<Long, LongIterator>(iterator()) {
+			@Override
+			public long nextLong() {
+				long next = iterator.nextLong();
+				action.accept(next);
+				return next;
+			}
+		};
 	}
 
 	default Longs sorted() {

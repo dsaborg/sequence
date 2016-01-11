@@ -159,7 +159,33 @@ public interface Doubles extends DoubleIterable {
 
 	@Nonnull
 	default Doubles map(@Nonnull DoubleUnaryOperator mapper) {
-		return () -> new MappingDoubleIterator(iterator(), mapper);
+		return () -> new BaseDoubleIterator<Double, DoubleIterator>(iterator()) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.nextDouble());
+			}
+		};
+	}
+
+	default Sequence<Double> box() {
+		return toSequence(Double::valueOf);
+	}
+
+	@Nonnull
+	default <T> Sequence<T> toSequence(@Nonnull DoubleFunction<T> mapper) {
+		return () -> new Iterator<T>() {
+			private final DoubleIterator iterator = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextDouble());
+			}
+		};
 	}
 
 	@Nonnull
@@ -338,7 +364,14 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	default Doubles peek(DoubleConsumer action) {
-		return () -> new PeekingDoubleIterator(iterator(), action);
+		return () -> new BaseDoubleIterator<Double, DoubleIterator>(iterator()) {
+			@Override
+			public double nextDouble() {
+				double next = iterator.nextDouble();
+				action.accept(next);
+				return next;
+			}
+		};
 	}
 
 	default Doubles sorted() {
@@ -404,13 +437,13 @@ public interface Doubles extends DoubleIterable {
 			DoubleIterator iterator = iterator();
 
 			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
+			public int nextInt() {
+				return (int) iterator.nextDouble();
 			}
 
 			@Override
-			public int nextInt() {
-				return (int) iterator.nextDouble();
+			public boolean hasNext() {
+				return iterator.hasNext();
 			}
 		};
 	}

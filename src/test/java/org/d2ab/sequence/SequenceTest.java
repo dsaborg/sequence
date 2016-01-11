@@ -967,4 +967,40 @@ public class SequenceTest {
 		assertThat(Sequence.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(Sequence.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
 	}
+
+	@Test
+	public void mapToChar() {
+		Chars empty = Sequence.<Integer>empty().mapToChar(x -> (char) x.intValue());
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Chars chars = Sequence.ints(0x61).limit(5).mapToChar(x -> (char) x.intValue());
+		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void mapToInt() {
+		Ints empty = Sequence.<Integer>empty().mapToInt(Integer::intValue);
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Ints ints = Sequence.ints().limit(5).mapToInt(Integer::intValue);
+		twice(() -> assertThat(ints, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void mapToLong() {
+		Longs empty = Sequence.<Long>empty().mapToLong(Long::longValue);
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Longs longs = Sequence.ints().limit(5).mapToLong(i -> (long) i);
+		twice(() -> assertThat(longs, contains(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void mapToDouble() {
+		Doubles empty = Sequence.<Double>empty().mapToDouble(Double::doubleValue);
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Doubles doubles = Sequence.ints().limit(5).mapToDouble(i -> (double) i);
+		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+	}
 }

@@ -622,4 +622,22 @@ public class DoublesTest {
 		Longs doubledHalves = Doubles.range(0.5, 1.5, 0.5).toLongs(d -> (long) (d * 2));
 		twice(() -> assertThat(doubledHalves, contains(1L, 2L, 3L)));
 	}
+
+	@Test
+	public void toSequence() {
+		Sequence<Double> empty = Doubles.empty().toSequence(d -> d + 1);
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Double> doubles = Doubles.startingAt(1).limit(5).toSequence(d -> d + 1);
+		twice(() -> assertThat(doubles, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
+	}
+
+	@Test
+	public void box() {
+		Sequence<Double> empty = Doubles.empty().box();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Double> doubles = Doubles.startingAt(1).limit(5).box();
+		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+	}
 }

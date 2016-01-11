@@ -582,4 +582,22 @@ public class IntsTest {
 		Doubles doubles = Ints.positive().limit(5).toDoubles(i -> i / 2.0);
 		twice(() -> assertThat(doubles, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
 	}
+
+	@Test
+	public void toSequence() {
+		Sequence<Integer> empty = Ints.empty().toSequence(i -> i + 1);
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Integer> ints = Ints.positive().limit(5).toSequence(i -> i + 1);
+		twice(() -> assertThat(ints, contains(2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void box() {
+		Sequence<Integer> empty = Ints.empty().box();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		Sequence<Integer> ints = Ints.positive().limit(5).box();
+		twice(() -> assertThat(ints, contains(1, 2, 3, 4, 5)));
+	}
 }

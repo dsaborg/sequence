@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-public class PeekingCharIterator extends BaseCharIterator<Character, CharIterator> {
-	private final CharConsumer action;
+import java.util.function.Function;
 
-	public PeekingCharIterator(CharIterator iterator, CharConsumer action) {
-		super(iterator);
-		this.action = action;
-	}
+/**
+ * A specialization of {@link Function} that takes a {@code char} value and returns an object.
+ */
+@FunctionalInterface
+public interface CharFunction<R> {
 
-	@Override
-	public char nextChar() {
-		char next = iterator.nextChar();
-		action.accept(next);
-		return next;
-	}
+	/**
+	 * Applies this function to the given argument.
+	 *
+	 * @param value the function argument
+	 *
+	 * @return the function result
+	 */
+	R apply(char value);
 }

@@ -13,18 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-public class MappingCharIterator extends BaseCharIterator<Character, CharIterator> {
-	private final CharUnaryOperator mapper;
+import java.util.function.Function;
 
-	public MappingCharIterator(CharIterator iterator, CharUnaryOperator mapper) {
-		super(iterator);
-		this.mapper = mapper;
-	}
+/**
+ * Represents a function that produces an char-valued result.  This is the
+ * {@code char}-producing primitive specialization for {@link Function}.
+ * <p>
+ * <p>This is a functional interface whose functional method is {@link #applyAsChar(Object)}.
+ *
+ * @param <T> the type of the input to the function
+ *
+ * @see Function
+ * @since 1.8
+ */
+@FunctionalInterface
+public interface ToCharFunction<T> {
 
-	@Override
-	public char nextChar() {
-		return mapper.applyAsChar(iterator.nextChar());
-	}
+	/**
+	 * Applies this function to the given argument.
+	 *
+	 * @param value the function argument
+	 *
+	 * @return the function result
+	 */
+	char applyAsChar(T value);
 }
