@@ -15,17 +15,18 @@
  */
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.chars.CharBinaryOperator;
-import org.d2ab.primitive.chars.CharIterator;
-import org.d2ab.primitive.chars.OptionalChar;
+import org.d2ab.primitive.chars.*;
 import org.d2ab.utils.MoreArrays;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -578,5 +579,39 @@ public class CharsTest {
 
 		Sequence<Character> charsBoxed = abcde.box();
 		twice(() -> assertThat(charsBoxed, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void repeat() {
+		Chars repeatEmpty = empty.repeat();
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		Chars repeatOne = a.repeat();
+		twice(() -> assertThat(repeatOne.limit(10), contains('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a')));
+
+		Chars repeatTwo = ab.repeat();
+		twice(() -> assertThat(repeatTwo.limit(10), contains('a', 'b', 'a', 'b', 'a', 'b', 'a', 'b', 'a', 'b')));
+
+		Chars repeatThree = abc.repeat();
+		twice(() -> assertThat(repeatThree.limit(10), contains('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a')));
+
+		Chars repeatVarying = Chars.from(new CharIterable() {
+			private List<Character> list = asList('a', 'b', 'c');
+			int end = list.size();
+
+			@Override
+			public CharIterator iterator() {
+				List<Character> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				Iterator<Character> iterator = subList.iterator();
+				return new DelegatingCharIterator<Character, Iterator<Character>>() {
+					@Override
+					public char nextChar() {
+						return iterator.next();
+					}
+				}.backedBy(iterator);
+			}
+		}).repeat();
+		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b', 'a'));
 	}
 }

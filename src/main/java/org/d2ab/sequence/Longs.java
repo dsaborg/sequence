@@ -478,4 +478,8 @@ public interface Longs extends LongIterable {
 			}
 		}.backedBy(iterator());
 	}
+
+	default Longs repeat() {
+		return () -> new RepeatingLongIterator(this);
+	}
 }

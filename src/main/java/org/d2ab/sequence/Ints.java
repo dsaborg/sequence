@@ -484,4 +484,8 @@ public interface Ints extends IntIterable {
 			}
 		}.backedBy(iterator());
 	}
+
+	default Ints repeat() {
+		return () -> new RepeatingIntIterator(this);
+	}
 }

@@ -16,17 +16,18 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
+import org.d2ab.primitive.doubles.DoubleIterable;
 import org.d2ab.primitive.doubles.DoubleIterator;
 import org.d2ab.utils.MoreArrays;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.OptionalDouble;
+import java.util.*;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -38,12 +39,12 @@ import static org.junit.Assert.fail;
 public class DoublesTest {
 	private final Doubles empty = Doubles.empty();
 
-	private final Doubles a = Doubles.of(1.0);
-	private final Doubles ab = Doubles.of(1.0, 2.0);
-	private final Doubles abc = Doubles.of(1.0, 2.0, 3.0);
-	private final Doubles abcd = Doubles.of(1.0, 2.0, 3.0, 4.0);
-	private final Doubles abcde = Doubles.of(1.0, 2.0, 3.0, 4.0, 5.0);
-	private final Doubles abcdefghi = Doubles.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+	private final Doubles _1 = Doubles.of(1.0);
+	private final Doubles _12 = Doubles.of(1.0, 2.0);
+	private final Doubles _123 = Doubles.of(1.0, 2.0, 3.0);
+	private final Doubles _1234 = Doubles.of(1.0, 2.0, 3.0, 4.0);
+	private final Doubles _12345 = Doubles.of(1.0, 2.0, 3.0, 4.0, 5.0);
+	private final Doubles _123456789 = Doubles.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
 
 	private final Doubles oneRandom = Doubles.of(17.0);
 	private final Doubles twoRandom = Doubles.of(17.0, 32.0);
@@ -51,12 +52,12 @@ public class DoublesTest {
 
 	@Test
 	public void ofOne() throws Exception {
-		twice(() -> assertThat(a, contains(1.0)));
+		twice(() -> assertThat(_1, contains(1.0)));
 	}
 
 	@Test
 	public void ofMany() throws Exception {
-		twice(() -> assertThat(abc, contains(1.0, 2.0, 3.0)));
+		twice(() -> assertThat(_123, contains(1.0, 2.0, 3.0)));
 	}
 
 	@Test
@@ -68,7 +69,7 @@ public class DoublesTest {
 
 		twice(() -> {
 			double expected = 1.0;
-			for (double i : abc)
+			for (double i : _123)
 				assertThat(i, is(expected++));
 		});
 	}
@@ -77,16 +78,16 @@ public class DoublesTest {
 	public void forEach() throws Exception {
 		twice(() -> {
 			empty.forEachDouble(c -> fail("Should not get called"));
-			a.forEachDouble(c -> assertThat(c, is(in(singletonList(1.0)))));
-			ab.forEachDouble(c -> assertThat(c, is(in(Arrays.asList(1.0, 2.0)))));
-			abc.forEachDouble(c -> assertThat(c, is(in(Arrays.asList(1.0, 2.0, 3.0)))));
+			_1.forEachDouble(c -> assertThat(c, is(in(singletonList(1.0)))));
+			_12.forEachDouble(c -> assertThat(c, is(in(Arrays.asList(1.0, 2.0)))));
+			_123.forEachDouble(c -> assertThat(c, is(in(Arrays.asList(1.0, 2.0, 3.0)))));
 		});
 	}
 
 	@Test
 	public void iterator() throws Exception {
 		twice(() -> {
-			DoubleIterator iterator = abc.iterator();
+			DoubleIterator iterator = _123.iterator();
 
 			assertThat(iterator.hasNext(), is(true));
 			assertThat(iterator.nextDouble(), is(1.0));
@@ -116,7 +117,7 @@ public class DoublesTest {
 
 	@Test
 	public void fromSequence() throws Exception {
-		Doubles fromSequence = Doubles.from(abc);
+		Doubles fromSequence = Doubles.from(_123);
 
 		twice(() -> assertThat(fromSequence, contains(1.0, 2.0, 3.0)));
 	}
@@ -157,50 +158,50 @@ public class DoublesTest {
 
 	@Test
 	public void skip() {
-		Doubles skipNone = abc.skip(0.0);
+		Doubles skipNone = _123.skip(0.0);
 		twice(() -> assertThat(skipNone, contains(1.0, 2.0, 3.0)));
 
-		Doubles skipOne = abc.skip(1.0);
+		Doubles skipOne = _123.skip(1.0);
 		twice(() -> assertThat(skipOne, contains(2.0, 3.0)));
 
-		Doubles skipTwo = abc.skip(2.0);
+		Doubles skipTwo = _123.skip(2.0);
 		twice(() -> assertThat(skipTwo, contains(3.0)));
 
-		Doubles skipThree = abc.skip(3.0);
+		Doubles skipThree = _123.skip(3.0);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
-		Doubles skipFour = abc.skip(4.0);
+		Doubles skipFour = _123.skip(4.0);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
 	@Test
 	public void limit() {
-		Doubles limitNone = abc.limit(0.0);
+		Doubles limitNone = _123.limit(0.0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
-		Doubles limitOne = abc.limit(1.0);
+		Doubles limitOne = _123.limit(1.0);
 		twice(() -> assertThat(limitOne, contains(1.0)));
 
-		Doubles limitTwo = abc.limit(2.0);
+		Doubles limitTwo = _123.limit(2.0);
 		twice(() -> assertThat(limitTwo, contains(1.0, 2.0)));
 
-		Doubles limitThree = abc.limit(3.0);
+		Doubles limitThree = _123.limit(3.0);
 		twice(() -> assertThat(limitThree, contains(1.0, 2.0, 3.0)));
 
-		Doubles limitFour = abc.limit(4.0);
+		Doubles limitFour = _123.limit(4.0);
 		twice(() -> assertThat(limitFour, contains(1.0, 2.0, 3.0)));
 	}
 
 	@Test
 	public void append() {
-		Doubles appended = abc.append(Doubles.of(4.0, 5.0, 6.0)).append(Doubles.of(7.0, 8.0));
+		Doubles appended = _123.append(Doubles.of(4.0, 5.0, 6.0)).append(Doubles.of(7.0, 8.0));
 
 		twice(() -> assertThat(appended, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)));
 	}
 
 	@Test
 	public void appendIterator() {
-		Doubles appended = abc.append(MoreArrays.iterator(4.0, 5.0, 6.0)).append(MoreArrays.iterator(7.0, 8.0));
+		Doubles appended = _123.append(MoreArrays.iterator(4.0, 5.0, 6.0)).append(MoreArrays.iterator(7.0, 8.0));
 
 		assertThat(appended, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
 		assertThat(appended, contains(1.0, 2.0, 3.0));
@@ -208,7 +209,7 @@ public class DoublesTest {
 
 	@Test
 	public void appendStream() {
-		Doubles appended = abc.append(Stream.of(4.0, 5.0, 6.0)).append(Stream.of(7.0, 8.0));
+		Doubles appended = _123.append(Stream.of(4.0, 5.0, 6.0)).append(Stream.of(7.0, 8.0));
 
 		assertThat(appended, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
 
@@ -222,7 +223,7 @@ public class DoublesTest {
 
 	@Test
 	public void appendArray() {
-		Doubles appended = abc.append(4.0, 5.0, 6.0).append(7.0, 8.0);
+		Doubles appended = _123.append(4.0, 5.0, 6.0).append(7.0, 8.0);
 
 		twice(() -> assertThat(appended, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)));
 	}
@@ -269,7 +270,7 @@ public class DoublesTest {
 
 	@Test
 	public void map() {
-		Doubles mapped = abc.map(c -> c + 1.0);
+		Doubles mapped = _123.map(c -> c + 1.0);
 		twice(() -> assertThat(mapped, contains(2.0, 3.0, 4.0)));
 	}
 
@@ -294,24 +295,24 @@ public class DoublesTest {
 	@Test
 	public void collect() {
 		twice(() -> {
-			StringBuilder builder = abc.collect(StringBuilder::new, StringBuilder::append);
+			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
 			assertThat(builder.toString(), is("1.02.03.0"));
 		});
 	}
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(abc.toArray(), new double[]{1.0, 2.0, 3.0}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toArray(), new double[]{1.0, 2.0, 3.0}), is(true)));
 	}
 
 	@Test
 	public void join() {
-		twice(() -> assertThat(abc.join(", "), is("1.0, 2.0, 3.0")));
+		twice(() -> assertThat(_123.join(", "), is("1.0, 2.0, 3.0")));
 	}
 
 	@Test
 	public void joinWithPrefixAndSuffix() {
-		twice(() -> assertThat(abc.join("<", ", ", ">"), is("<1.0, 2.0, 3.0>")));
+		twice(() -> assertThat(_123.join("<", ", ", ">"), is("<1.0, 2.0, 3.0>")));
 	}
 
 	@Test
@@ -319,9 +320,9 @@ public class DoublesTest {
 		DoubleBinaryOperator secondDouble = (c1, c2) -> c2;
 		twice(() -> {
 			assertThat(empty.reduce(secondDouble), is(OptionalDouble.empty()));
-			assertThat(a.reduce(secondDouble), is(OptionalDouble.of(1.0)));
-			assertThat(ab.reduce(secondDouble), is(OptionalDouble.of(2.0)));
-			assertThat(abc.reduce(secondDouble), is(OptionalDouble.of(3.0)));
+			assertThat(_1.reduce(secondDouble), is(OptionalDouble.of(1.0)));
+			assertThat(_12.reduce(secondDouble), is(OptionalDouble.of(2.0)));
+			assertThat(_123.reduce(secondDouble), is(OptionalDouble.of(3.0)));
 		});
 	}
 
@@ -330,9 +331,9 @@ public class DoublesTest {
 		DoubleBinaryOperator secondDouble = (c1, c2) -> c2;
 		twice(() -> {
 			assertThat(empty.reduce(17.0, secondDouble), is(17.0));
-			assertThat(a.reduce(17.0, secondDouble), is(1.0));
-			assertThat(ab.reduce(17.0, secondDouble), is(2.0));
-			assertThat(abc.reduce(17.0, secondDouble), is(3.0));
+			assertThat(_1.reduce(17.0, secondDouble), is(1.0));
+			assertThat(_12.reduce(17.0, secondDouble), is(2.0));
+			assertThat(_123.reduce(17.0, secondDouble), is(3.0));
 		});
 	}
 
@@ -340,9 +341,9 @@ public class DoublesTest {
 	public void first() {
 		twice(() -> {
 			assertThat(empty.first(), is(OptionalDouble.empty()));
-			assertThat(a.first(), is(OptionalDouble.of(1.0)));
-			assertThat(ab.first(), is(OptionalDouble.of(1.0)));
-			assertThat(abc.first(), is(OptionalDouble.of(1.0)));
+			assertThat(_1.first(), is(OptionalDouble.of(1.0)));
+			assertThat(_12.first(), is(OptionalDouble.of(1.0)));
+			assertThat(_123.first(), is(OptionalDouble.of(1.0)));
 		});
 	}
 
@@ -350,10 +351,10 @@ public class DoublesTest {
 	public void second() {
 		twice(() -> {
 			assertThat(empty.second(), is(OptionalDouble.empty()));
-			assertThat(a.second(), is(OptionalDouble.empty()));
-			assertThat(ab.second(), is(OptionalDouble.of(2.0)));
-			assertThat(abc.second(), is(OptionalDouble.of(2.0)));
-			assertThat(abcd.second(), is(OptionalDouble.of(2.0)));
+			assertThat(_1.second(), is(OptionalDouble.empty()));
+			assertThat(_12.second(), is(OptionalDouble.of(2.0)));
+			assertThat(_123.second(), is(OptionalDouble.of(2.0)));
+			assertThat(_1234.second(), is(OptionalDouble.of(2.0)));
 		});
 	}
 
@@ -361,11 +362,11 @@ public class DoublesTest {
 	public void third() {
 		twice(() -> {
 			assertThat(empty.third(), is(OptionalDouble.empty()));
-			assertThat(a.third(), is(OptionalDouble.empty()));
-			assertThat(ab.third(), is(OptionalDouble.empty()));
-			assertThat(abc.third(), is(OptionalDouble.of(3.0)));
-			assertThat(abcd.third(), is(OptionalDouble.of(3.0)));
-			assertThat(abcde.third(), is(OptionalDouble.of(3.0)));
+			assertThat(_1.third(), is(OptionalDouble.empty()));
+			assertThat(_12.third(), is(OptionalDouble.empty()));
+			assertThat(_123.third(), is(OptionalDouble.of(3.0)));
+			assertThat(_1234.third(), is(OptionalDouble.of(3.0)));
+			assertThat(_12345.third(), is(OptionalDouble.of(3.0)));
 		});
 	}
 
@@ -373,15 +374,15 @@ public class DoublesTest {
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalDouble.empty()));
-			assertThat(a.last(), is(OptionalDouble.of(1.0)));
-			assertThat(ab.last(), is(OptionalDouble.of(2.0)));
-			assertThat(abc.last(), is(OptionalDouble.of(3.0)));
+			assertThat(_1.last(), is(OptionalDouble.of(1.0)));
+			assertThat(_12.last(), is(OptionalDouble.of(2.0)));
+			assertThat(_123.last(), is(OptionalDouble.of(3.0)));
 		});
 	}
 
 	@Test
 	public void step() {
-		Doubles stepThree = abcdefghi.step(3.0);
+		Doubles stepThree = _123456789.step(3.0);
 		twice(() -> assertThat(stepThree, contains(1.0, 4.0, 7.0)));
 	}
 
@@ -433,35 +434,35 @@ public class DoublesTest {
 	@Test
 	public void count() {
 		twice(() -> assertThat(empty.count(), is(0.0)));
-		twice(() -> assertThat(a.count(), is(1.0)));
-		twice(() -> assertThat(ab.count(), is(2.0)));
-		twice(() -> assertThat(abcdefghi.count(), is(9.0)));
+		twice(() -> assertThat(_1.count(), is(1.0)));
+		twice(() -> assertThat(_12.count(), is(2.0)));
+		twice(() -> assertThat(_123456789.count(), is(9.0)));
 	}
 
 	@Test
 	public void any() {
-		twice(() -> assertThat(abc.any(x -> x > 0.0), is(true)));
-		twice(() -> assertThat(abc.any(x -> x > 2.0), is(true)));
-		twice(() -> assertThat(abc.any(x -> x > 4.0), is(false)));
+		twice(() -> assertThat(_123.any(x -> x > 0.0), is(true)));
+		twice(() -> assertThat(_123.any(x -> x > 2.0), is(true)));
+		twice(() -> assertThat(_123.any(x -> x > 4.0), is(false)));
 	}
 
 	@Test
 	public void all() {
-		twice(() -> assertThat(abc.all(x -> x > 0.0), is(true)));
-		twice(() -> assertThat(abc.all(x -> x > 2.0), is(false)));
-		twice(() -> assertThat(abc.all(x -> x > 4.0), is(false)));
+		twice(() -> assertThat(_123.all(x -> x > 0.0), is(true)));
+		twice(() -> assertThat(_123.all(x -> x > 2.0), is(false)));
+		twice(() -> assertThat(_123.all(x -> x > 4.0), is(false)));
 	}
 
 	@Test
 	public void none() {
-		twice(() -> assertThat(abc.none(x -> x > 0.0), is(false)));
-		twice(() -> assertThat(abc.none(x -> x > 2.0), is(false)));
-		twice(() -> assertThat(abc.none(x -> x > 4.0), is(true)));
+		twice(() -> assertThat(_123.none(x -> x > 0.0), is(false)));
+		twice(() -> assertThat(_123.none(x -> x > 2.0), is(false)));
+		twice(() -> assertThat(_123.none(x -> x > 4.0), is(true)));
 	}
 
 	@Test
 	public void peek() {
-		Doubles peek = abc.peek(x -> assertThat(x, is(both(greaterThan(0.0)).and(lessThan(4.0)))));
+		Doubles peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0.0)).and(lessThan(4.0)))));
 		twice(() -> assertThat(peek, contains(1.0, 2.0, 3.0)));
 	}
 
@@ -470,7 +471,7 @@ public class DoublesTest {
 		Doubles prefixEmpty = empty.prefix(327.0);
 		twice(() -> assertThat(prefixEmpty, contains(327.0)));
 
-		Doubles prefix = abc.prefix(327.0);
+		Doubles prefix = _123.prefix(327.0);
 		twice(() -> assertThat(prefix, contains(327.0, 1.0, 2.0, 3.0)));
 	}
 
@@ -479,15 +480,15 @@ public class DoublesTest {
 		Doubles suffixEmpty = empty.suffix(532.0);
 		twice(() -> assertThat(suffixEmpty, contains(532.0)));
 
-		Doubles suffix = abc.suffix(532.0);
+		Doubles suffix = _123.suffix(532.0);
 		twice(() -> assertThat(suffix, contains(1.0, 2.0, 3.0, 532.0)));
 	}
 
 	@Test
 	public void interleave() {
 		assertThat(empty.interleave(empty), is(emptyIterable()));
-		assertThat(abc.interleave(abcde), contains(1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0));
-		assertThat(abcde.interleave(abc), contains(1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0));
+		assertThat(_123.interleave(_12345), contains(1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0));
+		assertThat(_12345.interleave(_123), contains(1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
@@ -495,16 +496,16 @@ public class DoublesTest {
 		Doubles emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
 
-		Doubles oneReversed = a.reverse();
+		Doubles oneReversed = _1.reverse();
 		twice(() -> assertThat(oneReversed, contains(1.0)));
 
-		Doubles twoReversed = ab.reverse();
+		Doubles twoReversed = _12.reverse();
 		twice(() -> assertThat(twoReversed, contains(2.0, 1.0)));
 
-		Doubles threeReversed = abc.reverse();
+		Doubles threeReversed = _123.reverse();
 		twice(() -> assertThat(threeReversed, contains(3.0, 2.0, 1.0)));
 
-		Doubles nineReversed = abcdefghi.reverse();
+		Doubles nineReversed = _123456789.reverse();
 		twice(() -> assertThat(nineReversed, contains(9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0)));
 	}
 
@@ -639,5 +640,39 @@ public class DoublesTest {
 
 		Sequence<Double> doubles = Doubles.startingAt(1).limit(5).box();
 		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+	}
+
+	@Test
+	public void repeat() {
+		Doubles repeatEmpty = empty.repeat();
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		Doubles repeatOne = _1.repeat();
+		twice(() -> assertThat(repeatOne.limit(10), contains(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)));
+
+		Doubles repeatTwo = _12.repeat();
+		twice(() -> assertThat(repeatTwo.limit(10), contains(1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0)));
+
+		Doubles repeatThree = _123.repeat();
+		twice(() -> assertThat(repeatThree.limit(10), contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0)));
+
+		Doubles repeatVarying = Doubles.from(new DoubleIterable() {
+			private List<Double> list = asList(1.0, 2.0, 3.0);
+			int end = list.size();
+
+			@Override
+			public DoubleIterator iterator() {
+				List<Double> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				Iterator<Double> iterator = subList.iterator();
+				return new DelegatingDoubleIterator<Double, Iterator<Double>>() {
+					@Override
+					public double nextDouble() {
+						return iterator.next();
+					}
+				}.backedBy(iterator);
+			}
+		}).repeat();
+		assertThat(repeatVarying, contains(1.0, 2.0, 3.0, 1.0, 2.0, 1.0));
 	}
 }

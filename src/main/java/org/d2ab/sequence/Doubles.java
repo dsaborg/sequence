@@ -505,4 +505,8 @@ public interface Doubles extends DoubleIterable {
 			}
 		};
 	}
+
+	default Doubles repeat() {
+		return () -> new RepeatingDoubleIterator(this);
+	}
 }

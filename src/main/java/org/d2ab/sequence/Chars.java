@@ -435,4 +435,8 @@ public interface Chars extends CharIterable {
 			}
 		}.backedBy(iterator());
 	}
+
+	default Chars repeat() {
+		return () -> new RepeatingCharIterator(this);
+	}
 }
