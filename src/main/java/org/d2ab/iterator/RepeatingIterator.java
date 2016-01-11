@@ -28,8 +28,6 @@ import java.util.NoSuchElementException;
 public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
 	private final Iterable<T> iterable;
 
-	private boolean hasNext;
-
 	public RepeatingIterator(Iterable<T> iterable) {
 		this.iterable = iterable;
 	}
