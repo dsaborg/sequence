@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-import org.d2ab.collection.ThresholdBitSet;
+import org.d2ab.collection.Tracker;
 
 import java.util.NoSuchElementException;
 
 public class DistinctCharIterator extends UnaryCharIterator {
 	private static final int THRESHOLD = 256;
 
-	private final ThresholdBitSet seen = new ThresholdBitSet(THRESHOLD);
+	private final Tracker seen = new Tracker(THRESHOLD);
 
 	private char next;
 	private boolean hasNext;

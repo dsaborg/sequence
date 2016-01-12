@@ -21,23 +21,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A mix between a {@link Set} and a {@link BitSet} for remembering values. Uses a {@link BitSet} up to a threshold
- * value, then uses a regular {@link Set}.
+ * Tracks presence of items, for example used to calculate distinct entries. Uses a mix between a {@link Set} and a
+ * {@link BitSet} for remembering values. Uses a {@link BitSet} up to a threshold value, then uses a regular
+ * {@link Set}.
  */
-public class ThresholdBitSet {
+public class Tracker {
 	private final int threshold;
-	private final Set<Long> seenHigh = new HashSet<>();
-	private final BitSet seenLow;
+	private final Set<Long> high = new HashSet<>();
+	private final BitSet low;
 
-	public ThresholdBitSet(int threshold) {
+	public Tracker(int threshold) {
 		this.threshold = threshold;
-		seenLow = new BitSet(threshold);
+		low = new BitSet(threshold);
 	}
 
 	public boolean add(long l) {
 		if (l < threshold)
-			return BitSets.add(seenLow, (int) l);
+			return BitSets.add(low, (int) l);
 		else
-			return seenHigh.add(l);
+			return high.add(l);
 	}
 }

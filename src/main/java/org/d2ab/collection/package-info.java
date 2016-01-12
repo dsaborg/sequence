@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * Classes related to {@link java.util.Collection} classes.
+ */
+@ParametersAreNonnullByDefault
 package org.d2ab.collection;
 
-import java.util.BitSet;
-
-import static java.util.Objects.requireNonNull;
-
-/**
- *
- */
-public class BitSets {
-	private BitSets() {
-	}
-
-	public static boolean add(BitSet bitSet, int index) {
-		requireNonNull(bitSet);
-		boolean cleared = !bitSet.get(index);
-		if (cleared) {
-			bitSet.set(index);
-		}
-		return cleared;
-	}
-}
+import javax.annotation.ParametersAreNonnullByDefault;
