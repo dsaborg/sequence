@@ -16,7 +16,7 @@ great lengths to be as lazy and late-evaluating as possible, with minimal overhe
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
 of a pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers wanting
 to perform common data processing tasks on moderately small collections. If you need parallel iteration or are 
-processing over 1 million or so entries, use `Streams`.
+processing over 1 million or so entries, use parallel `Streams`.
 
 ```
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
