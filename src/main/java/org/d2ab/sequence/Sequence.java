@@ -137,7 +137,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * the {@link Stream} is requested again.
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 *
 	 * @see #of(T)
 	 * @see #of(T...)
 	 * @see #from(Iterable)

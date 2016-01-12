@@ -59,10 +59,8 @@ public class EntrySequenceTest {
 	                                                                        Pair.of("24", 24), Pair.of("5", 5),
 	                                                                        Pair.of("67", 67));
 	private final Entry<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
-	private final Entry<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3",
-	                                                                                                           3),
-	                                                                 Pair.of(
-			"4", 4), Pair.of("5", 5)};
+	private final Entry<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+	                                                                 Pair.of("4", 4), Pair.of("5", 5)};
 	private final Entry<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
 	private final Entry<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 

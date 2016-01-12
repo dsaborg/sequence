@@ -332,8 +332,7 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterables() {
-		Sequence<Integer> flattened = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6))
-		                                      .flatten();
+		Sequence<Integer> flattened = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6)).flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
