@@ -285,7 +285,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(T)
 	 * @see #until(T)
 	 */
-	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
+	static <T> Sequence<T> recurse(@Nullable T seed, UnaryOperator<T> f) {
 		return () -> new RecursiveIterator<>(seed, f);
 	}
 
@@ -307,8 +307,14 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(T)
 	 * @see #until(T)
 	 */
-	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
+	static <T, S> Sequence<S> recurse(@Nullable T seed,
+	                                  Function<? super T, ? extends S> f,
+	                                  Function<? super S, ? extends T> g) {
 		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
+	}
+
+	default Sequence<T> until(@Nullable T terminal) {
+		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
 	/**
@@ -320,7 +326,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #recurse(T, UnaryOperator)
 	 * @see #recurse(T, Function, Function)
 	 */
-	default Sequence<T> endingAt(T terminal) {
+	default Sequence<T> endingAt(@Nullable T terminal) {
 		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
@@ -368,10 +374,6 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default <U> Sequence<U> flatten() {
 		return ChainingIterable.<U>flatten(this)::iterator;
-	}
-
-	default Sequence<T> until(T terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
 	default Set<T> toSet() {
@@ -473,11 +475,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return result.toString();
 	}
 
-	default T reduce(T identity, BinaryOperator<T> operator) {
+	default T reduce(@Nullable T identity, BinaryOperator<T> operator) {
 		return reduce(identity, operator, iterator());
 	}
 
-	default T reduce(T identity, BinaryOperator<T> operator, Iterator<? extends T> iterator) {
+	default T reduce(@Nullable T identity, BinaryOperator<T> operator, Iterator<? extends T> iterator) {
 		T result = identity;
 		while (iterator.hasNext())
 			result = operator.apply(result, iterator.next());
@@ -578,16 +580,16 @@ public interface Sequence<T> extends Iterable<T> {
 		return count;
 	}
 
-	default Object[] toArray() {
-		return toList().toArray();
-	}
-
 	default List<T> toList() {
 		return toList(ArrayList::new);
 	}
 
 	default List<T> toList(Supplier<? extends List<T>> constructor) {
 		return toCollection(constructor);
+	}
+
+	default Object[] toArray() {
+		return toList().toArray();
 	}
 
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
