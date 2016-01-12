@@ -25,7 +25,6 @@ import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
 import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.primitive.longs.DelegatingLongIterator;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
@@ -51,7 +50,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(T...)
 	 * @see #from(Iterable)
 	 */
-	@Nonnull
 	static <T> Sequence<T> empty() {
 		return from(emptyIterator());
 	}
@@ -64,8 +62,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(T...)
 	 * @see #from(Iterable)
 	 */
-	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterator<T> iterator) {
+	static <T> Sequence<T> from(Iterator<T> iterator) {
 		return () -> iterator;
 	}
 
@@ -75,7 +72,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(T...)
 	 * @see #from(Iterable)
 	 */
-	@Nonnull
 	static <T> Sequence<T> of(@Nullable T item) {
 		return from(singleton(item));
 	}
@@ -86,8 +82,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(T)
 	 * @see #of(T...)
 	 */
-	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterable<T> iterable) {
+	static <T> Sequence<T> from(Iterable<T> iterable) {
 		return iterable::iterator;
 	}
 
@@ -98,8 +93,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
-	@Nonnull
-	static <T> Sequence<T> of(@Nonnull T... items) {
+	static <T> Sequence<T> of(T... items) {
 		return from(asList(items));
 	}
 
@@ -112,8 +106,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
-	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Iterable<T>... iterables) {
+	static <T> Sequence<T> from(Iterable<T>... iterables) {
 		return new ChainingIterable<>(iterables)::iterator;
 	}
 
@@ -127,8 +120,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterable)
 	 * @see #from(Iterator)
 	 */
-	@Nonnull
-	static <T> Sequence<T> from(@Nonnull Supplier<? extends Iterator<T>> iteratorSupplier) {
+	static <T> Sequence<T> from(Supplier<? extends Iterator<T>> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -335,17 +327,14 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Map the values in this sequence to another set of values specified by the given {@code mapper} function.
 	 */
-	@Nonnull
-	default <U> Sequence<U> map(@Nonnull Function<? super T, ? extends U> mapper) {
+	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
-	@Nonnull
 	default Sequence<T> skip(long skip) {
 		return () -> new SkippingIterator<T>(skip).backedBy(iterator());
 	}
 
-	@Nonnull
 	default Sequence<T> limit(long limit) {
 		return () -> new LimitingIterator<T>(limit).backedBy(iterator());
 	}
@@ -354,8 +343,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return append(Iterables.from(iterator));
 	}
 
-	@Nonnull
-	default Sequence<T> append(@Nonnull Iterable<T> that) {
+	default Sequence<T> append(Iterable<T> that) {
 		@SuppressWarnings("unchecked")
 		Iterable<T> chainingSequence = new ChainingIterable<>(this, that);
 		return chainingSequence::iterator;
@@ -370,13 +358,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return append(Iterables.from(stream));
 	}
 
-	@Nonnull
-	default Sequence<T> filter(@Nonnull Predicate<? super T> predicate) {
+	default Sequence<T> filter(Predicate<? super T> predicate) {
 		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
 	}
 
-	@Nonnull
-	default <U> Sequence<U> flatMap(@Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
+	default <U> Sequence<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
 		return ChainingIterable.flatMap(this, mapper)::iterator;
 	}
 
@@ -689,13 +675,13 @@ public interface Sequence<T> extends Iterable<T> {
 		return from(list);
 	}
 
-	default Sequence<T> shuffle(@Nonnull Random md) {
+	default Sequence<T> shuffle(Random md) {
 		List<T> list = toList();
 		Collections.shuffle(list, md);
 		return from(list);
 	}
 
-	default CharSeq mapToChar(@Nonnull ToCharFunction<T> mapper) {
+	default CharSeq mapToChar(ToCharFunction<T> mapper) {
 		return () -> new DelegatingCharIterator<T, Iterator<T>>() {
 			@Override
 			public char nextChar() {
@@ -704,7 +690,7 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default IntSeq mapToInt(@Nonnull ToIntFunction<T> mapper) {
+	default IntSeq mapToInt(ToIntFunction<T> mapper) {
 		return () -> new DelegatingIntIterator<T, Iterator<T>>() {
 			@Override
 			public int nextInt() {
@@ -713,7 +699,7 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq mapToLong(@Nonnull ToLongFunction<T> mapper) {
+	default LongSeq mapToLong(ToLongFunction<T> mapper) {
 		return () -> new DelegatingLongIterator<T, Iterator<T>>() {
 			@Override
 			public long nextLong() {
@@ -722,7 +708,7 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq mapToDouble(@Nonnull ToDoubleFunction<T> mapper) {
+	default DoubleSeq mapToDouble(ToDoubleFunction<T> mapper) {
 		return () -> new DelegatingDoubleIterator<T, Iterator<T>>() {
 			@Override
 			public double nextDouble() {

@@ -89,7 +89,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		};
 	}
 
-	static <K, V> boolean test(@Nonnull Entry<K, V> entry, @Nonnull BiPredicate<? super K, ? super V> predicate) {
+	static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> predicate) {
 		return predicate.test(entry.getKey(), entry.getValue());
 	}
 
@@ -187,9 +187,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		};
 	}
 
-	@Nonnull
-	default <LL, RR> Pair<LL, RR> map(@Nonnull Function<? super L, ? extends LL> leftMapper,
-	                                  @Nonnull Function<? super R, ? extends RR> rightMapper) {
+	default <LL, RR> Pair<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
+	                                  Function<? super R, ? extends RR> rightMapper) {
 		return new Base<LL, RR>() {
 			@Override
 			public LL getLeft() {
@@ -203,24 +202,23 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		};
 	}
 
-	@Nonnull
-	default <LL, RR> Pair<LL, RR> map(@Nonnull BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
+	default <LL, RR> Pair<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
 		return mapper.apply(getLeft(), getRight());
 	}
 
-	default <T> T apply(@Nonnull BiFunction<? super L, ? super R, ? extends T> function) {
+	default <T> T apply(BiFunction<? super L, ? super R, ? extends T> function) {
 		return function.apply(getLeft(), getRight());
 	}
 
-	default boolean test(@Nonnull Predicate<? super L> leftPredicate, @Nonnull Predicate<? super R> rightPredicate) {
+	default boolean test(Predicate<? super L> leftPredicate, Predicate<? super R> rightPredicate) {
 		return leftPredicate.test(getLeft()) && rightPredicate.test(getRight());
 	}
 
-	default boolean test(@Nonnull BiPredicate<? super L, ? super R> predicate) {
+	default boolean test(BiPredicate<? super L, ? super R> predicate) {
 		return predicate.test(getLeft(), getRight());
 	}
 
-	default Map<L, R> putInto(@Nonnull Map<L, R> map) {
+	default Map<L, R> putInto(Map<L, R> map) {
 		return putEntry(map, this);
 	}
 
