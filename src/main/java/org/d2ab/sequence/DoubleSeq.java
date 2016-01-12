@@ -21,7 +21,6 @@ import org.d2ab.primitive.ints.IntIterator;
 import org.d2ab.primitive.longs.LongIterator;
 import org.d2ab.utils.Arrayz;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalDouble;
@@ -41,7 +40,6 @@ public interface DoubleSeq extends DoubleIterable {
 	/**
 	 * Create empty {@code DoubleSeq} with no contents.
 	 */
-	@Nonnull
 	static DoubleSeq empty() {
 		return from(emptyIterator());
 	}
@@ -51,8 +49,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * {@link Iterator} of {@code Double} values. Note that {@code DoubleSeq} created from {@link Iterator}s
 	 * cannot be passed over more than once. Further attempts will register the {@code DoubleSeq} as empty.
 	 */
-	@Nonnull
-	static DoubleSeq from(@Nonnull Iterator<Double> iterator) {
+	static DoubleSeq from(Iterator<Double> iterator) {
 		return from(DoubleIterator.from(iterator));
 	}
 
@@ -62,24 +59,21 @@ public interface DoubleSeq extends DoubleIterable {
 	 * will
 	 * register the {@code DoubleSeq} as empty.
 	 */
-	@Nonnull
-	static DoubleSeq from(@Nonnull DoubleIterator iterator) {
+	static DoubleSeq from(DoubleIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
 	 * Create a {@code DoubleSeq} from a {@link DoubleIterable}.
 	 */
-	@Nonnull
-	static DoubleSeq from(@Nonnull DoubleIterable iterable) {
+	static DoubleSeq from(DoubleIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
 	 * Create a {@code DoubleSeq} with the given doubles.
 	 */
-	@Nonnull
-	static DoubleSeq of(@Nonnull double... cs) {
+	static DoubleSeq of(double... cs) {
 		return () -> new ArrayDoubleIterator(cs);
 	}
 
@@ -88,8 +82,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	@Nonnull
-	static DoubleSeq from(@Nonnull Supplier<? extends DoubleIterator> iteratorSupplier) {
+	static DoubleSeq from(Supplier<? extends DoubleIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -107,8 +100,7 @@ public interface DoubleSeq extends DoubleIterable {
 	/**
 	 * Create a {@code DoubleSeq} from an {@link Iterable} of {@code Double} values.
 	 */
-	@Nonnull
-	static DoubleSeq from(@Nonnull Iterable<Double> iterable) {
+	static DoubleSeq from(Iterable<Double> iterable) {
 		return () -> DoubleIterator.from(iterable);
 	}
 
@@ -226,8 +218,7 @@ public interface DoubleSeq extends DoubleIterable {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
-	@Nonnull
-	default DoubleSeq map(@Nonnull DoubleUnaryOperator mapper) {
+	default DoubleSeq map(DoubleUnaryOperator mapper) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
 			public double nextDouble() {
@@ -240,8 +231,7 @@ public interface DoubleSeq extends DoubleIterable {
 		return toSequence(Double::valueOf);
 	}
 
-	@Nonnull
-	default <T> Sequence<T> toSequence(@Nonnull DoubleFunction<T> mapper) {
+	default <T> Sequence<T> toSequence(DoubleFunction<T> mapper) {
 		return () -> new Iterator<T>() {
 			private final DoubleIterator iterator = iterator();
 
@@ -257,23 +247,19 @@ public interface DoubleSeq extends DoubleIterable {
 		};
 	}
 
-	@Nonnull
 	default DoubleSeq skip(double skip) {
 		return () -> new SkippingDoubleIterator(skip).backedBy(iterator());
 	}
 
-	@Nonnull
 	default DoubleSeq limit(double limit) {
 		return () -> new LimitingDoubleIterator(limit).backedBy(iterator());
 	}
 
-	@Nonnull
-	default DoubleSeq append(@Nonnull Iterable<Double> iterable) {
+	default DoubleSeq append(Iterable<Double> iterable) {
 		return append(DoubleIterable.from(iterable));
 	}
 
-	@Nonnull
-	default DoubleSeq append(@Nonnull DoubleIterable that) {
+	default DoubleSeq append(DoubleIterable that) {
 		return new ChainingDoubleIterable(this, that)::iterator;
 	}
 
@@ -297,8 +283,7 @@ public interface DoubleSeq extends DoubleIterable {
 		return append(DoubleIterable.from(stream));
 	}
 
-	@Nonnull
-	default DoubleSeq filter(@Nonnull DoublePredicate predicate) {
+	default DoubleSeq filter(DoublePredicate predicate) {
 		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
 	}
 

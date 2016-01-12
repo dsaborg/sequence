@@ -16,19 +16,17 @@
 
 package org.d2ab.primitive.doubles;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
  */
 public class InterleavingDoubleIterator implements DoubleIterator {
-	@Nonnull
 	private final List<DoubleIterator> iterators = new ArrayList<>();
 
 	private int current;
 
-	public InterleavingDoubleIterator(@Nonnull DoubleIterable... iterables) {
+	public InterleavingDoubleIterator(DoubleIterable... iterables) {
 		for (DoubleIterable iterable : iterables) {
 			DoubleIterator iterator = Objects.requireNonNull(iterable).iterator();
 			iterators.add(Objects.requireNonNull(iterator));

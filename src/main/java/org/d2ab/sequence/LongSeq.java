@@ -23,7 +23,6 @@ import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.primitive.longs.*;
 import org.d2ab.utils.Arrayz;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalLong;
@@ -42,7 +41,6 @@ public interface LongSeq extends LongIterable {
 	/**
 	 * Create empty {@code LongSeq} with no contents.
 	 */
-	@Nonnull
 	static LongSeq empty() {
 		return from(emptyIterator());
 	}
@@ -53,8 +51,7 @@ public interface LongSeq extends LongIterable {
 	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code LongSeq} as
 	 * empty.
 	 */
-	@Nonnull
-	static LongSeq from(@Nonnull Iterator<Long> iterator) {
+	static LongSeq from(Iterator<Long> iterator) {
 		return from(LongIterator.from(iterator));
 	}
 
@@ -64,24 +61,21 @@ public interface LongSeq extends LongIterable {
 	 * will
 	 * register the {@code LongSeq} as empty.
 	 */
-	@Nonnull
-	static LongSeq from(@Nonnull LongIterator iterator) {
+	static LongSeq from(LongIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
 	 * Create a {@code LongSeq} from a {@link LongIterable}.
 	 */
-	@Nonnull
-	static LongSeq from(@Nonnull LongIterable iterable) {
+	static LongSeq from(LongIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
 	 * Create a {@code LongSeq} with the given longs.
 	 */
-	@Nonnull
-	static LongSeq of(@Nonnull long... cs) {
+	static LongSeq of(long... cs) {
 		return () -> new ArrayLongIterator(cs);
 	}
 
@@ -90,8 +84,7 @@ public interface LongSeq extends LongIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	@Nonnull
-	static LongSeq from(@Nonnull Supplier<? extends LongIterator> iteratorSupplier) {
+	static LongSeq from(Supplier<? extends LongIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -109,8 +102,7 @@ public interface LongSeq extends LongIterable {
 	/**
 	 * Create a {@code LongSeq} from an {@link Iterable} of {@code Long} values.
 	 */
-	@Nonnull
-	static LongSeq from(@Nonnull Iterable<Long> iterable) {
+	static LongSeq from(Iterable<Long> iterable) {
 		return () -> LongIterator.from(iterable);
 	}
 
@@ -203,8 +195,7 @@ public interface LongSeq extends LongIterable {
 		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
-	@Nonnull
-	default LongSeq map(@Nonnull LongUnaryOperator mapper) {
+	default LongSeq map(LongUnaryOperator mapper) {
 		return () -> new UnaryLongIterator() {
 			@Override
 			public long nextLong() {
@@ -225,8 +216,7 @@ public interface LongSeq extends LongIterable {
 		return toSequence(Long::valueOf);
 	}
 
-	@Nonnull
-	default <T> Sequence<T> toSequence(@Nonnull LongFunction<T> mapper) {
+	default <T> Sequence<T> toSequence(LongFunction<T> mapper) {
 		return () -> new DelegatingIterator<Long, LongIterator, T, Iterator<T>>() {
 			@Override
 			public T next() {
@@ -235,23 +225,19 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	@Nonnull
 	default LongSeq skip(long skip) {
 		return () -> new SkippingLongIterator(skip).backedBy(iterator());
 	}
 
-	@Nonnull
 	default LongSeq limit(long limit) {
 		return () -> new LimitingLongIterator(limit).backedBy(iterator());
 	}
 
-	@Nonnull
-	default LongSeq append(@Nonnull Iterable<Long> iterable) {
+	default LongSeq append(Iterable<Long> iterable) {
 		return append(LongIterable.from(iterable));
 	}
 
-	@Nonnull
-	default LongSeq append(@Nonnull LongIterable that) {
+	default LongSeq append(LongIterable that) {
 		return new ChainingLongIterable(this, that)::iterator;
 	}
 
@@ -275,8 +261,7 @@ public interface LongSeq extends LongIterable {
 		return append(LongIterable.from(stream));
 	}
 
-	@Nonnull
-	default LongSeq filter(@Nonnull LongPredicate predicate) {
+	default LongSeq filter(LongPredicate predicate) {
 		return () -> new FilteringLongIterator(predicate).backedBy(iterator());
 	}
 

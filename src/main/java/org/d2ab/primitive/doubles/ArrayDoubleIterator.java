@@ -16,18 +16,16 @@
 
 package org.d2ab.primitive.doubles;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayDoubleIterator implements DoubleIterator {
-	@Nonnull
 	private double[] values;
 	private int index;
 
-	public ArrayDoubleIterator(@Nonnull double... values) {
+	public ArrayDoubleIterator(double... values) {
 		this.values = values;
 	}
 

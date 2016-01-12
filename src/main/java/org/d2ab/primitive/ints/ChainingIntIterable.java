@@ -16,7 +16,6 @@
 
 package org.d2ab.primitive.ints;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -29,12 +28,11 @@ import static java.util.Arrays.asList;
 public class ChainingIntIterable implements IntIterable {
 	private final Collection<IntIterable> iterables = new ArrayList<>();
 
-	public ChainingIntIterable(@Nonnull IntIterable... iterables) {
+	public ChainingIntIterable(IntIterable... iterables) {
 		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
 	}
 
-	@Nonnull
-	public ChainingIntIterable append(@Nonnull IntIterable iterable) {
+	public ChainingIntIterable append(IntIterable iterable) {
 		iterables.add(iterable);
 		return this;
 	}

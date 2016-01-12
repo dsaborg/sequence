@@ -22,7 +22,6 @@ import org.d2ab.primitive.ints.*;
 import org.d2ab.primitive.longs.DelegatingLongIterator;
 import org.d2ab.utils.Arrayz;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalInt;
@@ -41,7 +40,6 @@ public interface IntSeq extends IntIterable {
 	/**
 	 * Create empty {@code IntSeq} with no contents.
 	 */
-	@Nonnull
 	static IntSeq empty() {
 		return from(emptyIterator());
 	}
@@ -52,8 +50,7 @@ public interface IntSeq extends IntIterable {
 	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code IntSeq} as
 	 * empty.
 	 */
-	@Nonnull
-	static IntSeq from(@Nonnull Iterator<Integer> iterator) {
+	static IntSeq from(Iterator<Integer> iterator) {
 		return from(IntIterator.from(iterator));
 	}
 
@@ -63,24 +60,21 @@ public interface IntSeq extends IntIterable {
 	 * will
 	 * register the {@code IntSeq} as empty.
 	 */
-	@Nonnull
-	static IntSeq from(@Nonnull IntIterator iterator) {
+	static IntSeq from(IntIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
 	 * Create a {@code IntSeq} from a {@link IntIterable}.
 	 */
-	@Nonnull
-	static IntSeq from(@Nonnull IntIterable iterable) {
+	static IntSeq from(IntIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
 	 * Create a {@code IntSeq} with the given ints.
 	 */
-	@Nonnull
-	static IntSeq of(@Nonnull int... cs) {
+	static IntSeq of(int... cs) {
 		return () -> new ArrayIntIterator(cs);
 	}
 
@@ -89,8 +83,7 @@ public interface IntSeq extends IntIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	@Nonnull
-	static IntSeq from(@Nonnull Supplier<? extends IntIterator> iteratorSupplier) {
+	static IntSeq from(Supplier<? extends IntIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -108,8 +101,7 @@ public interface IntSeq extends IntIterable {
 	/**
 	 * Create a {@code IntSeq} from an {@link Iterable} of {@code Integer} values.
 	 */
-	@Nonnull
-	static IntSeq from(@Nonnull Iterable<Integer> iterable) {
+	static IntSeq from(Iterable<Integer> iterable) {
 		return () -> IntIterator.from(iterable);
 	}
 
@@ -221,8 +213,7 @@ public interface IntSeq extends IntIterable {
 	 * Map the values in this {@code IntSeq} sequence to another set of values specified by the given {@code mapper}
 	 * function.
 	 */
-	@Nonnull
-	default IntSeq map(@Nonnull IntUnaryOperator mapper) {
+	default IntSeq map(IntUnaryOperator mapper) {
 		return () -> new UnaryIntIterator() {
 			@Override
 			public int nextInt() {
@@ -235,8 +226,7 @@ public interface IntSeq extends IntIterable {
 		return toSequence(Integer::valueOf);
 	}
 
-	@Nonnull
-	default <T> Sequence<T> toSequence(@Nonnull IntFunction<T> mapper) {
+	default <T> Sequence<T> toSequence(IntFunction<T> mapper) {
 		return () -> new Iterator<T>() {
 			private final IntIterator iterator = iterator();
 
@@ -252,23 +242,19 @@ public interface IntSeq extends IntIterable {
 		};
 	}
 
-	@Nonnull
 	default IntSeq skip(long skip) {
 		return () -> new SkippingIntIterator(skip).backedBy(iterator());
 	}
 
-	@Nonnull
 	default IntSeq limit(long limit) {
 		return () -> new LimitingIntIterator(limit).backedBy(iterator());
 	}
 
-	@Nonnull
-	default IntSeq append(@Nonnull Iterable<Integer> iterable) {
+	default IntSeq append(Iterable<Integer> iterable) {
 		return append(IntIterable.from(iterable));
 	}
 
-	@Nonnull
-	default IntSeq append(@Nonnull IntIterable that) {
+	default IntSeq append(IntIterable that) {
 		return new ChainingIntIterable(this, that)::iterator;
 	}
 
@@ -292,8 +278,7 @@ public interface IntSeq extends IntIterable {
 		return append(IntIterable.from(stream));
 	}
 
-	@Nonnull
-	default IntSeq filter(@Nonnull IntPredicate predicate) {
+	default IntSeq filter(IntPredicate predicate) {
 		return () -> new FilteringIntIterator(predicate).backedBy(iterator());
 	}
 

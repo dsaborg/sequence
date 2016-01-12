@@ -16,19 +16,17 @@
 
 package org.d2ab.primitive.longs;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
  */
 public class InterleavingLongIterator implements LongIterator {
-	@Nonnull
 	private final List<LongIterator> iterators = new ArrayList<>();
 
 	private int current;
 
-	public InterleavingLongIterator(@Nonnull LongIterable... iterables) {
+	public InterleavingLongIterator(LongIterable... iterables) {
 		for (LongIterable iterable : iterables) {
 			LongIterator iterator = Objects.requireNonNull(iterable).iterator();
 			iterators.add(Objects.requireNonNull(iterator));

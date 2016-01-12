@@ -36,101 +36,83 @@ import static java.util.Collections.emptyIterator;
  */
 @FunctionalInterface
 public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
-	@Nonnull
 	static <T, U> EntrySequence<T, U> of(Pair<T, U> item) {
 		return from(Collections.singleton(item));
 	}
 
 	@SafeVarargs
-	@Nonnull
-	static <T, U> EntrySequence<T, U> from(@Nonnull Iterable<? extends Entry<T, U>>... iterables) {
+	static <T, U> EntrySequence<T, U> from(Iterable<? extends Entry<T, U>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);
 	}
 
 	@SafeVarargs
-	@Nonnull
-	static <T, U> EntrySequence<T, U> of(@Nonnull Entry<T, U>... items) {
+	static <T, U> EntrySequence<T, U> of(Entry<T, U>... items) {
 		return from(asList(items));
 	}
 
-	@Nonnull
 	static <T, U> EntrySequence<T, U> empty() {
 		return from(emptyIterator());
 	}
 
-	@Nonnull
-	static <T, U> EntrySequence<T, U> from(@Nonnull Iterator<Entry<T, U>> iterator) {
+	static <T, U> EntrySequence<T, U> from(Iterator<Entry<T, U>> iterator) {
 		return () -> iterator;
 	}
 
-	@Nonnull
-	static <T, U> EntrySequence<T, U> from(@Nonnull Stream<Entry<T, U>> stream) {
+	static <T, U> EntrySequence<T, U> from(Stream<Entry<T, U>> stream) {
 		return stream::iterator;
 	}
 
-	@Nonnull
-	static <T, U> EntrySequence<T, U> from(@Nonnull Supplier<? extends Iterator<Entry<T, U>>> iteratorSupplier) {
+	static <T, U> EntrySequence<T, U> from(Supplier<? extends Iterator<Entry<T, U>>> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
-	@Nonnull
 	static <T, U> EntrySequence<T, U> recurse(@Nullable T firstSeed, @Nullable U secondSeed,
-	                                          @Nonnull BiFunction<T, U, ? extends Entry<T, U>> op) {
+	                                          BiFunction<T, U, ? extends Entry<T, U>> op) {
 		return () -> new RecursiveIterator<>(Pair.of(firstSeed, secondSeed), p -> op.apply(p.getKey(), p.getValue()));
 	}
 
-	@Nonnull
 	static <T, U, V, W> EntrySequence<V, W> recurse(@Nullable T firstSeed, @Nullable U secondSeed,
-	                                                @Nonnull BiFunction<T, U, Entry<V, W>> f,
-	                                                @Nonnull BiFunction<V, W, Entry<T, U>> g) {
+	                                                BiFunction<T, U, Entry<V, W>> f,
+	                                                BiFunction<V, W, Entry<T, U>> g) {
 		return () -> new RecursiveIterator<>(f.apply(firstSeed, secondSeed), p -> {
 			Entry<T, U> p2 = g.apply(p.getKey(), p.getValue());
 			return f.apply(p2.getKey(), p2.getValue());
 		});
 	}
 
-	@Nonnull
 	static <K, V> EntrySequence<K, V> from(Map<K, V> map) {
 		return map.entrySet()::iterator;
 	}
 
-	@Nonnull
-	default <V, W> EntrySequence<V, W> map(@Nonnull BiFunction<? super T, ? super U, ? extends Entry<V, W>> mapper) {
+	default <V, W> EntrySequence<V, W> map(BiFunction<? super T, ? super U, ? extends Entry<V, W>> mapper) {
 		return map(e -> mapper.apply(e.getKey(), e.getValue()));
 	}
 
-	@Nonnull
 	default <V, W> EntrySequence<V, W> map(Function<Entry<T, U>, Entry<V, W>> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
-	@Nonnull
-	default <V, W> EntrySequence<V, W> map(@Nonnull Function<? super T, ? extends V> keyMapper,
-	                                       @Nonnull Function<? super U, ? extends W> valueMapper) {
+	default <V, W> EntrySequence<V, W> map(Function<? super T, ? extends V> keyMapper,
+	                                       Function<? super U, ? extends W> valueMapper) {
 		return map(e -> Pair.map(e, keyMapper, valueMapper));
 	}
 
-	@Nonnull
 	default EntrySequence<T, U> skip(int skip) {
 		return () -> new SkippingIterator<Entry<T, U>>(skip).backedBy(iterator());
 	}
 
-	@Nonnull
 	default EntrySequence<T, U> limit(int limit) {
 		return () -> new LimitingIterator<Entry<T, U>>(limit).backedBy(iterator());
 	}
 
-	@Nonnull
-	default EntrySequence<T, U> then(@Nonnull EntrySequence<T, U> then) {
+	default EntrySequence<T, U> then(EntrySequence<T, U> then) {
 		return () -> new ChainingIterator<>(this, then);
 	}
 
-	@Nonnull
-	default EntrySequence<T, U> filter(@Nonnull BiPredicate<? super T, ? super U> predicate) {
+	default EntrySequence<T, U> filter(BiPredicate<? super T, ? super U> predicate) {
 		return () -> new FilteringIterator<Entry<T, U>>(e -> Pair.test(e, predicate)).backedBy(iterator());
 	}
 
-	@Nonnull
 	default <V, W> EntrySequence<V, W> flatMap(@Nonnull
 	                                           BiFunction<? super T, ? super U, ? extends Iterable<Entry<V, W>>>
 			                                               mapper) {

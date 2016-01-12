@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
 import org.d2ab.sequence.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -69,32 +69,26 @@ public interface CharIterable extends Iterable<Character> {
 		return () -> CharIterator.from(iterable);
 	}
 
-	@Nonnull
 	static CharIterable from(CharIterator iterator) {
 		return iterator.asIterable();
 	}
 
-	@Nonnull
 	static CharIterable from(Iterator<Character> iterator) {
 		return () -> CharIterator.from(iterator);
 	}
 
-	@Nonnull
 	static CharIterable from(IntStream charStream) {
 		return from(CharIterator.from(charStream.iterator()));
 	}
 
-	@Nonnull
 	static CharIterable of(char... characters) {
 		return () -> new ArrayCharIterator(characters);
 	}
 
-	@Nonnull
 	static CharIterable from(Character... characters) {
 		return from(Arrays.asList(characters));
 	}
 
-	@Nonnull
 	static CharIterable from(Stream<Character> stream) {
 		return from(stream.iterator());
 	}

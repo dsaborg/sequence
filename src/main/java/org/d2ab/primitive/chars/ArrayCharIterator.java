@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayCharIterator implements CharIterator {
-	@Nonnull
 	private char[] values;
 	private int index;
 
-	public ArrayCharIterator(@Nonnull char... values) {
+	public ArrayCharIterator(char... values) {
 		this.values = values;
 	}
 

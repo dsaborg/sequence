@@ -16,7 +16,6 @@
 
 package org.d2ab.sequence;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -267,7 +266,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		}
 
 		@Override
-		public int compareTo(@Nonnull Entry<L, R> that) {
+		public int compareTo(Entry<L, R> that) {
 			return COMPARATOR.compare(this, that);
 		}
 	}

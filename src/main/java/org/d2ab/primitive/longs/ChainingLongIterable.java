@@ -16,7 +16,6 @@
 
 package org.d2ab.primitive.longs;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -29,12 +28,11 @@ import static java.util.Arrays.asList;
 public class ChainingLongIterable implements LongIterable {
 	private final Collection<LongIterable> iterables = new ArrayList<>();
 
-	public ChainingLongIterable(@Nonnull LongIterable... iterables) {
+	public ChainingLongIterable(LongIterable... iterables) {
 		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
 	}
 
-	@Nonnull
-	public ChainingLongIterable append(@Nonnull LongIterable iterable) {
+	public ChainingLongIterable append(LongIterable iterable) {
 		iterables.add(iterable);
 		return this;
 	}

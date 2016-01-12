@@ -16,18 +16,16 @@
 
 package org.d2ab.primitive.ints;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayIntIterator implements IntIterator {
-	@Nonnull
 	private int[] values;
 	private int index;
 
-	public ArrayIntIterator(@Nonnull int... values) {
+	public ArrayIntIterator(int... values) {
 		this.values = values;
 	}
 

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
@@ -66,7 +66,6 @@ public final class OptionalChar {
 		this.value = value;
 	}
 
-	@Nonnull
 	private static OptionalChar[] buildCache(int threshold) {
 		OptionalChar[] cache = new OptionalChar[threshold];
 		for (int i = 0; i < threshold; i++) {

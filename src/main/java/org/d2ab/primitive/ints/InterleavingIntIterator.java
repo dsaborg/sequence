@@ -16,19 +16,17 @@
 
 package org.d2ab.primitive.ints;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
  */
 public class InterleavingIntIterator implements IntIterator {
-	@Nonnull
 	private final List<IntIterator> iterators = new ArrayList<>();
 
 	private int current;
 
-	public InterleavingIntIterator(@Nonnull IntIterable... iterables) {
+	public InterleavingIntIterator(IntIterable... iterables) {
 		for (IntIterable iterable : iterables) {
 			IntIterator iterator = Objects.requireNonNull(iterable).iterator();
 			iterators.add(Objects.requireNonNull(iterator));

@@ -16,18 +16,16 @@
 
 package org.d2ab.primitive.longs;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayLongIterator implements LongIterator {
-	@Nonnull
 	private long[] values;
 	private int index;
 
-	public ArrayLongIterator(@Nonnull long... values) {
+	public ArrayLongIterator(long... values) {
 		this.values = values;
 	}
 

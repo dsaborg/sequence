@@ -16,7 +16,6 @@
 
 package org.d2ab.primitive.doubles;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -29,12 +28,11 @@ import static java.util.Arrays.asList;
 public class ChainingDoubleIterable implements DoubleIterable {
 	private final Collection<DoubleIterable> iterables = new ArrayList<>();
 
-	public ChainingDoubleIterable(@Nonnull DoubleIterable... iterables) {
+	public ChainingDoubleIterable(DoubleIterable... iterables) {
 		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
 	}
 
-	@Nonnull
-	public ChainingDoubleIterable append(@Nonnull DoubleIterable iterable) {
+	public ChainingDoubleIterable append(DoubleIterable iterable) {
 		iterables.add(iterable);
 		return this;
 	}

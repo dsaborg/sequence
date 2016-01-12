@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -28,12 +28,11 @@ import static java.util.Arrays.asList;
 public class ChainingCharIterable implements CharIterable {
 	private final Collection<CharIterable> iterables = new ArrayList<>();
 
-	public ChainingCharIterable(@Nonnull CharIterable... iterables) {
+	public ChainingCharIterable(CharIterable... iterables) {
 		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
 	}
 
-	@Nonnull
-	public ChainingCharIterable append(@Nonnull CharIterable iterable) {
+	public ChainingCharIterable append(CharIterable iterable) {
 		iterables.add(iterable);
 		return this;
 	}

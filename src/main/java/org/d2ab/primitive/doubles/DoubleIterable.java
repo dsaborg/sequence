@@ -18,7 +18,6 @@ package org.d2ab.primitive.doubles;
 
 import org.d2ab.sequence.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -71,32 +70,26 @@ public interface DoubleIterable extends Iterable<Double> {
 		return () -> DoubleIterator.from(iterable);
 	}
 
-	@Nonnull
 	static DoubleIterable from(DoubleIterator iterator) {
 		return iterator.asIterable();
 	}
 
-	@Nonnull
 	static DoubleIterable from(Iterator<Double> iterator) {
 		return () -> DoubleIterator.from(iterator);
 	}
 
-	@Nonnull
 	static DoubleIterable from(DoubleStream doubleStream) {
 		return from(DoubleIterator.from(doubleStream.iterator()));
 	}
 
-	@Nonnull
 	static DoubleIterable of(double... doubles) {
 		return () -> new ArrayDoubleIterator(doubles);
 	}
 
-	@Nonnull
 	static DoubleIterable from(Double... doubles) {
 		return from(Arrays.asList(doubles));
 	}
 
-	@Nonnull
 	static DoubleIterable from(Stream<Double> stream) {
 		return from(stream.iterator());
 	}

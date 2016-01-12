@@ -18,7 +18,6 @@ package org.d2ab.primitive.ints;
 
 import org.d2ab.sequence.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -71,32 +70,26 @@ public interface IntIterable extends Iterable<Integer> {
 		return () -> IntIterator.from(iterable);
 	}
 
-	@Nonnull
 	static IntIterable from(IntIterator iterator) {
 		return iterator.asIterable();
 	}
 
-	@Nonnull
 	static IntIterable from(Iterator<Integer> iterator) {
 		return () -> IntIterator.from(iterator);
 	}
 
-	@Nonnull
 	static IntIterable from(IntStream intStream) {
 		return from(IntIterator.from(intStream.iterator()));
 	}
 
-	@Nonnull
 	static IntIterable of(int... integers) {
 		return () -> new ArrayIntIterator(integers);
 	}
 
-	@Nonnull
 	static IntIterable from(Integer... integers) {
 		return from(Arrays.asList(integers));
 	}
 
-	@Nonnull
 	static IntIterable from(Stream<Integer> stream) {
 		return from(stream.iterator());
 	}

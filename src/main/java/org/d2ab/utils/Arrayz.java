@@ -18,7 +18,6 @@ package org.d2ab.utils;
 
 import org.d2ab.iterator.ArrayIterator;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -45,7 +44,6 @@ public class Arrayz {
 	}
 
 	@SafeVarargs
-	@Nonnull
 	public static <T> Iterable<T> iterable(T... items) {
 		return () -> new ArrayIterator<>(requireNonNull(items));
 	}

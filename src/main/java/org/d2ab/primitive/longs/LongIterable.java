@@ -18,7 +18,6 @@ package org.d2ab.primitive.longs;
 
 import org.d2ab.sequence.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -71,32 +70,26 @@ public interface LongIterable extends Iterable<Long> {
 		return () -> LongIterator.from(iterable);
 	}
 
-	@Nonnull
 	static LongIterable from(LongIterator iterator) {
 		return iterator.asIterable();
 	}
 
-	@Nonnull
 	static LongIterable from(Iterator<Long> iterator) {
 		return () -> LongIterator.from(iterator);
 	}
 
-	@Nonnull
 	static LongIterable from(LongStream longStream) {
 		return from(LongIterator.from(longStream.iterator()));
 	}
 
-	@Nonnull
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
 	}
 
-	@Nonnull
 	static LongIterable from(Long... longs) {
 		return from(Arrays.asList(longs));
 	}
 
-	@Nonnull
 	static LongIterable from(Stream<Long> stream) {
 		return from(stream.iterator());
 	}

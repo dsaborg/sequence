@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
  */
 public class InterleavingCharIterator implements CharIterator {
-	@Nonnull
 	private final List<CharIterator> iterators = new ArrayList<>();
 
 	private int current;
 
-	public InterleavingCharIterator(@Nonnull CharIterable... iterables) {
+	public InterleavingCharIterator(CharIterable... iterables) {
 		for (CharIterable iterable : iterables) {
 			CharIterator iterator = Objects.requireNonNull(iterable).iterator();
 			iterators.add(Objects.requireNonNull(iterator));

@@ -20,7 +20,6 @@ import org.d2ab.primitive.chars.*;
 import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.utils.Arrayz;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Supplier;
@@ -38,7 +37,6 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Create an empty {@code CharSequence} with no characters.
 	 */
-	@Nonnull
 	static CharSeq empty() {
 		return from(emptyIterator());
 	}
@@ -48,8 +46,7 @@ public interface CharSeq extends CharIterable {
 	 * CharSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
 	 * register the {@code CharSequence} as empty.
 	 */
-	@Nonnull
-	static CharSeq from(@Nonnull Iterator<Character> iterator) {
+	static CharSeq from(Iterator<Character> iterator) {
 		return from(CharIterator.from(iterator));
 	}
 
@@ -59,16 +56,14 @@ public interface CharSeq extends CharIterable {
 	 * will
 	 * register the {@code CharSequence} as empty.
 	 */
-	@Nonnull
-	static CharSeq from(@Nonnull CharIterator iterator) {
+	static CharSeq from(CharIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
 	 * Create a {@code CharSequence} from a {@link CharIterable}.
 	 */
-	@Nonnull
-	static CharSeq from(@Nonnull CharIterable iterable) {
+	static CharSeq from(CharIterable iterable) {
 		return iterable::iterator;
 	}
 
@@ -79,8 +74,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Create a {@code CharSequence} with the given characters.
 	 */
-	@Nonnull
-	static CharSeq of(@Nonnull char... cs) {
+	static CharSeq of(char... cs) {
 		return () -> new ArrayCharIterator(cs);
 	}
 
@@ -89,8 +83,7 @@ public interface CharSeq extends CharIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	@Nonnull
-	static CharSeq from(@Nonnull Supplier<? extends CharIterator> iteratorSupplier) {
+	static CharSeq from(Supplier<? extends CharIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -108,8 +101,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Create a {@code CharSequence} from an {@link Iterable} of {@code Character} values.
 	 */
-	@Nonnull
-	static CharSeq from(@Nonnull Iterable<Character> iterable) {
+	static CharSeq from(Iterable<Character> iterable) {
 		return () -> CharIterator.from(iterable);
 	}
 
@@ -212,8 +204,7 @@ public interface CharSeq extends CharIterable {
 		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
-	@Nonnull
-	default CharSeq map(@Nonnull CharUnaryOperator mapper) {
+	default CharSeq map(CharUnaryOperator mapper) {
 		return () -> new UnaryCharIterator() {
 			@Override
 			public char nextChar() {
@@ -226,8 +217,7 @@ public interface CharSeq extends CharIterable {
 		return toSequence(Character::valueOf);
 	}
 
-	@Nonnull
-	default <T> Sequence<T> toSequence(@Nonnull CharFunction<T> mapper) {
+	default <T> Sequence<T> toSequence(CharFunction<T> mapper) {
 		return () -> new Iterator<T>() {
 			private final CharIterator iterator = iterator();
 
@@ -243,23 +233,19 @@ public interface CharSeq extends CharIterable {
 		};
 	}
 
-	@Nonnull
 	default CharSeq skip(long skip) {
 		return () -> new SkippingCharIterator(skip).backedBy(iterator());
 	}
 
-	@Nonnull
 	default CharSeq limit(long limit) {
 		return () -> new LimitingCharIterator(limit).backedBy(iterator());
 	}
 
-	@Nonnull
-	default CharSeq append(@Nonnull Iterable<Character> iterable) {
+	default CharSeq append(Iterable<Character> iterable) {
 		return append(CharIterable.from(iterable));
 	}
 
-	@Nonnull
-	default CharSeq append(@Nonnull CharIterable that) {
+	default CharSeq append(CharIterable that) {
 		return new ChainingCharIterable(this, that)::iterator;
 	}
 
@@ -283,8 +269,7 @@ public interface CharSeq extends CharIterable {
 		return append(CharIterable.from(stream));
 	}
 
-	@Nonnull
-	default CharSeq filter(@Nonnull CharPredicate predicate) {
+	default CharSeq filter(CharPredicate predicate) {
 		return () -> new FilteringCharIterator(predicate).backedBy(iterator());
 	}
 
