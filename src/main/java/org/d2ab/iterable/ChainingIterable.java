@@ -23,60 +23,64 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+
 public class ChainingIterable<T> implements Iterable<T> {
+	@Nonnull
 	private final Collection<Iterable<T>> iterables = new ArrayList<>();
 
 	public ChainingIterable() {
 	}
 
 	public ChainingIterable(@Nonnull Iterable<T> iterable) {
-		iterables.add(Objects.requireNonNull(iterable));
+		iterables.add(requireNonNull(iterable));
 	}
 
 	@SafeVarargs
 	public ChainingIterable(@Nonnull Iterable<T>... iterables) {
-		Arrayz.forEach(e -> this.iterables.add(Objects.requireNonNull(e)), iterables);
+		Arrayz.forEach(e -> this.iterables.add(requireNonNull(e)), iterables);
 	}
 
 	public static <U> Iterable<U> flatten(@Nonnull Iterable<?> containers) {
-		return new ChainingIterable<U>().flatAppend(containers);
+		return new ChainingIterable<U>().flatAppend(requireNonNull(containers));
 	}
 
 	@Nonnull
 	public static <T, U> Iterable<U> flatMap(@Nonnull Iterable<? extends T> iterable,
 	                                         @Nonnull Function<? super T, ? extends Iterable<U>> mapper) {
+		requireNonNull(mapper);
+		requireNonNull(iterable);
 		ChainingIterable<U> result = new ChainingIterable<>();
 		iterable.forEach(each -> result.append(mapper.apply(each)));
 		return result;
 	}
 
 	public Iterable<T> flatAppend(@Nonnull Iterable<?> containers) {
-		for (Object each : containers)
+		for (Object each : requireNonNull(containers))
 			append(Iterables.from(each));
 		return this;
 	}
 
 	@Nonnull
 	public Iterable<T> append(@Nonnull Iterable<T> iterable) {
-		iterables.add(iterable);
+		iterables.add(requireNonNull(iterable));
 		return this;
 	}
 
-	public Iterable<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(iterator));
+	public Iterable<T> append(@Nonnull Iterator<T> iterator) {
+		return append(Iterables.from(requireNonNull(iterator)));
 	}
 
 	@SuppressWarnings("unchecked")
-	public Iterable<T> append(T... objects) {
-		return append(Iterables.from(objects));
+	public Iterable<T> append(@Nonnull T... objects) {
+		return append(Iterables.from(requireNonNull(objects)));
 	}
 
-	public Iterable<T> append(Stream<T> stream) {
-		return append(Iterables.from(stream));
+	public Iterable<T> append(@Nonnull Stream<T> stream) {
+		return append(Iterables.from(requireNonNull(stream)));
 	}
 
 	@Override
