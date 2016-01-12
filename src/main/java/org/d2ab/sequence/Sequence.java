@@ -695,7 +695,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return from(list);
 	}
 
-	default Chars mapToChar(@Nonnull ToCharFunction<T> mapper) {
+	default CharSeq mapToChar(@Nonnull ToCharFunction<T> mapper) {
 		return () -> new DelegatingCharIterator<T, Iterator<T>>() {
 			@Override
 			public char nextChar() {
@@ -704,7 +704,7 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default Ints mapToInt(@Nonnull ToIntFunction<T> mapper) {
+	default IntSeq mapToInt(@Nonnull ToIntFunction<T> mapper) {
 		return () -> new DelegatingIntIterator<T, Iterator<T>>() {
 			@Override
 			public int nextInt() {
@@ -713,7 +713,7 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default Longs mapToLong(@Nonnull ToLongFunction<T> mapper) {
+	default LongSeq mapToLong(@Nonnull ToLongFunction<T> mapper) {
 		return () -> new DelegatingLongIterator<T, Iterator<T>>() {
 			@Override
 			public long nextLong() {
@@ -722,7 +722,7 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default Doubles mapToDouble(@Nonnull ToDoubleFunction<T> mapper) {
+	default DoubleSeq mapToDouble(@Nonnull ToDoubleFunction<T> mapper) {
 		return () -> new DelegatingDoubleIterator<T, Iterator<T>>() {
 			@Override
 			public double nextDouble() {

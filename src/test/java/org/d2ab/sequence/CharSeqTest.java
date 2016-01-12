@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
@@ -32,19 +33,19 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class CharsTest {
-	private final Chars empty = Chars.empty();
+public class CharSeqTest {
+	private final CharSeq empty = CharSeq.empty();
 
-	private final Chars a = Chars.of('a');
-	private final Chars ab = Chars.of('a', 'b');
-	private final Chars abc = Chars.of('a', 'b', 'c');
-	private final Chars abcd = Chars.of('a', 'b', 'c', 'd');
-	private final Chars abcde = Chars.of('a', 'b', 'c', 'd', 'e');
-	private final Chars abcdefghi = Chars.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i');
+	private final CharSeq a = CharSeq.of('a');
+	private final CharSeq ab = CharSeq.of('a', 'b');
+	private final CharSeq abc = CharSeq.of('a', 'b', 'c');
+	private final CharSeq abcd = CharSeq.of('a', 'b', 'c', 'd');
+	private final CharSeq abcde = CharSeq.of('a', 'b', 'c', 'd', 'e');
+	private final CharSeq abcdefghi = CharSeq.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i');
 
-	private final Chars oneRandom = Chars.of('q');
-	private final Chars twoRandom = Chars.of('q', 'w');
-	private final Chars nineRandom = Chars.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
+	private final CharSeq oneRandom = CharSeq.of('q');
+	private final CharSeq twoRandom = CharSeq.of('q', 'w');
+	private final CharSeq nineRandom = CharSeq.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
 
 	@Test
 	public void ofOne() throws Exception {
@@ -101,7 +102,7 @@ public class CharsTest {
 
 	@Test
 	public void ofNone() throws Exception {
-		Chars sequence = Chars.of();
+		CharSeq sequence = CharSeq.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -113,7 +114,7 @@ public class CharsTest {
 
 	@Test
 	public void fromSequence() throws Exception {
-		Chars fromSequence = Chars.from(abc);
+		CharSeq fromSequence = CharSeq.from(abc);
 
 		twice(() -> assertThat(fromSequence, contains('a', 'b', 'c')));
 	}
@@ -122,14 +123,14 @@ public class CharsTest {
 	public void fromIterable() throws Exception {
 		Iterable<Character> iterable = () -> asList('a', 'b', 'c').iterator();
 
-		Chars sequenceFromIterable = Chars.from(iterable);
+		CharSeq sequenceFromIterable = CharSeq.from(iterable);
 
 		twice(() -> assertThat(sequenceFromIterable, contains('a', 'b', 'c')));
 	}
 
 	@Test
 	public void fromStream() throws Exception {
-		Chars sequenceFromStream = Chars.from(asList('a', 'b', 'c').stream());
+		CharSeq sequenceFromStream = CharSeq.from(asList('a', 'b', 'c').stream());
 
 		assertThat(sequenceFromStream, contains('a', 'b', 'c'));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -137,7 +138,7 @@ public class CharsTest {
 
 	@Test
 	public void fromEmptyStream() throws Exception {
-		Chars sequenceFromStream = Chars.from(Stream.of());
+		CharSeq sequenceFromStream = CharSeq.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -147,57 +148,57 @@ public class CharsTest {
 	public void fromIteratorSupplier() throws Exception {
 		Supplier<CharIterator> iterators = () -> CharIterator.from(asList('a', 'b', 'c'));
 
-		Chars sequenceFromIterators = Chars.from(iterators);
+		CharSeq sequenceFromIterators = CharSeq.from(iterators);
 
 		twice(() -> assertThat(sequenceFromIterators, contains('a', 'b', 'c')));
 	}
 
 	@Test
 	public void skip() {
-		Chars skipNone = abc.skip(0);
+		CharSeq skipNone = abc.skip(0);
 		twice(() -> assertThat(skipNone, contains('a', 'b', 'c')));
 
-		Chars skipOne = abc.skip(1);
+		CharSeq skipOne = abc.skip(1);
 		twice(() -> assertThat(skipOne, contains('b', 'c')));
 
-		Chars skipTwo = abc.skip(2);
+		CharSeq skipTwo = abc.skip(2);
 		twice(() -> assertThat(skipTwo, contains('c')));
 
-		Chars skipThree = abc.skip(3);
+		CharSeq skipThree = abc.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
-		Chars skipFour = abc.skip(4);
+		CharSeq skipFour = abc.skip(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
 	@Test
 	public void limit() {
-		Chars limitNone = abc.limit(0);
+		CharSeq limitNone = abc.limit(0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
-		Chars limitOne = abc.limit(1);
+		CharSeq limitOne = abc.limit(1);
 		twice(() -> assertThat(limitOne, contains('a')));
 
-		Chars limitTwo = abc.limit(2);
+		CharSeq limitTwo = abc.limit(2);
 		twice(() -> assertThat(limitTwo, contains('a', 'b')));
 
-		Chars limitThree = abc.limit(3);
+		CharSeq limitThree = abc.limit(3);
 		twice(() -> assertThat(limitThree, contains('a', 'b', 'c')));
 
-		Chars limitFour = abc.limit(4);
+		CharSeq limitFour = abc.limit(4);
 		twice(() -> assertThat(limitFour, contains('a', 'b', 'c')));
 	}
 
 	@Test
 	public void append() {
-		Chars appended = abc.append(Chars.of('d', 'e', 'f')).append(Chars.of('g', 'h'));
+		CharSeq appended = abc.append(CharSeq.of('d', 'e', 'f')).append(CharSeq.of('g', 'h'));
 
 		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
 	}
 
 	@Test
 	public void appendIterator() {
-		Chars appended = abc.append(MoreArrays.iterator('d', 'e', 'f')).append(MoreArrays.iterator('g', 'h'));
+		CharSeq appended = abc.append(MoreArrays.iterator('d', 'e', 'f')).append(MoreArrays.iterator('g', 'h'));
 
 		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 		assertThat(appended, contains('a', 'b', 'c'));
@@ -205,7 +206,7 @@ public class CharsTest {
 
 	@Test
 	public void appendStream() {
-		Chars appended = abc.append(Stream.of('d', 'e', 'f')).append(Stream.of('g', 'h'));
+		CharSeq appended = abc.append(Stream.of('d', 'e', 'f')).append(Stream.of('g', 'h'));
 
 		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 
@@ -219,7 +220,7 @@ public class CharsTest {
 
 	@Test
 	public void appendArray() {
-		Chars appended = abc.append('d', 'e', 'f').append('g', 'h');
+		CharSeq appended = abc.append('d', 'e', 'f').append('g', 'h');
 
 		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
 	}
@@ -230,7 +231,7 @@ public class CharsTest {
 		CharIterator second = CharIterator.from(asList('d', 'e', 'f'));
 		CharIterator third = CharIterator.from(asList('g', 'h'));
 
-		Chars then = Chars.from(first).append(() -> second).append(() -> third);
+		CharSeq then = CharSeq.from(first).append(() -> second).append(() -> third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -246,7 +247,7 @@ public class CharsTest {
 		CharIterator first = CharIterator.of('a');
 		CharIterator second = CharIterator.of('b');
 
-		Chars sequence = Chars.from(first).append(() -> second);
+		CharSeq sequence = CharSeq.from(first).append(() -> second);
 
 		// check delayed iteration
 		CharIterator iterator = sequence.iterator();
@@ -259,32 +260,32 @@ public class CharsTest {
 
 	@Test
 	public void filter() {
-		Chars filtered = Chars.of('a', 'b', 'c', 'd', 'e', 'f', 'g').filter(i -> (i % 2) == 0);
+		CharSeq filtered = CharSeq.of('a', 'b', 'c', 'd', 'e', 'f', 'g').filter(i -> (i % 2) == 0);
 
 		twice(() -> assertThat(filtered, contains('b', 'd', 'f')));
 	}
 
 	@Test
 	public void map() {
-		Chars mapped = abc.map(c -> (char) (c + 1));
+		CharSeq mapped = abc.map(c -> (char) (c + 1));
 		twice(() -> assertThat(mapped, contains('b', 'c', 'd')));
 	}
 
 	@Test
 	public void recurse() {
-		Chars recursive = Chars.recurse('a', c -> (char) (c + 1));
+		CharSeq recursive = CharSeq.recurse('a', c -> (char) (c + 1));
 		twice(() -> assertThat(recursive.limit(10), contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j')));
 	}
 
 	@Test
 	public void recurseUntil() {
-		Chars until = Chars.recurse('a', c -> (char) (c + 1)).until('g');
+		CharSeq until = CharSeq.recurse('a', c -> (char) (c + 1)).until('g');
 		twice(() -> assertThat(until, contains('a', 'b', 'c', 'd', 'e', 'f')));
 	}
 
 	@Test
 	public void recurseEndingAt() {
-		Chars endingAt = Chars.recurse('a', c -> (char) (c + 1)).endingAt('g');
+		CharSeq endingAt = CharSeq.recurse('a', c -> (char) (c + 1)).endingAt('g');
 		twice(() -> assertThat(endingAt, contains('a', 'b', 'c', 'd', 'e', 'f', 'g')));
 	}
 
@@ -378,37 +379,37 @@ public class CharsTest {
 
 	@Test
 	public void step() {
-		Chars stepThree = abcdefghi.step(3);
+		CharSeq stepThree = abcdefghi.step(3);
 		twice(() -> assertThat(stepThree, contains('a', 'd', 'g')));
 	}
 
 	@Test
 	public void distinct() {
-		Chars emptyDistinct = empty.distinct();
+		CharSeq emptyDistinct = empty.distinct();
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
 
-		Chars oneDistinct = oneRandom.distinct();
+		CharSeq oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains('q')));
 
-		Chars twoDuplicatesDistinct = Chars.of('q', 'q').distinct();
+		CharSeq twoDuplicatesDistinct = CharSeq.of('q', 'q').distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains('q')));
 
-		Chars nineDistinct = nineRandom.distinct();
+		CharSeq nineDistinct = nineRandom.distinct();
 		twice(() -> assertThat(nineDistinct, contains('f', 'a', 'g', 'b', 'q', 'e', 'd')));
 	}
 
 	@Test
 	public void sorted() {
-		Chars emptySorted = empty.sorted();
+		CharSeq emptySorted = empty.sorted();
 		twice(() -> assertThat(emptySorted, emptyIterable()));
 
-		Chars oneSorted = oneRandom.sorted();
+		CharSeq oneSorted = oneRandom.sorted();
 		twice(() -> assertThat(oneSorted, contains('q')));
 
-		Chars twoSorted = twoRandom.sorted();
+		CharSeq twoSorted = twoRandom.sorted();
 		twice(() -> assertThat(twoSorted, contains('q', 'w')));
 
-		Chars nineSorted = nineRandom.sorted();
+		CharSeq nineSorted = nineRandom.sorted();
 		twice(() -> assertThat(nineSorted, contains('a', 'a', 'b', 'd', 'e', 'f', 'f', 'g', 'q')));
 	}
 
@@ -473,25 +474,25 @@ public class CharsTest {
 
 	@Test
 	public void peek() {
-		Chars peek = abc.peek(x -> assertThat(x, is(both(greaterThan('@')).and(lessThan('d')))));
+		CharSeq peek = abc.peek(x -> assertThat(x, is(both(greaterThan('@')).and(lessThan('d')))));
 		twice(() -> assertThat(peek, contains('a', 'b', 'c')));
 	}
 
 	@Test
 	public void prefix() {
-		Chars prefixEmpty = empty.prefix('[');
+		CharSeq prefixEmpty = empty.prefix('[');
 		twice(() -> assertThat(prefixEmpty, contains('[')));
 
-		Chars prefix = abc.prefix('[');
+		CharSeq prefix = abc.prefix('[');
 		twice(() -> assertThat(prefix, contains('[', 'a', 'b', 'c')));
 	}
 
 	@Test
 	public void suffix() {
-		Chars suffixEmpty = empty.suffix(']');
+		CharSeq suffixEmpty = empty.suffix(']');
 		twice(() -> assertThat(suffixEmpty, contains(']')));
 
-		Chars suffix = abc.suffix(']');
+		CharSeq suffix = abc.suffix(']');
 		twice(() -> assertThat(suffix, contains('a', 'b', 'c', ']')));
 	}
 
@@ -504,42 +505,42 @@ public class CharsTest {
 
 	@Test
 	public void reverse() {
-		Chars emptyReversed = empty.reverse();
+		CharSeq emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
 
-		Chars oneReversed = a.reverse();
+		CharSeq oneReversed = a.reverse();
 		twice(() -> assertThat(oneReversed, contains('a')));
 
-		Chars twoReversed = ab.reverse();
+		CharSeq twoReversed = ab.reverse();
 		twice(() -> assertThat(twoReversed, contains('b', 'a')));
 
-		Chars threeReversed = abc.reverse();
+		CharSeq threeReversed = abc.reverse();
 		twice(() -> assertThat(threeReversed, contains('c', 'b', 'a')));
 
-		Chars nineReversed = abcdefghi.reverse();
+		CharSeq nineReversed = abcdefghi.reverse();
 		twice(() -> assertThat(nineReversed, contains('i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a')));
 	}
 
 	@Test
 	public void chars() {
-		assertThat(Chars.all().limit(3), contains('\u0000', '\u0001', '\u0002'));
-		assertThat(Chars.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
-		assertThat(Chars.all().count(), is(65536L));
+		assertThat(CharSeq.all().limit(3), contains('\u0000', '\u0001', '\u0002'));
+		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
+		assertThat(CharSeq.all().count(), is(65536L));
 	}
 
 	@Test
 	public void charsStartingAt() {
-		assertThat(Chars.startingAt('A').limit(3), contains('A', 'B', 'C'));
-		assertThat(Chars.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
-		assertThat(Chars.startingAt(Character.MAX_VALUE), contains(Character.MAX_VALUE));
-		assertThat(Chars.startingAt('\u8000').count(), is(32768L));
+		assertThat(CharSeq.startingAt('A').limit(3), contains('A', 'B', 'C'));
+		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
+		assertThat(CharSeq.startingAt(Character.MAX_VALUE), contains(Character.MAX_VALUE));
+		assertThat(CharSeq.startingAt('\u8000').count(), is(32768L));
 	}
 
 	@Test
 	public void charRange() {
-		assertThat(Chars.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
-		assertThat(Chars.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
-		assertThat(Chars.range('A', 'F').count(), is(6L));
+		assertThat(CharSeq.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
+		assertThat(CharSeq.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
+		assertThat(CharSeq.range('A', 'F').count(), is(6L));
 	}
 
 	@Test
@@ -553,11 +554,11 @@ public class CharsTest {
 
 	@Test
 	public void toInts() {
-		Ints emptyInts = empty.toInts();
-		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		IntSeq emptyIntSeq = empty.toInts();
+		twice(() -> assertThat(emptyIntSeq, is(emptyIterable())));
 
-		Ints ints = Chars.all().limit(5).toInts();
-		twice(() -> assertThat(ints, contains(0, 1, 2, 3, 4)));
+		IntSeq intSeq = CharSeq.all().limit(5).toInts();
+		twice(() -> assertThat(intSeq, contains(0, 1, 2, 3, 4)));
 	}
 
 	@Test
@@ -580,19 +581,19 @@ public class CharsTest {
 
 	@Test
 	public void repeat() {
-		Chars repeatEmpty = empty.repeat();
+		CharSeq repeatEmpty = empty.repeat();
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
-		Chars repeatOne = a.repeat();
+		CharSeq repeatOne = a.repeat();
 		twice(() -> assertThat(repeatOne.limit(3), contains('a', 'a', 'a')));
 
-		Chars repeatTwo = ab.repeat();
+		CharSeq repeatTwo = ab.repeat();
 		twice(() -> assertThat(repeatTwo.limit(5), contains('a', 'b', 'a', 'b', 'a')));
 
-		Chars repeatThree = abc.repeat();
+		CharSeq repeatThree = abc.repeat();
 		twice(() -> assertThat(repeatThree.limit(8), contains('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b')));
 
-		Chars repeatVarying = Chars.from(new CharIterable() {
+		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
 			private List<Character> list = asList('a', 'b', 'c');
 			int end = list.size();
 
@@ -615,7 +616,7 @@ public class CharsTest {
 	@Test
 	public void generate() {
 		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
-		Chars sequence = Chars.generate(queue::poll).endingAt('e');
+		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
 
 		assertThat(sequence, contains('a', 'b', 'c', 'd', 'e'));
 	}

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
@@ -138,16 +139,16 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void snakeCase() {
-		Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+		CharSeq snakeCase = CharSeq.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
 		assertThat(snakeCase.asString(), is("hello_lexicon"));
 	}
 
 	@Test
 	public void capitalize() {
-		Chars titleCase = Chars.from("hello_lexicon")
-		                       .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
-		                       .map(c -> (c == '_') ? ' ' : c);
+		CharSeq titleCase = CharSeq.from("hello_lexicon")
+		                           .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
+		                           .map(c -> (c == '_') ? ' ' : c);
 
 		assertThat(titleCase.asString(), is("Hello Lexicon"));
 	}
@@ -165,21 +166,21 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void intsSequence() {
-		Ints squares = Ints.positive().map(i -> i * i);
+		IntSeq squares = IntSeq.positive().map(i -> i * i);
 
 		assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 	}
 
 	@Test
 	public void longsSequence() {
-		Longs negativeOdds = Longs.negative().step(2);
+		LongSeq negativeOdds = LongSeq.negative().step(2);
 
 		assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
 	}
 
 	@Test
 	public void doublesSequence() {
-		Doubles squareRoots = Doubles.positive().limit(3).map(Math::sqrt);
+		DoubleSeq squareRoots = DoubleSeq.positive().limit(3).map(Math::sqrt);
 
 		assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
 	}

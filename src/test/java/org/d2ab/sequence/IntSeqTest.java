@@ -36,19 +36,19 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class IntsTest {
-	private final Ints empty = Ints.empty();
+public class IntSeqTest {
+	private final IntSeq empty = IntSeq.empty();
 
-	private final Ints _1 = Ints.of(1);
-	private final Ints _12 = Ints.of(1, 2);
-	private final Ints _123 = Ints.of(1, 2, 3);
-	private final Ints _1234 = Ints.of(1, 2, 3, 4);
-	private final Ints _12345 = Ints.of(1, 2, 3, 4, 5);
-	private final Ints _123456789 = Ints.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+	private final IntSeq _1 = IntSeq.of(1);
+	private final IntSeq _12 = IntSeq.of(1, 2);
+	private final IntSeq _123 = IntSeq.of(1, 2, 3);
+	private final IntSeq _1234 = IntSeq.of(1, 2, 3, 4);
+	private final IntSeq _12345 = IntSeq.of(1, 2, 3, 4, 5);
+	private final IntSeq _123456789 = IntSeq.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-	private final Ints oneRandom = Ints.of(17);
-	private final Ints twoRandom = Ints.of(17, 32);
-	private final Ints nineRandom = Ints.of(6, 6, 1, 7, 1, 2, 17, 5, 4);
+	private final IntSeq oneRandom = IntSeq.of(17);
+	private final IntSeq twoRandom = IntSeq.of(17, 32);
+	private final IntSeq nineRandom = IntSeq.of(6, 6, 1, 7, 1, 2, 17, 5, 4);
 
 	@Test
 	public void ofOne() throws Exception {
@@ -105,7 +105,7 @@ public class IntsTest {
 
 	@Test
 	public void ofNone() throws Exception {
-		Ints sequence = Ints.of();
+		IntSeq sequence = IntSeq.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -117,7 +117,7 @@ public class IntsTest {
 
 	@Test
 	public void fromSequence() throws Exception {
-		Ints fromSequence = Ints.from(_123);
+		IntSeq fromSequence = IntSeq.from(_123);
 
 		twice(() -> assertThat(fromSequence, contains(1, 2, 3)));
 	}
@@ -126,14 +126,14 @@ public class IntsTest {
 	public void fromIterable() throws Exception {
 		Iterable<Integer> iterable = () -> asList(1, 2, 3).iterator();
 
-		Ints sequenceFromIterable = Ints.from(iterable);
+		IntSeq sequenceFromIterable = IntSeq.from(iterable);
 
 		twice(() -> assertThat(sequenceFromIterable, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void fromStream() throws Exception {
-		Ints sequenceFromStream = Ints.from(asList(1, 2, 3).stream());
+		IntSeq sequenceFromStream = IntSeq.from(asList(1, 2, 3).stream());
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -141,7 +141,7 @@ public class IntsTest {
 
 	@Test
 	public void fromEmptyStream() throws Exception {
-		Ints sequenceFromStream = Ints.from(Stream.of());
+		IntSeq sequenceFromStream = IntSeq.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -151,57 +151,57 @@ public class IntsTest {
 	public void fromIteratorSupplier() throws Exception {
 		Supplier<IntIterator> iterators = () -> IntIterator.from(asList(1, 2, 3));
 
-		Ints sequenceFromIterators = Ints.from(iterators);
+		IntSeq sequenceFromIterators = IntSeq.from(iterators);
 
 		twice(() -> assertThat(sequenceFromIterators, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void skip() {
-		Ints skipNone = _123.skip(0);
+		IntSeq skipNone = _123.skip(0);
 		twice(() -> assertThat(skipNone, contains(1, 2, 3)));
 
-		Ints skipOne = _123.skip(1);
+		IntSeq skipOne = _123.skip(1);
 		twice(() -> assertThat(skipOne, contains(2, 3)));
 
-		Ints skipTwo = _123.skip(2);
+		IntSeq skipTwo = _123.skip(2);
 		twice(() -> assertThat(skipTwo, contains(3)));
 
-		Ints skipThree = _123.skip(3);
+		IntSeq skipThree = _123.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
-		Ints skipFour = _123.skip(4);
+		IntSeq skipFour = _123.skip(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
 	@Test
 	public void limit() {
-		Ints limitNone = _123.limit(0);
+		IntSeq limitNone = _123.limit(0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
-		Ints limitOne = _123.limit(1);
+		IntSeq limitOne = _123.limit(1);
 		twice(() -> assertThat(limitOne, contains(1)));
 
-		Ints limitTwo = _123.limit(2);
+		IntSeq limitTwo = _123.limit(2);
 		twice(() -> assertThat(limitTwo, contains(1, 2)));
 
-		Ints limitThree = _123.limit(3);
+		IntSeq limitThree = _123.limit(3);
 		twice(() -> assertThat(limitThree, contains(1, 2, 3)));
 
-		Ints limitFour = _123.limit(4);
+		IntSeq limitFour = _123.limit(4);
 		twice(() -> assertThat(limitFour, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void append() {
-		Ints appended = _123.append(Ints.of(4, 5, 6)).append(Ints.of(7, 8));
+		IntSeq appended = _123.append(IntSeq.of(4, 5, 6)).append(IntSeq.of(7, 8));
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
 
 	@Test
 	public void appendIterator() {
-		Ints appended = _123.append(MoreArrays.iterator(4, 5, 6)).append(MoreArrays.iterator(7, 8));
+		IntSeq appended = _123.append(MoreArrays.iterator(4, 5, 6)).append(MoreArrays.iterator(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));
@@ -209,7 +209,7 @@ public class IntsTest {
 
 	@Test
 	public void appendStream() {
-		Ints appended = _123.append(Stream.of(4, 5, 6)).append(Stream.of(7, 8));
+		IntSeq appended = _123.append(Stream.of(4, 5, 6)).append(Stream.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 
@@ -223,7 +223,7 @@ public class IntsTest {
 
 	@Test
 	public void appendArray() {
-		Ints appended = _123.append(4, 5, 6).append(7, 8);
+		IntSeq appended = _123.append(4, 5, 6).append(7, 8);
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
@@ -234,7 +234,7 @@ public class IntsTest {
 		IntIterator second = IntIterator.from(asList(4, 5, 6));
 		IntIterator third = IntIterator.from(asList(7, 8));
 
-		Ints then = Ints.from(first).append(() -> second).append(() -> third);
+		IntSeq then = IntSeq.from(first).append(() -> second).append(() -> third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -250,7 +250,7 @@ public class IntsTest {
 		IntIterator first = IntIterator.of(1);
 		IntIterator second = IntIterator.of(2);
 
-		Ints sequence = Ints.from(first).append(() -> second);
+		IntSeq sequence = IntSeq.from(first).append(() -> second);
 
 		// check delayed iteration
 		IntIterator iterator = sequence.iterator();
@@ -263,32 +263,32 @@ public class IntsTest {
 
 	@Test
 	public void filter() {
-		Ints filtered = Ints.of(1, 2, 3, 4, 5, 6, 7).filter(i -> (i % 2) == 0);
+		IntSeq filtered = IntSeq.of(1, 2, 3, 4, 5, 6, 7).filter(i -> (i % 2) == 0);
 
 		twice(() -> assertThat(filtered, contains(2, 4, 6)));
 	}
 
 	@Test
 	public void map() {
-		Ints mapped = _123.map(c -> c + 1);
+		IntSeq mapped = _123.map(c -> c + 1);
 		twice(() -> assertThat(mapped, contains(2, 3, 4)));
 	}
 
 	@Test
 	public void recurse() {
-		Ints recursive = Ints.recurse(1, i -> i + 1);
+		IntSeq recursive = IntSeq.recurse(1, i -> i + 1);
 		twice(() -> assertThat(recursive.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
 	@Test
 	public void recurseUntil() {
-		Ints until = Ints.recurse(1, c -> c + 1).until(7);
+		IntSeq until = IntSeq.recurse(1, c -> c + 1).until(7);
 		twice(() -> assertThat(until, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void recurseEndingAt() {
-		Ints endingAt = Ints.recurse(1, c -> c + 1).endingAt(7);
+		IntSeq endingAt = IntSeq.recurse(1, c -> c + 1).endingAt(7);
 		twice(() -> assertThat(endingAt, contains(1, 2, 3, 4, 5, 6, 7)));
 	}
 
@@ -382,37 +382,37 @@ public class IntsTest {
 
 	@Test
 	public void step() {
-		Ints stepThree = _123456789.step(3);
+		IntSeq stepThree = _123456789.step(3);
 		twice(() -> assertThat(stepThree, contains(1, 4, 7)));
 	}
 
 	@Test
 	public void distinct() {
-		Ints emptyDistinct = empty.distinct();
+		IntSeq emptyDistinct = empty.distinct();
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
 
-		Ints oneDistinct = oneRandom.distinct();
+		IntSeq oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains(17)));
 
-		Ints twoDuplicatesDistinct = Ints.of(17, 17).distinct();
+		IntSeq twoDuplicatesDistinct = IntSeq.of(17, 17).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17)));
 
-		Ints nineDistinct = nineRandom.distinct();
+		IntSeq nineDistinct = nineRandom.distinct();
 		twice(() -> assertThat(nineDistinct, contains(6, 1, 7, 2, 17, 5, 4)));
 	}
 
 	@Test
 	public void sorted() {
-		Ints emptySorted = empty.sorted();
+		IntSeq emptySorted = empty.sorted();
 		twice(() -> assertThat(emptySorted, emptyIterable()));
 
-		Ints oneSorted = oneRandom.sorted();
+		IntSeq oneSorted = oneRandom.sorted();
 		twice(() -> assertThat(oneSorted, contains(17)));
 
-		Ints twoSorted = twoRandom.sorted();
+		IntSeq twoSorted = twoRandom.sorted();
 		twice(() -> assertThat(twoSorted, contains(17, 32)));
 
-		Ints nineSorted = nineRandom.sorted();
+		IntSeq nineSorted = nineRandom.sorted();
 		twice(() -> assertThat(nineSorted, contains(1, 1, 2, 4, 5, 6, 6, 7, 17)));
 	}
 
@@ -477,25 +477,25 @@ public class IntsTest {
 
 	@Test
 	public void peek() {
-		Ints peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+		IntSeq peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
 		twice(() -> assertThat(peek, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void prefix() {
-		Ints prefixEmpty = empty.prefix(327);
+		IntSeq prefixEmpty = empty.prefix(327);
 		twice(() -> assertThat(prefixEmpty, contains(327)));
 
-		Ints prefix = _123.prefix(327);
+		IntSeq prefix = _123.prefix(327);
 		twice(() -> assertThat(prefix, contains(327, 1, 2, 3)));
 	}
 
 	@Test
 	public void suffix() {
-		Ints suffixEmpty = empty.suffix(532);
+		IntSeq suffixEmpty = empty.suffix(532);
 		twice(() -> assertThat(suffixEmpty, contains(532)));
 
-		Ints suffix = _123.suffix(532);
+		IntSeq suffix = _123.suffix(532);
 		twice(() -> assertThat(suffix, contains(1, 2, 3, 532)));
 	}
 
@@ -508,115 +508,115 @@ public class IntsTest {
 
 	@Test
 	public void reverse() {
-		Ints emptyReversed = empty.reverse();
+		IntSeq emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
 
-		Ints oneReversed = _1.reverse();
+		IntSeq oneReversed = _1.reverse();
 		twice(() -> assertThat(oneReversed, contains(1)));
 
-		Ints twoReversed = _12.reverse();
+		IntSeq twoReversed = _12.reverse();
 		twice(() -> assertThat(twoReversed, contains(2, 1)));
 
-		Ints threeReversed = _123.reverse();
+		IntSeq threeReversed = _123.reverse();
 		twice(() -> assertThat(threeReversed, contains(3, 2, 1)));
 
-		Ints nineReversed = _123456789.reverse();
+		IntSeq nineReversed = _123456789.reverse();
 		twice(() -> assertThat(nineReversed, contains(9, 8, 7, 6, 5, 4, 3, 2, 1)));
 	}
 
 	@Test
 	public void ints() {
-		assertThat(Ints.positive().limit(3), contains(1, 2, 3));
-		assertThat(Ints.positive().limit(127).last(), is(OptionalInt.of(127)));
-		assertThat(Ints.positive().limit(1000000).count(), is(1000000L));
+		assertThat(IntSeq.positive().limit(3), contains(1, 2, 3));
+		assertThat(IntSeq.positive().limit(127).last(), is(OptionalInt.of(127)));
+		assertThat(IntSeq.positive().limit(1000000).count(), is(1000000L));
 	}
 
 	@Test
 	public void intsStartingAt() {
-		assertThat(Ints.startingAt(1).limit(3), contains(1, 2, 3));
-		assertThat(Ints.startingAt(0x1400).limit(3).last(), is(OptionalInt.of(0x1402)));
-		assertThat(Ints.startingAt(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
-		assertThat(Ints.startingAt(Integer.MAX_VALUE - 32767).count(), is(32768L));
+		assertThat(IntSeq.startingAt(1).limit(3), contains(1, 2, 3));
+		assertThat(IntSeq.startingAt(0x1400).limit(3).last(), is(OptionalInt.of(0x1402)));
+		assertThat(IntSeq.startingAt(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
+		assertThat(IntSeq.startingAt(Integer.MAX_VALUE - 32767).count(), is(32768L));
 	}
 
 	@Test
 	public void intRange() {
-		assertThat(Ints.range(1, 6), contains(1, 2, 3, 4, 5, 6));
-		assertThat(Ints.range(6, 1), contains(6, 5, 4, 3, 2, 1));
-		assertThat(Ints.range(1, 6).count(), is(6L));
+		assertThat(IntSeq.range(1, 6), contains(1, 2, 3, 4, 5, 6));
+		assertThat(IntSeq.range(6, 1), contains(6, 5, 4, 3, 2, 1));
+		assertThat(IntSeq.range(1, 6).count(), is(6L));
 	}
 
 	@Test
 	public void toChars() {
-		Chars chars = Ints.startingAt('a').limit(5).toChars();
-		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+		CharSeq charSeq = IntSeq.startingAt('a').limit(5).toChars();
+		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void toLongs() {
-		Longs longs = Ints.positive().limit(5).toLongs();
-		twice(() -> assertThat(longs, contains(1L, 2L, 3L, 4L, 5L)));
+		LongSeq longSeq = IntSeq.positive().limit(5).toLongs();
+		twice(() -> assertThat(longSeq, contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
 	public void toDoubles() {
-		Doubles doubles = Ints.positive().limit(5).toDoubles();
-		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+		DoubleSeq doubleSeq = IntSeq.positive().limit(5).toDoubles();
+		twice(() -> assertThat(doubleSeq, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 
 	@Test
 	public void toCharsMapped() {
-		Chars chars = Ints.positive().limit(5).toChars(i -> (char) (0x60 + i));
-		twice(() -> assertThat(chars, contains('a', 'b', 'c', 'd', 'e')));
+		CharSeq charSeq = IntSeq.positive().limit(5).toChars(i -> (char) (0x60 + i));
+		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void toLongsMapped() {
 		long maxInt = Integer.MAX_VALUE;
 
-		Longs longs = Ints.positive().limit(5).toLongs(i -> i * maxInt);
-		twice(() -> assertThat(longs, contains(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
+		LongSeq longSeq = IntSeq.positive().limit(5).toLongs(i -> i * maxInt);
+		twice(() -> assertThat(longSeq, contains(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
 	}
 
 	@Test
 	public void toDoublesMapped() {
-		Doubles doubles = Ints.positive().limit(5).toDoubles(i -> i / 2.0);
-		twice(() -> assertThat(doubles, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
+		DoubleSeq doubleSeq = IntSeq.positive().limit(5).toDoubles(i -> i / 2.0);
+		twice(() -> assertThat(doubleSeq, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
 	}
 
 	@Test
 	public void toSequence() {
-		Sequence<Integer> empty = Ints.empty().toSequence(i -> i + 1);
+		Sequence<Integer> empty = IntSeq.empty().toSequence(i -> i + 1);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Integer> ints = Ints.positive().limit(5).toSequence(i -> i + 1);
+		Sequence<Integer> ints = IntSeq.positive().limit(5).toSequence(i -> i + 1);
 		twice(() -> assertThat(ints, contains(2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void box() {
-		Sequence<Integer> empty = Ints.empty().box();
+		Sequence<Integer> empty = IntSeq.empty().box();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Integer> ints = Ints.positive().limit(5).box();
+		Sequence<Integer> ints = IntSeq.positive().limit(5).box();
 		twice(() -> assertThat(ints, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void repeat() {
-		Ints repeatEmpty = empty.repeat();
+		IntSeq repeatEmpty = empty.repeat();
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
-		Ints repeatOne = _1.repeat();
+		IntSeq repeatOne = _1.repeat();
 		twice(() -> assertThat(repeatOne.limit(3), contains(1, 1, 1)));
 
-		Ints repeatTwo = _12.repeat();
+		IntSeq repeatTwo = _12.repeat();
 		twice(() -> assertThat(repeatTwo.limit(5), contains(1, 2, 1, 2, 1)));
 
-		Ints repeatThree = _123.repeat();
+		IntSeq repeatThree = _123.repeat();
 		twice(() -> assertThat(repeatThree.limit(8), contains(1, 2, 3, 1, 2, 3, 1, 2)));
 
-		Ints repeatVarying = Ints.from(new IntIterable() {
+		IntSeq repeatVarying = IntSeq.from(new IntIterable() {
 			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
@@ -639,7 +639,7 @@ public class IntsTest {
 	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
-		Ints sequence = Ints.generate(queue::poll).endingAt(5);
+		IntSeq sequence = IntSeq.generate(queue::poll).endingAt(5);
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 	}

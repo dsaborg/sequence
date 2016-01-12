@@ -157,28 +157,29 @@ assertThat(factorial, is(6227020800L));
 
 ### Primitive
 
-There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `Chars`, `Ints`, `Longs` and `Doubles`:
+There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `CharSeq`, `IntSeq`, 
+`LongSeq` and `DoubleSeq`:
 
 ```
-Chars snakeCase = Chars.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+CharSeq snakeCase = CharSeq.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
 assertThat(snakeCase.asString(), is("hello_lexicon"));
 ```
 
 ```
-Ints squares = Ints.positive().map(i -> i * i);
+IntSeq squares = IntSeq.positive().map(i -> i * i);
 
 assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 ```
 
 ```
-Longs negativeOdds = Longs.negative().step(2);
+LongSeq negativeOdds = LongSeq.negative().step(2);
 
 assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
 ```
 
 ```
-Doubles squareRoots = Doubles.positive().limit(3).map(Math::sqrt);
+DoubleSeq squareRoots = DoubleSeq.positive().limit(3).map(Math::sqrt);
 
 assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
@@ -186,7 +187,7 @@ assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
 The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
 
 ```
-Chars titleCase = Chars.from("hello_lexicon")
+CharSeq titleCase = CharSeq.from("hello_lexicon")
                        .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
                        .map(c -> (c == '_') ? ' ' : c);
 

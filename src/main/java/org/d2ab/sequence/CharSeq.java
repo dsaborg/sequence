@@ -34,12 +34,12 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of characters.
  */
 @FunctionalInterface
-public interface Chars extends CharIterable {
+public interface CharSeq extends CharIterable {
 	/**
 	 * Create an empty {@code CharSequence} with no characters.
 	 */
 	@Nonnull
-	static Chars empty() {
+	static CharSeq empty() {
 		return from(emptyIterator());
 	}
 
@@ -49,7 +49,7 @@ public interface Chars extends CharIterable {
 	 * register the {@code CharSequence} as empty.
 	 */
 	@Nonnull
-	static Chars from(@Nonnull Iterator<Character> iterator) {
+	static CharSeq from(@Nonnull Iterator<Character> iterator) {
 		return from(CharIterator.from(iterator));
 	}
 
@@ -60,7 +60,7 @@ public interface Chars extends CharIterable {
 	 * register the {@code CharSequence} as empty.
 	 */
 	@Nonnull
-	static Chars from(@Nonnull CharIterator iterator) {
+	static CharSeq from(@Nonnull CharIterator iterator) {
 		return () -> iterator;
 	}
 
@@ -68,11 +68,11 @@ public interface Chars extends CharIterable {
 	 * Create a {@code CharSequence} from a {@link CharIterable}.
 	 */
 	@Nonnull
-	static Chars from(@Nonnull CharIterable iterable) {
+	static CharSeq from(@Nonnull CharIterable iterable) {
 		return iterable::iterator;
 	}
 
-	static Chars from(CharSequence csq) {
+	static CharSeq from(CharSequence csq) {
 		return () -> new CharSequenceCharIterator(csq);
 	}
 
@@ -80,7 +80,7 @@ public interface Chars extends CharIterable {
 	 * Create a {@code CharSequence} with the given characters.
 	 */
 	@Nonnull
-	static Chars of(@Nonnull char... cs) {
+	static CharSeq of(@Nonnull char... cs) {
 		return () -> new ArrayCharIterator(cs);
 	}
 
@@ -90,7 +90,7 @@ public interface Chars extends CharIterable {
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
 	@Nonnull
-	static Chars from(@Nonnull Supplier<? extends CharIterator> iteratorSupplier) {
+	static CharSeq from(@Nonnull Supplier<? extends CharIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -101,7 +101,7 @@ public interface Chars extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
-	static Chars from(Stream<Character> stream) {
+	static CharSeq from(Stream<Character> stream) {
 		return from(stream::iterator);
 	}
 
@@ -109,7 +109,7 @@ public interface Chars extends CharIterable {
 	 * Create a {@code CharSequence} from an {@link Iterable} of {@code Character} values.
 	 */
 	@Nonnull
-	static Chars from(@Nonnull Iterable<Character> iterable) {
+	static CharSeq from(@Nonnull Iterable<Character> iterable) {
 		return () -> CharIterator.from(iterable);
 	}
 
@@ -122,7 +122,7 @@ public interface Chars extends CharIterable {
 	 * @see #until(char)
 	 * @see #endingAt(char)
 	 */
-	static Chars all() {
+	static CharSeq all() {
 		return startingAt((char) 0);
 	}
 
@@ -135,7 +135,7 @@ public interface Chars extends CharIterable {
 	 * @see #until(char)
 	 * @see #endingAt(char)
 	 */
-	static Chars startingAt(char start) {
+	static CharSeq startingAt(char start) {
 		return range(start, Character.MAX_VALUE);
 	}
 
@@ -147,23 +147,23 @@ public interface Chars extends CharIterable {
 	 * @see #until(char)
 	 * @see #endingAt(char)
 	 */
-	static Chars range(char start, char end) {
+	static CharSeq range(char start, char end) {
 		CharUnaryOperator next = (end > start) ? c -> (char) ++c : c -> (char) --c;
 		return recurse(start, next).endingAt(end);
 	}
 
 	/**
-	 * Returns a {@code Chars} sequence produced by recursively applying the given operation to the given seed, which
+	 * Returns a {@code CharSeq} sequence produced by recursively applying the given operation to the given seed, which
 	 * forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
-	 * {@code Chars} sequence never terminates naturally.
+	 * {@code CharSeq} sequence never terminates naturally.
 	 *
-	 * @return a {@code Chars} sequence produced by recursively applying the given operation to the given seed
+	 * @return a {@code CharSeq} sequence produced by recursively applying the given operation to the given seed
 	 *
 	 * @see #generate(CharSupplier)
 	 * @see #endingAt(char)
 	 * @see #until(char)
 	 */
-	static Chars recurse(char seed, CharUnaryOperator op) {
+	static CharSeq recurse(char seed, CharUnaryOperator op) {
 		return () -> new InfiniteCharIterator() {
 			private char previous;
 			private boolean hasPrevious;
@@ -178,42 +178,42 @@ public interface Chars extends CharIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code Chars} that is generated from the given supplier and thus never terminates.
+	 * @return a sequence of {@code CharSeq} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(char, CharUnaryOperator)
 	 * @see #endingAt(char)
 	 * @see #until(char)
 	 */
-	static Chars generate(CharSupplier supplier) {
+	static CharSeq generate(CharSupplier supplier) {
 		return () -> (InfiniteCharIterator) supplier::getAsChar;
 	}
 
 	/**
-	 * Terminate this {@code Chars} sequence before the given element, with the previous element as the last
-	 * element in this {@code Chars} sequence.
+	 * Terminate this {@code CharSeq} sequence before the given element, with the previous element as the last
+	 * element in this {@code CharSeq} sequence.
 	 *
 	 * @see #endingAt(char)
 	 * @see #generate(CharSupplier)
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
-	default Chars until(char terminal) {
+	default CharSeq until(char terminal) {
 		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code Chars} sequence at the given element, including it as the last element in this {@code
-	 * Chars} sequence.
+	 * Terminate this {@code CharSeq} sequence at the given element, including it as the last element in this {@code
+	 * CharSeq} sequence.
 	 *
 	 * @see #until(char)
 	 * @see #generate(CharSupplier)
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
-	default Chars endingAt(char terminal) {
+	default CharSeq endingAt(char terminal) {
 		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
 	@Nonnull
-	default Chars map(@Nonnull CharUnaryOperator mapper) {
+	default CharSeq map(@Nonnull CharUnaryOperator mapper) {
 		return () -> new UnaryCharIterator() {
 			@Override
 			public char nextChar() {
@@ -244,47 +244,47 @@ public interface Chars extends CharIterable {
 	}
 
 	@Nonnull
-	default Chars skip(long skip) {
+	default CharSeq skip(long skip) {
 		return () -> new SkippingCharIterator(skip).backedBy(iterator());
 	}
 
 	@Nonnull
-	default Chars limit(long limit) {
+	default CharSeq limit(long limit) {
 		return () -> new LimitingCharIterator(limit).backedBy(iterator());
 	}
 
 	@Nonnull
-	default Chars append(@Nonnull Iterable<Character> iterable) {
+	default CharSeq append(@Nonnull Iterable<Character> iterable) {
 		return append(CharIterable.from(iterable));
 	}
 
 	@Nonnull
-	default Chars append(@Nonnull CharIterable that) {
+	default CharSeq append(@Nonnull CharIterable that) {
 		return new ChainingCharIterable(this, that)::iterator;
 	}
 
-	default Chars append(CharIterator iterator) {
+	default CharSeq append(CharIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
-	default Chars append(Iterator<Character> iterator) {
+	default CharSeq append(Iterator<Character> iterator) {
 		return append(CharIterable.from(iterator));
 	}
 
-	default Chars append(char... characters) {
+	default CharSeq append(char... characters) {
 		return append(CharIterable.of(characters));
 	}
 
-	default Chars append(Stream<Character> stream) {
+	default CharSeq append(Stream<Character> stream) {
 		return append(CharIterable.from(stream));
 	}
 
-	default Chars append(IntStream stream) {
+	default CharSeq append(IntStream stream) {
 		return append(CharIterable.from(stream));
 	}
 
 	@Nonnull
-	default Chars filter(@Nonnull CharPredicate predicate) {
+	default CharSeq filter(@Nonnull CharPredicate predicate) {
 		return () -> new FilteringCharIterator(predicate).backedBy(iterator());
 	}
 
@@ -365,11 +365,11 @@ public interface Chars extends CharIterable {
 		return OptionalChar.of(last);
 	}
 
-	default Chars step(long step) {
+	default CharSeq step(long step) {
 		return () -> new SteppingCharIterator(step).backedBy(iterator());
 	}
 
-	default Chars distinct() {
+	default CharSeq distinct() {
 		return () -> new DistinctCharIterator().backedBy(iterator());
 	}
 
@@ -418,7 +418,7 @@ public interface Chars extends CharIterable {
 		return false;
 	}
 
-	default Chars peek(CharConsumer action) {
+	default CharSeq peek(CharConsumer action) {
 		return () -> new UnaryCharIterator() {
 			@Override
 			public char nextChar() {
@@ -429,7 +429,7 @@ public interface Chars extends CharIterable {
 		}.backedBy(iterator());
 	}
 
-	default Chars sorted() {
+	default CharSeq sorted() {
 		char[] array = toArray();
 		Arrays.sort(array);
 		return () -> CharIterator.of(array);
@@ -459,19 +459,19 @@ public interface Chars extends CharIterable {
 		return result;
 	}
 
-	default Chars prefix(char... cs) {
+	default CharSeq prefix(char... cs) {
 		return () -> new ChainingCharIterator(CharIterable.of(cs), this);
 	}
 
-	default Chars suffix(char... cs) {
+	default CharSeq suffix(char... cs) {
 		return () -> new ChainingCharIterator(this, CharIterable.of(cs));
 	}
 
-	default Chars interleave(Chars that) {
+	default CharSeq interleave(CharSeq that) {
 		return () -> new InterleavingCharIterator(this, that);
 	}
 
-	default Chars reverse() {
+	default CharSeq reverse() {
 		char[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
 			MoreArrays.swap(array, i, array.length - 1 - i);
@@ -483,15 +483,15 @@ public interface Chars extends CharIterable {
 		return new String(toArray());
 	}
 
-	default Chars mapBack(IntCharToCharBinaryFunction mapper) {
+	default CharSeq mapBack(IntCharToCharBinaryFunction mapper) {
 		return () -> new BackPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
-	default Chars mapForward(CharIntToCharBinaryFunction mapper) {
+	default CharSeq mapForward(CharIntToCharBinaryFunction mapper) {
 		return () -> new ForwardPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
-	default Ints toInts() {
+	default IntSeq toInts() {
 		return () -> new DelegatingIntIterator<Character, CharIterator>() {
 			@Override
 			public int nextInt() {
@@ -500,7 +500,7 @@ public interface Chars extends CharIterable {
 		}.backedBy(iterator());
 	}
 
-	default Chars repeat() {
+	default CharSeq repeat() {
 		return () -> new RepeatingCharIterator(this);
 	}
 }

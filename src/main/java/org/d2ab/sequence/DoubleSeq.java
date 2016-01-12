@@ -37,49 +37,49 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of doubles.
  */
 @FunctionalInterface
-public interface Doubles extends DoubleIterable {
+public interface DoubleSeq extends DoubleIterable {
 	/**
-	 * Create empty {@code Doubles} with no contents.
+	 * Create empty {@code DoubleSeq} with no contents.
 	 */
 	@Nonnull
-	static Doubles empty() {
+	static DoubleSeq empty() {
 		return from(emptyIterator());
 	}
 
 	/**
-	 * Create an {@code Doubles} from an
-	 * {@link Iterator} of {@code Double} values. Note that {@code Doubles} created from {@link Iterator}s
-	 * cannot be passed over more than once. Further attempts will register the {@code Doubles} as empty.
+	 * Create an {@code DoubleSeq} from an
+	 * {@link Iterator} of {@code Double} values. Note that {@code DoubleSeq} created from {@link Iterator}s
+	 * cannot be passed over more than once. Further attempts will register the {@code DoubleSeq} as empty.
 	 */
 	@Nonnull
-	static Doubles from(@Nonnull Iterator<Double> iterator) {
+	static DoubleSeq from(@Nonnull Iterator<Double> iterator) {
 		return from(DoubleIterator.from(iterator));
 	}
 
 	/**
-	 * Create a {@code Doubles} from a {@link DoubleIterator} of double values. Note that {@code
-	 * Doubles}s created from {@link DoubleIterator}s cannot be passed over more than once. Further attempts
+	 * Create a {@code DoubleSeq} from a {@link DoubleIterator} of double values. Note that {@code
+	 * DoubleSeq}s created from {@link DoubleIterator}s cannot be passed over more than once. Further attempts
 	 * will
-	 * register the {@code Doubles} as empty.
+	 * register the {@code DoubleSeq} as empty.
 	 */
 	@Nonnull
-	static Doubles from(@Nonnull DoubleIterator iterator) {
+	static DoubleSeq from(@Nonnull DoubleIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
-	 * Create a {@code Doubles} from a {@link DoubleIterable}.
+	 * Create a {@code DoubleSeq} from a {@link DoubleIterable}.
 	 */
 	@Nonnull
-	static Doubles from(@Nonnull DoubleIterable iterable) {
+	static DoubleSeq from(@Nonnull DoubleIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
-	 * Create a {@code Doubles} with the given doubles.
+	 * Create a {@code DoubleSeq} with the given doubles.
 	 */
 	@Nonnull
-	static Doubles of(@Nonnull double... cs) {
+	static DoubleSeq of(@Nonnull double... cs) {
 		return () -> new ArrayDoubleIterator(cs);
 	}
 
@@ -89,7 +89,7 @@ public interface Doubles extends DoubleIterable {
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
 	@Nonnull
-	static Doubles from(@Nonnull Supplier<? extends DoubleIterator> iteratorSupplier) {
+	static DoubleSeq from(@Nonnull Supplier<? extends DoubleIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -100,15 +100,15 @@ public interface Doubles extends DoubleIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
-	static Doubles from(Stream<Double> stream) {
+	static DoubleSeq from(Stream<Double> stream) {
 		return from(stream::iterator);
 	}
 
 	/**
-	 * Create a {@code Doubles} from an {@link Iterable} of {@code Double} values.
+	 * Create a {@code DoubleSeq} from an {@link Iterable} of {@code Double} values.
 	 */
 	@Nonnull
-	static Doubles from(@Nonnull Iterable<Double> iterable) {
+	static DoubleSeq from(@Nonnull Iterable<Double> iterable) {
 		return () -> DoubleIterator.from(iterable);
 	}
 
@@ -121,7 +121,7 @@ public interface Doubles extends DoubleIterable {
 	 * @see #range(double, double)
 	 * @see #range(double, double, double)
 	 */
-	static Doubles positive() {
+	static DoubleSeq positive() {
 		return startingAt(1);
 	}
 
@@ -134,7 +134,7 @@ public interface Doubles extends DoubleIterable {
 	 * @see #range(double, double)
 	 * @see #range(double, double, double)
 	 */
-	static Doubles negative() {
+	static DoubleSeq negative() {
 		return range(-1L, Double.MIN_VALUE);
 	}
 
@@ -147,7 +147,7 @@ public interface Doubles extends DoubleIterable {
 	 * @see #range(double, double)
 	 * @see #range(double, double, double)
 	 */
-	static Doubles startingAt(double start) {
+	static DoubleSeq startingAt(double start) {
 		return range(start, Double.MAX_VALUE);
 	}
 
@@ -159,7 +159,7 @@ public interface Doubles extends DoubleIterable {
 	 * @see #startingAt(double)
 	 * @see #range(double, double, double)
 	 */
-	static Doubles range(double start, double end) {
+	static DoubleSeq range(double start, double end) {
 		return range(start, end, 1);
 	}
 
@@ -172,12 +172,12 @@ public interface Doubles extends DoubleIterable {
 	 * @see #startingAt(double)
 	 * @see #range(double, double)
 	 */
-	static Doubles range(double start, double end, double step) {
+	static DoubleSeq range(double start, double end, double step) {
 		double effectiveStep = end > start ? step : -step;
 		return recurse(start, d -> d + effectiveStep).endingAt(end);
 	}
 
-	static Doubles recurse(double seed, DoubleUnaryOperator op) {
+	static DoubleSeq recurse(double seed, DoubleUnaryOperator op) {
 		return () -> new InfiniteDoubleIterator() {
 			private double previous;
 			private boolean hasPrevious;
@@ -192,42 +192,42 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code Doubles} that is generated from the given supplier and thus never terminates.
+	 * @return a sequence of {@code DoubleSeq} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 * @see #endingAt(double)
 	 * @see #until(double)
 	 */
-	static Doubles generate(DoubleSupplier supplier) {
+	static DoubleSeq generate(DoubleSupplier supplier) {
 		return () -> (InfiniteDoubleIterator) supplier::getAsDouble;
 	}
 
 	/**
-	 * Terminate this {@code Doubles} sequence before the given element, with the previous element as the last
-	 * element in this {@code Doubles} sequence.
+	 * Terminate this {@code DoubleSeq} sequence before the given element, with the previous element as the last
+	 * element in this {@code DoubleSeq} sequence.
 	 *
 	 * @see #endingAt(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default Doubles until(double terminal) {
+	default DoubleSeq until(double terminal) {
 		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code Doubles} sequence at the given element, including it as the last element in this {@code
-	 * Doubles} sequence.
+	 * Terminate this {@code DoubleSeq} sequence at the given element, including it as the last element in this {@code
+	 * DoubleSeq} sequence.
 	 *
 	 * @see #until(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default Doubles endingAt(double terminal) {
+	default DoubleSeq endingAt(double terminal) {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	@Nonnull
-	default Doubles map(@Nonnull DoubleUnaryOperator mapper) {
+	default DoubleSeq map(@Nonnull DoubleUnaryOperator mapper) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
 			public double nextDouble() {
@@ -258,47 +258,47 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	@Nonnull
-	default Doubles skip(double skip) {
+	default DoubleSeq skip(double skip) {
 		return () -> new SkippingDoubleIterator(skip).backedBy(iterator());
 	}
 
 	@Nonnull
-	default Doubles limit(double limit) {
+	default DoubleSeq limit(double limit) {
 		return () -> new LimitingDoubleIterator(limit).backedBy(iterator());
 	}
 
 	@Nonnull
-	default Doubles append(@Nonnull Iterable<Double> iterable) {
+	default DoubleSeq append(@Nonnull Iterable<Double> iterable) {
 		return append(DoubleIterable.from(iterable));
 	}
 
 	@Nonnull
-	default Doubles append(@Nonnull DoubleIterable that) {
+	default DoubleSeq append(@Nonnull DoubleIterable that) {
 		return new ChainingDoubleIterable(this, that)::iterator;
 	}
 
-	default Doubles append(DoubleIterator iterator) {
+	default DoubleSeq append(DoubleIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
-	default Doubles append(Iterator<Double> iterator) {
+	default DoubleSeq append(Iterator<Double> iterator) {
 		return append(DoubleIterable.from(iterator));
 	}
 
-	default Doubles append(double... doubles) {
+	default DoubleSeq append(double... doubles) {
 		return append(DoubleIterable.of(doubles));
 	}
 
-	default Doubles append(Stream<Double> stream) {
+	default DoubleSeq append(Stream<Double> stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
-	default Doubles append(DoubleStream stream) {
+	default DoubleSeq append(DoubleStream stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
 	@Nonnull
-	default Doubles filter(@Nonnull DoublePredicate predicate) {
+	default DoubleSeq filter(@Nonnull DoublePredicate predicate) {
 		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
 	}
 
@@ -379,7 +379,7 @@ public interface Doubles extends DoubleIterable {
 		return OptionalDouble.of(last);
 	}
 
-	default Doubles step(double step) {
+	default DoubleSeq step(double step) {
 		return () -> new SteppingDoubleIterator(step).backedBy(iterator());
 	}
 
@@ -428,7 +428,7 @@ public interface Doubles extends DoubleIterable {
 		return false;
 	}
 
-	default Doubles peek(DoubleConsumer action) {
+	default DoubleSeq peek(DoubleConsumer action) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
 			public double nextDouble() {
@@ -439,7 +439,7 @@ public interface Doubles extends DoubleIterable {
 		}.backedBy(iterator());
 	}
 
-	default Doubles sorted() {
+	default DoubleSeq sorted() {
 		double[] array = toArray();
 		Arrays.sort(array);
 		return () -> DoubleIterator.of(array);
@@ -469,19 +469,19 @@ public interface Doubles extends DoubleIterable {
 		return result;
 	}
 
-	default Doubles prefix(double... cs) {
+	default DoubleSeq prefix(double... cs) {
 		return () -> new ChainingDoubleIterator(DoubleIterable.of(cs), this);
 	}
 
-	default Doubles suffix(double... cs) {
+	default DoubleSeq suffix(double... cs) {
 		return () -> new ChainingDoubleIterator(this, DoubleIterable.of(cs));
 	}
 
-	default Doubles interleave(Doubles that) {
+	default DoubleSeq interleave(DoubleSeq that) {
 		return () -> new InterleavingDoubleIterator(this, that);
 	}
 
-	default Doubles reverse() {
+	default DoubleSeq reverse() {
 		double[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
 			MoreArrays.swap(array, i, array.length - 1 - i);
@@ -489,15 +489,15 @@ public interface Doubles extends DoubleIterable {
 		return DoubleIterable.of(array)::iterator;
 	}
 
-	default Doubles mapBack(BackPeekingDoubleFunction mapper) {
+	default DoubleSeq mapBack(BackPeekingDoubleFunction mapper) {
 		return () -> new BackPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
-	default Doubles mapForward(ForwardPeekingDoubleFunction mapper) {
+	default DoubleSeq mapForward(ForwardPeekingDoubleFunction mapper) {
 		return () -> new ForwardPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
-	default Ints toInts() {
+	default IntSeq toInts() {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -513,7 +513,7 @@ public interface Doubles extends DoubleIterable {
 		};
 	}
 
-	default Longs toLongs() {
+	default LongSeq toLongs() {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -529,11 +529,11 @@ public interface Doubles extends DoubleIterable {
 		};
 	}
 
-	default Ints toRoundedInts() {
+	default IntSeq toRoundedInts() {
 		return toInts(d -> (int) round(d));
 	}
 
-	default Ints toInts(DoubleToIntFunction mapper) {
+	default IntSeq toInts(DoubleToIntFunction mapper) {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -549,11 +549,11 @@ public interface Doubles extends DoubleIterable {
 		};
 	}
 
-	default Longs toRoundedLongs() {
+	default LongSeq toRoundedLongs() {
 		return toLongs(Math::round);
 	}
 
-	default Longs toLongs(DoubleToLongFunction mapper) {
+	default LongSeq toLongs(DoubleToLongFunction mapper) {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -569,7 +569,7 @@ public interface Doubles extends DoubleIterable {
 		};
 	}
 
-	default Doubles repeat() {
+	default DoubleSeq repeat() {
 		return () -> new RepeatingDoubleIterator(this);
 	}
 }
