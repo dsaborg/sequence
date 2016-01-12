@@ -22,7 +22,7 @@ import java.util.function.IntPredicate;
 public class FilteringIntIterator extends UnaryIntIterator {
 	private final IntPredicate predicate;
 
-	int next;
+	private int next;
 	private boolean hasNext;
 
 	public FilteringIntIterator(IntPredicate predicate) {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
@@ -20,7 +21,7 @@ import java.util.NoSuchElementException;
 public class SkippingCharIterator extends UnaryCharIterator {
 	private final long skip;
 
-	boolean skipped;
+	private boolean skipped;
 
 	public SkippingCharIterator(long skip) {
 		this.skip = skip;

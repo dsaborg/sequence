@@ -16,6 +16,7 @@
 
 package org.d2ab.primitive.chars;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -48,7 +49,7 @@ public class ChainingCharIterable implements CharIterable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o)
 			return true;
 		if ((o == null) || (getClass() != o.getClass()))

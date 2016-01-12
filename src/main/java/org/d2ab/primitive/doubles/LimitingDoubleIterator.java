@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 
 public class LimitingDoubleIterator extends UnaryDoubleIterator {
 	private final double limit;
-	double count;
+	private double count;
 
 	public LimitingDoubleIterator(double limit) {
 		this.limit = limit;

@@ -50,17 +50,17 @@ public class SequenceTest {
 	private final Sequence<Integer> nineRandom = Sequence.of(67, 5, 43, 3, 5, 7, 24, 5, 67);
 
 	@Test
-	public void ofOne() throws Exception {
+	public void ofOne() {
 		twice(() -> assertThat(_1, contains(1)));
 	}
 
 	@Test
-	public void ofMany() throws Exception {
+	public void ofMany() {
 		twice(() -> assertThat(_123, contains(1, 2, 3)));
 	}
 
 	@Test
-	public void forLoop() throws Exception {
+	public void forLoop() {
 		twice(() -> {
 			for (int ignored : empty)
 				fail("Should not get called");
@@ -74,7 +74,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void forEach() throws Exception {
+	public void forEach() {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
 			_1.forEach(i -> assertThat(i, is(in(singletonList(1)))));
@@ -84,7 +84,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void iterator() throws Exception {
+	public void iterator() {
 		twice(() -> {
 			Iterator iterator = _123.iterator();
 
@@ -103,33 +103,33 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void ofNone() throws Exception {
+	public void ofNone() {
 		Sequence<Integer> sequence = Sequence.<Integer>of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
-	public void empty() throws Exception {
+	public void empty() {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
-	public void ofNulls() throws Exception {
+	public void ofNulls() {
 		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
 
 		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
 	}
 
 	@Test
-	public void fromSequence() throws Exception {
+	public void fromSequence() {
 		Sequence<Integer> fromSequence = Sequence.from(_123);
 
 		twice(() -> assertThat(fromSequence, contains(1, 2, 3)));
 	}
 
 	@Test
-	public void fromIterable() throws Exception {
+	public void fromIterable() {
 		Iterable<Integer> iterable = () -> asList(1, 2, 3).iterator();
 
 		Sequence<Integer> sequenceFromIterable = Sequence.from(iterable);
@@ -138,7 +138,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromStream() throws Exception {
+	public void fromStream() {
 		Sequence<Integer> sequenceFromStream = Sequence.from(asList(1, 2, 3).stream());
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
@@ -146,7 +146,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromEmptyStream() throws Exception {
+	public void fromEmptyStream() {
 		Sequence<Integer> sequenceFromStream = Sequence.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
@@ -154,7 +154,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() throws Exception {
+	public void fromIteratorSupplier() {
 		Supplier<Iterator<Integer>> iterators = () -> asList(1, 2, 3).iterator();
 
 		Sequence<Integer> sequenceFromIterators = Sequence.from(iterators);
@@ -163,7 +163,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromIterables() throws Exception {
+	public void fromIterables() {
 		Iterable<Integer> first = asList(1, 2, 3);
 		Iterable<Integer> second = asList(4, 5, 6);
 		Iterable<Integer> third = asList(7, 8, 9);
@@ -174,7 +174,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromNoIterables() throws Exception {
+	public void fromNoIterables() {
 		Sequence<Integer> sequenceFromNoIterables = Sequence.<Integer>from();
 
 		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));

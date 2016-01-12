@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
@@ -20,7 +21,7 @@ import java.util.NoSuchElementException;
 public class LimitingCharIterator extends UnaryCharIterator {
 	private final long limit;
 
-	long count;
+	private long count;
 
 	public LimitingCharIterator(long limit) {
 		this.limit = limit;

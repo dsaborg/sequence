@@ -22,7 +22,7 @@ import java.util.function.DoublePredicate;
 public class FilteringDoubleIterator extends UnaryDoubleIterator {
 	private final DoublePredicate predicate;
 
-	double next;
+	private double next;
 	private boolean hasNext;
 
 	public FilteringDoubleIterator(DoublePredicate predicate) {

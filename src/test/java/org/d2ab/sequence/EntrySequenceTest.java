@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -65,23 +66,18 @@ public class EntrySequenceTest {
 	private final Entry<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
 	private final Entry<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
-	public static void twice(Runnable action) {
-		action.run();
-		action.run();
-	}
-
 	@Test
-	public void ofOne() throws Exception {
+	public void ofOne() {
 		twice(() -> assertThat(_1, contains(Pair.of("1", 1))));
 	}
 
 	@Test
-	public void ofMany() throws Exception {
+	public void ofMany() {
 		twice(() -> assertThat(_123, contains(entries123)));
 	}
 
 	@Test
-	public void forLoop() throws Exception {
+	public void forLoop() {
 		twice(() -> {
 			for (Entry<String, Integer> ignored : empty)
 				fail("Should not get called");
@@ -95,7 +91,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void forEach() throws Exception {
+	public void forEach() {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
 			_1.forEach(i -> assertThat(i, is(in(entries123))));
@@ -105,7 +101,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void iterator() throws Exception {
+	public void iterator() {
 		twice(() -> {
 			Iterator iterator = _123.iterator();
 
@@ -124,19 +120,19 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void ofNone() throws Exception {
+	public void ofNone() {
 		EntrySequence<String, Integer> sequence = EntrySequence.<String, Integer>of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
-	public void empty() throws Exception {
+	public void empty() {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
-	public void ofWithNulls() throws Exception {
+	public void ofWithNulls() {
 		EntrySequence<String, Integer> sequence = EntrySequence.of(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3),
 		                                                           Pair.of("4", null), Pair.of(null, null));
 
@@ -146,14 +142,14 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromBiSequence() throws Exception {
+	public void fromBiSequence() {
 		EntrySequence<String, Integer> fromEntrySequence = EntrySequence.from(_123);
 
 		twice(() -> assertThat(fromEntrySequence, contains(entries123)));
 	}
 
 	@Test
-	public void fromIterable() throws Exception {
+	public void fromIterable() {
 		Iterable<Entry<String, Integer>> iterable = asList(entries123);
 
 		EntrySequence<String, Integer> sequenceFromIterable = EntrySequence.from(iterable);
@@ -162,7 +158,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() throws Exception {
+	public void fromIteratorSupplier() {
 		Supplier<Iterator<Entry<String, Integer>>> iterators = () -> Arrayz.iterator(entries123);
 
 		EntrySequence<String, Integer> sequenceFromIterators = EntrySequence.from(iterators);
@@ -171,7 +167,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromIterables() throws Exception {
+	public void fromIterables() {
 		Iterable<Entry<String, Integer>> first = asList(entries123);
 		Iterable<Entry<String, Integer>> second = asList(entries456);
 		Iterable<Entry<String, Integer>> third = asList(entries789);
@@ -185,7 +181,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromNoIterables() throws Exception {
+	public void fromNoIterables() {
 		EntrySequence<String, Integer> sequenceFromNoIterables = EntrySequence.from(new Iterable[]{});
 
 		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));

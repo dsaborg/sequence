@@ -22,7 +22,7 @@ package org.d2ab.primitive.longs;
 public class BackPeekingLongIterator extends UnaryLongIterator {
 	private final BackPeekingLongFunction mapper;
 
-	boolean hasPrevious;
+	private boolean hasPrevious;
 	private long previous = -1;
 
 	public BackPeekingLongIterator(BackPeekingLongFunction mapper) {

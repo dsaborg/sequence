@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 public class LimitingIterator<T> extends UnaryReferenceIterator<T> {
 	private final long limit;
 
-	long count;
+	private long count;
 
 	public LimitingIterator(long limit) {
 		this.limit = limit;

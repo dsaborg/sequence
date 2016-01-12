@@ -20,11 +20,12 @@ import org.d2ab.sequence.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
@@ -41,8 +42,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	@SuppressWarnings("unchecked")
 	static IntIterable from(Object container) {
-		if (container == null)
-			throw new NullPointerException();
+		requireNonNull(container);
 
 		if (container instanceof IntIterable)
 			return (IntIterable) container;
@@ -106,7 +106,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Integer> action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		forEachInt((action instanceof IntConsumer) ? (IntConsumer) action : action::accept);
 	}
@@ -127,7 +127,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 * }</pre>
 	 */
 	default void forEachInt(IntConsumer action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		IntIterator iterator = iterator();
 		while (iterator.hasNext())

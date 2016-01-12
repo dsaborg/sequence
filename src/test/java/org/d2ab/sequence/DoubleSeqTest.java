@@ -51,17 +51,17 @@ public class DoubleSeqTest {
 	private final DoubleSeq nineRandom = DoubleSeq.of(6.0, 6.0, 1.0, 7.0, 1.0, 2.0, 17.0, 5.0, 4.0);
 
 	@Test
-	public void ofOne() throws Exception {
+	public void ofOne() {
 		twice(() -> assertThat(_1, contains(1.0)));
 	}
 
 	@Test
-	public void ofMany() throws Exception {
+	public void ofMany() {
 		twice(() -> assertThat(_123, contains(1.0, 2.0, 3.0)));
 	}
 
 	@Test
-	public void forLoop() throws Exception {
+	public void forLoop() {
 		twice(() -> {
 			for (double ignored : empty)
 				fail("Should not get called");
@@ -75,7 +75,7 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void forEach() throws Exception {
+	public void forEach() {
 		twice(() -> {
 			empty.forEachDouble(c -> fail("Should not get called"));
 			_1.forEachDouble(c -> assertThat(c, is(in(singletonList(1.0)))));
@@ -85,7 +85,7 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void iterator() throws Exception {
+	public void iterator() {
 		twice(() -> {
 			DoubleIterator iterator = _123.iterator();
 
@@ -104,26 +104,26 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void ofNone() throws Exception {
+	public void ofNone() {
 		DoubleSeq sequence = DoubleSeq.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
-	public void empty() throws Exception {
+	public void empty() {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
-	public void fromSequence() throws Exception {
+	public void fromSequence() {
 		DoubleSeq fromSequence = DoubleSeq.from(_123);
 
 		twice(() -> assertThat(fromSequence, contains(1.0, 2.0, 3.0)));
 	}
 
 	@Test
-	public void fromIterable() throws Exception {
+	public void fromIterable() {
 		Iterable<Double> iterable = () -> asList(1.0, 2.0, 3.0).iterator();
 
 		DoubleSeq sequenceFromIterable = DoubleSeq.from(iterable);
@@ -132,7 +132,7 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void fromStream() throws Exception {
+	public void fromStream() {
 		DoubleSeq sequenceFromStream = DoubleSeq.from(asList(1.0, 2.0, 3.0).stream());
 
 		assertThat(sequenceFromStream, contains(1.0, 2.0, 3.0));
@@ -140,7 +140,7 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void fromEmptyStream() throws Exception {
+	public void fromEmptyStream() {
 		DoubleSeq sequenceFromStream = DoubleSeq.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
@@ -148,7 +148,7 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() throws Exception {
+	public void fromIteratorSupplier() {
 		Supplier<DoubleIterator> iterators = () -> DoubleIterator.from(asList(1.0, 2.0, 3.0));
 
 		DoubleSeq sequenceFromIterators = DoubleSeq.from(iterators);

@@ -21,7 +21,7 @@ package org.d2ab.primitive.doubles;
  */
 public class BackPeekingDoubleIterator extends UnaryDoubleIterator {
 	private final BackPeekingDoubleFunction mapper;
-	boolean hasPrevious;
+	private boolean hasPrevious;
 	private double previous = -1;
 
 	public BackPeekingDoubleIterator(BackPeekingDoubleFunction mapper) {

@@ -24,7 +24,7 @@ public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 	private final Predicate<? super T> predicate;
 
 	@Nullable
-	T next;
+	private T next;
 	private boolean hasNext;
 
 	public FilteringIterator(Predicate<? super T> predicate) {

@@ -51,17 +51,17 @@ public class LongSeqTest {
 	private final LongSeq nineRandom = LongSeq.of(6L, 6L, 1L, 7L, 1L, 2L, 17L, 5L, 4L);
 
 	@Test
-	public void ofOne() throws Exception {
+	public void ofOne() {
 		twice(() -> assertThat(_1, contains(1L)));
 	}
 
 	@Test
-	public void ofMany() throws Exception {
+	public void ofMany() {
 		twice(() -> assertThat(_123, contains(1L, 2L, 3L)));
 	}
 
 	@Test
-	public void forLoop() throws Exception {
+	public void forLoop() {
 		twice(() -> {
 			for (long ignored : empty)
 				fail("Should not get called");
@@ -75,7 +75,7 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void forEach() throws Exception {
+	public void forEach() {
 		twice(() -> {
 			empty.forEachLong(c -> fail("Should not get called"));
 			_1.forEachLong(c -> assertThat(c, is(in(singletonList(1L)))));
@@ -85,7 +85,7 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void iterator() throws Exception {
+	public void iterator() {
 		twice(() -> {
 			LongIterator iterator = _123.iterator();
 
@@ -104,26 +104,26 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void ofNone() throws Exception {
+	public void ofNone() {
 		LongSeq sequence = LongSeq.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
-	public void empty() throws Exception {
+	public void empty() {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
-	public void fromSequence() throws Exception {
+	public void fromSequence() {
 		LongSeq fromSequence = LongSeq.from(_123);
 
 		twice(() -> assertThat(fromSequence, contains(1L, 2L, 3L)));
 	}
 
 	@Test
-	public void fromIterable() throws Exception {
+	public void fromIterable() {
 		Iterable<Long> iterable = () -> asList(1L, 2L, 3L).iterator();
 
 		LongSeq sequenceFromIterable = LongSeq.from(iterable);
@@ -132,7 +132,7 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void fromStream() throws Exception {
+	public void fromStream() {
 		LongSeq sequenceFromStream = LongSeq.from(asList(1L, 2L, 3L).stream());
 
 		assertThat(sequenceFromStream, contains(1L, 2L, 3L));
@@ -140,7 +140,7 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void fromEmptyStream() throws Exception {
+	public void fromEmptyStream() {
 		LongSeq sequenceFromStream = LongSeq.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
@@ -148,7 +148,7 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() throws Exception {
+	public void fromIteratorSupplier() {
 		Supplier<LongIterator> iterators = () -> LongIterator.from(asList(1L, 2L, 3L));
 
 		LongSeq sequenceFromIterators = LongSeq.from(iterators);

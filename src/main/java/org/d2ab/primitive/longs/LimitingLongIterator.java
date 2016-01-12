@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 public class LimitingLongIterator extends UnaryLongIterator {
 	private final long limit;
 
-	long count;
+	private long count;
 
 	public LimitingLongIterator(long limit) {
 		this.limit = limit;

@@ -48,17 +48,17 @@ public class CharSeqTest {
 	private final CharSeq nineRandom = CharSeq.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
 
 	@Test
-	public void ofOne() throws Exception {
+	public void ofOne() {
 		twice(() -> assertThat(a, contains('a')));
 	}
 
 	@Test
-	public void ofMany() throws Exception {
+	public void ofMany() {
 		twice(() -> assertThat(abc, contains('a', 'b', 'c')));
 	}
 
 	@Test
-	public void forLoop() throws Exception {
+	public void forLoop() {
 		twice(() -> {
 			for (int ignored : empty)
 				fail("Should not get called");
@@ -72,7 +72,7 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void forEach() throws Exception {
+	public void forEach() {
 		twice(() -> {
 			empty.forEachChar(c -> fail("Should not get called"));
 			a.forEachChar(c -> assertThat(c, is(in(singletonList('a')))));
@@ -82,7 +82,7 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void iterator() throws Exception {
+	public void iterator() {
 		twice(() -> {
 			CharIterator iterator = abc.iterator();
 
@@ -101,26 +101,26 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void ofNone() throws Exception {
+	public void ofNone() {
 		CharSeq sequence = CharSeq.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
-	public void empty() throws Exception {
+	public void empty() {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
-	public void fromSequence() throws Exception {
+	public void fromSequence() {
 		CharSeq fromSequence = CharSeq.from(abc);
 
 		twice(() -> assertThat(fromSequence, contains('a', 'b', 'c')));
 	}
 
 	@Test
-	public void fromIterable() throws Exception {
+	public void fromIterable() {
 		Iterable<Character> iterable = () -> asList('a', 'b', 'c').iterator();
 
 		CharSeq sequenceFromIterable = CharSeq.from(iterable);
@@ -129,7 +129,7 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void fromStream() throws Exception {
+	public void fromStream() {
 		CharSeq sequenceFromStream = CharSeq.from(asList('a', 'b', 'c').stream());
 
 		assertThat(sequenceFromStream, contains('a', 'b', 'c'));
@@ -137,7 +137,7 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void fromEmptyStream() throws Exception {
+	public void fromEmptyStream() {
 		CharSeq sequenceFromStream = CharSeq.from(Stream.of());
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
@@ -145,7 +145,7 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() throws Exception {
+	public void fromIteratorSupplier() {
 		Supplier<CharIterator> iterators = () -> CharIterator.from(asList('a', 'b', 'c'));
 
 		CharSeq sequenceFromIterators = CharSeq.from(iterators);

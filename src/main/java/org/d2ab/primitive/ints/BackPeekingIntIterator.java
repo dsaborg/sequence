@@ -21,7 +21,7 @@ package org.d2ab.primitive.ints;
  */
 public class BackPeekingIntIterator extends UnaryIntIterator {
 	private final BackPeekingIntFunction mapper;
-	boolean hasPrevious;
+	private boolean hasPrevious;
 	private int previous = -1;
 
 	public BackPeekingIntIterator(BackPeekingIntFunction mapper) {

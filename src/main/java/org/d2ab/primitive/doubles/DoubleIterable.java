@@ -20,11 +20,12 @@ import org.d2ab.sequence.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
@@ -41,8 +42,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 */
 	@SuppressWarnings("unchecked")
 	static DoubleIterable from(Object container) {
-		if (container == null)
-			throw new NullPointerException();
+		requireNonNull(container);
 
 		if (container instanceof DoubleIterable)
 			return (DoubleIterable) container;
@@ -106,7 +106,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Double> action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		forEachDouble((action instanceof DoubleConsumer) ? (DoubleConsumer) action : action::accept);
 	}
@@ -127,7 +127,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * }</pre>
 	 */
 	default void forEachDouble(DoubleConsumer action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		DoubleIterator iterator = iterator();
 		while (iterator.hasNext())

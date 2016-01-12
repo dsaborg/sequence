@@ -20,10 +20,11 @@ import org.d2ab.sequence.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
@@ -40,8 +41,7 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	@SuppressWarnings("unchecked")
 	static CharIterable from(Object container) {
-		if (container == null)
-			throw new NullPointerException();
+		requireNonNull(container);
 
 		if (container instanceof CharIterable)
 			return (CharIterable) container;
@@ -106,7 +106,7 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Character> action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		forEachChar((action instanceof CharConsumer) ? (CharConsumer) action : action::accept);
 	}
@@ -127,7 +127,7 @@ public interface CharIterable extends Iterable<Character> {
 	 * }</pre>
 	 */
 	default void forEachChar(CharConsumer action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		CharIterator iterator = iterator();
 		while (iterator.hasNext())

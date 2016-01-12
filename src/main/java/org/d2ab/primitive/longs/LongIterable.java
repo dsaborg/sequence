@@ -20,11 +20,12 @@ import org.d2ab.sequence.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
@@ -41,8 +42,7 @@ public interface LongIterable extends Iterable<Long> {
 	 */
 	@SuppressWarnings("unchecked")
 	static LongIterable from(Object container) {
-		if (container == null)
-			throw new NullPointerException();
+		requireNonNull(container);
 
 		if (container instanceof LongIterable)
 			return (LongIterable) container;
@@ -107,7 +107,7 @@ public interface LongIterable extends Iterable<Long> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Long> action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		forEachLong((action instanceof LongConsumer) ? (LongConsumer) action : action::accept);
 	}
@@ -128,7 +128,7 @@ public interface LongIterable extends Iterable<Long> {
 	 * }</pre>
 	 */
 	default void forEachLong(LongConsumer action) {
-		Objects.requireNonNull(action);
+		requireNonNull(action);
 
 		LongIterator iterator = iterator();
 		while (iterator.hasNext())

@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 public class SkippingLongIterator extends UnaryLongIterator {
 	private final long skip;
 
-	boolean skipped;
+	private boolean skipped;
 
 	public SkippingLongIterator(long skip) {
 		this.skip = skip;

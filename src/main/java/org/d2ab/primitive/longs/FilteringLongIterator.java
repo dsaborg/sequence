@@ -22,7 +22,7 @@ import java.util.function.LongPredicate;
 public class FilteringLongIterator extends UnaryLongIterator {
 	private final LongPredicate predicate;
 
-	long next;
+	private long next;
 	private boolean hasNext;
 
 	public FilteringLongIterator(LongPredicate predicate) {

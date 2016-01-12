@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
 	private final long skip;
 
-	boolean skipped;
+	private boolean skipped;
 
 	public SkippingIterator(long skip) {
 		this.skip = skip;
