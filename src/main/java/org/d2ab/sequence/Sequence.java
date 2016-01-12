@@ -376,22 +376,31 @@ public interface Sequence<T> extends Iterable<T> {
 		return ChainingIterable.<U>flatten(this)::iterator;
 	}
 
+	default Object[] toArray() {
+		return toList().toArray();
+	}
+
+	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
+		List list = toList();
+		@SuppressWarnings("unchecked")
+		A[] array = (A[]) list.toArray(constructor.apply(list.size()));
+		return array;
+	}
+
+	default List<T> toList() {
+		return toList(ArrayList::new);
+	}
+
+	default List<T> toList(Supplier<? extends List<T>> constructor) {
+		return toCollection(constructor);
+	}
+
 	default Set<T> toSet() {
 		return toSet(HashSet::new);
 	}
 
 	default <S extends Set<T>> S toSet(Supplier<? extends S> constructor) {
 		return toCollection(constructor);
-	}
-
-	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
-		return collect(constructor, Collection::add);
-	}
-
-	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
-		C result = constructor.get();
-		forEach(each -> adder.accept(result, each));
-		return result;
 	}
 
 	default SortedSet<T> toSortedSet() {
@@ -447,6 +456,16 @@ public interface Sequence<T> extends Iterable<T> {
 	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
 	                                           Function<? super T, ? extends V> valueMapper) {
 		return toMap(TreeMap::new, keyMapper, valueMapper);
+	}
+
+	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
+		return collect(constructor, Collection::add);
+	}
+
+	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
+		C result = constructor.get();
+		forEach(each -> adder.accept(result, each));
+		return result;
 	}
 
 	default <S, R> S collect(Collector<T, R, S> collector) {
@@ -578,25 +597,6 @@ public interface Sequence<T> extends Iterable<T> {
 			count++;
 		}
 		return count;
-	}
-
-	default List<T> toList() {
-		return toList(ArrayList::new);
-	}
-
-	default List<T> toList(Supplier<? extends List<T>> constructor) {
-		return toCollection(constructor);
-	}
-
-	default Object[] toArray() {
-		return toList().toArray();
-	}
-
-	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
-		List list = toList();
-		@SuppressWarnings("unchecked")
-		A[] array = (A[]) list.toArray(constructor.apply(list.size()));
-		return array;
 	}
 
 	default Stream<T> stream() {

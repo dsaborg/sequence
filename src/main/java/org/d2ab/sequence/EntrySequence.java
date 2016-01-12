@@ -125,22 +125,31 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
+	default Entry<T, U>[] toArray() {
+		return toArray(Entry[]::new);
+	}
+
+	default Entry<T, U>[] toArray(IntFunction<Entry<T, U>[]> constructor) {
+		List list = toList();
+		@SuppressWarnings("unchecked")
+		Entry<T, U>[] array = (Entry<T, U>[]) list.toArray(constructor.apply(list.size()));
+		return array;
+	}
+
+	default List<Entry<T, U>> toList() {
+		return toList(ArrayList::new);
+	}
+
+	default List<Entry<T, U>> toList(Supplier<List<Entry<T, U>>> constructor) {
+		return toCollection(constructor);
+	}
+
 	default Set<Entry<T, U>> toSet() {
 		return toSet(HashSet::new);
 	}
 
 	default <S extends Set<Entry<T, U>>> S toSet(Supplier<? extends S> constructor) {
 		return toCollection(constructor);
-	}
-
-	default <C extends Collection<Entry<T, U>>> C toCollection(Supplier<? extends C> constructor) {
-		return collect(constructor, Collection::add);
-	}
-
-	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Entry<T, U>> adder) {
-		C result = constructor.get();
-		forEach(each -> adder.accept(result, each));
-		return result;
 	}
 
 	default SortedSet<Entry<T, U>> toSortedSet() {
@@ -159,6 +168,16 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	default SortedMap<T, U> toSortedMap() {
 		return toMap(TreeMap::new);
+	}
+
+	default <C extends Collection<Entry<T, U>>> C toCollection(Supplier<? extends C> constructor) {
+		return collect(constructor, Collection::add);
+	}
+
+	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Entry<T, U>> adder) {
+		C result = constructor.get();
+		forEach(each -> adder.accept(result, each));
+		return result;
 	}
 
 	default <S, R> S collect(Collector<Entry<T, U>, R, S> collector) {
@@ -283,25 +302,6 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 			count++;
 		}
 		return count;
-	}
-
-	default Entry<T, U>[] toArray() {
-		return toArray(Entry[]::new);
-	}
-
-	default Entry<T, U>[] toArray(IntFunction<Entry<T, U>[]> constructor) {
-		List list = toList();
-		@SuppressWarnings("unchecked")
-		Entry<T, U>[] array = (Entry<T, U>[]) list.toArray(constructor.apply(list.size()));
-		return array;
-	}
-
-	default List<Entry<T, U>> toList() {
-		return toList(ArrayList::new);
-	}
-
-	default List<Entry<T, U>> toList(Supplier<List<Entry<T, U>>> constructor) {
-		return toCollection(constructor);
 	}
 
 	default boolean all(BiPredicate<? super T, ? super U> predicate) {
