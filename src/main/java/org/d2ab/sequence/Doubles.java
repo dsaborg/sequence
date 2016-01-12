@@ -115,14 +115,37 @@ public interface Doubles extends DoubleIterable {
 	/**
 	 * A {@code Sequence} of all the positive {@link Double} values starting at {@code 1} and ending at
 	 * {@link Double#MAX_VALUE}.
+	 *
+	 * @see #negative()
+	 * @see #startingAt(double)
+	 * @see #range(double, double)
+	 * @see #range(double, double, double)
 	 */
 	static Doubles positive() {
 		return startingAt(1);
 	}
 
 	/**
+	 * A {@code Sequence} of all the negative {@link Double} values starting at {@code -1} and ending at
+	 * {@link Double#MIN_VALUE}.
+	 *
+	 * @see #positive()
+	 * @see #startingAt(double)
+	 * @see #range(double, double)
+	 * @see #range(double, double, double)
+	 */
+	static Doubles negative() {
+		return range(-1L, Double.MIN_VALUE);
+	}
+
+	/**
 	 * A {@code Sequence} of all the {@link Double} values starting at the given value and ending at {@link
 	 * Double#MAX_VALUE}.
+	 *
+	 * @see #positive
+	 * @see #negative()
+	 * @see #range(double, double)
+	 * @see #range(double, double, double)
 	 */
 	static Doubles startingAt(double start) {
 		return range(start, Double.MAX_VALUE);
@@ -130,13 +153,24 @@ public interface Doubles extends DoubleIterable {
 
 	/**
 	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive.
+	 *
+	 * @see #positive
+	 * @see #negative()
+	 * @see #startingAt(double)
+	 * @see #range(double, double, double)
 	 */
 	static Doubles range(double start, double end) {
 		return range(start, end, 1);
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive.
+	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive, using
+	 * the given step between iterations.
+	 *
+	 * @see #positive
+	 * @see #negative()
+	 * @see #startingAt(double)
+	 * @see #range(double, double)
 	 */
 	static Doubles range(double start, double end, double step) {
 		double effectiveStep = end > start ? step : -step;
@@ -158,20 +192,36 @@ public interface Doubles extends DoubleIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Double} values starting at {@code -1} and ending at
-	 * {@link Double#MIN_VALUE}.
-	 */
-	static Doubles negative() {
-		return range(-1L, Double.MIN_VALUE);
-	}
-
-	/**
 	 * @return a sequence of {@code Doubles} that is generated from the given supplier and thus never terminates.
+	 *
+	 * @see #recurse(double, DoubleUnaryOperator)
+	 * @see #endingAt(double)
+	 * @see #until(double)
 	 */
 	static Doubles generate(DoubleSupplier supplier) {
 		return () -> (InfiniteDoubleIterator) supplier::getAsDouble;
 	}
 
+	/**
+	 * Terminate this {@code Doubles} sequence before the given element, with the previous element as the last
+	 * element in this {@code Doubles} sequence.
+	 *
+	 * @see #endingAt(double)
+	 * @see #generate(DoubleSupplier)
+	 * @see #recurse(double, DoubleUnaryOperator)
+	 */
+	default Doubles until(double terminal) {
+		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Doubles} sequence at the given element, including it as the last element in this {@code
+	 * Doubles} sequence.
+	 *
+	 * @see #until(double)
+	 * @see #generate(DoubleSupplier)
+	 * @see #recurse(double, DoubleUnaryOperator)
+	 */
 	default Doubles endingAt(double terminal) {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
@@ -250,10 +300,6 @@ public interface Doubles extends DoubleIterable {
 	@Nonnull
 	default Doubles filter(@Nonnull DoublePredicate predicate) {
 		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
-	}
-
-	default Doubles until(double terminal) {
-		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {

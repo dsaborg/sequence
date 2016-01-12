@@ -157,11 +157,11 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * Returns a {@code Sequence} produced by recursively applying the given operation to the given seed, which forms
-	 * the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
-	 * {@code Sequence} never terminates naturally.
+	 * Returns an {@code Ints} sequence produced by recursively applying the given operation to the given seed, which
+	 * forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
+	 * {@code Ints} sequence never terminates naturally.
 	 *
-	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
+	 * @return an {@code Ints} sequence produced by recursively applying the given operation to the given seed
 	 *
 	 * @see #generate(IntSupplier)
 	 * @see #endingAt(int)
@@ -193,8 +193,20 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * Terminate this {@code Ints} sequence when the given element is encountered, including the element as the last
-	 * element in the {@code Ints} sequence.
+	 * Terminate this {@code Ints} sequence before the given element, with the previous element as the last
+	 * element in this {@code Ints} sequence.
+	 *
+	 * @see #endingAt(int)
+	 * @see #generate(IntSupplier)
+	 * @see #recurse(int, IntUnaryOperator)
+	 */
+	default Ints until(int terminal) {
+		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Ints} sequence at the given element, including it as the last element in this {@code
+	 * Ints} sequence.
 	 *
 	 * @see #until(int)
 	 * @see #generate(IntSupplier)
@@ -282,10 +294,6 @@ public interface Ints extends IntIterable {
 	@Nonnull
 	default Ints filter(@Nonnull IntPredicate predicate) {
 		return () -> new FilteringIntIterator(predicate).backedBy(iterator());
-	}
-
-	default Ints until(int terminal) {
-		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {

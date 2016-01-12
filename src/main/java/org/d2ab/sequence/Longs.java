@@ -116,9 +116,25 @@ public interface Longs extends LongIterable {
 	/**
 	 * A {@code Sequence} of all the positive {@link Long} values starting at {@code 1} and ending at
 	 * {@link Long#MAX_VALUE}.
+	 *
+	 * @see #negative()
+	 * @see #startingAt(long)
+	 * @see #range(long, long)
 	 */
 	static Longs positive() {
 		return startingAt(1);
+	}
+
+	/**
+	 * A {@code Sequence} of all the negative {@link Long} values starting at {@code -1} and ending at
+	 * {@link Long#MIN_VALUE}.
+	 *
+	 * @see #positive()
+	 * @see #startingAt(long)
+	 * @see #range(long, long)
+	 */
+	static Longs negative() {
+		return range(-1L, Long.MIN_VALUE);
 	}
 
 	/**
@@ -152,20 +168,36 @@ public interface Longs extends LongIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Long} values starting at {@code -1} and ending at
-	 * {@link Long#MIN_VALUE}.
-	 */
-	static Longs negative() {
-		return range(-1L, Long.MIN_VALUE);
-	}
-
-	/**
-	 * @return a sequence of {@code Longs} that is generated from the given supplier and thus never terminates.
+	 * @return a sequence of {@code Ints} that is generated from the given supplier and thus never terminates.
+	 *
+	 * @see #recurse(long, LongUnaryOperator)
+	 * @see #endingAt(long)
+	 * @see #until(long)
 	 */
 	static Longs generate(LongSupplier supplier) {
 		return () -> (InfiniteLongIterator) supplier::getAsLong;
 	}
 
+	/**
+	 * Terminate this {@code Longs} sequence before the given element, with the previous element as the last
+	 * element in this {@code Longs} sequence.
+	 *
+	 * @see #endingAt(long)
+	 * @see #generate(LongSupplier)
+	 * @see #recurse(long, LongUnaryOperator)
+	 */
+	default Longs until(long terminal) {
+		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Longs} sequence at the given element, including it as the last element in this {@code
+	 * Longs} sequence.
+	 *
+	 * @see #until(long)
+	 * @see #generate(LongSupplier)
+	 * @see #recurse(long, LongUnaryOperator)
+	 */
 	default Longs endingAt(long terminal) {
 		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
@@ -245,10 +277,6 @@ public interface Longs extends LongIterable {
 	@Nonnull
 	default Longs filter(@Nonnull LongPredicate predicate) {
 		return () -> new FilteringLongIterator(predicate).backedBy(iterator());
-	}
-
-	default Longs until(long terminal) {
-		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {

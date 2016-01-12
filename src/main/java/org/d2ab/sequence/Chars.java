@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
@@ -115,6 +116,11 @@ public interface Chars extends CharIterable {
 	/**
 	 * A {@code Sequence} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
 	 * {@link Character#MAX_VALUE}.
+	 *
+	 * @see #startingAt(char)
+	 * @see #range(char, char)
+	 * @see #until(char)
+	 * @see #endingAt(char)
 	 */
 	static Chars all() {
 		return startingAt((char) 0);
@@ -123,6 +129,11 @@ public interface Chars extends CharIterable {
 	/**
 	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
 	 * Character#MAX_VALUE}.
+	 *
+	 * @see #all()
+	 * @see #range(char, char)
+	 * @see #until(char)
+	 * @see #endingAt(char)
 	 */
 	static Chars startingAt(char start) {
 		return range(start, Character.MAX_VALUE);
@@ -130,12 +141,28 @@ public interface Chars extends CharIterable {
 
 	/**
 	 * A {@code Sequence} of all the {@link Character} values between the given start and end positions, inclusive.
+	 *
+	 * @see #all()
+	 * @see #startingAt(char)
+	 * @see #until(char)
+	 * @see #endingAt(char)
 	 */
 	static Chars range(char start, char end) {
 		CharUnaryOperator next = (end > start) ? c -> (char) ++c : c -> (char) --c;
 		return recurse(start, next).endingAt(end);
 	}
 
+	/**
+	 * Returns a {@code Chars} sequence produced by recursively applying the given operation to the given seed, which
+	 * forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
+	 * {@code Chars} sequence never terminates naturally.
+	 *
+	 * @return a {@code Chars} sequence produced by recursively applying the given operation to the given seed
+	 *
+	 * @see #generate(CharSupplier)
+	 * @see #endingAt(char)
+	 * @see #until(char)
+	 */
 	static Chars recurse(char seed, CharUnaryOperator op) {
 		return () -> new InfiniteCharIterator() {
 			private char previous;
@@ -150,10 +177,37 @@ public interface Chars extends CharIterable {
 		};
 	}
 
+	/**
+	 * @return a sequence of {@code Chars} that is generated from the given supplier and thus never terminates.
+	 *
+	 * @see #recurse(char, CharUnaryOperator)
+	 * @see #endingAt(char)
+	 * @see #until(char)
+	 */
 	static Chars generate(CharSupplier supplier) {
 		return () -> (InfiniteCharIterator) supplier::getAsChar;
 	}
 
+	/**
+	 * Terminate this {@code Chars} sequence before the given element, with the previous element as the last
+	 * element in this {@code Chars} sequence.
+	 *
+	 * @see #endingAt(char)
+	 * @see #generate(CharSupplier)
+	 * @see #recurse(char, CharUnaryOperator)
+	 */
+	default Chars until(char terminal) {
+		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Chars} sequence at the given element, including it as the last element in this {@code
+	 * Chars} sequence.
+	 *
+	 * @see #until(char)
+	 * @see #generate(CharSupplier)
+	 * @see #recurse(char, CharUnaryOperator)
+	 */
 	default Chars endingAt(char terminal) {
 		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
@@ -232,10 +286,6 @@ public interface Chars extends CharIterable {
 	@Nonnull
 	default Chars filter(@Nonnull CharPredicate predicate) {
 		return () -> new FilteringCharIterator(predicate).backedBy(iterator());
-	}
-
-	default Chars until(char terminal) {
-		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
