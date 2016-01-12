@@ -123,66 +123,115 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * A {@code Sequence} of all the positive {@link Integer} numbers starting at {@code 1} and ending at {@link
-	 * Integer#MAX_VALUE}.
+	 * Integer#MAX_VALUE} inclusive.
+	 *
+	 * @see #ints(int)
+	 * @see #range(int, int)
 	 */
 	static Sequence<Integer> ints() {
 		return range(1, Integer.MAX_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Integer} numbers between the given start and end positions, inclusive.
-	 */
-	static Sequence<Integer> range(int start, int end) {
-		UnaryOperator<Integer> next = (end > start) ? i -> i + 1 : i -> i - 1;
-		return recurse(start, next).endingAt(end);
-	}
-
-	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> op) {
-		return () -> new RecursiveIterator<>(seed, op);
-	}
-
-	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
-		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
-	}
-
-	/**
 	 * A {@code Sequence} of all the {@link Integer} numbers starting at the given start and ending at {@link
-	 * Integer#MAX_VALUE}.
+	 * Integer#MAX_VALUE} inclusive.
 	 * <p>
 	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
-	 * eventually
-	 * {@link Integer#MAX_VALUE}.
+	 * eventually {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #ints()
+	 * @see #range(int, int)
 	 */
 	static Sequence<Integer> ints(int start) {
 		return range(start, Integer.MAX_VALUE);
 	}
 
 	/**
+	 * A {@code Sequence} of all the {@link Integer} numbers between the given start and end positions, inclusive.
+	 * If the end index is less than the start index, the resulting {@code Sequence} will be counting down from the
+	 * start to the end.
+	 *
+	 * @see #ints()
+	 * @see #ints(int)
+	 */
+	static Sequence<Integer> range(int start, int end) {
+		UnaryOperator<Integer> next = (end > start) ? i -> ++i : i -> --i;
+		return recurse(start, next).endingAt(end);
+	}
+
+	/**
+	 * Returns a {@code Sequence} produced by recursively applying the given operation to the given seed, which forms
+	 * the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
+	 * {@code Sequence} never terminates naturally.
+	 *
+	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
+	 *
+	 * @see #recurse(T, Function, Function)
+	 * @see #endingAt(T)
+	 * @see #until(T)
+	 */
+	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
+		return () -> new RecursiveIterator<>(seed, f);
+	}
+
+	/**
+	 * Returns a {@code Sequence} produced by recursively applying the given mapper {@code f} and incrementer
+	 * {@code g} operations to the given seed, the first element being {@code f(seed)}, the second being
+	 * {@code f(g(f(seed)))}, the third {@code f(g(f(g(f(seed)))))} and so on. The returned {@code Sequence} never
+	 * terminates naturally.
+	 *
+	 * @param f a mapper function for producing elements that are to be included in the sequence, the first being
+	 *          f(seed)
+	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence,
+	 *          applied to the first mapped element f(seed) to produce the second unmapped value
+	 *
+	 * @return a {@code Sequence} produced by recursively applying the given mapper and incrementer operations to the
+	 * given seed
+	 *
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #endingAt(T)
+	 * @see #until(T)
+	 */
+	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
+		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
+	}
+
+	/**
 	 * A {@code Sequence} of all the positive {@link Long} numbers starting at {@code 1} and ending at {@link
-	 * Long#MAX_VALUE}.
+	 * Long#MAX_VALUE} inclusive.
+	 *
+	 * @see #longs(long)
+	 * @see #range(long, long)
 	 */
 	static Sequence<Long> longs() {
 		return range(1, Long.MAX_VALUE);
 	}
 
 	/**
+	 * A {@code Sequence} of all the {@link Long} numbers starting at the given value and ending at {@link
+	 * Long#MAX_VALUE} inclusive.
+	 * <p>
+	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
+	 * eventually {@link Long#MAX_VALUE}.
+	 *
+	 * @see #longs()
+	 * @see #range(long, long)
+	 */
+	static Sequence<Long> longs(long start) {
+		return range(start, Long.MAX_VALUE);
+	}
+
+	/**
 	 * A {@code Sequence} of all the {@link Long} numbers between the given start and end positions, inclusive.
+	 * If the end index is less than the start index, the resulting {@code Sequence} will be counting down from the
+	 * start to the end.
+	 *
+	 * @see #longs()
+	 * @see #longs(long)
 	 */
 	static Sequence<Long> range(long start, long end) {
 		UnaryOperator<Long> next = (end > start) ? i -> i + 1 : i -> i - 1;
 		return recurse(start, next).endingAt(end);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Long} numbers starting at the given value and ending at {@link
-	 * Long#MAX_VALUE}.
-	 * <p>
-	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
-	 * eventually
-	 * {@link Long#MAX_VALUE}.
-	 */
-	static Sequence<Long> longs(long start) {
-		return range(start, Long.MAX_VALUE);
 	}
 
 	/**
@@ -209,10 +258,23 @@ public interface Sequence<T> extends Iterable<T> {
 		return range(start, Character.MAX_VALUE);
 	}
 
+	/**
+	 * @return an infinite {@code Sequence} generated by repeatedly calling the given supplier.
+	 *
+	 * @see #endingAt(T)
+	 * @see #until(T)
+	 */
 	static <T> Sequence<T> generate(Supplier<T> supplier) {
 		return () -> (InfiniteIterator<T>) supplier::get;
 	}
 
+	/**
+	 * Terminate this {@code Sequence} when the given element is encountered, including the element.
+	 *
+	 * @see #until(T)
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #recurse(T, Function, Function)
+	 */
 	default Sequence<T> endingAt(T terminal) {
 		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
