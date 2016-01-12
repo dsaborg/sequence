@@ -79,8 +79,8 @@ public class LongsTest {
 		twice(() -> {
 			empty.forEachLong(c -> fail("Should not get called"));
 			_1.forEachLong(c -> assertThat(c, is(in(singletonList(1L)))));
-			_12.forEachLong(c -> assertThat(c, is(in(Arrays.asList(1L, 2L)))));
-			_123.forEachLong(c -> assertThat(c, is(in(Arrays.asList(1L, 2L, 3L)))));
+			_12.forEachLong(c -> assertThat(c, is(in(asList(1L, 2L)))));
+			_123.forEachLong(c -> assertThat(c, is(in(asList(1L, 2L, 3L)))));
 		});
 	}
 
@@ -124,7 +124,7 @@ public class LongsTest {
 
 	@Test
 	public void fromIterable() throws Exception {
-		Iterable<Long> iterable = () -> Arrays.asList(1L, 2L, 3L).iterator();
+		Iterable<Long> iterable = () -> asList(1L, 2L, 3L).iterator();
 
 		Longs sequenceFromIterable = Longs.from(iterable);
 
@@ -133,7 +133,7 @@ public class LongsTest {
 
 	@Test
 	public void fromStream() throws Exception {
-		Longs sequenceFromStream = Longs.from(Arrays.asList(1L, 2L, 3L).stream());
+		Longs sequenceFromStream = Longs.from(asList(1L, 2L, 3L).stream());
 
 		assertThat(sequenceFromStream, contains(1L, 2L, 3L));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -149,7 +149,7 @@ public class LongsTest {
 
 	@Test
 	public void fromIteratorSupplier() throws Exception {
-		Supplier<LongIterator> iterators = () -> LongIterator.from(Arrays.asList(1L, 2L, 3L));
+		Supplier<LongIterator> iterators = () -> LongIterator.from(asList(1L, 2L, 3L));
 
 		Longs sequenceFromIterators = Longs.from(iterators);
 
@@ -230,9 +230,9 @@ public class LongsTest {
 
 	@Test
 	public void appendIsLazy() {
-		LongIterator first = LongIterator.from(Arrays.asList(1L, 2L, 3L));
-		LongIterator second = LongIterator.from(Arrays.asList(4L, 5L, 6L));
-		LongIterator third = LongIterator.from(Arrays.asList(7L, 8L));
+		LongIterator first = LongIterator.from(asList(1L, 2L, 3L));
+		LongIterator second = LongIterator.from(asList(4L, 5L, 6L));
+		LongIterator third = LongIterator.from(asList(7L, 8L));
 
 		Longs then = Longs.from(first).append(() -> second).append(() -> third);
 

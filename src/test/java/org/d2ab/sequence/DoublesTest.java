@@ -79,8 +79,8 @@ public class DoublesTest {
 		twice(() -> {
 			empty.forEachDouble(c -> fail("Should not get called"));
 			_1.forEachDouble(c -> assertThat(c, is(in(singletonList(1.0)))));
-			_12.forEachDouble(c -> assertThat(c, is(in(Arrays.asList(1.0, 2.0)))));
-			_123.forEachDouble(c -> assertThat(c, is(in(Arrays.asList(1.0, 2.0, 3.0)))));
+			_12.forEachDouble(c -> assertThat(c, is(in(asList(1.0, 2.0)))));
+			_123.forEachDouble(c -> assertThat(c, is(in(asList(1.0, 2.0, 3.0)))));
 		});
 	}
 
@@ -124,7 +124,7 @@ public class DoublesTest {
 
 	@Test
 	public void fromIterable() throws Exception {
-		Iterable<Double> iterable = () -> Arrays.asList(1.0, 2.0, 3.0).iterator();
+		Iterable<Double> iterable = () -> asList(1.0, 2.0, 3.0).iterator();
 
 		Doubles sequenceFromIterable = Doubles.from(iterable);
 
@@ -133,7 +133,7 @@ public class DoublesTest {
 
 	@Test
 	public void fromStream() throws Exception {
-		Doubles sequenceFromStream = Doubles.from(Arrays.asList(1.0, 2.0, 3.0).stream());
+		Doubles sequenceFromStream = Doubles.from(asList(1.0, 2.0, 3.0).stream());
 
 		assertThat(sequenceFromStream, contains(1.0, 2.0, 3.0));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -149,7 +149,7 @@ public class DoublesTest {
 
 	@Test
 	public void fromIteratorSupplier() throws Exception {
-		Supplier<DoubleIterator> iterators = () -> DoubleIterator.from(Arrays.asList(1.0, 2.0, 3.0));
+		Supplier<DoubleIterator> iterators = () -> DoubleIterator.from(asList(1.0, 2.0, 3.0));
 
 		Doubles sequenceFromIterators = Doubles.from(iterators);
 
@@ -230,9 +230,9 @@ public class DoublesTest {
 
 	@Test
 	public void appendIsLazy() {
-		DoubleIterator first = DoubleIterator.from(Arrays.asList(1.0, 2.0, 3.0));
-		DoubleIterator second = DoubleIterator.from(Arrays.asList(4.0, 5.0, 6.0));
-		DoubleIterator third = DoubleIterator.from(Arrays.asList(7.0, 8.0));
+		DoubleIterator first = DoubleIterator.from(asList(1.0, 2.0, 3.0));
+		DoubleIterator second = DoubleIterator.from(asList(4.0, 5.0, 6.0));
+		DoubleIterator third = DoubleIterator.from(asList(7.0, 8.0));
 
 		Doubles then = Doubles.from(first).append(() -> second).append(() -> third);
 

@@ -75,8 +75,8 @@ public class CharsTest {
 		twice(() -> {
 			empty.forEachChar(c -> fail("Should not get called"));
 			a.forEachChar(c -> assertThat(c, is(in(singletonList('a')))));
-			ab.forEachChar(c -> assertThat(c, is(in(Arrays.asList('a', 'b')))));
-			abc.forEachChar(c -> assertThat(c, is(in(Arrays.asList('a', 'b', 'c')))));
+			ab.forEachChar(c -> assertThat(c, is(in(asList('a', 'b')))));
+			abc.forEachChar(c -> assertThat(c, is(in(asList('a', 'b', 'c')))));
 		});
 	}
 
@@ -120,7 +120,7 @@ public class CharsTest {
 
 	@Test
 	public void fromIterable() throws Exception {
-		Iterable<Character> iterable = () -> Arrays.asList('a', 'b', 'c').iterator();
+		Iterable<Character> iterable = () -> asList('a', 'b', 'c').iterator();
 
 		Chars sequenceFromIterable = Chars.from(iterable);
 
@@ -129,7 +129,7 @@ public class CharsTest {
 
 	@Test
 	public void fromStream() throws Exception {
-		Chars sequenceFromStream = Chars.from(Arrays.asList('a', 'b', 'c').stream());
+		Chars sequenceFromStream = Chars.from(asList('a', 'b', 'c').stream());
 
 		assertThat(sequenceFromStream, contains('a', 'b', 'c'));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -145,7 +145,7 @@ public class CharsTest {
 
 	@Test
 	public void fromIteratorSupplier() throws Exception {
-		Supplier<CharIterator> iterators = () -> CharIterator.from(Arrays.asList('a', 'b', 'c'));
+		Supplier<CharIterator> iterators = () -> CharIterator.from(asList('a', 'b', 'c'));
 
 		Chars sequenceFromIterators = Chars.from(iterators);
 
@@ -226,9 +226,9 @@ public class CharsTest {
 
 	@Test
 	public void appendIsLazy() {
-		CharIterator first = CharIterator.from(Arrays.asList('a', 'b', 'c'));
-		CharIterator second = CharIterator.from(Arrays.asList('d', 'e', 'f'));
-		CharIterator third = CharIterator.from(Arrays.asList('g', 'h'));
+		CharIterator first = CharIterator.from(asList('a', 'b', 'c'));
+		CharIterator second = CharIterator.from(asList('d', 'e', 'f'));
+		CharIterator third = CharIterator.from(asList('g', 'h'));
 
 		Chars then = Chars.from(first).append(() -> second).append(() -> third);
 

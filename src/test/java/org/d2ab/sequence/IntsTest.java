@@ -79,8 +79,8 @@ public class IntsTest {
 		twice(() -> {
 			empty.forEachInt(c -> fail("Should not get called"));
 			_1.forEachInt(c -> assertThat(c, is(in(singletonList(1)))));
-			_12.forEachInt(c -> assertThat(c, is(in(Arrays.asList(1, 2)))));
-			_123.forEachInt(c -> assertThat(c, is(in(Arrays.asList(1, 2, 3)))));
+			_12.forEachInt(c -> assertThat(c, is(in(asList(1, 2)))));
+			_123.forEachInt(c -> assertThat(c, is(in(asList(1, 2, 3)))));
 		});
 	}
 
@@ -124,7 +124,7 @@ public class IntsTest {
 
 	@Test
 	public void fromIterable() throws Exception {
-		Iterable<Integer> iterable = () -> Arrays.asList(1, 2, 3).iterator();
+		Iterable<Integer> iterable = () -> asList(1, 2, 3).iterator();
 
 		Ints sequenceFromIterable = Ints.from(iterable);
 
@@ -133,7 +133,7 @@ public class IntsTest {
 
 	@Test
 	public void fromStream() throws Exception {
-		Ints sequenceFromStream = Ints.from(Arrays.asList(1, 2, 3).stream());
+		Ints sequenceFromStream = Ints.from(asList(1, 2, 3).stream());
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -149,7 +149,7 @@ public class IntsTest {
 
 	@Test
 	public void fromIteratorSupplier() throws Exception {
-		Supplier<IntIterator> iterators = () -> IntIterator.from(Arrays.asList(1, 2, 3));
+		Supplier<IntIterator> iterators = () -> IntIterator.from(asList(1, 2, 3));
 
 		Ints sequenceFromIterators = Ints.from(iterators);
 
@@ -230,9 +230,9 @@ public class IntsTest {
 
 	@Test
 	public void appendIsLazy() {
-		IntIterator first = IntIterator.from(Arrays.asList(1, 2, 3));
-		IntIterator second = IntIterator.from(Arrays.asList(4, 5, 6));
-		IntIterator third = IntIterator.from(Arrays.asList(7, 8));
+		IntIterator first = IntIterator.from(asList(1, 2, 3));
+		IntIterator second = IntIterator.from(asList(4, 5, 6));
+		IntIterator third = IntIterator.from(asList(7, 8));
 
 		Ints then = Ints.from(first).append(() -> second).append(() -> third);
 
