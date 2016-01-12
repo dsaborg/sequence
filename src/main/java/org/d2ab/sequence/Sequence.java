@@ -328,10 +328,6 @@ public interface Sequence<T> extends Iterable<T> {
 		return ChainingIterable.<U>flatten(this)::iterator;
 	}
 
-	default Sequence<T> untilNull() {
-		return () -> new ExclusiveTerminalIterator<T>(null).backedBy(iterator());
-	}
-
 	default Sequence<T> until(T terminal) {
 		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}

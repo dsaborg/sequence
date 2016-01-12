@@ -401,7 +401,7 @@ public class SequenceTest {
 
 	@Test
 	public void recurseUntilNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).untilNull();
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).until(null);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
@@ -1033,7 +1033,7 @@ public class SequenceTest {
 	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
-		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();
+		Sequence<Integer> sequence = Sequence.generate(queue::poll).until(null);
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
