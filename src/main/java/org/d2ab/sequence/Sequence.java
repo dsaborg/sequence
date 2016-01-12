@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.sequence;
 
 import org.d2ab.iterable.ChainingIterable;
@@ -197,43 +198,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns a {@code Sequence} produced by recursively applying the given operation to the given seed, which forms
-	 * the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
-	 * {@code Sequence} never terminates naturally.
-	 *
-	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
-	 *
-	 * @see #recurse(T, Function, Function)
-	 * @see #endingAt(T)
-	 * @see #until(T)
-	 */
-	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
-		return () -> new RecursiveIterator<>(seed, f);
-	}
-
-	/**
-	 * Returns a {@code Sequence} produced by recursively applying the given mapper {@code f} and incrementer
-	 * {@code g} operations to the given seed, the first element being {@code f(seed)}, the second being
-	 * {@code f(g(f(seed)))}, the third {@code f(g(f(g(f(seed)))))} and so on. The returned {@code Sequence} never
-	 * terminates naturally.
-	 *
-	 * @param f a mapper function for producing elements that are to be included in the sequence, the first being
-	 *          f(seed)
-	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence,
-	 *          applied to the first mapped element f(seed) to produce the second unmapped value
-	 *
-	 * @return a {@code Sequence} produced by recursively applying the given mapper and incrementer operations to the
-	 * given seed
-	 *
-	 * @see #recurse(T, UnaryOperator)
-	 * @see #endingAt(T)
-	 * @see #until(T)
-	 */
-	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
-		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
-	}
-
-	/**
 	 * A {@code Sequence} of all the positive {@link Long} numbers starting at {@code 1} and ending at {@link
 	 * Long#MAX_VALUE} inclusive.
 	 *
@@ -314,6 +278,43 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> generate(Supplier<T> supplier) {
 		return () -> (InfiniteIterator<T>) supplier::get;
+	}
+
+	/**
+	 * Returns a {@code Sequence} produced by recursively applying the given operation to the given seed, which forms
+	 * the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
+	 * {@code Sequence} never terminates naturally.
+	 *
+	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
+	 *
+	 * @see #recurse(T, Function, Function)
+	 * @see #endingAt(T)
+	 * @see #until(T)
+	 */
+	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
+		return () -> new RecursiveIterator<>(seed, f);
+	}
+
+	/**
+	 * Returns a {@code Sequence} produced by recursively applying the given mapper {@code f} and incrementer
+	 * {@code g} operations to the given seed, the first element being {@code f(seed)}, the second being
+	 * {@code f(g(f(seed)))}, the third {@code f(g(f(g(f(seed)))))} and so on. The returned {@code Sequence} never
+	 * terminates naturally.
+	 *
+	 * @param f a mapper function for producing elements that are to be included in the sequence, the first being
+	 *          f(seed)
+	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence,
+	 *          applied to the first mapped element f(seed) to produce the second unmapped value
+	 *
+	 * @return a {@code Sequence} produced by recursively applying the given mapper and incrementer operations to the
+	 * given seed
+	 *
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #endingAt(T)
+	 * @see #until(T)
+	 */
+	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
+		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
 	}
 
 	/**
