@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
@@ -240,17 +241,15 @@ public class EntrySequenceTest {
 	public void thenIsLazy() {
 		Iterator<Entry<String, Integer>> first = MoreArrays.iterator(entries123);
 		Iterator<Entry<String, Integer>> second = MoreArrays.iterator(entries456);
-		Iterator<Entry<String, Integer>> third = MoreArrays.iterator(entries789);
 
-		EntrySequence<String, Integer> then = EntrySequence.from(first).then(() -> second).then(() -> third);
+		EntrySequence<String, Integer> then = EntrySequence.from(first).then(() -> second);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
-		assertThat(third.hasNext(), is(true));
 
 		assertThat(then, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
-		                          Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)));
+		                          Pair.of("6", 6)));
 		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
 	}
 
