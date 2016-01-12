@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 
 public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
@@ -27,14 +29,6 @@ public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.next();
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (!skipped) {
 			Iterators.skip(iterator, skip);
@@ -42,5 +36,14 @@ public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
 		}
 
 		return iterator.hasNext();
+	}
+
+	@Override
+	@Nullable
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return iterator.next();
 	}
 }

@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.function.UnaryOperator;
 
 public class RecursiveIterator<T> implements InfiniteIterator<T> {
+	@Nullable
 	private final T seed;
 	private final UnaryOperator<T> op;
+
+	@Nullable
 	private T previous;
 	private boolean hasPrevious;
 
-	public RecursiveIterator(T seed, UnaryOperator<T> op) {
+	public RecursiveIterator(@Nullable T seed, UnaryOperator<T> op) {
 		this.seed = seed;
 		this.op = op;
 	}
 
 	@Override
+	@Nullable
 	public T next() {
 		previous = hasPrevious ? op.apply(previous) : seed;
 		hasPrevious = true;

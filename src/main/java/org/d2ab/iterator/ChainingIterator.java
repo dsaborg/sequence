@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -33,17 +35,18 @@ public class ChainingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		return iterator.next();
-	}
-
-	@Override
 	public boolean hasNext() {
 		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
 			iterator = (Iterator<T>) iterables.next().iterator();
 		}
 		return iterator != null && iterator.hasNext();
+	}
+
+	@Override
+	@Nullable
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+		return iterator.next();
 	}
 }

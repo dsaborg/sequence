@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
 import java.util.*;
@@ -27,6 +28,14 @@ public class PartitioningIterator<T> extends DelegatingReferenceIterator<T, List
 	}
 
 	@Override
+	public boolean hasNext() {
+		while (partition.size() < window && iterator.hasNext())
+			partition.add(iterator.next());
+
+		return partition.size() == window;
+	}
+
+	@Override
 	public List<T> next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -34,13 +43,5 @@ public class PartitioningIterator<T> extends DelegatingReferenceIterator<T, List
 		List<T> result = new ArrayList<>(partition);
 		partition.removeFirst();
 		return result;
-	}
-
-	@Override
-	public boolean hasNext() {
-		while (partition.size() < window && iterator.hasNext())
-			partition.add(iterator.next());
-
-		return partition.size() == window;
 	}
 }

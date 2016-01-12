@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class PeekingIterator<T> extends UnaryReferenceIterator<T> {
@@ -25,6 +27,7 @@ public class PeekingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
+	@Nullable
 	public T next() {
 		T next = iterator.next();
 		action.accept(next);

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class SortingIterator<T> extends UnaryReferenceIterator<T> {
@@ -37,22 +39,23 @@ public class SortingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return sortedIterator.next();
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (sortedIterator == null) {
-			List<T> elements = new ArrayList<T>();
+			List<T> elements = new ArrayList<>();
 			while (iterator.hasNext())
 				elements.add(iterator.next());
 			elements.sort(comparator);
 			sortedIterator = elements.iterator();
 		}
 		return sortedIterator.hasNext();
+	}
+
+	@Override
+	@Nullable
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return sortedIterator.next();
 	}
 }

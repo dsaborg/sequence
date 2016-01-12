@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -25,6 +27,12 @@ public class ReverseIterator<T> extends UnaryReferenceIterator<T> {
 	private ListIterator<? extends T> listIterator;
 
 	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();
+	}
+
+	@Override
+	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -36,10 +44,5 @@ public class ReverseIterator<T> extends UnaryReferenceIterator<T> {
 		}
 
 		return listIterator.previous();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();
 	}
 }

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class MappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
@@ -25,6 +27,7 @@ public class MappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
 	}
 
 	@Override
+	@Nullable
 	public U next() {
 		return mapper.apply(iterator.next());
 	}

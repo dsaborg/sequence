@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 
 public class SteppingIterator<T> extends UnaryReferenceIterator<T> {
@@ -25,17 +27,6 @@ public class SteppingIterator<T> extends UnaryReferenceIterator<T> {
 
 	public SteppingIterator(long step) {
 		this.step = step;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T result = next;
-		next = null;
-		hasNext = false;
-		return result;
 	}
 
 	@Override
@@ -52,5 +43,17 @@ public class SteppingIterator<T> extends UnaryReferenceIterator<T> {
 		hasNext = true;
 
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T result = next;
+		next = null;
+		hasNext = false;
+		return result;
 	}
 }

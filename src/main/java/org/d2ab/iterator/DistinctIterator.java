@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -22,19 +24,9 @@ import java.util.Set;
 public class DistinctIterator<T> extends UnaryReferenceIterator<T> {
 	private Set<T> seen = new HashSet<>();
 
+	@Nullable
 	private T next;
 	private boolean hasNext;
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T result = next;
-		hasNext = false;
-		next = null;
-		return result;
-	}
 
 	@Override
 	public boolean hasNext() {
@@ -50,5 +42,17 @@ public class DistinctIterator<T> extends UnaryReferenceIterator<T> {
 		}
 
 		return hasNext;
+	}
+
+	@Override
+	@Nullable
+	public T next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T result = next;
+		hasNext = false;
+		next = null;
+		return result;
 	}
 }

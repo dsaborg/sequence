@@ -13,30 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 	private final Predicate<? super T> predicate;
 
+	@Nullable
 	T next;
 	private boolean hasNext;
 
 	public FilteringIterator(Predicate<? super T> predicate) {
 		this.predicate = predicate;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext()) {
-			throw new NoSuchElementException();
-		}
-		T nextValue = next;
-		hasNext = false;
-		next = null;
-		return nextValue;
 	}
 
 	@Override
@@ -54,5 +46,17 @@ public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 
 		// found matching value
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public T next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		T nextValue = next;
+		hasNext = false;
+		next = null;
+		return nextValue;
 	}
 }

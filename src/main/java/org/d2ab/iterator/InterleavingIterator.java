@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
  */
 public class InterleavingIterator<T> implements Iterator<T> {
-	@Nonnull
 	private final List<Iterator<T>> iterators = new ArrayList<>();
 	private int current;
 
 	@SafeVarargs
-	public InterleavingIterator(@Nonnull Iterable<T>... iterables) {
+	public InterleavingIterator(Iterable<T>... iterables) {
 		for (Iterable<T> iterable : iterables) {
 			Iterator<T> iterator = Objects.requireNonNull(iterable).iterator();
 			iterators.add(Objects.requireNonNull(iterator));
@@ -43,6 +43,7 @@ public class InterleavingIterator<T> implements Iterator<T> {
 	}
 
 	@Override
+	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

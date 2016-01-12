@@ -14,32 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * Classes related to {@link java.util.Iterator}s.
+ */
+@ParametersAreNonnullByDefault
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
-import java.util.NoSuchElementException;
-
-public class LimitingIterator<T> extends UnaryReferenceIterator<T> {
-	private final long limit;
-
-	long count;
-
-	public LimitingIterator(long limit) {
-		this.limit = limit;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return count < limit && iterator.hasNext();
-	}
-
-	@Override
-	@Nullable
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		T next = iterator.next();
-		count++;
-		return next;
-	}
-}
+import javax.annotation.ParametersAreNonnullByDefault;

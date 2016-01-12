@@ -13,28 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
 import org.d2ab.sequence.Pair;
 
+import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 
 public class PairingIterator<T> extends DelegatingReferenceIterator<T, Pair<T, T>> {
+	@Nullable
 	private T previous;
 	private boolean hasPrevious;
 	private boolean started;
-
-	@Override
-	public Pair<T, T> next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		T next = iterator.hasNext() ? iterator.next() : null;
-		Pair<T, T> result = Pair.of(previous, next);
-		previous = next;
-		started = true;
-		return result;
-	}
 
 	@Override
 	public boolean hasNext() {
@@ -53,5 +44,17 @@ public class PairingIterator<T> extends DelegatingReferenceIterator<T, Pair<T, T
 		}
 
 		return hasNext;
+	}
+
+	@Override
+	public Pair<T, T> next() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		T next = iterator.hasNext() ? iterator.next() : null;
+		Pair<T, T> result = Pair.of(previous, next);
+		previous = next;
+		started = true;
+		return result;
 	}
 }

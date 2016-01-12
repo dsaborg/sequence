@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
 import org.d2ab.sequence.Pair;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -26,12 +27,10 @@ import java.util.NoSuchElementException;
  * {@link Pair}s.
  */
 public class InterleavingPairingIterator<T, U> implements Iterator<Pair<T, U>> {
-	@Nonnull
 	private final Iterator<? extends T> first;
-	@Nonnull
 	private final Iterator<? extends U> second;
 
-	public InterleavingPairingIterator(@Nonnull Iterator<? extends T> first, @Nonnull Iterator<? extends U> second) {
+	public InterleavingPairingIterator(Iterator<? extends T> first, Iterator<? extends U> second) {
 		this.first = first;
 		this.second = second;
 	}
@@ -42,6 +41,7 @@ public class InterleavingPairingIterator<T, U> implements Iterator<Pair<T, U>> {
 	}
 
 	@Override
+	@Nullable
 	public Pair<T, U> next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

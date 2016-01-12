@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -39,7 +41,7 @@ public class ArrayIterator<T> implements Iterator<T> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
@@ -61,6 +63,7 @@ public class ArrayIterator<T> implements Iterator<T> {
 	}
 
 	@Override
+	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

@@ -13,32 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class InclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
+	@Nullable
 	private final T terminal;
 
+	@Nullable
 	private T previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalIterator(T terminal) {
+	public InclusiveTerminalIterator(@Nullable T terminal) {
 		this.terminal = terminal;
 	}
 
 	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
+	}
+
+	@Override
+	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
 		return previous = iterator.next();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
 	}
 }
