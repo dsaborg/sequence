@@ -45,6 +45,10 @@ import static java.util.Collections.singleton;
 public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Create an empty {@code Sequence} with no items.
+	 *
+	 * @see #of(T)
+	 * @see #of(T...)
+	 * @see #from(Iterable)
 	 */
 	@Nonnull
 	static <T> Sequence<T> empty() {
@@ -54,6 +58,10 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
 	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
+	 *
+	 * @see #of(T)
+	 * @see #of(T...)
+	 * @see #from(Iterable)
 	 */
 	@Nonnull
 	static <T> Sequence<T> from(@Nonnull Iterator<T> iterator) {
@@ -62,6 +70,9 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Create a {@code Sequence} with one item.
+	 *
+	 * @see #of(T...)
+	 * @see #from(Iterable)
 	 */
 	@Nonnull
 	static <T> Sequence<T> of(@Nullable T item) {
@@ -70,6 +81,9 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Create a {@code Sequence} from an {@link Iterable} of items.
+	 *
+	 * @see #of(T)
+	 * @see #of(T...)
 	 */
 	@Nonnull
 	static <T> Sequence<T> from(@Nonnull Iterable<T> iterable) {
@@ -78,6 +92,9 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Create a {@code Sequence} with the given items.
+	 *
+	 * @see #of(T)
+	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
 	@Nonnull
@@ -87,8 +104,11 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
-	 * the
-	 * stream of items in the {@code Sequence}.
+	 * the stream of items in the {@code Sequence}.
+	 *
+	 * @see #of(T)
+	 * @see #of(T...)
+	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
 	@Nonnull
@@ -100,6 +120,11 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Create a {@code Sequence} from {@link Iterator}s of items supplied by the given {@link Supplier}. Every time the
 	 * {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of elements.
 	 * This is similar to creating a {@code Sequence} from an {@link Iterable}.
+	 *
+	 * @see #of(T)
+	 * @see #of(T...)
+	 * @see #from(Iterable)
+	 * @see #from(Iterator)
 	 */
 	@Nonnull
 	static <T> Sequence<T> from(@Nonnull Supplier<? extends Iterator<T>> iteratorSupplier) {
@@ -112,11 +137,24 @@ public interface Sequence<T> extends Iterable<T> {
 	 * the {@link Stream} is requested again.
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 *
+	 * @see #of(T)
+	 * @see #of(T...)
+	 * @see #from(Iterable)
+	 * @see #from(Iterator)
 	 */
 	static <T> Sequence<T> from(Stream<T> stream) {
 		return stream::iterator;
 	}
 
+	/**
+	 * Create a {@code Sequence} of {@link Entry} key/value items from a {@link Map} of items. The resulting
+	 * {@code Sequence} can be mapped using {@link Pair} items, which implement {@link Entry} and can thus be
+	 * processed as part of the {@code Sequence}'s transformation steps.
+	 *
+	 * @see #of
+	 * @see #from(Iterable)
+	 */
 	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
 		return from(map.entrySet());
 	}
@@ -236,26 +274,37 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * A {@code Sequence} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
-	 * {@link Character#MAX_VALUE}.
+	 * {@link Character#MAX_VALUE} inclusive.
+	 *
+	 * @see #chars(char)
+	 * @see #range(char, char)
 	 */
 	static Sequence<Character> chars() {
 		return range((char) 0, Character.MAX_VALUE);
 	}
 
 	/**
+	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
+	 * Character#MAX_VALUE} inclusive.
+	 *
+	 * @see #chars()
+	 * @see #range(char, char)
+	 */
+	static Sequence<Character> chars(char start) {
+		return range(start, Character.MAX_VALUE);
+	}
+
+	/**
 	 * A {@code Sequence} of all the {@link Character} values between the given start and end positions, inclusive.
+	 * If the end index is less than the start index, the resulting {@code Sequence} will be counting down from the
+	 * start to the end.
+	 *
+	 * @see #chars()
+	 * @see #chars(char)
 	 */
 	static Sequence<Character> range(char start, char end) {
 		UnaryOperator<Character> next = (end > start) ? c -> (char) (c + 1) : c -> (char) (c - 1);
 		return recurse(start, next).endingAt(end);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
-	 * Character#MAX_VALUE}.
-	 */
-	static Sequence<Character> chars(char start) {
-		return range(start, Character.MAX_VALUE);
 	}
 
 	/**
