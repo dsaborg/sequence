@@ -115,14 +115,30 @@ public interface Ints extends IntIterable {
 	/**
 	 * A {@code Sequence} of all the positive {@link Integer} values starting at {@code 1} and ending at
 	 * {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #negative()
+	 * @see #startingAt(int)
+	 * @see #range(int, int)
 	 */
 	static Ints positive() {
 		return startingAt(1);
 	}
 
 	/**
+	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at
+	 * {@link Integer#MIN_VALUE}.
+	 */
+	static Ints negative() {
+		return range(-1, Integer.MIN_VALUE);
+	}
+
+	/**
 	 * A {@code Sequence} of all the {@link Integer} values starting at the given value and ending at {@link
 	 * Integer#MAX_VALUE}.
+	 *
+	 * @see #positive()
+	 * @see #negative()
+	 * @see #range(int, int)
 	 */
 	static Ints startingAt(int start) {
 		return range(start, Integer.MAX_VALUE);
@@ -130,12 +146,27 @@ public interface Ints extends IntIterable {
 
 	/**
 	 * A {@code Sequence} of all the {@link Integer} values between the given start and end positions, inclusive.
+	 *
+	 * @see #positive()
+	 * @see #negative()
+	 * @see #startingAt(int)
 	 */
 	static Ints range(int start, int end) {
 		IntUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
 		return recurse(start, next).endingAt(end);
 	}
 
+	/**
+	 * Returns a {@code Sequence} produced by recursively applying the given operation to the given seed, which forms
+	 * the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
+	 * {@code Sequence} never terminates naturally.
+	 *
+	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
+	 *
+	 * @see #generate(IntSupplier)
+	 * @see #endingAt(int)
+	 * @see #until(int)
+	 */
 	static Ints recurse(int seed, IntUnaryOperator op) {
 		return () -> new InfiniteIntIterator() {
 			private int previous;
@@ -151,24 +182,32 @@ public interface Ints extends IntIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at
-	 * {@link Integer#MIN_VALUE}.
-	 */
-	static Ints negative() {
-		return range(-1, Integer.MIN_VALUE);
-	}
-
-	/**
 	 * @return a sequence of {@code Ints} that is generated from the given supplier and thus never terminates.
+	 *
+	 * @see #recurse(int, IntUnaryOperator)
+	 * @see #endingAt(int)
+	 * @see #until(int)
 	 */
 	static Ints generate(IntSupplier supplier) {
 		return () -> (InfiniteIntIterator) supplier::getAsInt;
 	}
 
+	/**
+	 * Terminate this {@code Ints} sequence when the given element is encountered, including the element as the last
+	 * element in the {@code Ints} sequence.
+	 *
+	 * @see #until(int)
+	 * @see #generate(IntSupplier)
+	 * @see #recurse(int, IntUnaryOperator)
+	 */
 	default Ints endingAt(int terminal) {
 		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 
+	/**
+	 * Map the values in this {@code Ints} sequence to another set of values specified by the given {@code mapper}
+	 * function.
+	 */
 	@Nonnull
 	default Ints map(@Nonnull IntUnaryOperator mapper) {
 		return () -> new UnaryIntIterator() {
