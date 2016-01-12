@@ -13,34 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterable;
 
 import org.d2ab.sequence.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 
 public class Iterables {
 	private Iterables() {
 	}
 
-	@Nonnull
 	public static <T> Iterable<T> from(Iterator<T> iterator) {
+		requireNonNull(iterator);
 		return () -> iterator;
 	}
 
 	@SafeVarargs
-	@Nonnull
 	public static <T> Iterable<T> from(T... objects) {
-		return asList(objects);
+		return asList(requireNonNull(objects));
 	}
 
-	@Nonnull
 	public static <T> Iterable<T> from(Stream<T> stream) {
-		return stream::iterator;
+		return requireNonNull(stream)::iterator;
 	}
 
 	/**
@@ -56,9 +55,7 @@ public class Iterables {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Iterable<T> from(Object container) {
-		if (container == null)
-			throw new NullPointerException();
-
+		requireNonNull(container);
 		if (container instanceof Iterable)
 			return (Iterable<T>) container;
 		else if (container instanceof Iterator)
