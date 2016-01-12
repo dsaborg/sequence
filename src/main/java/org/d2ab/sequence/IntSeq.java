@@ -20,7 +20,7 @@ import org.d2ab.primitive.chars.DelegatingCharIterator;
 import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
 import org.d2ab.primitive.ints.*;
 import org.d2ab.primitive.longs.DelegatingLongIterator;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -483,7 +483,7 @@ public interface IntSeq extends IntIterable {
 	default IntSeq reverse() {
 		int[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
-			MoreArrays.swap(array, i, array.length - 1 - i);
+			Arrayz.swap(array, i, array.length - 1 - i);
 		}
 		return IntIterable.of(array)::iterator;
 	}

@@ -21,7 +21,7 @@ import org.d2ab.primitive.chars.DelegatingCharIterator;
 import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
 import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.primitive.longs.*;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -466,7 +466,7 @@ public interface LongSeq extends LongIterable {
 	default LongSeq reverse() {
 		long[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
-			MoreArrays.swap(array, i, array.length - 1 - i);
+			Arrayz.swap(array, i, array.length - 1 - i);
 		}
 		return LongIterable.of(array)::iterator;
 	}

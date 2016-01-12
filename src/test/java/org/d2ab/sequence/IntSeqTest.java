@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.primitive.ints.DelegatingIntIterator;
 import org.d2ab.primitive.ints.IntIterable;
 import org.d2ab.primitive.ints.IntIterator;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -201,7 +201,7 @@ public class IntSeqTest {
 
 	@Test
 	public void appendIterator() {
-		IntSeq appended = _123.append(MoreArrays.iterator(4, 5, 6)).append(MoreArrays.iterator(7, 8));
+		IntSeq appended = _123.append(Arrayz.iterator(4, 5, 6)).append(Arrayz.iterator(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));

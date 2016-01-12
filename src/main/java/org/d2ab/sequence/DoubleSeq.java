@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.primitive.doubles.*;
 import org.d2ab.primitive.ints.IntIterator;
 import org.d2ab.primitive.longs.LongIterator;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -484,7 +484,7 @@ public interface DoubleSeq extends DoubleIterable {
 	default DoubleSeq reverse() {
 		double[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
-			MoreArrays.swap(array, i, array.length - 1 - i);
+			Arrayz.swap(array, i, array.length - 1 - i);
 		}
 		return DoubleIterable.of(array)::iterator;
 	}

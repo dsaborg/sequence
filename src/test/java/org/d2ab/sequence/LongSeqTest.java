@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.primitive.longs.DelegatingLongIterator;
 import org.d2ab.primitive.longs.LongIterable;
 import org.d2ab.primitive.longs.LongIterator;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -201,7 +201,7 @@ public class LongSeqTest {
 
 	@Test
 	public void appendIterator() {
-		LongSeq appended = _123.append(MoreArrays.iterator(4L, 5L, 6L)).append(MoreArrays.iterator(7L, 8L));
+		LongSeq appended = _123.append(Arrayz.iterator(4L, 5L, 6L)).append(Arrayz.iterator(7L, 8L));
 
 		assertThat(appended, contains(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
 		assertThat(appended, contains(1L, 2L, 3L));

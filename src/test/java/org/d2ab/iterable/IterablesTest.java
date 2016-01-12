@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterable;
 
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 import org.junit.Test;
 
 import static org.d2ab.test.Tests.twice;
@@ -25,16 +26,16 @@ import static org.junit.Assert.assertThat;
 public class IterablesTest {
 	@Test
 	public void of() {
-		Iterable<Integer> empty = MoreArrays.iterable();
+		Iterable<Integer> empty = Arrayz.iterable();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Iterable<Integer> one = MoreArrays.iterable(1);
+		Iterable<Integer> one = Arrayz.iterable(1);
 		twice(() -> assertThat(one, contains(1)));
 
-		Iterable<Integer> two = MoreArrays.iterable(1, 2);
+		Iterable<Integer> two = Arrayz.iterable(1, 2);
 		twice(() -> assertThat(two, contains(1, 2)));
 
-		Iterable<Integer> three = MoreArrays.iterable(1, 2, 3);
+		Iterable<Integer> three = Arrayz.iterable(1, 2, 3);
 		twice(() -> assertThat(three, contains(1, 2, 3)));
 	}
 }

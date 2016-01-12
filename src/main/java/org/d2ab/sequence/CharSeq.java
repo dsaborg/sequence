@@ -18,7 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
 import org.d2ab.primitive.ints.DelegatingIntIterator;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -474,7 +474,7 @@ public interface CharSeq extends CharIterable {
 	default CharSeq reverse() {
 		char[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
-			MoreArrays.swap(array, i, array.length - 1 - i);
+			Arrayz.swap(array, i, array.length - 1 - i);
 		}
 		return CharIterable.of(array)::iterator;
 	}

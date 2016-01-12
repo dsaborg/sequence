@@ -17,7 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -225,7 +225,7 @@ public class SequenceTest {
 
 	@Test
 	public void appendIterator() {
-		Sequence<Integer> appended = _123.append(MoreArrays.iterator(4, 5, 6)).append(MoreArrays.iterator(7, 8));
+		Sequence<Integer> appended = _123.append(Arrayz.iterator(4, 5, 6)).append(Arrayz.iterator(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));

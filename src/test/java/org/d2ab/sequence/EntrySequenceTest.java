@@ -17,7 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -163,7 +163,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void fromIteratorSupplier() throws Exception {
-		Supplier<Iterator<Entry<String, Integer>>> iterators = () -> MoreArrays.iterator(entries123);
+		Supplier<Iterator<Entry<String, Integer>>> iterators = () -> Arrayz.iterator(entries123);
 
 		EntrySequence<String, Integer> sequenceFromIterators = EntrySequence.from(iterators);
 
@@ -239,8 +239,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void thenIsLazy() {
-		Iterator<Entry<String, Integer>> first = MoreArrays.iterator(entries123);
-		Iterator<Entry<String, Integer>> second = MoreArrays.iterator(entries456);
+		Iterator<Entry<String, Integer>> first = Arrayz.iterator(entries123);
+		Iterator<Entry<String, Integer>> second = Arrayz.iterator(entries456);
 
 		EntrySequence<String, Integer> then = EntrySequence.from(first).then(() -> second);
 
@@ -255,8 +255,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void thenIsLazyWhenSkippingHasNext() {
-		Iterator<Entry<String, Integer>> first = MoreArrays.iterator(Pair.of("1", 1));
-		Iterator<Entry<String, Integer>> second = MoreArrays.iterator(Pair.of("2", 2));
+		Iterator<Entry<String, Integer>> first = Arrayz.iterator(Pair.of("1", 1));
+		Iterator<Entry<String, Integer>> second = Arrayz.iterator(Pair.of("2", 2));
 
 		EntrySequence<String, Integer> sequence = EntrySequence.from(first).then(EntrySequence.from(second));
 

@@ -17,7 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.primitive.chars.*;
-import org.d2ab.utils.MoreArrays;
+import org.d2ab.utils.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -198,7 +198,7 @@ public class CharSeqTest {
 
 	@Test
 	public void appendIterator() {
-		CharSeq appended = abc.append(MoreArrays.iterator('d', 'e', 'f')).append(MoreArrays.iterator('g', 'h'));
+		CharSeq appended = abc.append(Arrayz.iterator('d', 'e', 'f')).append(Arrayz.iterator('g', 'h'));
 
 		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 		assertThat(appended, contains('a', 'b', 'c'));

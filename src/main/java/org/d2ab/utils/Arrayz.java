@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.utils;
 
 import org.d2ab.iterator.ArrayIterator;
@@ -22,49 +23,56 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Utilities for arrays, similar to {@link Arrays} with a few extras like iterators and {@link #forEach}.
  */
-public class MoreArrays {
-	private MoreArrays() {
+public class Arrayz {
+	private Arrayz() {
 	}
 
 	@SafeVarargs
-	public static <T> void forEach(Consumer<? super T> action, @Nonnull T... array) {
-		for (T item : array)
+	public static <T> void forEach(@Nonnull Consumer<? super T> action, @Nonnull T... array) {
+		requireNonNull(action);
+		for (T item : requireNonNull(array))
 			action.accept(item);
 	}
 
 	@SafeVarargs
-	public static <T> Iterator<T> iterator(T... items) {
-		return new ArrayIterator<>(items);
+	public static <T> Iterator<T> iterator(@Nonnull T... items) {
+		return new ArrayIterator<>(requireNonNull(items));
 	}
 
 	@SafeVarargs
 	@Nonnull
-	public static <T> Iterable<T> iterable(T... items) {
-		return () -> new ArrayIterator<>(items);
+	public static <T> Iterable<T> iterable(@Nonnull T... items) {
+		return () -> new ArrayIterator<>(requireNonNull(items));
 	}
 
-	public static void swap(long[] array, int i, int j) {
+	public static void swap(@Nonnull long[] array, int i, int j) {
+		requireNonNull(array);
 		long temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
 	}
 
-	public static void swap(int[] array, int i, int j) {
+	public static void swap(@Nonnull int[] array, int i, int j) {
+		requireNonNull(array);
 		int temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
 	}
 
-	public static void swap(char[] array, int i, int j) {
+	public static void swap(@Nonnull char[] array, int i, int j) {
+		requireNonNull(array);
 		char temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
 	}
 
-	public static void swap(double[] array, int i, int j) {
+	public static void swap(@Nonnull double[] array, int i, int j) {
+		requireNonNull(array);
 		double temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
