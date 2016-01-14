@@ -17,15 +17,19 @@
 package org.d2ab.primitive.longs;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.function.LongPredicate;
 
 public class ExclusiveTerminalLongIterator extends UnaryLongIterator {
-	private final long terminal;
+	private final LongPredicate terminal;
 
 	private long next;
 	private boolean hasNext;
 
 	public ExclusiveTerminalLongIterator(long terminal) {
+		this(l -> l == terminal);
+	}
+
+	public ExclusiveTerminalLongIterator(LongPredicate terminal) {
 		this.terminal = terminal;
 	}
 
@@ -44,6 +48,6 @@ public class ExclusiveTerminalLongIterator extends UnaryLongIterator {
 			next = iterator.next();
 			hasNext = true;
 		}
-		return hasNext && !Objects.equals(next, terminal);
+		return hasNext && !terminal.test(next);
 	}
 }

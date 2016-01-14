@@ -189,6 +189,7 @@ public interface IntSeq extends IntIterable {
 	 * Terminate this {@code IntSeq} sequence before the given element, with the previous element as the last
 	 * element in this {@code IntSeq} sequence.
 	 *
+	 * @see #until(IntPredicate)
 	 * @see #endingAt(int)
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
@@ -201,11 +202,38 @@ public interface IntSeq extends IntIterable {
 	 * Terminate this {@code IntSeq} sequence at the given element, including it as the last element in this {@code
 	 * IntSeq} sequence.
 	 *
+	 * @see #endingAt(IntPredicate)
 	 * @see #until(int)
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
 	default IntSeq endingAt(int terminal) {
+		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code IntSeq} sequence before the element that satisfies the given predicate, with the previous
+	 * element as the last element in this {@code IntSeq} sequence.
+	 *
+	 * @see #until(int)
+	 * @see #endingAt(int)
+	 * @see #generate(IntSupplier)
+	 * @see #recurse(int, IntUnaryOperator)
+	 */
+	default IntSeq until(IntPredicate terminal) {
+		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code IntSeq} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code IntSeq} sequence.
+	 *
+	 * @see #endingAt(int)
+	 * @see #until(int)
+	 * @see #generate(IntSupplier)
+	 * @see #recurse(int, IntUnaryOperator)
+	 */
+	default IntSeq endingAt(IntPredicate terminal) {
 		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 

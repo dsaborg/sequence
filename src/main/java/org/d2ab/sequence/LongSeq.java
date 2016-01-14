@@ -175,6 +175,7 @@ public interface LongSeq extends LongIterable {
 	 * Terminate this {@code LongSeq} sequence before the given element, with the previous element as the last
 	 * element in this {@code LongSeq} sequence.
 	 *
+	 * @see #until(LongPredicate)
 	 * @see #endingAt(long)
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
@@ -187,11 +188,38 @@ public interface LongSeq extends LongIterable {
 	 * Terminate this {@code LongSeq} sequence at the given element, including it as the last element in this {@code
 	 * LongSeq} sequence.
 	 *
+	 * @see #endingAt(LongPredicate)
 	 * @see #until(long)
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
 	default LongSeq endingAt(long terminal) {
+		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code LongSeq} sequence before the element that satisfies the given predicate, with the previous
+	 * element as the last element in this {@code LongSeq} sequence.
+	 *
+	 * @see #until(long)
+	 * @see #endingAt(long)
+	 * @see #generate(LongSupplier)
+	 * @see #recurse(long, LongUnaryOperator)
+	 */
+	default LongSeq until(LongPredicate terminal) {
+		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code LongSeq} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code LongSeq} sequence.
+	 *
+	 * @see #endingAt(long)
+	 * @see #until(long)
+	 * @see #generate(LongSupplier)
+	 * @see #recurse(long, LongUnaryOperator)
+	 */
+	default LongSeq endingAt(LongPredicate terminal) {
 		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 

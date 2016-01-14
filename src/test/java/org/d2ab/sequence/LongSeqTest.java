@@ -281,14 +281,26 @@ public class LongSeqTest {
 	}
 
 	@Test
-	public void recurseUntil() {
-		LongSeq until = LongSeq.recurse(1L, c -> c + 1L).until(7L);
+	public void untilTerminal() {
+		LongSeq until = LongSeq.recurse(1, x -> x + 1).until(7L);
 		twice(() -> assertThat(until, contains(1L, 2L, 3L, 4L, 5L, 6L)));
 	}
 
 	@Test
-	public void recurseEndingAt() {
-		LongSeq endingAt = LongSeq.recurse(1L, c -> c + 1L).endingAt(7L);
+	public void endingAtTerminal() {
+		LongSeq endingAt = LongSeq.recurse(1, x -> x + 1).endingAt(7L);
+		twice(() -> assertThat(endingAt, contains(1L, 2L, 3L, 4L, 5L, 6L, 7L)));
+	}
+
+	@Test
+	public void untilPredicate() {
+		LongSeq until = LongSeq.recurse(1, x -> x + 1).until(i -> i == 7L);
+		twice(() -> assertThat(until, contains(1L, 2L, 3L, 4L, 5L, 6L)));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		LongSeq endingAt = LongSeq.recurse(1, x -> x + 1).endingAt(i -> i == 7L);
 		twice(() -> assertThat(endingAt, contains(1L, 2L, 3L, 4L, 5L, 6L, 7L)));
 	}
 

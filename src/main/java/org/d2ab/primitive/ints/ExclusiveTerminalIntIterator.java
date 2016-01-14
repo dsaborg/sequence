@@ -17,15 +17,19 @@
 package org.d2ab.primitive.ints;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.function.IntPredicate;
 
 public class ExclusiveTerminalIntIterator extends UnaryIntIterator {
-	private final int terminal;
+	private final IntPredicate terminal;
 
 	private int next;
 	private boolean hasNext;
 
 	public ExclusiveTerminalIntIterator(int terminal) {
+		this(i -> i == terminal);
+	}
+
+	public ExclusiveTerminalIntIterator(IntPredicate terminal) {
 		this.terminal = terminal;
 	}
 
@@ -44,6 +48,6 @@ public class ExclusiveTerminalIntIterator extends UnaryIntIterator {
 			next = iterator.next();
 			hasNext = true;
 		}
-		return hasNext && !Objects.equals(next, terminal);
+		return hasNext && !terminal.test(next);
 	}
 }

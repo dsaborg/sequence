@@ -281,14 +281,26 @@ public class IntSeqTest {
 	}
 
 	@Test
-	public void recurseUntil() {
-		IntSeq until = IntSeq.recurse(1, c -> c + 1).until(7);
+	public void untilTerminal() {
+		IntSeq until = IntSeq.recurse(1, x -> x + 1).until(7);
 		twice(() -> assertThat(until, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
-	public void recurseEndingAt() {
-		IntSeq endingAt = IntSeq.recurse(1, c -> c + 1).endingAt(7);
+	public void endingAtTerminal() {
+		IntSeq endingAt = IntSeq.recurse(1, x -> x + 1).endingAt(7);
+		twice(() -> assertThat(endingAt, contains(1, 2, 3, 4, 5, 6, 7)));
+	}
+
+	@Test
+	public void untilPredicate() {
+		IntSeq until = IntSeq.recurse(1, x -> x + 1).until(i -> i == 7);
+		twice(() -> assertThat(until, contains(1, 2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		IntSeq endingAt = IntSeq.recurse(1, x -> x + 1).endingAt(i -> i == 7);
 		twice(() -> assertThat(endingAt, contains(1, 2, 3, 4, 5, 6, 7)));
 	}
 
