@@ -1,8 +1,8 @@
 # Sequence
 ## A lightweight companion to the Java 8 Stream library
-###### Daniel Skogquist Åborg ([d2ab.org](http://www.d2ab.org/))
+##### Daniel Skogquist Åborg ([d2ab.org](http://www.d2ab.org/))
 
-**NOTE: PRE-RELEASE VERSION 0.x, INTERFACE _WILL_ CHANGE UNTIL 1.0**
+**NOTE: Beta Version, interface is largely in place but may still change until the official release.**
 
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java.
