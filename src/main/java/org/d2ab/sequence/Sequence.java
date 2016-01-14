@@ -706,40 +706,28 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PeekingIterator<>(action).backedBy(iterator());
 	}
 
-	default <U extends R, V extends R, R> Sequence<R> delimit(V delimiter) {
-		return () -> {
-			@SuppressWarnings("unchecked")
-			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).backedBy(
-					delimitedIterator);
-		};
+	@SuppressWarnings("unchecked")
+	default <V extends R, R> Sequence<R> delimit(V delimiter) {
+		return () -> new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).backedBy(
+				iterator());
 	}
 
-	default <U extends R, V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
-		return () -> {
-			@SuppressWarnings("unchecked")
-			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).backedBy(
-					delimitedIterator);
-		};
+	@SuppressWarnings("unchecked")
+	default <V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
+		return () -> new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).backedBy(
+				iterator());
 	}
 
-	default <U extends R, V extends R, R> Sequence<R> prefix(V prefix) {
-		return () -> {
-			@SuppressWarnings("unchecked")
-			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).backedBy(
-					delimitedIterator);
-		};
+	@SuppressWarnings("unchecked")
+	default <V extends R, R> Sequence<R> prefix(V prefix) {
+		return () -> new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).backedBy(
+				iterator());
 	}
 
-	default <U extends R, V extends R, R> Sequence<R> suffix(V suffix) {
-		return () -> {
-			@SuppressWarnings("unchecked")
-			Iterator<U> delimitedIterator = (Iterator<U>) iterator();
-			return new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).backedBy(
-					delimitedIterator);
-		};
+	@SuppressWarnings("unchecked")
+	default <V extends R, R> Sequence<R> suffix(V suffix) {
+		return () -> new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).backedBy(
+				iterator());
 	}
 
 	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
@@ -799,6 +787,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> repeat() {
-		return () -> new RepeatingIterator(this);
+		return () -> new RepeatingIterator<>(this);
 	}
 }

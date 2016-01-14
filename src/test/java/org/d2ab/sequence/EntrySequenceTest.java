@@ -60,11 +60,11 @@ public class EntrySequenceTest {
 	                                                                        Pair.of("5", 5), Pair.of("7", 7),
 	                                                                        Pair.of("24", 24), Pair.of("5", 5),
 	                                                                        Pair.of("67", 67));
-	private final Entry<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
-	private final Entry<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+	private final Pair<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
+	private final Pair<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
 	                                                                 Pair.of("4", 4), Pair.of("5", 5)};
-	private final Entry<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
-	private final Entry<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
+	private final Pair<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
+	private final Pair<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
 	@Test
 	public void ofOne() {
@@ -171,6 +171,20 @@ public class EntrySequenceTest {
 		Iterable<Entry<String, Integer>> first = asList(entries123);
 		Iterable<Entry<String, Integer>> second = asList(entries456);
 		Iterable<Entry<String, Integer>> third = asList(entries789);
+
+		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
+
+		twice(() -> assertThat(sequenceFromIterables,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                Pair.of("9", 9))));
+	}
+
+	@Test
+	public void fromPairIterables() {
+		Iterable<Pair<String, Integer>> first = asList(entries123);
+		Iterable<Pair<String, Integer>> second = asList(entries456);
+		Iterable<Pair<String, Integer>> third = asList(entries789);
 
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 

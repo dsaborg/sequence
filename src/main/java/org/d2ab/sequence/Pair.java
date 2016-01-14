@@ -69,8 +69,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		};
 	}
 
-	static <T, U> Consumer<? super Pair<T, U>> consumer(BiConsumer<? super T, ? super U> action) {
-		return p -> action.accept(p.getLeft(), p.getRight());
+	static <T, U> Consumer<? super Entry<T, U>> consumer(BiConsumer<? super T, ? super U> action) {
+		return p -> action.accept(p.getKey(), p.getValue());
 	}
 
 	static <KK, VV, K, V> Entry<KK, VV> map(Entry<K, V> entry, Function<? super K, ? extends KK> keyMapper,
@@ -228,7 +228,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	}
 
 	abstract class Base<L, R> implements Pair<L, R> {
+		@SuppressWarnings("unchecked")
 		public static final Comparator NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
+		@SuppressWarnings("unchecked")
 		private final Comparator<Entry> COMPARATOR = comparing((Function<Entry, Object>) Entry::getKey,
 		                                                       NULLS_FIRST).thenComparing(
 				(Function<Entry, Object>) Entry::getValue, NULLS_FIRST);

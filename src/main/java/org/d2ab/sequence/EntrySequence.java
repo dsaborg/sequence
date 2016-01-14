@@ -105,6 +105,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return () -> new LimitingIterator<Entry<T, U>>(limit).backedBy(iterator());
 	}
 
+	@SuppressWarnings("unchecked")
 	default EntrySequence<T, U> then(EntrySequence<T, U> then) {
 		return () -> new ChainingIterator<>(this, then);
 	}
@@ -325,6 +326,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 	}
 
 	default EntrySequence<T, U> peek(BiConsumer<T, U> action) {
-		return () -> new PeekingIterator(Pair.consumer(action)).backedBy(iterator());
+		Consumer<? super Entry<T, U>> consumer = Pair.consumer(action);
+		return () -> new PeekingIterator<>(consumer).backedBy(iterator());
 	}
 }

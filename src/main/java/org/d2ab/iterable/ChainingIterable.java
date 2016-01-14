@@ -29,17 +29,17 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 
 public class ChainingIterable<T> implements Iterable<T> {
-	private final Collection<Iterable<T>> iterables = new ArrayList<>();
+	private final Collection<Iterable<? extends T>> iterables = new ArrayList<>();
 
 	public ChainingIterable() {
 	}
 
-	public ChainingIterable(Iterable<T> iterable) {
+	public ChainingIterable(Iterable<? extends T> iterable) {
 		iterables.add(requireNonNull(iterable));
 	}
 
 	@SafeVarargs
-	public ChainingIterable(Iterable<T>... iterables) {
+	public ChainingIterable(Iterable<? extends T>... iterables) {
 		Arrayz.forEach(e -> this.iterables.add(requireNonNull(e)), iterables);
 	}
 

@@ -27,16 +27,18 @@ import java.util.NoSuchElementException;
  * empty {@link Iterator}, this {@link Iterator} will never terminate.
  */
 public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
-	private final Iterable<T> iterable;
+	private final Iterable<? extends T> iterable;
 
-	public RepeatingIterator(Iterable<T> iterable) {
+	public RepeatingIterator(Iterable<? extends T> iterable) {
 		this.iterable = iterable;
 	}
 
 	@Override
 	public boolean hasNext() {
 		if (iterator == null || !iterator.hasNext()) {
-			iterator = iterable.iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<T> iterator = (Iterator<T>) iterable.iterator();
+			this.iterator = iterator;
 		}
 		return iterator.hasNext();
 	}

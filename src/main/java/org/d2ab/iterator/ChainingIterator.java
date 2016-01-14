@@ -37,7 +37,9 @@ public class ChainingIterator<T> extends UnaryReferenceIterator<T> {
 	@Override
 	public boolean hasNext() {
 		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			iterator = (Iterator<T>) iterables.next().iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<T> iterator = (Iterator<T>) iterables.next().iterator();
+			this.iterator = iterator;
 		}
 		return iterator != null && iterator.hasNext();
 	}

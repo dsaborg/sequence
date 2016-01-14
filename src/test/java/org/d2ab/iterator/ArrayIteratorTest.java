@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.iterator;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ import static org.junit.Assert.assertThat;
 public class ArrayIteratorTest {
 	@Test
 	public void arrayIterator() {
-		ArrayIterator iterator = new ArrayIterator(1, 2, 3);
+		ArrayIterator<Integer> iterator = new ArrayIterator<>(1, 2, 3);
 
 		assertThat(iterator.hasNext(), is(true));
 		assertThat(iterator.next(), is(1));

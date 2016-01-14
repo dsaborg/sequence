@@ -21,13 +21,15 @@ import java.util.Iterator;
 /**
  * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
  */
-public abstract class DelegatingIterator<T, I extends Iterator<? extends T>, U, J extends Iterator<? extends U>>
+public abstract class DelegatingIterator<T, I extends Iterator<T>, U, J extends Iterator<U>>
 		implements Iterator<U> {
 	protected I iterator;
 
 	public J backedBy(I iterator) {
 		this.iterator = iterator;
-		return (J) this;
+		@SuppressWarnings("unchecked")
+		J result = (J) this;
+		return result;
 	}
 
 	@Override

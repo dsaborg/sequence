@@ -29,9 +29,12 @@ import static org.junit.Assert.assertThat;
 
 public class ChainingIterableTest {
 	private final ChainingIterable<String> empty = new ChainingIterable<>();
+	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc = new ChainingIterable<>(asList("a", "b", "c"));
+	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc_def = new ChainingIterable<>(asList("a", "b", "c"),
 	                                                                        asList("d", "e", "f"));
+	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc_def_ghi = new ChainingIterable<>(asList("a", "b", "c"),
 	                                                                            asList("d", "e", "f"),
 	                                                                            asList("g", "h", "i"));
@@ -58,6 +61,7 @@ public class ChainingIterableTest {
 
 	@Test
 	public void lazy() {
+		@SuppressWarnings("unchecked")
 		ChainingIterable<String> chainingIterable = new ChainingIterable<>(asList("a", "b", "c"), () -> {
 			throw new IllegalStateException(); // Not thrown yet, until below when iterator is requested
 		});
