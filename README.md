@@ -1,5 +1,5 @@
 # Sequence
-## A lightweight companion to the Java 8 Stream library
+## A lightweight alternative to Java 8 sequential Stream
 ##### Daniel Skogquist Åborg ([d2ab.org](http://www.d2ab.org/))
 
 **NOTE: Beta Version, interface is largely in place but may still change until the official release.**
