@@ -184,6 +184,7 @@ public interface CharSeq extends CharIterable {
 	 * Terminate this {@code CharSeq} sequence before the given element, with the previous element as the last
 	 * element in this {@code CharSeq} sequence.
 	 *
+	 * @see #until(CharPredicate)
 	 * @see #endingAt(char)
 	 * @see #generate(CharSupplier)
 	 * @see #recurse(char, CharUnaryOperator)
@@ -196,11 +197,38 @@ public interface CharSeq extends CharIterable {
 	 * Terminate this {@code CharSeq} sequence at the given element, including it as the last element in this {@code
 	 * CharSeq} sequence.
 	 *
+	 * @see #endingAt(CharPredicate)
 	 * @see #until(char)
 	 * @see #generate(CharSupplier)
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
 	default CharSeq endingAt(char terminal) {
+		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code CharSeq} sequence before the element that satisfies the given predicate, with the previous
+	 * element as the last element in this {@code CharSeq} sequence.
+	 *
+	 * @see #until(char)
+	 * @see #endingAt(char)
+	 * @see #generate(CharSupplier)
+	 * @see #recurse(char, CharUnaryOperator)
+	 */
+	default CharSeq until(CharPredicate terminal) {
+		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code CharSeq} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code CharSeq} sequence.
+	 *
+	 * @see #endingAt(char)
+	 * @see #until(char)
+	 * @see #generate(CharSupplier)
+	 * @see #recurse(char, CharUnaryOperator)
+	 */
+	default CharSeq endingAt(CharPredicate terminal) {
 		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 

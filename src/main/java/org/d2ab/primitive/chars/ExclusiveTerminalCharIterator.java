@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.d2ab.primitive.chars;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class ExclusiveTerminalCharIterator extends UnaryCharIterator {
-	private final char terminal;
+	private final CharPredicate terminal;
 	private char next;
 	private boolean hasNext;
 
 	public ExclusiveTerminalCharIterator(char terminal) {
+		this(c -> c == terminal);
+	}
+
+	public ExclusiveTerminalCharIterator(CharPredicate terminal) {
 		this.terminal = terminal;
 	}
 
@@ -42,6 +46,6 @@ public class ExclusiveTerminalCharIterator extends UnaryCharIterator {
 			next = iterator.next();
 			hasNext = true;
 		}
-		return hasNext && !Objects.equals(next, terminal);
+		return hasNext && !terminal.test(next);
 	}
 }

@@ -278,14 +278,26 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void recurseUntil() {
-		CharSeq until = CharSeq.recurse('a', c -> (char) (c + 1)).until('g');
+	public void untilTerminal() {
+		CharSeq until = CharSeq.recurse('a', x -> (char) (x + 1)).until('g');
 		twice(() -> assertThat(until, contains('a', 'b', 'c', 'd', 'e', 'f')));
 	}
 
 	@Test
-	public void recurseEndingAt() {
-		CharSeq endingAt = CharSeq.recurse('a', c -> (char) (c + 1)).endingAt('g');
+	public void endingAtTerminal() {
+		CharSeq endingAt = CharSeq.recurse('a', x -> (char) (x + 1)).endingAt('g');
+		twice(() -> assertThat(endingAt, contains('a', 'b', 'c', 'd', 'e', 'f', 'g')));
+	}
+
+	@Test
+	public void untilPredicate() {
+		CharSeq until = CharSeq.recurse('a', x -> (char) (x + 1)).until(c -> c == 'g');
+		twice(() -> assertThat(until, contains('a', 'b', 'c', 'd', 'e', 'f')));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		CharSeq endingAt = CharSeq.recurse('a', x -> (char) (x + 1)).endingAt(c -> c == 'g');
 		twice(() -> assertThat(endingAt, contains('a', 'b', 'c', 'd', 'e', 'f', 'g')));
 	}
 

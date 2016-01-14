@@ -17,15 +17,19 @@
 package org.d2ab.primitive.doubles;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.function.DoublePredicate;
 
 public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
-	private final double terminal;
+	private final DoublePredicate terminal;
 
 	private double previous;
 	private boolean hasPrevious;
 
 	public InclusiveTerminalDoubleIterator(double terminal) {
+		this(d -> d == terminal);
+	}
+
+	public InclusiveTerminalDoubleIterator(DoublePredicate terminal) {
 		this.terminal = terminal;
 	}
 
@@ -40,6 +44,6 @@ public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
+		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
 	}
 }

@@ -198,6 +198,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * Terminate this {@code DoubleSeq} sequence before the given element, with the previous element as the last
 	 * element in this {@code DoubleSeq} sequence.
 	 *
+	 * @see #until(DoublePredicate)
 	 * @see #endingAt(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
@@ -210,11 +211,39 @@ public interface DoubleSeq extends DoubleIterable {
 	 * Terminate this {@code DoubleSeq} sequence at the given element, including it as the last element in this {@code
 	 * DoubleSeq} sequence.
 	 *
+	 * @see #endingAt(DoublePredicate)
 	 * @see #until(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
 	default DoubleSeq endingAt(double terminal) {
+		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code DoubleSeq} sequence before the element that satisfies the given predicate, with the
+	 * previous
+	 * element as the last element in this {@code DoubleSeq} sequence.
+	 *
+	 * @see #until(double)
+	 * @see #endingAt(double)
+	 * @see #generate(DoubleSupplier)
+	 * @see #recurse(double, DoubleUnaryOperator)
+	 */
+	default DoubleSeq until(DoublePredicate terminal) {
+		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code DoubleSeq} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code DoubleSeq} sequence.
+	 *
+	 * @see #endingAt(double)
+	 * @see #until(double)
+	 * @see #generate(DoubleSupplier)
+	 * @see #recurse(double, DoubleUnaryOperator)
+	 */
+	default DoubleSeq endingAt(DoublePredicate terminal) {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 

@@ -281,14 +281,26 @@ public class DoubleSeqTest {
 	}
 
 	@Test
-	public void recurseUntil() {
-		DoubleSeq until = DoubleSeq.recurse(1.0, c -> c + 1.0).until(7.0);
+	public void untilTerminal() {
+		DoubleSeq until = DoubleSeq.recurse(1, x -> x + 1).until(7.0);
 		twice(() -> assertThat(until, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)));
 	}
 
 	@Test
-	public void recurseEndingAt() {
-		DoubleSeq endingAt = DoubleSeq.recurse(1.0, c -> c + 1.0).endingAt(7.0);
+	public void endingAtTerminal() {
+		DoubleSeq endingAt = DoubleSeq.recurse(1, x -> x + 1).endingAt(7.0);
+		twice(() -> assertThat(endingAt, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0)));
+	}
+
+	@Test
+	public void untilPredicate() {
+		DoubleSeq until = DoubleSeq.recurse(1, x -> x + 1).until(d -> d == 7.0);
+		twice(() -> assertThat(until, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		DoubleSeq endingAt = DoubleSeq.recurse(1, x -> x + 1).endingAt(d -> d == 7.0);
 		twice(() -> assertThat(endingAt, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0)));
 	}
 
