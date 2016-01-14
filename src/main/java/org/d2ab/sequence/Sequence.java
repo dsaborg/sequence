@@ -313,6 +313,18 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
 	}
 
+	/**
+	 * Terminate this {@code Sequence} just before the given element is encountered, not including the element in the
+	 * {@code Sequence}.
+	 *
+	 * @see #untilNull()
+	 * @see #until(Predicate)
+	 * @see #endingAt(T)
+	 * @see #generate(Supplier)
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #recurse(T, Function, Function)
+	 * @see #repeat()
+	 */
 	default Sequence<T> until(@Nullable T terminal) {
 		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
@@ -321,12 +333,79 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Terminate this {@code Sequence} when the given element is encountered, including the element as the last element
 	 * in the {@code Sequence}.
 	 *
+	 * @see #endingAtNull
+	 * @see #endingAt(Predicate)
 	 * @see #until(T)
 	 * @see #generate(Supplier)
 	 * @see #recurse(T, UnaryOperator)
 	 * @see #recurse(T, Function, Function)
+	 * @see #repeat()
 	 */
 	default Sequence<T> endingAt(@Nullable T terminal) {
+		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Sequence} just before a null element is encountered, not including the null in the
+	 * {@code Sequence}.
+	 *
+	 * @see #until(T)
+	 * @see #until(Predicate)
+	 * @see #endingAtNull
+	 * @see #generate(Supplier)
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #recurse(T, Function, Function)
+	 * @see #repeat()
+	 */
+	default Sequence<T> untilNull() {
+		return () -> new ExclusiveTerminalIterator<>((T) null).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Sequence} when a null element is encountered, including the null as the last element
+	 * in the {@code Sequence}.
+	 *
+	 * @see #endingAt(T)
+	 * @see #endingAt(Predicate)
+	 * @see #untilNull
+	 * @see #generate(Supplier)
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #recurse(T, Function, Function)
+	 * @see #repeat()
+	 */
+	default Sequence<T> endingAtNull() {
+		return () -> new InclusiveTerminalIterator<>((T) null).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Sequence} just before the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code Sequence}.
+	 *
+	 * @see #until(T)
+	 * @see #untilNull()
+	 * @see #endingAt(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #recurse(T, Function, Function)
+	 * @see #repeat()
+	 */
+	default Sequence<T> until(Predicate<T> terminal) {
+		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+	}
+
+	/**
+	 * Terminate this {@code Sequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the last element in the {@code Sequence}.
+	 *
+	 * @see #endingAt(T)
+	 * @see #endingAtNull()
+	 * @see #until(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(T, UnaryOperator)
+	 * @see #recurse(T, Function, Function)
+	 * @see #repeat()
+	 */
+	default Sequence<T> endingAt(Predicate<T> terminal) {
 		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 

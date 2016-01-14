@@ -303,13 +303,15 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapLazy() {
-		Sequence<Integer> flatMap = Sequence.of(asList(1, 2), null).flatMap(Function.identity());
+		Sequence<Integer> flatMap = Sequence.of(asList(1, 2), (Iterable<Integer>) () -> {
+			throw new IllegalStateException();
+		}).flatMap(Function.identity());
 
 		twice(() -> {
 			Iterator<Integer> iterator = flatMap.iterator(); // NPE if not lazy - expected later below
 			assertThat(iterator.next(), is(1));
 			assertThat(iterator.next(), is(2));
-			expecting(NullPointerException.class, iterator::next);
+			expecting(IllegalStateException.class, iterator::next);
 		});
 	}
 
@@ -400,20 +402,38 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void recurseUntilNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).until(null);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
-	}
-
-	@Test
-	public void recurseUntil() {
+	public void untilTerminal() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(7);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
-	public void recurseEndingAt() {
+	public void untilNull() {
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).untilNull();
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+	}
+
+	@Test
+	public void untilPredicate() {
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(i -> i == 7);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void endingAtTerminal() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(7);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
+	}
+
+	@Test
+	public void endingAtNull() {
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).endingAtNull();
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, null)));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(i -> i == 7);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
 	}
 
@@ -1033,7 +1053,7 @@ public class SequenceTest {
 	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
-		Sequence<Integer> sequence = Sequence.generate(queue::poll).until(null);
+		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));

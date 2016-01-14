@@ -19,22 +19,26 @@ package org.d2ab.iterator;
 import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class InclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
-	@Nullable
-	private final T terminal;
+	private final Predicate<T> terminalPredicate;
 
 	@Nullable
 	private T previous;
 	private boolean hasPrevious;
 
 	public InclusiveTerminalIterator(@Nullable T terminal) {
-		this.terminal = terminal;
+		this(o -> Objects.equals(o, terminal));
+	}
+
+	public InclusiveTerminalIterator(Predicate<T> terminalPredicate) {
+		this.terminalPredicate = terminalPredicate;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() && !(hasPrevious && Objects.equals(previous, terminal));
+		return iterator.hasNext() && (!hasPrevious || !terminalPredicate.test(previous));
 	}
 
 	@Override
