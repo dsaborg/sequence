@@ -16,10 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.longs.DelegatingLongIterator;
-import org.d2ab.primitive.longs.LongIterable;
-import org.d2ab.primitive.longs.LongIterator;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.iterable.longs.LongIterable;
+import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Arrayz;
 import org.junit.Test;
 
 import java.util.*;

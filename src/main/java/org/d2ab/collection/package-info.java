@@ -15,7 +15,7 @@
  */
 
 /**
- * Classes related to {@link java.util.Collection} classes.
+ * Classes related to {@link java.util.Collection}.
  */
 @ParametersAreNonnullByDefault
 package org.d2ab.collection;

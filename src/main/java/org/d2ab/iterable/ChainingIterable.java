@@ -17,7 +17,7 @@
 package org.d2ab.iterable;
 
 import org.d2ab.iterator.ChainingIterator;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.util.Arrayz;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

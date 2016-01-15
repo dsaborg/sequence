@@ -16,10 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.ints.DelegatingIntIterator;
-import org.d2ab.primitive.ints.IntIterable;
-import org.d2ab.primitive.ints.IntIterator;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.util.Arrayz;
 import org.junit.Test;
 
 import java.util.*;

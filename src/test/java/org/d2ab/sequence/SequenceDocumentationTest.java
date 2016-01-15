@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.Arrays;

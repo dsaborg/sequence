@@ -16,10 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
-import org.d2ab.primitive.doubles.DoubleIterable;
-import org.d2ab.primitive.doubles.DoubleIterator;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.util.Arrayz;
 import org.junit.Test;
 
 import java.util.*;

@@ -16,10 +16,14 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.doubles.*;
-import org.d2ab.primitive.ints.IntIterator;
-import org.d2ab.primitive.longs.LongIterator;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.function.doubles.BackPeekingDoubleFunction;
+import org.d2ab.function.doubles.ForwardPeekingDoubleFunction;
+import org.d2ab.iterable.doubles.ChainingDoubleIterable;
+import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.iterator.doubles.*;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Arrayz;
 
 import java.util.Arrays;
 import java.util.Iterator;

@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.sequence.Pair;
+import org.d2ab.util.Pair;
 
 import javax.annotation.Nullable;
 import java.util.NoSuchElementException;

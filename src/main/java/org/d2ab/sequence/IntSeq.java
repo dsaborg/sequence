@@ -16,11 +16,16 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.chars.DelegatingCharIterator;
-import org.d2ab.primitive.doubles.DelegatingDoubleIterator;
-import org.d2ab.primitive.ints.*;
-import org.d2ab.primitive.longs.DelegatingLongIterator;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.function.ints.BackPeekingIntFunction;
+import org.d2ab.function.ints.ForwardPeekingIntFunction;
+import org.d2ab.function.ints.IntToCharFunction;
+import org.d2ab.iterable.ints.ChainingIntIterable;
+import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.iterator.chars.DelegatingCharIterator;
+import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
+import org.d2ab.iterator.ints.*;
+import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.util.Arrayz;
 
 import java.util.Arrays;
 import java.util.Iterator;

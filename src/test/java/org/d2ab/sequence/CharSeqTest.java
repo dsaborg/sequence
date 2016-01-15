@@ -16,8 +16,12 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.primitive.chars.*;
-import org.d2ab.utils.Arrayz;
+import org.d2ab.function.chars.CharBinaryOperator;
+import org.d2ab.iterable.chars.CharIterable;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.DelegatingCharIterator;
+import org.d2ab.util.Arrayz;
+import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
 
 import java.util.*;

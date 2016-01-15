@@ -16,7 +16,7 @@
 
 package org.d2ab.iterable;
 
-import org.d2ab.sequence.Pair;
+import org.d2ab.util.Pair;
 
 import java.util.Iterator;
 import java.util.stream.Stream;

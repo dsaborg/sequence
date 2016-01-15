@@ -16,8 +16,10 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterator.*;
+import org.d2ab.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
