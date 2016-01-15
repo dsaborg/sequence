@@ -35,47 +35,49 @@ import static java.util.Collections.emptyIterator;
  * collating the list of elements.
  */
 @FunctionalInterface
-public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
-	static <T, U> EntrySequence<T, U> of(Pair<T, U> item) {
+public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
+	static <K, V> EntrySequence<K, V> of(Pair<K, V> item) {
 		return from(Collections.singleton(item));
 	}
 
 	@SafeVarargs
-	static <T, U> EntrySequence<T, U> from(Iterable<? extends Entry<T, U>>... iterables) {
+	static <K, V> EntrySequence<K, V> from(Iterable<? extends Entry<K, V>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);
 	}
 
 	@SafeVarargs
-	static <T, U> EntrySequence<T, U> of(Entry<T, U>... items) {
+	static <K, V> EntrySequence<K, V> of(Entry<K, V>... items) {
 		return from(asList(items));
 	}
 
-	static <T, U> EntrySequence<T, U> empty() {
+	static <K, V> EntrySequence<K, V> empty() {
 		return from(emptyIterator());
 	}
 
-	static <T, U> EntrySequence<T, U> from(Iterator<Entry<T, U>> iterator) {
+	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
 		return () -> iterator;
 	}
 
-	static <T, U> EntrySequence<T, U> from(Stream<Entry<T, U>> stream) {
+	static <K, V> EntrySequence<K, V> from(Stream<Entry<K, V>> stream) {
 		return stream::iterator;
 	}
 
-	static <T, U> EntrySequence<T, U> from(Supplier<? extends Iterator<Entry<T, U>>> iteratorSupplier) {
+	static <K, V> EntrySequence<K, V> from(Supplier<? extends Iterator<Entry<K, V>>> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
-	static <T, U> EntrySequence<T, U> recurse(@Nullable T firstSeed, @Nullable U secondSeed,
-	                                          BiFunction<T, U, ? extends Entry<T, U>> op) {
-		return () -> new RecursiveIterator<>(Pair.of(firstSeed, secondSeed), p -> op.apply(p.getKey(), p.getValue()));
+	static <K, V> EntrySequence<K, V> recurse(@Nullable K keySeed,
+	                                          @Nullable V valueSeed,
+	                                          BiFunction<K, V, ? extends Entry<K, V>> op) {
+		return () -> new RecursiveIterator<>(Pair.of(keySeed, valueSeed), p -> op.apply(p.getKey(), p.getValue()));
 	}
 
-	static <T, U, V, W> EntrySequence<V, W> recurse(@Nullable T firstSeed, @Nullable U secondSeed,
-	                                                BiFunction<T, U, Entry<V, W>> f,
-	                                                BiFunction<V, W, Entry<T, U>> g) {
-		return () -> new RecursiveIterator<>(f.apply(firstSeed, secondSeed), p -> {
-			Entry<T, U> p2 = g.apply(p.getKey(), p.getValue());
+	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(@Nullable K keySeed,
+	                                                    @Nullable V valueSeed,
+	                                                    BiFunction<K, V, Entry<KK, VV>> f,
+	                                                    BiFunction<KK, VV, Entry<K, V>> g) {
+		return () -> new RecursiveIterator<>(f.apply(keySeed, valueSeed), p -> {
+			Entry<K, V> p2 = g.apply(p.getKey(), p.getValue());
 			return f.apply(p2.getKey(), p2.getValue());
 		});
 	}
@@ -84,134 +86,134 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return map.entrySet()::iterator;
 	}
 
-	default <V, W> EntrySequence<V, W> map(BiFunction<? super T, ? super U, ? extends Entry<V, W>> mapper) {
+	default <KK, VV> EntrySequence<KK, VV> map(BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
 		return map(e -> mapper.apply(e.getKey(), e.getValue()));
 	}
 
-	default <V, W> EntrySequence<V, W> map(Function<Entry<T, U>, Entry<V, W>> mapper) {
+	default <KK, VV> EntrySequence<KK, VV> map(Function<Entry<K, V>, Entry<KK, VV>> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
-	default <V, W> EntrySequence<V, W> map(Function<? super T, ? extends V> keyMapper,
-	                                       Function<? super U, ? extends W> valueMapper) {
+	default <KK, VV> EntrySequence<KK, VV> map(Function<? super K, ? extends KK> keyMapper,
+	                                           Function<? super V, ? extends VV> valueMapper) {
 		return map(e -> Pair.map(e, keyMapper, valueMapper));
 	}
 
-	default EntrySequence<T, U> skip(int skip) {
-		return () -> new SkippingIterator<Entry<T, U>>(skip).backedBy(iterator());
+	default EntrySequence<K, V> skip(int skip) {
+		return () -> new SkippingIterator<Entry<K, V>>(skip).backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> limit(int limit) {
-		return () -> new LimitingIterator<Entry<T, U>>(limit).backedBy(iterator());
+	default EntrySequence<K, V> limit(int limit) {
+		return () -> new LimitingIterator<Entry<K, V>>(limit).backedBy(iterator());
 	}
 
 	@SuppressWarnings("unchecked")
-	default EntrySequence<T, U> then(EntrySequence<T, U> then) {
+	default EntrySequence<K, V> then(EntrySequence<K, V> then) {
 		return () -> new ChainingIterator<>(this, then);
 	}
 
-	default EntrySequence<T, U> filter(BiPredicate<? super T, ? super U> predicate) {
-		return () -> new FilteringIterator<Entry<T, U>>(e -> Pair.test(e, predicate)).backedBy(iterator());
+	default EntrySequence<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
+		return () -> new FilteringIterator<Entry<K, V>>(e -> Pair.test(e, predicate)).backedBy(iterator());
 	}
 
-	default <V, W> EntrySequence<V, W> flatMap(@Nonnull
-	                                           BiFunction<? super T, ? super U, ? extends Iterable<Entry<V, W>>>
-			                                           mapper) {
-		ChainingIterable<Entry<V, W>> result = new ChainingIterable<>();
+	default <KK, VV> EntrySequence<KK, VV> flatMap(@Nonnull
+	                                               BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>>
+			                                               mapper) {
+		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
 		forEach(e -> result.append(mapper.apply(e.getKey(), e.getValue())));
 		return result::iterator;
 	}
 
-	default EntrySequence<T, U> until(Entry<T, U> terminal) {
+	default EntrySequence<K, V> until(Entry<K, V> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> endingAt(Entry<T, U> terminal) {
+	default EntrySequence<K, V> endingAt(Entry<K, V> terminal) {
 		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> until(T first, U second) {
-		return until(Pair.of(first, second));
+	default EntrySequence<K, V> until(K key, V value) {
+		return until(Pair.of(key, value));
 	}
 
-	default EntrySequence<T, U> endingAt(T first, U second) {
-		return endingAt(Pair.of(first, second));
+	default EntrySequence<K, V> endingAt(K key, V value) {
+		return endingAt(Pair.of(key, value));
 	}
 
-	default EntrySequence<T, U> until(BiPredicate<? super T, ? super U> terminal) {
+	default EntrySequence<K, V> until(BiPredicate<? super K, ? super V> terminal) {
 		return until(Pair.predicate(terminal));
 	}
 
-	default EntrySequence<T, U> endingAt(BiPredicate<? super T, ? super U> terminal) {
+	default EntrySequence<K, V> endingAt(BiPredicate<? super K, ? super V> terminal) {
 		return endingAt(Pair.predicate(terminal));
 	}
 
-	default EntrySequence<T, U> until(Predicate<? super Entry<T, U>> terminal) {
+	default EntrySequence<K, V> until(Predicate<? super Entry<K, V>> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> endingAt(Predicate<? super Entry<T, U>> terminal) {
+	default EntrySequence<K, V> endingAt(Predicate<? super Entry<K, V>> terminal) {
 		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
-	default Entry<T, U>[] toArray() {
+	default Entry<K, V>[] toArray() {
 		return toArray(Entry[]::new);
 	}
 
-	default Entry<T, U>[] toArray(IntFunction<Entry<T, U>[]> constructor) {
+	default Entry<K, V>[] toArray(IntFunction<Entry<K, V>[]> constructor) {
 		List list = toList();
 		@SuppressWarnings("unchecked")
-		Entry<T, U>[] array = (Entry<T, U>[]) list.toArray(constructor.apply(list.size()));
+		Entry<K, V>[] array = (Entry<K, V>[]) list.toArray(constructor.apply(list.size()));
 		return array;
 	}
 
-	default List<Entry<T, U>> toList() {
+	default List<Entry<K, V>> toList() {
 		return toList(ArrayList::new);
 	}
 
-	default List<Entry<T, U>> toList(Supplier<List<Entry<T, U>>> constructor) {
+	default List<Entry<K, V>> toList(Supplier<List<Entry<K, V>>> constructor) {
 		return toCollection(constructor);
 	}
 
-	default Set<Entry<T, U>> toSet() {
+	default Set<Entry<K, V>> toSet() {
 		return toSet(HashSet::new);
 	}
 
-	default <S extends Set<Entry<T, U>>> S toSet(Supplier<? extends S> constructor) {
+	default <S extends Set<Entry<K, V>>> S toSet(Supplier<? extends S> constructor) {
 		return toCollection(constructor);
 	}
 
-	default SortedSet<Entry<T, U>> toSortedSet() {
+	default SortedSet<Entry<K, V>> toSortedSet() {
 		return toSet(TreeSet::new);
 	}
 
-	default Map<T, U> toMap() {
+	default Map<K, V> toMap() {
 		return toMap(HashMap::new);
 	}
 
-	default <M extends Map<T, U>> M toMap(Supplier<? extends M> constructor) {
+	default <M extends Map<K, V>> M toMap(Supplier<? extends M> constructor) {
 		M result = constructor.get();
-		forEach(each -> Pair.putEntry(result, each));
+		forEach(each -> Pair.put(result, each));
 		return result;
 	}
 
-	default SortedMap<T, U> toSortedMap() {
+	default SortedMap<K, V> toSortedMap() {
 		return toMap(TreeMap::new);
 	}
 
-	default <C extends Collection<Entry<T, U>>> C toCollection(Supplier<? extends C> constructor) {
+	default <C extends Collection<Entry<K, V>>> C toCollection(Supplier<? extends C> constructor) {
 		return collect(constructor, Collection::add);
 	}
 
-	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Entry<T, U>> adder) {
+	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Entry<K, V>> adder) {
 		C result = constructor.get();
 		forEach(each -> adder.accept(result, each));
 		return result;
 	}
 
-	default <S, R> S collect(Collector<Entry<T, U>, R, S> collector) {
+	default <S, R> S collect(Collector<Entry<K, V>, R, S> collector) {
 		R result = collector.supplier().get();
-		BiConsumer<R, Entry<T, U>> accumulator = collector.accumulator();
+		BiConsumer<R, Entry<K, V>> accumulator = collector.accumulator();
 		forEach(each -> accumulator.accept(result, each));
 		return collector.finisher().apply(result);
 	}
@@ -224,7 +226,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
 		boolean first = true;
-		for (Entry<T, U> each : this) {
+		for (Entry<K, V> each : this) {
 			if (first)
 				first = false;
 			else
@@ -235,54 +237,55 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return result.toString();
 	}
 
-	default Optional<Entry<T, U>> reduce(BinaryOperator<Entry<T, U>> operator) {
-		Iterator<Entry<T, U>> iterator = iterator();
+	default Optional<Entry<K, V>> reduce(BinaryOperator<Entry<K, V>> operator) {
+		Iterator<Entry<K, V>> iterator = iterator();
 		if (!iterator.hasNext())
 			return Optional.empty();
 
-		Entry<T, U> result = reduce(iterator.next(), operator, iterator);
+		Entry<K, V> result = reduce(iterator.next(), operator, iterator);
 		return Optional.of(result);
 	}
 
-	default Optional<Entry<T, U>> reduce(QuaternaryFunction<T, U, T, U, Entry<T, U>> operator) {
-		Iterator<Entry<T, U>> iterator = iterator();
+	default Optional<Entry<K, V>> reduce(QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
+		Iterator<Entry<K, V>> iterator = iterator();
 		if (!iterator.hasNext())
 			return Optional.empty();
 
-		BinaryOperator<Entry<T, U>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
+		BinaryOperator<Entry<K, V>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
 		                                                                      e.getValue());
-		Entry<T, U> result = reduce(iterator.next(), binaryOperator, iterator);
+		Entry<K, V> result = reduce(iterator.next(), binaryOperator, iterator);
 		return Optional.of(result);
 	}
 
-	default Entry<T, U> reduce(Entry<T, U> identity, BinaryOperator<Entry<T, U>> operator) {
+	default Entry<K, V> reduce(Entry<K, V> identity, BinaryOperator<Entry<K, V>> operator) {
 		return reduce(identity, operator, iterator());
 	}
 
-	default Entry<T, U> reduce(T first, U second, QuaternaryFunction<T, U, T, U, Entry<T, U>> operator) {
-		BinaryOperator<Entry<T, U>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
+	default Entry<K, V> reduce(K key, V value, QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
+		BinaryOperator<Entry<K, V>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
 		                                                                      e.getValue());
-		return reduce(Pair.of(first, second), binaryOperator, iterator());
+		return reduce(Pair.of(key, value), binaryOperator, iterator());
 	}
 
-	default Entry<T, U> reduce(Entry<T, U> identity, BinaryOperator<Entry<T, U>> operator,
-	                           Iterator<Entry<T, U>> iterator) {
-		Entry<T, U> result = identity;
+	default Entry<K, V> reduce(Entry<K, V> identity,
+	                           BinaryOperator<Entry<K, V>> operator,
+	                           Iterator<Entry<K, V>> iterator) {
+		Entry<K, V> result = identity;
 		while (iterator.hasNext())
 			result = operator.apply(result, iterator.next());
 		return result;
 	}
 
-	default Optional<Entry<T, U>> first() {
-		Iterator<Entry<T, U>> iterator = iterator();
+	default Optional<Entry<K, V>> first() {
+		Iterator<Entry<K, V>> iterator = iterator();
 		if (!iterator.hasNext())
 			return Optional.empty();
 
 		return Optional.of(iterator.next());
 	}
 
-	default Optional<Entry<T, U>> second() {
-		Iterator<Entry<T, U>> iterator = iterator();
+	default Optional<Entry<K, V>> second() {
+		Iterator<Entry<K, V>> iterator = iterator();
 
 		Iterators.skip(iterator);
 		if (!iterator.hasNext())
@@ -291,8 +294,8 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return Optional.of(iterator.next());
 	}
 
-	default Optional<Entry<T, U>> third() {
-		Iterator<Entry<T, U>> iterator = iterator();
+	default Optional<Entry<K, V>> third() {
+		Iterator<Entry<K, V>> iterator = iterator();
 
 		Iterators.skip(iterator, 2);
 		if (!iterator.hasNext())
@@ -301,12 +304,12 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return Optional.of(iterator.next());
 	}
 
-	default Optional<Entry<T, U>> last() {
-		Iterator<Entry<T, U>> iterator = iterator();
+	default Optional<Entry<K, V>> last() {
+		Iterator<Entry<K, V>> iterator = iterator();
 		if (!iterator.hasNext())
 			return Optional.empty();
 
-		Entry<T, U> last;
+		Entry<K, V> last;
 		do {
 			last = iterator.next();
 		} while (iterator.hasNext());
@@ -314,64 +317,64 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return Optional.of(last);
 	}
 
-	default Sequence<List<Entry<T, U>>> partition(int window) {
-		return () -> new PartitioningIterator<Entry<T, U>>(window).backedBy(iterator());
+	default Sequence<List<Entry<K, V>>> partition(int window) {
+		return () -> new PartitioningIterator<Entry<K, V>>(window).backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> step(int step) {
-		return () -> new SteppingIterator<Entry<T, U>>(step).backedBy(iterator());
+	default EntrySequence<K, V> step(int step) {
+		return () -> new SteppingIterator<Entry<K, V>>(step).backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> distinct() {
-		return () -> new DistinctIterator<Entry<T, U>>().backedBy(iterator());
+	default EntrySequence<K, V> distinct() {
+		return () -> new DistinctIterator<Entry<K, V>>().backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> sorted() {
-		return () -> new SortingIterator<Entry<T, U>>().backedBy(iterator());
+	default EntrySequence<K, V> sorted() {
+		return () -> new SortingIterator<Entry<K, V>>().backedBy(iterator());
 	}
 
-	default EntrySequence<T, U> sorted(Comparator<? super Entry<? extends T, ? extends U>> comparator) {
-		return () -> new SortingIterator<Entry<T, U>>(comparator).backedBy(iterator());
+	default EntrySequence<K, V> sorted(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
+		return () -> new SortingIterator<Entry<K, V>>(comparator).backedBy(iterator());
 	}
 
-	default Optional<Entry<T, U>> min(Comparator<? super Entry<? extends T, ? extends U>> comparator) {
+	default Optional<Entry<K, V>> min(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
 	}
 
-	default Optional<Entry<T, U>> max(Comparator<? super Entry<? extends T, ? extends U>> comparator) {
+	default Optional<Entry<K, V>> max(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
 		return reduce(BinaryOperator.maxBy(comparator));
 	}
 
 	default int count() {
 		int count = 0;
-		for (Entry<T, U> ignored : this) {
+		for (Entry<K, V> ignored : this) {
 			count++;
 		}
 		return count;
 	}
 
-	default boolean all(BiPredicate<? super T, ? super U> predicate) {
-		for (Entry<T, U> each : this) {
+	default boolean all(BiPredicate<? super K, ? super V> predicate) {
+		for (Entry<K, V> each : this) {
 			if (!predicate.test(each.getKey(), each.getValue()))
 				return false;
 		}
 		return true;
 	}
 
-	default boolean none(BiPredicate<? super T, ? super U> predicate) {
+	default boolean none(BiPredicate<? super K, ? super V> predicate) {
 		return !any(predicate);
 	}
 
-	default boolean any(BiPredicate<? super T, ? super U> predicate) {
-		for (Entry<T, U> each : this) {
+	default boolean any(BiPredicate<? super K, ? super V> predicate) {
+		for (Entry<K, V> each : this) {
 			if (predicate.test(each.getKey(), each.getValue()))
 				return true;
 		}
 		return false;
 	}
 
-	default EntrySequence<T, U> peek(BiConsumer<T, U> action) {
-		Consumer<? super Entry<T, U>> consumer = Pair.consumer(action);
+	default EntrySequence<K, V> peek(BiConsumer<K, V> action) {
+		Consumer<? super Entry<K, V>> consumer = Pair.consumer(action);
 		return () -> new PeekingIterator<>(consumer).backedBy(iterator());
 	}
 }

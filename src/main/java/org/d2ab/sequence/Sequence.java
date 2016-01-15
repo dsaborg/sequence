@@ -505,7 +505,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends
 			                                                                                                   Entry<K, V>> mapper) {
 		M result = constructor.get();
-		forEach(each -> Pair.putEntry(result, mapper.apply(each)));
+		forEach(each -> Pair.put(result, mapper.apply(each)));
 		return result;
 	}
 

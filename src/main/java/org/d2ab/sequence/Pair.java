@@ -73,8 +73,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		return p -> action.accept(p.getKey(), p.getValue());
 	}
 
-	static <KK, VV, K, V> Entry<KK, VV> map(Entry<K, V> entry, Function<? super K, ? extends KK> keyMapper,
-	                                        Function<? super V, ? extends VV> valueMapper) {
+	static <KK, VV, K, V> Pair<KK, VV> map(Entry<K, V> entry,
+	                                       Function<? super K, ? extends KK> keyMapper,
+	                                       Function<? super V, ? extends VV> valueMapper) {
 		return new Base<KK, VV>() {
 			@Override
 			public KK getLeft() {
@@ -92,7 +93,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		return predicate.test(entry.getKey(), entry.getValue());
 	}
 
-	static <K, V> Map<K, V> putEntry(Map<K, V> result, Entry<K, V> each) {
+	static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> each) {
 		result.put(each.getKey(), each.getValue());
 		return result;
 	}
@@ -222,7 +223,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	}
 
 	default Map<L, R> putInto(Map<L, R> map) {
-		return putEntry(map, this);
+		return put(map, this);
 	}
 
 	default <T> Iterator<T> iterator() {
