@@ -27,46 +27,6 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
 
-### Maps
-
-`Maps` are handled as `Sequences` of `Entry` or `Pair`, with special transformation methods that convert 
-to/from `Maps`. `Pair` implements `Entry` and provides extra transformation methods.
-
-```
-Sequence<Integer> keys = Sequence.of(1, 2, 3);
-Sequence<String> values = Sequence.of("1", "2", "3");
-
-Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
-Map<Integer, String> map = keyValueSequence.toMap();
-
-assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
-```
-
-You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
-
-```
-Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
-
-Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
-                                                   .map(Pair::from)
-                                                   .filter(p -> p.test((s, i) -> i != 2))
-                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
-
-assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
-```
-
-You can also work directly on `Entry` keys and values using `EntrySequence`.
-
-```
-Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
-
-EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
-                                                           .filter((k, v) -> v % 2 != 0)
-                                                           .map((k, v) -> Pair.of(v, k));
-
-assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
-```
-
 ### Iterable
 
 Because `Sequences` are `Iterables` you can re-use them safely after you have already traversed them, as long as they're
@@ -153,6 +113,46 @@ Sequence<Long> thirteen = Sequence.recurse(1L, i -> i + 1).limit(13);
 Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 assertThat(factorial, is(6227020800L));
+```
+
+### Maps
+
+`Maps` are handled as `Sequences` of `Entry` or `Pair`, with special transformation methods that convert 
+to/from `Maps`. `Pair` implements `Entry` and provides extra transformation methods.
+
+```
+Sequence<Integer> keys = Sequence.of(1, 2, 3);
+Sequence<String> values = Sequence.of("1", "2", "3");
+
+Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
+Map<Integer, String> map = keyValueSequence.toMap();
+
+assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
+```
+
+You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
+
+```
+Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
+                                                   .map(Pair::from)
+                                                   .filter(p -> p.test((s, i) -> i != 2))
+                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+
+assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+```
+
+You can also work directly on `Entry` keys and values using `EntrySequence`.
+
+```
+Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
+                                                           .filter((k, v) -> v % 2 != 0)
+                                                           .map((k, v) -> Pair.of(v, k));
+
+assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
 
 ### Primitive
