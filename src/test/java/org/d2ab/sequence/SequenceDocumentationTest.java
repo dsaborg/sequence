@@ -22,7 +22,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,8 +34,7 @@ import static org.junit.Assert.assertThat;
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0)
-		                             .map(Objects::toString)
+		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0).map(Object::toString)
 		                             .toList();
 
 		assertThat(evens, contains("2", "4", "6", "8"));

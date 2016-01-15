@@ -21,7 +21,7 @@ processing over 1 million or so entries, use parallel `Streams`.
 ```
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
                              .filter(x -> x % 2 == 0)
-                             .map(Objects::toString)
+                             .map(Object::toString)
                              .toList();
 
 assertThat(evens, contains("2", "4", "6", "8"));
