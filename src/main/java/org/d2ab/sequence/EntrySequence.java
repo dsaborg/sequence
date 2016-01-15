@@ -116,7 +116,7 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	default <V, W> EntrySequence<V, W> flatMap(@Nonnull
 	                                           BiFunction<? super T, ? super U, ? extends Iterable<Entry<V, W>>>
-			                                               mapper) {
+			                                           mapper) {
 		ChainingIterable<Entry<V, W>> result = new ChainingIterable<>();
 		forEach(e -> result.append(mapper.apply(e.getKey(), e.getValue())));
 		return result::iterator;
@@ -124,6 +124,34 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	default EntrySequence<T, U> until(Entry<T, U> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+	}
+
+	default EntrySequence<T, U> endingAt(Entry<T, U> terminal) {
+		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+	}
+
+	default EntrySequence<T, U> until(T first, U second) {
+		return until(Pair.of(first, second));
+	}
+
+	default EntrySequence<T, U> endingAt(T first, U second) {
+		return endingAt(Pair.of(first, second));
+	}
+
+	default EntrySequence<T, U> until(BiPredicate<? super T, ? super U> terminal) {
+		return until(Pair.predicate(terminal));
+	}
+
+	default EntrySequence<T, U> endingAt(BiPredicate<? super T, ? super U> terminal) {
+		return endingAt(Pair.predicate(terminal));
+	}
+
+	default EntrySequence<T, U> until(Predicate<? super Entry<T, U>> terminal) {
+		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+	}
+
+	default EntrySequence<T, U> endingAt(Predicate<? super Entry<T, U>> terminal) {
+		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
 	}
 
 	default Entry<T, U>[] toArray() {
@@ -207,8 +235,34 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 		return result.toString();
 	}
 
+	default Optional<Entry<T, U>> reduce(BinaryOperator<Entry<T, U>> operator) {
+		Iterator<Entry<T, U>> iterator = iterator();
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		Entry<T, U> result = reduce(iterator.next(), operator, iterator);
+		return Optional.of(result);
+	}
+
+	default Optional<Entry<T, U>> reduce(QuaternaryFunction<T, U, T, U, Entry<T, U>> operator) {
+		Iterator<Entry<T, U>> iterator = iterator();
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		BinaryOperator<Entry<T, U>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
+		                                                                      e.getValue());
+		Entry<T, U> result = reduce(iterator.next(), binaryOperator, iterator);
+		return Optional.of(result);
+	}
+
 	default Entry<T, U> reduce(Entry<T, U> identity, BinaryOperator<Entry<T, U>> operator) {
 		return reduce(identity, operator, iterator());
+	}
+
+	default Entry<T, U> reduce(T first, U second, QuaternaryFunction<T, U, T, U, Entry<T, U>> operator) {
+		BinaryOperator<Entry<T, U>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
+		                                                                      e.getValue());
+		return reduce(Pair.of(first, second), binaryOperator, iterator());
 	}
 
 	default Entry<T, U> reduce(Entry<T, U> identity, BinaryOperator<Entry<T, U>> operator,
@@ -282,15 +336,6 @@ public interface EntrySequence<T, U> extends Iterable<Entry<T, U>> {
 
 	default Optional<Entry<T, U>> min(Comparator<? super Entry<? extends T, ? extends U>> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
-	}
-
-	default Optional<Entry<T, U>> reduce(BinaryOperator<Entry<T, U>> operator) {
-		Iterator<Entry<T, U>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		Entry<T, U> result = reduce(iterator.next(), operator, iterator);
-		return Optional.of(result);
 	}
 
 	default Optional<Entry<T, U>> max(Comparator<? super Entry<? extends T, ? extends U>> comparator) {

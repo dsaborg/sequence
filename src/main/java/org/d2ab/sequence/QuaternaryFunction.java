@@ -16,11 +16,10 @@
 
 package org.d2ab.sequence;
 
-import java.util.Iterator;
-import java.util.function.BiConsumer;
-
-public interface BiIterator<T, U> extends Iterator<Pair<T, U>> {
-	default void forEachRemaining(BiConsumer<? super T, ? super U> action) {
-		forEachRemaining(Pair.consumer(action));
-	}
+/**
+ *
+ */
+@FunctionalInterface
+public interface QuaternaryFunction<T, U, V, W, R> {
+	R apply(T t, U u, V v, W w);
 }

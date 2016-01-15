@@ -62,7 +62,7 @@ public class EntrySequenceTest {
 	                                                                        Pair.of("67", 67));
 	private final Pair<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
 	private final Pair<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-	                                                                 Pair.of("4", 4), Pair.of("5", 5)};
+	                                                                Pair.of("4", 4), Pair.of("5", 5)};
 	private final Pair<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
 	private final Pair<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
@@ -351,8 +351,51 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void recurseUntil() {
+	public void until() {
 		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(Pair.of("4", 4));
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void endingAt() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt(Pair.of("3", 3));
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void untilPredicate() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(e -> e.equals(Pair.of("4", 4)));
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt(e -> e.equals(Pair.of("3", 3)));
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void untilBinary() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until("4", 4);
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void endingAtBinary() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt("3", 3);
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void untilBinaryPredicate() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until((k, v) -> k.equals("4") && v == 4);
+		twice(() -> assertThat(sequence, contains(entries123)));
+	}
+
+	@Test
+	public void endingAtBinaryPredicate() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345)
+		                                                       .endingAt((k, v) -> k.equals("3") && v == 3);
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
@@ -488,6 +531,21 @@ public class EntrySequenceTest {
 	public void reduce() {
 		BinaryOperator<Entry<String, Integer>> sumPair = (r, e) -> Pair.of(r.getKey() + e.getKey(),
 		                                                                   r.getValue() + e.getValue());
+
+		twice(() -> {
+			assertThat(empty.reduce(sumPair), is(Optional.empty()));
+			assertThat(_1.reduce(sumPair), is(Optional.of(Pair.of("1", 1))));
+			assertThat(_12.reduce(sumPair), is(Optional.of(Pair.of("12", 3))));
+			assertThat(_123.reduce(sumPair), is(Optional.of(Pair.of("123", 6))));
+		});
+	}
+
+	@Test
+	public void reduceQuaternary() {
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumPair = (rk, rv, ek, ev) ->
+				                                                                                       Pair.of(
+				rk + ek, rv + ev);
+
 		twice(() -> {
 			assertThat(empty.reduce(sumPair), is(Optional.empty()));
 			assertThat(_1.reduce(sumPair), is(Optional.of(Pair.of("1", 1))));
@@ -505,6 +563,20 @@ public class EntrySequenceTest {
 			assertThat(_1.reduce(Pair.of("17", 17), sumPair), is(Pair.of("171", 18)));
 			assertThat(_12.reduce(Pair.of("17", 17), sumPair), is(Pair.of("1712", 20)));
 			assertThat(_123.reduce(Pair.of("17", 17), sumPair), is(Pair.of("17123", 23)));
+		});
+	}
+
+	@Test
+	public void reduceQuaternaryWithIdentity() {
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumPair = (rk, rv, ek, ev) ->
+				                                                                                       Pair.of(
+				rk + ek, rv + ev);
+
+		twice(() -> {
+			assertThat(empty.reduce("17", 17, sumPair), is(Pair.of("17", 17)));
+			assertThat(_1.reduce("17", 17, sumPair), is(Pair.of("171", 18)));
+			assertThat(_12.reduce("17", 17, sumPair), is(Pair.of("1712", 20)));
+			assertThat(_123.reduce("17", 17, sumPair), is(Pair.of("17123", 23)));
 		});
 	}
 

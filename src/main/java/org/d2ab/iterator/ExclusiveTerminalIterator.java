@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class ExclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
-	private final Predicate<T> terminalPredicate;
+	private final Predicate<? super T> terminalPredicate;
 
 	@Nullable
 	private T next;
@@ -32,7 +32,7 @@ public class ExclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
 		this(o -> Objects.equals(o, terminal));
 	}
 
-	public ExclusiveTerminalIterator(Predicate<T> terminalPredicate) {
+	public ExclusiveTerminalIterator(Predicate<? super T> terminalPredicate) {
 		this.terminalPredicate = terminalPredicate;
 	}
 

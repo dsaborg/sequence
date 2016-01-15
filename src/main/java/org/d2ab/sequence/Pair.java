@@ -97,6 +97,10 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		return result;
 	}
 
+	static <T, U> Predicate<? super Entry<T, U>> predicate(BiPredicate<? super T, ? super U> predicate) {
+		return p -> predicate.test(p.getKey(), p.getValue());
+	}
+
 	L getLeft();
 
 	R getRight();
