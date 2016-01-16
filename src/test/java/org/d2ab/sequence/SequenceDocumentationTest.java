@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -158,7 +159,7 @@ public class SequenceDocumentationTest {
 
 		EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
 		                                                           .filter((k, v) -> v % 2 != 0)
-		                                                           .map((k, v) -> Pair.of(v, k));
+		                                                           .map((k, v) -> Entries.of(v, k));
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}
@@ -182,5 +183,18 @@ public class SequenceDocumentationTest {
 		DoubleSeq squareRoots = DoubleSeq.positive().limit(3).map(Math::sqrt);
 
 		assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
+	}
+
+	@Test
+	public void biSequence() {
+		BiSequence<String, Integer> presidents = BiSequence.pair("Abraham Lincoln", 1861)
+		                                                   .appendPair("Richard Nixon", 1969)
+		                                                   .appendPair("George Bush", 2001)
+		                                                   .appendPair("Barack Obama", 2005);
+
+		Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
+
+		assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
+		                                  "Barack Obama (2005)"));
 	}
 }

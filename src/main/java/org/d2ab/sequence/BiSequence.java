@@ -18,10 +18,11 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterable.ChainingIterable;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
+import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.*;
@@ -44,6 +45,14 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> of(Pair<L, R>... items) {
 		return from(asList(items));
+	}
+
+	static <L, R> BiSequence<L, R> pair(L left, R right) {
+		return of(Pair.of(left, right));
+	}
+
+	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>> iterable) {
+		return iterable::iterator;
 	}
 
 	@SafeVarargs
@@ -69,18 +78,19 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	static <L, R> BiSequence<L, R> recurse(@Nullable L leftSeed,
 	                                       @Nullable R rightSeed,
-	                                       BiFunction<L, R, ? extends Pair<L, R>> op) {
-		return () -> new RecursiveIterator<>(Pair.of(leftSeed, rightSeed), p -> op.apply(p.getKey(), p.getValue()));
+	                                       BiFunction<? super L, ? super R, ? extends Pair<L, R>> op) {
+		return recurse(Pair.of(leftSeed, rightSeed), Pair.asUnaryOperator(op));
+	}
+
+	static <L, R> BiSequence<L, R> recurse(Pair<L, R> seed, UnaryOperator<Pair<L, R>> op) {
+		return () -> new RecursiveIterator<>(seed, op);
 	}
 
 	static <L, R, LL, RR> BiSequence<LL, RR> recurse(@Nullable L leftSeed,
 	                                                 @Nullable R rightSeed,
-	                                                 BiFunction<L, R, Pair<LL, RR>> f,
-	                                                 BiFunction<LL, RR, Pair<L, R>> g) {
-		return () -> new RecursiveIterator<>(f.apply(leftSeed, rightSeed), p -> {
-			Pair<L, R> p2 = g.apply(p.getKey(), p.getValue());
-			return f.apply(p2.getKey(), p2.getValue());
-		});
+	                                                 BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> f,
+	                                                 BiFunction<? super LL, ? super RR, ? extends Pair<L, R>> g) {
+		return recurse(f.apply(leftSeed, rightSeed), Pair.asUnaryOperator(f, g));
 	}
 
 	static <K, V> BiSequence<K, V> from(Map<K, V> map) {
@@ -88,10 +98,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default <LL, RR> BiSequence<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
-		return map(e -> mapper.apply(e.getKey(), e.getValue()));
+		return map(Pair.asFunction(mapper));
 	}
 
-	default <LL, RR> BiSequence<LL, RR> map(Function<Pair<L, R>, Pair<LL, RR>> mapper) {
+	default <LL, RR> BiSequence<LL, RR> map(Function<? super Pair<L, R>, ? extends Pair<LL, RR>> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
@@ -114,14 +124,19 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> filter(BiPredicate<? super L, ? super R> predicate) {
-		return () -> new FilteringIterator<Pair<L, R>>(e -> Pair.test(e, predicate)).backedBy(iterator());
+		return filter(Pair.asPredicate(predicate));
 	}
 
-	default <LL, RR> BiSequence<LL, RR> flatMap(@Nonnull
-	                                            BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>>
+	default BiSequence<L, R> filter(Predicate<? super Pair<L, R>> predicate) {
+		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
+	}
+
+	default <LL, RR> BiSequence<LL, RR> flatMap(BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>>
 			                                            mapper) {
 		ChainingIterable<Pair<LL, RR>> result = new ChainingIterable<>();
-		forEach(e -> result.append(mapper.apply(e.getKey(), e.getValue())));
+		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = Pair.asFunction(mapper);
+		Consumer<? super Iterable<Pair<LL, RR>>> append = result::append;
+		Sequence.from(this).map(function).forEach(append);
 		return result::iterator;
 	}
 
@@ -142,11 +157,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> until(BiPredicate<? super L, ? super R> terminal) {
-		return until(Pair.predicate(terminal));
+		return until(Pair.asPredicate(terminal));
 	}
 
 	default BiSequence<L, R> endingAt(BiPredicate<? super L, ? super R> terminal) {
-		return endingAt(Pair.predicate(terminal));
+		return endingAt(Pair.asPredicate(terminal));
 	}
 
 	default BiSequence<L, R> until(Predicate<? super Pair<L, R>> terminal) {
@@ -194,7 +209,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default <M extends Map<L, R>> M toMap(Supplier<? extends M> constructor) {
 		M result = constructor.get();
-		forEach(each -> Pair.put(result, each));
+		forEach(each -> Entries.put(result, each));
 		return result;
 	}
 
@@ -252,9 +267,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		if (!iterator.hasNext())
 			return Optional.empty();
 
-		BinaryOperator<Pair<L, R>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
-		                                                                     e.getValue());
-		Pair<L, R> result = reduce(iterator.next(), binaryOperator, iterator);
+		Pair<L, R> result = reduce(iterator.next(), Pair.asBinaryOperator(operator), iterator);
 		return Optional.of(result);
 	}
 
@@ -263,9 +276,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default Pair<L, R> reduce(L left, R right, QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
-		BinaryOperator<Pair<L, R>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
-		                                                                     e.getValue());
-		return reduce(Pair.of(left, right), binaryOperator, iterator());
+		return reduce(Pair.of(left, right), Pair.asBinaryOperator(operator), iterator());
 	}
 
 	default Pair<L, R> reduce(Pair<L, R> identity, BinaryOperator<Pair<L, R>> operator, Iterator<Pair<L, R>>
@@ -347,17 +358,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default int count() {
 		int count = 0;
-		for (Pair<L, R> ignored : this) {
+		for (Pair<L, R> ignored : this)
 			count++;
-		}
 		return count;
 	}
 
-	default boolean all(BiPredicate<? super L, ? super R> predicate) {
-		for (Pair<L, R> each : this) {
-			if (!predicate.test(each.getKey(), each.getValue()))
+	default boolean all(BiPredicate<? super L, ? super R> biPredicate) {
+		Predicate<? super Pair<L, R>> predicate = Pair.asPredicate(biPredicate);
+		for (Pair<L, R> each : this)
+			if (!predicate.test(each))
 				return false;
-		}
 		return true;
 	}
 
@@ -365,16 +375,52 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return !any(predicate);
 	}
 
-	default boolean any(BiPredicate<? super L, ? super R> predicate) {
-		for (Pair<L, R> each : this) {
-			if (predicate.test(each.getKey(), each.getValue()))
+	default boolean any(BiPredicate<? super L, ? super R> biPredicate) {
+		Predicate<? super Pair<L, R>> predicate = Pair.asPredicate(biPredicate);
+		for (Pair<L, R> each : this)
+			if (predicate.test(each))
 				return true;
-		}
 		return false;
 	}
 
 	default BiSequence<L, R> peek(BiConsumer<L, R> action) {
-		Consumer<? super Pair<L, R>> consumer = Pair.consumer(action);
+		Consumer<? super Pair<L, R>> consumer = Pair.asConsumer(action);
 		return () -> new PeekingIterator<>(consumer).backedBy(iterator());
+	}
+
+	default BiSequence<L, R> append(Iterator<? extends Pair<L, R>> iterator) {
+		return append(Iterables.from(iterator));
+	}
+
+	default BiSequence<L, R> append(Iterable<? extends Pair<L, R>> that) {
+		@SuppressWarnings("unchecked")
+		Iterable<Pair<L, R>> chainingSequence = new ChainingIterable<>(this, that);
+		return chainingSequence::iterator;
+	}
+
+	@SuppressWarnings("unchecked")
+	default BiSequence<L, R> append(Pair<L, R>... entries) {
+		return append(Iterables.from(entries));
+	}
+
+	@SuppressWarnings("unchecked")
+	default BiSequence<L, R> appendPair(L left, R right) {
+		return append(Pair.of(left, right));
+	}
+
+	default BiSequence<L, R> append(Stream<Pair<L, R>> stream) {
+		return append(Iterables.from(stream));
+	}
+
+	default Sequence<Pair<L, R>> toSequence() {
+		return Sequence.from(this);
+	}
+
+	default <T> Sequence<T> toSequence(BiFunction<L, R, T> mapper) {
+		return toSequence(Pair.asFunction(mapper));
+	}
+
+	default <T> Sequence<T> toSequence(Function<? super Pair<L, R>, ? extends T> mapper) {
+		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 }

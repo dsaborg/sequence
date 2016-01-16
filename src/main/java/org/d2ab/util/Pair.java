@@ -16,6 +16,9 @@
 
 package org.d2ab.util;
 
+import org.d2ab.function.Functions;
+import org.d2ab.function.QuaternaryFunction;
+
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -23,8 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.function.*;
-
-import static java.util.Comparator.*;
 
 public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	static <T, U> Pair<T, U> of(@Nullable T left, @Nullable U right) {
@@ -69,10 +70,6 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		};
 	}
 
-	static <T, U> Consumer<? super Entry<T, U>> consumer(BiConsumer<? super T, ? super U> action) {
-		return p -> action.accept(p.getKey(), p.getValue());
-	}
-
 	static <KK, VV, K, V> Pair<KK, VV> map(Entry<K, V> entry,
 	                                       Function<? super K, ? extends KK> keyMapper,
 	                                       Function<? super V, ? extends VV> valueMapper) {
@@ -90,16 +87,41 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	}
 
 	static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> predicate) {
-		return predicate.test(entry.getKey(), entry.getValue());
+		return Entries.asPredicate(predicate).test(entry);
 	}
 
-	static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> each) {
-		result.put(each.getKey(), each.getValue());
-		return result;
+	static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends Pair<K, V>>
+			                                                        op) {
+		return entry -> op.apply(entry.getKey(), entry.getValue());
 	}
 
-	static <T, U> Predicate<? super Entry<T, U>> predicate(BiPredicate<? super T, ? super U> predicate) {
-		return p -> predicate.test(p.getKey(), p.getValue());
+	static <K, V, KK, VV> UnaryOperator<Pair<KK, VV>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
+			                                                                                                   Pair<KK, VV>> f,
+
+	                                                                  BiFunction<? super KK, ? super VV, ? extends
+			                                                                                                     Pair<K, V>> g) {
+
+		Function<? super Pair<K, V>, ? extends Pair<KK, VV>> f1 = asFunction(f);
+		Function<? super Pair<KK, VV>, ? extends Pair<K, V>> g1 = asFunction(g);
+		return Functions.toUnaryOperator(f1, g1);
+	}
+
+	static <K, V> BinaryOperator<Pair<K, V>> asBinaryOperator(QuaternaryFunction<K, V, K, V, Pair<K, V>> f) {
+		return (e1, e2) -> f.apply(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue());
+	}
+
+	static <K, V, R> Function<? super Pair<K, V>, ? extends R> asFunction(BiFunction<? super K, ? super V, ? extends
+			                                                                                                       R>
+			                                                                      mapper) {
+		return entry -> mapper.apply(entry.getKey(), entry.getValue());
+	}
+
+	static <K, V> Predicate<? super Pair<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
+		return entry -> predicate.test(entry.getKey(), entry.getValue());
+	}
+
+	static <K, V> Consumer<? super Pair<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
+		return entry -> action.accept(entry.getKey(), entry.getValue());
 	}
 
 	L getLeft();
@@ -223,7 +245,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	}
 
 	default Map<L, R> putInto(Map<L, R> map) {
-		return put(map, this);
+		return Entries.put(map, this);
 	}
 
 	default <T> Iterator<T> iterator() {
@@ -234,11 +256,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 
 	abstract class Base<L, R> implements Pair<L, R> {
 		@SuppressWarnings("unchecked")
-		public static final Comparator NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
-		@SuppressWarnings("unchecked")
-		private final Comparator<Entry> COMPARATOR = comparing((Function<Entry, Object>) Entry::getKey,
-		                                                       NULLS_FIRST).thenComparing(
-				(Function<Entry, Object>) Entry::getValue, NULLS_FIRST);
+		private static final Comparator<Entry> COMPARATOR = (Comparator<Entry>) Entries.comparator();
 
 		public static String format(Object o) {
 			if (o instanceof String) {

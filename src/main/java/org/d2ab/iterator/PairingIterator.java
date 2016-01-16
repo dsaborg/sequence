@@ -29,21 +29,20 @@ public class PairingIterator<T> extends DelegatingReferenceIterator<T, Pair<T, T
 
 	@Override
 	public boolean hasNext() {
-		boolean hasNext = iterator.hasNext();
+		if (!hasPrevious) {
+			boolean hasNext = iterator.hasNext();
+
+			// First time, get the first element so we have a base for the first pair
+			if (hasNext) {
+				previous = iterator.next();
+				hasPrevious = true;
+			}
+
+			return hasNext;
+		}
 
 		// Ensure first element is processed with a trailing null if iterator contains only one item
-		if (hasPrevious) {
-			return !started || hasNext;
-		}
-
-		// First time hasNext() is called (may be from next), get the first element so we have a base for the first
-		// pair
-		if (hasNext) {
-			previous = iterator.next();
-			hasPrevious = true;
-		}
-
-		return hasNext;
+		return !started || iterator.hasNext();
 	}
 
 	@Override

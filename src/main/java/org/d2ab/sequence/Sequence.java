@@ -24,6 +24,7 @@ import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 
 import javax.annotation.Nullable;
@@ -506,7 +507,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends
 			                                                                                                   Entry<K, V>> mapper) {
 		M result = constructor.get();
-		forEach(each -> Pair.put(result, mapper.apply(each)));
+		forEach(each -> Entries.put(result, mapper.apply(each)));
 		return result;
 	}
 
@@ -628,6 +629,16 @@ public interface Sequence<T> extends Iterable<T> {
 
 	default Sequence<Pair<T, T>> pair() {
 		return () -> new PairingIterator<T>().backedBy(iterator());
+	}
+
+	/**
+	 * Converts a {@code Sequence} of {@link Pair}s of items into a {@link BiSequence}. Note the sequence must be of
+	 * {@link Pair} or a {@link ClassCastException} will occur when traversal is attempted.
+	 */
+	default <L, R> BiSequence<L, R> toBiSequence() {
+		@SuppressWarnings("unchecked")
+		Sequence<Pair<L, R>> pairSequence = (Sequence<Pair<L, R>>) this;
+		return BiSequence.from(pairSequence);
 	}
 
 	default Sequence<List<T>> partition(int window) {

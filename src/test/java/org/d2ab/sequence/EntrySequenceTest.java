@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.util.Arrayz;
-import org.d2ab.util.Pair;
+import org.d2ab.util.Entries;
 import org.junit.Test;
 
 import java.util.*;
@@ -39,38 +39,43 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("unchecked")
 public class EntrySequenceTest {
 	private final EntrySequence<String, Integer> empty = EntrySequence.<String, Integer>empty();
-	private final EntrySequence<String, Integer> _1 = EntrySequence.of(Pair.of("1", 1));
-	private final EntrySequence<String, Integer> _12 = EntrySequence.of(Pair.of("1", 1), Pair.of("2", 2));
-	private final EntrySequence<String, Integer> _123 = EntrySequence.of(Pair.of("1", 1), Pair.of("2", 2),
-	                                                                     Pair.of("3", 3));
-	private final EntrySequence<String, Integer> _1234 = EntrySequence.of(Pair.of("1", 1), Pair.of("2", 2),
-	                                                                      Pair.of("3", 3), Pair.of("4", 4));
-	private final EntrySequence<String, Integer> _12345 = EntrySequence.of(Pair.of("1", 1), Pair.of("2", 2),
-	                                                                       Pair.of("3", 3), Pair.of("4", 4),
-	                                                                       Pair.of("5", 5));
-	private final EntrySequence<String, Integer> _123456789 = EntrySequence.of(Pair.of("1", 1), Pair.of("2", 2),
-	                                                                           Pair.of("3", 3), Pair.of("4", 4),
-	                                                                           Pair.of("5", 5), Pair.of("6", 6),
-	                                                                           Pair.of("7", 7), Pair.of("8", 8),
-	                                                                           Pair.of("9", 9));
-	private final EntrySequence<String, Integer> random1 = EntrySequence.of(Pair.of("17", 17));
-	private final EntrySequence<String, Integer> random2 = EntrySequence.of(Pair.of("17", 17), Pair.of("32", 32));
-	private final EntrySequence<String, Integer> random3 = EntrySequence.of(Pair.of("2", 2), Pair.of("3", 3),
-	                                                                        Pair.of("4", 4));
-	private final EntrySequence<String, Integer> random9 = EntrySequence.of(Pair.of("67", 67), Pair.of("5", 5),
-	                                                                        Pair.of("43", 43), Pair.of("3", 3),
-	                                                                        Pair.of("5", 5), Pair.of("7", 7),
-	                                                                        Pair.of("24", 24), Pair.of("5", 5),
-	                                                                        Pair.of("67", 67));
-	private final Pair<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
-	private final Pair<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-	                                                                Pair.of("4", 4), Pair.of("5", 5)};
-	private final Pair<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
-	private final Pair<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
+	private final EntrySequence<String, Integer> _1 = EntrySequence.of(Entries.of("1", 1));
+	private final EntrySequence<String, Integer> _12 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2));
+	private final EntrySequence<String, Integer> _123 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2),
+	                                                                     Entries.of("3", 3));
+	private final EntrySequence<String, Integer> _1234 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2),
+	                                                                      Entries.of("3", 3), Entries.of("4", 4));
+	private final EntrySequence<String, Integer> _12345 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2),
+	                                                                       Entries.of("3", 3), Entries.of("4", 4),
+	                                                                       Entries.of("5", 5));
+	private final EntrySequence<String, Integer> _123456789 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2),
+	                                                                           Entries.of("3", 3), Entries.of("4", 4),
+	                                                                           Entries.of("5", 5), Entries.of("6", 6),
+	                                                                           Entries.of("7", 7), Entries.of("8", 8),
+	                                                                           Entries.of("9", 9));
+	private final EntrySequence<String, Integer> random1 = EntrySequence.of(Entries.of("17", 17));
+	private final EntrySequence<String, Integer> random2 = EntrySequence.of(Entries.of("17", 17), Entries.of("32",
+	                                                                                                         32));
+	private final EntrySequence<String, Integer> random3 = EntrySequence.of(Entries.of("2", 2), Entries.of("3", 3),
+	                                                                        Entries.of("4", 4));
+	private final EntrySequence<String, Integer> random9 = EntrySequence.of(Entries.of("67", 67), Entries.of("5", 5),
+	                                                                        Entries.of("43", 43), Entries.of("3", 3),
+	                                                                        Entries.of("5", 5), Entries.of("7", 7),
+	                                                                        Entries.of("24", 24), Entries.of("5", 5),
+	                                                                        Entries.of("67", 67));
+	private final Entry<String, Integer>[] entries123 = new Entry[]{Entries.of("1", 1), Entries.of("2", 2),
+	                                                                Entries.of("3", 3)};
+	private final Entry<String, Integer>[] entries12345 = new Entry[]{Entries.of("1", 1), Entries.of("2", 2),
+	                                                                  Entries.of("3", 3), Entries.of("4", 4),
+	                                                                  Entries.of("5", 5)};
+	private final Entry<String, Integer>[] entries456 = new Entry[]{Entries.of("4", 4), Entries.of("5", 5),
+	                                                                Entries.of("6", 6)};
+	private final Entry<String, Integer>[] entries789 = new Entry[]{Entries.of("7", 7), Entries.of("8", 8),
+	                                                                Entries.of("9", 9)};
 
 	@Test
 	public void ofOne() {
-		twice(() -> assertThat(_1, contains(Pair.of("1", 1))));
+		twice(() -> assertThat(_1, contains(Entries.of("1", 1))));
 	}
 
 	@Test
@@ -88,7 +93,7 @@ public class EntrySequenceTest {
 		twice(() -> {
 			int expected = 1;
 			for (Entry<String, Integer> i : _123)
-				assertThat(i, is(Pair.of(String.valueOf(expected), expected++)));
+				assertThat(i, is(Entries.of(String.valueOf(expected), expected++)));
 		});
 	}
 
@@ -108,13 +113,13 @@ public class EntrySequenceTest {
 			Iterator iterator = _123.iterator();
 
 			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(Pair.of("1", 1)));
+			assertThat(iterator.next(), is(Entries.of("1", 1)));
 
 			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(Pair.of("2", 2)));
+			assertThat(iterator.next(), is(Entries.of("2", 2)));
 
 			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(Pair.of("3", 3)));
+			assertThat(iterator.next(), is(Entries.of("3", 3)));
 
 			assertThat(iterator.hasNext(), is(false));
 			assertThat(iterator.hasNext(), is(false));
@@ -135,12 +140,12 @@ public class EntrySequenceTest {
 
 	@Test
 	public void ofWithNulls() {
-		EntrySequence<String, Integer> sequence = EntrySequence.of(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3),
-		                                                           Pair.of("4", null), Pair.of(null, null));
+		EntrySequence<String, Integer> sequence = EntrySequence.of(Entries.of("1", 1), Entries.of(null, 2),
+		                                                           Entries.of("3", 3), Entries.of("4", null),
+		                                                           Entries.of(null, null));
 
-		twice(() -> assertThat(sequence,
-		                       contains(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
-		                                Pair.of(null, null))));
+		twice(() -> assertThat(sequence, contains(Entries.of("1", 1), Entries.of(null, 2), Entries.of("3", 3),
+		                                          Entries.of("4", null), Entries.of(null, null))));
 	}
 
 	@Test
@@ -177,23 +182,23 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 
 		twice(() -> assertThat(sequenceFromIterables,
-		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
-		                                Pair.of("9", 9))));
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
+		                                Entries.of("5", 5), Entries.of("6", 6), Entries.of("7", 7), Entries.of("8", 8),
+		                                Entries.of("9", 9))));
 	}
 
 	@Test
-	public void fromPairIterables() {
-		Iterable<Pair<String, Integer>> first = asList(entries123);
-		Iterable<Pair<String, Integer>> second = asList(entries456);
-		Iterable<Pair<String, Integer>> third = asList(entries789);
+	public void fromEntryIterables() {
+		Iterable<Entry<String, Integer>> first = asList(entries123);
+		Iterable<Entry<String, Integer>> second = asList(entries456);
+		Iterable<Entry<String, Integer>> third = asList(entries789);
 
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 
 		twice(() -> assertThat(sequenceFromIterables,
-		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
-		                                Pair.of("9", 9))));
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
+		                                Entries.of("5", 5), Entries.of("6", 6), Entries.of("7", 7), Entries.of("8", 8),
+		                                Entries.of("9", 9))));
 	}
 
 	@Test
@@ -209,10 +214,10 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(skipNone, contains(entries123)));
 
 		EntrySequence<String, Integer> skipOne = _123.skip(1);
-		twice(() -> assertThat(skipOne, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(skipOne, contains(Entries.of("2", 2), Entries.of("3", 3))));
 
 		EntrySequence<String, Integer> skipTwo = _123.skip(2);
-		twice(() -> assertThat(skipTwo, contains(Pair.of("3", 3))));
+		twice(() -> assertThat(skipTwo, contains(Entries.of("3", 3))));
 
 		EntrySequence<String, Integer> skipThree = _123.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
@@ -227,16 +232,16 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(limitZero, is(emptyIterable())));
 
 		EntrySequence<String, Integer> limitOne = _123.limit(1);
-		twice(() -> assertThat(limitOne, contains(Pair.of("1", 1))));
+		twice(() -> assertThat(limitOne, contains(Entries.of("1", 1))));
 
 		EntrySequence<String, Integer> limitTwo = _123.limit(2);
-		twice(() -> assertThat(limitTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		twice(() -> assertThat(limitTwo, contains(Entries.of("1", 1), Entries.of("2", 2))));
 
 		EntrySequence<String, Integer> limitThree = _123.limit(3);
-		twice(() -> assertThat(limitThree, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(limitThree, contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3))));
 
 		EntrySequence<String, Integer> limitFour = _123.limit(4);
-		twice(() -> assertThat(limitFour, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(limitFour, contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3))));
 	}
 
 	@Test
@@ -244,9 +249,10 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> then = _123.then(EntrySequence.of(entries456))
 		                                          .then(EntrySequence.of(entries789));
 
-		twice(() -> assertThat(then, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                                      Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
-		                                      Pair.of("9", 9))));
+		twice(() -> assertThat(then,
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
+		                                Entries.of("5", 5), Entries.of("6", 6), Entries.of("7", 7), Entries.of("8", 8),
+		                                Entries.of("9", 9))));
 	}
 
 	@Test
@@ -260,22 +266,22 @@ public class EntrySequenceTest {
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
 
-		assertThat(then, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
-		                          Pair.of("6", 6)));
+		assertThat(then, contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
+		                          Entries.of("5", 5), Entries.of("6", 6)));
 		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
 	}
 
 	@Test
 	public void thenIsLazyWhenSkippingHasNext() {
-		Iterator<Entry<String, Integer>> first = Arrayz.iterator(Pair.of("1", 1));
-		Iterator<Entry<String, Integer>> second = Arrayz.iterator(Pair.of("2", 2));
+		Iterator<Entry<String, Integer>> first = Arrayz.iterator(Entries.of("1", 1));
+		Iterator<Entry<String, Integer>> second = Arrayz.iterator(Entries.of("2", 2));
 
 		EntrySequence<String, Integer> sequence = EntrySequence.from(first).then(EntrySequence.from(second));
 
 		// check delayed iteration
 		Iterator<Entry<String, Integer>> iterator = sequence.iterator();
-		assertThat(iterator.next(), is(Pair.of("1", 1)));
-		assertThat(iterator.next(), is(Pair.of("2", 2)));
+		assertThat(iterator.next(), is(Entries.of("1", 1)));
+		assertThat(iterator.next(), is(Entries.of("2", 2)));
 		assertThat(iterator.hasNext(), is(false));
 
 		assertThat(sequence, is(emptyIterable())); // second run is empty
@@ -285,7 +291,8 @@ public class EntrySequenceTest {
 	public void filter() {
 		EntrySequence<String, Integer> filtered = _123456789.filter((s, i) -> i % 2 == 0);
 
-		twice(() -> assertThat(filtered, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("6", 6), Pair.of("8", 8)
+		twice(() -> assertThat(filtered,
+		                       contains(Entries.of("2", 2), Entries.of("4", 4), Entries.of("6", 6), Entries.of("8", 8)
 		)));
 	}
 
@@ -294,38 +301,40 @@ public class EntrySequenceTest {
 		EntrySequence<Integer, String> evens = _123456789.filter((s, x) -> x % 2 == 0)
 		                                                 .map(Integer::parseInt, Object::toString);
 
-		twice(() -> assertThat(evens, contains(Pair.of(2, "2"), Pair.of(4, "4"), Pair.of(6, "6"), Pair.of(8, "8"))));
+		twice(() -> assertThat(evens, contains(Entries.of(2, "2"), Entries.of(4, "4"), Entries.of(6, "6"),
+		                                       Entries.of(8, "8"))));
 	}
 
 	@Test
 	public void mapBiFunction() {
-		EntrySequence<Integer, String> mapped = _123.map((s, i) -> Pair.of(parseInt(s), i.toString()));
-		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+		EntrySequence<Integer, String> mapped = _123.map((s, i) -> Entries.of(parseInt(s), i.toString()));
+		twice(() -> assertThat(mapped, contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
 
 	@Test
 	public void mapTwoFunctions() {
 		EntrySequence<Integer, String> mapped = _123.map(Integer::parseInt, Object::toString);
-		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+		twice(() -> assertThat(mapped, contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
 
 	@Test
-	public void mapPairFunction() {
-		EntrySequence<Integer, String> mapped = _123.map(p -> Pair.of(parseInt(p.getKey()), p.getValue().toString()));
-		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+	public void mapEntryFunction() {
+		EntrySequence<Integer, String> mapped = _123.map(
+				p -> Entries.of(parseInt(p.getKey()), p.getValue().toString()));
+		twice(() -> assertThat(mapped, contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
 
 	@Test
 	public void mapIsLazy() {
-		EntrySequence<Integer, String> mapped = EntrySequence.of(Pair.of("1", 1), null) // null will be hit when
+		EntrySequence<Integer, String> mapped = EntrySequence.of(Entries.of("1", 1), null) // null will be hit when
 		                                                     // mapping
-		                                                     .map((s, i) -> Pair.of(parseInt(s), i.toString()));
+		                                                     .map((s, i) -> Entries.of(parseInt(s), i.toString()));
 
 		twice(() -> {
 			// NPE here if not lazy
 			Iterator<Entry<Integer, String>> iterator = mapped.iterator();
 
-			assertThat(iterator.next(), is(Pair.of(1, "1")));
+			assertThat(iterator.next(), is(Entries.of(1, "1")));
 
 			try {
 				iterator.next();
@@ -338,41 +347,44 @@ public class EntrySequenceTest {
 
 	@Test
 	public void recurse() {
-		EntrySequence<String, Integer> sequence = EntrySequence.recurse("1", 1, (k, v) -> Pair.of(String.valueOf(v +
-		                                                                                                         1),
+		EntrySequence<String, Integer> sequence = EntrySequence.recurse("1", 1, (k, v) -> Entries.of(String.valueOf(v +
+		                                                                                                            1),
 		                                                                                          v + 1));
-		twice(() -> assertThat(sequence.limit(3), contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(sequence.limit(3),
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3))));
 	}
 
 	@Test
 	public void recurseTwins() {
-		EntrySequence<String, Integer> sequence = EntrySequence.recurse(1, "1", (k, v) -> Pair.of(v, k),
-		                                                                (k, v) -> Pair.of(v + 1,
+		EntrySequence<String, Integer> sequence = EntrySequence.recurse(1, "1", (k, v) -> Entries.of(v, k),
+		                                                                (k, v) -> Entries.of(v + 1,
 		                                                                                  String.valueOf(v + 1)));
-		twice(() -> assertThat(sequence.limit(3), contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(sequence.limit(3),
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3))));
 	}
 
 	@Test
 	public void until() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(Pair.of("4", 4));
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(Entries.of("4", 4));
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
 	@Test
 	public void endingAt() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt(Pair.of("3", 3));
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt(Entries.of("3", 3));
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
 	@Test
 	public void untilPredicate() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(e -> e.equals(Pair.of("4", 4)));
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(e -> e.equals(Entries.of("4", 4)));
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt(e -> e.equals(Pair.of("3", 3)));
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345)
+		                                                       .endingAt(e -> e.equals(Entries.of("3", 3)));
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
@@ -468,7 +480,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void toMapFromPairs() {
+	public void toMapFromEntries() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		EntrySequence<String, Integer> sequence = EntrySequence.from(original);
@@ -511,7 +523,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toArrayWithType() {
-		twice(() -> assertThat(_123.toArray(Pair[]::new), arrayContaining(entries123)));
+		twice(() -> assertThat(_123.toArray(Entry[]::new), arrayContaining(entries123)));
 	}
 
 	@Test
@@ -521,64 +533,62 @@ public class EntrySequenceTest {
 
 	@Test
 	public void join() {
-		twice(() -> assertThat(_123.join(", "), is("(\"1\", 1), (\"2\", 2), (\"3\", 3)")));
+		twice(() -> assertThat(_123.join(", "), is("<1, 1>, <2, 2>, <3, 3>")));
 	}
 
 	@Test
 	public void joinWithPrefixAndSuffix() {
-		twice(() -> assertThat(_123.join("<", ", ", ">"), is("<(\"1\", 1), (\"2\", 2), (\"3\", 3)>")));
+		twice(() -> assertThat(_123.join("<", ", ", ">"), is("<<1, 1>, <2, 2>, <3, 3>>")));
 	}
 
 	@Test
 	public void reduce() {
-		BinaryOperator<Entry<String, Integer>> sumPair = (r, e) -> Pair.of(r.getKey() + e.getKey(),
+		BinaryOperator<Entry<String, Integer>> sumEntry = (r, e) -> Entries.of(r.getKey() + e.getKey(),
 		                                                                   r.getValue() + e.getValue());
 
 		twice(() -> {
-			assertThat(empty.reduce(sumPair), is(Optional.empty()));
-			assertThat(_1.reduce(sumPair), is(Optional.of(Pair.of("1", 1))));
-			assertThat(_12.reduce(sumPair), is(Optional.of(Pair.of("12", 3))));
-			assertThat(_123.reduce(sumPair), is(Optional.of(Pair.of("123", 6))));
+			assertThat(empty.reduce(sumEntry), is(Optional.empty()));
+			assertThat(_1.reduce(sumEntry), is(Optional.of(Entries.of("1", 1))));
+			assertThat(_12.reduce(sumEntry), is(Optional.of(Entries.of("12", 3))));
+			assertThat(_123.reduce(sumEntry), is(Optional.of(Entries.of("123", 6))));
 		});
 	}
 
 	@Test
 	public void reduceQuaternary() {
-		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumPair = (rk, rv, ek, ev) ->
-				                                                                                       Pair.of(
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) -> Entries.of(
 				rk + ek, rv + ev);
 
 		twice(() -> {
-			assertThat(empty.reduce(sumPair), is(Optional.empty()));
-			assertThat(_1.reduce(sumPair), is(Optional.of(Pair.of("1", 1))));
-			assertThat(_12.reduce(sumPair), is(Optional.of(Pair.of("12", 3))));
-			assertThat(_123.reduce(sumPair), is(Optional.of(Pair.of("123", 6))));
+			assertThat(empty.reduce(sumEntry), is(Optional.empty()));
+			assertThat(_1.reduce(sumEntry), is(Optional.of(Entries.of("1", 1))));
+			assertThat(_12.reduce(sumEntry), is(Optional.of(Entries.of("12", 3))));
+			assertThat(_123.reduce(sumEntry), is(Optional.of(Entries.of("123", 6))));
 		});
 	}
 
 	@Test
 	public void reduceWithIdentity() {
-		BinaryOperator<Entry<String, Integer>> sumPair = (r, e) -> Pair.of(r.getKey() + e.getKey(),
+		BinaryOperator<Entry<String, Integer>> sumEntry = (r, e) -> Entries.of(r.getKey() + e.getKey(),
 		                                                                   r.getValue() + e.getValue());
 		twice(() -> {
-			assertThat(empty.reduce(Pair.of("17", 17), sumPair), is(Pair.of("17", 17)));
-			assertThat(_1.reduce(Pair.of("17", 17), sumPair), is(Pair.of("171", 18)));
-			assertThat(_12.reduce(Pair.of("17", 17), sumPair), is(Pair.of("1712", 20)));
-			assertThat(_123.reduce(Pair.of("17", 17), sumPair), is(Pair.of("17123", 23)));
+			assertThat(empty.reduce(Entries.of("17", 17), sumEntry), is(Entries.of("17", 17)));
+			assertThat(_1.reduce(Entries.of("17", 17), sumEntry), is(Entries.of("171", 18)));
+			assertThat(_12.reduce(Entries.of("17", 17), sumEntry), is(Entries.of("1712", 20)));
+			assertThat(_123.reduce(Entries.of("17", 17), sumEntry), is(Entries.of("17123", 23)));
 		});
 	}
 
 	@Test
 	public void reduceQuaternaryWithIdentity() {
-		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumPair = (rk, rv, ek, ev) ->
-				                                                                                       Pair.of(
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) -> Entries.of(
 				rk + ek, rv + ev);
 
 		twice(() -> {
-			assertThat(empty.reduce("17", 17, sumPair), is(Pair.of("17", 17)));
-			assertThat(_1.reduce("17", 17, sumPair), is(Pair.of("171", 18)));
-			assertThat(_12.reduce("17", 17, sumPair), is(Pair.of("1712", 20)));
-			assertThat(_123.reduce("17", 17, sumPair), is(Pair.of("17123", 23)));
+			assertThat(empty.reduce("17", 17, sumEntry), is(Entries.of("17", 17)));
+			assertThat(_1.reduce("17", 17, sumEntry), is(Entries.of("171", 18)));
+			assertThat(_12.reduce("17", 17, sumEntry), is(Entries.of("1712", 20)));
+			assertThat(_123.reduce("17", 17, sumEntry), is(Entries.of("17123", 23)));
 		});
 	}
 
@@ -586,9 +596,9 @@ public class EntrySequenceTest {
 	public void first() {
 		twice(() -> {
 			assertThat(empty.first(), is(Optional.empty()));
-			assertThat(_1.first(), is(Optional.of(Pair.of("1", 1))));
-			assertThat(_12.first(), is(Optional.of(Pair.of("1", 1))));
-			assertThat(_123.first(), is(Optional.of(Pair.of("1", 1))));
+			assertThat(_1.first(), is(Optional.of(Entries.of("1", 1))));
+			assertThat(_12.first(), is(Optional.of(Entries.of("1", 1))));
+			assertThat(_123.first(), is(Optional.of(Entries.of("1", 1))));
 		});
 	}
 
@@ -597,9 +607,9 @@ public class EntrySequenceTest {
 		twice(() -> {
 			assertThat(empty.second(), is(Optional.empty()));
 			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_123.second(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_1234.second(), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_12.second(), is(Optional.of(Entries.of("2", 2))));
+			assertThat(_123.second(), is(Optional.of(Entries.of("2", 2))));
+			assertThat(_1234.second(), is(Optional.of(Entries.of("2", 2))));
 		});
 	}
 
@@ -609,9 +619,9 @@ public class EntrySequenceTest {
 			assertThat(empty.third(), is(Optional.empty()));
 			assertThat(_1.third(), is(Optional.empty()));
 			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.third(), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_12345.third(), is(Optional.of(Pair.of("3", 3))));
+			assertThat(_123.third(), is(Optional.of(Entries.of("3", 3))));
+			assertThat(_1234.third(), is(Optional.of(Entries.of("3", 3))));
+			assertThat(_12345.third(), is(Optional.of(Entries.of("3", 3))));
 		});
 	}
 
@@ -619,23 +629,24 @@ public class EntrySequenceTest {
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
-			assertThat(_1.last(), is(Optional.of(Pair.of("1", 1))));
-			assertThat(_12.last(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_123.last(), is(Optional.of(Pair.of("3", 3))));
+			assertThat(_1.last(), is(Optional.of(Entries.of("1", 1))));
+			assertThat(_12.last(), is(Optional.of(Entries.of("2", 2))));
+			assertThat(_123.last(), is(Optional.of(Entries.of("3", 3))));
 		});
 	}
 
 	@Test
 	public void partition() {
-		twice(() -> assertThat(_12345.partition(3), contains(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                     asList(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
-		                                                     asList(Pair.of("3", 3), Pair.of("4", 4),
-		                                                            Pair.of("5", 5)))));
+		twice(() -> assertThat(_12345.partition(3),
+		                       contains(asList(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
+		                                asList(Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4)),
+		                                asList(Entries.of("3", 3), Entries.of("4", 4), Entries.of("5", 5)))));
 	}
 
 	@Test
 	public void step() {
-		twice(() -> assertThat(_123456789.step(3), contains(Pair.of("1", 1), Pair.of("4", 4), Pair.of("7", 7))));
+		twice(() -> assertThat(_123456789.step(3),
+		                       contains(Entries.of("1", 1), Entries.of("4", 4), Entries.of("7", 7))));
 	}
 
 	@Test
@@ -644,16 +655,16 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
 
 		EntrySequence<String, Integer> oneDistinct = random1.distinct();
-		twice(() -> assertThat(oneDistinct, contains(Pair.of("17", 17))));
+		twice(() -> assertThat(oneDistinct, contains(Entries.of("17", 17))));
 
-		EntrySequence<String, Integer> twoDuplicatesDistinct = EntrySequence.of(Pair.of("17", 17), Pair.of("17", 17))
+		EntrySequence<String, Integer> twoDuplicatesDistinct = EntrySequence.of(Entries.of("17", 17),
+		                                                                        Entries.of("17", 17))
 		                                                                    .distinct();
-		twice(() -> assertThat(twoDuplicatesDistinct, contains(Pair.of("17", 17))));
+		twice(() -> assertThat(twoDuplicatesDistinct, contains(Entries.of("17", 17))));
 
 		EntrySequence<String, Integer> nineDistinct = random9.distinct();
-		twice(() -> assertThat(nineDistinct,
-		                       contains(Pair.of("67", 67), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3),
-		                                Pair.of("7", 7), Pair.of("24", 24))));
+		twice(() -> assertThat(nineDistinct, contains(Entries.of("67", 67), Entries.of("5", 5), Entries.of("43", 43),
+		                                              Entries.of("3", 3), Entries.of("7", 7), Entries.of("24", 24))));
 	}
 
 	@Test
@@ -662,16 +673,16 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptySorted, emptyIterable()));
 
 		EntrySequence<String, Integer> oneSorted = random1.sorted();
-		twice(() -> assertThat(oneSorted, contains(Pair.of("17", 17))));
+		twice(() -> assertThat(oneSorted, contains(Entries.of("17", 17))));
 
 		EntrySequence<String, Integer> twoSorted = random2.sorted();
-		twice(() -> assertThat(twoSorted, contains(Pair.of("17", 17), Pair.of("32", 32))));
+		twice(() -> assertThat(twoSorted, contains(Entries.of("17", 17), Entries.of("32", 32))));
 
 		EntrySequence<String, Integer> nineSorted = random9.sorted();
 		twice(() -> assertThat(nineSorted, // String sorting on first item
-		                       contains(Pair.of("24", 24), Pair.of("3", 3), Pair.of("43", 43), Pair.of("5", 5),
-		                                Pair.of("5", 5), Pair.of("5", 5), Pair.of("67", 67), Pair.of("67", 67),
-		                                Pair.of("7", 7))));
+		                       contains(Entries.of("24", 24), Entries.of("3", 3), Entries.of("43", 43),
+		                                Entries.of("5", 5), Entries.of("5", 5), Entries.of("5", 5),
+		                                Entries.of("67", 67), Entries.of("67", 67), Entries.of("7", 7))));
 	}
 
 	@Test
@@ -680,16 +691,16 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptySorted, emptyIterable()));
 
 		EntrySequence<String, Integer> oneSorted = random1.sorted((Comparator) Comparator.reverseOrder());
-		twice(() -> assertThat(oneSorted, contains(Pair.of("17", 17))));
+		twice(() -> assertThat(oneSorted, contains(Entries.of("17", 17))));
 
 		EntrySequence<String, Integer> twoSorted = random2.sorted((Comparator) Comparator.reverseOrder());
-		twice(() -> assertThat(twoSorted, contains(Pair.of("32", 32), Pair.of("17", 17))));
+		twice(() -> assertThat(twoSorted, contains(Entries.of("32", 32), Entries.of("17", 17))));
 
 		EntrySequence<String, Integer> nineSorted = random9.sorted((Comparator) Comparator.reverseOrder());
 		twice(() -> assertThat(nineSorted, // String sorting on first item reverse
-		                       contains(Pair.of("7", 7), Pair.of("67", 67), Pair.of("67", 67), Pair.of("5", 5),
-		                                Pair.of("5", 5), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3),
-		                                Pair.of("24", 24))));
+		                       contains(Entries.of("7", 7), Entries.of("67", 67), Entries.of("67", 67),
+		                                Entries.of("5", 5), Entries.of("5", 5), Entries.of("5", 5),
+		                                Entries.of("43", 43), Entries.of("3", 3), Entries.of("24", 24))));
 	}
 
 	@Test
@@ -698,13 +709,13 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyMin, is(Optional.empty())));
 
 		Optional<Entry<String, Integer>> oneMin = random1.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(oneMin, is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(oneMin, is(Optional.of(Entries.of("17", 17)))));
 
 		Optional<Entry<String, Integer>> twoMin = random2.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(twoMin, is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(twoMin, is(Optional.of(Entries.of("17", 17)))));
 
 		Optional<Entry<String, Integer>> nineMin = random9.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(nineMin, is(Optional.of(Pair.of("24", 24)))));
+		twice(() -> assertThat(nineMin, is(Optional.of(Entries.of("24", 24)))));
 	}
 
 	@Test
@@ -713,13 +724,13 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyMax, is(Optional.empty())));
 
 		Optional<Entry<String, Integer>> oneMax = random1.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(oneMax, is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(oneMax, is(Optional.of(Entries.of("17", 17)))));
 
 		Optional<Entry<String, Integer>> twoMax = random2.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(twoMax, is(Optional.of(Pair.of("32", 32)))));
+		twice(() -> assertThat(twoMax, is(Optional.of(Entries.of("32", 32)))));
 
 		Optional<Entry<String, Integer>> nineMax = random9.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(nineMax, is(Optional.of(Pair.of("7", 7)))));
+		twice(() -> assertThat(nineMax, is(Optional.of(Entries.of("7", 7)))));
 	}
 
 	@Test

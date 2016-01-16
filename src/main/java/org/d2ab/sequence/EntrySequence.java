@@ -18,10 +18,10 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterable.ChainingIterable;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
-import org.d2ab.util.Pair;
+import org.d2ab.util.Entries;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
@@ -38,8 +38,17 @@ import static java.util.Collections.emptyIterator;
  */
 @FunctionalInterface
 public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
-	static <K, V> EntrySequence<K, V> of(Pair<K, V> item) {
+	static <K, V> EntrySequence<K, V> of(Entry<K, V> item) {
 		return from(Collections.singleton(item));
+	}
+
+	@SafeVarargs
+	static <K, V> EntrySequence<K, V> of(Entry<K, V>... items) {
+		return from(asList(items));
+	}
+
+	static <K, V> EntrySequence<K, V> entry(K left, V right) {
+		return of(Entries.of(left, right));
 	}
 
 	@SafeVarargs
@@ -47,9 +56,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return () -> new ChainingIterator<>(iterables);
 	}
 
-	@SafeVarargs
-	static <K, V> EntrySequence<K, V> of(Entry<K, V>... items) {
-		return from(asList(items));
+	static <K, V> EntrySequence<K, V> from(Iterable<Entry<K, V>> iterable) {
+		return iterable::iterator;
 	}
 
 	static <K, V> EntrySequence<K, V> empty() {
@@ -71,17 +79,14 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	static <K, V> EntrySequence<K, V> recurse(@Nullable K keySeed,
 	                                          @Nullable V valueSeed,
 	                                          BiFunction<K, V, ? extends Entry<K, V>> op) {
-		return () -> new RecursiveIterator<>(Pair.of(keySeed, valueSeed), p -> op.apply(p.getKey(), p.getValue()));
+		return () -> new RecursiveIterator<>(Entries.of(keySeed, valueSeed), Entries.asUnaryOperator(op));
 	}
 
 	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(@Nullable K keySeed,
 	                                                    @Nullable V valueSeed,
-	                                                    BiFunction<K, V, Entry<KK, VV>> f,
-	                                                    BiFunction<KK, VV, Entry<K, V>> g) {
-		return () -> new RecursiveIterator<>(f.apply(keySeed, valueSeed), p -> {
-			Entry<K, V> p2 = g.apply(p.getKey(), p.getValue());
-			return f.apply(p2.getKey(), p2.getValue());
-		});
+	                                                    BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
+	                                                    BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
+		return () -> new RecursiveIterator<>(f.apply(keySeed, valueSeed), Entries.asUnaryOperator(f, g));
 	}
 
 	static <K, V> EntrySequence<K, V> from(Map<K, V> map) {
@@ -89,16 +94,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default <KK, VV> EntrySequence<KK, VV> map(BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
-		return map(e -> mapper.apply(e.getKey(), e.getValue()));
+		return map(Entries.asFunction(mapper));
 	}
 
-	default <KK, VV> EntrySequence<KK, VV> map(Function<Entry<K, V>, Entry<KK, VV>> mapper) {
+	default <KK, VV> EntrySequence<KK, VV> map(Function<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
 	default <KK, VV> EntrySequence<KK, VV> map(Function<? super K, ? extends KK> keyMapper,
 	                                           Function<? super V, ? extends VV> valueMapper) {
-		return map(e -> Pair.map(e, keyMapper, valueMapper));
+		return map(Entries.asFunction(keyMapper, valueMapper));
 	}
 
 	default EntrySequence<K, V> skip(int skip) {
@@ -115,14 +120,22 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
-		return () -> new FilteringIterator<Entry<K, V>>(e -> Pair.test(e, predicate)).backedBy(iterator());
+		return filter(Entries.asPredicate(predicate));
 	}
 
-	default <KK, VV> EntrySequence<KK, VV> flatMap(@Nonnull
-	                                               BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>>
+	default EntrySequence<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
+		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
+	}
+
+	default <KK, VV> EntrySequence<KK, VV> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>>
+			                                               mapper) {
+		return flatMap(Entries.asFunction(mapper));
+	}
+
+	default <KK, VV> EntrySequence<KK, VV> flatMap(Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>>
 			                                               mapper) {
 		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
-		forEach(e -> result.append(mapper.apply(e.getKey(), e.getValue())));
+		toSequence(mapper).forEach(result::append);
 		return result::iterator;
 	}
 
@@ -135,19 +148,19 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> until(K key, V value) {
-		return until(Pair.of(key, value));
+		return until(Entries.of(key, value));
 	}
 
 	default EntrySequence<K, V> endingAt(K key, V value) {
-		return endingAt(Pair.of(key, value));
+		return endingAt(Entries.of(key, value));
 	}
 
 	default EntrySequence<K, V> until(BiPredicate<? super K, ? super V> terminal) {
-		return until(Pair.predicate(terminal));
+		return until(Entries.asPredicate(terminal));
 	}
 
 	default EntrySequence<K, V> endingAt(BiPredicate<? super K, ? super V> terminal) {
-		return endingAt(Pair.predicate(terminal));
+		return endingAt(Entries.asPredicate(terminal));
 	}
 
 	default EntrySequence<K, V> until(Predicate<? super Entry<K, V>> terminal) {
@@ -195,7 +208,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	default <M extends Map<K, V>> M toMap(Supplier<? extends M> constructor) {
 		M result = constructor.get();
-		forEach(each -> Pair.put(result, each));
+		forEach(each -> Entries.put(result, each));
 		return result;
 	}
 
@@ -253,9 +266,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		if (!iterator.hasNext())
 			return Optional.empty();
 
-		BinaryOperator<Entry<K, V>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
-		                                                                      e.getValue());
-		Entry<K, V> result = reduce(iterator.next(), binaryOperator, iterator);
+		Entry<K, V> result = reduce(iterator.next(), Entries.asBinaryOperator(operator), iterator);
 		return Optional.of(result);
 	}
 
@@ -264,9 +275,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default Entry<K, V> reduce(K key, V value, QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
-		BinaryOperator<Entry<K, V>> binaryOperator = (r, e) -> operator.apply(r.getKey(), r.getValue(), e.getKey(),
-		                                                                      e.getValue());
-		return reduce(Pair.of(key, value), binaryOperator, iterator());
+		return reduce(Entries.of(key, value), Entries.asBinaryOperator(operator), iterator());
 	}
 
 	default Entry<K, V> reduce(Entry<K, V> identity,
@@ -349,17 +358,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	default int count() {
 		int count = 0;
-		for (Entry<K, V> ignored : this) {
+		for (Entry<K, V> ignored : this)
 			count++;
-		}
 		return count;
 	}
 
-	default boolean all(BiPredicate<? super K, ? super V> predicate) {
-		for (Entry<K, V> each : this) {
-			if (!predicate.test(each.getKey(), each.getValue()))
+	default boolean all(BiPredicate<? super K, ? super V> biPredicate) {
+		Predicate<? super Entry<K, V>> predicate = Entries.asPredicate(biPredicate);
+		for (Entry<K, V> each : this)
+			if (!predicate.test(each))
 				return false;
-		}
 		return true;
 	}
 
@@ -367,16 +375,52 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return !any(predicate);
 	}
 
-	default boolean any(BiPredicate<? super K, ? super V> predicate) {
-		for (Entry<K, V> each : this) {
-			if (predicate.test(each.getKey(), each.getValue()))
+	default boolean any(BiPredicate<? super K, ? super V> biPredicate) {
+		Predicate<? super Entry<K, V>> predicate = Entries.asPredicate(biPredicate);
+		for (Entry<K, V> each : this)
+			if (predicate.test(each))
 				return true;
-		}
 		return false;
 	}
 
 	default EntrySequence<K, V> peek(BiConsumer<K, V> action) {
-		Consumer<? super Entry<K, V>> consumer = Pair.consumer(action);
+		Consumer<? super Entry<K, V>> consumer = Entries.asConsumer(action);
 		return () -> new PeekingIterator<>(consumer).backedBy(iterator());
+	}
+
+	default EntrySequence<K, V> append(Iterator<? extends Entry<K, V>> iterator) {
+		return append(Iterables.from(iterator));
+	}
+
+	default EntrySequence<K, V> append(Iterable<? extends Entry<K, V>> that) {
+		@SuppressWarnings("unchecked")
+		Iterable<Entry<K, V>> chainingSequence = new ChainingIterable<>(this, that);
+		return chainingSequence::iterator;
+	}
+
+	@SuppressWarnings("unchecked")
+	default EntrySequence<K, V> append(Entry<K, V>... entries) {
+		return append(Iterables.from(entries));
+	}
+
+	@SuppressWarnings("unchecked")
+	default EntrySequence<K, V> appendEntry(K key, V value) {
+		return append(Entries.of(key, value));
+	}
+
+	default EntrySequence<K, V> append(Stream<Entry<K, V>> stream) {
+		return append(Iterables.from(stream));
+	}
+
+	default Sequence<Entry<K, V>> toSequence() {
+		return Sequence.from(this);
+	}
+
+	default <T> Sequence<T> toSequence(BiFunction<? super K, ? super V, ? extends T> mapper) {
+		return toSequence(Entries.asFunction(mapper));
+	}
+
+	default <T> Sequence<T> toSequence(Function<? super Entry<K, V>, ? extends T> mapper) {
+		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 }

@@ -115,6 +115,23 @@ Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 assertThat(factorial, is(6227020800L));
 ```
 
+### Pairs
+
+When iterating over sequences of pairs of item, there is ```BiSequence``` which provides native operators and
+transformations across lists of pairs of items:
+
+```
+BiSequence<String, Integer> presidents = BiSequence.pair("Abraham Lincoln", 1861)
+                                                   .appendPair("Richard Nixon", 1969)
+                                                   .appendPair("George Bush", 2001)
+                                                   .appendPair("Barack Obama", 2005);
+
+Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
+
+assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
+                                  "Barack Obama (2005)"));
+```
+
 ### Maps
 
 `Maps` are handled as `Sequences` of `Entry` or `Pair`, with special transformation methods that convert 

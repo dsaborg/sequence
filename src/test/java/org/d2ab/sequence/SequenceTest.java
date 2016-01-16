@@ -666,7 +666,7 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void pairs() {
+	public void pair() {
 		Sequence<Pair<Integer, Integer>> emptyPaired = empty.pair();
 		twice(() -> assertThat(emptyPaired, is(emptyIterable())));
 
@@ -681,6 +681,23 @@ public class SequenceTest {
 
 		Sequence<Pair<Integer, Integer>> fivePaired = _12345.pair();
 		twice(() -> assertThat(fivePaired, contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void toBiSequence() {
+		BiSequence<Integer, String> emptyBiSequence = empty.toBiSequence();
+		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
+
+		BiSequence<Integer, String> oneBiSequence = Sequence.of(Pair.of(1, "1")).toBiSequence();
+		twice(() -> assertThat(oneBiSequence, contains(Pair.of(1, "1"))));
+
+		BiSequence<Integer, String> twoBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
+		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
+
+		BiSequence<Integer, String> threeBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))
+		                                                      .toBiSequence();
+		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
 	@SuppressWarnings("unchecked")
