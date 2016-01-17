@@ -119,7 +119,7 @@ When iterating over sequences of pairs of item, there is ```BiSequence``` which 
 transformations across lists of pairs of items:
 
 ```
-BiSequence<String, Integer> presidents = BiSequence.pair("Abraham Lincoln", 1861)
+BiSequence<String, Integer> presidents = BiSequence.ofPair("Abraham Lincoln", 1861)
                                                    .appendPair("Richard Nixon", 1969)
                                                    .appendPair("George Bush", 2001)
                                                    .appendPair("Barack Obama", 2005);
