@@ -425,7 +425,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> repeat() {
-		return () -> new RepeatingIterator<>(this);
+		return () -> new RepeatingIterator<>(this, -1);
+	}
+
+	default EntrySequence<K, V> repeat(long times) {
+		return () -> new RepeatingIterator<>(this, times);
 	}
 
 	default EntrySequence<K, V> reverse() {

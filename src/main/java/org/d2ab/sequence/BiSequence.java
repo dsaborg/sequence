@@ -425,7 +425,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> repeat() {
-		return () -> new RepeatingIterator<>(this);
+		return () -> new RepeatingIterator<>(this, -1);
+	}
+
+	default BiSequence<L, R> repeat(long times) {
+		return () -> new RepeatingIterator<>(this, times);
 	}
 
 	default BiSequence<L, R> reverse() {

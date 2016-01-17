@@ -807,6 +807,55 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		EntrySequence<String, Integer> repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		EntrySequence<String, Integer> repeatOne = _1.repeat(2);
+		twice(() -> assertThat(repeatOne, contains(Entries.of("1", 1), Entries.of("1", 1))));
+
+		EntrySequence<String, Integer> repeatTwo = _12.repeat(2);
+		twice(() -> assertThat(repeatTwo, contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("1", 1),
+		                                           Entries.of("2", 2))));
+
+		EntrySequence<String, Integer> repeatThree = _123.repeat(2);
+		twice(() -> assertThat(repeatThree,
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("1", 1),
+		                                Entries.of("2", 2), Entries.of("3", 3))));
+
+		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
+			private List<Entry<String, Integer>> list = asList(Entries.of("1", 1), Entries.of("2", 2),
+			                                                   Entries.of("3", 3));
+			int end = list.size();
+
+			@Override
+			public Iterator<Entry<String, Integer>> iterator() {
+				List<Entry<String, Integer>> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				return subList.iterator();
+			}
+		}).repeat(2);
+		assertThat(repeatVarying,
+		           contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("1", 1),
+		                    Entries.of("2", 2)));
+	}
+
+	@Test
+	public void repeatZero() {
+		EntrySequence<String, Integer> repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		EntrySequence<String, Integer> repeatOne = _1.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		EntrySequence<String, Integer> repeatTwo = _12.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		EntrySequence<String, Integer> repeatThree = _123.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void reverse() {
 		EntrySequence<String, Integer> emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));

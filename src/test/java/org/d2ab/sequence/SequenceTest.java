@@ -1069,6 +1069,49 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		Sequence<Integer> repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		Sequence<Integer> repeatOne = _1.repeat(2);
+		twice(() -> assertThat(repeatOne, contains(1, 1)));
+
+		Sequence<Integer> repeatTwo = _12.repeat(2);
+		twice(() -> assertThat(repeatTwo, contains(1, 2, 1, 2)));
+
+		Sequence<Integer> repeatThree = _123.repeat(2);
+		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
+
+		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
+			private List<Integer> list = asList(1, 2, 3);
+			int end = list.size();
+
+			@Override
+			public Iterator<Integer> iterator() {
+				List<Integer> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				return subList.iterator();
+			}
+		}).repeat(2);
+		assertThat(repeatVarying, contains(1, 2, 3, 1, 2));
+	}
+
+	@Test
+	public void repeatZero() {
+		Sequence<Integer> repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		Sequence<Integer> repeatOne = _1.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		Sequence<Integer> repeatTwo = _12.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		Sequence<Integer> repeatThree = _123.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();

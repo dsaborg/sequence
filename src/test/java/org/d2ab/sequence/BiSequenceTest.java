@@ -786,6 +786,52 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		BiSequence<String, Integer> repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		BiSequence<String, Integer> repeatOne = _1.repeat(2);
+		twice(() -> assertThat(repeatOne, contains(Pair.of("1", 1), Pair.of("1", 1))));
+
+		BiSequence<String, Integer> repeatTwo = _12.repeat(2);
+		twice(() -> assertThat(repeatTwo,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> repeatThree = _123.repeat(2);
+		twice(() -> assertThat(repeatThree, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1",
+		                                                                                                        1),
+		                                             Pair.of("2", 2), Pair.of("3", 3))));
+		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
+			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
+			int end = list.size();
+
+			@Override
+			public Iterator<Pair<String, Integer>> iterator() {
+				List<Pair<String, Integer>> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				return subList.iterator();
+			}
+		}).repeat(2);
+		assertThat(repeatVarying,
+		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2)));
+	}
+
+	@Test
+	public void repeatZero() {
+		BiSequence<String, Integer> repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		BiSequence<String, Integer> repeatOne = _1.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		BiSequence<String, Integer> repeatTwo = _12.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		BiSequence<String, Integer> repeatThree = _123.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void reverse() {
 		BiSequence<String, Integer> emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));

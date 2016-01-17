@@ -28,19 +28,24 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
 	private final Iterable<? extends T> iterable;
+	private long times;
 
-	public RepeatingIterator(Iterable<? extends T> iterable) {
+	public RepeatingIterator(Iterable<? extends T> iterable, long times) {
 		this.iterable = iterable;
+		this.times = times;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (iterator == null || !iterator.hasNext()) {
+		if ((iterator == null || !iterator.hasNext()) && times != 0) {
+			if (times > 0)
+				times--;
+
 			@SuppressWarnings("unchecked")
 			Iterator<T> iterator = (Iterator<T>) iterable.iterator();
 			this.iterator = iterator;
 		}
-		return iterator.hasNext();
+		return iterator != null && iterator.hasNext();
 	}
 
 	@Override

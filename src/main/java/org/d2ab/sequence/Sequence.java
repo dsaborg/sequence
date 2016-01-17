@@ -799,6 +799,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<T> repeat() {
-		return () -> new RepeatingIterator<>(this);
+		return () -> new RepeatingIterator<>(this, -1);
+	}
+
+	default Sequence<T> repeat(long times) {
+		return () -> new RepeatingIterator<>(this, times);
 	}
 }
