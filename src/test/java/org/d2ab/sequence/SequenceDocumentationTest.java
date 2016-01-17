@@ -36,8 +36,8 @@ import static org.junit.Assert.assertThat;
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0).map(Object::toString)
-		                             .toList();
+		List<String> evens =
+				Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0).map(Object::toString).toList();
 
 		assertThat(evens, contains("2", "4", "6", "8"));
 	}
@@ -157,9 +157,8 @@ public class SequenceDocumentationTest {
 	public void entrySequence() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
-		                                                           .filter((k, v) -> v % 2 != 0)
-		                                                           .map((k, v) -> Entries.of(v, k));
+		EntrySequence<Integer, String> oddsInverted =
+				EntrySequence.from(original).filter((k, v) -> v % 2 != 0).map((k, v) -> Entries.of(v, k));
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}

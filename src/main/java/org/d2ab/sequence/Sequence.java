@@ -494,8 +494,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap() {
 		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
-				                                                                                                 .<Entry<K, V>>identity();
+		Function<? super T, ? extends Entry<K, V>> mapper =
+				(Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
 		return toMap(mapper);
 	}
 

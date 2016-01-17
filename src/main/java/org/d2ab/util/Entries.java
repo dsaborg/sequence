@@ -39,8 +39,8 @@ public class Entries {
 	private static final Function<Entry, Object> GET_VALUE = (Function<Entry, Object>) Entry::getValue;
 
 	@SuppressWarnings("unchecked")
-	private static final Comparator<Entry> COMPARATOR = comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE,
-	                                                                                                  NULLS_FIRST);
+	private static final Comparator<Entry> COMPARATOR =
+			comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE, NULLS_FIRST);
 
 	private Entries() {
 	}

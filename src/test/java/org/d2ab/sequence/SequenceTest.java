@@ -318,8 +318,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
-		                                                   asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence =
+				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
 		Sequence<Integer> flatMap = sequence.flatMap(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -358,8 +358,8 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
-		                                                   asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence =
+				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -695,8 +695,8 @@ public class SequenceTest {
 		BiSequence<Integer, String> twoBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
-		BiSequence<Integer, String> threeBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))
-		                                                      .toBiSequence();
+		BiSequence<Integer, String> threeBiSequence =
+				Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3")).toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 

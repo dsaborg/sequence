@@ -41,27 +41,23 @@ public class BiSequenceTest {
 	private final BiSequence<String, Integer> _1 = BiSequence.of(Pair.of("1", 1));
 	private final BiSequence<String, Integer> _12 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2));
 	private final BiSequence<String, Integer> _123 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
-	private final BiSequence<String, Integer> _1234 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-	                                                                Pair.of("4", 4));
-	private final BiSequence<String, Integer> _12345 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-	                                                                 Pair.of("4", 4), Pair.of("5", 5));
-	private final BiSequence<String, Integer> _123456789 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2),
-	                                                                     Pair.of("3", 3), Pair.of("4", 4),
-	                                                                     Pair.of("5", 5), Pair.of("6", 6),
-	                                                                     Pair.of("7", 7), Pair.of("8", 8),
-	                                                                     Pair.of("9", 9));
+	private final BiSequence<String, Integer> _1234 =
+			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4));
+	private final BiSequence<String, Integer> _12345 =
+			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5));
+	private final BiSequence<String, Integer> _123456789 =
+			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+			              Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9));
 	private final BiSequence<String, Integer> random1 = BiSequence.of(Pair.of("17", 17));
 	private final BiSequence<String, Integer> random2 = BiSequence.of(Pair.of("17", 17), Pair.of("32", 32));
-	private final BiSequence<String, Integer> random3 = BiSequence.of(Pair.of("2", 2), Pair.of("3", 3),
-	                                                                  Pair.of("4", 4));
-	private final BiSequence<String, Integer> random9 = BiSequence.of(Pair.of("67", 67), Pair.of("5", 5),
-	                                                                  Pair.of("43", 43), Pair.of("3", 3),
-	                                                                  Pair.of("5", 5), Pair.of("7", 7),
-	                                                                  Pair.of("24", 24), Pair.of("5", 5),
-	                                                                  Pair.of("67", 67));
+	private final BiSequence<String, Integer> random3 =
+			BiSequence.of(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4));
+	private final BiSequence<String, Integer> random9 =
+			BiSequence.of(Pair.of("67", 67), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3), Pair.of("5", 5),
+			              Pair.of("7", 7), Pair.of("24", 24), Pair.of("5", 5), Pair.of("67", 67));
 	private final Pair<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
-	private final Pair<String, Integer>[] entries12345 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-	                                                                Pair.of("4", 4), Pair.of("5", 5)};
+	private final Pair<String, Integer>[] entries12345 =
+			new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)};
 	private final Pair<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
 	private final Pair<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
@@ -132,8 +128,9 @@ public class BiSequenceTest {
 
 	@Test
 	public void ofWithNulls() {
-		BiSequence<String, Integer> sequence = BiSequence.of(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3),
-		                                                     Pair.of("4", null), Pair.of(null, null));
+		BiSequence<String, Integer> sequence =
+				BiSequence.of(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
+				              Pair.of(null, null));
 
 		twice(() -> assertThat(sequence,
 		                       contains(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
@@ -287,8 +284,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void filterAndMap() {
-		BiSequence<Integer, String> evens = _123456789.filter((s, x) -> x % 2 == 0)
-		                                              .map(Integer::parseInt, Object::toString);
+		BiSequence<Integer, String> evens =
+				_123456789.filter((s, x) -> x % 2 == 0).map(Integer::parseInt, Object::toString);
 
 		twice(() -> assertThat(evens, contains(Pair.of(2, "2"), Pair.of(4, "4"), Pair.of(6, "6"), Pair.of(8, "8"))));
 	}
@@ -334,15 +331,15 @@ public class BiSequenceTest {
 
 	@Test
 	public void recurse() {
-		BiSequence<String, Integer> sequence = BiSequence.recurse("1", 1,
-		                                                          (k, v) -> Pair.of(String.valueOf(v + 1), v + 1));
+		BiSequence<String, Integer> sequence =
+				BiSequence.recurse("1", 1, (k, v) -> Pair.of(String.valueOf(v + 1), v + 1));
 		twice(() -> assertThat(sequence.limit(3), contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void recurseTwins() {
-		BiSequence<String, Integer> sequence = BiSequence.recurse(1, "1", (k, v) -> Pair.of(v, k),
-		                                                          (k, v) -> Pair.of(v + 1, String.valueOf(v + 1)));
+		BiSequence<String, Integer> sequence =
+				BiSequence.recurse(1, "1", (k, v) -> Pair.of(v, k), (k, v) -> Pair.of(v + 1, String.valueOf(v + 1)));
 		twice(() -> assertThat(sequence.limit(3), contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
@@ -524,8 +521,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void reduce() {
-		BinaryOperator<Pair<String, Integer>> sumPair = (r, e) -> Pair.of(r.getKey() + e.getKey(),
-		                                                                  r.getValue() + e.getValue());
+		BinaryOperator<Pair<String, Integer>> sumPair =
+				(r, e) -> Pair.of(r.getKey() + e.getKey(), r.getValue() + e.getValue());
 
 		twice(() -> {
 			assertThat(empty.reduce(sumPair), is(Optional.empty()));
@@ -537,9 +534,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void reduceQuaternary() {
-		QuaternaryFunction<String, Integer, String, Integer, Pair<String, Integer>> sumPair = (rk, rv, ek, ev) -> Pair
-				                                                                                                          .of(
-				rk + ek, rv + ev);
+		QuaternaryFunction<String, Integer, String, Integer, Pair<String, Integer>> sumPair =
+				(rk, rv, ek, ev) -> Pair.of(rk + ek, rv + ev);
 
 		twice(() -> {
 			assertThat(empty.reduce(sumPair), is(Optional.empty()));
@@ -551,8 +547,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void reduceWithIdentity() {
-		BinaryOperator<Pair<String, Integer>> sumPair = (r, e) -> Pair.of(r.getKey() + e.getKey(),
-		                                                                  r.getValue() + e.getValue());
+		BinaryOperator<Pair<String, Integer>> sumPair =
+				(r, e) -> Pair.of(r.getKey() + e.getKey(), r.getValue() + e.getValue());
 		twice(() -> {
 			assertThat(empty.reduce(Pair.of("17", 17), sumPair), is(Pair.of("17", 17)));
 			assertThat(_1.reduce(Pair.of("17", 17), sumPair), is(Pair.of("171", 18)));
@@ -563,9 +559,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void reduceQuaternaryWithIdentity() {
-		QuaternaryFunction<String, Integer, String, Integer, Pair<String, Integer>> sumPair = (rk, rv, ek, ev) -> Pair
-				                                                                                                          .of(
-				rk + ek, rv + ev);
+		QuaternaryFunction<String, Integer, String, Integer, Pair<String, Integer>> sumPair =
+				(rk, rv, ek, ev) -> Pair.of(rk + ek, rv + ev);
 
 		twice(() -> {
 			assertThat(empty.reduce("17", 17, sumPair), is(Pair.of("17", 17)));
@@ -639,8 +634,8 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> oneDistinct = random1.distinct();
 		twice(() -> assertThat(oneDistinct, contains(Pair.of("17", 17))));
 
-		BiSequence<String, Integer> twoDuplicatesDistinct = BiSequence.of(Pair.of("17", 17), Pair.of("17", 17))
-		                                                              .distinct();
+		BiSequence<String, Integer> twoDuplicatesDistinct =
+				BiSequence.of(Pair.of("17", 17), Pair.of("17", 17)).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(Pair.of("17", 17))));
 
 		BiSequence<String, Integer> nineDistinct = random9.distinct();
@@ -746,8 +741,9 @@ public class BiSequenceTest {
 
 	@Test
 	public void peek() {
-		BiSequence<String, Integer> peek = _123.peek(
-				(s, x) -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)).and(equalTo(parseInt(s))))));
+		BiSequence<String, Integer> peek =
+				_123.peek((s, x) -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)).and(equalTo(parseInt(s)))
+				)));
 		twice(() -> assertThat(peek, contains(entries123)));
 	}
 
