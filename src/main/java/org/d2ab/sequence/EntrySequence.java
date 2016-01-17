@@ -47,7 +47,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return from(asList(items));
 	}
 
-	static <K, V> EntrySequence<K, V> entry(K left, V right) {
+	static <K, V> EntrySequence<K, V> ofEntry(K left, V right) {
 		return of(Entries.of(left, right));
 	}
 

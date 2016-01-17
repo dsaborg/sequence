@@ -186,7 +186,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void biSequence() {
-		BiSequence<String, Integer> presidents = BiSequence.pair("Abraham Lincoln", 1861)
+		BiSequence<String, Integer> presidents = BiSequence.ofPair("Abraham Lincoln", 1861)
 		                                                   .appendPair("Richard Nixon", 1969)
 		                                                   .appendPair("George Bush", 2001)
 		                                                   .appendPair("Barack Obama", 2005);

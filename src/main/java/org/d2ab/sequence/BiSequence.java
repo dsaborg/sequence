@@ -47,7 +47,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return from(asList(items));
 	}
 
-	static <L, R> BiSequence<L, R> pair(L left, R right) {
+	static <L, R> BiSequence<L, R> ofPair(L left, R right) {
 		return of(Pair.of(left, right));
 	}
 
