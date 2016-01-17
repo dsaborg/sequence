@@ -335,8 +335,7 @@ public class BiSequenceTest {
 	@Test
 	public void recurse() {
 		BiSequence<String, Integer> sequence = BiSequence.recurse("1", 1,
-		                                                          (k, v) -> Pair.of(String.valueOf(v + 1),     v   +
-		                                                                                                       1));
+		                                                          (k, v) -> Pair.of(String.valueOf(v + 1), v + 1));
 		twice(() -> assertThat(sequence.limit(3), contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
@@ -750,5 +749,85 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> peek = _123.peek(
 				(s, x) -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)).and(equalTo(parseInt(s))))));
 		twice(() -> assertThat(peek, contains(entries123)));
+	}
+
+	@Test
+	public void repeat() {
+		BiSequence<String, Integer> repeatEmpty = empty.repeat();
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		BiSequence<String, Integer> repeatOne = _1.repeat();
+		twice(() -> assertThat(repeatOne.limit(3), contains(Pair.of("1", 1), Pair.of("1", 1), Pair.of("1", 1))));
+
+		BiSequence<String, Integer> repeatTwo = _12.repeat();
+		twice(() -> assertThat(repeatTwo.limit(5),
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("1", 1), Pair.of("2", 2),
+		                                Pair.of("1", 1))));
+
+		BiSequence<String, Integer> repeatThree = _123.repeat();
+		twice(() -> assertThat(repeatThree.limit(8),
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1),
+		                                Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
+			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
+			int end = list.size();
+
+			@Override
+			public Iterator<Pair<String, Integer>> iterator() {
+				List<Pair<String, Integer>> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				return subList.iterator();
+			}
+		}).repeat();
+		assertThat(repeatVarying,
+		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2),
+		                    Pair.of("1", 1)));
+	}
+
+	@Test
+	public void reverse() {
+		BiSequence<String, Integer> emptyReversed = empty.reverse();
+		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+
+		BiSequence<String, Integer> oneReversed = _1.reverse();
+		twice(() -> assertThat(oneReversed, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> twoReversed = _12.reverse();
+		twice(() -> assertThat(twoReversed, contains(Pair.of("2", 2), Pair.of("1", 1))));
+
+		BiSequence<String, Integer> threeReversed = _123.reverse();
+		twice(() -> assertThat(threeReversed, contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1))));
+
+		BiSequence<String, Integer> nineReversed = _123456789.reverse();
+		twice(() -> assertThat(nineReversed,
+		                       contains(Pair.of("9", 9), Pair.of("8", 8), Pair.of("7", 7), Pair.of("6", 6),
+		                                Pair.of("5", 5), Pair.of("4", 4), Pair.of("3", 3), Pair.of("2", 2),
+		                                Pair.of("1", 1))));
+	}
+
+	@Test
+	public void shuffle() {
+		assertThat(empty.shuffle(), is(emptyIterable()));
+		assertThat(_1.shuffle(), contains(Pair.of("1", 1)));
+		assertThat(_12.shuffle(), containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(_123.shuffle(), containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)));
+		assertThat(_123456789.shuffle(),
+		           containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                              Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                              Pair.of("9", 9)));
+	}
+
+	@Test
+	public void shuffleWithRandomSource() {
+		Random seed = new Random(17);
+
+		assertThat(empty.shuffle(seed), is(emptyIterable()));
+		assertThat(_1.shuffle(seed), contains(Pair.of("1", 1)));
+		assertThat(_12.shuffle(seed), contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(_123.shuffle(seed), contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1)));
+		assertThat(_123456789.shuffle(seed),
+		           contains(Pair.of("2", 2), Pair.of("9", 9), Pair.of("4", 4), Pair.of("6", 6), Pair.of("8", 8),
+		                    Pair.of("7", 7), Pair.of("5", 5), Pair.of("1", 1), Pair.of("3", 3)));
 	}
 }

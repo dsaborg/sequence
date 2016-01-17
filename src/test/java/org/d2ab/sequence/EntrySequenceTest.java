@@ -291,9 +291,8 @@ public class EntrySequenceTest {
 	public void filter() {
 		EntrySequence<String, Integer> filtered = _123456789.filter((s, i) -> i % 2 == 0);
 
-		twice(() -> assertThat(filtered,
-		                       contains(Entries.of("2", 2), Entries.of("4", 4), Entries.of("6", 6), Entries.of("8", 8)
-		)));
+		twice(() -> assertThat(filtered, contains(Entries.of("2", 2), Entries.of("4", 4), Entries.of("6", 6),
+		                                          Entries.of("8", 8))));
 	}
 
 	@Test
@@ -347,9 +346,9 @@ public class EntrySequenceTest {
 
 	@Test
 	public void recurse() {
-		EntrySequence<String, Integer> sequence = EntrySequence.recurse("1", 1, (k, v) -> Entries.of(String.valueOf(v +
-		                                                                                                            1),
-		                                                                                          v + 1));
+		EntrySequence<String, Integer> sequence = EntrySequence.recurse("1", 1,
+		                                                                (k, v) -> Entries.of(String.valueOf(v + 1),
+		                                                                                     v + 1));
 		twice(() -> assertThat(sequence.limit(3),
 		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3))));
 	}
@@ -358,7 +357,7 @@ public class EntrySequenceTest {
 	public void recurseTwins() {
 		EntrySequence<String, Integer> sequence = EntrySequence.recurse(1, "1", (k, v) -> Entries.of(v, k),
 		                                                                (k, v) -> Entries.of(v + 1,
-		                                                                                  String.valueOf(v + 1)));
+		                                                                                     String.valueOf(v + 1)));
 		twice(() -> assertThat(sequence.limit(3),
 		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3))));
 	}
@@ -544,7 +543,7 @@ public class EntrySequenceTest {
 	@Test
 	public void reduce() {
 		BinaryOperator<Entry<String, Integer>> sumEntry = (r, e) -> Entries.of(r.getKey() + e.getKey(),
-		                                                                   r.getValue() + e.getValue());
+		                                                                       r.getValue() + e.getValue());
 
 		twice(() -> {
 			assertThat(empty.reduce(sumEntry), is(Optional.empty()));
@@ -556,7 +555,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void reduceQuaternary() {
-		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) -> Entries.of(
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) ->
+				                                                                                        Entries.of(
 				rk + ek, rv + ev);
 
 		twice(() -> {
@@ -570,7 +570,7 @@ public class EntrySequenceTest {
 	@Test
 	public void reduceWithIdentity() {
 		BinaryOperator<Entry<String, Integer>> sumEntry = (r, e) -> Entries.of(r.getKey() + e.getKey(),
-		                                                                   r.getValue() + e.getValue());
+		                                                                       r.getValue() + e.getValue());
 		twice(() -> {
 			assertThat(empty.reduce(Entries.of("17", 17), sumEntry), is(Entries.of("17", 17)));
 			assertThat(_1.reduce(Entries.of("17", 17), sumEntry), is(Entries.of("171", 18)));
@@ -581,7 +581,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void reduceQuaternaryWithIdentity() {
-		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) -> Entries.of(
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) ->
+				                                                                                        Entries.of(
 				rk + ek, rv + ev);
 
 		twice(() -> {
@@ -658,8 +659,7 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(oneDistinct, contains(Entries.of("17", 17))));
 
 		EntrySequence<String, Integer> twoDuplicatesDistinct = EntrySequence.of(Entries.of("17", 17),
-		                                                                        Entries.of("17", 17))
-		                                                                    .distinct();
+		                                                                        Entries.of("17", 17)).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(Entries.of("17", 17))));
 
 		EntrySequence<String, Integer> nineDistinct = random9.distinct();
@@ -767,5 +767,89 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> peek = _123.peek(
 				(s, x) -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)).and(equalTo(parseInt(s))))));
 		twice(() -> assertThat(peek, contains(entries123)));
+	}
+
+	@Test
+	public void repeat() {
+		EntrySequence<String, Integer> repeatEmpty = empty.repeat();
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		EntrySequence<String, Integer> repeatOne = _1.repeat();
+		twice(() -> assertThat(repeatOne.limit(3),
+		                       contains(Entries.of("1", 1), Entries.of("1", 1), Entries.of("1", 1))));
+
+		EntrySequence<String, Integer> repeatTwo = _12.repeat();
+		twice(() -> assertThat(repeatTwo.limit(5),
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("1", 1), Entries.of("2", 2),
+		                                Entries.of("1", 1))));
+
+		EntrySequence<String, Integer> repeatThree = _123.repeat();
+		twice(() -> assertThat(repeatThree.limit(8),
+		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("1", 1),
+		                                Entries.of("2", 2), Entries.of("3", 3), Entries.of("1", 1),
+		                                Entries.of("2", 2))));
+
+		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
+			private List<Entry<String, Integer>> list = asList(Entries.of("1", 1), Entries.of("2", 2),
+			                                                   Entries.of("3", 3));
+			int end = list.size();
+
+			@Override
+			public Iterator<Entry<String, Integer>> iterator() {
+				List<Entry<String, Integer>> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				return subList.iterator();
+			}
+		}).repeat();
+		assertThat(repeatVarying,
+		           contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("1", 1),
+		                    Entries.of("2", 2), Entries.of("1", 1)));
+	}
+
+	@Test
+	public void reverse() {
+		EntrySequence<String, Integer> emptyReversed = empty.reverse();
+		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+
+		EntrySequence<String, Integer> oneReversed = _1.reverse();
+		twice(() -> assertThat(oneReversed, contains(Entries.of("1", 1))));
+
+		EntrySequence<String, Integer> twoReversed = _12.reverse();
+		twice(() -> assertThat(twoReversed, contains(Entries.of("2", 2), Entries.of("1", 1))));
+
+		EntrySequence<String, Integer> threeReversed = _123.reverse();
+		twice(() -> assertThat(threeReversed, contains(Entries.of("3", 3), Entries.of("2", 2), Entries.of("1", 1))));
+
+		EntrySequence<String, Integer> nineReversed = _123456789.reverse();
+		twice(() -> assertThat(nineReversed,
+		                       contains(Entries.of("9", 9), Entries.of("8", 8), Entries.of("7", 7), Entries.of("6", 6),
+		                                Entries.of("5", 5), Entries.of("4", 4), Entries.of("3", 3), Entries.of("2", 2),
+		                                Entries.of("1", 1))));
+	}
+
+	@Test
+	public void shuffle() {
+		assertThat(empty.shuffle(), is(emptyIterable()));
+		assertThat(_1.shuffle(), contains(Entries.of("1", 1)));
+		assertThat(_12.shuffle(), containsInAnyOrder(Entries.of("1", 1), Entries.of("2", 2)));
+		assertThat(_123.shuffle(), containsInAnyOrder(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)));
+		assertThat(_123456789.shuffle(),
+		           containsInAnyOrder(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
+		                              Entries.of("5", 5), Entries.of("6", 6), Entries.of("7", 7), Entries.of("8", 8),
+		                              Entries.of("9", 9)));
+	}
+
+	@Test
+	public void shuffleWithRandomSource() {
+		Random seed = new Random(17);
+
+		assertThat(empty.shuffle(seed), is(emptyIterable()));
+		assertThat(_1.shuffle(seed), contains(Entries.of("1", 1)));
+		assertThat(_12.shuffle(seed), contains(Entries.of("1", 1), Entries.of("2", 2)));
+		assertThat(_123.shuffle(seed), contains(Entries.of("3", 3), Entries.of("2", 2), Entries.of("1", 1)));
+		assertThat(_123456789.shuffle(seed),
+		           contains(Entries.of("2", 2), Entries.of("9", 9), Entries.of("4", 4), Entries.of("6", 6),
+		                    Entries.of("8", 8), Entries.of("7", 7), Entries.of("5", 5), Entries.of("1", 1),
+		                    Entries.of("3", 3)));
 	}
 }

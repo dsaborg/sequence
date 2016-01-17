@@ -423,4 +423,24 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	default <T> Sequence<T> toSequence(Function<? super Entry<K, V>, ? extends T> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
+
+	default EntrySequence<K, V> repeat() {
+		return () -> new RepeatingIterator<>(this);
+	}
+
+	default EntrySequence<K, V> reverse() {
+		return () -> new ReverseIterator<Entry<K, V>>().backedBy(iterator());
+	}
+
+	default EntrySequence<K, V> shuffle() {
+		List<Entry<K, V>> list = toList();
+		Collections.shuffle(list);
+		return from(list);
+	}
+
+	default EntrySequence<K, V> shuffle(Random md) {
+		List<Entry<K, V>> list = toList();
+		Collections.shuffle(list, md);
+		return from(list);
+	}
 }

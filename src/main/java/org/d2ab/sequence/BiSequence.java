@@ -423,4 +423,24 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	default <T> Sequence<T> toSequence(Function<? super Pair<L, R>, ? extends T> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
+
+	default BiSequence<L, R> repeat() {
+		return () -> new RepeatingIterator<>(this);
+	}
+
+	default BiSequence<L, R> reverse() {
+		return () -> new ReverseIterator<Pair<L, R>>().backedBy(iterator());
+	}
+
+	default BiSequence<L, R> shuffle() {
+		List<Pair<L, R>> list = toList();
+		Collections.shuffle(list);
+		return from(list);
+	}
+
+	default BiSequence<L, R> shuffle(Random md) {
+		List<Pair<L, R>> list = toList();
+		Collections.shuffle(list, md);
+		return from(list);
+	}
 }

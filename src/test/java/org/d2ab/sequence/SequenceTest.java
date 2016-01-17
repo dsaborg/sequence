@@ -937,13 +937,13 @@ public class SequenceTest {
 
 	@Test
 	public void shuffleWithRandomSource() {
-		Random stableSeed = new Random(17);
+		Random seed = new Random(17);
 
-		assertThat(empty.shuffle(stableSeed), is(emptyIterable()));
-		assertThat(_1.shuffle(stableSeed), contains(1));
-		assertThat(_12.shuffle(stableSeed), contains(1, 2));
-		assertThat(_123.shuffle(stableSeed), contains(3, 2, 1));
-		assertThat(_123456789.shuffle(stableSeed), contains(2, 9, 4, 6, 8, 7, 5, 1, 3));
+		assertThat(empty.shuffle(seed), is(emptyIterable()));
+		assertThat(_1.shuffle(seed), contains(1));
+		assertThat(_12.shuffle(seed), contains(1, 2));
+		assertThat(_123.shuffle(seed), contains(3, 2, 1));
+		assertThat(_123456789.shuffle(seed), contains(2, 9, 4, 6, 8, 7, 5, 1, 3));
 	}
 
 	@Test
