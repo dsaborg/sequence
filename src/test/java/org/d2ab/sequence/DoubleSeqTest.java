@@ -689,6 +689,55 @@ public class DoubleSeqTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		DoubleSeq repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		DoubleSeq repeatOne = _1.repeat(2);
+		twice(() -> assertThat(repeatOne, contains(1.0, 1.0)));
+
+		DoubleSeq repeatTwo = _12.repeat(2);
+		twice(() -> assertThat(repeatTwo, contains(1.0, 2.0, 1.0, 2.0)));
+
+		DoubleSeq repeatThree = _123.repeat(2);
+		twice(() -> assertThat(repeatThree, contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0)));
+
+		DoubleSeq repeatVarying = DoubleSeq.from(new DoubleIterable() {
+			private List<Double> list = asList(1.0, 2.0, 3.0);
+			int end = list.size();
+
+			@Override
+			public DoubleIterator iterator() {
+				List<Double> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				Iterator<Double> iterator = subList.iterator();
+				return new DelegatingDoubleIterator<Double, Iterator<Double>>() {
+					@Override
+					public double nextDouble() {
+						return iterator.next();
+					}
+				}.backedBy(iterator);
+			}
+		}).repeat(2);
+		assertThat(repeatVarying, contains(1.0, 2.0, 3.0, 1.0, 2.0));
+	}
+
+	@Test
+	public void repeatZero() {
+		DoubleSeq repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		DoubleSeq repeatOne = _1.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		DoubleSeq repeatTwo = _12.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		DoubleSeq repeatThree = _123.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void generate() {
 		Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
 		DoubleSeq sequence = DoubleSeq.generate(queue::poll).endingAt(5.0);

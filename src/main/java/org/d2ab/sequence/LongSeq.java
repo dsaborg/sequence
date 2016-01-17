@@ -544,6 +544,10 @@ public interface LongSeq extends LongIterable {
 	}
 
 	default LongSeq repeat() {
-		return () -> new RepeatingLongIterator(this);
+		return () -> new RepeatingLongIterator(this, -1);
+	}
+
+	default LongSeq repeat(long times) {
+		return () -> new RepeatingLongIterator(this, times);
 	}
 }

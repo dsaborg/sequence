@@ -646,6 +646,55 @@ public class LongSeqTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		LongSeq repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		LongSeq repeatOne = _1.repeat(2);
+		twice(() -> assertThat(repeatOne, contains(1L, 1L)));
+
+		LongSeq repeatTwo = _12.repeat(2);
+		twice(() -> assertThat(repeatTwo, contains(1L, 2L, 1L, 2L)));
+
+		LongSeq repeatThree = _123.repeat(2);
+		twice(() -> assertThat(repeatThree, contains(1L, 2L, 3L, 1L, 2L, 3L)));
+
+		LongSeq repeatVarying = LongSeq.from(new LongIterable() {
+			private List<Long> list = asList(1L, 2L, 3L);
+			int end = list.size();
+
+			@Override
+			public LongIterator iterator() {
+				List<Long> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				Iterator<Long> iterator = subList.iterator();
+				return new DelegatingLongIterator<Long, Iterator<Long>>() {
+					@Override
+					public long nextLong() {
+						return iterator.next();
+					}
+				}.backedBy(iterator);
+			}
+		}).repeat(2);
+		assertThat(repeatVarying, contains(1L, 2L, 3L, 1L, 2L));
+	}
+
+	@Test
+	public void repeatZero() {
+		LongSeq repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		LongSeq repeatOne = _1.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		LongSeq repeatTwo = _12.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		LongSeq repeatThree = _123.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void generate() {
 		Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
 		LongSeq sequence = LongSeq.generate(queue::poll).endingAt(5L);

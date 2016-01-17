@@ -588,6 +588,10 @@ public interface DoubleSeq extends DoubleIterable {
 	}
 
 	default DoubleSeq repeat() {
-		return () -> new RepeatingDoubleIterator(this);
+		return () -> new RepeatingDoubleIterator(this, -1);
+	}
+
+	default DoubleSeq repeat(long times) {
+		return () -> new RepeatingDoubleIterator(this, times);
 	}
 }

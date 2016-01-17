@@ -28,17 +28,22 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingDoubleIterator extends UnaryDoubleIterator {
 	private final DoubleIterable iterable;
+	private long times;
 
-	public RepeatingDoubleIterator(DoubleIterable iterable) {
+	public RepeatingDoubleIterator(DoubleIterable iterable, long times) {
 		this.iterable = iterable;
+		this.times = times;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (iterator == null || !iterator.hasNext()) {
+		if ((iterator == null || !iterator.hasNext()) && times != 0) {
+			if (times > 0)
+				times--;
+
 			iterator = iterable.iterator();
 		}
-		return iterator.hasNext();
+		return iterator != null && iterator.hasNext();
 	}
 
 	@Override
