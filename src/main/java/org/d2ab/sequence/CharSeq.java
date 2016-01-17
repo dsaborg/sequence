@@ -518,6 +518,10 @@ public interface CharSeq extends CharIterable {
 	}
 
 	default CharSeq repeat() {
-		return () -> new RepeatingCharIterator(this);
+		return () -> new RepeatingCharIterator(this, -1);
+	}
+
+	default CharSeq repeat(long times) {
+		return () -> new RepeatingCharIterator(this, times);
 	}
 }

@@ -649,6 +649,55 @@ public class IntSeqTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		IntSeq repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		IntSeq repeatOne = _1.repeat(2);
+		twice(() -> assertThat(repeatOne, contains(1, 1)));
+
+		IntSeq repeatTwo = _12.repeat(2);
+		twice(() -> assertThat(repeatTwo, contains(1, 2, 1, 2)));
+
+		IntSeq repeatThree = _123.repeat(2);
+		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
+
+		IntSeq repeatVarying = IntSeq.from(new IntIterable() {
+			private List<Integer> list = asList(1, 2, 3);
+			int end = list.size();
+
+			@Override
+			public IntIterator iterator() {
+				List<Integer> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				Iterator<Integer> iterator = subList.iterator();
+				return new DelegatingIntIterator<Integer, Iterator<Integer>>() {
+					@Override
+					public int nextInt() {
+						return iterator.next();
+					}
+				}.backedBy(iterator);
+			}
+		}).repeat(2);
+		assertThat(repeatVarying, contains(1, 2, 3, 1, 2));
+	}
+
+	@Test
+	public void repeatZero() {
+		IntSeq repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		IntSeq repeatOne = _1.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		IntSeq repeatTwo = _12.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		IntSeq repeatThree = _123.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 		IntSeq sequence = IntSeq.generate(queue::poll).endingAt(5);

@@ -569,6 +569,10 @@ public interface IntSeq extends IntIterable {
 	}
 
 	default IntSeq repeat() {
-		return () -> new RepeatingIntIterator(this);
+		return () -> new RepeatingIntIterator(this, -1);
+	}
+
+	default IntSeq repeat(long times) {
+		return () -> new RepeatingIntIterator(this, times);
 	}
 }

@@ -28,17 +28,22 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingCharIterator extends UnaryCharIterator {
 	private final CharIterable iterable;
+	private long times;
 
-	public RepeatingCharIterator(CharIterable iterable) {
+	public RepeatingCharIterator(CharIterable iterable, long times) {
 		this.iterable = iterable;
+		this.times = times;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if (iterator == null || !iterator.hasNext()) {
+		if ((iterator == null || !iterator.hasNext()) && times != 0) {
+			if (times > 0)
+				times--;
+
 			iterator = iterable.iterator();
 		}
-		return iterator.hasNext();
+		return iterator != null && iterator.hasNext();
 	}
 
 	@Override

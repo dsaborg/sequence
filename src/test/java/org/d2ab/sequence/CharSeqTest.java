@@ -630,6 +630,55 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void repeatTwice() {
+		CharSeq repeatEmpty = empty.repeat(2);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		CharSeq repeatOne = a.repeat(2);
+		twice(() -> assertThat(repeatOne, contains('a', 'a')));
+
+		CharSeq repeatTwo = ab.repeat(2);
+		twice(() -> assertThat(repeatTwo, contains('a', 'b', 'a', 'b')));
+
+		CharSeq repeatThree = abc.repeat(2);
+		twice(() -> assertThat(repeatThree, contains('a', 'b', 'c', 'a', 'b', 'c')));
+
+		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
+			private List<Character> list = asList('a', 'b', 'c');
+			int end = list.size();
+
+			@Override
+			public CharIterator iterator() {
+				List<Character> subList = list.subList(0, end);
+				end = end > 0 ? end - 1 : 0;
+				Iterator<Character> iterator = subList.iterator();
+				return new DelegatingCharIterator<Character, Iterator<Character>>() {
+					@Override
+					public char nextChar() {
+						return iterator.next();
+					}
+				}.backedBy(iterator);
+			}
+		}).repeat(2);
+		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b'));
+	}
+
+	@Test
+	public void repeatZero() {
+		CharSeq repeatEmpty = empty.repeat(0);
+		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+
+		CharSeq repeatOne = a.repeat(0);
+		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+
+		CharSeq repeatTwo = ab.repeat(0);
+		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+
+		CharSeq repeatThree = abc.repeat(0);
+		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
 	public void generate() {
 		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
 		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
