@@ -132,8 +132,7 @@ assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969
 
 ### Maps
 
-`Maps` are handled as `Sequences` of `Entry` or `Pair`, with special transformation methods that convert 
-to/from `Maps`. `Pair` implements `Entry` and provides extra transformation methods.
+`Maps` are handled as `Sequences` of `Entry`, with special transformation methods that convert to/from `Maps`.
 
 ```
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
