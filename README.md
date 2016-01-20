@@ -25,6 +25,10 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
 
+### Releases
+
+For releases, check out the [GitHub Releases Page](https://github.com/d2ab/sequence/releases).
+
 ### Iterable
 
 Because `Sequences` are `Iterables` you can re-use them safely after you have already traversed them, as long as they're
