@@ -17,10 +17,23 @@
 apply plugin: 'java'
 apply plugin: 'java-library-distribution'
 
-version = '0.11.0'
+version = '0.11.1'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 repositories {
     jcenter()
+}
+
+task sourcesJar(type: Jar, dependsOn: tasks.classes) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+tasks.assemble.shouldRunAfter tasks.sourcesJar
+
+artifacts {
+    archives sourcesJar
 }
 
 dependencies {
@@ -35,6 +48,7 @@ distributions {
         contents {
             from { 'README.md' }
             from { 'LICENSE' }
+            from { "${libsDir}/${project.name}-${version}-sources.jar" }
         }
     }
 }
