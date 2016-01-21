@@ -102,7 +102,7 @@ public interface LongIterable extends Iterable<Long> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @implSpec If the action is an instance of {@code LongConsumer} then it is cast to {@code LongConsumer} and
+	 * <p>If the action is an instance of {@code LongConsumer} then it is cast to {@code LongConsumer} and
 	 * passed
 	 * to {@link #forEachLong}; otherwise the action is adapted to an instance of {@code LongConsumer}, by boxing the
 	 * argument of {@code LongConsumer}, and then passed to {@link #forEachLong}.
@@ -122,7 +122,7 @@ public interface LongIterable extends Iterable<Long> {
 	 * @param action The action to be performed for each element
 	 *
 	 * @throws NullPointerException if the specified action is null
-	 * @implSpec <p>The default implementation behaves as if:
+	 * <p>The default implementation behaves as if:
 	 * <pre>{@code
 	 * LongIterator iterator = iterator();
 	 * while (iterator.hasNext())

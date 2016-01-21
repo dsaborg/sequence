@@ -102,7 +102,7 @@ public interface CharIterable extends Iterable<Character> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @implSpec If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
+	 * <p>If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
 	 * passed
 	 * to {@link #forEachChar}; otherwise the action is adapted to an instance of {@code CharConsumer}, by boxing the
 	 * argument of {@code CharConsumer}, and then passed to {@link #forEachChar}.
@@ -122,7 +122,7 @@ public interface CharIterable extends Iterable<Character> {
 	 * @param action The action to be performed for each element
 	 *
 	 * @throws NullPointerException if the specified action is null
-	 * @implSpec <p>The default implementation behaves as if:
+	 * <p>The default implementation behaves as if:
 	 * <pre>{@code
 	 * CharIterator iterator = iterator();
 	 * while (iterator.hasNext())

@@ -102,7 +102,7 @@ public interface IntIterable extends Iterable<Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @implSpec If the action is an instance of {@code IntConsumer} then it is cast to {@code IntConsumer} and passed
+	 * <p>If the action is an instance of {@code IntConsumer} then it is cast to {@code IntConsumer} and passed
 	 * to {@link #forEachInt}; otherwise the action is adapted to an instance of {@code IntConsumer}, by boxing the
 	 * argument of {@code IntConsumer}, and then passed to {@link #forEachInt}.
 	 */
@@ -121,7 +121,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 * @param action The action to be performed for each element
 	 *
 	 * @throws NullPointerException if the specified action is null
-	 * @implSpec <p>The default implementation behaves as if:
+	 * <p>The default implementation behaves as if:
 	 * <pre>{@code
 	 * IntIterator iterator = iterator();
 	 * while (iterator.hasNext())

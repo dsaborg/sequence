@@ -79,12 +79,12 @@ public final class OptionalChar {
 
 	/**
 	 * Returns an empty {@code OptionalChar} instance.  No value is present for this OptionalChar.
-	 *
-	 * @return an empty {@code OptionalChar}
-	 *
-	 * @apiNote Though it may be tempting to do so, avoid testing if an object is empty by comparing with {@code ==}
+	 * <p>
+	 * Though it may be tempting to do so, avoid testing if an object is empty by comparing with {@code ==}
 	 * against instances returned by {@code Option.empty()}. There is no guarantee that it is a singleton. Instead, use
 	 * {@link #isPresent()}.
+	 *
+	 * @return an empty {@code OptionalChar}
 	 */
 	public static OptionalChar empty() {
 		return EMPTY;
@@ -163,6 +163,10 @@ public final class OptionalChar {
 
 	/**
 	 * Return the contained value, if present, otherwise throw an exception to be created by the provided supplier.
+	 * <p>
+	 * A method reference to the exception constructor with an empty argument list can be used as the
+	 * supplier.
+	 * For example, {@code IllegalStateException::new}
 	 *
 	 * @param <X>               Type of the exception to be thrown
 	 * @param exceptionSupplier The supplier which will return the exception to be thrown
@@ -171,9 +175,6 @@ public final class OptionalChar {
 	 *
 	 * @throws X                    if there is no value present
 	 * @throws NullPointerException if no value is present and {@code exceptionSupplier} is null
-	 * @apiNote A method reference to the exception constructor with an empty argument list can be used as the
-	 * supplier.
-	 * For example, {@code IllegalStateException::new}
 	 */
 	public <X extends Throwable> char orElseThrow(Supplier<X> exceptionSupplier) throws X {
 		if (present)
@@ -219,11 +220,11 @@ public final class OptionalChar {
 	 * Returns a non-empty string representation of this object suitable for debugging. The exact presentation
 	 * format is
 	 * unspecified and may vary between implementations and versions.
+	 * <p>
+	 * If a value is present the result must include its string representation in the result. Empty and
+	 * present instances must be unambiguously differentiable.
 	 *
 	 * @return the string representation of this instance
-	 *
-	 * @implSpec If a value is present the result must include its string representation in the result. Empty and
-	 * present instances must be unambiguously differentiable.
 	 */
 	@Override
 	public String toString() {
