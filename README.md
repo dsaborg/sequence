@@ -16,7 +16,7 @@ of a pipeline, and is built for convenience and compatibility with the rest of J
 to perform common data processing tasks on moderately small collections. If you need parallel iteration or are 
 processing over 1 million or so entries, use parallel `Streams`.
 
-```
+```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
                              .filter(x -> x % 2 == 0)
                              .map(Object::toString)
@@ -37,7 +37,7 @@ For manually installable releases, check out the [GitHub Releases Page](https://
 
 To install in maven, use the maven central dependency:
 
-```
+```Maven
 <dependency>
   <groupId>org.d2ab</groupId>
   <artifactId>sequence</artifactId>
@@ -49,7 +49,7 @@ To install in maven, use the maven central dependency:
 
 To install in gradle, use the maven central dependency:
 
-```
+```Gradle
 repositories {
     jcenter()
 }
@@ -64,7 +64,7 @@ dependencies {
 Because `Sequences` are `Iterables` you can re-use them safely after you have already traversed them, as long as they're
 backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`, of course.
 
-```
+```Java
 Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
 
 // using sequence of ints 1..10 first time to get odd numbers between 1 and 10
@@ -78,7 +78,7 @@ assertThat(squares, contains(16, 25, 36, 49, 64));
 
 Also because `Sequences` are `Iterables` they work beautifully in foreach loops:
 
-```
+```Java
 Sequence<Integer> sequence = Sequence.ints().limit(3);
 
 int x = 1;
@@ -90,7 +90,7 @@ Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` m
 it's very easy to create your own full-fledged `Sequence` instances that can be operated on like any other `Sequence`
 through the default methods on the interface that carry the bulk of the burden.
 
-```
+```Java
 List list = Arrays.asList(1, 2, 3, 4, 5);
 
 // Sequence as @FunctionalInterface of list's Iterator
@@ -106,7 +106,7 @@ assertThat(transformed, contains("1", "2", "3"));
 
 `Sequences` interoperate beautifully with `Streams`, through the expected `from(Stream)` and `.stream()` methods.
 
-```
+```Java
 Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
 Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
 
@@ -117,7 +117,7 @@ assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c"
 
 There is full support for infinite recursive `Sequences`, including termination at a known value.
 
-```
+```Java
 Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
                                                pair -> pair.shiftedLeft(pair.apply(Integer::sum)))
                                       .map(Pair::getLeft)
@@ -126,7 +126,7 @@ Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
 assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
-```
+```Java
 Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
 
 Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).untilNull();
@@ -140,7 +140,7 @@ assertThat(sequence,
 
 Also the standard reduction operations are available as per `Stream`:
 
-```
+```Java
 Sequence<Long> thirteen = Sequence.recurse(1L, i -> i + 1).limit(13);
 Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
@@ -152,7 +152,7 @@ assertThat(factorial, is(6227020800L));
 When iterating over sequences of pairs of item, there is ```BiSequence``` which provides native operators and
 transformations across lists of pairs of items:
 
-```
+```Java
 BiSequence<String, Integer> presidents = BiSequence.ofPair("Abraham Lincoln", 1861)
                                                    .appendPair("Richard Nixon", 1969)
                                                    .appendPair("George Bush", 2001)
@@ -168,7 +168,7 @@ assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969
 
 `Maps` are handled as `Sequences` of `Entry`, with special transformation methods that convert to/from `Maps`.
 
-```
+```Java
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
 Sequence<String> values = Sequence.of("1", "2", "3");
 
@@ -180,7 +180,7 @@ assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())
 
 You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
 
-```
+```Java
 Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
@@ -193,7 +193,7 @@ assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6)
 
 You can also work directly on `Entry` keys and values using `EntrySequence`.
 
-```
+```Java
 Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
@@ -208,25 +208,25 @@ assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").bui
 There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `CharSeq`, `IntSeq`, 
 `LongSeq` and `DoubleSeq`:
 
-```
+```Java
 CharSeq snakeCase = CharSeq.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
 
 assertThat(snakeCase.asString(), is("hello_lexicon"));
 ```
 
-```
+```Java
 IntSeq squares = IntSeq.positive().map(i -> i * i);
 
 assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 ```
 
-```
+```Java
 LongSeq negativeOdds = LongSeq.negative().step(2);
 
 assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
 ```
 
-```
+```Java
 DoubleSeq squareRoots = DoubleSeq.positive().limit(3).map(Math::sqrt);
 
 assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
@@ -234,7 +234,7 @@ assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
 
 The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
 
-```
+```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
                        .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
                        .map(c -> (c == '_') ? ' ' : c);
