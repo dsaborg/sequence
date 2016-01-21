@@ -16,8 +16,12 @@
 
 apply plugin: 'java'
 apply plugin: 'java-library-distribution'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
-version = '0.11.1'
+version = '0.11.2'
+group = 'org.d2ab'
+archivesBaseName = project.name
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -44,11 +48,15 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
+signing {
+    sign configurations.archives
+}
+
 dependencies {
-    testCompile "org.mockito:mockito-core:2.+"
-    testCompile 'junit:junit:4.12+'
-    testCompile 'org.hamcrest:java-hamcrest:2+'
-    compile 'com.google.code.findbugs:jsr305:2+'
+    testCompile "org.mockito:mockito-core:[2,)"
+    testCompile 'junit:junit:[4.12,)'
+    testCompile 'org.hamcrest:java-hamcrest:[2,)'
+    compile 'com.google.code.findbugs:jsr305:[3,)'
 }
 
 distributions {
@@ -58,6 +66,51 @@ distributions {
             from { 'LICENSE' }
             from { "${libsDir}/${project.name}-${version}-javadoc.jar" }
             from { "${libsDir}/${project.name}-${version}-sources.jar" }
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Sequence'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'A lightweight alternative to Java 8 sequential Stream'
+                url 'http://github.com/d2ab/sequence'
+
+                scm {
+                    connection 'scm:git:https://github.com/d2ab/sequence.git'
+                    developerConnection 'scm:git:https://github.com/d2ab/sequence.git'
+                    url 'https://github.com/d2ab/sequence'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'd2ab'
+                        name 'Daniel Skogquist Åborg'
+                        email 'daniel@d2ab.org'
+                    }
+                }
+            }
         }
     }
 }

@@ -25,9 +25,39 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
 
-### Releases
+### Install
 
-For releases, check out the [GitHub Releases Page](https://github.com/d2ab/sequence/releases).
+The Sequence library is available for manual install or as a maven central dependency for maven and gradle.
+
+#### Manual
+
+For manually installable releases, check out the [GitHub Releases Page](https://github.com/d2ab/sequence/releases).
+
+#### Maven
+
+To install in maven, use the maven central dependency:
+
+```
+<dependency>
+  <groupId>org.d2ab</groupId>
+  <artifactId>sequence</artifactId>
+  <version>0.11.2</version>
+</dependency>
+```
+
+#### Gradle
+
+To install in gradle, use the maven central dependency:
+
+```
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.d2ab:sequence:0.11.2'
+}
+```
 
 ### Iterable
 
