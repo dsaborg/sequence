@@ -2,6 +2,22 @@
 ## A lightweight alternative to Java 8 sequential Stream
 ##### Daniel Skogquist Åborg ([d2ab.org](http://www.d2ab.org/))
 
+* [Overview](#overview)
+* [Install](#install)
+  * [Manual](#manual)
+  * [Maven](#maven)
+  * [Gradle](#gradle)
+* [Iterable](#iterable)
+* [Streams](#streams)
+* [Recursion](#recursion)
+* [Reduction](#reduction)
+* [Pairs](#pairs)
+* [Maps](#maps)
+* [Primitive](#primitive)
+* [Conclusion](#conclusion)
+
+### Overview
+
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java.
 
