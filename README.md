@@ -5,16 +5,7 @@
 
 * [Overview](#overview)
 * [Install](#install)
-  * [Manual](#manual)
-  * [Maven](#maven)
-  * [Gradle](#gradle)
-* [Iterable](#iterable)
-* [Streams](#streams)
-* [Recursion](#recursion)
-* [Reduction](#reduction)
-* [Pairs](#pairs)
-* [Maps](#maps)
-* [Primitive](#primitive)
+* [Usage](#usage)
 * [Conclusion](#conclusion)
 
 ### Overview
@@ -76,7 +67,9 @@ dependencies {
 }
 ```
 
-### Iterable
+### Usage
+
+#### Iterable
 
 Because `Sequences` are `Iterables` you can re-use them safely after you have already traversed them, as long as they're
 backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`, of course.
@@ -119,7 +112,7 @@ Sequence<String> transformed = sequence.map(Object::toString).limit(3);
 assertThat(transformed, contains("1", "2", "3"));
 ```
 
-### Streams
+#### Streams
 
 `Sequences` interoperate beautifully with `Streams`, through the expected `from(Stream)` and `.stream()` methods.
 
@@ -130,7 +123,7 @@ Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
 assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```
 
-### Recursion
+#### Recursion
 
 There is full support for infinite recursive `Sequences`, including termination at a known value.
 
@@ -153,7 +146,7 @@ assertThat(sequence,
                     instanceOf(NullPointerException.class)));
 ```
 
-### Reduction
+#### Reduction
 
 Also the standard reduction operations are available as per `Stream`:
 
@@ -164,7 +157,7 @@ Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 assertThat(factorial, is(6227020800L));
 ```
 
-### Pairs
+#### Pairs
 
 When iterating over sequences of pairs of item, there is ```BiSequence``` which provides native operators and
 transformations across lists of pairs of items:
@@ -181,7 +174,7 @@ assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969
                                   "Barack Obama (2005)"));
 ```
 
-### Maps
+#### Maps
 
 `Maps` are handled as `Sequences` of `Entry`, with special transformation methods that convert to/from `Maps`.
 
@@ -220,7 +213,7 @@ EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
 assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
 
-### Primitive
+#### Primitive
 
 There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `CharSeq`, `IntSeq`, 
 `LongSeq` and `DoubleSeq`:
