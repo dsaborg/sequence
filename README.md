@@ -1,6 +1,7 @@
 # Sequence
 ## A lightweight alternative to Java 8 sequential Stream
-##### Daniel Skogquist Åborg ([d2ab.org](http://www.d2ab.org/))
+
+##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
 
 * [Overview](#overview)
 * [Install](#install)
@@ -260,6 +261,6 @@ assertThat(titleCase.asString(), is("Hello Lexicon"));
 
 ### Conclusion
 
-Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`!
+Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
 
-Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)!
+Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)! :heart:
