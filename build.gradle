@@ -19,7 +19,7 @@ apply plugin: 'java-library-distribution'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = '0.11.2'
+version = '0.12.0-SNAPSHOT'
 group = 'org.d2ab'
 archivesBaseName = project.name
 
@@ -39,10 +39,7 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-tasks.distZip.shouldRunAfter tasks.javadocJar
-tasks.distTar.shouldRunAfter tasks.javadocJar
-tasks.distZip.shouldRunAfter tasks.sourcesJar
-tasks.distTar.shouldRunAfter tasks.sourcesJar
+[distZip, distTar]*.dependsOn javadocJar, sourcesJar
 
 artifacts {
     archives javadocJar, sourcesJar
@@ -64,8 +61,8 @@ distributions {
         contents {
             from { 'README.md' }
             from { 'LICENSE' }
-            from { "${libsDir}/${project.name}-${version}-javadoc.jar" }
-            from { "${libsDir}/${project.name}-${version}-sources.jar" }
+            from { tasks.javadocJar.archivePath }
+            from { tasks.sourcesJar.archivePath }
         }
     }
 }
