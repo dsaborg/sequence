@@ -39,7 +39,7 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-[distZip, distTar]*.dependsOn javadocJar, sourcesJar
+assembleDist.dependsOn javadocJar, sourcesJar
 
 artifacts {
     archives javadocJar, sourcesJar
@@ -61,8 +61,8 @@ distributions {
         contents {
             from { 'README.md' }
             from { 'LICENSE' }
-            from { tasks.javadocJar.archivePath }
-            from { tasks.sourcesJar.archivePath }
+            from { javadocJar }
+            from { sourcesJar }
         }
     }
 }
