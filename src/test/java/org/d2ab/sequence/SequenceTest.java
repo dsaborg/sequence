@@ -1015,29 +1015,29 @@ public class SequenceTest {
 
 	@Test
 	public void mapToInt() {
-		IntSeq empty = Sequence.<Integer>empty().intSequence(Integer::intValue);
+		IntSequence empty = Sequence.<Integer>empty().intSequence(Integer::intValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		IntSeq intSeq = Sequence.ints().limit(5).intSequence(Integer::intValue);
-		twice(() -> assertThat(intSeq, contains(1, 2, 3, 4, 5)));
+		IntSequence intSequence = Sequence.ints().limit(5).intSequence(Integer::intValue);
+		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapToLong() {
-		LongSeq empty = Sequence.<Long>empty().longSequence(Long::longValue);
+		LongSequence empty = Sequence.<Long>empty().longSequence(Long::longValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		LongSeq longSeq = Sequence.ints().limit(5).longSequence(i -> (long) i);
-		twice(() -> assertThat(longSeq, contains(1L, 2L, 3L, 4L, 5L)));
+		LongSequence longSequence = Sequence.ints().limit(5).longSequence(i -> (long) i);
+		twice(() -> assertThat(longSequence, contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
 	public void mapToDouble() {
-		DoubleSeq empty = Sequence.<Double>empty().doubleSequence(Double::doubleValue);
+		DoubleSequence empty = Sequence.<Double>empty().doubleSequence(Double::doubleValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		DoubleSeq doubleSeq = Sequence.ints().limit(5).doubleSequence(i -> (double) i);
-		twice(() -> assertThat(doubleSeq, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+		DoubleSequence doubleSequence = Sequence.ints().limit(5).doubleSequence(i -> (double) i);
+		twice(() -> assertThat(doubleSequence, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 
 	@Test

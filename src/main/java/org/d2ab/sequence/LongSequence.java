@@ -42,45 +42,46 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of longs.
  */
 @FunctionalInterface
-public interface LongSeq extends LongIterable {
+public interface LongSequence extends LongIterable {
 	/**
-	 * Create empty {@code LongSeq} with no contents.
+	 * Create empty {@code LongSequence} with no contents.
 	 */
-	static LongSeq empty() {
+	static LongSequence empty() {
 		return from(emptyIterator());
 	}
 
 	/**
-	 * Create an {@code LongSeq} from an {@link Iterator} of {@code Long} values. Note that {@code LongSeq} created
+	 * Create an {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that {@code LongSequence}
+	 * created
 	 * from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code LongSeq} as
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code LongSequence} as
 	 * empty.
 	 */
-	static LongSeq from(Iterator<Long> iterator) {
+	static LongSequence from(Iterator<Long> iterator) {
 		return from(LongIterator.from(iterator));
 	}
 
 	/**
-	 * Create a {@code LongSeq} from a {@link LongIterator} of long values. Note that {@code
-	 * LongSeq}s created from {@link LongIterator}s cannot be passed over more than once. Further attempts
+	 * Create a {@code LongSequence} from a {@link LongIterator} of long values. Note that {@code
+	 * LongSequence}s created from {@link LongIterator}s cannot be passed over more than once. Further attempts
 	 * will
-	 * register the {@code LongSeq} as empty.
+	 * register the {@code LongSequence} as empty.
 	 */
-	static LongSeq from(LongIterator iterator) {
+	static LongSequence from(LongIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
-	 * Create a {@code LongSeq} from a {@link LongIterable}.
+	 * Create a {@code LongSequence} from a {@link LongIterable}.
 	 */
-	static LongSeq from(LongIterable iterable) {
+	static LongSequence from(LongIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
-	 * Create a {@code LongSeq} with the given longs.
+	 * Create a {@code LongSequence} with the given longs.
 	 */
-	static LongSeq of(long... cs) {
+	static LongSequence of(long... cs) {
 		return () -> new ArrayLongIterator(cs);
 	}
 
@@ -89,7 +90,7 @@ public interface LongSeq extends LongIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	static LongSeq from(Supplier<? extends LongIterator> iteratorSupplier) {
+	static LongSequence from(Supplier<? extends LongIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -100,14 +101,14 @@ public interface LongSeq extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
-	static LongSeq from(Stream<Long> stream) {
+	static LongSequence from(Stream<Long> stream) {
 		return from(stream::iterator);
 	}
 
 	/**
-	 * Create a {@code LongSeq} from an {@link Iterable} of {@code Long} values.
+	 * Create a {@code LongSequence} from an {@link Iterable} of {@code Long} values.
 	 */
-	static LongSeq from(Iterable<Long> iterable) {
+	static LongSequence from(Iterable<Long> iterable) {
 		return () -> LongIterator.from(iterable);
 	}
 
@@ -119,7 +120,7 @@ public interface LongSeq extends LongIterable {
 	 * @see #startingAt(long)
 	 * @see #range(long, long)
 	 */
-	static LongSeq positive() {
+	static LongSequence positive() {
 		return startingAt(1);
 	}
 
@@ -131,7 +132,7 @@ public interface LongSeq extends LongIterable {
 	 * @see #startingAt(long)
 	 * @see #range(long, long)
 	 */
-	static LongSeq negative() {
+	static LongSequence negative() {
 		return range(-1L, Long.MIN_VALUE);
 	}
 
@@ -139,19 +140,19 @@ public interface LongSeq extends LongIterable {
 	 * A {@code Sequence} of all the {@link Long} values starting at the given value and ending at {@link
 	 * Long#MAX_VALUE}.
 	 */
-	static LongSeq startingAt(long start) {
+	static LongSequence startingAt(long start) {
 		return range(start, Long.MAX_VALUE);
 	}
 
 	/**
 	 * A {@code Sequence} of all the {@link Long} values between the given start and end positions, inclusive.
 	 */
-	static LongSeq range(long start, long end) {
+	static LongSequence range(long start, long end) {
 		LongUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
 		return recurse(start, next).endingAt(end);
 	}
 
-	static LongSeq recurse(long seed, LongUnaryOperator op) {
+	static LongSequence recurse(long seed, LongUnaryOperator op) {
 		return () -> new InfiniteLongIterator() {
 			private long previous;
 			private boolean hasPrevious;
@@ -166,69 +167,71 @@ public interface LongSeq extends LongIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code IntSeq} that is generated from the given supplier and thus never terminates.
+	 * @return a sequence of {@code IntSequence} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(long, LongUnaryOperator)
 	 * @see #endingAt(long)
 	 * @see #until(long)
 	 */
-	static LongSeq generate(LongSupplier supplier) {
+	static LongSequence generate(LongSupplier supplier) {
 		return () -> (InfiniteLongIterator) supplier::getAsLong;
 	}
 
 	/**
-	 * Terminate this {@code LongSeq} sequence before the given element, with the previous element as the last
-	 * element in this {@code LongSeq} sequence.
+	 * Terminate this {@code LongSequence} sequence before the given element, with the previous element as the last
+	 * element in this {@code LongSequence} sequence.
 	 *
 	 * @see #until(LongPredicate)
 	 * @see #endingAt(long)
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
-	default LongSeq until(long terminal) {
+	default LongSequence until(long terminal) {
 		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code LongSeq} sequence at the given element, including it as the last element in this {@code
-	 * LongSeq} sequence.
+	 * Terminate this {@code LongSequence} sequence at the given element, including it as the last element in this
+	 * {@code
+	 * LongSequence} sequence.
 	 *
 	 * @see #endingAt(LongPredicate)
 	 * @see #until(long)
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
-	default LongSeq endingAt(long terminal) {
+	default LongSequence endingAt(long terminal) {
 		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code LongSeq} sequence before the element that satisfies the given predicate, with the previous
-	 * element as the last element in this {@code LongSeq} sequence.
+	 * Terminate this {@code LongSequence} sequence before the element that satisfies the given predicate, with the
+	 * previous
+	 * element as the last element in this {@code LongSequence} sequence.
 	 *
 	 * @see #until(long)
 	 * @see #endingAt(long)
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
-	default LongSeq until(LongPredicate terminal) {
+	default LongSequence until(LongPredicate terminal) {
 		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code LongSeq} sequence at the element that satisfies the given predicate, including the
-	 * element as the last element in this {@code LongSeq} sequence.
+	 * Terminate this {@code LongSequence} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code LongSequence} sequence.
 	 *
 	 * @see #endingAt(long)
 	 * @see #until(long)
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
-	default LongSeq endingAt(LongPredicate terminal) {
+	default LongSequence endingAt(LongPredicate terminal) {
 		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
-	default LongSeq map(LongUnaryOperator mapper) {
+	default LongSequence map(LongUnaryOperator mapper) {
 		return () -> new UnaryLongIterator() {
 			@Override
 			public long nextLong() {
@@ -237,11 +240,11 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq mapBack(BackPeekingLongFunction mapper) {
+	default LongSequence mapBack(BackPeekingLongFunction mapper) {
 		return () -> new BackPeekingLongIterator(mapper).backedBy(iterator());
 	}
 
-	default LongSeq mapForward(ForwardPeekingLongFunction mapper) {
+	default LongSequence mapForward(ForwardPeekingLongFunction mapper) {
 		return () -> new ForwardPeekingLongIterator(mapper).backedBy(iterator());
 	}
 
@@ -258,43 +261,43 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq skip(long skip) {
+	default LongSequence skip(long skip) {
 		return () -> new SkippingLongIterator(skip).backedBy(iterator());
 	}
 
-	default LongSeq limit(long limit) {
+	default LongSequence limit(long limit) {
 		return () -> new LimitingLongIterator(limit).backedBy(iterator());
 	}
 
-	default LongSeq append(Iterable<Long> iterable) {
+	default LongSequence append(Iterable<Long> iterable) {
 		return append(LongIterable.from(iterable));
 	}
 
-	default LongSeq append(LongIterable that) {
+	default LongSequence append(LongIterable that) {
 		return new ChainingLongIterable(this, that)::iterator;
 	}
 
-	default LongSeq append(LongIterator iterator) {
+	default LongSequence append(LongIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
-	default LongSeq append(Iterator<Long> iterator) {
+	default LongSequence append(Iterator<Long> iterator) {
 		return append(LongIterable.from(iterator));
 	}
 
-	default LongSeq append(long... longs) {
+	default LongSequence append(long... longs) {
 		return append(LongIterable.of(longs));
 	}
 
-	default LongSeq append(Stream<Long> stream) {
+	default LongSequence append(Stream<Long> stream) {
 		return append(LongIterable.from(stream));
 	}
 
-	default LongSeq append(LongStream stream) {
+	default LongSequence append(LongStream stream) {
 		return append(LongIterable.from(stream));
 	}
 
-	default LongSeq filter(LongPredicate predicate) {
+	default LongSequence filter(LongPredicate predicate) {
 		return () -> new FilteringLongIterator(predicate).backedBy(iterator());
 	}
 
@@ -375,11 +378,11 @@ public interface LongSeq extends LongIterable {
 		return OptionalLong.of(last);
 	}
 
-	default LongSeq step(long step) {
+	default LongSequence step(long step) {
 		return () -> new SteppingLongIterator(step).backedBy(iterator());
 	}
 
-	default LongSeq distinct() {
+	default LongSequence distinct() {
 		return () -> new DistinctLongIterator().backedBy(iterator());
 	}
 
@@ -428,7 +431,7 @@ public interface LongSeq extends LongIterable {
 		return false;
 	}
 
-	default LongSeq peek(LongConsumer action) {
+	default LongSequence peek(LongConsumer action) {
 		return () -> new UnaryLongIterator() {
 			@Override
 			public long nextLong() {
@@ -439,7 +442,7 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq sorted() {
+	default LongSequence sorted() {
 		long[] array = toArray();
 		Arrays.sort(array);
 		return () -> LongIterator.of(array);
@@ -469,19 +472,19 @@ public interface LongSeq extends LongIterable {
 		return result;
 	}
 
-	default LongSeq prefix(long... cs) {
+	default LongSequence prefix(long... cs) {
 		return () -> new ChainingLongIterator(LongIterable.of(cs), this);
 	}
 
-	default LongSeq suffix(long... cs) {
+	default LongSequence suffix(long... cs) {
 		return () -> new ChainingLongIterator(this, LongIterable.of(cs));
 	}
 
-	default LongSeq interleave(LongSeq that) {
+	default LongSequence interleave(LongSequence that) {
 		return () -> new InterleavingLongIterator(this, that);
 	}
 
-	default LongSeq reverse() {
+	default LongSequence reverse() {
 		long[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
 			Arrayz.swap(array, i, array.length - 1 - i);
@@ -498,7 +501,7 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default IntSeq toInts() {
+	default IntSequence toInts() {
 		return () -> new DelegatingIntIterator<Long, LongIterator>() {
 			@Override
 			public int nextInt() {
@@ -507,7 +510,7 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq toDoubles() {
+	default DoubleSequence toDoubles() {
 		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
 			@Override
 			public double nextDouble() {
@@ -525,7 +528,7 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default IntSeq toInts(LongToIntFunction mapper) {
+	default IntSequence toInts(LongToIntFunction mapper) {
 		return () -> new DelegatingIntIterator<Long, LongIterator>() {
 			@Override
 			public int nextInt() {
@@ -534,7 +537,7 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq toDoubles(LongToDoubleFunction mapper) {
+	default DoubleSequence toDoubles(LongToDoubleFunction mapper) {
 		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
 			@Override
 			public double nextDouble() {
@@ -543,11 +546,11 @@ public interface LongSeq extends LongIterable {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq repeat() {
+	default LongSequence repeat() {
 		return () -> new RepeatingLongIterator(this, -1);
 	}
 
-	default LongSeq repeat(long times) {
+	default LongSequence repeat(long times) {
 		return () -> new RepeatingLongIterator(this, times);
 	}
 }

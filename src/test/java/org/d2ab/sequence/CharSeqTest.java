@@ -570,11 +570,11 @@ public class CharSeqTest {
 
 	@Test
 	public void toInts() {
-		IntSeq emptyIntSeq = empty.toInts();
-		twice(() -> assertThat(emptyIntSeq, is(emptyIterable())));
+		IntSequence emptyIntSequence = empty.toInts();
+		twice(() -> assertThat(emptyIntSequence, is(emptyIterable())));
 
-		IntSeq intSeq = CharSeq.all().limit(5).toInts();
-		twice(() -> assertThat(intSeq, contains(0, 1, 2, 3, 4)));
+		IntSequence intSequence = CharSeq.all().limit(5).toInts();
+		twice(() -> assertThat(intSequence, contains(0, 1, 2, 3, 4)));
 	}
 
 	@Test

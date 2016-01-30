@@ -39,44 +39,47 @@ import static java.util.Collections.emptyIterator;
 @FunctionalInterface
 public interface CharSeq extends CharIterable {
 	/**
-	 * Create an empty {@code CharSequence} with no characters.
+	 * Create an empty {@code CharSeq} with no characters.
 	 */
 	static CharSeq empty() {
 		return from(emptyIterator());
 	}
 
 	/**
-	 * Create a {@code CharSequence} from an {@link Iterator} of {@code Character} values. Note that {@code
-	 * CharSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code CharSequence} as empty.
+	 * Create a {@code CharSeq} from an {@link Iterator} of {@code Character} values. Note that {@code
+	 * CharSeq}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
+	 * register the {@code CharSeq} as empty.
 	 */
 	static CharSeq from(Iterator<Character> iterator) {
 		return from(CharIterator.from(iterator));
 	}
 
 	/**
-	 * Create a {@code CharSequence} from a {@link CharIterator} of character values. Note that {@code
-	 * CharSequence}s created from {@link CharIterator}s cannot be passed over more than once. Further attempts
+	 * Create a {@code CharSeq} from a {@link CharIterator} of character values. Note that {@code
+	 * CharSeq}s created from {@link CharIterator}s cannot be passed over more than once. Further attempts
 	 * will
-	 * register the {@code CharSequence} as empty.
+	 * register the {@code CharSeq} as empty.
 	 */
 	static CharSeq from(CharIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
-	 * Create a {@code CharSequence} from a {@link CharIterable}.
+	 * Create a {@code CharSeq} from a {@link CharIterable}.
 	 */
 	static CharSeq from(CharIterable iterable) {
 		return iterable::iterator;
 	}
 
+	/**
+	 * Create a {@code CharSeq} from a {@link CharSequence}.
+	 */
 	static CharSeq from(CharSequence csq) {
 		return () -> new CharSequenceCharIterator(csq);
 	}
 
 	/**
-	 * Create a {@code CharSequence} with the given characters.
+	 * Create a {@code CharSeq} with the given characters.
 	 */
 	static CharSeq of(char... cs) {
 		return () -> new ArrayCharIterator(cs);
@@ -103,7 +106,7 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Create a {@code CharSequence} from an {@link Iterable} of {@code Character} values.
+	 * Create a {@code CharSeq} from an {@link Iterable} of {@code Character} values.
 	 */
 	static CharSeq from(Iterable<Character> iterable) {
 		return () -> CharIterator.from(iterable);
@@ -508,7 +511,7 @@ public interface CharSeq extends CharIterable {
 		return () -> new ForwardPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
-	default IntSeq toInts() {
+	default IntSequence toInts() {
 		return () -> new DelegatingIntIterator<Character, CharIterator>() {
 			@Override
 			public int nextInt() {

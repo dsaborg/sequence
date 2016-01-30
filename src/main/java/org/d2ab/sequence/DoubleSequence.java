@@ -40,44 +40,44 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of doubles.
  */
 @FunctionalInterface
-public interface DoubleSeq extends DoubleIterable {
+public interface DoubleSequence extends DoubleIterable {
 	/**
-	 * Create empty {@code DoubleSeq} with no contents.
+	 * Create empty {@code DoubleSequence} with no contents.
 	 */
-	static DoubleSeq empty() {
+	static DoubleSequence empty() {
 		return from(emptyIterator());
 	}
 
 	/**
-	 * Create an {@code DoubleSeq} from an
-	 * {@link Iterator} of {@code Double} values. Note that {@code DoubleSeq} created from {@link Iterator}s
-	 * cannot be passed over more than once. Further attempts will register the {@code DoubleSeq} as empty.
+	 * Create an {@code DoubleSequence} from an
+	 * {@link Iterator} of {@code Double} values. Note that {@code DoubleSequence} created from {@link Iterator}s
+	 * cannot be passed over more than once. Further attempts will register the {@code DoubleSequence} as empty.
 	 */
-	static DoubleSeq from(Iterator<Double> iterator) {
+	static DoubleSequence from(Iterator<Double> iterator) {
 		return from(DoubleIterator.from(iterator));
 	}
 
 	/**
-	 * Create a {@code DoubleSeq} from a {@link DoubleIterator} of double values. Note that {@code
-	 * DoubleSeq}s created from {@link DoubleIterator}s cannot be passed over more than once. Further attempts
+	 * Create a {@code DoubleSequence} from a {@link DoubleIterator} of double values. Note that {@code
+	 * DoubleSequence}s created from {@link DoubleIterator}s cannot be passed over more than once. Further attempts
 	 * will
-	 * register the {@code DoubleSeq} as empty.
+	 * register the {@code DoubleSequence} as empty.
 	 */
-	static DoubleSeq from(DoubleIterator iterator) {
+	static DoubleSequence from(DoubleIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
-	 * Create a {@code DoubleSeq} from a {@link DoubleIterable}.
+	 * Create a {@code DoubleSequence} from a {@link DoubleIterable}.
 	 */
-	static DoubleSeq from(DoubleIterable iterable) {
+	static DoubleSequence from(DoubleIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
-	 * Create a {@code DoubleSeq} with the given doubles.
+	 * Create a {@code DoubleSequence} with the given doubles.
 	 */
-	static DoubleSeq of(double... cs) {
+	static DoubleSequence of(double... cs) {
 		return () -> new ArrayDoubleIterator(cs);
 	}
 
@@ -86,7 +86,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	static DoubleSeq from(Supplier<? extends DoubleIterator> iteratorSupplier) {
+	static DoubleSequence from(Supplier<? extends DoubleIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -97,14 +97,14 @@ public interface DoubleSeq extends DoubleIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
-	static DoubleSeq from(Stream<Double> stream) {
+	static DoubleSequence from(Stream<Double> stream) {
 		return from(stream::iterator);
 	}
 
 	/**
-	 * Create a {@code DoubleSeq} from an {@link Iterable} of {@code Double} values.
+	 * Create a {@code DoubleSequence} from an {@link Iterable} of {@code Double} values.
 	 */
-	static DoubleSeq from(Iterable<Double> iterable) {
+	static DoubleSequence from(Iterable<Double> iterable) {
 		return () -> DoubleIterator.from(iterable);
 	}
 
@@ -117,7 +117,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * @see #range(double, double)
 	 * @see #range(double, double, double)
 	 */
-	static DoubleSeq positive() {
+	static DoubleSequence positive() {
 		return startingAt(1);
 	}
 
@@ -130,7 +130,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * @see #range(double, double)
 	 * @see #range(double, double, double)
 	 */
-	static DoubleSeq negative() {
+	static DoubleSequence negative() {
 		return range(-1L, Double.MIN_VALUE);
 	}
 
@@ -143,7 +143,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * @see #range(double, double)
 	 * @see #range(double, double, double)
 	 */
-	static DoubleSeq startingAt(double start) {
+	static DoubleSequence startingAt(double start) {
 		return range(start, Double.MAX_VALUE);
 	}
 
@@ -155,7 +155,7 @@ public interface DoubleSeq extends DoubleIterable {
 	 * @see #startingAt(double)
 	 * @see #range(double, double, double)
 	 */
-	static DoubleSeq range(double start, double end) {
+	static DoubleSequence range(double start, double end) {
 		return range(start, end, 1);
 	}
 
@@ -168,12 +168,12 @@ public interface DoubleSeq extends DoubleIterable {
 	 * @see #startingAt(double)
 	 * @see #range(double, double)
 	 */
-	static DoubleSeq range(double start, double end, double step) {
+	static DoubleSequence range(double start, double end, double step) {
 		double effectiveStep = end > start ? step : -step;
 		return recurse(start, d -> d + effectiveStep).endingAt(end);
 	}
 
-	static DoubleSeq recurse(double seed, DoubleUnaryOperator op) {
+	static DoubleSequence recurse(double seed, DoubleUnaryOperator op) {
 		return () -> new InfiniteDoubleIterator() {
 			private double previous;
 			private boolean hasPrevious;
@@ -188,70 +188,72 @@ public interface DoubleSeq extends DoubleIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code DoubleSeq} that is generated from the given supplier and thus never terminates.
+	 * @return a sequence of {@code DoubleSequence} that is generated from the given supplier and thus never
+	 * terminates.
 	 *
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 * @see #endingAt(double)
 	 * @see #until(double)
 	 */
-	static DoubleSeq generate(DoubleSupplier supplier) {
+	static DoubleSequence generate(DoubleSupplier supplier) {
 		return () -> (InfiniteDoubleIterator) supplier::getAsDouble;
 	}
 
 	/**
-	 * Terminate this {@code DoubleSeq} sequence before the given element, with the previous element as the last
-	 * element in this {@code DoubleSeq} sequence.
+	 * Terminate this {@code DoubleSequence} sequence before the given element, with the previous element as the last
+	 * element in this {@code DoubleSequence} sequence.
 	 *
 	 * @see #until(DoublePredicate)
 	 * @see #endingAt(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSeq until(double terminal) {
+	default DoubleSequence until(double terminal) {
 		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code DoubleSeq} sequence at the given element, including it as the last element in this {@code
-	 * DoubleSeq} sequence.
+	 * Terminate this {@code DoubleSequence} sequence at the given element, including it as the last element in this
+	 * {@code
+	 * DoubleSequence} sequence.
 	 *
 	 * @see #endingAt(DoublePredicate)
 	 * @see #until(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSeq endingAt(double terminal) {
+	default DoubleSequence endingAt(double terminal) {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code DoubleSeq} sequence before the element that satisfies the given predicate, with the
+	 * Terminate this {@code DoubleSequence} sequence before the element that satisfies the given predicate, with the
 	 * previous
-	 * element as the last element in this {@code DoubleSeq} sequence.
+	 * element as the last element in this {@code DoubleSequence} sequence.
 	 *
 	 * @see #until(double)
 	 * @see #endingAt(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSeq until(DoublePredicate terminal) {
+	default DoubleSequence until(DoublePredicate terminal) {
 		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code DoubleSeq} sequence at the element that satisfies the given predicate, including the
-	 * element as the last element in this {@code DoubleSeq} sequence.
+	 * Terminate this {@code DoubleSequence} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code DoubleSequence} sequence.
 	 *
 	 * @see #endingAt(double)
 	 * @see #until(double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSeq endingAt(DoublePredicate terminal) {
+	default DoubleSequence endingAt(DoublePredicate terminal) {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
-	default DoubleSeq map(DoubleUnaryOperator mapper) {
+	default DoubleSequence map(DoubleUnaryOperator mapper) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
 			public double nextDouble() {
@@ -280,43 +282,43 @@ public interface DoubleSeq extends DoubleIterable {
 		};
 	}
 
-	default DoubleSeq skip(double skip) {
+	default DoubleSequence skip(double skip) {
 		return () -> new SkippingDoubleIterator(skip).backedBy(iterator());
 	}
 
-	default DoubleSeq limit(double limit) {
+	default DoubleSequence limit(double limit) {
 		return () -> new LimitingDoubleIterator(limit).backedBy(iterator());
 	}
 
-	default DoubleSeq append(Iterable<Double> iterable) {
+	default DoubleSequence append(Iterable<Double> iterable) {
 		return append(DoubleIterable.from(iterable));
 	}
 
-	default DoubleSeq append(DoubleIterable that) {
+	default DoubleSequence append(DoubleIterable that) {
 		return new ChainingDoubleIterable(this, that)::iterator;
 	}
 
-	default DoubleSeq append(DoubleIterator iterator) {
+	default DoubleSequence append(DoubleIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
-	default DoubleSeq append(Iterator<Double> iterator) {
+	default DoubleSequence append(Iterator<Double> iterator) {
 		return append(DoubleIterable.from(iterator));
 	}
 
-	default DoubleSeq append(double... doubles) {
+	default DoubleSequence append(double... doubles) {
 		return append(DoubleIterable.of(doubles));
 	}
 
-	default DoubleSeq append(Stream<Double> stream) {
+	default DoubleSequence append(Stream<Double> stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
-	default DoubleSeq append(DoubleStream stream) {
+	default DoubleSequence append(DoubleStream stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
-	default DoubleSeq filter(DoublePredicate predicate) {
+	default DoubleSequence filter(DoublePredicate predicate) {
 		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
 	}
 
@@ -397,7 +399,7 @@ public interface DoubleSeq extends DoubleIterable {
 		return OptionalDouble.of(last);
 	}
 
-	default DoubleSeq step(double step) {
+	default DoubleSequence step(double step) {
 		return () -> new SteppingDoubleIterator(step).backedBy(iterator());
 	}
 
@@ -446,7 +448,7 @@ public interface DoubleSeq extends DoubleIterable {
 		return false;
 	}
 
-	default DoubleSeq peek(DoubleConsumer action) {
+	default DoubleSequence peek(DoubleConsumer action) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
 			public double nextDouble() {
@@ -457,7 +459,7 @@ public interface DoubleSeq extends DoubleIterable {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq sorted() {
+	default DoubleSequence sorted() {
 		double[] array = toArray();
 		Arrays.sort(array);
 		return () -> DoubleIterator.of(array);
@@ -487,19 +489,19 @@ public interface DoubleSeq extends DoubleIterable {
 		return result;
 	}
 
-	default DoubleSeq prefix(double... cs) {
+	default DoubleSequence prefix(double... cs) {
 		return () -> new ChainingDoubleIterator(DoubleIterable.of(cs), this);
 	}
 
-	default DoubleSeq suffix(double... cs) {
+	default DoubleSequence suffix(double... cs) {
 		return () -> new ChainingDoubleIterator(this, DoubleIterable.of(cs));
 	}
 
-	default DoubleSeq interleave(DoubleSeq that) {
+	default DoubleSequence interleave(DoubleSequence that) {
 		return () -> new InterleavingDoubleIterator(this, that);
 	}
 
-	default DoubleSeq reverse() {
+	default DoubleSequence reverse() {
 		double[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
 			Arrayz.swap(array, i, array.length - 1 - i);
@@ -507,15 +509,15 @@ public interface DoubleSeq extends DoubleIterable {
 		return DoubleIterable.of(array)::iterator;
 	}
 
-	default DoubleSeq mapBack(BackPeekingDoubleFunction mapper) {
+	default DoubleSequence mapBack(BackPeekingDoubleFunction mapper) {
 		return () -> new BackPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
-	default DoubleSeq mapForward(ForwardPeekingDoubleFunction mapper) {
+	default DoubleSequence mapForward(ForwardPeekingDoubleFunction mapper) {
 		return () -> new ForwardPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
-	default IntSeq toInts() {
+	default IntSequence toInts() {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -531,7 +533,7 @@ public interface DoubleSeq extends DoubleIterable {
 		};
 	}
 
-	default LongSeq toLongs() {
+	default LongSequence toLongs() {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -547,11 +549,11 @@ public interface DoubleSeq extends DoubleIterable {
 		};
 	}
 
-	default IntSeq toRoundedInts() {
+	default IntSequence toRoundedInts() {
 		return toInts(d -> (int) round(d));
 	}
 
-	default IntSeq toInts(DoubleToIntFunction mapper) {
+	default IntSequence toInts(DoubleToIntFunction mapper) {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -567,11 +569,11 @@ public interface DoubleSeq extends DoubleIterable {
 		};
 	}
 
-	default LongSeq toRoundedLongs() {
+	default LongSequence toRoundedLongs() {
 		return toLongs(Math::round);
 	}
 
-	default LongSeq toLongs(DoubleToLongFunction mapper) {
+	default LongSequence toLongs(DoubleToLongFunction mapper) {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
 
@@ -587,11 +589,11 @@ public interface DoubleSeq extends DoubleIterable {
 		};
 	}
 
-	default DoubleSeq repeat() {
+	default DoubleSequence repeat() {
 		return () -> new RepeatingDoubleIterator(this, -1);
 	}
 
-	default DoubleSeq repeat(long times) {
+	default DoubleSequence repeat(long times) {
 		return () -> new RepeatingDoubleIterator(this, times);
 	}
 }

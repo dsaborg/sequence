@@ -30,15 +30,15 @@ public class CharSequenceCharIterator implements CharIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		return index < csq.length();
+	}
+
+	@Override
 	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		return csq.charAt(index++);
-	}
-
-	@Override
-	public boolean hasNext() {
-		return index < csq.length();
 	}
 }

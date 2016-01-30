@@ -1002,10 +1002,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} to an {@link IntSeq} using the given mapper function to map each element to an
+	 * Convert this {@code Sequence} to an {@link IntSequence} using the given mapper function to map each element
+	 * to an
 	 * {@code int}.
 	 */
-	default IntSeq intSequence(ToIntFunction<T> mapper) {
+	default IntSequence intSequence(ToIntFunction<T> mapper) {
 		return () -> new DelegatingIntIterator<T, Iterator<T>>() {
 			@Override
 			public int nextInt() {
@@ -1015,10 +1016,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} to a {@link LongSeq} using the given mapper function to map each element to a
+	 * Convert this {@code Sequence} to a {@link LongSequence} using the given mapper function to map each element to a
 	 * {@code long}.
 	 */
-	default LongSeq longSequence(ToLongFunction<T> mapper) {
+	default LongSequence longSequence(ToLongFunction<T> mapper) {
 		return () -> new DelegatingLongIterator<T, Iterator<T>>() {
 			@Override
 			public long nextLong() {
@@ -1028,10 +1029,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} to a {@link DoubleSeq} using the given mapper function to map each element to a
+	 * Convert this {@code Sequence} to a {@link DoubleSequence} using the given mapper function to map each element to a
 	 * {@code double}.
 	 */
-	default DoubleSeq doubleSequence(ToDoubleFunction<T> mapper) {
+	default DoubleSequence doubleSequence(ToDoubleFunction<T> mapper) {
 		return () -> new DelegatingDoubleIterator<T, Iterator<T>>() {
 			@Override
 			public double nextDouble() {

@@ -41,45 +41,46 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of ints.
  */
 @FunctionalInterface
-public interface IntSeq extends IntIterable {
+public interface IntSequence extends IntIterable {
 	/**
-	 * Create empty {@code IntSeq} with no contents.
+	 * Create empty {@code IntSequence} with no contents.
 	 */
-	static IntSeq empty() {
+	static IntSequence empty() {
 		return from(emptyIterator());
 	}
 
 	/**
-	 * Create an {@code IntSeq} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSeq} created
+	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
+	 * created
 	 * from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code IntSeq} as
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code IntSequence} as
 	 * empty.
 	 */
-	static IntSeq from(Iterator<Integer> iterator) {
+	static IntSequence from(Iterator<Integer> iterator) {
 		return from(IntIterator.from(iterator));
 	}
 
 	/**
-	 * Create a {@code IntSeq} from a {@link IntIterator} of int values. Note that {@code
-	 * IntSeq}s created from {@link IntIterator}s cannot be passed over more than once. Further attempts
+	 * Create a {@code IntSequence} from a {@link IntIterator} of int values. Note that {@code
+	 * IntSequence}s created from {@link IntIterator}s cannot be passed over more than once. Further attempts
 	 * will
-	 * register the {@code IntSeq} as empty.
+	 * register the {@code IntSequence} as empty.
 	 */
-	static IntSeq from(IntIterator iterator) {
+	static IntSequence from(IntIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
-	 * Create a {@code IntSeq} from a {@link IntIterable}.
+	 * Create a {@code IntSequence} from a {@link IntIterable}.
 	 */
-	static IntSeq from(IntIterable iterable) {
+	static IntSequence from(IntIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
-	 * Create a {@code IntSeq} with the given ints.
+	 * Create a {@code IntSequence} with the given ints.
 	 */
-	static IntSeq of(int... cs) {
+	static IntSequence of(int... cs) {
 		return () -> new ArrayIntIterator(cs);
 	}
 
@@ -88,7 +89,7 @@ public interface IntSeq extends IntIterable {
 	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
 	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
 	 */
-	static IntSeq from(Supplier<? extends IntIterator> iteratorSupplier) {
+	static IntSequence from(Supplier<? extends IntIterator> iteratorSupplier) {
 		return iteratorSupplier::get;
 	}
 
@@ -99,14 +100,14 @@ public interface IntSeq extends IntIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
-	static IntSeq from(Stream<Integer> stream) {
+	static IntSequence from(Stream<Integer> stream) {
 		return from(stream::iterator);
 	}
 
 	/**
-	 * Create a {@code IntSeq} from an {@link Iterable} of {@code Integer} values.
+	 * Create a {@code IntSequence} from an {@link Iterable} of {@code Integer} values.
 	 */
-	static IntSeq from(Iterable<Integer> iterable) {
+	static IntSequence from(Iterable<Integer> iterable) {
 		return () -> IntIterator.from(iterable);
 	}
 
@@ -118,7 +119,7 @@ public interface IntSeq extends IntIterable {
 	 * @see #startingAt(int)
 	 * @see #range(int, int)
 	 */
-	static IntSeq positive() {
+	static IntSequence positive() {
 		return startingAt(1);
 	}
 
@@ -126,7 +127,7 @@ public interface IntSeq extends IntIterable {
 	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at
 	 * {@link Integer#MIN_VALUE}.
 	 */
-	static IntSeq negative() {
+	static IntSequence negative() {
 		return range(-1, Integer.MIN_VALUE);
 	}
 
@@ -138,7 +139,7 @@ public interface IntSeq extends IntIterable {
 	 * @see #negative()
 	 * @see #range(int, int)
 	 */
-	static IntSeq startingAt(int start) {
+	static IntSequence startingAt(int start) {
 		return range(start, Integer.MAX_VALUE);
 	}
 
@@ -149,23 +150,24 @@ public interface IntSeq extends IntIterable {
 	 * @see #negative()
 	 * @see #startingAt(int)
 	 */
-	static IntSeq range(int start, int end) {
+	static IntSequence range(int start, int end) {
 		IntUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
 		return recurse(start, next).endingAt(end);
 	}
 
 	/**
-	 * Returns an {@code IntSeq} sequence produced by recursively applying the given operation to the given seed, which
+	 * Returns an {@code IntSequence} sequence produced by recursively applying the given operation to the given
+	 * seed, which
 	 * forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
-	 * {@code IntSeq} sequence never terminates naturally.
+	 * {@code IntSequence} sequence never terminates naturally.
 	 *
-	 * @return an {@code IntSeq} sequence produced by recursively applying the given operation to the given seed
+	 * @return an {@code IntSequence} sequence produced by recursively applying the given operation to the given seed
 	 *
 	 * @see #generate(IntSupplier)
 	 * @see #endingAt(int)
 	 * @see #until(int)
 	 */
-	static IntSeq recurse(int seed, IntUnaryOperator op) {
+	static IntSequence recurse(int seed, IntUnaryOperator op) {
 		return () -> new InfiniteIntIterator() {
 			private int previous;
 			private boolean hasPrevious;
@@ -180,73 +182,75 @@ public interface IntSeq extends IntIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code IntSeq} that is generated from the given supplier and thus never terminates.
+	 * @return a sequence of {@code IntSequence} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(int, IntUnaryOperator)
 	 * @see #endingAt(int)
 	 * @see #until(int)
 	 */
-	static IntSeq generate(IntSupplier supplier) {
+	static IntSequence generate(IntSupplier supplier) {
 		return () -> (InfiniteIntIterator) supplier::getAsInt;
 	}
 
 	/**
-	 * Terminate this {@code IntSeq} sequence before the given element, with the previous element as the last
-	 * element in this {@code IntSeq} sequence.
+	 * Terminate this {@code IntSequence} sequence before the given element, with the previous element as the last
+	 * element in this {@code IntSequence} sequence.
 	 *
 	 * @see #until(IntPredicate)
 	 * @see #endingAt(int)
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
-	default IntSeq until(int terminal) {
+	default IntSequence until(int terminal) {
 		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code IntSeq} sequence at the given element, including it as the last element in this {@code
-	 * IntSeq} sequence.
+	 * Terminate this {@code IntSequence} sequence at the given element, including it as the last element in this
+	 * {@code
+	 * IntSequence} sequence.
 	 *
 	 * @see #endingAt(IntPredicate)
 	 * @see #until(int)
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
-	default IntSeq endingAt(int terminal) {
+	default IntSequence endingAt(int terminal) {
 		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code IntSeq} sequence before the element that satisfies the given predicate, with the previous
-	 * element as the last element in this {@code IntSeq} sequence.
+	 * Terminate this {@code IntSequence} sequence before the element that satisfies the given predicate, with the
+	 * previous
+	 * element as the last element in this {@code IntSequence} sequence.
 	 *
 	 * @see #until(int)
 	 * @see #endingAt(int)
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
-	default IntSeq until(IntPredicate terminal) {
+	default IntSequence until(IntPredicate terminal) {
 		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Terminate this {@code IntSeq} sequence at the element that satisfies the given predicate, including the
-	 * element as the last element in this {@code IntSeq} sequence.
+	 * Terminate this {@code IntSequence} sequence at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code IntSequence} sequence.
 	 *
 	 * @see #endingAt(int)
 	 * @see #until(int)
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
-	default IntSeq endingAt(IntPredicate terminal) {
+	default IntSequence endingAt(IntPredicate terminal) {
 		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
 	}
 
 	/**
-	 * Map the values in this {@code IntSeq} sequence to another set of values specified by the given {@code mapper}
+	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code mapper}
 	 * function.
 	 */
-	default IntSeq map(IntUnaryOperator mapper) {
+	default IntSequence map(IntUnaryOperator mapper) {
 		return () -> new UnaryIntIterator() {
 			@Override
 			public int nextInt() {
@@ -275,43 +279,43 @@ public interface IntSeq extends IntIterable {
 		};
 	}
 
-	default IntSeq skip(long skip) {
+	default IntSequence skip(long skip) {
 		return () -> new SkippingIntIterator(skip).backedBy(iterator());
 	}
 
-	default IntSeq limit(long limit) {
+	default IntSequence limit(long limit) {
 		return () -> new LimitingIntIterator(limit).backedBy(iterator());
 	}
 
-	default IntSeq append(Iterable<Integer> iterable) {
+	default IntSequence append(Iterable<Integer> iterable) {
 		return append(IntIterable.from(iterable));
 	}
 
-	default IntSeq append(IntIterable that) {
+	default IntSequence append(IntIterable that) {
 		return new ChainingIntIterable(this, that)::iterator;
 	}
 
-	default IntSeq append(IntIterator iterator) {
+	default IntSequence append(IntIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
-	default IntSeq append(Iterator<Integer> iterator) {
+	default IntSequence append(Iterator<Integer> iterator) {
 		return append(IntIterable.from(iterator));
 	}
 
-	default IntSeq append(int... ints) {
+	default IntSequence append(int... ints) {
 		return append(IntIterable.of(ints));
 	}
 
-	default IntSeq append(Stream<Integer> stream) {
+	default IntSequence append(Stream<Integer> stream) {
 		return append(IntIterable.from(stream));
 	}
 
-	default IntSeq append(IntStream stream) {
+	default IntSequence append(IntStream stream) {
 		return append(IntIterable.from(stream));
 	}
 
-	default IntSeq filter(IntPredicate predicate) {
+	default IntSequence filter(IntPredicate predicate) {
 		return () -> new FilteringIntIterator(predicate).backedBy(iterator());
 	}
 
@@ -392,11 +396,11 @@ public interface IntSeq extends IntIterable {
 		return OptionalInt.of(last);
 	}
 
-	default IntSeq step(long step) {
+	default IntSequence step(long step) {
 		return () -> new SteppingIntIterator(step).backedBy(iterator());
 	}
 
-	default IntSeq distinct() {
+	default IntSequence distinct() {
 		return () -> new DistinctIntIterator().backedBy(iterator());
 	}
 
@@ -445,7 +449,7 @@ public interface IntSeq extends IntIterable {
 		return false;
 	}
 
-	default IntSeq peek(IntConsumer action) {
+	default IntSequence peek(IntConsumer action) {
 		return () -> new UnaryIntIterator() {
 			@Override
 			public int nextInt() {
@@ -456,7 +460,7 @@ public interface IntSeq extends IntIterable {
 		}.backedBy(iterator());
 	}
 
-	default IntSeq sorted() {
+	default IntSequence sorted() {
 		int[] array = toArray();
 		Arrays.sort(array);
 		return () -> IntIterator.of(array);
@@ -486,19 +490,19 @@ public interface IntSeq extends IntIterable {
 		return result;
 	}
 
-	default IntSeq prefix(int... cs) {
+	default IntSequence prefix(int... cs) {
 		return () -> new ChainingIntIterator(IntIterable.of(cs), this);
 	}
 
-	default IntSeq suffix(int... cs) {
+	default IntSequence suffix(int... cs) {
 		return () -> new ChainingIntIterator(this, IntIterable.of(cs));
 	}
 
-	default IntSeq interleave(IntSeq that) {
+	default IntSequence interleave(IntSequence that) {
 		return () -> new InterleavingIntIterator(this, that);
 	}
 
-	default IntSeq reverse() {
+	default IntSequence reverse() {
 		int[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
 			Arrayz.swap(array, i, array.length - 1 - i);
@@ -506,11 +510,11 @@ public interface IntSeq extends IntIterable {
 		return IntIterable.of(array)::iterator;
 	}
 
-	default IntSeq mapBack(BackPeekingIntFunction mapper) {
+	default IntSequence mapBack(BackPeekingIntFunction mapper) {
 		return () -> new BackPeekingIntIterator(mapper).backedBy(iterator());
 	}
 
-	default IntSeq mapForward(ForwardPeekingIntFunction mapper) {
+	default IntSequence mapForward(ForwardPeekingIntFunction mapper) {
 		return () -> new ForwardPeekingIntIterator(mapper).backedBy(iterator());
 	}
 
@@ -523,7 +527,7 @@ public interface IntSeq extends IntIterable {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq toLongs() {
+	default LongSequence toLongs() {
 		return () -> new DelegatingLongIterator<Integer, IntIterator>() {
 			@Override
 			public long nextLong() {
@@ -532,7 +536,7 @@ public interface IntSeq extends IntIterable {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq toDoubles() {
+	default DoubleSequence toDoubles() {
 		return () -> new DelegatingDoubleIterator<Integer, IntIterator>() {
 			@Override
 			public double nextDouble() {
@@ -550,7 +554,7 @@ public interface IntSeq extends IntIterable {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq toLongs(IntToLongFunction mapper) {
+	default LongSequence toLongs(IntToLongFunction mapper) {
 		return () -> new DelegatingLongIterator<Integer, IntIterator>() {
 			@Override
 			public long nextLong() {
@@ -559,7 +563,7 @@ public interface IntSeq extends IntIterable {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq toDoubles(IntToDoubleFunction mapper) {
+	default DoubleSequence toDoubles(IntToDoubleFunction mapper) {
 		return () -> new DelegatingDoubleIterator<Integer, IntIterator>() {
 			@Override
 			public double nextDouble() {
@@ -568,11 +572,11 @@ public interface IntSeq extends IntIterable {
 		}.backedBy(iterator());
 	}
 
-	default IntSeq repeat() {
+	default IntSequence repeat() {
 		return () -> new RepeatingIntIterator(this, -1);
 	}
 
-	default IntSeq repeat(long times) {
+	default IntSequence repeat(long times) {
 		return () -> new RepeatingIntIterator(this, times);
 	}
 }

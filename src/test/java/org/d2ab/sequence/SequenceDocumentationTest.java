@@ -165,21 +165,21 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void intsSequence() {
-		IntSeq squares = IntSeq.positive().map(i -> i * i);
+		IntSequence squares = IntSequence.positive().map(i -> i * i);
 
 		assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 	}
 
 	@Test
 	public void longsSequence() {
-		LongSeq negativeOdds = LongSeq.negative().step(2);
+		LongSequence negativeOdds = LongSequence.negative().step(2);
 
 		assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
 	}
 
 	@Test
 	public void doublesSequence() {
-		DoubleSeq squareRoots = DoubleSeq.positive().limit(3).map(Math::sqrt);
+		DoubleSequence squareRoots = DoubleSequence.positive().limit(3).map(Math::sqrt);
 
 		assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
 	}
