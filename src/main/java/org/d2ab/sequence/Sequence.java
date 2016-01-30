@@ -418,49 +418,94 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Skip a set number of steps in this {@code Sequence}.
+	 */
 	default Sequence<T> skip(long skip) {
 		return () -> new SkippingIterator<T>(skip).backedBy(iterator());
 	}
 
+	/**
+	 * Limit the maximum number of results returned by this {@code Sequence}.
+	 */
 	default Sequence<T> limit(long limit) {
 		return () -> new LimitingIterator<T>(limit).backedBy(iterator());
 	}
 
+	/**
+	 * Append the elements of the given {@link Iterator} to the end of this {@code Sequence}. The appended elements
+	 * will
+	 * only be available on the first traversal of the resulting {@code Sequence}.
+	 */
 	default Sequence<T> append(Iterator<T> iterator) {
 		return append(Iterables.from(iterator));
 	}
 
+	/**
+	 * Append the elements of the given {@link Iterable} to the end of this {@code Sequence}.
+	 */
 	default Sequence<T> append(Iterable<T> that) {
 		@SuppressWarnings("unchecked")
 		Iterable<T> chainingSequence = new ChainingIterable<>(this, that);
 		return chainingSequence::iterator;
 	}
 
+	/**
+	 * Append the given elements to the end of this {@code Sequence}.
+	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> append(T... objects) {
 		return append(Iterables.from(objects));
 	}
 
+	/**
+	 * Append the elements of the given {@link Stream} to the end of this {@code Sequence}.
+	 * The resulting {@code Sequence} can only be traversed once, further attempts to traverse will results in a
+	 * {@link NoSuchElementException}.
+	 */
 	default Sequence<T> append(Stream<T> stream) {
 		return append(Iterables.from(stream));
 	}
 
+	/**
+	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given {@link Predicate}.
+	 */
 	default Sequence<T> filter(Predicate<? super T> predicate) {
 		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
 	}
 
+	/**
+	 * Flat map the elements in this {@code Sequence} according to the given mapper {@link Function}. The resulting
+	 * {@code Sequence} contains the elements that is the result of applying the mapper {@link Function} to each
+	 * element, inline.
+	 */
 	default <U> Sequence<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
 		return ChainingIterable.flatMap(this, mapper)::iterator;
 	}
 
+	/**
+	 * Flatten the elements in this {@code Sequence}. The resulting {@code Sequence} contains the elements that is the
+	 * result of flattening each element, inline. Allowed elements that can be flattened are {@link Iterator},
+	 * {@link Iterable}, {@code array}, {@link Pair} and {@link Stream}. Elements of another type will result in a
+	 * {@link ClassCastException}.
+	 *
+	 * @throws ClassCastException if a non-collection element is encountered in the {@code Sequence}.
+	 */
 	default <U> Sequence<U> flatten() {
 		return ChainingIterable.<U>flatten(this)::iterator;
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into an array.
+	 */
 	default Object[] toArray() {
 		return toList().toArray();
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into an array of the type determined by the given array
+	 * constructor.
+	 */
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
 		List list = toList();
 		@SuppressWarnings("unchecked")
@@ -468,29 +513,47 @@ public interface Sequence<T> extends Iterable<T> {
 		return array;
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into a {@link List}.
+	 */
 	default List<T> toList() {
 		return toList(ArrayList::new);
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into a {@link List} of the type determined by the given
+	 * constructor.
+	 */
 	default List<T> toList(Supplier<? extends List<T>> constructor) {
 		return toCollection(constructor);
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into a {@link Set}.
+	 */
 	default Set<T> toSet() {
 		return toSet(HashSet::new);
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into a {@link Set} of the type determined by the given
+	 * constructor.
+	 */
 	default <S extends Set<T>> S toSet(Supplier<? extends S> constructor) {
 		return toCollection(constructor);
 	}
 
+	/**
+	 * Collect the elements in this {@code Sequence} into a {@link SortedSet}.
+	 */
 	default SortedSet<T> toSortedSet() {
 		return toSet(TreeSet::new);
 	}
 
 	/**
-	 * Convert this {@code Sequence} of {@link Entry} values into a map, or throw {@code ClassCastException} if this
-	 * {@code Sequence} is not of {@link Entry}.
+	 * Convert this {@code Sequence} of {@link Map.Entry} values into a {@link Map}.
+	 *
+	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
 	default <K, V> Map<K, V> toMap() {
 		@SuppressWarnings("unchecked")
@@ -499,11 +562,19 @@ public interface Sequence<T> extends Iterable<T> {
 		return toMap(mapper);
 	}
 
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map}, using the given mapper {@link Function} to convert each
+	 * element into a {@link Map.Entry}.
+	 */
 	default <K, V> Map<K, V> toMap(Function<? super T, ? extends Entry<K, V>> mapper) {
 		Supplier<Map<K, V>> supplier = HashMap::new;
 		return toMap(supplier, mapper);
 	}
 
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map} of the type determined by the given constructor, using the
+	 * given mapper {@link Function} to convert each element into a {@link Map.Entry}.
+	 */
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends
 			                                                                                                   Entry<K, V>> mapper) {
 		M result = constructor.get();
@@ -511,17 +582,33 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
+	/**
+	 * Convert this {@code Sequence} of {@link Map.Entry} values into a {@link Map} of the type determined by the given
+	 * constructor.
+	 *
+	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
+	 */
 	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier) {
 		@SuppressWarnings("unchecked")
 		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
 		return toMap(supplier, mapper);
 	}
 
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map}, using the given key mapper {@link Function} and value
+	 * mapper
+	 * {@link Function} to convert each element into a {@link Map} entry.
+	 */
 	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
 	                               Function<? super T, ? extends V> valueMapper) {
 		return toMap(HashMap::new, keyMapper, valueMapper);
 	}
 
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map} of the type determined by the given constructor, using the
+	 * given key mapper {@link Function} and value mapper {@link Function} to convert each element into a {@link Map}
+	 * entry.
+	 */
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
 	                                            Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
@@ -534,11 +621,39 @@ public interface Sequence<T> extends Iterable<T> {
 		return result;
 	}
 
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map}, using the given mapper {@link Function} to convert each
+	 * element into a {@link Map.Entry}.
+	 *
+	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
+	 */
+	default <K, V> SortedMap<K, V> toSortedMap() {
+		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;
+		Function<? super T, ? extends Entry<K, V>> mapper =
+				(Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
+		return toMap(supplier, mapper);
+	}
+
+	/**
+	 * Convert this {@code Sequence} of {@link Map.Entry} into a {@link SortedMap}.
+	 */
+	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Entry<K, V>> mapper) {
+		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;
+		return toMap(supplier, mapper);
+	}
+
+	/**
+	 * Convert this {@code Sequence} into a {@link SortedMap}, using the given key mapper {@link Function} and value
+	 * mapper {@link Function} to convert each element into a {@link SortedMap} entry.
+	 */
 	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
 	                                           Function<? super T, ? extends V> valueMapper) {
 		return toMap(TreeMap::new, keyMapper, valueMapper);
 	}
 
+	/**
+	 * Collect this {@code Sequence} into a {@link Collection} of the type determined by the given constructor.
+	 */
 	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
 		return collect(constructor, Collection::add);
 	}
