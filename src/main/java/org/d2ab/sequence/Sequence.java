@@ -38,6 +38,8 @@ import java.util.stream.StreamSupport;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 import static java.util.Collections.singleton;
+import static java.util.function.BinaryOperator.maxBy;
+import static java.util.function.BinaryOperator.minBy;
 
 /**
  * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and collating
@@ -629,6 +631,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> SortedMap<K, V> toSortedMap() {
 		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;
+		@SuppressWarnings("unchecked")
 		Function<? super T, ? extends Entry<K, V>> mapper =
 				(Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
 		return toMap(supplier, mapper);
@@ -658,12 +661,18 @@ public interface Sequence<T> extends Iterable<T> {
 		return collect(constructor, Collection::add);
 	}
 
+	/**
+	 * Collect this {@code Sequence} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
 		C result = constructor.get();
 		forEach(each -> adder.accept(result, each));
 		return result;
 	}
 
+	/**
+	 * Collect this {@code Sequence} into an arbitrary container using the given {@link Collector}.
+	 */
 	default <S, R> S collect(Collector<T, R, S> collector) {
 		R result = collector.supplier().get();
 		BiConsumer<R, T> accumulator = collector.accumulator();
@@ -671,36 +680,51 @@ public interface Sequence<T> extends Iterable<T> {
 		return collector.finisher().apply(result);
 	}
 
+	/**
+	 * Join this {@code Sequence} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code Sequence} into a string separated by the given delimiter, with the given prefix and suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
-		boolean first = true;
+		boolean started = false;
 		for (T each : this) {
-			if (first)
-				first = false;
-			else
+			if (started)
 				result.append(delimiter);
+			else
+				started = true;
 			result.append(each);
 		}
 		result.append(suffix);
 		return result.toString();
 	}
 
+	/**
+	 * Reduce this {@code Sequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each element in this sequence.
+	 */
+	default Optional<T> reduce(BinaryOperator<T> operator) {
+		return Iterators.reduce(iterator(), operator);
+	}
+
+	/**
+	 * Reduce this {@code Sequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each element in this sequence, starting with the given identity as the initial result.
+	 */
 	default T reduce(@Nullable T identity, BinaryOperator<T> operator) {
-		return reduce(identity, operator, iterator());
+		return Iterators.reduce(iterator(), identity, operator);
 	}
 
-	default T reduce(@Nullable T identity, BinaryOperator<T> operator, Iterator<? extends T> iterator) {
-		T result = identity;
-		while (iterator.hasNext())
-			result = operator.apply(result, iterator.next());
-		return result;
-	}
-
+	/**
+	 * @return the first element of this {@code Sequence} or an empty {@link Optional} if there are no elements in the
+	 * {@code Sequence}.
+	 */
 	default Optional<T> first() {
 		Iterator<T> iterator = iterator();
 		if (!iterator.hasNext())
@@ -709,6 +733,10 @@ public interface Sequence<T> extends Iterable<T> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the second element of this {@code Sequence} or an empty {@link Optional} if there is one or less
+	 * elements in the {@code Sequence}.
+	 */
 	default Optional<T> second() {
 		Iterator<T> iterator = iterator();
 
@@ -719,6 +747,10 @@ public interface Sequence<T> extends Iterable<T> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the third element of this {@code Sequence} or an empty {@link Optional} if there is two or less
+	 * elements in the {@code Sequence}.
+	 */
 	default Optional<T> third() {
 		Iterator<T> iterator = iterator();
 
@@ -729,6 +761,10 @@ public interface Sequence<T> extends Iterable<T> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no
+	 * elements in the {@code Sequence}.
+	 */
 	default Optional<T> last() {
 		Iterator<T> iterator = iterator();
 		if (!iterator.hasNext())
@@ -742,6 +778,11 @@ public interface Sequence<T> extends Iterable<T> {
 		return Optional.of(last);
 	}
 
+	/**
+	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
+	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
+	 * has a null as the second item.
+	 */
 	default Sequence<Pair<T, T>> pair() {
 		return () -> new PairingIterator<T>().backedBy(iterator());
 	}
@@ -756,18 +797,43 @@ public interface Sequence<T> extends Iterable<T> {
 		return BiSequence.from(pairSequence);
 	}
 
+	/**
+	 * Converts a {@code Sequence} of {@link Map.Entry} items into an {@link EntrySequence}. Note the sequence must be
+	 * of {@link Map.Entry} or a {@link ClassCastException} will occur when traversal is attempted.
+	 */
+	default <K, V> EntrySequence<K, V> toEntrySequence() {
+		@SuppressWarnings("unchecked")
+		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
+		return EntrySequence.from(entrySequence);
+	}
+
+	/**
+	 * Partition the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
+	 * of the given window. The first item in each list is the second item in the previous list. The final list may
+	 * be shorter than the window.
+	 */
 	default Sequence<List<T>> partition(int window) {
 		return () -> new PartitioningIterator<T>(window).backedBy(iterator());
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
+	 */
 	default Sequence<T> step(long step) {
 		return () -> new SteppingIterator<T>(step).backedBy(iterator());
 	}
 
+	/**
+	 * @return a sequence where each item in this {@code Sequence} occurs only once, the first time it is encountered.
+	 */
 	default Sequence<T> distinct() {
 		return () -> new DistinctIterator<T>().backedBy(iterator());
 	}
 
+	/**
+	 * @return this {@code Sequence} sorted according to the natural order. Must be a (@code Sequence} of
+	 * {@link Comparable} or a {@link ClassCastException} is thrown during traversal.
+	 */
 	default <S extends Comparable<? super S>> Sequence<S> sorted() {
 		return () -> {
 			@SuppressWarnings("unchecked")
@@ -776,39 +842,47 @@ public interface Sequence<T> extends Iterable<T> {
 		};
 	}
 
+	/**
+	 * @return this {@code Sequence} sorted according to the given {@link Comparator}.
+	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
 		return () -> new SortingIterator<>(comparator).backedBy(iterator());
 	}
 
+	/**
+	 * @return the minimal element in this {@code Sequence} according to the given {@link Comparator}.
+	 */
 	default Optional<T> min(Comparator<? super T> comparator) {
-		return reduce(BinaryOperator.minBy(comparator));
+		return reduce(minBy(comparator));
 	}
 
-	default Optional<T> reduce(BinaryOperator<T> operator) {
-		Iterator<T> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		T result = reduce(iterator.next(), operator, iterator);
-		return Optional.of(result);
-	}
-
+	/**
+	 * @return the maximum element in this {@code Sequence} according to the given {@link Comparator}.
+	 */
 	default Optional<T> max(Comparator<? super T> comparator) {
-		return reduce(BinaryOperator.maxBy(comparator));
+		return reduce(maxBy(comparator));
 	}
 
+	/**
+	 * @return the count of elements in this sequence.
+	 */
 	default long count() {
 		long count = 0;
-		for (Iterator iterator = iterator(); iterator.hasNext(); iterator.next()) {
+		for (Iterator iterator = iterator(); iterator.hasNext(); iterator.next())
 			count++;
-		}
 		return count;
 	}
 
+	/**
+	 * @return this {@code Sequence} as a {@link Stream}.
+	 */
 	default Stream<T> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
 
+	/**
+	 * @return true if all elements in this {@code Sequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(Predicate<? super T> predicate) {
 		for (T each : this) {
 			if (!predicate.test(each))
@@ -817,10 +891,16 @@ public interface Sequence<T> extends Iterable<T> {
 		return true;
 	}
 
+	/**
+	 * @return true if no elements in this {@code Sequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(Predicate<? super T> predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any element in this {@code Sequence} satisfies the given predicate, false otherwise.
+	 */
 	default boolean any(Predicate<? super T> predicate) {
 		for (T each : this) {
 			if (predicate.test(each))
@@ -829,55 +909,90 @@ public interface Sequence<T> extends Iterable<T> {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link Consumer} to see each element in this {@code Sequence} as it is traversed.
+	 */
 	default Sequence<T> peek(Consumer<? super T> action) {
 		return () -> new PeekingIterator<>(action).backedBy(iterator());
 	}
 
+	/**
+	 * Delimit each element in this {@code Sequence} with the given delimiter element.
+	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> delimit(V delimiter) {
 		return () -> new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).backedBy(
 				iterator());
 	}
 
+	/**
+	 * Delimit the elements in this {@code Sequence} with the given delimiter, prefix and suffix elements.
+	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
 		return () -> new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).backedBy(
 				iterator());
 	}
 
+	/**
+	 * Prefix the elements in this {@code Sequence} with the given prefix element.
+	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> prefix(V prefix) {
 		return () -> new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).backedBy(
 				iterator());
 	}
 
+	/**
+	 * Suffix the elements in this {@code Sequence} with the given suffix element.
+	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> suffix(V suffix) {
 		return () -> new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).backedBy(
 				iterator());
 	}
 
+	/**
+	 * Interleave the elements in this {@code Sequence} with those of the given {@code Sequence}, stopping when either
+	 * sequence finishes. The result is a {@code Sequence} of pairs of items, the first of which come from this
+	 * sequence
+	 * and the second from the given sequence.
+	 */
 	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
 		return () -> new InterleavingPairingIterator<>(iterator(), that.iterator());
 	}
 
+	/**
+	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.
+	 */
 	default Sequence<T> reverse() {
 		return () -> new ReverseIterator<T>().backedBy(iterator());
 	}
 
+	/**
+	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order.
+	 */
 	default Sequence<T> shuffle() {
 		List<T> list = toList();
 		Collections.shuffle(list);
 		return from(list);
 	}
 
+	/**
+	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order as determined by the given
+	 * random generator.
+	 */
 	default Sequence<T> shuffle(Random md) {
 		List<T> list = toList();
 		Collections.shuffle(list, md);
 		return from(list);
 	}
 
-	default CharSeq mapToChar(ToCharFunction<T> mapper) {
+	/**
+	 * Convert this {@code Sequence} to a {@link CharSeq} using the given mapper function to map each element to a
+	 * {@code char}.
+	 */
+	default CharSeq charSequence(ToCharFunction<T> mapper) {
 		return () -> new DelegatingCharIterator<T, Iterator<T>>() {
 			@Override
 			public char nextChar() {
@@ -886,7 +1001,11 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default IntSeq mapToInt(ToIntFunction<T> mapper) {
+	/**
+	 * Convert this {@code Sequence} to an {@link IntSeq} using the given mapper function to map each element to an
+	 * {@code int}.
+	 */
+	default IntSeq intSequence(ToIntFunction<T> mapper) {
 		return () -> new DelegatingIntIterator<T, Iterator<T>>() {
 			@Override
 			public int nextInt() {
@@ -895,7 +1014,11 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default LongSeq mapToLong(ToLongFunction<T> mapper) {
+	/**
+	 * Convert this {@code Sequence} to a {@link LongSeq} using the given mapper function to map each element to a
+	 * {@code long}.
+	 */
+	default LongSeq longSequence(ToLongFunction<T> mapper) {
 		return () -> new DelegatingLongIterator<T, Iterator<T>>() {
 			@Override
 			public long nextLong() {
@@ -904,7 +1027,11 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
-	default DoubleSeq mapToDouble(ToDoubleFunction<T> mapper) {
+	/**
+	 * Convert this {@code Sequence} to a {@link DoubleSeq} using the given mapper function to map each element to a
+	 * {@code double}.
+	 */
+	default DoubleSeq doubleSequence(ToDoubleFunction<T> mapper) {
 		return () -> new DelegatingDoubleIterator<T, Iterator<T>>() {
 			@Override
 			public double nextDouble() {
@@ -913,10 +1040,17 @@ public interface Sequence<T> extends Iterable<T> {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Repeat this {@code Sequence} forever, producing a sequence that never terminates unless the original sequence is
+	 * empty in which case the resulting sequence is also empty.
+	 */
 	default Sequence<T> repeat() {
 		return () -> new RepeatingIterator<>(this, -1);
 	}
 
+	/**
+	 * Repeat this {@code Sequence} the given number of times.
+	 */
 	default Sequence<T> repeat(long times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}

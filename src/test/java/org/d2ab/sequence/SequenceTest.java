@@ -1006,37 +1006,37 @@ public class SequenceTest {
 
 	@Test
 	public void mapToChar() {
-		CharSeq empty = Sequence.<Integer>empty().mapToChar(x -> (char) x.intValue());
+		CharSeq empty = Sequence.<Integer>empty().charSequence(x -> (char) x.intValue());
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		CharSeq charSeq = Sequence.ints(0x61).limit(5).mapToChar(x -> (char) x.intValue());
+		CharSeq charSeq = Sequence.ints(0x61).limit(5).charSequence(x -> (char) x.intValue());
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void mapToInt() {
-		IntSeq empty = Sequence.<Integer>empty().mapToInt(Integer::intValue);
+		IntSeq empty = Sequence.<Integer>empty().intSequence(Integer::intValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		IntSeq intSeq = Sequence.ints().limit(5).mapToInt(Integer::intValue);
+		IntSeq intSeq = Sequence.ints().limit(5).intSequence(Integer::intValue);
 		twice(() -> assertThat(intSeq, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapToLong() {
-		LongSeq empty = Sequence.<Long>empty().mapToLong(Long::longValue);
+		LongSeq empty = Sequence.<Long>empty().longSequence(Long::longValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		LongSeq longSeq = Sequence.ints().limit(5).mapToLong(i -> (long) i);
+		LongSeq longSeq = Sequence.ints().limit(5).longSequence(i -> (long) i);
 		twice(() -> assertThat(longSeq, contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
 	public void mapToDouble() {
-		DoubleSeq empty = Sequence.<Double>empty().mapToDouble(Double::doubleValue);
+		DoubleSeq empty = Sequence.<Double>empty().doubleSequence(Double::doubleValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		DoubleSeq doubleSeq = Sequence.ints().limit(5).mapToDouble(i -> (double) i);
+		DoubleSeq doubleSeq = Sequence.ints().limit(5).doubleSequence(i -> (double) i);
 		twice(() -> assertThat(doubleSeq, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 
