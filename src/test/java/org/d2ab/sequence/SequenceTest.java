@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.util.Arrayz;
+import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -297,7 +298,7 @@ public class SequenceTest {
 	public void flatMapIterables() {
 		Sequence<List<Integer>> sequence = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
 
-		Sequence<Integer> flatMap = sequence.flatMap(Function.identity());
+		Sequence<Integer> flatMap = sequence.flatten(Function.identity());
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
@@ -306,7 +307,7 @@ public class SequenceTest {
 	public void flatMapLazy() {
 		Sequence<Integer> flatMap = Sequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
-		}).flatMap(Function.identity());
+		}).flatten(Function.identity());
 
 		twice(() -> {
 			Iterator<Integer> iterator = flatMap.iterator(); // NPE if not lazy - expected later below
@@ -320,7 +321,7 @@ public class SequenceTest {
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence =
 				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
-		Sequence<Integer> flatMap = sequence.flatMap(Sequence::from);
+		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
 	}
@@ -329,7 +330,7 @@ public class SequenceTest {
 	public void flatMapArrays() {
 		Sequence<Integer[]> sequence = Sequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
-		Sequence<Integer> flatMap = sequence.flatMap(Sequence::of);
+		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
@@ -505,7 +506,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void toMapFromPairs() {
+	public void toMap() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
@@ -522,8 +523,8 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void toMapFromPairsWithMapper() {
-		Function<Integer, Pair<Integer, String>> mapper = i -> Pair.of(i, String.valueOf(i));
+	public void toMapWithWithMapper() {
+		Function<Integer, Entry<Integer, String>> mapper = i -> Entries.of(i, String.valueOf(i));
 
 		twice(() -> {
 			Map<Integer, String> map = _123.toMap(mapper);
@@ -537,7 +538,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void toMap() {
+	public void toMapWithMappers() {
 		twice(() -> {
 			Map<String, Integer> map = _123.toMap(Object::toString, Function.identity());
 
@@ -558,6 +559,19 @@ public class SequenceTest {
 
 	@Test
 	public void toSortedMap() {
+		Map<String, Integer> original = Maps.builder("3", 3).put("1", 1).put("4", 4).put("2", 2).build();
+
+		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toSortedMap();
+			assertThat(map, instanceOf(TreeMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
+
+	@Test
+	public void toSortedMapWithMappers() {
 		twice(() -> {
 			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
 
@@ -666,26 +680,46 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void pair() {
-		Sequence<Pair<Integer, Integer>> emptyPaired = empty.pair();
+	public void entries() {
+		Sequence<Entry<Integer, Integer>> emptyEntries = empty.entries();
+		twice(() -> assertThat(emptyEntries, is(emptyIterable())));
+
+		Sequence<Entry<Integer, Integer>> oneEntries = _1.entries();
+		twice(() -> assertThat(oneEntries, contains(Entries.of(1, null))));
+
+		Sequence<Entry<Integer, Integer>> twoEntries = _12.entries();
+		twice(() -> assertThat(twoEntries, contains(Entries.of(1, 2))));
+
+		Sequence<Entry<Integer, Integer>> threeEntries = _123.entries();
+		twice(() -> assertThat(threeEntries, contains(Entries.of(1, 2), Entries.of(2, 3))));
+
+		Sequence<Entry<Integer, Integer>> fiveEntries = _12345.entries();
+		twice(() -> assertThat(fiveEntries,
+		                       contains(Entries.of(1, 2), Entries.of(2, 3), Entries.of(3, 4), Entries.of(4, 5))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void pairs() {
+		Sequence<Pair<Integer, Integer>> emptyPaired = empty.pairs();
 		twice(() -> assertThat(emptyPaired, is(emptyIterable())));
 
-		Sequence<Pair<Integer, Integer>> onePaired = _1.pair();
+		Sequence<Pair<Integer, Integer>> onePaired = _1.pairs();
 		twice(() -> assertThat(onePaired, contains(Pair.of(1, null))));
 
-		Sequence<Pair<Integer, Integer>> twoPaired = _12.pair();
+		Sequence<Pair<Integer, Integer>> twoPaired = _12.pairs();
 		twice(() -> assertThat(twoPaired, contains(Pair.of(1, 2))));
 
-		Sequence<Pair<Integer, Integer>> threePaired = _123.pair();
+		Sequence<Pair<Integer, Integer>> threePaired = _123.pairs();
 		twice(() -> assertThat(threePaired, contains(Pair.of(1, 2), Pair.of(2, 3))));
 
-		Sequence<Pair<Integer, Integer>> fivePaired = _12345.pair();
+		Sequence<Pair<Integer, Integer>> fivePaired = _12345.pairs();
 		twice(() -> assertThat(fivePaired, contains(Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4), Pair.of(4, 5))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void toBiSequence() {
+	public void biSequence() {
 		BiSequence<Integer, String> emptyBiSequence = empty.toBiSequence();
 		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
 
@@ -698,6 +732,25 @@ public class SequenceTest {
 		BiSequence<Integer, String> threeBiSequence =
 				Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3")).toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void entrySequence() {
+		EntrySequence<Integer, String> emptyEntrySequence = empty.toEntrySequence();
+		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
+
+		EntrySequence<Integer, String> oneEntrySequence = Sequence.of(Entries.of(1, "1")).toEntrySequence();
+		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
+
+		EntrySequence<Integer, String> twoEntrySequence =
+				Sequence.of(Entries.of(1, "1"), Entries.of(2, "2")).toEntrySequence();
+		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
+
+		EntrySequence<Integer, String> threeEntrySequence =
+				Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3")).toEntrySequence();
+		twice(() -> assertThat(threeEntrySequence,
+		                       contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1006,37 +1059,37 @@ public class SequenceTest {
 
 	@Test
 	public void mapToChar() {
-		CharSeq empty = Sequence.<Integer>empty().charSequence(x -> (char) x.intValue());
+		CharSeq empty = Sequence.<Integer>empty().toChars(x -> (char) x.intValue());
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		CharSeq charSeq = Sequence.ints(0x61).limit(5).charSequence(x -> (char) x.intValue());
+		CharSeq charSeq = Sequence.ints(0x61).limit(5).toChars(x -> (char) x.intValue());
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void mapToInt() {
-		IntSequence empty = Sequence.<Integer>empty().intSequence(Integer::intValue);
+		IntSequence empty = Sequence.<Integer>empty().toInts(Integer::intValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		IntSequence intSequence = Sequence.ints().limit(5).intSequence(Integer::intValue);
+		IntSequence intSequence = Sequence.ints().limit(5).toInts(Integer::intValue);
 		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapToLong() {
-		LongSequence empty = Sequence.<Long>empty().longSequence(Long::longValue);
+		LongSequence empty = Sequence.<Long>empty().toLongs(Long::longValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		LongSequence longSequence = Sequence.ints().limit(5).longSequence(i -> (long) i);
+		LongSequence longSequence = Sequence.ints().limit(5).toLongs(i -> (long) i);
 		twice(() -> assertThat(longSequence, contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
 	public void mapToDouble() {
-		DoubleSequence empty = Sequence.<Double>empty().doubleSequence(Double::doubleValue);
+		DoubleSequence empty = Sequence.<Double>empty().toDoubles(Double::doubleValue);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		DoubleSequence doubleSequence = Sequence.ints().limit(5).doubleSequence(i -> (double) i);
+		DoubleSequence doubleSequence = Sequence.ints().limit(5).toDoubles(i -> (double) i);
 		twice(() -> assertThat(doubleSequence, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 

@@ -118,7 +118,7 @@ assertThat(transformed, contains("1", "2", "3"));
 
 ```Java
 Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
-Stream<String> abbccd = Sequence.from(abcd).pair().<String>flatten().stream();
+Stream<String> abbccd = Sequence.from(abcd).pairs().<String>flatten().stream();
 
 assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```

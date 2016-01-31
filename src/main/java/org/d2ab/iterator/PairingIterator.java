@@ -16,13 +16,11 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.util.Pair;
-
 import javax.annotation.Nullable;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
-public class PairingIterator<T> extends DelegatingReferenceIterator<T, Pair<T, T>> {
-	@Nullable
+public abstract class PairingIterator<T, E extends Entry<T, T>> extends DelegatingReferenceIterator<T, E> {
 	private T previous;
 	private boolean hasPrevious;
 	private boolean started;
@@ -46,14 +44,16 @@ public class PairingIterator<T> extends DelegatingReferenceIterator<T, Pair<T, T
 	}
 
 	@Override
-	public Pair<T, T> next() {
+	public E next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		T next = iterator.hasNext() ? iterator.next() : null;
-		Pair<T, T> result = Pair.of(previous, next);
+		E result = makeEntry(previous, next);
 		previous = next;
 		started = true;
 		return result;
 	}
+
+	protected abstract E makeEntry(T previous, @Nullable T next);
 }

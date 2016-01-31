@@ -239,6 +239,10 @@ public interface CharSeq extends CharIterable {
 		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code chars} in this {@code CharSeq} to another set of {@code chars} specified by the given
+	 * {@code mapper} function.
+	 */
 	default CharSeq map(CharUnaryOperator mapper) {
 		return () -> new UnaryCharIterator() {
 			@Override
@@ -248,10 +252,16 @@ public interface CharSeq extends CharIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code chars} in this {@code CharSeq} to their boxed {@link Character} counterparts.
+	 */
 	default Sequence<Character> box() {
 		return toSequence(Character::valueOf);
 	}
 
+	/**
+	 * Map the {@code chars} in this {@code CharSeq} to a {@link Sequence} of values.
+	 */
 	default <T> Sequence<T> toSequence(CharFunction<T> mapper) {
 		return () -> new Iterator<T>() {
 			private final CharIterator iterator = iterator();
@@ -268,38 +278,76 @@ public interface CharSeq extends CharIterable {
 		};
 	}
 
+	/**
+	 * Skip a set number of {@code chars} in this {@code CharSeq}.
+	 */
 	default CharSeq skip(long skip) {
 		return () -> new SkippingCharIterator(skip).backedBy(iterator());
 	}
 
+	/**
+	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
+	 */
 	default CharSeq limit(long limit) {
 		return () -> new LimitingCharIterator(limit).backedBy(iterator());
 	}
 
+	/**
+	 * Append the {@link Character}s in the given {@link Iterable} to the end of this {@code CharSeq}.
+	 */
 	default CharSeq append(Iterable<Character> iterable) {
 		return append(CharIterable.from(iterable));
 	}
 
+	/**
+	 * Append the {@code chars} in the given {@link CharIterable} to the end of this {@code CharSeq}.
+	 */
 	default CharSeq append(CharIterable that) {
 		return new ChainingCharIterable(this, that)::iterator;
 	}
 
+	/**
+	 * Append the {@code chars} in the given {@link CharIterator} to the end of this {@code CharSeq}.
+	 * <p>
+	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
+	 */
 	default CharSeq append(CharIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
+	/**
+	 * Append the {@link Character}s in the given {@link Iterator} to the end of this {@code CharSeq}.
+	 * <p>
+	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
+	 */
 	default CharSeq append(Iterator<Character> iterator) {
 		return append(CharIterable.from(iterator));
 	}
 
+	/**
+	 * Append the given {@code chars} to the end of this {@code CharSeq}.
+	 */
 	default CharSeq append(char... characters) {
 		return append(CharIterable.of(characters));
 	}
 
+	/**
+	 * Append the {@link Character}s in the given {@link Stream} to the end of this {@code CharSeq}.
+	 * <p>
+	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default CharSeq append(Stream<Character> stream) {
 		return append(CharIterable.from(stream));
 	}
 
+	/**
+	 * Append the {@code char} values of the {@code ints} in the given {@link IntStream} to the end of this
+	 * {@code CharSeq}.
+	 * <p>
+	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default CharSeq append(IntStream stream) {
 		return append(CharIterable.from(stream));
 	}

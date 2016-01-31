@@ -414,7 +414,14 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Map the values in this sequence to another set of values specified by the given {@code mapper} function.
+	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
+	 *
+	 * @see #flatten()
+	 * @see #flatten(Function)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
 		return () -> new MappingIterator<>(mapper).backedBy(iterator());
@@ -435,9 +442,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Append the elements of the given {@link Iterator} to the end of this {@code Sequence}. The appended elements
-	 * will
-	 * only be available on the first traversal of the resulting {@code Sequence}.
+	 * Append the elements of the given {@link Iterator} to the end of this {@code Sequence}.
+	 * <p>
+	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
 	 */
 	default Sequence<T> append(Iterator<T> iterator) {
 		return append(Iterables.from(iterator));
@@ -462,8 +469,9 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Append the elements of the given {@link Stream} to the end of this {@code Sequence}.
+	 * <p>
 	 * The resulting {@code Sequence} can only be traversed once, further attempts to traverse will results in a
-	 * {@link NoSuchElementException}.
+	 * {@link IllegalStateException}.
 	 */
 	default Sequence<T> append(Stream<T> stream) {
 		return append(Iterables.from(stream));
@@ -477,11 +485,18 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Flat map the elements in this {@code Sequence} according to the given mapper {@link Function}. The resulting
+	 * Flatten the elements in this {@code Sequence} according to the given mapper {@link Function}. The resulting
 	 * {@code Sequence} contains the elements that is the result of applying the mapper {@link Function} to each
-	 * element, inline.
+	 * element, appended together inline as a {@code Sequence}.
+	 *
+	 * @see #flatten()
+	 * @see #map(Function)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
 	 */
-	default <U> Sequence<U> flatMap(Function<? super T, ? extends Iterable<U>> mapper) {
+	default <U> Sequence<U> flatten(Function<? super T, ? extends Iterable<U>> mapper) {
 		return ChainingIterable.flatMap(this, mapper)::iterator;
 	}
 
@@ -492,6 +507,13 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link ClassCastException}.
 	 *
 	 * @throws ClassCastException if a non-collection element is encountered in the {@code Sequence}.
+	 *
+	 * @see #flatten(Function)
+	 * @see #map(Function)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> flatten() {
 		return ChainingIterable.<U>flatten(this)::iterator;
@@ -783,8 +805,27 @@ public interface Sequence<T> extends Iterable<T> {
 	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
 	 * has a null as the second item.
 	 */
-	default Sequence<Pair<T, T>> pair() {
-		return () -> new PairingIterator<T>().backedBy(iterator());
+	default Sequence<Entry<T, T>> entries() {
+		return () -> new PairingIterator<T, Entry<T, T>>() {
+			@Override
+			protected Entry<T, T> makeEntry(T previous, @Nullable T next) {
+				return Entries.of(previous, next);
+			}
+		}.backedBy(iterator());
+	}
+
+	/**
+	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
+	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
+	 * has a null as the second item.
+	 */
+	default Sequence<Pair<T, T>> pairs() {
+		return () -> new PairingIterator<T, Pair<T, T>>() {
+			@Override
+			protected Pair<T, T> makeEntry(T previous, @Nullable T next) {
+				return Pair.of(previous, next);
+			}
+		}.backedBy(iterator());
 	}
 
 	/**
@@ -991,8 +1032,15 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Convert this {@code Sequence} to a {@link CharSeq} using the given mapper function to map each element to a
 	 * {@code char}.
+	 *
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten()
 	 */
-	default CharSeq charSequence(ToCharFunction<T> mapper) {
+	default CharSeq toChars(ToCharFunction<T> mapper) {
 		return () -> new DelegatingCharIterator<T, Iterator<T>>() {
 			@Override
 			public char nextChar() {
@@ -1003,10 +1051,16 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Convert this {@code Sequence} to an {@link IntSequence} using the given mapper function to map each element
-	 * to an
-	 * {@code int}.
+	 * to an {@code int}.
+	 *
+	 * @see #toChars(ToCharFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten()
 	 */
-	default IntSequence intSequence(ToIntFunction<T> mapper) {
+	default IntSequence toInts(ToIntFunction<T> mapper) {
 		return () -> new DelegatingIntIterator<T, Iterator<T>>() {
 			@Override
 			public int nextInt() {
@@ -1018,8 +1072,15 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Convert this {@code Sequence} to a {@link LongSequence} using the given mapper function to map each element to a
 	 * {@code long}.
+	 *
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten()
 	 */
-	default LongSequence longSequence(ToLongFunction<T> mapper) {
+	default LongSequence toLongs(ToLongFunction<T> mapper) {
 		return () -> new DelegatingLongIterator<T, Iterator<T>>() {
 			@Override
 			public long nextLong() {
@@ -1029,10 +1090,17 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} to a {@link DoubleSequence} using the given mapper function to map each element to a
-	 * {@code double}.
+	 * Convert this {@code Sequence} to a {@link DoubleSequence} using the given mapper function to map each element
+	 * to a {@code double}.
+	 *
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten()
 	 */
-	default DoubleSequence doubleSequence(ToDoubleFunction<T> mapper) {
+	default DoubleSequence toDoubles(ToDoubleFunction<T> mapper) {
 		return () -> new DelegatingDoubleIterator<T, Iterator<T>>() {
 			@Override
 			public double nextDouble() {
