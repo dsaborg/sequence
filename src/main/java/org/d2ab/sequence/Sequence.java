@@ -637,17 +637,12 @@ public interface Sequence<T> extends Iterable<T> {
 	                                            Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
 		M result = constructor.get();
-		forEach(each -> {
-			K key = keyMapper.apply(each);
-			V value = valueMapper.apply(each);
-			result.put(key, value);
-		});
+		forEach(each -> result.put(keyMapper.apply(each), valueMapper.apply(each)));
 		return result;
 	}
 
 	/**
-	 * Convert this {@code Sequence} of into a {@link Map}, using the given mapper {@link Function} to convert each
-	 * element into a {@link Map.Entry}.
+	 * Convert this {@code Sequence} of {@link Map.Entry} into a {@link SortedMap}.
 	 *
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
@@ -660,7 +655,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this {@code Sequence} of {@link Map.Entry} into a {@link SortedMap}.
+	 * Convert this {@code Sequence} of into a {@link SortedMap}, using the given mapper {@link Function} to convert
+	 * each
+	 * element into a {@link Map.Entry}.
 	 */
 	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Entry<K, V>> mapper) {
 		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;

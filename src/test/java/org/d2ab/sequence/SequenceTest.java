@@ -571,6 +571,16 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void toSortedMapWithMapper() {
+		twice(() -> {
+			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(e -> Entries.of(e.toString(), e));
+
+			assertThat(sortedMap, instanceOf(TreeMap.class));
+			assertThat(sortedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
+		});
+	}
+
+	@Test
 	public void toSortedMapWithMappers() {
 		twice(() -> {
 			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
