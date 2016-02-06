@@ -20,7 +20,6 @@ import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
-import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 
 import javax.annotation.Nullable;
@@ -107,7 +106,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default <LL, RR> BiSequence<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
 	                                        Function<? super R, ? extends RR> rightMapper) {
-		return map(e -> Pair.map(e, leftMapper, rightMapper));
+		return map(p -> p.map(leftMapper, rightMapper));
 	}
 
 	default BiSequence<L, R> skip(int skip) {
@@ -209,7 +208,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default <M extends Map<L, R>> M toMap(Supplier<? extends M> constructor) {
 		M result = constructor.get();
-		forEach(each -> Entries.put(result, each));
+		forEach(each -> each.put(result));
 		return result;
 	}
 

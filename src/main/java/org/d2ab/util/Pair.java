@@ -27,7 +27,9 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.function.*;
 
-public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
+import static java.util.Comparator.*;
+
+public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	static <T, U> Pair<T, U> of(@Nullable T left, @Nullable U right) {
 		return new Base<T, U>() {
 			@Override
@@ -70,29 +72,13 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		};
 	}
 
-	static <KK, VV, K, V> Pair<KK, VV> map(Entry<K, V> entry,
-	                                       Function<? super K, ? extends KK> keyMapper,
-	                                       Function<? super V, ? extends VV> valueMapper) {
-		return new Base<KK, VV>() {
-			@Override
-			public KK getLeft() {
-				return keyMapper.apply(entry.getKey());
-			}
-
-			@Override
-			public VV getRight() {
-				return valueMapper.apply(entry.getValue());
-			}
-		};
-	}
-
 	static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> predicate) {
 		return Entries.asPredicate(predicate).test(entry);
 	}
 
 	static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends Pair<K, V>>
 			                                                        op) {
-		return entry -> op.apply(entry.getKey(), entry.getValue());
+		return entry -> op.apply(entry.getLeft(), entry.getRight());
 	}
 
 	static <K, V, KK, VV> UnaryOperator<Pair<KK, VV>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
@@ -107,21 +93,21 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 	}
 
 	static <K, V> BinaryOperator<Pair<K, V>> asBinaryOperator(QuaternaryFunction<K, V, K, V, Pair<K, V>> f) {
-		return (e1, e2) -> f.apply(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue());
+		return (e1, e2) -> f.apply(e1.getLeft(), e1.getRight(), e2.getLeft(), e2.getRight());
 	}
 
 	static <K, V, R> Function<? super Pair<K, V>, ? extends R> asFunction(BiFunction<? super K, ? super V, ? extends
 			                                                                                                       R>
 			                                                                      mapper) {
-		return entry -> mapper.apply(entry.getKey(), entry.getValue());
+		return entry -> mapper.apply(entry.getLeft(), entry.getRight());
 	}
 
 	static <K, V> Predicate<? super Pair<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
-		return entry -> predicate.test(entry.getKey(), entry.getValue());
+		return entry -> predicate.test(entry.getLeft(), entry.getRight());
 	}
 
 	static <K, V> Consumer<? super Pair<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
-		return entry -> action.accept(entry.getKey(), entry.getValue());
+		return entry -> action.accept(entry.getLeft(), entry.getRight());
 	}
 
 	L getLeft();
@@ -244,8 +230,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		return predicate.test(getLeft(), getRight());
 	}
 
-	default Map<L, R> putInto(Map<L, R> map) {
-		return Entries.put(map, this);
+	default Map<L, R> put(Map<L, R> map) {
+		map.put(getLeft(), getRight());
+		return map;
 	}
 
 	default <T> Iterator<T> iterator() {
@@ -256,7 +243,14 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 
 	abstract class Base<L, R> implements Pair<L, R> {
 		@SuppressWarnings("unchecked")
-		private static final Comparator<Entry> COMPARATOR = (Comparator<Entry>) Entries.comparator();
+		private static final Comparator NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
+
+		private static final Function<Pair, Object> GET_LEFT = (Function<Pair, Object>) Pair::getLeft;
+		private static final Function<Pair, Object> GET_RIGHT = (Function<Pair, Object>) Pair::getRight;
+
+		@SuppressWarnings("unchecked")
+		private static final Comparator<Pair> COMPARATOR =
+				comparing(GET_LEFT, NULLS_FIRST).thenComparing(GET_RIGHT, NULLS_FIRST);
 
 		public static String format(Object o) {
 			if (o instanceof String) {
@@ -276,13 +270,13 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		public boolean equals(Object o) {
 			if (this == o)
 				return true;
-			if (!(o instanceof Entry))
+			if (!(o instanceof Pair))
 				return false;
 
-			Entry<?, ?> that = (Entry<?, ?>) o;
+			Pair<?, ?> that = (Pair<?, ?>) o;
 
-			return ((getKey() != null) ? getKey().equals(that.getKey()) : (that.getKey() == null)) &&
-			       ((getValue() != null) ? getValue().equals(that.getValue()) : (that.getValue() == null));
+			return ((getLeft() != null) ? getLeft().equals(that.getLeft()) : (that.getLeft() == null)) &&
+			       ((getRight() != null) ? getRight().equals(that.getRight()) : (that.getRight() == null));
 		}
 
 		@Override
@@ -291,7 +285,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Entry<L, R>> {
 		}
 
 		@Override
-		public int compareTo(Entry<L, R> that) {
+		public int compareTo(Pair<L, R> that) {
 			return COMPARATOR.compare(this, that);
 		}
 	}

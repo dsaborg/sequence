@@ -116,7 +116,7 @@ public class PairTest {
 	@Test
 	public void put() {
 		Map<Integer, String> map = new HashMap<>();
-		pair.putInto(map);
+		pair.put(map);
 		assertThat(map.get(1), is("2"));
 	}
 

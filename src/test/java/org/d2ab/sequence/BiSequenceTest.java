@@ -304,7 +304,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void mapPairFunction() {
-		BiSequence<Integer, String> mapped = _123.map(p -> Pair.of(parseInt(p.getKey()), p.getValue().toString()));
+		BiSequence<Integer, String> mapped = _123.map(p -> Pair.of(parseInt(p.getLeft()), p.getRight().toString()));
 		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -522,7 +522,7 @@ public class BiSequenceTest {
 	@Test
 	public void reduce() {
 		BinaryOperator<Pair<String, Integer>> sumPair =
-				(r, e) -> Pair.of(r.getKey() + e.getKey(), r.getValue() + e.getValue());
+				(r, e) -> Pair.of(r.getLeft() + e.getLeft(), r.getRight() + e.getRight());
 
 		twice(() -> {
 			assertThat(empty.reduce(sumPair), is(Optional.empty()));
@@ -548,7 +548,7 @@ public class BiSequenceTest {
 	@Test
 	public void reduceWithIdentity() {
 		BinaryOperator<Pair<String, Integer>> sumPair =
-				(r, e) -> Pair.of(r.getKey() + e.getKey(), r.getValue() + e.getValue());
+				(r, e) -> Pair.of(r.getLeft() + e.getLeft(), r.getRight() + e.getRight());
 		twice(() -> {
 			assertThat(empty.reduce(Pair.of("17", 17), sumPair), is(Pair.of("17", 17)));
 			assertThat(_1.reduce(Pair.of("17", 17), sumPair), is(Pair.of("171", 18)));

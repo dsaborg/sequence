@@ -614,7 +614,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier) {
 		@SuppressWarnings("unchecked")
-		Function<T, Pair<K, V>> mapper = (Function<T, Pair<K, V>>) Function.<Pair<K, V>>identity();
+		Function<T, Entry<K, V>> mapper = (Function<T, Entry<K, V>>) Function.<Entry<K, V>>identity();
 		return toMap(supplier, mapper);
 	}
 

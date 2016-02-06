@@ -45,10 +45,6 @@ public class Entries {
 	private Entries() {
 	}
 
-	public static <K, V> Comparator<? super Entry<K, V>> comparator() {
-		return COMPARATOR;
-	}
-
 	/**
 	 * Creates a new {@link Entry} with the given key and value. Calling {@link Entry#setValue(Object)} on the
 	 * entry will result in an {@link UnsupportedOperationException} being thrown.
@@ -85,7 +81,7 @@ public class Entries {
 	public static <K, V, KK, VV> Function<Entry<K, V>, Entry<KK, VV>> asFunction(Function<? super K, ? extends KK>
 			                                                                             keyMapper, Function<? super V, ? extends VV>
 			                                                                             valueMapper) {
-		return entry -> Pair.map(entry, keyMapper, valueMapper);
+		return entry -> of(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
 	}
 
 	public static <K, V> Predicate<Entry<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
@@ -105,23 +101,6 @@ public class Entries {
 		private EntryImpl(@Nullable K key, @Nullable V value) {
 			this.key = key;
 			this.value = value;
-		}
-
-		@SuppressWarnings("NullableProblems")
-		@Override
-		public K getKey() {
-			return key;
-		}
-
-		@SuppressWarnings("NullableProblems")
-		@Override
-		public V getValue() {
-			return value;
-		}
-
-		@Override
-		public V setValue(V value) {
-			throw new UnsupportedOperationException();
 		}
 
 		@Override
@@ -145,6 +124,23 @@ public class Entries {
 		@Override
 		public String toString() {
 			return "<" + key + ", " + value + '>';
+		}
+
+		@SuppressWarnings("NullableProblems")
+		@Override
+		public K getKey() {
+			return key;
+		}
+
+		@SuppressWarnings("NullableProblems")
+		@Override
+		public V getValue() {
+			return value;
+		}
+
+		@Override
+		public V setValue(V value) {
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
