@@ -21,26 +21,18 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 public abstract class PairingIterator<T, E extends Entry<T, T>> extends DelegatingReferenceIterator<T, E> {
+	private final long step;
+
 	private T previous;
 	private boolean hasPrevious;
-	private boolean started;
+
+	public PairingIterator(long step) {
+		this.step = step;
+	}
 
 	@Override
 	public boolean hasNext() {
-		if (!hasPrevious) {
-			boolean hasNext = iterator.hasNext();
-
-			// First time, get the first element so we have a base for the first pair
-			if (hasNext) {
-				previous = iterator.next();
-				hasPrevious = true;
-			}
-
-			return hasNext;
-		}
-
-		// Ensure first element is processed with a trailing null if iterator contains only one item
-		return !started || iterator.hasNext();
+		return hasPrevious && step > 1 || iterator.hasNext();
 	}
 
 	@Override
@@ -48,12 +40,30 @@ public abstract class PairingIterator<T, E extends Entry<T, T>> extends Delegati
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T next = iterator.hasNext() ? iterator.next() : null;
-		E result = makeEntry(previous, next);
+		// First time, get the first element so we have a base for the first pair
+		if (!hasPrevious && iterator.hasNext()) {
+			previous = iterator.next();
+			hasPrevious = true;
+		}
+
+		boolean hasNext = iterator.hasNext();
+		T next = hasNext ? iterator.next() : null;
+		E result = pair(previous, next);
+
 		previous = next;
-		started = true;
+		hasPrevious = hasNext;
+
+		for (int i = 1; i < step && hasPrevious; i++) {
+			if (iterator.hasNext()) {
+				previous = iterator.next();
+			} else {
+				previous = null;
+				hasPrevious = false;
+			}
+		}
+
 		return result;
 	}
 
-	protected abstract E makeEntry(T previous, @Nullable T next);
+	protected abstract E pair(T first, @Nullable T second);
 }

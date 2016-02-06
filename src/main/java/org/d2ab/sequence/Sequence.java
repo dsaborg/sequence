@@ -806,10 +806,10 @@ public interface Sequence<T> extends Iterable<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Entry<T, T>> entries() {
-		return () -> new PairingIterator<T, Entry<T, T>>() {
+		return () -> new PairingIterator<T, Entry<T, T>>(1) {
 			@Override
-			protected Entry<T, T> makeEntry(T previous, @Nullable T next) {
-				return Entries.of(previous, next);
+			protected Entry<T, T> pair(T first, @Nullable T second) {
+				return Entries.of(first, second);
 			}
 		}.backedBy(iterator());
 	}
@@ -820,10 +820,38 @@ public interface Sequence<T> extends Iterable<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Pair<T, T>> pairs() {
-		return () -> new PairingIterator<T, Pair<T, T>>() {
+		return () -> new PairingIterator<T, Pair<T, T>>(1) {
 			@Override
-			protected Pair<T, T> makeEntry(T previous, @Nullable T next) {
-				return Pair.of(previous, next);
+			protected Pair<T, T> pair(T first, @Nullable T second) {
+				return Pair.of(first, second);
+			}
+		}.backedBy(iterator());
+	}
+
+	/**
+	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
+	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
+	 * has a null as the second item.
+	 */
+	default Sequence<Entry<T, T>> adjacentEntries() {
+		return () -> new PairingIterator<T, Entry<T, T>>(2) {
+			@Override
+			protected Entry<T, T> pair(T first, @Nullable T second) {
+				return Entries.of(first, second);
+			}
+		}.backedBy(iterator());
+	}
+
+	/**
+	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
+	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
+	 * has a null as the second item.
+	 */
+	default Sequence<Pair<T, T>> adjacentPairs() {
+		return () -> new PairingIterator<T, Pair<T, T>>(2) {
+			@Override
+			protected Pair<T, T> pair(T first, @Nullable T second) {
+				return Pair.of(first, second);
 			}
 		}.backedBy(iterator());
 	}

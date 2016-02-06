@@ -719,6 +719,50 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void adjacentEntries() {
+		Sequence<Entry<Integer, Integer>> emptyEntries = empty.adjacentEntries();
+		twice(() -> assertThat(emptyEntries, is(emptyIterable())));
+
+		Sequence<Entry<Integer, Integer>> oneEntries = _1.adjacentEntries();
+		twice(() -> assertThat(oneEntries, contains(Pair.of(1, null))));
+
+		Sequence<Entry<Integer, Integer>> twoEntries = _12.adjacentEntries();
+		twice(() -> assertThat(twoEntries, contains(Pair.of(1, 2))));
+
+		Sequence<Entry<Integer, Integer>> threeEntries = _123.adjacentEntries();
+		twice(() -> assertThat(threeEntries, contains(Pair.of(1, 2), Pair.of(3, null))));
+
+		Sequence<Entry<Integer, Integer>> fourEntries = _1234.adjacentEntries();
+		twice(() -> assertThat(fourEntries, contains(Pair.of(1, 2), Pair.of(3, 4))));
+
+		Sequence<Entry<Integer, Integer>> fiveEntries = _12345.adjacentEntries();
+		twice(() -> assertThat(fiveEntries, contains(Pair.of(1, 2), Pair.of(3, 4), Pair.of(5, null))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void adjacentPairs() {
+		Sequence<Pair<Integer, Integer>> emptyPaired = empty.adjacentPairs();
+		twice(() -> assertThat(emptyPaired, is(emptyIterable())));
+
+		Sequence<Pair<Integer, Integer>> onePaired = _1.adjacentPairs();
+		twice(() -> assertThat(onePaired, contains(Pair.of(1, null))));
+
+		Sequence<Pair<Integer, Integer>> twoPaired = _12.adjacentPairs();
+		twice(() -> assertThat(twoPaired, contains(Pair.of(1, 2))));
+
+		Sequence<Pair<Integer, Integer>> threePaired = _123.adjacentPairs();
+		twice(() -> assertThat(threePaired, contains(Pair.of(1, 2), Pair.of(3, null))));
+
+		Sequence<Pair<Integer, Integer>> fourPaired = _1234.adjacentPairs();
+		twice(() -> assertThat(fourPaired, contains(Pair.of(1, 2), Pair.of(3, 4))));
+
+		Sequence<Pair<Integer, Integer>> fivePaired = _12345.adjacentPairs();
+		twice(() -> assertThat(fivePaired, contains(Pair.of(1, 2), Pair.of(3, 4), Pair.of(5, null))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void biSequence() {
 		BiSequence<Integer, String> emptyBiSequence = empty.toBiSequence();
 		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
