@@ -20,6 +20,7 @@ import org.d2ab.iterable.doubles.DoubleIterable;
 
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -60,5 +61,12 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 
 	default DoubleIterable asIterable() {
 		return () -> this;
+	}
+
+	default double reduce(double identity, DoubleBinaryOperator operator) {
+		double result = identity;
+		while (hasNext())
+			result = operator.applyAsDouble(result, nextDouble());
+		return result;
 	}
 }

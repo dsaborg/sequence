@@ -364,7 +364,13 @@ public interface CharSeq extends CharIterable {
 	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
-		C result = constructor.get();
+		return collectInto(constructor.get(), adder);
+	}
+
+	/**
+	 * Collect this {@code CharSeq} into the given container using the given adder.
+	 */
+	default <C> C collectInto(C result, ObjCharConsumer<? super C> adder) {
 		forEachChar(c -> adder.accept(result, c));
 		return result;
 	}

@@ -683,19 +683,30 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Collect this {@code Sequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
-		C result = constructor.get();
-		forEach(each -> adder.accept(result, each));
-		return result;
+		return collectInto(constructor.get(), adder);
 	}
 
 	/**
 	 * Collect this {@code Sequence} into an arbitrary container using the given {@link Collector}.
 	 */
-	default <S, R> S collect(Collector<T, R, S> collector) {
-		R result = collector.supplier().get();
-		BiConsumer<R, T> accumulator = collector.accumulator();
-		forEach(each -> accumulator.accept(result, each));
-		return collector.finisher().apply(result);
+	default <R, A> R collect(Collector<T, A, R> collector) {
+		A container = collect(collector.supplier(), collector.accumulator());
+		return collector.finisher().apply(container);
+	}
+
+	/**
+	 * Collect this {@code Sequence} into the given {@link Collection}.
+	 */
+	default <U extends Collection<T>> U collectInto(U collection) {
+		return collectInto(collection, Collection::add);
+	}
+
+	/**
+	 * Collect this {@code Sequence} into the given container, using the given adder.
+	 */
+	default <C> C collectInto(C result, BiConsumer<? super C, ? super T> adder) {
+		forEach(each -> adder.accept(result, each));
+		return result;
 	}
 
 	/**

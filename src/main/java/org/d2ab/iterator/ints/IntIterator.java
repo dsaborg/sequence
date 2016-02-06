@@ -20,6 +20,7 @@ import org.d2ab.iterable.ints.IntIterable;
 
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
+import java.util.function.IntBinaryOperator;
 
 /**
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
@@ -60,5 +61,12 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 
 	default IntIterable asIterable() {
 		return () -> this;
+	}
+
+	default int reduce(int identity, IntBinaryOperator operator) {
+		int result = identity;
+		while (hasNext())
+			result = operator.applyAsInt(result, nextInt());
+		return result;
 	}
 }

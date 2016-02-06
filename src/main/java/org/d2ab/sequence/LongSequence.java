@@ -231,6 +231,10 @@ public interface LongSequence extends LongIterable {
 		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code longs} in this {@code LongSequence} to another set of {@code longs} specified by the given
+	 * {@code mapper} function.
+	 */
 	default LongSequence map(LongUnaryOperator mapper) {
 		return () -> new UnaryLongIterator() {
 			@Override
@@ -248,10 +252,16 @@ public interface LongSequence extends LongIterable {
 		return () -> new ForwardPeekingLongIterator(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code longs} in this {@code LongSequence} to their boxed {@link Long} counterparts.
+	 */
 	default Sequence<Long> box() {
 		return toSequence(Long::valueOf);
 	}
 
+	/**
+	 * Map the {@code longs} in this {@code LongSequence} to a {@link Sequence} of values.
+	 */
 	default <T> Sequence<T> toSequence(LongFunction<T> mapper) {
 		return () -> new DelegatingIterator<Long, LongIterator, T, Iterator<T>>() {
 			@Override
@@ -302,8 +312,11 @@ public interface LongSequence extends LongIterable {
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
-		C result = constructor.get();
-		forEachLong(x -> adder.accept(result, x));
+		return collectInto(constructor.get(), adder);
+	}
+
+	default <C> C collectInto(C result, ObjLongConsumer<? super C> adder) {
+		forEachLong(l -> adder.accept(result, l));
 		return result;
 	}
 
@@ -325,15 +338,17 @@ public interface LongSequence extends LongIterable {
 		return result.append(suffix).toString();
 	}
 
-	default long reduce(long identity, LongBinaryOperator operator) {
-		return reduce(identity, operator, iterator());
+	default OptionalLong reduce(LongBinaryOperator operator) {
+		LongIterator iterator = iterator();
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
+
+		long result = iterator.reduce(iterator.next(), operator);
+		return OptionalLong.of(result);
 	}
 
-	default long reduce(long identity, LongBinaryOperator operator, LongIterator iterator) {
-		long result = identity;
-		while (iterator.hasNext())
-			result = operator.applyAsLong(result, iterator.nextLong());
-		return result;
+	default long reduce(long identity, LongBinaryOperator operator) {
+		return iterator().reduce(identity, operator);
 	}
 
 	default OptionalLong first() {
@@ -388,15 +403,6 @@ public interface LongSequence extends LongIterable {
 
 	default OptionalLong min() {
 		return reduce((a, b) -> (a < b) ? a : b);
-	}
-
-	default OptionalLong reduce(LongBinaryOperator operator) {
-		LongIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
-
-		long result = reduce(iterator.next(), operator, iterator);
-		return OptionalLong.of(result);
 	}
 
 	default OptionalLong max() {

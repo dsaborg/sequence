@@ -323,8 +323,11 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {
-		C result = constructor.get();
-		forEachDouble(c -> adder.accept(result, c));
+		return collectInto(constructor.get(), adder);
+	}
+
+	default <C> C collectInto(C result, ObjDoubleConsumer<? super C> adder) {
+		forEachDouble(d -> adder.accept(result, d));
 		return result;
 	}
 
@@ -346,15 +349,17 @@ public interface DoubleSequence extends DoubleIterable {
 		return result.append(suffix).toString();
 	}
 
-	default double reduce(double identity, DoubleBinaryOperator operator) {
-		return reduce(identity, operator, iterator());
+	default OptionalDouble reduce(DoubleBinaryOperator operator) {
+		DoubleIterator iterator = iterator();
+		if (!iterator.hasNext())
+			return OptionalDouble.empty();
+
+		double result = iterator.reduce(iterator.next(), operator);
+		return OptionalDouble.of(result);
 	}
 
-	default double reduce(double identity, DoubleBinaryOperator operator, DoubleIterator iterator) {
-		double result = identity;
-		while (iterator.hasNext())
-			result = operator.applyAsDouble(result, iterator.nextDouble());
-		return result;
+	default double reduce(double identity, DoubleBinaryOperator operator) {
+		return iterator().reduce(identity, operator);
 	}
 
 	default OptionalDouble first() {
@@ -405,15 +410,6 @@ public interface DoubleSequence extends DoubleIterable {
 
 	default OptionalDouble min() {
 		return reduce((a, b) -> (a < b) ? a : b);
-	}
-
-	default OptionalDouble reduce(DoubleBinaryOperator operator) {
-		DoubleIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalDouble.empty();
-
-		double result = reduce(iterator.next(), operator, iterator);
-		return OptionalDouble.of(result);
 	}
 
 	default OptionalDouble max() {

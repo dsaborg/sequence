@@ -309,7 +309,19 @@ public class CharSeqTest {
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = abc.collect(StringBuilder::new, StringBuilder::append);
+
 			assertThat(builder.toString(), is("abc"));
+		});
+	}
+
+	@Test
+	public void collectInto() {
+		twice(() -> {
+			StringBuilder builder = new StringBuilder();
+			StringBuilder result = abc.collectInto(builder, StringBuilder::append);
+
+			assertThat(result, is(sameInstance(builder)));
+			assertThat(result.toString(), is("abc"));
 		});
 	}
 

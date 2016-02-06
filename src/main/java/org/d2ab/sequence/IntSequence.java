@@ -259,10 +259,16 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code ints} in this {@code IntSequence} to their boxed {@link Integer} counterparts.
+	 */
 	default Sequence<Integer> box() {
 		return toSequence(Integer::valueOf);
 	}
 
+	/**
+	 * Map the {@code ints} in this {@code IntSequence} to a {@link Sequence} of values.
+	 */
 	default <T> Sequence<T> toSequence(IntFunction<T> mapper) {
 		return () -> new Iterator<T>() {
 			private final IntIterator iterator = iterator();
@@ -279,56 +285,113 @@ public interface IntSequence extends IntIterable {
 		};
 	}
 
+	/**
+	 * Skip a set number of {@code ints} in this {@code IntSequence}.
+	 */
 	default IntSequence skip(long skip) {
 		return () -> new SkippingIntIterator(skip).backedBy(iterator());
 	}
 
+	/**
+	 * Limit the maximum number of {@code ints} returned by this {@code IntSequence}.
+	 */
 	default IntSequence limit(long limit) {
 		return () -> new LimitingIntIterator(limit).backedBy(iterator());
 	}
 
+	/**
+	 * Append the {@link Integer}s in the given {@link Iterable} to the end of this {@code IntSequence}.
+	 */
 	default IntSequence append(Iterable<Integer> iterable) {
 		return append(IntIterable.from(iterable));
 	}
 
+	/**
+	 * Append the {@code ints} in the given {@link IntIterable} to the end of this {@code IntSequence}.
+	 */
 	default IntSequence append(IntIterable that) {
 		return new ChainingIntIterable(this, that)::iterator;
 	}
 
+	/**
+	 * Append the {@code ints} in the given {@link IntIterator} to the end of this {@code IntSequence}.
+	 * <p>
+	 * The appended {@code ints} will only be available on the first traversal of the resulting {@code IntSequence}.
+	 */
 	default IntSequence append(IntIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
+	/**
+	 * Append the {@link Character}s in the given {@link Iterator} to the end of this {@code CharSeq}.
+	 * <p>
+	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
+	 */
 	default IntSequence append(Iterator<Integer> iterator) {
 		return append(IntIterable.from(iterator));
 	}
 
+	/**
+	 * Append the given {@code ints} to the end of this {@code IntSequence}.
+	 */
 	default IntSequence append(int... ints) {
 		return append(IntIterable.of(ints));
 	}
 
+	/**
+	 * Append the {@link Integer}s in the given {@link Stream} to the end of this {@code IntSequence}.
+	 * <p>
+	 * The appended
+	 * {@link Integer}s will only be available on the first traversal of the resulting {@code IntSequence}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default IntSequence append(Stream<Integer> stream) {
 		return append(IntIterable.from(stream));
 	}
 
+	/**
+	 * Append the {@code int} values of the given {@link IntStream} to the end of this {@code IntSequence}.
+	 * <p>
+	 * The appended {@code ints} will only be available on the first traversal of the resulting {@code IntSequence}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default IntSequence append(IntStream stream) {
 		return append(IntIterable.from(stream));
 	}
 
+	/**
+	 * Filter the elements in this {@code IntSequence}, keeping only the elements that match the given
+	 * {@link IntPredicate}.
+	 */
 	default IntSequence filter(IntPredicate predicate) {
 		return () -> new FilteringIntIterator(predicate).backedBy(iterator());
 	}
 
+	/**
+	 * Collect this {@code IntSequence} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {
-		C result = constructor.get();
+		return collectInto(constructor.get(), adder);
+	}
+
+	/**
+	 * Collect this {@code IntSequence} into the given container using the given adder.
+	 */
+	default <C> C collectInto(C result, ObjIntConsumer<? super C> adder) {
 		forEachInt(x -> adder.accept(result, x));
 		return result;
 	}
 
+	/**
+	 * Join this {@code IntSequence} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code IntSequence} into a string separated by the given delimiter, with the given prefix and suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder(prefix);
 
@@ -343,15 +406,25 @@ public interface IntSequence extends IntIterable {
 		return result.append(suffix).toString();
 	}
 
-	default int reduce(int identity, IntBinaryOperator operator) {
-		return reduce(identity, operator, iterator());
+	/**
+	 * Reduce this {@code IntSequence} into a single int by iteratively applying the given binary operator to
+	 * the current result and each int in the sequence.
+	 */
+	default OptionalInt reduce(IntBinaryOperator operator) {
+		IntIterator iterator = iterator();
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
+
+		int result = iterator.reduce(iterator.next(), operator);
+		return OptionalInt.of(result);
 	}
 
-	default int reduce(int identity, IntBinaryOperator operator, IntIterator iterator) {
-		int result = identity;
-		while (iterator.hasNext())
-			result = operator.applyAsInt(result, iterator.nextInt());
-		return result;
+	/**
+	 * Reduce this {@code IntSequence} into a single int by iteratively applying the given binary operator to
+	 * the current result and each int in the sequence, starting with the given identity as the initial result.
+	 */
+	default int reduce(int identity, IntBinaryOperator operator) {
+		return iterator().reduce(identity, operator);
 	}
 
 	default OptionalInt first() {
@@ -406,15 +479,6 @@ public interface IntSequence extends IntIterable {
 
 	default OptionalInt min() {
 		return reduce((a, b) -> (a < b) ? a : b);
-	}
-
-	default OptionalInt reduce(IntBinaryOperator operator) {
-		IntIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
-
-		int result = reduce(iterator.next(), operator, iterator);
-		return OptionalInt.of(result);
 	}
 
 	default OptionalInt max() {

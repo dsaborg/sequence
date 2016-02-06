@@ -20,6 +20,7 @@ import org.d2ab.iterable.longs.LongIterable;
 
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
+import java.util.function.LongBinaryOperator;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -60,5 +61,12 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 
 	default LongIterable asIterable() {
 		return () -> this;
+	}
+
+	default long reduce(long identity, LongBinaryOperator operator) {
+		long result = identity;
+		while (hasNext())
+			result = operator.applyAsLong(result, nextLong());
+		return result;
 	}
 }

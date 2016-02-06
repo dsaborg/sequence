@@ -506,6 +506,18 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void collectIntoCollection() {
+		Sequence<Integer> sequence = _123;
+
+		twice(() -> {
+			Deque<Integer> deque = new ArrayDeque<>();
+			Deque<Integer> result = sequence.collectInto(deque);
+			assertThat(result, is(sameInstance(deque)));
+			assertThat(result, contains(1, 2, 3));
+		});
+	}
+
+	@Test
 	public void toMap() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
@@ -597,6 +609,17 @@ public class SequenceTest {
 
 			assertThat(deque, instanceOf(ArrayDeque.class));
 			assertThat(deque, contains(1, 2, 3));
+		});
+	}
+
+	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			Deque<Integer> deque = new ArrayDeque<>();
+			Deque<Integer> result = _123.collectInto(deque, Deque::add);
+
+			assertThat(result, is(sameInstance(deque)));
+			assertThat(result, contains(1, 2, 3));
 		});
 	}
 
