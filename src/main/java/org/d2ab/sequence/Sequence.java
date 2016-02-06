@@ -507,7 +507,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link ClassCastException}.
 	 *
 	 * @throws ClassCastException if a non-collection element is encountered in the {@code Sequence}.
-	 *
 	 * @see #flatten(Function)
 	 * @see #map(Function)
 	 * @see #toChars(ToCharFunction)
@@ -890,7 +889,8 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * @return a sequence where each item in this {@code Sequence} occurs only once, the first time it is encountered.
+	 * @return a {@code Sequence} where each item in this {@code Sequence} occurs only once, the first time it is
+	 * encountered.
 	 */
 	default Sequence<T> distinct() {
 		return () -> new DistinctIterator<T>().backedBy(iterator());
@@ -1021,8 +1021,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Interleave the elements in this {@code Sequence} with those of the given {@code Sequence}, stopping when either
 	 * sequence finishes. The result is a {@code Sequence} of pairs of items, the first of which come from this
-	 * sequence
-	 * and the second from the given sequence.
+	 * sequence and the second from the given sequence.
 	 */
 	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
 		return () -> new InterleavingPairingIterator<>(iterator(), that.iterator());

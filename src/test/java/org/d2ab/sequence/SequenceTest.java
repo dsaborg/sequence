@@ -573,7 +573,7 @@ public class SequenceTest {
 	@Test
 	public void toSortedMapWithMapper() {
 		twice(() -> {
-			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(e -> Entries.of(e.toString(), e));
+			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(x -> Entries.of(x.toString(), x));
 
 			assertThat(sortedMap, instanceOf(TreeMap.class));
 			assertThat(sortedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));

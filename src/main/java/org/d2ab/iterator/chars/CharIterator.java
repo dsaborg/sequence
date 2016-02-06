@@ -16,6 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
+import org.d2ab.function.chars.CharBinaryOperator;
 import org.d2ab.function.chars.CharConsumer;
 import org.d2ab.iterable.chars.CharIterable;
 
@@ -108,6 +109,17 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		Objects.requireNonNull(action);
 		while (hasNext())
 			action.accept(nextChar());
+	}
+
+	/**
+	 * Reduce this {@code CharIterator} into a single element by iteratively applying the given binary operator to
+	 * the current result and each element in the iterator, starting with the given identity as the initial result.
+	 */
+	default char reduce(char identity, CharBinaryOperator operator) {
+		char result = identity;
+		while (hasNext())
+			result = operator.applyAsChar(result, nextChar());
+		return result;
 	}
 
 	/**

@@ -352,20 +352,33 @@ public interface CharSeq extends CharIterable {
 		return append(CharIterable.from(stream));
 	}
 
+	/**
+	 * Filter the elements in this {@code CharSeq}, keeping only the elements that match the given
+	 * {@link CharPredicate}.
+	 */
 	default CharSeq filter(CharPredicate predicate) {
 		return () -> new FilteringCharIterator(predicate).backedBy(iterator());
 	}
 
+	/**
+	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
 		C result = constructor.get();
 		forEachChar(c -> adder.accept(result, c));
 		return result;
 	}
 
+	/**
+	 * Join this {@code CharSeq} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code CharSeq} into a string separated by the given delimiter, with the given prefix and suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder(prefix);
 
@@ -380,17 +393,32 @@ public interface CharSeq extends CharIterable {
 		return result.append(suffix).toString();
 	}
 
+	/**
+	 * Reduce this {@code CharSeq} into a single element by iteratively applying the given binary operator to
+	 * the current result and each element in the sequence.
+	 */
+	default OptionalChar reduce(CharBinaryOperator operator) {
+		CharIterator iterator = iterator();
+		if (!iterator.hasNext())
+			return OptionalChar.empty();
+
+		Character identity = iterator.next();
+		char result = iterator.reduce(identity, operator);
+		return OptionalChar.of(result);
+	}
+
+	/**
+	 * Reduce this {@code CharSeq} into a single element by iteratively applying the given binary operator to
+	 * the current result and each element in the sequence, starting with the given identity as the initial result.
+	 */
 	default char reduce(char identity, CharBinaryOperator operator) {
-		return reduce(identity, operator, iterator());
+		return iterator().reduce(identity, operator);
 	}
 
-	default char reduce(char identity, CharBinaryOperator operator, CharIterator iterator) {
-		char result = identity;
-		while (iterator.hasNext())
-			result = operator.applyAsChar(result, iterator.nextChar());
-		return result;
-	}
-
+	/**
+	 * @return the first character of this {@code CharSeq} or an empty {@link OptionalChar} if there are no characters
+	 * in the {@code CharSeq}.
+	 */
 	default OptionalChar first() {
 		CharIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -399,6 +427,10 @@ public interface CharSeq extends CharIterable {
 		return OptionalChar.of(iterator.nextChar());
 	}
 
+	/**
+	 * @return the second character of this {@code CharSeq} or an empty {@link OptionalChar} if there are less than two
+	 * characters in the {@code CharSeq}.
+	 */
 	default OptionalChar second() {
 		CharIterator iterator = iterator();
 
@@ -409,6 +441,10 @@ public interface CharSeq extends CharIterable {
 		return OptionalChar.of(iterator.nextChar());
 	}
 
+	/**
+	 * @return the third character of this {@code CharSeq} or an empty {@link OptionalChar} if there are less than
+	 * three characters in the {@code CharSeq}.
+	 */
 	default OptionalChar third() {
 		CharIterator iterator = iterator();
 
@@ -420,6 +456,10 @@ public interface CharSeq extends CharIterable {
 		return OptionalChar.of(iterator.nextChar());
 	}
 
+	/**
+	 * @return the last character of this {@code CharSeq} or an empty {@link OptionalChar} if there are no
+	 * characters in the {@code CharSeq}.
+	 */
 	default OptionalChar last() {
 		CharIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -433,31 +473,38 @@ public interface CharSeq extends CharIterable {
 		return OptionalChar.of(last);
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code CharSeq}.
+	 */
 	default CharSeq step(long step) {
 		return () -> new SteppingCharIterator(step).backedBy(iterator());
 	}
 
+	/**
+	 * @return a {@code CharSeq} where each item in this {@code CharSeq} occurs only once, the first time it is
+	 * encountered.
+	 */
 	default CharSeq distinct() {
 		return () -> new DistinctCharIterator().backedBy(iterator());
 	}
 
+	/**
+	 * @return the smallest character in this {@code CharSeq} according to their integer value.
+	 */
 	default OptionalChar min() {
 		return reduce((a, b) -> (a < b) ? a : b);
 	}
 
-	default OptionalChar reduce(CharBinaryOperator operator) {
-		CharIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalChar.empty();
-
-		char result = reduce(iterator.next(), operator, iterator);
-		return OptionalChar.of(result);
-	}
-
+	/**
+	 * @return the greatest character in this {@code CharSeq} according to their integer value.
+	 */
 	default OptionalChar max() {
 		return reduce((a, b) -> (a > b) ? a : b);
 	}
 
+	/**
+	 * @return the number of characters in this {@code CharSeq}.
+	 */
 	default long count() {
 		long count = 0;
 		for (CharIterator iterator = iterator(); iterator.hasNext(); iterator.nextChar()) {
@@ -466,6 +513,9 @@ public interface CharSeq extends CharIterable {
 		return count;
 	}
 
+	/**
+	 * @return true if all characters in this {@code CharSeq} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(CharPredicate predicate) {
 		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (!predicate.test(iterator.nextChar()))
@@ -474,10 +524,16 @@ public interface CharSeq extends CharIterable {
 		return true;
 	}
 
+	/**
+	 * @return true if no characters in this {@code CharSeq} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(CharPredicate predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any character in this {@code CharSeq} satisfy the given predicate, false otherwise.
+	 */
 	default boolean any(CharPredicate predicate) {
 		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (predicate.test(iterator.nextChar()))
@@ -486,6 +542,9 @@ public interface CharSeq extends CharIterable {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link CharConsumer} to see each element in this {@code CharSeq} as it is traversed.
+	 */
 	default CharSeq peek(CharConsumer action) {
 		return () -> new UnaryCharIterator() {
 			@Override
@@ -497,12 +556,20 @@ public interface CharSeq extends CharIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * @return this {@code CharSeq} sorted according to the natural order of the characters' integer values.
+	 *
+	 * @see #reverse()
+	 */
 	default CharSeq sorted() {
 		char[] array = toArray();
 		Arrays.sort(array);
 		return () -> CharIterator.of(array);
 	}
 
+	/**
+	 * Collect the characters in this {@code CharSeq} into an array.
+	 */
 	default char[] toArray() {
 		char[] work = new char[10];
 
@@ -527,18 +594,34 @@ public interface CharSeq extends CharIterable {
 		return result;
 	}
 
+	/**
+	 * Prefix the characters in this {@code CharSeq} with the given characters.
+	 */
 	default CharSeq prefix(char... cs) {
 		return () -> new ChainingCharIterator(CharIterable.of(cs), this);
 	}
 
+	/**
+	 * Suffix the characters in this {@code CharSeq} with the given characters.
+	 */
 	default CharSeq suffix(char... cs) {
 		return () -> new ChainingCharIterator(this, CharIterable.of(cs));
 	}
 
+	/**
+	 * Interleave the elements in this {@code CharSeq} with those of the given {@code CharSeq}, stopping when either
+	 * sequence finishes. The result is a {@code CharSeq} of pairs of items, the first of which come from this
+	 * sequence and the second from the given sequence.
+	 */
 	default CharSeq interleave(CharSeq that) {
 		return () -> new InterleavingCharIterator(this, that);
 	}
 
+	/**
+	 * @return a {@code CharSeq} which iterates over this {@code CharSeq} in reverse order.
+	 *
+	 * @see #sorted()
+	 */
 	default CharSeq reverse() {
 		char[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
@@ -547,18 +630,43 @@ public interface CharSeq extends CharIterable {
 		return CharIterable.of(array)::iterator;
 	}
 
+	/**
+	 * @return this {@code CharSeq} concatenated as a string.
+	 *
+	 * @see #join(String)
+	 * @see #join(String, String, String)
+	 * @see #collect(Supplier, ObjCharConsumer)
+	 */
 	default String asString() {
 		return new String(toArray());
 	}
 
+	/**
+	 * Map this {@code CharSeq} to another sequence of characters while peeking at the previous character in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the previous character and the current character in the iteration. The previous
+	 * character is supplied as the first parameter to the mapping function as an int, which is -1 if there is no
+	 * previous character, i.e. for the first character in the iteration.
+	 */
 	default CharSeq mapBack(IntCharToCharBinaryFunction mapper) {
 		return () -> new BackPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Map this {@code CharSeq} to another sequence of characters while peeking at the next character in the sequence.
+	 * <p>
+	 * The mapper has access to the current character and the next character in the iteration. The next character is
+	 * supplied as the second parameter to the mapping function as an int, which is -1 if there is no next character,
+	 * i.e. for the last character in the iteration.
+	 */
 	default CharSeq mapForward(CharIntToCharBinaryFunction mapper) {
 		return () -> new ForwardPeekingMappingCharIterator(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of characters to a sequence of ints corresponding to the integer value of each character.
+	 */
 	default IntSequence toInts() {
 		return () -> new DelegatingIntIterator<Character, CharIterator>() {
 			@Override
@@ -568,10 +676,18 @@ public interface CharSeq extends CharIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Repeat this sequence of characters forever, looping back to the beginning when the iterator runs out of chars.
+	 * <p>
+	 * The resulting sequence will never terminate if this sequence is non-empty.
+	 */
 	default CharSeq repeat() {
 		return () -> new RepeatingCharIterator(this, -1);
 	}
 
+	/**
+	 * Repeat this sequence of characters x times, looping back to the beginning when the iterator runs out of chars.
+	 */
 	default CharSeq repeat(long times) {
 		return () -> new RepeatingCharIterator(this, times);
 	}
