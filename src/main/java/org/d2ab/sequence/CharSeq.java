@@ -400,8 +400,8 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Reduce this {@code CharSeq} into a single element by iteratively applying the given binary operator to
-	 * the current result and each element in the sequence.
+	 * Reduce this {@code CharSeq} into a single {@code char} by iteratively applying the given binary operator to
+	 * the current result and each {@code char} in the sequence.
 	 */
 	default OptionalChar reduce(CharBinaryOperator operator) {
 		CharIterator iterator = iterator();
@@ -414,8 +414,9 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Reduce this {@code CharSeq} into a single element by iteratively applying the given binary operator to
-	 * the current result and each element in the sequence, starting with the given identity as the initial result.
+	 * Reduce this {@code CharSeq} into a single {@code char} by iteratively applying the given binary operator to
+	 * the current result and each {@code char} in the sequence, starting with the given identity as the initial
+	 * result.
 	 */
 	default char reduce(char identity, CharBinaryOperator operator) {
 		return iterator().reduce(identity, operator);
@@ -487,8 +488,7 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * @return a {@code CharSeq} where each item in this {@code CharSeq} occurs only once, the first time it is
-	 * encountered.
+	 * @return a {@code CharSeq} where each item occurs only once, the first time it is encountered.
 	 */
 	default CharSeq distinct() {
 		return () -> new DistinctCharIterator().backedBy(iterator());

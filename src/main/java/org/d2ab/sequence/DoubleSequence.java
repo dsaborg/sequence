@@ -253,6 +253,10 @@ public interface DoubleSequence extends DoubleIterable {
 		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code doubles} in this {@code DoubleSequence} to another set of {@code doubles} specified by the given
+	 * {@code mapper} function.
+	 */
 	default DoubleSequence map(DoubleUnaryOperator mapper) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
@@ -262,10 +266,16 @@ public interface DoubleSequence extends DoubleIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Map the {@code doubles} in this {@code DoubleSequence} to their boxed {@link Double} counterparts.
+	 */
 	default Sequence<Double> box() {
 		return toSequence(Double::valueOf);
 	}
 
+	/**
+	 * Map the {@code doubles} in this {@code DoubleSequence} to a {@link Sequence} of values.
+	 */
 	default <T> Sequence<T> toSequence(DoubleFunction<T> mapper) {
 		return () -> new Iterator<T>() {
 			private final DoubleIterator iterator = iterator();
@@ -282,59 +292,115 @@ public interface DoubleSequence extends DoubleIterable {
 		};
 	}
 
+	/**
+	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
+	 */
 	default DoubleSequence skip(double skip) {
 		return () -> new SkippingDoubleIterator(skip).backedBy(iterator());
 	}
 
+	/**
+	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
+	 */
 	default DoubleSequence limit(double limit) {
 		return () -> new LimitingDoubleIterator(limit).backedBy(iterator());
 	}
 
+	/**
+	 * Append the {@link Double}s in the given {@link Iterable} to the end of this {@code DoubleSequence}.
+	 */
 	default DoubleSequence append(Iterable<Double> iterable) {
 		return append(DoubleIterable.from(iterable));
 	}
 
+	/**
+	 * Append the {@code doubles} in the given {@link DoubleIterable} to the end of this {@code DoubleSequence}.
+	 */
 	default DoubleSequence append(DoubleIterable that) {
 		return new ChainingDoubleIterable(this, that)::iterator;
 	}
 
+	/**
+	 * Append the {@code doubles} in the given {@link DoubleIterator} to the end of this {@code DoubleSequence}.
+	 * <p>
+	 * The appended {@code doubles} will only be available on the first traversal of the resulting {@code
+	 * DoubleSequence}.
+	 */
 	default DoubleSequence append(DoubleIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
+	/**
+	 * Append the {@link Double}s in the given {@link Iterator} to the end of this {@code DoubleSequence}.
+	 * <p>
+	 * The appended {@link Double}s will only be available on the first traversal of the resulting
+	 * {@code DoubleSequence}.
+	 */
 	default DoubleSequence append(Iterator<Double> iterator) {
 		return append(DoubleIterable.from(iterator));
 	}
 
+	/**
+	 * Append the given {@code doubles} to the end of this {@code DoubleSequence}.
+	 */
 	default DoubleSequence append(double... doubles) {
 		return append(DoubleIterable.of(doubles));
 	}
 
+	/**
+	 * Append the {@link Double}s in the given {@link Stream} to the end of this {@code DoubleSequence}.
+	 * <p>
+	 * The appended {@link Double}s will only be available on the first traversal of the resulting
+	 * {@code DoubleSequence}. Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default DoubleSequence append(Stream<Double> stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
+	/**
+	 * Append the {@code double} values of the given {@link DoubleStream} to the end of this {@code DoubleSequence}.
+	 * <p>
+	 * The appended {@code doubles} will only be available on the first traversal of the resulting
+	 * {@code DoubleSequence}. Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default DoubleSequence append(DoubleStream stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
+	/**
+	 * Filter the elements in this {@code DoubleSequence}, keeping only the elements that match the given
+	 * {@link DoublePredicate}.
+	 */
 	default DoubleSequence filter(DoublePredicate predicate) {
 		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
 	}
 
+	/**
+	 * Collect this {@code DoubleSequence} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {
 		return collectInto(constructor.get(), adder);
 	}
 
+	/**
+	 * Collect this {@code DoubleSequence} into the given container using the given adder.
+	 */
 	default <C> C collectInto(C result, ObjDoubleConsumer<? super C> adder) {
 		forEachDouble(d -> adder.accept(result, d));
 		return result;
 	}
 
+	/**
+	 * Join this {@code DoubleSequence} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code DoubleSequence} into a string separated by the given delimiter, with the given prefix and
+	 * suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder(prefix);
 
@@ -349,6 +415,10 @@ public interface DoubleSequence extends DoubleIterable {
 		return result.append(suffix).toString();
 	}
 
+	/**
+	 * Reduce this {@code DoubleSequence} into a single {@code double} by iteratively applying the given binary
+	 * operator to the current result and each {@code double} in the sequence.
+	 */
 	default OptionalDouble reduce(DoubleBinaryOperator operator) {
 		DoubleIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -358,10 +428,19 @@ public interface DoubleSequence extends DoubleIterable {
 		return OptionalDouble.of(result);
 	}
 
+	/**
+	 * Reduce this {@code DoubleSequence} into a single {@code double} by iteratively applying the given binary
+	 * operator to the current result and each {@code double} in the sequence, starting with the given identity as the
+	 * initial result.
+	 */
 	default double reduce(double identity, DoubleBinaryOperator operator) {
 		return iterator().reduce(identity, operator);
 	}
 
+	/**
+	 * @return the first double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are no
+	 * doubles in the {@code DoubleSequence}.
+	 */
 	default OptionalDouble first() {
 		DoubleIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -370,6 +449,11 @@ public interface DoubleSequence extends DoubleIterable {
 		return OptionalDouble.of(iterator.nextDouble());
 	}
 
+	/**
+	 * @return the second double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
+	 * than two
+	 * doubles in the {@code DoubleSequence}.
+	 */
 	default OptionalDouble second() {
 		DoubleIterator iterator = iterator();
 
@@ -380,6 +464,11 @@ public interface DoubleSequence extends DoubleIterable {
 		return OptionalDouble.of(iterator.nextDouble());
 	}
 
+	/**
+	 * @return the third double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
+	 * than
+	 * three doubles in the {@code DoubleSequence}.
+	 */
 	default OptionalDouble third() {
 		DoubleIterator iterator = iterator();
 
@@ -391,6 +480,10 @@ public interface DoubleSequence extends DoubleIterable {
 		return OptionalDouble.of(iterator.nextDouble());
 	}
 
+	/**
+	 * @return the last double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are no
+	 * doubles in the {@code DoubleSequence}.
+	 */
 	default OptionalDouble last() {
 		DoubleIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -404,6 +497,9 @@ public interface DoubleSequence extends DoubleIterable {
 		return OptionalDouble.of(last);
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
+	 */
 	default DoubleSequence step(double step) {
 		return () -> new SteppingDoubleIterator(step).backedBy(iterator());
 	}

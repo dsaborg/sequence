@@ -323,9 +323,10 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Append the {@link Character}s in the given {@link Iterator} to the end of this {@code CharSeq}.
+	 * Append the {@link Integer}s in the given {@link Iterator} to the end of this {@code IntSequence}.
 	 * <p>
-	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
+	 * The appended
+	 * {@link Integer}s will only be available on the first traversal of the resulting {@code IntSequence}.
 	 */
 	default IntSequence append(Iterator<Integer> iterator) {
 		return append(IntIterable.from(iterator));
@@ -407,8 +408,8 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Reduce this {@code IntSequence} into a single int by iteratively applying the given binary operator to
-	 * the current result and each int in the sequence.
+	 * Reduce this {@code IntSequence} into a single {@code int} by iteratively applying the given binary operator to
+	 * the current result and each {@code int} in the sequence.
 	 */
 	default OptionalInt reduce(IntBinaryOperator operator) {
 		IntIterator iterator = iterator();
@@ -420,13 +421,17 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Reduce this {@code IntSequence} into a single int by iteratively applying the given binary operator to
-	 * the current result and each int in the sequence, starting with the given identity as the initial result.
+	 * Reduce this {@code IntSequence} into a single {@code int} by iteratively applying the given binary operator to
+	 * the current result and each {@code int} in the sequence, starting with the given identity as the initial result.
 	 */
 	default int reduce(int identity, IntBinaryOperator operator) {
 		return iterator().reduce(identity, operator);
 	}
 
+	/**
+	 * @return the first int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no
+	 * ints in the {@code IntSequence}.
+	 */
 	default OptionalInt first() {
 		IntIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -435,6 +440,10 @@ public interface IntSequence extends IntIterable {
 		return OptionalInt.of(iterator.nextInt());
 	}
 
+	/**
+	 * @return the second int of this {@code IntSequence} or an empty {@link OptionalInt} if there are less than two
+	 * ints in the {@code IntSequence}.
+	 */
 	default OptionalInt second() {
 		IntIterator iterator = iterator();
 
@@ -445,6 +454,10 @@ public interface IntSequence extends IntIterable {
 		return OptionalInt.of(iterator.nextInt());
 	}
 
+	/**
+	 * @return the third int of this {@code IntSequence} or an empty {@link OptionalInt} if there are less than
+	 * three ints in the {@code IntSequence}.
+	 */
 	default OptionalInt third() {
 		IntIterator iterator = iterator();
 
@@ -456,6 +469,10 @@ public interface IntSequence extends IntIterable {
 		return OptionalInt.of(iterator.nextInt());
 	}
 
+	/**
+	 * @return the last int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no
+	 * ints in the {@code IntSequence}.
+	 */
 	default OptionalInt last() {
 		IntIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -469,10 +486,16 @@ public interface IntSequence extends IntIterable {
 		return OptionalInt.of(last);
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code IntSequence}.
+	 */
 	default IntSequence step(long step) {
 		return () -> new SteppingIntIterator(step).backedBy(iterator());
 	}
 
+	/**
+	 * @return an {@code IntSequence} where each item occurs only once, the first time it is encountered.
+	 */
 	default IntSequence distinct() {
 		return () -> new DistinctIntIterator().backedBy(iterator());
 	}

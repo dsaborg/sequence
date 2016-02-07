@@ -271,59 +271,113 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Skip a set number of {@code longs} in this {@code LongSequence}.
+	 */
 	default LongSequence skip(long skip) {
 		return () -> new SkippingLongIterator(skip).backedBy(iterator());
 	}
 
+	/**
+	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
+	 */
 	default LongSequence limit(long limit) {
 		return () -> new LimitingLongIterator(limit).backedBy(iterator());
 	}
 
+	/**
+	 * Append the {@link Long}s in the given {@link Iterable} to the end of this {@code LongSequence}.
+	 */
 	default LongSequence append(Iterable<Long> iterable) {
 		return append(LongIterable.from(iterable));
 	}
 
+	/**
+	 * Append the {@code longs} in the given {@link LongIterable} to the end of this {@code LongSequence}.
+	 */
 	default LongSequence append(LongIterable that) {
 		return new ChainingLongIterable(this, that)::iterator;
 	}
 
+	/**
+	 * Append the {@code longs} in the given {@link LongIterator} to the end of this {@code LongSequence}.
+	 * <p>
+	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
+	 */
 	default LongSequence append(LongIterator iterator) {
 		return append(iterator.asIterable());
 	}
 
+	/**
+	 * Append the {@link Long}s in the given {@link Iterator} to the end of this {@code LongSequence}.
+	 * <p>
+	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
+	 */
 	default LongSequence append(Iterator<Long> iterator) {
 		return append(LongIterable.from(iterator));
 	}
 
+	/**
+	 * Append the given {@code longs} to the end of this {@code LongSequence}.
+	 */
 	default LongSequence append(long... longs) {
 		return append(LongIterable.of(longs));
 	}
 
+	/**
+	 * Append the {@link Long}s in the given {@link Stream} to the end of this {@code LongSequence}.
+	 * <p>
+	 * The appended
+	 * {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default LongSequence append(Stream<Long> stream) {
 		return append(LongIterable.from(stream));
 	}
 
+	/**
+	 * Append the {@code long} values of the given {@link LongStream} to the end of this {@code LongSequence}.
+	 * <p>
+	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 */
 	default LongSequence append(LongStream stream) {
 		return append(LongIterable.from(stream));
 	}
 
+	/**
+	 * Filter the elements in this {@code LongSequence}, keeping only the elements that match the given
+	 * {@link LongPredicate}.
+	 */
 	default LongSequence filter(LongPredicate predicate) {
 		return () -> new FilteringLongIterator(predicate).backedBy(iterator());
 	}
 
+	/**
+	 * Collect this {@code LongSequence} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
 		return collectInto(constructor.get(), adder);
 	}
 
+	/**
+	 * Collect this {@code LongSequence} into the given container using the given adder.
+	 */
 	default <C> C collectInto(C result, ObjLongConsumer<? super C> adder) {
 		forEachLong(l -> adder.accept(result, l));
 		return result;
 	}
 
+	/**
+	 * Join this {@code LongSequence} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code LongSequence} into a string separated by the given delimiter, with the given prefix and suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder(prefix);
 
@@ -338,6 +392,10 @@ public interface LongSequence extends LongIterable {
 		return result.append(suffix).toString();
 	}
 
+	/**
+	 * Reduce this {@code LongSequence} into a single {@code long} by iteratively applying the given binary operator to
+	 * the current result and each {@code long} in the sequence.
+	 */
 	default OptionalLong reduce(LongBinaryOperator operator) {
 		LongIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -347,10 +405,18 @@ public interface LongSequence extends LongIterable {
 		return OptionalLong.of(result);
 	}
 
+	/**
+	 * Reduce this {@code LongSequence} into a single {@code long} by iteratively applying the given binary operator to
+	 * the current result and each {@code long} in the sequence, starting with the given identity as the initial result.
+	 */
 	default long reduce(long identity, LongBinaryOperator operator) {
 		return iterator().reduce(identity, operator);
 	}
 
+	/**
+	 * @return the first long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
+	 * longs in the {@code LongSequence}.
+	 */
 	default OptionalLong first() {
 		LongIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -359,6 +425,10 @@ public interface LongSequence extends LongIterable {
 		return OptionalLong.of(iterator.nextLong());
 	}
 
+	/**
+	 * @return the second long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than two
+	 * longs in the {@code LongSequence}.
+	 */
 	default OptionalLong second() {
 		LongIterator iterator = iterator();
 
@@ -369,6 +439,10 @@ public interface LongSequence extends LongIterable {
 		return OptionalLong.of(iterator.nextLong());
 	}
 
+	/**
+	 * @return the third long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than
+	 * three longs in the {@code LongSequence}.
+	 */
 	default OptionalLong third() {
 		LongIterator iterator = iterator();
 
@@ -380,6 +454,10 @@ public interface LongSequence extends LongIterable {
 		return OptionalLong.of(iterator.nextLong());
 	}
 
+	/**
+	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
+	 * longs in the {@code LongSequence}.
+	 */
 	default OptionalLong last() {
 		LongIterator iterator = iterator();
 		if (!iterator.hasNext())
@@ -393,10 +471,16 @@ public interface LongSequence extends LongIterable {
 		return OptionalLong.of(last);
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code LongSequence}.
+	 */
 	default LongSequence step(long step) {
 		return () -> new SteppingLongIterator(step).backedBy(iterator());
 	}
 
+	/**
+	 * @return a {@code LongSequence} where each item occurs only once, the first time it is encountered.
+	 */
 	default LongSequence distinct() {
 		return () -> new DistinctLongIterator().backedBy(iterator());
 	}
