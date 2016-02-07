@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.longs;
+package org.d2ab.iterator.doubles;
 
-import org.d2ab.function.longs.BackPeekingLongFunction;
+import java.util.function.DoubleBinaryOperator;
 
 /**
- * An iterator over longs that also maps each element by looking at the current AND the previous element.
+ * An iterator over doubles that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingLongIterator extends UnaryLongIterator {
-	private final BackPeekingLongFunction mapper;
-
+public class BackPeekingMappingDoubleIterator extends UnaryDoubleIterator {
+	private final double firstPrevious;
+	private final DoubleBinaryOperator mapper;
 	private boolean hasPrevious;
-	private long previous = -1;
+	private double previous = -1;
 
-	public BackPeekingLongIterator(BackPeekingLongFunction mapper) {
+	public BackPeekingMappingDoubleIterator(double firstPrevious, DoubleBinaryOperator mapper) {
+		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}
 
 	@Override
-	public long nextLong() {
-		long next = iterator.nextLong();
+	public double nextDouble() {
+		double next = iterator.nextDouble();
 
-		long result = mapper.applyAndPeek(hasPrevious, previous, next);
+		double result = mapper.applyAsDouble(hasPrevious ? previous : firstPrevious, next);
 
 		previous = next;
 		hasPrevious = true;

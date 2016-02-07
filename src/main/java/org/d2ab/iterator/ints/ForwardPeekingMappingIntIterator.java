@@ -22,7 +22,7 @@ import java.util.function.IntBinaryOperator;
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingIntIterator extends UnaryIntIterator {
+public class ForwardPeekingMappingIntIterator extends UnaryIntIterator {
 	private final int lastNext;
 	private final IntBinaryOperator mapper;
 
@@ -30,7 +30,7 @@ public class ForwardPeekingIntIterator extends UnaryIntIterator {
 	private int current = -1;
 	private boolean started;
 
-	public ForwardPeekingIntIterator(int lastNext, IntBinaryOperator mapper) {
+	public ForwardPeekingMappingIntIterator(int lastNext, IntBinaryOperator mapper) {
 		this.lastNext = lastNext;
 		this.mapper = mapper;
 	}

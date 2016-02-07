@@ -146,8 +146,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void capitalize() {
-		CharSeq titleCase = CharSeq.from("hello_lexicon")
-		                           .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
+		CharSeq titleCase = CharSeq.from("hello_lexicon").mapBack('_', (p, c) -> p == '_' ? toUpperCase(c) : c)
 		                           .map(c -> (c == '_') ? ' ' : c);
 
 		assertThat(titleCase.asString(), is("Hello Lexicon"));

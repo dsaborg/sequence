@@ -650,23 +650,23 @@ public interface CharSeq extends CharIterable {
 	 * Map this {@code CharSeq} to another sequence of characters while peeking at the previous character in the
 	 * sequence.
 	 * <p>
-	 * The mapper has access to the previous character and the current character in the iteration. The previous
-	 * character is supplied as the first parameter to the mapping function as an int, which is -1 if there is no
-	 * previous character, i.e. for the first character in the iteration.
+	 * The mapper has access to the previous char and the current char in the iteration. If the current char is
+	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
+	 * the first previous value.
 	 */
-	default CharSeq mapBack(IntCharToCharBinaryFunction mapper) {
-		return () -> new BackPeekingMappingCharIterator(mapper).backedBy(iterator());
+	default CharSeq mapBack(char firstPrevious, CharBinaryOperator mapper) {
+		return () -> new BackPeekingMappingCharIterator(firstPrevious, mapper).backedBy(iterator());
 	}
 
 	/**
 	 * Map this {@code CharSeq} to another sequence of characters while peeking at the next character in the sequence.
 	 * <p>
-	 * The mapper has access to the current character and the next character in the iteration. The next character is
-	 * supplied as the second parameter to the mapping function as an int, which is -1 if there is no next character,
-	 * i.e. for the last character in the iteration.
+	 * The mapper has access to the current char and the next char in the iteration. If the current char is
+	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
+	 * the last next value.
 	 */
-	default CharSeq mapForward(CharIntToCharBinaryFunction mapper) {
-		return () -> new ForwardPeekingMappingCharIterator(mapper).backedBy(iterator());
+	default CharSeq mapForward(char lastNext, CharBinaryOperator mapper) {
+		return () -> new ForwardPeekingMappingCharIterator(lastNext, mapper).backedBy(iterator());
 	}
 
 	/**

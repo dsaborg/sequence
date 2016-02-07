@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.doubles;
+package org.d2ab.iterator.ints;
 
-import java.util.function.DoubleBinaryOperator;
+import java.util.function.IntBinaryOperator;
 
 /**
- * An iterator over doubles that also maps each element by looking at the current AND the previous element.
+ * An iterator over ints that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingDoubleIterator extends UnaryDoubleIterator {
-	private final double firstPrevious;
-	private final DoubleBinaryOperator mapper;
+public class BackPeekingMappingIntIterator extends UnaryIntIterator {
+	private final int firstPrevious;
+	private final IntBinaryOperator mapper;
 	private boolean hasPrevious;
-	private double previous = -1;
+	private int previous = -1;
 
-	public BackPeekingDoubleIterator(double firstPrevious, DoubleBinaryOperator mapper) {
+	public BackPeekingMappingIntIterator(int firstPrevious, IntBinaryOperator mapper) {
 		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}
 
 	@Override
-	public double nextDouble() {
-		double next = iterator.nextDouble();
+	public int nextInt() {
+		int next = iterator.nextInt();
 
-		double result = mapper.applyAsDouble(hasPrevious ? previous : firstPrevious, next);
-
+		int result = mapper.applyAsInt(hasPrevious ? previous : firstPrevious, next);
 		previous = next;
 		hasPrevious = true;
 		return result;

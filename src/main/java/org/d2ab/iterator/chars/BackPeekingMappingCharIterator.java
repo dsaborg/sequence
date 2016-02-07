@@ -16,16 +16,18 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.IntCharToCharBinaryFunction;
+import org.d2ab.function.chars.CharBinaryOperator;
 
 /**
  * An iterator over chars that also maps each element by looking at the current AND the previous element.
  */
 public class BackPeekingMappingCharIterator extends UnaryCharIterator {
-	private final IntCharToCharBinaryFunction mapper;
+	private final char firstPrevious;
+	private final CharBinaryOperator mapper;
 	private int previous = -1;
 
-	public BackPeekingMappingCharIterator(IntCharToCharBinaryFunction mapper) {
+	public BackPeekingMappingCharIterator(char firstPrevious, CharBinaryOperator mapper) {
+		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}
 
@@ -33,8 +35,7 @@ public class BackPeekingMappingCharIterator extends UnaryCharIterator {
 	public char nextChar() {
 		char next = iterator.nextChar();
 
-		char result = mapper.applyAsIntAndChar(previous, next);
-
+		char result = mapper.applyAsChar(previous == -1 ? firstPrevious : (char) previous, next);
 		previous = next;
 		return result;
 	}

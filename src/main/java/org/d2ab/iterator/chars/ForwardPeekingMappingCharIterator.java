@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharIntToCharBinaryFunction;
+import org.d2ab.function.chars.CharBinaryOperator;
 
 import java.util.NoSuchElementException;
 
@@ -24,13 +24,28 @@ import java.util.NoSuchElementException;
  * An iterator over chars that also maps each element by looking at the current AND the next element.
  */
 public class ForwardPeekingMappingCharIterator extends UnaryCharIterator {
-	private final CharIntToCharBinaryFunction mapper;
+	private final char lastNext;
+	private final CharBinaryOperator mapper;
 
-	private int current = -1;
+	private char current;
+	private boolean hasCurrent;
 	private boolean started;
 
-	public ForwardPeekingMappingCharIterator(CharIntToCharBinaryFunction mapper) {
+	public ForwardPeekingMappingCharIterator(char lastNext, CharBinaryOperator mapper) {
+		this.lastNext = lastNext;
 		this.mapper = mapper;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (!started) {
+			if (iterator.hasNext()) {
+				current = iterator.next();
+				hasCurrent = true;
+			}
+			started = true;
+		}
+		return hasCurrent;
 	}
 
 	@Override
@@ -38,21 +53,12 @@ public class ForwardPeekingMappingCharIterator extends UnaryCharIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int next = iterator.hasNext() ? iterator.nextChar() : -1;
+		boolean hasNext = iterator.hasNext();
+		char next = hasNext ? iterator.nextChar() : lastNext;
 
-		char result = mapper.applyAsCharAndInt((char) current, next);
-
+		char result = mapper.applyAsChar(current, next);
 		current = next;
+		hasCurrent = hasNext;
 		return result;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!started) {
-			if (iterator.hasNext())
-				current = iterator.next();
-			started = true;
-		}
-		return current != -1;
 	}
 }

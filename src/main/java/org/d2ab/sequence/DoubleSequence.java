@@ -652,7 +652,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * the first previous value.
 	 */
 	default DoubleSequence mapBack(double firstPrevious, DoubleBinaryOperator mapper) {
-		return () -> new BackPeekingDoubleIterator(firstPrevious, mapper).backedBy(iterator());
+		return () -> new BackPeekingMappingDoubleIterator(firstPrevious, mapper).backedBy(iterator());
 	}
 
 	/**
@@ -664,7 +664,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * the last next value.
 	 */
 	default DoubleSequence mapForward(double lastNext, DoubleBinaryOperator mapper) {
-		return () -> new ForwardPeekingDoubleIterator(lastNext, mapper).backedBy(iterator());
+		return () -> new ForwardPeekingMappingDoubleIterator(lastNext, mapper).backedBy(iterator());
 	}
 
 	/**

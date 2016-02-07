@@ -16,8 +16,6 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.longs.BackPeekingLongFunction;
-import org.d2ab.function.longs.ForwardPeekingLongFunction;
 import org.d2ab.function.longs.LongToCharFunction;
 import org.d2ab.iterable.longs.ChainingLongIterable;
 import org.d2ab.iterable.longs.LongIterable;
@@ -248,24 +246,24 @@ public interface LongSequence extends LongIterable {
 	 * Map this {@code LongSequence} to another sequence of longs while peeking at the previous long in the
 	 * sequence.
 	 * <p>
-	 * The mapper has access to the previous long and the current long in the iteration, and a boolean that defines
-	 * whether there is a previous value or not, which is false for the first long in the iteration and true
-	 * otherwise.
+	 * The mapper has access to the previous long and the current long in the iteration. If the current long is
+	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
+	 * the first previous value.
 	 */
-	default LongSequence mapBack(BackPeekingLongFunction mapper) {
-		return () -> new BackPeekingLongIterator(mapper).backedBy(iterator());
+	default LongSequence mapBack(long firstPrevious, LongBinaryOperator mapper) {
+		return () -> new BackPeekingMappingLongIterator(firstPrevious, mapper).backedBy(iterator());
 	}
 
 	/**
 	 * Map this {@code LongSequence} to another sequence of longs while peeking at the next long in the
 	 * sequence.
 	 * <p>
-	 * The mapper has access to the current long and the next long in the iteration, and a boolean that defines
-	 * whether there is a next value or not, which is false for the last long in the iteration and true
-	 * otherwise.
+	 * The mapper has access to the current long and the next long in the iteration. If the current long is
+	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
+	 * the last next value.
 	 */
-	default LongSequence mapForward(ForwardPeekingLongFunction mapper) {
-		return () -> new ForwardPeekingLongIterator(mapper).backedBy(iterator());
+	default LongSequence mapForward(long lastNext, LongBinaryOperator mapper) {
+		return () -> new ForwardPeekingMappingLongIterator(lastNext, mapper).backedBy(iterator());
 	}
 
 	/**

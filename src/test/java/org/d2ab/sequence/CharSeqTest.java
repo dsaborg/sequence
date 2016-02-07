@@ -700,13 +700,13 @@ public class CharSeqTest {
 
 	@Test
 	public void mapBack() {
-		twice(() -> assertThat(abc.mapBack((p, c) -> (char) (p + 1)), contains('\0', 'b', 'c')));
-		twice(() -> assertThat(abc.mapBack((p, c) -> c), contains('a', 'b', 'c')));
+		twice(() -> assertThat(abc.mapBack('_', (p, c) -> p), contains('_', 'a', 'b')));
+		twice(() -> assertThat(abc.mapBack('_', (p, c) -> c), contains('a', 'b', 'c')));
 	}
 
 	@Test
 	public void mapForward() {
-		twice(() -> assertThat(abc.mapForward((c, n) -> (char) (n + 1)), contains('c', 'd', '\0')));
-		twice(() -> assertThat(abc.mapForward((c, n) -> c), contains('a', 'b', 'c')));
+		twice(() -> assertThat(abc.mapForward('_', (c, n) -> c), contains('a', 'b', 'c')));
+		twice(() -> assertThat(abc.mapForward('_', (c, n) -> n), contains('b', 'c', '_')));
 	}
 }

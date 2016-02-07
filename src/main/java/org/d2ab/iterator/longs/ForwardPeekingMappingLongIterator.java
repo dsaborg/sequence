@@ -16,37 +16,23 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.function.longs.ForwardPeekingLongFunction;
-
 import java.util.NoSuchElementException;
+import java.util.function.LongBinaryOperator;
 
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingLongIterator extends UnaryLongIterator {
-	private final ForwardPeekingLongFunction mapper;
+public class ForwardPeekingMappingLongIterator extends UnaryLongIterator {
+	private final long lastNext;
+	private final LongBinaryOperator mapper;
 
 	private boolean hasCurrent;
 	private long current = -1;
 	private boolean started;
 
-	public ForwardPeekingLongIterator(ForwardPeekingLongFunction mapper) {
+	public ForwardPeekingMappingLongIterator(long lastNext, LongBinaryOperator mapper) {
+		this.lastNext = lastNext;
 		this.mapper = mapper;
-	}
-
-	@Override
-	public long nextLong() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		boolean hasNext = iterator.hasNext();
-		long next = hasNext ? iterator.nextLong() : -1;
-
-		long result = mapper.applyAndPeek(current, hasNext, next);
-
-		current = next;
-		hasCurrent = hasNext;
-		return result;
 	}
 
 	@Override
@@ -59,5 +45,19 @@ public class ForwardPeekingLongIterator extends UnaryLongIterator {
 			}
 		}
 		return hasCurrent;
+	}
+
+	@Override
+	public long nextLong() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		boolean hasNext = iterator.hasNext();
+		long next = hasNext ? iterator.nextLong() : lastNext;
+
+		long result = mapper.applyAsLong(current, next);
+		current = next;
+		hasCurrent = hasNext;
+		return result;
 	}
 }

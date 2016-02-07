@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
+package org.d2ab.iterator.longs;
 
-import java.util.function.IntBinaryOperator;
+import java.util.function.LongBinaryOperator;
 
 /**
- * An iterator over ints that also maps each element by looking at the current AND the previous element.
+ * An iterator over longs that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingIntIterator extends UnaryIntIterator {
-	private final int firstPrevious;
-	private final IntBinaryOperator mapper;
-	private boolean hasPrevious;
-	private int previous = -1;
+public class BackPeekingMappingLongIterator extends UnaryLongIterator {
+	private final long firstPrevious;
+	private final LongBinaryOperator mapper;
 
-	public BackPeekingIntIterator(int firstPrevious, IntBinaryOperator mapper) {
+	private boolean hasPrevious;
+	private long previous;
+
+	public BackPeekingMappingLongIterator(long firstPrevious, LongBinaryOperator mapper) {
 		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}
 
 	@Override
-	public int nextInt() {
-		int next = iterator.nextInt();
+	public long nextLong() {
+		long next = iterator.nextLong();
 
-		int result = mapper.applyAsInt(hasPrevious ? previous : firstPrevious, next);
+		long result = mapper.applyAsLong(hasPrevious ? previous : firstPrevious, next);
 		previous = next;
 		hasPrevious = true;
 		return result;

@@ -22,7 +22,7 @@ import java.util.function.DoubleBinaryOperator;
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingDoubleIterator extends UnaryDoubleIterator {
+public class ForwardPeekingMappingDoubleIterator extends UnaryDoubleIterator {
 	private final double lastNext;
 	private final DoubleBinaryOperator mapper;
 
@@ -30,7 +30,7 @@ public class ForwardPeekingDoubleIterator extends UnaryDoubleIterator {
 	private double current = -1;
 	private boolean started;
 
-	public ForwardPeekingDoubleIterator(double lastNext, DoubleBinaryOperator mapper) {
+	public ForwardPeekingMappingDoubleIterator(double lastNext, DoubleBinaryOperator mapper) {
 		this.lastNext = lastNext;
 		this.mapper = mapper;
 	}
