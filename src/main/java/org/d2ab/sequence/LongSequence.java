@@ -485,14 +485,23 @@ public interface LongSequence extends LongIterable {
 		return () -> new DistinctLongIterator().backedBy(iterator());
 	}
 
+	/**
+	 * @return the smallest long in this {@code LongSequence}.
+	 */
 	default OptionalLong min() {
 		return reduce((a, b) -> (a < b) ? a : b);
 	}
 
+	/**
+	 * @return the greatest long in this {@code LongSequence}.
+	 */
 	default OptionalLong max() {
 		return reduce((a, b) -> (a > b) ? a : b);
 	}
 
+	/**
+	 * @return the number of longs in this {@code LongSequence}.
+	 */
 	default long count() {
 		long count = 0;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); iterator.nextLong()) {
@@ -501,6 +510,9 @@ public interface LongSequence extends LongIterable {
 		return count;
 	}
 
+	/**
+	 * @return true if all longs in this {@code LongSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(LongPredicate predicate) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (!predicate.test(iterator.nextLong()))
@@ -509,10 +521,16 @@ public interface LongSequence extends LongIterable {
 		return true;
 	}
 
+	/**
+	 * @return true if no longs in this {@code LongSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(LongPredicate predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any long in this {@code LongSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean any(LongPredicate predicate) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (predicate.test(iterator.nextLong()))
@@ -521,6 +539,9 @@ public interface LongSequence extends LongIterable {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link LongConsumer} to see each element in this {@code LongSequence} as it is traversed.
+	 */
 	default LongSequence peek(LongConsumer action) {
 		return () -> new UnaryLongIterator() {
 			@Override
@@ -532,12 +553,20 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * @return this {@code LongSequence} sorted according to the natural order of the long values.
+	 *
+	 * @see #reverse()
+	 */
 	default LongSequence sorted() {
 		long[] array = toArray();
 		Arrays.sort(array);
 		return () -> LongIterator.of(array);
 	}
 
+	/**
+	 * Collect the longs in this {@code LongSequence} into an array.
+	 */
 	default long[] toArray() {
 		long[] work = new long[10];
 
@@ -562,18 +591,33 @@ public interface LongSequence extends LongIterable {
 		return result;
 	}
 
+	/**
+	 * Prefix the longs in this {@code LongSequence} with the given longs.
+	 */
 	default LongSequence prefix(long... cs) {
 		return () -> new ChainingLongIterator(LongIterable.of(cs), this);
 	}
 
+	/**
+	 * Suffix the longs in this {@code LongSequence} with the given longs.
+	 */
 	default LongSequence suffix(long... cs) {
 		return () -> new ChainingLongIterator(this, LongIterable.of(cs));
 	}
 
+	/**
+	 * Interleave the elements in this {@code LongSequence} with those of the given {@code LongSequence}, stopping when
+	 * either sequence finishes.
+	 */
 	default LongSequence interleave(LongSequence that) {
 		return () -> new InterleavingLongIterator(this, that);
 	}
 
+	/**
+	 * @return a {@code LongSequence} which iterates over this {@code LongSequence} in reverse order.
+	 *
+	 * @see #sorted()
+	 */
 	default LongSequence reverse() {
 		long[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
@@ -582,6 +626,9 @@ public interface LongSequence extends LongIterable {
 		return LongIterable.of(array)::iterator;
 	}
 
+	/**
+	 * Convert this sequence of longs to a sequence of chars corresponding to the downcast char value of each long.
+	 */
 	default CharSeq toChars() {
 		return () -> new DelegatingCharIterator<Long, LongIterator>() {
 			@Override
@@ -591,6 +638,9 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of longs to a sequence of ints corresponding to the downcast integer value of each long.
+	 */
 	default IntSequence toInts() {
 		return () -> new DelegatingIntIterator<Long, LongIterator>() {
 			@Override
@@ -600,6 +650,9 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of longs to a sequence of doubles corresponding to the cast double value of each long.
+	 */
 	default DoubleSequence toDoubles() {
 		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
 			@Override
@@ -609,6 +662,9 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of longs to a sequence of chars using the given converter function.
+	 */
 	default CharSeq toChars(LongToCharFunction mapper) {
 		return () -> new DelegatingCharIterator<Long, LongIterator>() {
 			@Override
@@ -618,6 +674,9 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of longs to a sequence of ints using the given converter function.
+	 */
 	default IntSequence toInts(LongToIntFunction mapper) {
 		return () -> new DelegatingIntIterator<Long, LongIterator>() {
 			@Override
@@ -627,6 +686,9 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of longs to a sequence of doubles using the given converter function.
+	 */
 	default DoubleSequence toDoubles(LongToDoubleFunction mapper) {
 		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
 			@Override
@@ -636,10 +698,18 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Repeat this sequence of longs forever, looping back to the beginning when the iterator runs out of longs.
+	 * <p>
+	 * The resulting sequence will never terminate if this sequence is non-empty.
+	 */
 	default LongSequence repeat() {
 		return () -> new RepeatingLongIterator(this, -1);
 	}
 
+	/**
+	 * Repeat this sequence of longs x times, looping back to the beginning when the iterator runs out of longs.
+	 */
 	default LongSequence repeat(long times) {
 		return () -> new RepeatingLongIterator(this, times);
 	}

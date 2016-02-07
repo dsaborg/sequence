@@ -500,14 +500,23 @@ public interface IntSequence extends IntIterable {
 		return () -> new DistinctIntIterator().backedBy(iterator());
 	}
 
+	/**
+	 * @return the smallest int in this {@code IntSequence}.
+	 */
 	default OptionalInt min() {
 		return reduce((a, b) -> (a < b) ? a : b);
 	}
 
+	/**
+	 * @return the greatest int in this {@code IntSequence}.
+	 */
 	default OptionalInt max() {
 		return reduce((a, b) -> (a > b) ? a : b);
 	}
 
+	/**
+	 * @return the number of ints in this {@code IntSequence}.
+	 */
 	default long count() {
 		long count = 0;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); iterator.nextInt()) {
@@ -516,6 +525,9 @@ public interface IntSequence extends IntIterable {
 		return count;
 	}
 
+	/**
+	 * @return true if all ints in this {@code IntSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(IntPredicate predicate) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (!predicate.test(iterator.nextInt()))
@@ -524,10 +536,16 @@ public interface IntSequence extends IntIterable {
 		return true;
 	}
 
+	/**
+	 * @return true if no ints in this {@code IntSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(IntPredicate predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any int in this {@code IntSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean any(IntPredicate predicate) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (predicate.test(iterator.nextInt()))
@@ -536,6 +554,9 @@ public interface IntSequence extends IntIterable {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link IntConsumer} to see each element in this {@code IntSequence} as it is traversed.
+	 */
 	default IntSequence peek(IntConsumer action) {
 		return () -> new UnaryIntIterator() {
 			@Override
@@ -547,12 +568,20 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * @return this {@code IntSequence} sorted according to the natural order of the int values.
+	 *
+	 * @see #reverse()
+	 */
 	default IntSequence sorted() {
 		int[] array = toArray();
 		Arrays.sort(array);
 		return () -> IntIterator.of(array);
 	}
 
+	/**
+	 * Collect the ints in this {@code IntSequence} into an array.
+	 */
 	default int[] toArray() {
 		int[] work = new int[10];
 
@@ -577,18 +606,33 @@ public interface IntSequence extends IntIterable {
 		return result;
 	}
 
+	/**
+	 * Prefix the ints in this {@code IntSequence} with the given ints.
+	 */
 	default IntSequence prefix(int... cs) {
 		return () -> new ChainingIntIterator(IntIterable.of(cs), this);
 	}
 
+	/**
+	 * Suffix the ints in this {@code IntSequence} with the given ints.
+	 */
 	default IntSequence suffix(int... cs) {
 		return () -> new ChainingIntIterator(this, IntIterable.of(cs));
 	}
 
+	/**
+	 * Interleave the elements in this {@code IntSequence} with those of the given {@code IntSequence}, stopping when
+	 * either sequence finishes.
+	 */
 	default IntSequence interleave(IntSequence that) {
 		return () -> new InterleavingIntIterator(this, that);
 	}
 
+	/**
+	 * @return an {@code IntSequence} which iterates over this {@code IntSequence} in reverse order.
+	 *
+	 * @see #sorted()
+	 */
 	default IntSequence reverse() {
 		int[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
@@ -605,6 +649,9 @@ public interface IntSequence extends IntIterable {
 		return () -> new ForwardPeekingIntIterator(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of ints to a sequence of chars corresponding to the downcast char value of each int.
+	 */
 	default CharSeq toChars() {
 		return () -> new DelegatingCharIterator<Integer, IntIterator>() {
 			@Override
@@ -614,6 +661,9 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of ints to a sequence of longs.
+	 */
 	default LongSequence toLongs() {
 		return () -> new DelegatingLongIterator<Integer, IntIterator>() {
 			@Override
@@ -623,6 +673,9 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of ints to a sequence of doubles corresponding to the cast double value of each int.
+	 */
 	default DoubleSequence toDoubles() {
 		return () -> new DelegatingDoubleIterator<Integer, IntIterator>() {
 			@Override
@@ -632,6 +685,9 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of ints to a sequence of chars using the given converter function.
+	 */
 	default CharSeq toChars(IntToCharFunction mapper) {
 		return () -> new DelegatingCharIterator<Integer, IntIterator>() {
 			@Override
@@ -641,6 +697,9 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of ints to a sequence of longs using the given converter function.
+	 */
 	default LongSequence toLongs(IntToLongFunction mapper) {
 		return () -> new DelegatingLongIterator<Integer, IntIterator>() {
 			@Override
@@ -650,6 +709,9 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of ints to a sequence of doubles using the given converter function.
+	 */
 	default DoubleSequence toDoubles(IntToDoubleFunction mapper) {
 		return () -> new DelegatingDoubleIterator<Integer, IntIterator>() {
 			@Override
@@ -659,10 +721,18 @@ public interface IntSequence extends IntIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Repeat this sequence of ints forever, looping back to the beginning when the iterator runs out of ints.
+	 * <p>
+	 * The resulting sequence will never terminate if this sequence is non-empty.
+	 */
 	default IntSequence repeat() {
 		return () -> new RepeatingIntIterator(this, -1);
 	}
 
+	/**
+	 * Repeat this sequence of ints x times, looping back to the beginning when the iterator runs out of ints.
+	 */
 	default IntSequence repeat(long times) {
 		return () -> new RepeatingIntIterator(this, times);
 	}

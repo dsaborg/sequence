@@ -616,8 +616,7 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Interleave the elements in this {@code CharSeq} with those of the given {@code CharSeq}, stopping when either
-	 * sequence finishes. The result is a {@code CharSeq} of pairs of items, the first of which come from this
-	 * sequence and the second from the given sequence.
+	 * sequence finishes.
 	 */
 	default CharSeq interleave(CharSeq that) {
 		return () -> new InterleavingCharIterator(this, that);

@@ -504,14 +504,23 @@ public interface DoubleSequence extends DoubleIterable {
 		return () -> new SteppingDoubleIterator(step).backedBy(iterator());
 	}
 
+	/**
+	 * @return the smallest double in this {@code DoubleSequence}.
+	 */
 	default OptionalDouble min() {
 		return reduce((a, b) -> (a < b) ? a : b);
 	}
 
+	/**
+	 * @return the greatest double in this {@code DoubleSequence}.
+	 */
 	default OptionalDouble max() {
 		return reduce((a, b) -> (a > b) ? a : b);
 	}
 
+	/**
+	 * @return the number of doubles in this {@code DoubleSequence}.
+	 */
 	default double count() {
 		double count = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); iterator.nextDouble()) {
@@ -520,6 +529,9 @@ public interface DoubleSequence extends DoubleIterable {
 		return count;
 	}
 
+	/**
+	 * @return true if all doubles in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(DoublePredicate predicate) {
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (!predicate.test(iterator.nextDouble()))
@@ -528,10 +540,16 @@ public interface DoubleSequence extends DoubleIterable {
 		return true;
 	}
 
+	/**
+	 * @return true if no doubles in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(DoublePredicate predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any double in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean any(DoublePredicate predicate) {
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (predicate.test(iterator.nextDouble()))
@@ -540,6 +558,9 @@ public interface DoubleSequence extends DoubleIterable {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link DoubleConsumer} to see each element in this {@code DoubleSequence} as it is traversed.
+	 */
 	default DoubleSequence peek(DoubleConsumer action) {
 		return () -> new UnaryDoubleIterator() {
 			@Override
@@ -551,12 +572,20 @@ public interface DoubleSequence extends DoubleIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * @return this {@code DoubleSequence} sorted according to the natural order of the double values.
+	 *
+	 * @see #reverse()
+	 */
 	default DoubleSequence sorted() {
 		double[] array = toArray();
 		Arrays.sort(array);
 		return () -> DoubleIterator.of(array);
 	}
 
+	/**
+	 * Collect the doubles in this {@code DoubleSequence} into an array.
+	 */
 	default double[] toArray() {
 		double[] work = new double[10];
 
@@ -581,18 +610,33 @@ public interface DoubleSequence extends DoubleIterable {
 		return result;
 	}
 
-	default DoubleSequence prefix(double... cs) {
-		return () -> new ChainingDoubleIterator(DoubleIterable.of(cs), this);
+	/**
+	 * Prefix the doubles in this {@code DoubleSequence} with the given doubles.
+	 */
+	default DoubleSequence prefix(double... xs) {
+		return () -> new ChainingDoubleIterator(DoubleIterable.of(xs), this);
 	}
 
-	default DoubleSequence suffix(double... cs) {
-		return () -> new ChainingDoubleIterator(this, DoubleIterable.of(cs));
+	/**
+	 * Suffix the doubles in this {@code DoubleSequence} with the given doubles.
+	 */
+	default DoubleSequence suffix(double... xs) {
+		return () -> new ChainingDoubleIterator(this, DoubleIterable.of(xs));
 	}
 
+	/**
+	 * Interleave the elements in this {@code DoubleSequence} with those of the given {@code DoubleSequence}, stopping
+	 * when either sequence finishes.
+	 */
 	default DoubleSequence interleave(DoubleSequence that) {
 		return () -> new InterleavingDoubleIterator(this, that);
 	}
 
+	/**
+	 * @return a {@code DoubleSequence} which iterates over this {@code DoubleSequence} in reverse order.
+	 *
+	 * @see #sorted()
+	 */
 	default DoubleSequence reverse() {
 		double[] array = toArray();
 		for (int i = 0; i < (array.length / 2); i++) {
@@ -609,6 +653,10 @@ public interface DoubleSequence extends DoubleIterable {
 		return () -> new ForwardPeekingDoubleIterator(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Convert this sequence of doubles to a sequence of ints corresponding to the downcast integer value of each
+	 * double.
+	 */
 	default IntSequence toInts() {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
@@ -625,6 +673,10 @@ public interface DoubleSequence extends DoubleIterable {
 		};
 	}
 
+	/**
+	 * Convert this sequence of doubles to a sequence of longs corresponding to the downcast long value of each
+	 * double.
+	 */
 	default LongSequence toLongs() {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
@@ -641,10 +693,17 @@ public interface DoubleSequence extends DoubleIterable {
 		};
 	}
 
+	/**
+	 * Convert this sequence of doubles to a sequence of ints corresponding to the downcast rounded int value of each
+	 * double.
+	 */
 	default IntSequence toRoundedInts() {
 		return toInts(d -> (int) round(d));
 	}
 
+	/**
+	 * Convert this sequence of doubles to a sequence of ints using the given converter function.
+	 */
 	default IntSequence toInts(DoubleToIntFunction mapper) {
 		return () -> new IntIterator() {
 			DoubleIterator iterator = iterator();
@@ -661,10 +720,17 @@ public interface DoubleSequence extends DoubleIterable {
 		};
 	}
 
+	/**
+	 * Convert this sequence of doubles to a sequence of longs corresponding to the rounded long value of each
+	 * double.
+	 */
 	default LongSequence toRoundedLongs() {
 		return toLongs(Math::round);
 	}
 
+	/**
+	 * Convert this sequence of doubles to a sequence of longs using the given converter function.
+	 */
 	default LongSequence toLongs(DoubleToLongFunction mapper) {
 		return () -> new LongIterator() {
 			DoubleIterator iterator = iterator();
@@ -681,10 +747,18 @@ public interface DoubleSequence extends DoubleIterable {
 		};
 	}
 
+	/**
+	 * Repeat this sequence of characters doubles, looping back to the beginning when the iterator runs out of doubles.
+	 * <p>
+	 * The resulting sequence will never terminate if this sequence is non-empty.
+	 */
 	default DoubleSequence repeat() {
 		return () -> new RepeatingDoubleIterator(this, -1);
 	}
 
+	/**
+	 * Repeat this sequence of doubles x times, looping back to the beginning when the iterator runs out of doubles.
+	 */
 	default DoubleSequence repeat(long times) {
 		return () -> new RepeatingDoubleIterator(this, times);
 	}
