@@ -244,10 +244,26 @@ public interface LongSequence extends LongIterable {
 		}.backedBy(iterator());
 	}
 
+	/**
+	 * Map this {@code LongSequence} to another sequence of longs while peeking at the previous long in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the previous long and the current long in the iteration, and a boolean that defines
+	 * whether there is a previous value or not, which is false for the first long in the iteration and true
+	 * otherwise.
+	 */
 	default LongSequence mapBack(BackPeekingLongFunction mapper) {
 		return () -> new BackPeekingLongIterator(mapper).backedBy(iterator());
 	}
 
+	/**
+	 * Map this {@code LongSequence} to another sequence of longs while peeking at the next long in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the current long and the next long in the iteration, and a boolean that defines
+	 * whether there is a next value or not, which is false for the last long in the iteration and true
+	 * otherwise.
+	 */
 	default LongSequence mapForward(ForwardPeekingLongFunction mapper) {
 		return () -> new ForwardPeekingLongIterator(mapper).backedBy(iterator());
 	}
@@ -623,7 +639,7 @@ public interface LongSequence extends LongIterable {
 		for (int i = 0; i < (array.length / 2); i++) {
 			Arrayz.swap(array, i, array.length - 1 - i);
 		}
-		return LongIterable.of(array)::iterator;
+		return of(array);
 	}
 
 	/**

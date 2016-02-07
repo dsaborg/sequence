@@ -16,17 +16,19 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.function.doubles.BackPeekingDoubleFunction;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * An iterator over doubles that also maps each element by looking at the current AND the previous element.
  */
 public class BackPeekingDoubleIterator extends UnaryDoubleIterator {
-	private final BackPeekingDoubleFunction mapper;
+	private final double firstPrevious;
+	private final DoubleBinaryOperator mapper;
 	private boolean hasPrevious;
 	private double previous = -1;
 
-	public BackPeekingDoubleIterator(BackPeekingDoubleFunction mapper) {
+	public BackPeekingDoubleIterator(double firstPrevious, DoubleBinaryOperator mapper) {
+		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}
 
@@ -34,7 +36,7 @@ public class BackPeekingDoubleIterator extends UnaryDoubleIterator {
 	public double nextDouble() {
 		double next = iterator.nextDouble();
 
-		double result = mapper.applyAndPeek(hasPrevious, previous, next);
+		double result = mapper.applyAsDouble(hasPrevious ? previous : firstPrevious, next);
 
 		previous = next;
 		hasPrevious = true;

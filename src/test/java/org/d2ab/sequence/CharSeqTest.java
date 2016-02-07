@@ -697,4 +697,16 @@ public class CharSeqTest {
 
 		assertThat(sequence, contains('a', 'b', 'c', 'd', 'e'));
 	}
+
+	@Test
+	public void mapBack() {
+		twice(() -> assertThat(abc.mapBack((p, c) -> (char) (p + 1)), contains('\0', 'b', 'c')));
+		twice(() -> assertThat(abc.mapBack((p, c) -> c), contains('a', 'b', 'c')));
+	}
+
+	@Test
+	public void mapForward() {
+		twice(() -> assertThat(abc.mapForward((c, n) -> (char) (n + 1)), contains('c', 'd', '\0')));
+		twice(() -> assertThat(abc.mapForward((c, n) -> c), contains('a', 'b', 'c')));
+	}
 }

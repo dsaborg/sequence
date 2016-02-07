@@ -16,8 +16,6 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.ints.BackPeekingIntFunction;
-import org.d2ab.function.ints.ForwardPeekingIntFunction;
 import org.d2ab.function.ints.IntToCharFunction;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
@@ -638,15 +636,31 @@ public interface IntSequence extends IntIterable {
 		for (int i = 0; i < (array.length / 2); i++) {
 			Arrayz.swap(array, i, array.length - 1 - i);
 		}
-		return IntIterable.of(array)::iterator;
+		return of(array);
 	}
 
-	default IntSequence mapBack(BackPeekingIntFunction mapper) {
-		return () -> new BackPeekingIntIterator(mapper).backedBy(iterator());
+	/**
+	 * Map this {@code IntSequence} to another sequence of ints while peeking at the previous value in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the previous int and the current int in the iteration, and a boolean that defines
+	 * whether there is a previous value or not, which is false for the first int in the iteration and true
+	 * otherwise.
+	 */
+	default IntSequence mapBack(int firstPrevious, IntBinaryOperator mapper) {
+		return () -> new BackPeekingIntIterator(firstPrevious, mapper).backedBy(iterator());
 	}
 
-	default IntSequence mapForward(ForwardPeekingIntFunction mapper) {
-		return () -> new ForwardPeekingIntIterator(mapper).backedBy(iterator());
+	/**
+	 * Map this {@code IntSequence} to another sequence of ints while peeking at the next int in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the current int and the next int in the iteration, and a boolean that defines
+	 * whether there is a next value or not, which is false for the last int in the iteration and true
+	 * otherwise.
+	 */
+	default IntSequence mapForward(int lastNext, IntBinaryOperator mapper) {
+		return () -> new ForwardPeekingIntIterator(lastNext, mapper).backedBy(iterator());
 	}
 
 	/**

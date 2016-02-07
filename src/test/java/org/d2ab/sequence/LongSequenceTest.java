@@ -702,4 +702,16 @@ public class LongSequenceTest {
 
 		assertThat(sequence, contains(1L, 2L, 3L, 4L, 5L));
 	}
+
+	@Test
+	public void mapBack() {
+		twice(() -> assertThat(_123.mapBack((hasPrevious, p, i) -> hasPrevious ? p : 17L), contains(17L, 1L, 2L)));
+		twice(() -> assertThat(_123.mapBack((hasPrevious, p, i) -> i), contains(1L, 2L, 3L)));
+	}
+
+	@Test
+	public void mapForward() {
+		twice(() -> assertThat(_123.mapForward((i, hasNext, n) -> hasNext ? n : 17L), contains(2L, 3L, 17L)));
+		twice(() -> assertThat(_123.mapForward((i, hasNext, n) -> i), contains(1L, 2L, 3L)));
+	}
 }

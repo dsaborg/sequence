@@ -744,4 +744,16 @@ public class DoubleSequenceTest {
 
 		assertThat(sequence, contains(1.0, 2.0, 3.0, 4.0, 5.0));
 	}
+
+	@Test
+	public void mapBack() {
+		twice(() -> assertThat(_123.mapBack(17.0, (p, x) -> p), contains(17.0, 1.0, 2.0)));
+		twice(() -> assertThat(_123.mapBack(17.0, (p, x) -> x), contains(1.0, 2.0, 3.0)));
+	}
+
+	@Test
+	public void mapForward() {
+		twice(() -> assertThat(_123.mapForward(17.0, (x, n) -> x), contains(1.0, 2.0, 3.0)));
+		twice(() -> assertThat(_123.mapForward(17.0, (x, n) -> n), contains(2.0, 3.0, 17.0)));
+	}
 }

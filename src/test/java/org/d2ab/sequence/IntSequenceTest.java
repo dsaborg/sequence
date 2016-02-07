@@ -704,4 +704,26 @@ public class IntSequenceTest {
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 	}
+
+	@Test
+	public void mapBack() {
+		twice(() -> assertThat(_123.mapBack(17, (p, i) -> p), contains(17, 1, 2)));
+		twice(() -> assertThat(_123.mapBack(17, (p, i) -> i), contains(1, 2, 3)));
+	}
+
+	@Test
+	public void mapForward() {
+		twice(() -> assertThat(_123.mapForward(17, (i, n) -> i), contains(1, 2, 3)));
+		twice(() -> assertThat(_123.mapForward(17, (i, n) -> n), contains(2, 3, 17)));
+	}
+
+	@Test
+	public void positive() {
+		twice(() -> assertThat(IntSequence.positive().limit(5), contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void negative() {
+		twice(() -> assertThat(IntSequence.negative().limit(5), contains(-1, -2, -3, -4, -5)));
+	}
 }

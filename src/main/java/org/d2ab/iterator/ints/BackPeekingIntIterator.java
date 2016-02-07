@@ -16,17 +16,19 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.function.ints.BackPeekingIntFunction;
+import java.util.function.IntBinaryOperator;
 
 /**
  * An iterator over ints that also maps each element by looking at the current AND the previous element.
  */
 public class BackPeekingIntIterator extends UnaryIntIterator {
-	private final BackPeekingIntFunction mapper;
+	private final int firstPrevious;
+	private final IntBinaryOperator mapper;
 	private boolean hasPrevious;
 	private int previous = -1;
 
-	public BackPeekingIntIterator(BackPeekingIntFunction mapper) {
+	public BackPeekingIntIterator(int firstPrevious, IntBinaryOperator mapper) {
+		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}
 
@@ -34,8 +36,7 @@ public class BackPeekingIntIterator extends UnaryIntIterator {
 	public int nextInt() {
 		int next = iterator.nextInt();
 
-		int result = mapper.applyAndPeek(hasPrevious, previous, next);
-
+		int result = mapper.applyAsInt(hasPrevious ? previous : firstPrevious, next);
 		previous = next;
 		hasPrevious = true;
 		return result;

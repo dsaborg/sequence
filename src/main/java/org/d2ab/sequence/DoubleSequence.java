@@ -16,8 +16,6 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.doubles.BackPeekingDoubleFunction;
-import org.d2ab.function.doubles.ForwardPeekingDoubleFunction;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
 import org.d2ab.iterator.doubles.*;
@@ -642,15 +640,31 @@ public interface DoubleSequence extends DoubleIterable {
 		for (int i = 0; i < (array.length / 2); i++) {
 			Arrayz.swap(array, i, array.length - 1 - i);
 		}
-		return DoubleIterable.of(array)::iterator;
+		return of(array);
 	}
 
-	default DoubleSequence mapBack(BackPeekingDoubleFunction mapper) {
-		return () -> new BackPeekingDoubleIterator(mapper).backedBy(iterator());
+	/**
+	 * Map this {@code DoubleSequence} to another sequence of doubles while peeking at the previous value in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the previous double and the current double in the iteration. If the current double is
+	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
+	 * the first previous value.
+	 */
+	default DoubleSequence mapBack(double firstPrevious, DoubleBinaryOperator mapper) {
+		return () -> new BackPeekingDoubleIterator(firstPrevious, mapper).backedBy(iterator());
 	}
 
-	default DoubleSequence mapForward(ForwardPeekingDoubleFunction mapper) {
-		return () -> new ForwardPeekingDoubleIterator(mapper).backedBy(iterator());
+	/**
+	 * Map this {@code DoubleSequence} to another sequence of doubles while peeking at the next value in the
+	 * sequence.
+	 * <p>
+	 * The mapper has access to the current double and the next double in the iteration. If the current double is
+	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
+	 * the last next value.
+	 */
+	default DoubleSequence mapForward(double lastNext, DoubleBinaryOperator mapper) {
+		return () -> new ForwardPeekingDoubleIterator(lastNext, mapper).backedBy(iterator());
 	}
 
 	/**

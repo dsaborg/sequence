@@ -16,37 +16,23 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.function.doubles.ForwardPeekingDoubleFunction;
-
 import java.util.NoSuchElementException;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
 public class ForwardPeekingDoubleIterator extends UnaryDoubleIterator {
-	private final ForwardPeekingDoubleFunction mapper;
+	private final double lastNext;
+	private final DoubleBinaryOperator mapper;
 
 	private boolean hasCurrent;
 	private double current = -1;
 	private boolean started;
 
-	public ForwardPeekingDoubleIterator(ForwardPeekingDoubleFunction mapper) {
+	public ForwardPeekingDoubleIterator(double lastNext, DoubleBinaryOperator mapper) {
+		this.lastNext = lastNext;
 		this.mapper = mapper;
-	}
-
-	@Override
-	public double nextDouble() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		boolean hasNext = iterator.hasNext();
-		double next = hasNext ? iterator.nextDouble() : -1;
-
-		double result = mapper.applyAndPeek(current, hasNext, next);
-
-		current = next;
-		hasCurrent = hasNext;
-		return result;
 	}
 
 	@Override
@@ -59,5 +45,19 @@ public class ForwardPeekingDoubleIterator extends UnaryDoubleIterator {
 			}
 		}
 		return hasCurrent;
+	}
+
+	@Override
+	public double nextDouble() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		boolean hasNext = iterator.hasNext();
+		double next = hasNext ? iterator.nextDouble() : lastNext;
+
+		double result = mapper.applyAsDouble(current, next);
+		current = next;
+		hasCurrent = hasNext;
+		return result;
 	}
 }

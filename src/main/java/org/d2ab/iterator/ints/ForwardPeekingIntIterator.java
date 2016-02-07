@@ -16,37 +16,23 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.function.ints.ForwardPeekingIntFunction;
-
 import java.util.NoSuchElementException;
+import java.util.function.IntBinaryOperator;
 
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
 public class ForwardPeekingIntIterator extends UnaryIntIterator {
-	private final ForwardPeekingIntFunction mapper;
+	private final int lastNext;
+	private final IntBinaryOperator mapper;
 
 	private boolean hasCurrent;
 	private int current = -1;
 	private boolean started;
 
-	public ForwardPeekingIntIterator(ForwardPeekingIntFunction mapper) {
+	public ForwardPeekingIntIterator(int lastNext, IntBinaryOperator mapper) {
+		this.lastNext = lastNext;
 		this.mapper = mapper;
-	}
-
-	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		boolean hasNext = iterator.hasNext();
-		int next = hasNext ? iterator.nextInt() : -1;
-
-		int result = mapper.applyAndPeek(current, hasNext, next);
-
-		current = next;
-		hasCurrent = hasNext;
-		return result;
 	}
 
 	@Override
@@ -59,5 +45,19 @@ public class ForwardPeekingIntIterator extends UnaryIntIterator {
 			}
 		}
 		return hasCurrent;
+	}
+
+	@Override
+	public int nextInt() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		boolean hasNext = iterator.hasNext();
+		int next = hasNext ? iterator.nextInt() : lastNext;
+
+		int result = mapper.applyAsInt(current, next);
+		current = next;
+		hasCurrent = hasNext;
+		return result;
 	}
 }
