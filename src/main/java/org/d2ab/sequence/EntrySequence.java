@@ -328,8 +328,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return Optional.of(last);
 	}
 
-	default Sequence<List<Entry<K, V>>> partition(int window) {
-		return () -> new PartitioningIterator<Entry<K, V>>(window).backedBy(iterator());
+	default Sequence<List<Entry<K, V>>> window(int window) {
+		return window(window, 1);
+	}
+
+	default Sequence<List<Entry<K, V>>> window(int window, int step) {
+		return () -> new WindowingIterator<Entry<K, V>>(window, step).backedBy(iterator());
+	}
+
+	default Sequence<List<Entry<K, V>>> partition(int size) {
+		return window(size, size);
 	}
 
 	default EntrySequence<K, V> step(int step) {

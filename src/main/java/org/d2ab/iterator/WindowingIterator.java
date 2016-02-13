@@ -18,13 +18,16 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public class PartitioningIterator<T> extends DelegatingReferenceIterator<T, List<T>> {
+public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>> {
 	private final int window;
+	private final int step;
 
 	private Deque<T> partition = new LinkedList<>();
+	private boolean started;
 
-	public PartitioningIterator(int window) {
+	public WindowingIterator(int window, int step) {
 		this.window = window;
+		this.step = step;
 	}
 
 	@Override
@@ -32,7 +35,8 @@ public class PartitioningIterator<T> extends DelegatingReferenceIterator<T, List
 		while (partition.size() < window && iterator.hasNext())
 			partition.add(iterator.next());
 
-		return partition.size() == window;
+		return partition.size() == window ||
+		       partition.size() > 0 && (!started || partition.size() > window - step && !iterator.hasNext());
 	}
 
 	@Override
@@ -41,7 +45,17 @@ public class PartitioningIterator<T> extends DelegatingReferenceIterator<T, List
 			throw new NoSuchElementException();
 
 		List<T> result = new ArrayList<>(partition);
-		partition.removeFirst();
+
+		if (partition.size() > step) {
+			for (int i = 0; i < step && !partition.isEmpty(); i++)
+				partition.removeFirst();
+		} else {
+			for (int i = partition.size(); i < step && iterator.hasNext(); i++)
+				iterator.next();
+			partition.clear();
+		}
+
+		started = true;
 		return result;
 	}
 }

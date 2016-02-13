@@ -832,23 +832,51 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void window() {
+		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3), contains(singletonList(1))));
+		twice(() -> assertThat(_12.window(3), contains(asList(1, 2))));
+		twice(() -> assertThat(_123.window(3), contains(asList(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3), contains(asList(1, 2, 3), asList(2, 3, 4))));
+		twice(() -> assertThat(_12345.window(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void windowWithStep() {
+		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 2), contains(singletonList(1))));
+		twice(() -> assertThat(_12.window(3, 2), contains(asList(1, 2))));
+		twice(() -> assertThat(_123.window(3, 2), contains(asList(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3, 2), contains(asList(1, 2, 3), asList(3, 4))));
+		twice(() -> assertThat(_12345.window(3, 2), contains(asList(1, 2, 3), asList(3, 4, 5))));
+		twice(() -> assertThat(_123456789.window(3, 2),
+		                       contains(asList(1, 2, 3), asList(3, 4, 5), asList(5, 6, 7), asList(7, 8, 9))));
+
+		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 4), contains(singletonList(1))));
+		twice(() -> assertThat(_12.window(3, 4), contains(asList(1, 2))));
+		twice(() -> assertThat(_123.window(3, 4), contains(asList(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3, 4), contains(asList(1, 2, 3))));
+		twice(() -> assertThat(_12345.window(3, 4), contains(asList(1, 2, 3), singletonList(5))));
+		twice(() -> assertThat(_123456789.window(3, 4), contains(asList(1, 2, 3), asList(5, 6, 7), singletonList(9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void partition() {
-		twice(() -> assertThat(_12345.partition(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5))));
+		twice(() -> assertThat(empty.partition(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.partition(3), contains(singletonList(1))));
+		twice(() -> assertThat(_12.partition(3), contains(asList(1, 2))));
+		twice(() -> assertThat(_123.partition(3), contains(asList(1, 2, 3))));
+		twice(() -> assertThat(_1234.partition(3), contains(asList(1, 2, 3), singletonList(4))));
+		twice(() -> assertThat(_12345.partition(3), contains(asList(1, 2, 3), asList(4, 5))));
+		twice(() -> assertThat(_123456789.partition(3), contains(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9))));
 	}
 
 	@Test
 	public void step() {
 		twice(() -> assertThat(_123456789.step(3), contains(1, 4, 7)));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void partitionAndStep() {
-		Sequence<List<Integer>> partitionAndStep = _12345.partition(3).step(2);
-		twice(() -> assertThat(partitionAndStep, contains(asList(1, 2, 3), asList(3, 4, 5))));
-
-		Sequence<List<Integer>> partitioned = _12345.partition(3);
-		twice(() -> assertThat(partitioned.step(2), contains(asList(1, 2, 3), asList(3, 4, 5))));
 	}
 
 	@Test

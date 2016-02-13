@@ -632,8 +632,8 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void partition() {
-		twice(() -> assertThat(_12345.partition(3),
+	public void window() {
+		twice(() -> assertThat(_12345.window(3),
 		                       contains(asList(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
 		                                asList(Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4)),
 		                                asList(Entries.of("3", 3), Entries.of("4", 4), Entries.of("5", 5)))));

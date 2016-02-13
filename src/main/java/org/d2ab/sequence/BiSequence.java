@@ -327,8 +327,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return Optional.of(last);
 	}
 
-	default Sequence<List<Pair<L, R>>> partition(int window) {
-		return () -> new PartitioningIterator<Pair<L, R>>(window).backedBy(iterator());
+	default Sequence<List<Pair<L, R>>> window(int window) {
+		return window(window, 1);
+	}
+
+	default Sequence<List<Pair<L, R>>> window(int window, int step) {
+		return () -> new WindowingIterator<Pair<L, R>>(window, step).backedBy(iterator());
+	}
+
+	default Sequence<List<Pair<L, R>>> partition(int size) {
+		return window(size, size);
 	}
 
 	default BiSequence<L, R> step(int step) {

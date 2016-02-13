@@ -888,8 +888,16 @@ public interface Sequence<T> extends Iterable<T> {
 	 * of the given window. The first item in each list is the second item in the previous list. The final list may
 	 * be shorter than the window.
 	 */
-	default Sequence<List<T>> partition(int window) {
-		return () -> new PartitioningIterator<T>(window).backedBy(iterator());
+	default Sequence<List<T>> window(int window) {
+		return window(window, 1);
+	}
+
+	default Sequence<List<T>> window(int window, int step) {
+		return () -> new WindowingIterator<T>(window, step).backedBy(iterator());
+	}
+
+	default Sequence<List<T>> partition(int size) {
+		return window(size, size);
 	}
 
 	/**

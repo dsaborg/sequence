@@ -614,10 +614,10 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void partition() {
-		twice(() -> assertThat(_12345.partition(3), contains(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                     asList(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
-		                                                     asList(Pair.of("3", 3), Pair.of("4", 4),
+	public void window() {
+		twice(() -> assertThat(_12345.window(3), contains(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                                  asList(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
+		                                                  asList(Pair.of("3", 3), Pair.of("4", 4),
 		                                                            Pair.of("5", 5)))));
 	}
 
