@@ -23,7 +23,8 @@ public class LimitingLongIterator extends UnaryLongIterator {
 
 	private long count;
 
-	public LimitingLongIterator(long limit) {
+	public LimitingLongIterator(LongIterator iterator, long limit) {
+		super(iterator);
 		this.limit = limit;
 	}
 

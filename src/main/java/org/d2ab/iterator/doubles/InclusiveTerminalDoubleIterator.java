@@ -25,11 +25,12 @@ public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 	private double previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalDoubleIterator(double terminal) {
-		this(d -> d == terminal);
+	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal) {
+		this(iterator, d -> d == terminal);
 	}
 
-	public InclusiveTerminalDoubleIterator(DoublePredicate terminal) {
+	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

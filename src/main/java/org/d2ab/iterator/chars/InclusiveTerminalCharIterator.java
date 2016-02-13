@@ -26,11 +26,12 @@ public class InclusiveTerminalCharIterator extends UnaryCharIterator {
 	private char previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalCharIterator(char terminal) {
-		this(c -> c == terminal);
+	public InclusiveTerminalCharIterator(CharIterator iterator, char terminal) {
+		this(iterator, c -> c == terminal);
 	}
 
-	public InclusiveTerminalCharIterator(CharPredicate terminal) {
+	public InclusiveTerminalCharIterator(CharIterator iterator, CharPredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

@@ -30,7 +30,8 @@ public class ForwardPeekingMappingIntIterator extends UnaryIntIterator {
 	private int current = -1;
 	private boolean started;
 
-	public ForwardPeekingMappingIntIterator(int lastNext, IntBinaryOperator mapper) {
+	public ForwardPeekingMappingIntIterator(IntIterator iterator, int lastNext, IntBinaryOperator mapper) {
+		super(iterator);
 		this.lastNext = lastNext;
 		this.mapper = mapper;
 	}

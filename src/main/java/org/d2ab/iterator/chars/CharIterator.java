@@ -30,6 +30,18 @@ import java.util.function.Consumer;
  * An Iterator specialized for {@code char} values. Adapted from {@link PrimitiveIterator}.
  */
 public interface CharIterator extends PrimitiveIterator<Character, CharConsumer> {
+	CharIterator EMPTY = new CharIterator() {
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public char nextChar() {
+			throw new NoSuchElementException();
+		}
+	};
+
 	static CharIterator of(char... chars) {
 		return new ArrayCharIterator(chars);
 	}

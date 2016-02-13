@@ -24,4 +24,8 @@ import java.util.Iterator;
  * A superclass for delegating {@link CharIterator}s.
  */
 public abstract class DelegatingCharIterator<T, I extends Iterator<T>>
-		extends DelegatingIterator<T, I, Character, CharIterator> implements CharIterator {}
+		extends DelegatingIterator<T, I, Character, CharIterator> implements CharIterator {
+	public DelegatingCharIterator(I iterator) {
+		super(iterator);
+	}
+}

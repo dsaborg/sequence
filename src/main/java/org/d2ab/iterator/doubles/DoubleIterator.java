@@ -19,6 +19,7 @@ package org.d2ab.iterator.doubles;
 import org.d2ab.iterable.doubles.DoubleIterable;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.function.DoubleBinaryOperator;
 
@@ -26,6 +27,18 @@ import java.util.function.DoubleBinaryOperator;
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
  */
 public interface DoubleIterator extends PrimitiveIterator.OfDouble {
+	DoubleIterator EMPTY = new DoubleIterator() {
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public double nextDouble() {
+			throw new NoSuchElementException();
+		}
+	};
+
 	static DoubleIterator of(double... doubles) {
 		return new ArrayDoubleIterator(doubles);
 	}

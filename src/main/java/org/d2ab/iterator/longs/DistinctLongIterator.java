@@ -28,6 +28,10 @@ public class DistinctLongIterator extends UnaryLongIterator {
 	private long next;
 	private boolean hasNext;
 
+	public DistinctLongIterator(LongIterator iterator) {
+		super(iterator);
+	}
+
 	@Override
 	public long nextLong() {
 		if (!hasNext())

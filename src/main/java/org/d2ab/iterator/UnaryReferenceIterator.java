@@ -21,4 +21,8 @@ import java.util.Iterator;
 /**
  * Base class for reference {@link Iterator}s that delegate to another {@link Iterator} of the same type of values.
  */
-public abstract class UnaryReferenceIterator<T> extends DelegatingReferenceIterator<T, T> {}
+public abstract class UnaryReferenceIterator<T> extends DelegatingReferenceIterator<T, T> {
+	protected UnaryReferenceIterator(Iterator<T> iterator) {
+		super(iterator);
+	}
+}

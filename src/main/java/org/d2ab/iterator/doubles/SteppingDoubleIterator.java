@@ -24,7 +24,8 @@ public class SteppingDoubleIterator extends UnaryDoubleIterator {
 	private boolean hasNext;
 	private double next;
 
-	public SteppingDoubleIterator(double step) {
+	public SteppingDoubleIterator(DoubleIterator iterator, double step) {
+		super(iterator);
 		this.step = step;
 	}
 

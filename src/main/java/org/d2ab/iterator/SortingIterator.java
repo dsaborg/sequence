@@ -24,11 +24,12 @@ public class SortingIterator<T> extends UnaryReferenceIterator<T> {
 
 	private Iterator<T> sortedIterator;
 
-	public SortingIterator() {
-		this(naturalOrder());
+	public SortingIterator(Iterator<T> iterator) {
+		this(iterator, naturalOrder());
 	}
 
-	public SortingIterator(Comparator<? super T> comparator) {
+	public SortingIterator(Iterator<T> iterator, Comparator<? super T> comparator) {
+		super(iterator);
 		this.comparator = comparator;
 	}
 

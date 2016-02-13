@@ -27,7 +27,8 @@ public class BackPeekingMappingIntIterator extends UnaryIntIterator {
 	private boolean hasPrevious;
 	private int previous = -1;
 
-	public BackPeekingMappingIntIterator(int firstPrevious, IntBinaryOperator mapper) {
+	public BackPeekingMappingIntIterator(IntIterator iterator, int firstPrevious, IntBinaryOperator mapper) {
+		super(iterator);
 		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}

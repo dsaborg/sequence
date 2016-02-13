@@ -24,7 +24,8 @@ public class SteppingLongIterator extends UnaryLongIterator {
 	private boolean hasNext;
 	private long next;
 
-	public SteppingLongIterator(long step) {
+	public SteppingLongIterator(LongIterator iterator, long step) {
+		super(iterator);
 		this.step = step;
 	}
 

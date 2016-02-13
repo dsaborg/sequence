@@ -25,7 +25,8 @@ public class FilteringDoubleIterator extends UnaryDoubleIterator {
 	private double next;
 	private boolean hasNext;
 
-	public FilteringDoubleIterator(DoublePredicate predicate) {
+	public FilteringDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {
+		super(iterator);
 		this.predicate = predicate;
 	}
 

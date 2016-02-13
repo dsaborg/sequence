@@ -25,11 +25,12 @@ public class ExclusiveTerminalLongIterator extends UnaryLongIterator {
 	private long next;
 	private boolean hasNext;
 
-	public ExclusiveTerminalLongIterator(long terminal) {
-		this(l -> l == terminal);
+	public ExclusiveTerminalLongIterator(LongIterator iterator, long terminal) {
+		this(iterator, l -> l == terminal);
 	}
 
-	public ExclusiveTerminalLongIterator(LongPredicate terminal) {
+	public ExclusiveTerminalLongIterator(LongIterator iterator, LongPredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

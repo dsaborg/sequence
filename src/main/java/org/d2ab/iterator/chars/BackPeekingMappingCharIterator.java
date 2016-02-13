@@ -26,7 +26,8 @@ public class BackPeekingMappingCharIterator extends UnaryCharIterator {
 	private final CharBinaryOperator mapper;
 	private int previous = -1;
 
-	public BackPeekingMappingCharIterator(char firstPrevious, CharBinaryOperator mapper) {
+	public BackPeekingMappingCharIterator(CharIterator iterator, char firstPrevious, CharBinaryOperator mapper) {
+		super(iterator);
 		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}

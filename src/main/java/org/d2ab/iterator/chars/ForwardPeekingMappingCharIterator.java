@@ -31,7 +31,8 @@ public class ForwardPeekingMappingCharIterator extends UnaryCharIterator {
 	private boolean hasCurrent;
 	private boolean started;
 
-	public ForwardPeekingMappingCharIterator(char lastNext, CharBinaryOperator mapper) {
+	public ForwardPeekingMappingCharIterator(CharIterator iterator, char lastNext, CharBinaryOperator mapper) {
+		super(iterator);
 		this.lastNext = lastNext;
 		this.mapper = mapper;
 	}

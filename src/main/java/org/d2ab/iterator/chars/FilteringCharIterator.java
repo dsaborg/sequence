@@ -26,7 +26,8 @@ public class FilteringCharIterator extends UnaryCharIterator {
 	private char next;
 	private boolean hasNext;
 
-	public FilteringCharIterator(CharPredicate predicate) {
+	public FilteringCharIterator(CharIterator iterator, CharPredicate predicate) {
+		super(iterator);
 		this.predicate = predicate;
 	}
 

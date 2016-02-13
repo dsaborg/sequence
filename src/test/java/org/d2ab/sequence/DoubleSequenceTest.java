@@ -677,12 +677,12 @@ public class DoubleSequenceTest {
 				List<Double> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Double> iterator = subList.iterator();
-				return new DelegatingDoubleIterator<Double, Iterator<Double>>() {
+				return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
 					@Override
 					public double nextDouble() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat();
 		assertThat(repeatVarying, contains(1.0, 2.0, 3.0, 1.0, 2.0, 1.0));
@@ -711,12 +711,12 @@ public class DoubleSequenceTest {
 				List<Double> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Double> iterator = subList.iterator();
-				return new DelegatingDoubleIterator<Double, Iterator<Double>>() {
+				return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
 					@Override
 					public double nextDouble() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat(2);
 		assertThat(repeatVarying, contains(1.0, 2.0, 3.0, 1.0, 2.0));

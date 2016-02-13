@@ -30,7 +30,8 @@ public class ForwardPeekingMappingDoubleIterator extends UnaryDoubleIterator {
 	private double current = -1;
 	private boolean started;
 
-	public ForwardPeekingMappingDoubleIterator(double lastNext, DoubleBinaryOperator mapper) {
+	public ForwardPeekingMappingDoubleIterator(DoubleIterator iterator, double lastNext, DoubleBinaryOperator mapper) {
+		super(iterator);
 		this.lastNext = lastNext;
 		this.mapper = mapper;
 	}

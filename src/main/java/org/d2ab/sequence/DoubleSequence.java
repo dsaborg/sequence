@@ -207,7 +207,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
 	default DoubleSequence until(double terminal) {
-		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalDoubleIterator(iterator(), terminal);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
 	default DoubleSequence endingAt(double terminal) {
-		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalDoubleIterator(iterator(), terminal);
 	}
 
 	/**
@@ -235,7 +235,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
 	default DoubleSequence until(DoublePredicate terminal) {
-		return () -> new ExclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalDoubleIterator(iterator(), terminal);
 	}
 
 	/**
@@ -248,7 +248,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
 	default DoubleSequence endingAt(DoublePredicate terminal) {
-		return () -> new InclusiveTerminalDoubleIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalDoubleIterator(iterator(), terminal);
 	}
 
 	/**
@@ -256,12 +256,12 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@code mapper} function.
 	 */
 	default DoubleSequence map(DoubleUnaryOperator mapper) {
-		return () -> new UnaryDoubleIterator() {
+		return () -> new UnaryDoubleIterator(iterator()) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextDouble());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -294,14 +294,14 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
 	 */
 	default DoubleSequence skip(double skip) {
-		return () -> new SkippingDoubleIterator(skip).backedBy(iterator());
+		return () -> new SkippingDoubleIterator(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
 	default DoubleSequence limit(double limit) {
-		return () -> new LimitingDoubleIterator(limit).backedBy(iterator());
+		return () -> new LimitingDoubleIterator(iterator(), limit);
 	}
 
 	/**
@@ -370,7 +370,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@link DoublePredicate}.
 	 */
 	default DoubleSequence filter(DoublePredicate predicate) {
-		return () -> new FilteringDoubleIterator(predicate).backedBy(iterator());
+		return () -> new FilteringDoubleIterator(iterator(), predicate);
 	}
 
 	/**
@@ -499,7 +499,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
 	 */
 	default DoubleSequence step(double step) {
-		return () -> new SteppingDoubleIterator(step).backedBy(iterator());
+		return () -> new SteppingDoubleIterator(iterator(), step);
 	}
 
 	/**
@@ -560,14 +560,14 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Allow the given {@link DoubleConsumer} to see each element in this {@code DoubleSequence} as it is traversed.
 	 */
 	default DoubleSequence peek(DoubleConsumer action) {
-		return () -> new UnaryDoubleIterator() {
+		return () -> new UnaryDoubleIterator(iterator()) {
 			@Override
 			public double nextDouble() {
 				double next = iterator.nextDouble();
 				action.accept(next);
 				return next;
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -652,7 +652,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * the first previous value.
 	 */
 	default DoubleSequence mapBack(double firstPrevious, DoubleBinaryOperator mapper) {
-		return () -> new BackPeekingMappingDoubleIterator(firstPrevious, mapper).backedBy(iterator());
+		return () -> new BackPeekingMappingDoubleIterator(iterator(), firstPrevious, mapper);
 	}
 
 	/**
@@ -664,7 +664,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * the last next value.
 	 */
 	default DoubleSequence mapForward(double lastNext, DoubleBinaryOperator mapper) {
-		return () -> new ForwardPeekingMappingDoubleIterator(lastNext, mapper).backedBy(iterator());
+		return () -> new ForwardPeekingMappingDoubleIterator(iterator(), lastNext, mapper);
 	}
 
 	/**

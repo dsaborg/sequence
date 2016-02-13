@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import static java.util.Arrays.asList;
 
 public class ChainingLongIterator extends UnaryLongIterator {
+
 	private final Iterator<LongIterable> iterables;
 
 	public ChainingLongIterator(LongIterable... iterables) {
@@ -31,7 +32,15 @@ public class ChainingLongIterator extends UnaryLongIterator {
 	}
 
 	public ChainingLongIterator(Iterable<LongIterable> iterables) {
+		super(LongIterator.EMPTY);
 		this.iterables = iterables.iterator();
+	}
+
+	@Override
+	public boolean hasNext() {
+		while (!iterator.hasNext() && iterables.hasNext())
+			iterator = iterables.next().iterator();
+		return iterator.hasNext();
 	}
 
 	@Override
@@ -40,13 +49,5 @@ public class ChainingLongIterator extends UnaryLongIterator {
 			throw new NoSuchElementException();
 
 		return iterator.nextLong();
-	}
-
-	@Override
-	public boolean hasNext() {
-		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			backedBy(iterables.next().iterator());
-		}
-		return iterator != null && iterator.hasNext();
 	}
 }

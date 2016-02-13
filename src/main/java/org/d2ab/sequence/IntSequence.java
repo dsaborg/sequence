@@ -200,7 +200,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
 	default IntSequence until(int terminal) {
-		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIntIterator(iterator(), terminal);
 	}
 
 	/**
@@ -214,7 +214,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
 	default IntSequence endingAt(int terminal) {
-		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIntIterator(iterator(), terminal);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
 	default IntSequence until(IntPredicate terminal) {
-		return () -> new ExclusiveTerminalIntIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIntIterator(iterator(), terminal);
 	}
 
 	/**
@@ -241,7 +241,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
 	default IntSequence endingAt(IntPredicate terminal) {
-		return () -> new InclusiveTerminalIntIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIntIterator(iterator(), terminal);
 	}
 
 	/**
@@ -249,12 +249,12 @@ public interface IntSequence extends IntIterable {
 	 * function.
 	 */
 	default IntSequence map(IntUnaryOperator mapper) {
-		return () -> new UnaryIntIterator() {
+		return () -> new UnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextInt());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -287,14 +287,14 @@ public interface IntSequence extends IntIterable {
 	 * Skip a set number of {@code ints} in this {@code IntSequence}.
 	 */
 	default IntSequence skip(long skip) {
-		return () -> new SkippingIntIterator(skip).backedBy(iterator());
+		return () -> new SkippingIntIterator(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of {@code ints} returned by this {@code IntSequence}.
 	 */
 	default IntSequence limit(long limit) {
-		return () -> new LimitingIntIterator(limit).backedBy(iterator());
+		return () -> new LimitingIntIterator(iterator(), limit);
 	}
 
 	/**
@@ -363,7 +363,7 @@ public interface IntSequence extends IntIterable {
 	 * {@link IntPredicate}.
 	 */
 	default IntSequence filter(IntPredicate predicate) {
-		return () -> new FilteringIntIterator(predicate).backedBy(iterator());
+		return () -> new FilteringIntIterator(iterator(), predicate);
 	}
 
 	/**
@@ -488,14 +488,14 @@ public interface IntSequence extends IntIterable {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code IntSequence}.
 	 */
 	default IntSequence step(long step) {
-		return () -> new SteppingIntIterator(step).backedBy(iterator());
+		return () -> new SteppingIntIterator(iterator(), step);
 	}
 
 	/**
 	 * @return an {@code IntSequence} where each item occurs only once, the first time it is encountered.
 	 */
 	default IntSequence distinct() {
-		return () -> new DistinctIntIterator().backedBy(iterator());
+		return () -> new DistinctIntIterator(iterator());
 	}
 
 	/**
@@ -556,14 +556,14 @@ public interface IntSequence extends IntIterable {
 	 * Allow the given {@link IntConsumer} to see each element in this {@code IntSequence} as it is traversed.
 	 */
 	default IntSequence peek(IntConsumer action) {
-		return () -> new UnaryIntIterator() {
+		return () -> new UnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
 				int next = iterator.nextInt();
 				action.accept(next);
 				return next;
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -648,7 +648,7 @@ public interface IntSequence extends IntIterable {
 	 * the first previous value.
 	 */
 	default IntSequence mapBack(int firstPrevious, IntBinaryOperator mapper) {
-		return () -> new BackPeekingMappingIntIterator(firstPrevious, mapper).backedBy(iterator());
+		return () -> new BackPeekingMappingIntIterator(iterator(), firstPrevious, mapper);
 	}
 
 	/**
@@ -659,79 +659,79 @@ public interface IntSequence extends IntIterable {
 	 * the last next value.
 	 */
 	default IntSequence mapForward(int lastNext, IntBinaryOperator mapper) {
-		return () -> new ForwardPeekingMappingIntIterator(lastNext, mapper).backedBy(iterator());
+		return () -> new ForwardPeekingMappingIntIterator(iterator(), lastNext, mapper);
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of chars corresponding to the downcast char value of each int.
 	 */
 	default CharSeq toChars() {
-		return () -> new DelegatingCharIterator<Integer, IntIterator>() {
+		return () -> new DelegatingCharIterator<Integer, IntIterator>(iterator()) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextInt();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of longs.
 	 */
 	default LongSequence toLongs() {
-		return () -> new DelegatingLongIterator<Integer, IntIterator>() {
+		return () -> new DelegatingLongIterator<Integer, IntIterator>(iterator()) {
 			@Override
 			public long nextLong() {
 				return iterator.nextInt();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of doubles corresponding to the cast double value of each int.
 	 */
 	default DoubleSequence toDoubles() {
-		return () -> new DelegatingDoubleIterator<Integer, IntIterator>() {
+		return () -> new DelegatingDoubleIterator<Integer, IntIterator>(iterator()) {
 			@Override
 			public double nextDouble() {
 				return iterator.nextInt();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of chars using the given converter function.
 	 */
 	default CharSeq toChars(IntToCharFunction mapper) {
-		return () -> new DelegatingCharIterator<Integer, IntIterator>() {
+		return () -> new DelegatingCharIterator<Integer, IntIterator>(iterator()) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextInt());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of longs using the given converter function.
 	 */
 	default LongSequence toLongs(IntToLongFunction mapper) {
-		return () -> new DelegatingLongIterator<Integer, IntIterator>() {
+		return () -> new DelegatingLongIterator<Integer, IntIterator>(iterator()) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextInt());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of doubles using the given converter function.
 	 */
 	default DoubleSequence toDoubles(IntToDoubleFunction mapper) {
-		return () -> new DelegatingDoubleIterator<Integer, IntIterator>() {
+		return () -> new DelegatingDoubleIterator<Integer, IntIterator>(iterator()) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextInt());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**

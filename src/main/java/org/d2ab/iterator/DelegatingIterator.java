@@ -24,11 +24,8 @@ import java.util.Iterator;
 public abstract class DelegatingIterator<T, I extends Iterator<T>, U, J extends Iterator<U>> implements Iterator<U> {
 	protected I iterator;
 
-	public J backedBy(I iterator) {
+	protected DelegatingIterator(I iterator) {
 		this.iterator = iterator;
-		@SuppressWarnings("unchecked")
-		J result = (J) this;
-		return result;
 	}
 
 	@Override

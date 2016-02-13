@@ -17,6 +17,7 @@
 package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SteppingIterator<T> extends UnaryReferenceIterator<T> {
@@ -25,7 +26,8 @@ public class SteppingIterator<T> extends UnaryReferenceIterator<T> {
 	private boolean hasNext;
 	private T next;
 
-	public SteppingIterator(long step) {
+	public SteppingIterator(Iterator<T> iterator, long step) {
+		super(iterator);
 		this.step = step;
 	}
 

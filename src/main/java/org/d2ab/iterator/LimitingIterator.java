@@ -17,6 +17,7 @@
 package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class LimitingIterator<T> extends UnaryReferenceIterator<T> {
@@ -24,7 +25,8 @@ public class LimitingIterator<T> extends UnaryReferenceIterator<T> {
 
 	private long count;
 
-	public LimitingIterator(long limit) {
+	public LimitingIterator(Iterator<T> iterator, long limit) {
+		super(iterator);
 		this.limit = limit;
 	}
 

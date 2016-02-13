@@ -19,4 +19,8 @@ package org.d2ab.iterator.ints;
 /**
  * An {@link IntIterator} that converts ints to other ints.
  */
-public abstract class UnaryIntIterator extends DelegatingIntIterator<Integer, IntIterator> {}
+public abstract class UnaryIntIterator extends DelegatingIntIterator<Integer, IntIterator> {
+	protected UnaryIntIterator(IntIterator iterator) {
+		super(iterator);
+	}
+}

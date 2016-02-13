@@ -637,12 +637,12 @@ public class IntSequenceTest {
 				List<Integer> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Integer> iterator = subList.iterator();
-				return new DelegatingIntIterator<Integer, Iterator<Integer>>() {
+				return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
 					@Override
 					public int nextInt() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat();
 		assertThat(repeatVarying, contains(1, 2, 3, 1, 2, 1));
@@ -671,12 +671,12 @@ public class IntSequenceTest {
 				List<Integer> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Integer> iterator = subList.iterator();
-				return new DelegatingIntIterator<Integer, Iterator<Integer>>() {
+				return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
 					@Override
 					public int nextInt() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat(2);
 		assertThat(repeatVarying, contains(1, 2, 3, 1, 2));

@@ -18,11 +18,29 @@ package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
 
 public class Iterators {
+	private static final Iterator EMPTY = new Iterator() {
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public Object next() {
+			throw new NoSuchElementException();
+		}
+	};
+
 	private Iterators() {
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Iterator<T> empty() {
+		return EMPTY;
 	}
 
 	public static void skip(Iterator<?> iterator) {

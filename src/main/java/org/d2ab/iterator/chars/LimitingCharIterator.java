@@ -23,7 +23,8 @@ public class LimitingCharIterator extends UnaryCharIterator {
 
 	private long count;
 
-	public LimitingCharIterator(long limit) {
+	public LimitingCharIterator(CharIterator iterator, long limit) {
+		super(iterator);
 		this.limit = limit;
 	}
 

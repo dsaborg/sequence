@@ -25,7 +25,8 @@ public class FilteringLongIterator extends UnaryLongIterator {
 	private long next;
 	private boolean hasNext;
 
-	public FilteringLongIterator(LongPredicate predicate) {
+	public FilteringLongIterator(LongIterator iterator, LongPredicate predicate) {
+		super(iterator);
 		this.predicate = predicate;
 	}
 

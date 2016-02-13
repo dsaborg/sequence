@@ -30,7 +30,8 @@ public class ForwardPeekingMappingLongIterator extends UnaryLongIterator {
 	private long current = -1;
 	private boolean started;
 
-	public ForwardPeekingMappingLongIterator(long lastNext, LongBinaryOperator mapper) {
+	public ForwardPeekingMappingLongIterator(LongIterator iterator, long lastNext, LongBinaryOperator mapper) {
+		super(iterator);
 		this.lastNext = lastNext;
 		this.mapper = mapper;
 	}

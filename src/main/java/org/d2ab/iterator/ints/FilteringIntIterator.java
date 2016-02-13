@@ -25,7 +25,8 @@ public class FilteringIntIterator extends UnaryIntIterator {
 	private int next;
 	private boolean hasNext;
 
-	public FilteringIntIterator(IntPredicate predicate) {
+	public FilteringIntIterator(IntIterator iterator, IntPredicate predicate) {
+		super(iterator);
 		this.predicate = predicate;
 	}
 

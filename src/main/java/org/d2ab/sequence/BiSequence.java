@@ -101,7 +101,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default <LL, RR> BiSequence<LL, RR> map(Function<? super Pair<L, R>, ? extends Pair<LL, RR>> mapper) {
-		return () -> new MappingIterator<>(mapper).backedBy(iterator());
+		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	default <LL, RR> BiSequence<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
@@ -110,11 +110,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> skip(int skip) {
-		return () -> new SkippingIterator<Pair<L, R>>(skip).backedBy(iterator());
+		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
 	default BiSequence<L, R> limit(int limit) {
-		return () -> new LimitingIterator<Pair<L, R>>(limit).backedBy(iterator());
+		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,10 +127,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> filter(Predicate<? super Pair<L, R>> predicate) {
-		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
+		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
-	default <LL, RR> BiSequence<LL, RR> flatMap(BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>>
+	default <LL, RR> BiSequence<LL, RR> flatten(BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>>
 			                                            mapper) {
 		ChainingIterable<Pair<LL, RR>> result = new ChainingIterable<>();
 		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = Pair.asFunction(mapper);
@@ -140,11 +140,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> until(Pair<L, R> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default BiSequence<L, R> endingAt(Pair<L, R> terminal) {
-		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default BiSequence<L, R> until(L left, R right) {
@@ -164,11 +164,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> until(Predicate<? super Pair<L, R>> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default BiSequence<L, R> endingAt(Predicate<? super Pair<L, R>> terminal) {
-		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default Pair<L, R>[] toArray() {
@@ -332,7 +332,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default Sequence<List<Pair<L, R>>> window(int window, int step) {
-		return () -> new WindowingIterator<Pair<L, R>>(window, step).backedBy(iterator());
+		return () -> new WindowingIterator<>(iterator(), window, step);
 	}
 
 	default Sequence<List<Pair<L, R>>> partition(int size) {
@@ -340,19 +340,19 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> step(int step) {
-		return () -> new SteppingIterator<Pair<L, R>>(step).backedBy(iterator());
+		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
 	default BiSequence<L, R> distinct() {
-		return () -> new DistinctIterator<Pair<L, R>>().backedBy(iterator());
+		return () -> new DistinctIterator<>(iterator());
 	}
 
 	default BiSequence<L, R> sorted() {
-		return () -> new SortingIterator<Pair<L, R>>().backedBy(iterator());
+		return () -> new SortingIterator<>(iterator());
 	}
 
 	default BiSequence<L, R> sorted(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
-		return () -> new SortingIterator<Pair<L, R>>(comparator).backedBy(iterator());
+		return () -> new SortingIterator<>(iterator(), comparator);
 	}
 
 	default Optional<Pair<L, R>> min(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
@@ -392,7 +392,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default BiSequence<L, R> peek(BiConsumer<L, R> action) {
 		Consumer<? super Pair<L, R>> consumer = Pair.asConsumer(action);
-		return () -> new PeekingIterator<>(consumer).backedBy(iterator());
+		return () -> new PeekingIterator<>(iterator(), consumer);
 	}
 
 	default BiSequence<L, R> append(Iterator<? extends Pair<L, R>> iterator) {
@@ -428,7 +428,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default <T> Sequence<T> toSequence(Function<? super Pair<L, R>, ? extends T> mapper) {
-		return () -> new MappingIterator<>(mapper).backedBy(iterator());
+		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	default BiSequence<L, R> repeat() {
@@ -440,7 +440,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default BiSequence<L, R> reverse() {
-		return () -> new ReverseIterator<Pair<L, R>>().backedBy(iterator());
+		return () -> new ReverseIterator<>(iterator());
 	}
 
 	default BiSequence<L, R> shuffle() {

@@ -31,7 +31,15 @@ public class ChainingIntIterator extends UnaryIntIterator {
 	}
 
 	public ChainingIntIterator(Iterable<IntIterable> iterables) {
+		super(IntIterator.EMPTY);
 		this.iterables = iterables.iterator();
+	}
+
+	@Override
+	public boolean hasNext() {
+		while (!iterator.hasNext() && iterables.hasNext())
+			iterator = iterables.next().iterator();
+		return iterator.hasNext();
 	}
 
 	@Override
@@ -40,13 +48,5 @@ public class ChainingIntIterator extends UnaryIntIterator {
 			throw new NoSuchElementException();
 
 		return iterator.nextInt();
-	}
-
-	@Override
-	public boolean hasNext() {
-		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			iterator = iterables.next().iterator();
-		}
-		return iterator != null && iterator.hasNext();
 	}
 }

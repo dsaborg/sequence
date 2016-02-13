@@ -17,6 +17,7 @@
 package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
@@ -24,7 +25,8 @@ public class SkippingIterator<T> extends UnaryReferenceIterator<T> {
 
 	private boolean skipped;
 
-	public SkippingIterator(long skip) {
+	public SkippingIterator(Iterator<T> iterator, long skip) {
+		super(iterator);
 		this.skip = skip;
 	}
 

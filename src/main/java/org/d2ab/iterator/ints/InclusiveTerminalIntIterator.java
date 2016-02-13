@@ -25,12 +25,18 @@ public class InclusiveTerminalIntIterator extends UnaryIntIterator {
 	private int previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalIntIterator(int terminal) {
-		this(i -> i == terminal);
+	public InclusiveTerminalIntIterator(IntIterator iterator, int terminal) {
+		this(iterator, i -> i == terminal);
 	}
 
-	public InclusiveTerminalIntIterator(IntPredicate terminal) {
+	public InclusiveTerminalIntIterator(IntIterator iterator, IntPredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
 	}
 
 	@Override
@@ -40,10 +46,5 @@ public class InclusiveTerminalIntIterator extends UnaryIntIterator {
 
 		hasPrevious = true;
 		return previous = iterator.next();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
 	}
 }

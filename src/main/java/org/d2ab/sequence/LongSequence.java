@@ -185,7 +185,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
 	default LongSequence until(long terminal) {
-		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalLongIterator(iterator(), terminal);
 	}
 
 	/**
@@ -199,7 +199,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
 	default LongSequence endingAt(long terminal) {
-		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalLongIterator(iterator(), terminal);
 	}
 
 	/**
@@ -213,7 +213,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
 	default LongSequence until(LongPredicate terminal) {
-		return () -> new ExclusiveTerminalLongIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalLongIterator(iterator(), terminal);
 	}
 
 	/**
@@ -226,7 +226,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
 	default LongSequence endingAt(LongPredicate terminal) {
-		return () -> new InclusiveTerminalLongIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalLongIterator(iterator(), terminal);
 	}
 
 	/**
@@ -234,12 +234,12 @@ public interface LongSequence extends LongIterable {
 	 * {@code mapper} function.
 	 */
 	default LongSequence map(LongUnaryOperator mapper) {
-		return () -> new UnaryLongIterator() {
+		return () -> new UnaryLongIterator(iterator()) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextLong());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -251,7 +251,7 @@ public interface LongSequence extends LongIterable {
 	 * the first previous value.
 	 */
 	default LongSequence mapBack(long firstPrevious, LongBinaryOperator mapper) {
-		return () -> new BackPeekingMappingLongIterator(firstPrevious, mapper).backedBy(iterator());
+		return () -> new BackPeekingMappingLongIterator(iterator(), firstPrevious, mapper);
 	}
 
 	/**
@@ -263,7 +263,7 @@ public interface LongSequence extends LongIterable {
 	 * the last next value.
 	 */
 	default LongSequence mapForward(long lastNext, LongBinaryOperator mapper) {
-		return () -> new ForwardPeekingMappingLongIterator(lastNext, mapper).backedBy(iterator());
+		return () -> new ForwardPeekingMappingLongIterator(iterator(), lastNext, mapper);
 	}
 
 	/**
@@ -277,26 +277,26 @@ public interface LongSequence extends LongIterable {
 	 * Map the {@code longs} in this {@code LongSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(LongFunction<T> mapper) {
-		return () -> new DelegatingIterator<Long, LongIterator, T, Iterator<T>>() {
+		return () -> new DelegatingIterator<Long, LongIterator, T, Iterator<T>>(iterator()) {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextLong());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Skip a set number of {@code longs} in this {@code LongSequence}.
 	 */
 	default LongSequence skip(long skip) {
-		return () -> new SkippingLongIterator(skip).backedBy(iterator());
+		return () -> new SkippingLongIterator(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
 	 */
 	default LongSequence limit(long limit) {
-		return () -> new LimitingLongIterator(limit).backedBy(iterator());
+		return () -> new LimitingLongIterator(iterator(), limit);
 	}
 
 	/**
@@ -364,7 +364,7 @@ public interface LongSequence extends LongIterable {
 	 * {@link LongPredicate}.
 	 */
 	default LongSequence filter(LongPredicate predicate) {
-		return () -> new FilteringLongIterator(predicate).backedBy(iterator());
+		return () -> new FilteringLongIterator(iterator(), predicate);
 	}
 
 	/**
@@ -489,14 +489,14 @@ public interface LongSequence extends LongIterable {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code LongSequence}.
 	 */
 	default LongSequence step(long step) {
-		return () -> new SteppingLongIterator(step).backedBy(iterator());
+		return () -> new SteppingLongIterator(iterator(), step);
 	}
 
 	/**
 	 * @return a {@code LongSequence} where each item occurs only once, the first time it is encountered.
 	 */
 	default LongSequence distinct() {
-		return () -> new DistinctLongIterator().backedBy(iterator());
+		return () -> new DistinctLongIterator(iterator());
 	}
 
 	/**
@@ -557,14 +557,14 @@ public interface LongSequence extends LongIterable {
 	 * Allow the given {@link LongConsumer} to see each element in this {@code LongSequence} as it is traversed.
 	 */
 	default LongSequence peek(LongConsumer action) {
-		return () -> new UnaryLongIterator() {
+		return () -> new UnaryLongIterator(iterator()) {
 			@Override
 			public long nextLong() {
 				long next = iterator.nextLong();
 				action.accept(next);
 				return next;
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -644,72 +644,72 @@ public interface LongSequence extends LongIterable {
 	 * Convert this sequence of longs to a sequence of chars corresponding to the downcast char value of each long.
 	 */
 	default CharSeq toChars() {
-		return () -> new DelegatingCharIterator<Long, LongIterator>() {
+		return () -> new DelegatingCharIterator<Long, LongIterator>(iterator()) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextLong();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of longs to a sequence of ints corresponding to the downcast integer value of each long.
 	 */
 	default IntSequence toInts() {
-		return () -> new DelegatingIntIterator<Long, LongIterator>() {
+		return () -> new DelegatingIntIterator<Long, LongIterator>(iterator()) {
 			@Override
 			public int nextInt() {
 				return (int) iterator.nextLong();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of longs to a sequence of doubles corresponding to the cast double value of each long.
 	 */
 	default DoubleSequence toDoubles() {
-		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
+		return () -> new DelegatingDoubleIterator<Long, LongIterator>(iterator()) {
 			@Override
 			public double nextDouble() {
 				return iterator.nextLong();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of longs to a sequence of chars using the given converter function.
 	 */
 	default CharSeq toChars(LongToCharFunction mapper) {
-		return () -> new DelegatingCharIterator<Long, LongIterator>() {
+		return () -> new DelegatingCharIterator<Long, LongIterator>(iterator()) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextLong());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of longs to a sequence of ints using the given converter function.
 	 */
 	default IntSequence toInts(LongToIntFunction mapper) {
-		return () -> new DelegatingIntIterator<Long, LongIterator>() {
+		return () -> new DelegatingIntIterator<Long, LongIterator>(iterator()) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextLong());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
 	 * Convert this sequence of longs to a sequence of doubles using the given converter function.
 	 */
 	default DoubleSequence toDoubles(LongToDoubleFunction mapper) {
-		return () -> new DelegatingDoubleIterator<Long, LongIterator>() {
+		return () -> new DelegatingDoubleIterator<Long, LongIterator>(iterator()) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextLong());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**

@@ -98,7 +98,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default <KK, VV> EntrySequence<KK, VV> map(Function<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
-		return () -> new MappingIterator<>(mapper).backedBy(iterator());
+		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	default <KK, VV> EntrySequence<KK, VV> map(Function<? super K, ? extends KK> keyMapper,
@@ -107,11 +107,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> skip(int skip) {
-		return () -> new SkippingIterator<Entry<K, V>>(skip).backedBy(iterator());
+		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
 	default EntrySequence<K, V> limit(int limit) {
-		return () -> new LimitingIterator<Entry<K, V>>(limit).backedBy(iterator());
+		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -124,15 +124,15 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
-		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
+		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
-	default <KK, VV> EntrySequence<KK, VV> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>>
+	default <KK, VV> EntrySequence<KK, VV> flatten(BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>>
 			                                               mapper) {
-		return flatMap(Entries.asFunction(mapper));
+		return flatten(Entries.asFunction(mapper));
 	}
 
-	default <KK, VV> EntrySequence<KK, VV> flatMap(Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>>
+	default <KK, VV> EntrySequence<KK, VV> flatten(Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>>
 			                                               mapper) {
 		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
 		toSequence(mapper).forEach(result::append);
@@ -140,11 +140,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> until(Entry<K, V> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default EntrySequence<K, V> endingAt(Entry<K, V> terminal) {
-		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default EntrySequence<K, V> until(K key, V value) {
@@ -164,11 +164,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> until(Predicate<? super Entry<K, V>> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default EntrySequence<K, V> endingAt(Predicate<? super Entry<K, V>> terminal) {
-		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	default Entry<K, V>[] toArray() {
@@ -333,7 +333,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default Sequence<List<Entry<K, V>>> window(int window, int step) {
-		return () -> new WindowingIterator<Entry<K, V>>(window, step).backedBy(iterator());
+		return () -> new WindowingIterator<>(iterator(), window, step);
 	}
 
 	default Sequence<List<Entry<K, V>>> partition(int size) {
@@ -341,19 +341,19 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> step(int step) {
-		return () -> new SteppingIterator<Entry<K, V>>(step).backedBy(iterator());
+		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
 	default EntrySequence<K, V> distinct() {
-		return () -> new DistinctIterator<Entry<K, V>>().backedBy(iterator());
+		return () -> new DistinctIterator<>(iterator());
 	}
 
 	default EntrySequence<K, V> sorted() {
-		return () -> new SortingIterator<Entry<K, V>>().backedBy(iterator());
+		return () -> new SortingIterator<>(iterator());
 	}
 
 	default EntrySequence<K, V> sorted(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
-		return () -> new SortingIterator<Entry<K, V>>(comparator).backedBy(iterator());
+		return () -> new SortingIterator<>(iterator(), comparator);
 	}
 
 	default Optional<Entry<K, V>> min(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
@@ -393,7 +393,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	default EntrySequence<K, V> peek(BiConsumer<K, V> action) {
 		Consumer<? super Entry<K, V>> consumer = Entries.asConsumer(action);
-		return () -> new PeekingIterator<>(consumer).backedBy(iterator());
+		return () -> new PeekingIterator<>(iterator(), consumer);
 	}
 
 	default EntrySequence<K, V> append(Iterator<? extends Entry<K, V>> iterator) {
@@ -429,7 +429,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default <T> Sequence<T> toSequence(Function<? super Entry<K, V>, ? extends T> mapper) {
-		return () -> new MappingIterator<>(mapper).backedBy(iterator());
+		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	default EntrySequence<K, V> repeat() {
@@ -441,7 +441,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	default EntrySequence<K, V> reverse() {
-		return () -> new ReverseIterator<Entry<K, V>>().backedBy(iterator());
+		return () -> new ReverseIterator<>(iterator());
 	}
 
 	default EntrySequence<K, V> shuffle() {

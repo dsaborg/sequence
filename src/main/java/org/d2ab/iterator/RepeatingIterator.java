@@ -31,13 +31,14 @@ public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
 	private long times;
 
 	public RepeatingIterator(Iterable<? extends T> iterable, long times) {
+		super(Iterators.empty());
 		this.iterable = iterable;
 		this.times = times;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if ((iterator == null || !iterator.hasNext()) && times != 0) {
+		if (!iterator.hasNext() && times != 0) {
 			if (times > 0)
 				times--;
 
@@ -45,7 +46,7 @@ public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
 			Iterator<T> iterator = (Iterator<T>) iterable.iterator();
 			this.iterator = iterator;
 		}
-		return iterator != null && iterator.hasNext();
+		return iterator.hasNext();
 	}
 
 	@Override

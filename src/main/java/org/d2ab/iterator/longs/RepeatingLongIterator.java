@@ -31,19 +31,20 @@ public class RepeatingLongIterator extends UnaryLongIterator {
 	private long times;
 
 	public RepeatingLongIterator(LongIterable iterable, long times) {
+		super(LongIterator.EMPTY);
 		this.iterable = iterable;
 		this.times = times;
 	}
 
 	@Override
 	public boolean hasNext() {
-		if ((iterator == null || !iterator.hasNext()) && times != 0) {
+		if (!iterator.hasNext() && times != 0) {
 			if (times > 0)
 				times--;
 
 			iterator = iterable.iterator();
 		}
-		return iterator != null && iterator.hasNext();
+		return iterator.hasNext();
 	}
 
 	@Override

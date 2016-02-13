@@ -31,17 +31,18 @@ public class ChainingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	public ChainingIterator(Iterable<? extends Iterable<? extends T>> iterables) {
+		super(Iterators.empty());
 		this.iterables = iterables.iterator();
 	}
 
 	@Override
 	public boolean hasNext() {
-		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
+		while (!iterator.hasNext() && iterables.hasNext()) {
 			@SuppressWarnings("unchecked")
 			Iterator<T> iterator = (Iterator<T>) iterables.next().iterator();
 			this.iterator = iterator;
 		}
-		return iterator != null && iterator.hasNext();
+		return iterator.hasNext();
 	}
 
 	@Override

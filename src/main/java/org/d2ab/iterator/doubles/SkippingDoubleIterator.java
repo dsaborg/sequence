@@ -23,7 +23,8 @@ public class SkippingDoubleIterator extends UnaryDoubleIterator {
 
 	private boolean skipped;
 
-	public SkippingDoubleIterator(double skip) {
+	public SkippingDoubleIterator(DoubleIterator iterator, double skip) {
+		super(iterator);
 		this.skip = skip;
 	}
 

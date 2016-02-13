@@ -25,11 +25,12 @@ public class ExclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 	private double next;
 	private boolean hasNext;
 
-	public ExclusiveTerminalDoubleIterator(double terminal) {
-		this(d -> d == terminal);
+	public ExclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal) {
+		this(iterator, d -> d == terminal);
 	}
 
-	public ExclusiveTerminalDoubleIterator(DoublePredicate terminal) {
+	public ExclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

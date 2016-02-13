@@ -17,6 +17,7 @@
 package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
@@ -27,7 +28,8 @@ public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 	private T next;
 	private boolean hasNext;
 
-	public FilteringIterator(Predicate<? super T> predicate) {
+	public FilteringIterator(Iterator<T> iterator, Predicate<? super T> predicate) {
+		super(iterator);
 		this.predicate = predicate;
 	}
 

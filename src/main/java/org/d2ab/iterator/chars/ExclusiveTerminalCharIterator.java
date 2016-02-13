@@ -25,11 +25,12 @@ public class ExclusiveTerminalCharIterator extends UnaryCharIterator {
 	private char next;
 	private boolean hasNext;
 
-	public ExclusiveTerminalCharIterator(char terminal) {
-		this(c -> c == terminal);
+	public ExclusiveTerminalCharIterator(CharIterator iterator, char terminal) {
+		this(iterator, c -> c == terminal);
 	}
 
-	public ExclusiveTerminalCharIterator(CharPredicate terminal) {
+	public ExclusiveTerminalCharIterator(CharIterator iterator, CharPredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

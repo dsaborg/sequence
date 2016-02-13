@@ -28,7 +28,8 @@ public class BackPeekingMappingLongIterator extends UnaryLongIterator {
 	private boolean hasPrevious;
 	private long previous;
 
-	public BackPeekingMappingLongIterator(long firstPrevious, LongBinaryOperator mapper) {
+	public BackPeekingMappingLongIterator(LongIterator iterator, long firstPrevious, LongBinaryOperator mapper) {
+		super(iterator);
 		this.firstPrevious = firstPrevious;
 		this.mapper = mapper;
 	}

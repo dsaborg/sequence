@@ -26,6 +26,10 @@ import java.util.*;
 public class ReverseIterator<T> extends UnaryReferenceIterator<T> {
 	private ListIterator<? extends T> listIterator;
 
+	public ReverseIterator(Iterator<T> iterator) {
+		super(iterator);
+	}
+
 	@Override
 	public boolean hasNext() {
 		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();

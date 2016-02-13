@@ -24,7 +24,8 @@ public class SteppingCharIterator extends UnaryCharIterator {
 	private boolean hasNext;
 	private char next;
 
-	public SteppingCharIterator(long step) {
+	public SteppingCharIterator(CharIterator iterator, long step) {
+		super(iterator);
 		this.step = step;
 	}
 

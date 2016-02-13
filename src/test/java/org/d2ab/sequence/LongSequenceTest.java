@@ -635,12 +635,12 @@ public class LongSequenceTest {
 				List<Long> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Long> iterator = subList.iterator();
-				return new DelegatingLongIterator<Long, Iterator<Long>>() {
+				return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
 					@Override
 					public long nextLong() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat();
 		assertThat(repeatVarying, contains(1L, 2L, 3L, 1L, 2L, 1L));
@@ -669,12 +669,12 @@ public class LongSequenceTest {
 				List<Long> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Long> iterator = subList.iterator();
-				return new DelegatingLongIterator<Long, Iterator<Long>>() {
+				return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
 					@Override
 					public long nextLong() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat(2);
 		assertThat(repeatVarying, contains(1L, 2L, 3L, 1L, 2L));

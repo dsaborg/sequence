@@ -23,7 +23,8 @@ public class SkippingCharIterator extends UnaryCharIterator {
 
 	private boolean skipped;
 
-	public SkippingCharIterator(long skip) {
+	public SkippingCharIterator(CharIterator iterator, long skip) {
+		super(iterator);
 		this.skip = skip;
 	}
 

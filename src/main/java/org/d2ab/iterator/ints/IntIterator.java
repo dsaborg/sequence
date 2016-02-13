@@ -19,6 +19,7 @@ package org.d2ab.iterator.ints;
 import org.d2ab.iterable.ints.IntIterable;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.function.IntBinaryOperator;
 
@@ -26,6 +27,18 @@ import java.util.function.IntBinaryOperator;
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
  */
 public interface IntIterator extends PrimitiveIterator.OfInt {
+	IntIterator EMPTY = new IntIterator() {
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public int nextInt() {
+			throw new NoSuchElementException();
+		}
+	};
+
 	static IntIterator of(int... ints) {
 		return new ArrayIntIterator(ints);
 	}

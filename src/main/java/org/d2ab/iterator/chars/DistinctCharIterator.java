@@ -28,6 +28,10 @@ public class DistinctCharIterator extends UnaryCharIterator {
 	private char next;
 	private boolean hasNext;
 
+	public DistinctCharIterator(CharIterator iterator) {
+		super(iterator);
+	}
+
 	@Override
 	public char nextChar() {
 		if (!hasNext())

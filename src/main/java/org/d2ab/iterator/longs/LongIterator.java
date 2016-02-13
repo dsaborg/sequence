@@ -19,6 +19,7 @@ package org.d2ab.iterator.longs;
 import org.d2ab.iterable.longs.LongIterable;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.function.LongBinaryOperator;
 
@@ -26,6 +27,18 @@ import java.util.function.LongBinaryOperator;
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
  */
 public interface LongIterator extends PrimitiveIterator.OfLong {
+	LongIterator EMPTY = new LongIterator() {
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public long nextLong() {
+			throw new NoSuchElementException();
+		}
+	};
+
 	static LongIterator of(long... longs) {
 		return new ArrayLongIterator(longs);
 	}

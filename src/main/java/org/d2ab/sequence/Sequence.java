@@ -330,7 +330,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #repeat()
 	 */
 	default Sequence<T> until(@Nullable T terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	/**
@@ -346,7 +346,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #repeat()
 	 */
 	default Sequence<T> endingAt(@Nullable T terminal) {
-		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	/**
@@ -362,7 +362,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #repeat()
 	 */
 	default Sequence<T> untilNull() {
-		return () -> new ExclusiveTerminalIterator<>((T) null).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), (T) null);
 	}
 
 	/**
@@ -378,7 +378,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #repeat()
 	 */
 	default Sequence<T> endingAtNull() {
-		return () -> new InclusiveTerminalIterator<>((T) null).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), (T) null);
 	}
 
 	/**
@@ -394,7 +394,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #repeat()
 	 */
 	default Sequence<T> until(Predicate<T> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	/**
@@ -410,7 +410,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #repeat()
 	 */
 	default Sequence<T> endingAt(Predicate<T> terminal) {
-		return () -> new InclusiveTerminalIterator<>(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
 	/**
@@ -424,21 +424,21 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
-		return () -> new MappingIterator<>(mapper).backedBy(iterator());
+		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	/**
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */
 	default Sequence<T> skip(long skip) {
-		return () -> new SkippingIterator<T>(skip).backedBy(iterator());
+		return () -> new SkippingIterator<T>(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of results returned by this {@code Sequence}.
 	 */
 	default Sequence<T> limit(long limit) {
-		return () -> new LimitingIterator<T>(limit).backedBy(iterator());
+		return () -> new LimitingIterator<T>(iterator(), limit);
 	}
 
 	/**
@@ -481,7 +481,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given {@link Predicate}.
 	 */
 	default Sequence<T> filter(Predicate<? super T> predicate) {
-		return () -> new FilteringIterator<>(predicate).backedBy(iterator());
+		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
 	/**
@@ -598,8 +598,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Convert this {@code Sequence} of into a {@link Map} of the type determined by the given constructor, using the
 	 * given mapper {@link Function} to convert each element into a {@link Map.Entry}.
 	 */
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor, Function<? super T, ? extends
-			                                                                                                   Entry<K, V>> mapper) {
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
+	                                            Function<? super T, ? extends Entry<K, V>> mapper) {
 		M result = constructor.get();
 		forEach(each -> Entries.put(result, mapper.apply(each)));
 		return result;
@@ -813,12 +813,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Entry<T, T>> entries() {
-		return () -> new PairingIterator<T, Entry<T, T>>(1) {
+		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
 			@Override
 			protected Entry<T, T> pair(T first, @Nullable T second) {
 				return Entries.of(first, second);
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -827,12 +827,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Pair<T, T>> pairs() {
-		return () -> new PairingIterator<T, Pair<T, T>>(1) {
+		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 1) {
 			@Override
 			protected Pair<T, T> pair(T first, @Nullable T second) {
 				return Pair.of(first, second);
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -841,12 +841,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Entry<T, T>> adjacentEntries() {
-		return () -> new PairingIterator<T, Entry<T, T>>(2) {
+		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 2) {
 			@Override
 			protected Entry<T, T> pair(T first, @Nullable T second) {
 				return Entries.of(first, second);
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -855,12 +855,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Pair<T, T>> adjacentPairs() {
-		return () -> new PairingIterator<T, Pair<T, T>>(2) {
+		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 2) {
 			@Override
 			protected Pair<T, T> pair(T first, @Nullable T second) {
 				return Pair.of(first, second);
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -893,7 +893,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<List<T>> window(int window, int step) {
-		return () -> new WindowingIterator<T>(window, step).backedBy(iterator());
+		return () -> new WindowingIterator<T>(iterator(), window, step);
 	}
 
 	default Sequence<List<T>> partition(int size) {
@@ -904,7 +904,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
 	default Sequence<T> step(long step) {
-		return () -> new SteppingIterator<T>(step).backedBy(iterator());
+		return () -> new SteppingIterator<T>(iterator(), step);
 	}
 
 	/**
@@ -912,7 +912,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * encountered.
 	 */
 	default Sequence<T> distinct() {
-		return () -> new DistinctIterator<T>().backedBy(iterator());
+		return () -> new DistinctIterator<T>(iterator());
 	}
 
 	/**
@@ -923,7 +923,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<S> comparableIterator = (Iterator<S>) iterator();
-			return new SortingIterator<S>().backedBy(comparableIterator);
+			return new SortingIterator<S>(comparableIterator);
 		};
 	}
 
@@ -931,7 +931,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return this {@code Sequence} sorted according to the given {@link Comparator}.
 	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
-		return () -> new SortingIterator<>(comparator).backedBy(iterator());
+		return () -> new SortingIterator<>(iterator(), comparator);
 	}
 
 	/**
@@ -998,7 +998,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Allow the given {@link Consumer} to see each element in this {@code Sequence} as it is traversed.
 	 */
 	default Sequence<T> peek(Consumer<? super T> action) {
-		return () -> new PeekingIterator<>(action).backedBy(iterator());
+		return () -> new PeekingIterator<>(iterator(), action);
 	}
 
 	/**
@@ -1006,8 +1006,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> delimit(V delimiter) {
-		return () -> new DelimitingIterator(Optional.empty(), Optional.of(delimiter), Optional.empty()).backedBy(
-				iterator());
+		return () -> new DelimitingIterator(iterator(), Optional.empty(), Optional.of(delimiter), Optional.empty());
 	}
 
 	/**
@@ -1015,8 +1014,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
-		return () -> new DelimitingIterator(Optional.of(prefix), Optional.of(delimiter), Optional.of(suffix)).backedBy(
-				iterator());
+		return () -> new DelimitingIterator(iterator(), Optional.of(prefix), Optional.of(delimiter),
+		                                    Optional.of(suffix));
 	}
 
 	/**
@@ -1024,8 +1023,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> prefix(V prefix) {
-		return () -> new DelimitingIterator(Optional.of(prefix), Optional.empty(), Optional.empty()).backedBy(
-				iterator());
+		return () -> new DelimitingIterator(iterator(), Optional.of(prefix), Optional.empty(), Optional.empty());
 	}
 
 	/**
@@ -1033,8 +1031,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <V extends R, R> Sequence<R> suffix(V suffix) {
-		return () -> new DelimitingIterator(Optional.empty(), Optional.empty(), Optional.of(suffix)).backedBy(
-				iterator());
+		return () -> new DelimitingIterator(iterator(), Optional.empty(), Optional.empty(), Optional.of(suffix));
 	}
 
 	/**
@@ -1050,7 +1047,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.
 	 */
 	default Sequence<T> reverse() {
-		return () -> new ReverseIterator<T>().backedBy(iterator());
+		return () -> new ReverseIterator<T>(iterator());
 	}
 
 	/**
@@ -1084,12 +1081,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default CharSeq toChars(ToCharFunction<T> mapper) {
-		return () -> new DelegatingCharIterator<T, Iterator<T>>() {
+		return () -> new DelegatingCharIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.next());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -1104,12 +1101,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default IntSequence toInts(ToIntFunction<T> mapper) {
-		return () -> new DelegatingIntIterator<T, Iterator<T>>() {
+		return () -> new DelegatingIntIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.next());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -1124,12 +1121,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default LongSequence toLongs(ToLongFunction<T> mapper) {
-		return () -> new DelegatingLongIterator<T, Iterator<T>>() {
+		return () -> new DelegatingLongIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.next());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -1144,12 +1141,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<T> mapper) {
-		return () -> new DelegatingDoubleIterator<T, Iterator<T>>() {
+		return () -> new DelegatingDoubleIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.next());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**

@@ -630,12 +630,12 @@ public class CharSeqTest {
 				List<Character> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Character> iterator = subList.iterator();
-				return new DelegatingCharIterator<Character, Iterator<Character>>() {
+				return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
 					@Override
 					public char nextChar() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat();
 		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b', 'a'));
@@ -664,12 +664,12 @@ public class CharSeqTest {
 				List<Character> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Character> iterator = subList.iterator();
-				return new DelegatingCharIterator<Character, Iterator<Character>>() {
+				return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
 					@Override
 					public char nextChar() {
 						return iterator.next();
 					}
-				}.backedBy(iterator);
+				};
 			}
 		}).repeat(2);
 		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b'));

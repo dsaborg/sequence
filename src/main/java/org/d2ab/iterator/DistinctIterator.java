@@ -18,6 +18,7 @@ package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -27,6 +28,10 @@ public class DistinctIterator<T> extends UnaryReferenceIterator<T> {
 	@Nullable
 	private T next;
 	private boolean hasNext;
+
+	public DistinctIterator(Iterator<T> iterator) {
+		super(iterator);
+	}
 
 	@Override
 	public boolean hasNext() {

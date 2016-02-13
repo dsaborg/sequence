@@ -17,6 +17,7 @@
 package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public abstract class PairingIterator<T, E> extends DelegatingReferenceIterator<T, E> {
@@ -25,7 +26,8 @@ public abstract class PairingIterator<T, E> extends DelegatingReferenceIterator<
 	private T previous;
 	private boolean hasPrevious;
 
-	public PairingIterator(long step) {
+	public PairingIterator(Iterator<T> iterator, long step) {
+		super(iterator);
 		this.step = step;
 	}
 

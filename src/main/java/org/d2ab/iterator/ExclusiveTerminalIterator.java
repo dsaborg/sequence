@@ -17,6 +17,7 @@
 package org.d2ab.iterator;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -28,11 +29,12 @@ public class ExclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
 	private T next;
 	private boolean hasNext;
 
-	public ExclusiveTerminalIterator(@Nullable T terminal) {
-		this(o -> Objects.equals(o, terminal));
+	public ExclusiveTerminalIterator(Iterator<T> iterator, @Nullable T terminal) {
+		this(iterator, o -> Objects.equals(o, terminal));
 	}
 
-	public ExclusiveTerminalIterator(Predicate<? super T> terminalPredicate) {
+	public ExclusiveTerminalIterator(Iterator<T> iterator, Predicate<? super T> terminalPredicate) {
+		super(iterator);
 		this.terminalPredicate = terminalPredicate;
 	}
 

@@ -25,11 +25,12 @@ public class InclusiveTerminalLongIterator extends UnaryLongIterator {
 	private long previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalLongIterator(long terminal) {
-		this(l -> l == terminal);
+	public InclusiveTerminalLongIterator(LongIterator iterator, long terminal) {
+		this(iterator, l -> l == terminal);
 	}
 
-	public InclusiveTerminalLongIterator(LongPredicate terminal) {
+	public InclusiveTerminalLongIterator(LongIterator iterator, LongPredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

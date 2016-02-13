@@ -25,7 +25,8 @@ public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>
 	private Deque<T> partition = new LinkedList<>();
 	private boolean started;
 
-	public WindowingIterator(int window, int step) {
+	public WindowingIterator(Iterator<T> iterator, int window, int step) {
+		super(iterator);
 		this.window = window;
 		this.step = step;
 	}

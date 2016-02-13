@@ -25,11 +25,12 @@ public class ExclusiveTerminalIntIterator extends UnaryIntIterator {
 	private int next;
 	private boolean hasNext;
 
-	public ExclusiveTerminalIntIterator(int terminal) {
-		this(i -> i == terminal);
+	public ExclusiveTerminalIntIterator(IntIterator iterator, int terminal) {
+		this(iterator, i -> i == terminal);
 	}
 
-	public ExclusiveTerminalIntIterator(IntPredicate terminal) {
+	public ExclusiveTerminalIntIterator(IntIterator iterator, IntPredicate terminal) {
+		super(iterator);
 		this.terminal = terminal;
 	}
 

@@ -31,7 +31,15 @@ public class ChainingCharIterator extends UnaryCharIterator {
 	}
 
 	public ChainingCharIterator(Iterable<CharIterable> iterables) {
+		super(CharIterator.EMPTY);
 		this.iterables = iterables.iterator();
+	}
+
+	@Override
+	public boolean hasNext() {
+		while (!iterator.hasNext() && iterables.hasNext())
+			iterator = iterables.next().iterator();
+		return iterator.hasNext();
 	}
 
 	@Override
@@ -40,13 +48,5 @@ public class ChainingCharIterator extends UnaryCharIterator {
 			throw new NoSuchElementException();
 
 		return iterator.nextChar();
-	}
-
-	@Override
-	public boolean hasNext() {
-		while ((iterator == null || !iterator.hasNext()) && iterables.hasNext()) {
-			iterator = iterables.next().iterator();
-		}
-		return iterator != null && iterator.hasNext();
 	}
 }

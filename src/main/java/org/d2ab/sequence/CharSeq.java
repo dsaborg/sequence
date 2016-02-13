@@ -197,7 +197,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
 	default CharSeq until(char terminal) {
-		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalCharIterator(iterator(), terminal);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
 	default CharSeq endingAt(char terminal) {
-		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalCharIterator(iterator(), terminal);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
 	default CharSeq until(CharPredicate terminal) {
-		return () -> new ExclusiveTerminalCharIterator(terminal).backedBy(iterator());
+		return () -> new ExclusiveTerminalCharIterator(iterator(), terminal);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
 	default CharSeq endingAt(CharPredicate terminal) {
-		return () -> new InclusiveTerminalCharIterator(terminal).backedBy(iterator());
+		return () -> new InclusiveTerminalCharIterator(iterator(), terminal);
 	}
 
 	/**
@@ -244,12 +244,12 @@ public interface CharSeq extends CharIterable {
 	 * {@code mapper} function.
 	 */
 	default CharSeq map(CharUnaryOperator mapper) {
-		return () -> new UnaryCharIterator() {
+		return () -> new UnaryCharIterator(iterator()) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextChar());
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -282,14 +282,14 @@ public interface CharSeq extends CharIterable {
 	 * Skip a set number of {@code chars} in this {@code CharSeq}.
 	 */
 	default CharSeq skip(long skip) {
-		return () -> new SkippingCharIterator(skip).backedBy(iterator());
+		return () -> new SkippingCharIterator(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
 	 */
 	default CharSeq limit(long limit) {
-		return () -> new LimitingCharIterator(limit).backedBy(iterator());
+		return () -> new LimitingCharIterator(iterator(), limit);
 	}
 
 	/**
@@ -357,7 +357,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link CharPredicate}.
 	 */
 	default CharSeq filter(CharPredicate predicate) {
-		return () -> new FilteringCharIterator(predicate).backedBy(iterator());
+		return () -> new FilteringCharIterator(iterator(), predicate);
 	}
 
 	/**
@@ -484,14 +484,14 @@ public interface CharSeq extends CharIterable {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code CharSeq}.
 	 */
 	default CharSeq step(long step) {
-		return () -> new SteppingCharIterator(step).backedBy(iterator());
+		return () -> new SteppingCharIterator(iterator(), step);
 	}
 
 	/**
 	 * @return a {@code CharSeq} where each item occurs only once, the first time it is encountered.
 	 */
 	default CharSeq distinct() {
-		return () -> new DistinctCharIterator().backedBy(iterator());
+		return () -> new DistinctCharIterator(iterator());
 	}
 
 	/**
@@ -552,14 +552,14 @@ public interface CharSeq extends CharIterable {
 	 * Allow the given {@link CharConsumer} to see each element in this {@code CharSeq} as it is traversed.
 	 */
 	default CharSeq peek(CharConsumer action) {
-		return () -> new UnaryCharIterator() {
+		return () -> new UnaryCharIterator(iterator()) {
 			@Override
 			public char nextChar() {
 				char next = iterator.nextChar();
 				action.accept(next);
 				return next;
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**
@@ -655,7 +655,7 @@ public interface CharSeq extends CharIterable {
 	 * the first previous value.
 	 */
 	default CharSeq mapBack(char firstPrevious, CharBinaryOperator mapper) {
-		return () -> new BackPeekingMappingCharIterator(firstPrevious, mapper).backedBy(iterator());
+		return () -> new BackPeekingMappingCharIterator(iterator(), firstPrevious, mapper);
 	}
 
 	/**
@@ -666,19 +666,19 @@ public interface CharSeq extends CharIterable {
 	 * the last next value.
 	 */
 	default CharSeq mapForward(char lastNext, CharBinaryOperator mapper) {
-		return () -> new ForwardPeekingMappingCharIterator(lastNext, mapper).backedBy(iterator());
+		return () -> new ForwardPeekingMappingCharIterator(iterator(), lastNext, mapper);
 	}
 
 	/**
 	 * Convert this sequence of characters to a sequence of ints corresponding to the integer value of each character.
 	 */
 	default IntSequence toInts() {
-		return () -> new DelegatingIntIterator<Character, CharIterator>() {
+		return () -> new DelegatingIntIterator<Character, CharIterator>(iterator()) {
 			@Override
 			public int nextInt() {
 				return iterator.nextChar();
 			}
-		}.backedBy(iterator());
+		};
 	}
 
 	/**

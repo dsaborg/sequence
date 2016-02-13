@@ -22,7 +22,8 @@ public class LimitingDoubleIterator extends UnaryDoubleIterator {
 	private final double limit;
 	private double count;
 
-	public LimitingDoubleIterator(double limit) {
+	public LimitingDoubleIterator(DoubleIterator iterator, double limit) {
+		super(iterator);
 		this.limit = limit;
 	}
 

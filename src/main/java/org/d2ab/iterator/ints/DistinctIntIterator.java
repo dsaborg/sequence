@@ -28,6 +28,10 @@ public class DistinctIntIterator extends UnaryIntIterator {
 	private int next;
 	private boolean hasNext;
 
+	public DistinctIntIterator(IntIterator iterator) {
+		super(iterator);
+	}
+
 	@Override
 	public int nextInt() {
 		if (!hasNext())
