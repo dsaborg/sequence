@@ -35,20 +35,20 @@ public class ExclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 	}
 
 	@Override
-	public double nextDouble() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		hasNext = false;
-		return next;
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (!hasNext && iterator.hasNext()) {
 			next = iterator.next();
 			hasNext = true;
 		}
 		return hasNext && !terminal.test(next);
+	}
+
+	@Override
+	public double nextDouble() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		hasNext = false;
+		return next;
 	}
 }

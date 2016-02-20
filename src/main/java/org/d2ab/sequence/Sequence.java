@@ -427,6 +427,14 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
+	default <U> Sequence<U> mapBack(BiFunction<? super T, ? super T, ? extends U> mapper) {
+		return () -> new BackPeekingMappingIterator<>(iterator(), mapper);
+	}
+
+	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
+		return () -> new ForwardPeekingMappingIterator<>(iterator(), mapper);
+	}
+
 	/**
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */

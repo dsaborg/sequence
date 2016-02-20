@@ -392,6 +392,18 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void mapBack() {
+		twice(() -> assertThat(_123.mapBack((p, n) -> p), contains(null, 1, 2)));
+		twice(() -> assertThat(_123.mapBack((p, n) -> n), contains(1, 2, 3)));
+	}
+
+	@Test
+	public void mapForward() {
+		twice(() -> assertThat(_123.mapForward((n, f) -> n), contains(1, 2, 3)));
+		twice(() -> assertThat(_123.mapForward((n, f) -> f), contains(2, 3, null)));
+	}
+
+	@Test
 	public void recurse() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1);
 		twice(() -> assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
