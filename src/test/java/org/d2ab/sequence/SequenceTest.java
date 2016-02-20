@@ -1289,4 +1289,10 @@ public class SequenceTest {
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
 	}
+
+	@Test
+	public void swap() {
+		twice(() -> assertThat(_12345.swap((a, b) -> a == 2 && b == 3), contains(1, 3, 2, 4, 5)));
+		twice(() -> assertThat(_12345.swap((a, b) -> a == 2), contains(1, 3, 4, 5, 2)));
+	}
 }

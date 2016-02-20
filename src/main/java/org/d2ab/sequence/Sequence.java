@@ -1185,4 +1185,11 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<T> repeat(long times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
+
+	/**
+	 * Tests each pair of items in the sequence and swaps any two items which match the given predicate.
+	 */
+	default Sequence<T> swap(BiPredicate<? super T, ? super T> swapper) {
+		return () -> new SwappingIterator<>(iterator(), swapper);
+	}
 }
