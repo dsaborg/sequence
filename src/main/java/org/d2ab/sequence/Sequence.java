@@ -439,14 +439,14 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */
 	default Sequence<T> skip(long skip) {
-		return () -> new SkippingIterator<T>(iterator(), skip);
+		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of results returned by this {@code Sequence}.
 	 */
 	default Sequence<T> limit(long limit) {
-		return () -> new LimitingIterator<T>(iterator(), limit);
+		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
 	/**
@@ -505,7 +505,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> flatten(Function<? super T, ? extends Iterable<U>> mapper) {
-		return ChainingIterable.flatMap(this, mapper)::iterator;
+		return ChainingIterable.flatten(this, mapper)::iterator;
 	}
 
 	/**
@@ -621,7 +621,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier) {
 		@SuppressWarnings("unchecked")
-		Function<T, Entry<K, V>> mapper = (Function<T, Entry<K, V>>) Function.<Entry<K, V>>identity();
+		Function<T, Entry<K, V>> mapper = e -> (Entry<K, V>) e;
 		return toMap(supplier, mapper);
 	}
 
@@ -901,7 +901,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	default Sequence<List<T>> window(int window, int step) {
-		return () -> new WindowingIterator<T>(iterator(), window, step);
+		return () -> new WindowingIterator<>(iterator(), window, step);
 	}
 
 	default Sequence<List<T>> partition(int size) {
@@ -912,7 +912,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
 	default Sequence<T> step(long step) {
-		return () -> new SteppingIterator<T>(iterator(), step);
+		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
 	/**
@@ -920,7 +920,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * encountered.
 	 */
 	default Sequence<T> distinct() {
-		return () -> new DistinctIterator<T>(iterator());
+		return () -> new DistinctIterator<>(iterator());
 	}
 
 	/**
@@ -931,7 +931,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> {
 			@SuppressWarnings("unchecked")
 			Iterator<S> comparableIterator = (Iterator<S>) iterator();
-			return new SortingIterator<S>(comparableIterator);
+			return new SortingIterator<>(comparableIterator);
 		};
 	}
 
@@ -1055,7 +1055,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.
 	 */
 	default Sequence<T> reverse() {
-		return () -> new ReverseIterator<T>(iterator());
+		return () -> new ReverseIterator<>(iterator());
 	}
 
 	/**

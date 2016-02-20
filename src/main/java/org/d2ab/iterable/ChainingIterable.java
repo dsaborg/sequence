@@ -47,13 +47,19 @@ public class ChainingIterable<T> implements Iterable<T> {
 		return new ChainingIterable<U>().flatAppend(requireNonNull(containers));
 	}
 
-	public static <T, U> Iterable<U> flatMap(Iterable<? extends T> iterable,
+	public static <T, U> Iterable<U> flatten(Iterable<? extends T> iterable,
 	                                         Function<? super T, ? extends Iterable<U>> mapper) {
 		requireNonNull(mapper);
 		requireNonNull(iterable);
 		ChainingIterable<U> result = new ChainingIterable<>();
 		iterable.forEach(each -> result.append(mapper.apply(each)));
 		return result;
+	}
+
+	public Iterable<T> flatAppend(Object container) {
+		requireNonNull(container);
+		append(Iterables.from(container));
+		return this;
 	}
 
 	public Iterable<T> flatAppend(Iterable<?> containers) {
