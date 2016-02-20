@@ -427,10 +427,24 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Map this {@code Sequence} to another sequence while peeking at the previous element in the iteration.
+	 * <p>
+	 * The mapper has access to the previous element and the next element in the iteration. {@code null] is provided
+	 * as the first previous value when the next element is the first value in the sequence, and there is no previous
+	 * value.
+	 */
 	default <U> Sequence<U> mapBack(BiFunction<? super T, ? super T, ? extends U> mapper) {
 		return () -> new BackPeekingMappingIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Map this {@code Sequence} to another sequence while peeking at the following element in the iteration.
+	 * <p>
+	 * The mapper has access to the next element and the following element in the iteration. {@code null} is
+	 * provided as the last following value when the next element is the last value in the sequence and there is no
+	 * following value.
+	 */
 	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
 		return () -> new ForwardPeekingMappingIterator<>(iterator(), mapper);
 	}
