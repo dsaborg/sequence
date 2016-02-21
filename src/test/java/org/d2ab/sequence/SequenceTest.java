@@ -1028,8 +1028,20 @@ public class SequenceTest {
 
 	@Test
 	public void delimit() {
-		Sequence<Object> delimited = _123.delimit(", ");
-		twice(() -> assertThat(delimited, contains(1, ", ", 2, ", ", 3)));
+		Sequence<Object> delimitedEmpty = empty.delimit(", ");
+		twice(() -> assertThat(delimitedEmpty, is(emptyIterable())));
+
+		Sequence<Object> delimited1 = _1.delimit(", ");
+		twice(() -> assertThat(delimited1, contains(1)));
+
+		Sequence<Object> delimited12 = _12.delimit(", ");
+		twice(() -> assertThat(delimited12, contains(1, ", ", 2)));
+
+		Sequence<Object> delimited123 = _123.delimit(", ");
+		twice(() -> assertThat(delimited123, contains(1, ", ", 2, ", ", 3)));
+
+		Sequence<Object> delimited1234 = _1234.delimit(", ");
+		twice(() -> assertThat(delimited1234, contains(1, ", ", 2, ", ", 3, ", ", 4)));
 	}
 
 	@Test
@@ -1037,8 +1049,11 @@ public class SequenceTest {
 		Sequence<Object> delimitedEmpty = empty.prefix("[");
 		twice(() -> assertThat(delimitedEmpty, contains("[")));
 
-		Sequence<Object> delimited = _123.prefix("[");
-		twice(() -> assertThat(delimited, contains("[", 1, 2, 3)));
+		Sequence<Object> delimited1 = _1.prefix("[");
+		twice(() -> assertThat(delimited1, contains("[", 1)));
+
+		Sequence<Object> delimited123 = _123.prefix("[");
+		twice(() -> assertThat(delimited123, contains("[", 1, 2, 3)));
 	}
 
 	@Test
@@ -1046,8 +1061,11 @@ public class SequenceTest {
 		Sequence<Object> delimitedEmpty = empty.suffix("]");
 		twice(() -> assertThat(delimitedEmpty, contains("]")));
 
-		Sequence<Object> delimited = _123.suffix("]");
-		twice(() -> assertThat(delimited, contains(1, 2, 3, "]")));
+		Sequence<Object> delimited1 = _1.suffix("]");
+		twice(() -> assertThat(delimited1, contains(1, "]")));
+
+		Sequence<Object> delimited123 = _123.suffix("]");
+		twice(() -> assertThat(delimited123, contains(1, 2, 3, "]")));
 	}
 
 	@Test
