@@ -404,6 +404,22 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void peekBack() {
+		twice(() -> assertThat(_123.peekBack((p, n) -> {
+			assertThat(n, is(oneOf(1, 2, 3)));
+			assertThat(p, is(n == 1 ? null : n - 1));
+		}), contains(1, 2, 3)));
+	}
+
+	@Test
+	public void peekForward() {
+		twice(() -> assertThat(_123.peekForward((n, f) -> {
+			assertThat(n, is(oneOf(1, 2, 3)));
+			assertThat(f, is(n == 3 ? null : n + 1));
+		}), contains(1, 2, 3)));
+	}
+
+	@Test
 	public void recurse() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1);
 		twice(() -> assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));

@@ -16,59 +16,35 @@
 
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 
 /**
  * An {@link Iterator} that swaps any pair of items in the iteration that match the given predicate.
  */
-public class SwappingIterator<T> extends UnaryReferenceIterator<T> {
-	private final BiPredicate<? super T, ? super T> swapper;
+public class SwappingIterator<T> extends ForwardPeekingMappingIterator<T, T> {
+	private final BiPredicate<? super T, ? super T> swapPredicate;
 
-	private T next;
-	private boolean hasNext;
-	private boolean started;
-
-	public SwappingIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> swapper) {
+	public SwappingIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> swapPredicate) {
 		super(iterator);
-		this.swapper = swapper;
+		this.swapPredicate = swapPredicate;
 	}
 
 	@Override
-	public boolean hasNext() {
-		if (!started) {
-			if (iterator.hasNext()) {
-				next = iterator.next();
-				hasNext = true;
-			}
-			started = true;
-		}
-		return hasNext;
-	}
-
-	@Override
-	public T next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		boolean hasFollowing = iterator.hasNext();
-		T following;
-		if (hasFollowing) {
-			following = iterator.next();
-			if (swapper.test(next, following)) {
-				T temp = next;
-				next = following;
-				following = temp;
-			}
-		} else {
-			following = null;
+	protected T mapFollowing(boolean hasFollowing, @Nullable T following) {
+		if (!hasFollowing || !swapPredicate.test(next, following)) {
+			return following;
 		}
 
-		T result = next;
+		T swap = next;
 		next = following;
-		hasNext = hasFollowing;
-		return result;
+		return swap;
+	}
+
+	@Override
+	protected T mapNext(@Nullable T following) {
+		return next;
 	}
 }
 

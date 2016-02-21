@@ -16,23 +16,20 @@
 
 package org.d2ab.iterator;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
 
 /**
- * An iterator that maps each element by looking at the next AND the following element.
+ * Base class for iterators the can peek at the following item of each item in the iteration.
  */
-public class ForwardPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
-	private final BiFunction<? super T, ? super T, ? extends U> mapper;
-
-	private T next;
-	private boolean hasNext;
+public abstract class ForwardPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
+	protected T next;
+	protected boolean hasNext;
 	private boolean started;
 
-	public ForwardPeekingMappingIterator(Iterator<T> iterator, BiFunction<? super T, ? super T, ? extends U> mapper) {
+	public ForwardPeekingMappingIterator(Iterator<T> iterator) {
 		super(iterator);
-		this.mapper = mapper;
 	}
 
 	@Override
@@ -53,11 +50,14 @@ public class ForwardPeekingMappingIterator<T, U> extends DelegatingReferenceIter
 			throw new NoSuchElementException();
 
 		boolean hasFollowing = iterator.hasNext();
-		T following = hasFollowing ? iterator.next() : null;
-
-		U mapped = mapper.apply(next, following);
-		this.next = following;
+		T following = mapFollowing(hasFollowing, hasFollowing ? iterator.next() : null);
+		U mapped = mapNext(following);
+		next = following;
 		hasNext = hasFollowing;
 		return mapped;
 	}
+
+	protected abstract T mapFollowing(boolean hasFollowing, @Nullable T following);
+
+	protected abstract U mapNext(@Nullable T following);
 }

@@ -435,7 +435,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * value.
 	 */
 	default <U> Sequence<U> mapBack(BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return () -> new BackPeekingMappingIterator<>(iterator(), mapper);
+		return () -> new BackPeekingMappingIterator<T, U>(iterator()) {
+			@Override
+			protected U mapNext(T next) {
+				return mapper.apply(previous, next);
+			}
+		};
 	}
 
 	/**
@@ -446,7 +451,17 @@ public interface Sequence<T> extends Iterable<T> {
 	 * following value.
 	 */
 	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return () -> new ForwardPeekingMappingIterator<>(iterator(), mapper);
+		return () -> new ForwardPeekingMappingIterator<T, U>(iterator()) {
+			@Override
+			protected T mapFollowing(boolean hasFollowing, @Nullable T following) {
+				return following;
+			}
+
+			@Override
+			protected U mapNext(@Nullable T following) {
+				return mapper.apply(next, following);
+			}
+		};
 	}
 
 	/**
@@ -830,9 +845,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
-	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
-	 * has a null as the second item.
+	 * Pair the elements of this {@link Sequence} into a sequence of overlapping {@link Entry} elements. Each entry
+	 * overlaps the value item with the key item of the next entry. If there is only one item in the sequence, the
+	 * first pair returned has that item as a key and null as the value.
 	 */
 	default Sequence<Entry<T, T>> entries() {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
@@ -858,9 +873,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
-	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
-	 * has a null as the second item.
+	 * Pair the elements of this {@link Sequence} into a sequence of {@link Entry} elements. Each entry is adjacent to
+	 * the next entry. If there is an uneven amount of items in the list, the final entry returned has a null as the
+	 * value item.
 	 */
 	default Sequence<Entry<T, T>> adjacentEntries() {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 2) {
@@ -1021,6 +1036,39 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default Sequence<T> peek(Consumer<? super T> action) {
 		return () -> new PeekingIterator<>(iterator(), action);
+	}
+
+	/**
+	 * Allow the given {@link BiConsumer} to see each and its following element in this {@code Sequence} as it is
+	 * traversed. In the last iteration, the following item will be null.
+	 */
+	default Sequence<T> peekForward(BiConsumer<? super T, ? super T> action) {
+		return () -> new ForwardPeekingMappingIterator<T, T>(iterator()) {
+			@Override
+			protected T mapNext(@Nullable T following) {
+				action.accept(next, following);
+				return next;
+			}
+
+			@Override
+			protected T mapFollowing(boolean hasFollowing, @Nullable T following) {
+				return following;
+			}
+		};
+	}
+
+	/**
+	 * Allow the given {@link BiConsumer} to see each and its previous element in this {@code Sequence} as it is
+	 * traversed. In the first iteration, the previous item will be null.
+	 */
+	default Sequence<T> peekBack(BiConsumer<? super T, ? super T> action) {
+		return () -> new BackPeekingMappingIterator<T, T>(iterator()) {
+			@Override
+			protected T mapNext(@Nullable T next) {
+				action.accept(previous, next);
+				return next;
+			}
+		};
 	}
 
 	/**

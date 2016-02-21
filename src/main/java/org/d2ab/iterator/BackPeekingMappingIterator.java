@@ -17,26 +17,25 @@
 package org.d2ab.iterator;
 
 import java.util.Iterator;
-import java.util.function.BiFunction;
 
 /**
- * An iterator that maps each element by looking at the current AND the previous element.
+ * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public class BackPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
-	private final BiFunction<? super T, ? super T, ? extends U> mapper;
-	private T previous;
+public abstract class BackPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
+	protected T previous;
 
-	public BackPeekingMappingIterator(Iterator<T> iterator, BiFunction<? super T, ? super T, ? extends U> mapper) {
+	public BackPeekingMappingIterator(Iterator<T> iterator) {
 		super(iterator);
-		this.mapper = mapper;
 	}
 
 	@Override
 	public U next() {
 		T next = iterator.next();
 
-		U mapped = mapper.apply(previous, next);
+		U mapped = mapNext(next);
 		previous = next;
 		return mapped;
 	}
+
+	protected abstract U mapNext(T next);
 }
