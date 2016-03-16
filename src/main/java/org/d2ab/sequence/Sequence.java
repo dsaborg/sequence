@@ -921,7 +921,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Partition the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
+	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
 	 * of the given window. The first item in each list is the second item in the previous list. The final list may
 	 * be shorter than the window.
 	 */
@@ -929,12 +929,29 @@ public interface Sequence<T> extends Iterable<T> {
 		return window(window, 1);
 	}
 
+	/**
+	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
+	 * of the given window, stepping {@code step} elements between each window.
+	 */
 	default Sequence<List<T>> window(int window, int step) {
 		return () -> new WindowingIterator<>(iterator(), window, step);
 	}
 
+	/**
+	 * Partition the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, each with
+	 * the size of the given partition.
+	 */
 	default Sequence<List<T>> partition(int size) {
 		return window(size, size);
+	}
+
+	/**
+	 * Partition the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, where the
+	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the next
+	 * and following item in the iteration, and if it returns true the list is partitioned between the elements.
+	 */
+	default Sequence<List<T>> partition(BiPredicate<T, T> predicate) {
+		return () -> new PredicatePartitioningIterator<>(iterator(), predicate);
 	}
 
 	/**

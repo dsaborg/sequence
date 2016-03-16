@@ -902,6 +902,28 @@ public class SequenceTest {
 		twice(() -> assertThat(_123456789.partition(3), contains(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void partitionOnPredicate() {
+		Sequence<List<Integer>> emptyPartitioned = empty.partition((a, b) -> a > b);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<List<Integer>> onePartitioned = _1.partition((a, b) -> a > b);
+		twice(() -> assertThat(onePartitioned, contains(singletonList(1))));
+
+		Sequence<List<Integer>> twoPartitioned = _12.partition((a, b) -> a > b);
+		twice(() -> assertThat(twoPartitioned, contains(asList(1, 2))));
+
+		Sequence<List<Integer>> threePartitioned = _123.partition((a, b) -> a > b);
+		twice(() -> assertThat(threePartitioned, contains(asList(1, 2, 3))));
+
+		Sequence<List<Integer>> threeRandomPartitioned = threeRandom.partition((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomPartitioned, contains(asList(2, 3), singletonList(1))));
+
+		Sequence<List<Integer>> nineRandomPartitioned = nineRandom.partition((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomPartitioned, contains(singletonList(67), asList(5, 43), asList(3, 5, 7, 24), asList(5, 67))));
+	}
+
 	@Test
 	public void step() {
 		twice(() -> assertThat(_123456789.step(3), contains(1, 4, 7)));
