@@ -430,7 +430,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Map this {@code Sequence} to another sequence while peeking at the previous element in the iteration.
 	 * <p>
-	 * The mapper has access to the previous element and the next element in the iteration. {@code null] is provided
+	 * The mapper has access to the previous element and the next element in the iteration. {@code null} is provided
 	 * as the first previous value when the next element is the first value in the sequence, and there is no previous
 	 * value.
 	 */

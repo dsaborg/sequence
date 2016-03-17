@@ -122,7 +122,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @see #steppingFrom(double, double)
 	 *
-	 * @throws IllegalArgumentException if step < 0
+	 * @throws IllegalArgumentException if {@code step < 0}
 	 */
 	static DoubleSequence range(double start, double end, double step, double accuracy) {
 		if (step < 0)
