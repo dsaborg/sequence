@@ -49,7 +49,7 @@ To install in maven, use the maven central dependency:
 <dependency>
   <groupId>org.d2ab</groupId>
   <artifactId>sequence</artifactId>
-  <version>0.12.0</version>
+  <version>0.13.0</version>
 </dependency>
 ```
 
@@ -63,7 +63,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.d2ab:sequence:0.12.0'
+    compile 'org.d2ab:sequence:0.13.0'
 }
 ```
 
