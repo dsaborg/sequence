@@ -335,7 +335,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return () -> new WindowingIterator<>(iterator(), window, step);
 	}
 
-	default Sequence<List<Pair<L, R>>> partition(int size) {
+	default Sequence<List<Pair<L, R>>> batch(int size) {
 		return window(size, size);
 	}
 

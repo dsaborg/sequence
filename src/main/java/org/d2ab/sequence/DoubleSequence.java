@@ -107,68 +107,29 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the positive {@link Double} values starting at {@code 1} and ending at
-	 * {@link Double#MAX_VALUE}.
-	 *
-	 * @see #negative()
-	 * @see #startingAt(double)
-	 * @see #range(double, double)
-	 * @see #range(double, double, double)
-	 */
-	static DoubleSequence positive() {
-		return startingAt(1);
-	}
-
-	/**
-	 * A {@code Sequence} of all the negative {@link Double} values starting at {@code -1} and ending at
-	 * {@link Double#MIN_VALUE}.
-	 *
-	 * @see #positive()
-	 * @see #startingAt(double)
-	 * @see #range(double, double)
-	 * @see #range(double, double, double)
-	 */
-	static DoubleSequence negative() {
-		return range(-1L, Double.MIN_VALUE);
-	}
-
-	/**
 	 * A {@code Sequence} of all the {@link Double} values starting at the given value and ending at {@link
 	 * Double#MAX_VALUE}.
 	 *
-	 * @see #positive
-	 * @see #negative()
-	 * @see #range(double, double)
-	 * @see #range(double, double, double)
+	 * @see #range(double, double, double, double)
 	 */
-	static DoubleSequence startingAt(double start) {
-		return range(start, Double.MAX_VALUE);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive.
-	 *
-	 * @see #positive
-	 * @see #negative()
-	 * @see #startingAt(double)
-	 * @see #range(double, double, double)
-	 */
-	static DoubleSequence range(double start, double end) {
-		return range(start, end, 1);
+	static DoubleSequence steppingFrom(double start, double step) {
+		return recurse(start, d -> d + step);
 	}
 
 	/**
 	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive, using
-	 * the given step between iterations.
+	 * the given step between iterations and the given accuracy to check whether the end value has occurred.
 	 *
-	 * @see #positive
-	 * @see #negative()
-	 * @see #startingAt(double)
-	 * @see #range(double, double)
+	 * @see #steppingFrom(double, double)
+	 *
+	 * @throws IllegalArgumentException if step < 0
 	 */
-	static DoubleSequence range(double start, double end, double step) {
-		double effectiveStep = end > start ? step : -step;
-		return recurse(start, d -> d + effectiveStep).endingAt(end);
+	static DoubleSequence range(double start, double end, double step, double accuracy) {
+		if (step < 0)
+			throw new IllegalArgumentException("Require step to be >= 0");
+		return end > start ?
+		       recurse(start, d -> d + step).until(d -> d - accuracy >= end) :
+		       recurse(start, d -> d - step).until(d -> d + accuracy <= end);
 	}
 
 	static DoubleSequence recurse(double seed, DoubleUnaryOperator op) {
@@ -190,47 +151,45 @@ public interface DoubleSequence extends DoubleIterable {
 	 * terminates.
 	 *
 	 * @see #recurse(double, DoubleUnaryOperator)
-	 * @see #endingAt(double)
-	 * @see #until(double)
+	 * @see #endingAt(double, double)
+	 * @see #until(double, double)
 	 */
 	static DoubleSequence generate(DoubleSupplier supplier) {
 		return () -> (InfiniteDoubleIterator) supplier::getAsDouble;
 	}
 
 	/**
-	 * Terminate this {@code DoubleSequence} sequence before the given element, with the previous element as the last
-	 * element in this {@code DoubleSequence} sequence.
+	 * Terminate this {@code DoubleSequence} before the given element compared to the given accuracy, with the previous
+	 * element as the last element in this {@code DoubleSequence}.
 	 *
 	 * @see #until(DoublePredicate)
-	 * @see #endingAt(double)
+	 * @see #endingAt(double, double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSequence until(double terminal) {
-		return () -> new ExclusiveTerminalDoubleIterator(iterator(), terminal);
+	default DoubleSequence until(double terminal, double accuracy) {
+		return () -> new ExclusiveTerminalDoubleIterator(iterator(), terminal, accuracy);
 	}
 
 	/**
-	 * Terminate this {@code DoubleSequence} sequence at the given element, including it as the last element in this
-	 * {@code
-	 * DoubleSequence} sequence.
+	 * Terminate this {@code DoubleSequence} at the given element compared to the given accuracy, including it as the
+	 * last element in this {@code DoubleSequence}.
 	 *
 	 * @see #endingAt(DoublePredicate)
-	 * @see #until(double)
+	 * @see #until(double, double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSequence endingAt(double terminal) {
-		return () -> new InclusiveTerminalDoubleIterator(iterator(), terminal);
+	default DoubleSequence endingAt(double terminal, double accuracy) {
+		return () -> new InclusiveTerminalDoubleIterator(iterator(), terminal, accuracy);
 	}
 
 	/**
-	 * Terminate this {@code DoubleSequence} sequence before the element that satisfies the given predicate, with the
-	 * previous
-	 * element as the last element in this {@code DoubleSequence} sequence.
+	 * Terminate this {@code DoubleSequence} before the element that satisfies the given predicate, with the
+	 * previous element as the last element in this {@code DoubleSequence}.
 	 *
-	 * @see #until(double)
-	 * @see #endingAt(double)
+	 * @see #until(double, double)
+	 * @see #endingAt(double, double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
@@ -239,11 +198,11 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Terminate this {@code DoubleSequence} sequence at the element that satisfies the given predicate, including the
-	 * element as the last element in this {@code DoubleSequence} sequence.
+	 * Terminate this {@code DoubleSequence} at the element that satisfies the given predicate, including the
+	 * element as the last element in this {@code DoubleSequence}.
 	 *
-	 * @see #endingAt(double)
-	 * @see #until(double)
+	 * @see #endingAt(double, double)
+	 * @see #until(double, double)
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
@@ -293,14 +252,14 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
 	 */
-	default DoubleSequence skip(double skip) {
+	default DoubleSequence skip(long skip) {
 		return () -> new SkippingDoubleIterator(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
-	default DoubleSequence limit(double limit) {
+	default DoubleSequence limit(long limit) {
 		return () -> new LimitingDoubleIterator(iterator(), limit);
 	}
 
@@ -449,8 +408,7 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return the second double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
-	 * than two
-	 * doubles in the {@code DoubleSequence}.
+	 * than two doubles in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble second() {
 		DoubleIterator iterator = iterator();
@@ -464,8 +422,7 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return the third double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
-	 * than
-	 * three doubles in the {@code DoubleSequence}.
+	 * than three doubles in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble third() {
 		DoubleIterator iterator = iterator();
@@ -498,7 +455,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
 	 */
-	default DoubleSequence step(double step) {
+	default DoubleSequence step(long step) {
 		return () -> new SteppingDoubleIterator(iterator(), step);
 	}
 
@@ -519,8 +476,8 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * @return the number of doubles in this {@code DoubleSequence}.
 	 */
-	default double count() {
-		double count = 0;
+	default long count() {
+		long count = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); iterator.nextDouble()) {
 			count++;
 		}

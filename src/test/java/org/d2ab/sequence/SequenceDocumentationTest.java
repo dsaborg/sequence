@@ -163,24 +163,24 @@ public class SequenceDocumentationTest {
 	}
 
 	@Test
-	public void intsSequence() {
+	public void intSequence() {
 		IntSequence squares = IntSequence.positive().map(i -> i * i);
 
-		assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
+		assertThat(squares.limit(5), contains(1, 4, 9, 16, 25));
 	}
 
 	@Test
-	public void longsSequence() {
+	public void longSequence() {
 		LongSequence negativeOdds = LongSequence.negative().step(2);
 
-		assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
+		assertThat(negativeOdds.limit(5), contains(-1L, -3L, -5L, -7L, -9L));
 	}
 
 	@Test
-	public void doublesSequence() {
-		DoubleSequence squareRoots = DoubleSequence.positive().limit(3).map(Math::sqrt);
+	public void doubleSequence() {
+		DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
 
-		assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
+		assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 	}
 
 	@Test
@@ -194,5 +194,10 @@ public class SequenceDocumentationTest {
 
 		assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
 		                                  "Barack Obama (2005)"));
+	}
+
+	@Test
+	public void window() {
+
 	}
 }

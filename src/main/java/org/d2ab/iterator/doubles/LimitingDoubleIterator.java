@@ -19,10 +19,10 @@ package org.d2ab.iterator.doubles;
 import java.util.NoSuchElementException;
 
 public class LimitingDoubleIterator extends UnaryDoubleIterator {
-	private final double limit;
+	private final long limit;
 	private double count;
 
-	public LimitingDoubleIterator(DoubleIterator iterator, double limit) {
+	public LimitingDoubleIterator(DoubleIterator iterator, long limit) {
 		super(iterator);
 		this.limit = limit;
 	}

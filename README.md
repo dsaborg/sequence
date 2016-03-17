@@ -215,8 +215,8 @@ assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").bui
 
 #### Primitive
 
-There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `CharSeq`, `IntSeq`, 
-`LongSeq` and `DoubleSeq`:
+There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `CharSeq`,
+`IntSequence`, `LongSequence` and `DoubleSequence`:
 
 ```Java
 CharSeq snakeCase = CharSeq.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
@@ -225,29 +225,29 @@ assertThat(snakeCase.asString(), is("hello_lexicon"));
 ```
 
 ```Java
-IntSeq squares = IntSeq.positive().map(i -> i * i);
+IntSequence squares = IntSequence.positive().map(i -> i * i);
 
-assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
+assertThat(squares.limit(5), contains(1, 4, 9, 16, 25));
 ```
 
 ```Java
-LongSeq negativeOdds = LongSeq.negative().step(2);
+LongSequence negativeOdds = LongSequence.negative().step(2);
 
-assertThat(negativeOdds.skip(3).limit(5), contains(-7L, -9L, -11L, -13L, -15L));
+assertThat(negativeOdds.limit(5), contains(-1L, -3L, -5L, -7L, -9L));
 ```
 
 ```Java
-DoubleSeq squareRoots = DoubleSeq.positive().limit(3).map(Math::sqrt);
+DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
 
-assertThat(squareRoots, contains(sqrt(1), sqrt(2), sqrt(3)));
+assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
 
 The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
 
 ```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
-                       .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
-                       .map(c -> (c == '_') ? ' ' : c);
+                           .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
+                           .map(c -> (c == '_') ? ' ' : c);
 
 assertThat(titleCase.asString(), is("Hello Lexicon"));
 ```

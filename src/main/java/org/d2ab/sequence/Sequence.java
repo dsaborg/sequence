@@ -938,19 +938,19 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Partition the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, each with
-	 * the size of the given partition.
+	 * Batch the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, each with
+	 * the given batch size.
 	 */
-	default Sequence<List<T>> partition(int size) {
+	default Sequence<List<T>> batch(int size) {
 		return window(size, size);
 	}
 
 	/**
-	 * Partition the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, where the
-	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the next
-	 * and following item in the iteration, and if it returns true the list is partitioned between the elements.
+	 * Batch the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, where the
+	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the current
+	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
-	default Sequence<List<T>> partition(BiPredicate<T, T> predicate) {
+	default Sequence<List<T>> batch(BiPredicate<T, T> predicate) {
 		return () -> new PredicatePartitioningIterator<>(iterator(), predicate);
 	}
 

@@ -319,8 +319,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence =
-				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
+		                                                   asList(5, 6).iterator());
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -359,8 +359,8 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence =
-				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
+		                                                   asList(5, 6).iterator());
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -834,8 +834,8 @@ public class SequenceTest {
 		BiSequence<Integer, String> twoBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
-		BiSequence<Integer, String> threeBiSequence =
-				Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3")).toBiSequence();
+		BiSequence<Integer, String> threeBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))
+				.toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -848,12 +848,12 @@ public class SequenceTest {
 		EntrySequence<Integer, String> oneEntrySequence = Sequence.of(Entries.of(1, "1")).toEntrySequence();
 		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
 
-		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.of(Entries.of(1, "1"), Entries.of(2, "2")).toEntrySequence();
+		EntrySequence<Integer, String> twoEntrySequence = Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"))
+				.toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
 
-		EntrySequence<Integer, String> threeEntrySequence =
-				Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3")).toEntrySequence();
+		EntrySequence<Integer, String> threeEntrySequence = Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"),
+		                                                                Entries.of(3, "3")).toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
@@ -892,36 +892,37 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void partition() {
-		twice(() -> assertThat(empty.partition(3), is(emptyIterable())));
-		twice(() -> assertThat(_1.partition(3), contains(singletonList(1))));
-		twice(() -> assertThat(_12.partition(3), contains(asList(1, 2))));
-		twice(() -> assertThat(_123.partition(3), contains(asList(1, 2, 3))));
-		twice(() -> assertThat(_1234.partition(3), contains(asList(1, 2, 3), singletonList(4))));
-		twice(() -> assertThat(_12345.partition(3), contains(asList(1, 2, 3), asList(4, 5))));
-		twice(() -> assertThat(_123456789.partition(3), contains(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9))));
+	public void batch() {
+		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.batch(3), contains(singletonList(1))));
+		twice(() -> assertThat(_12.batch(3), contains(asList(1, 2))));
+		twice(() -> assertThat(_123.batch(3), contains(asList(1, 2, 3))));
+		twice(() -> assertThat(_1234.batch(3), contains(asList(1, 2, 3), singletonList(4))));
+		twice(() -> assertThat(_12345.batch(3), contains(asList(1, 2, 3), asList(4, 5))));
+		twice(() -> assertThat(_123456789.batch(3), contains(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void partitionOnPredicate() {
-		Sequence<List<Integer>> emptyPartitioned = empty.partition((a, b) -> a > b);
+	public void batchOnPredicate() {
+		Sequence<List<Integer>> emptyPartitioned = empty.batch((a, b) -> a > b);
 		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
 
-		Sequence<List<Integer>> onePartitioned = _1.partition((a, b) -> a > b);
+		Sequence<List<Integer>> onePartitioned = _1.batch((a, b) -> a > b);
 		twice(() -> assertThat(onePartitioned, contains(singletonList(1))));
 
-		Sequence<List<Integer>> twoPartitioned = _12.partition((a, b) -> a > b);
+		Sequence<List<Integer>> twoPartitioned = _12.batch((a, b) -> a > b);
 		twice(() -> assertThat(twoPartitioned, contains(asList(1, 2))));
 
-		Sequence<List<Integer>> threePartitioned = _123.partition((a, b) -> a > b);
+		Sequence<List<Integer>> threePartitioned = _123.batch((a, b) -> a > b);
 		twice(() -> assertThat(threePartitioned, contains(asList(1, 2, 3))));
 
-		Sequence<List<Integer>> threeRandomPartitioned = threeRandom.partition((a, b) -> a > b);
+		Sequence<List<Integer>> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(threeRandomPartitioned, contains(asList(2, 3), singletonList(1))));
 
-		Sequence<List<Integer>> nineRandomPartitioned = nineRandom.partition((a, b) -> a > b);
-		twice(() -> assertThat(nineRandomPartitioned, contains(singletonList(67), asList(5, 43), asList(3, 5, 7, 24), asList(5, 67))));
+		Sequence<List<Integer>> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(singletonList(67), asList(5, 43), asList(3, 5, 7, 24), asList(5, 67))));
 	}
 
 	@Test
@@ -1035,7 +1036,8 @@ public class SequenceTest {
 
 	@Test
 	public void peek() {
-		Sequence<Integer> peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
+		Sequence<Integer> peek = _123.peek(
+				x -> assertThat(x, is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(3)))));
 		twice(() -> assertThat(peek, contains(1, 2, 3)));
 	}
 

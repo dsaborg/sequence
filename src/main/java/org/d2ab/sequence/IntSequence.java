@@ -110,54 +110,166 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the positive {@link Integer} values starting at {@code 1} and ending at
+	 * An {@code IntSequence} of all the positive {@code int} values starting at {@code 1} and ending at
 	 * {@link Integer#MAX_VALUE}.
 	 *
+	 * @see #positiveFromZero()
+	 * @see #increasingFrom(int)
 	 * @see #negative()
-	 * @see #startingAt(int)
+	 * @see #negativeFromZero()
+	 * @see #decreasingFrom(int)
+	 * @see #steppingFrom(int, int)
 	 * @see #range(int, int)
+	 * @see #range(int, int, int)
 	 */
 	static IntSequence positive() {
-		return startingAt(1);
+		return range(1, Integer.MAX_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Integer} values starting at {@code -1} and ending at
+	 * An {@code IntSequence} of all the positive {@code int} values starting at {@code 0} and ending at
+	 * {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #positive()
+	 * @see #increasingFrom(int)
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 * @see #decreasingFrom(int)
+	 * @see #steppingFrom(int, int)
+	 * @see #range(int, int)
+	 * @see #range(int, int, int)
+	 */
+	static IntSequence positiveFromZero() {
+		return range(0, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * An increasing {@code IntSequence} of {@code int} values starting at the given value. This sequence never
+	 * terminates but will wrap to {@link Integer#MIN_VALUE} when passing {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #decreasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 * @see #steppingFrom(int, int)
+	 * @see #range(int, int)
+	 * @see #range(int, int, int)
+	 */
+	static IntSequence increasingFrom(int start) {
+		return steppingFrom(start, 1);
+	}
+
+	/**
+	 * An {@code IntSequence} of all the negative {@code int} values starting at {@code -1} and ending at
 	 * {@link Integer#MIN_VALUE}.
+	 *
+	 * @see #negativeFromZero()
+	 * @see #increasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #decreasingFrom(int)
+	 * @see #steppingFrom(int, int)
+	 * @see #range(int, int)
+	 * @see #range(int, int, int)
 	 */
 	static IntSequence negative() {
 		return range(-1, Integer.MIN_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Integer} values starting at the given value and ending at {@link
-	 * Integer#MAX_VALUE}.
+	 * An {@code IntSequence} of all the negative {@code int} values starting at {@code 0} and ending at
+	 * {@link Integer#MIN_VALUE}.
 	 *
-	 * @see #positive()
 	 * @see #negative()
+	 * @see #increasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #decreasingFrom(int)
+	 * @see #steppingFrom(int, int)
 	 * @see #range(int, int)
+	 * @see #range(int, int, int)
 	 */
-	static IntSequence startingAt(int start) {
-		return range(start, Integer.MAX_VALUE);
+	static IntSequence negativeFromZero() {
+		return range(0, Integer.MIN_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Integer} values between the given start and end positions, inclusive.
+	 * A decreasing {@code Sequence} of {@code int} values starting at the given value. This sequence never
+	 * terminates but will wrap to {@link Integer#MAX_VALUE} when passing {@link Integer#MIN_VALUE}.
 	 *
+	 * @see #increasingFrom(int)
 	 * @see #positive()
+	 * @see #positiveFromZero()
 	 * @see #negative()
-	 * @see #startingAt(int)
+	 * @see #negativeFromZero()
+	 * @see #steppingFrom(int, int)
+	 * @see #range(int, int)
+	 * @see #range(int, int, int)
+	 */
+	static IntSequence decreasingFrom(int start) {
+		return steppingFrom(start, -1);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@code int} values starting at the given value and stepping with the given
+	 * step. Pass in a negative step to create a decreasing sequence. This sequence never terminates but will wrap when
+	 * passing {@link Integer#MAX_VALUE} or {@link Integer#MIN_VALUE}.
+	 *
+	 * @see #range(int, int)
+	 * @see #range(int, int, int)
+	 * @see #increasingFrom(int)
+	 * @see #decreasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static IntSequence steppingFrom(int start, int step) {
+		return recurse(start, x -> x + step);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@code int} values between the given start and end positions, inclusive.
+	 *
+	 * @see #range(int, int, int)
+	 * @see #steppingFrom(int, int)
+	 * @see #increasingFrom(int)
+	 * @see #decreasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
 	 */
 	static IntSequence range(int start, int end) {
-		IntUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
-		return recurse(start, next).endingAt(end);
+		return range(start, end, 1);
+	}
+
+	/**
+	 * A {@code Sequence} of the {@code int} values between the given start and end positions, stepping with the
+	 * given step. The step must be given as a positive value, even if the range is a decreasing range.
+	 *
+	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #range(int, int)
+	 * @see #steppingFrom(int, int)
+	 * @see #increasingFrom(int)
+	 * @see #decreasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static IntSequence range(int start, int end, int step) {
+		if (step < 0) throw new IllegalArgumentException("Require step >= 0");
+		return end >= start ?
+		       recurse(start, x -> x + step).endingAt(x -> (long) x + step > end) :
+		       recurse(start, x -> x - step).endingAt(x -> (long) x - step < end);
 	}
 
 	/**
 	 * Returns an {@code IntSequence} sequence produced by recursively applying the given operation to the given
-	 * seed, which
-	 * forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
-	 * {@code IntSequence} sequence never terminates naturally.
+	 * seed, which forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on.
+	 * The returned {@code IntSequence} sequence never terminates naturally.
 	 *
 	 * @return an {@code IntSequence} sequence produced by recursively applying the given operation to the given seed
 	 *
@@ -245,7 +357,8 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code mapper}
+	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code
+	 * mapper}
 	 * function.
 	 */
 	default IntSequence map(IntUnaryOperator mapper) {
@@ -397,8 +510,7 @@ public interface IntSequence extends IntIterable {
 		boolean started = false;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); started = true) {
 			int each = iterator.nextInt();
-			if (started)
-				result.append(delimiter);
+			if (started) result.append(delimiter);
 			result.append(each);
 		}
 
@@ -411,8 +523,7 @@ public interface IntSequence extends IntIterable {
 	 */
 	default OptionalInt reduce(IntBinaryOperator operator) {
 		IntIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
+		if (!iterator.hasNext()) return OptionalInt.empty();
 
 		int result = iterator.reduce(iterator.next(), operator);
 		return OptionalInt.of(result);
@@ -432,8 +543,7 @@ public interface IntSequence extends IntIterable {
 	 */
 	default OptionalInt first() {
 		IntIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
+		if (!iterator.hasNext()) return OptionalInt.empty();
 
 		return OptionalInt.of(iterator.nextInt());
 	}
@@ -446,8 +556,7 @@ public interface IntSequence extends IntIterable {
 		IntIterator iterator = iterator();
 
 		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
+		if (!iterator.hasNext()) return OptionalInt.empty();
 
 		return OptionalInt.of(iterator.nextInt());
 	}
@@ -461,8 +570,7 @@ public interface IntSequence extends IntIterable {
 
 		iterator.skip();
 		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
+		if (!iterator.hasNext()) return OptionalInt.empty();
 
 		return OptionalInt.of(iterator.nextInt());
 	}
@@ -473,8 +581,7 @@ public interface IntSequence extends IntIterable {
 	 */
 	default OptionalInt last() {
 		IntIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
+		if (!iterator.hasNext()) return OptionalInt.empty();
 
 		int last;
 		do {
@@ -528,8 +635,7 @@ public interface IntSequence extends IntIterable {
 	 */
 	default boolean all(IntPredicate predicate) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (!predicate.test(iterator.nextInt()))
-				return false;
+			if (!predicate.test(iterator.nextInt())) return false;
 		}
 		return true;
 	}
@@ -546,8 +652,7 @@ public interface IntSequence extends IntIterable {
 	 */
 	default boolean any(IntPredicate predicate) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (predicate.test(iterator.nextInt()))
-				return true;
+			if (predicate.test(iterator.nextInt())) return true;
 		}
 		return false;
 	}

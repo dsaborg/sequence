@@ -111,45 +111,174 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the positive {@link Long} values starting at {@code 1} and ending at
-	 * {@link Long#MAX_VALUE}.
+	 * A {@code Sequence} of all the positive {@code long} values starting at {@code 1} and ending at
+	 * {@link Long#MAX_VALUE} inclusive.
 	 *
+	 * @see #positiveFromZero()
+	 * @see #increasingFrom(long)
 	 * @see #negative()
-	 * @see #startingAt(long)
+	 * @see #negativeFromZero()
+	 * @see #decreasingFrom(long)
+	 * @see #steppingFrom(long, long)
 	 * @see #range(long, long)
+	 * @see #range(long, long, long)
 	 */
 	static LongSequence positive() {
-		return startingAt(1);
+		return range(1, Long.MAX_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the negative {@link Long} values starting at {@code -1} and ending at
-	 * {@link Long#MIN_VALUE}.
+	 * A {@code LongSequence} of all the positive {@code long} values starting at {@code 0} and ending at
+	 * {@link Long#MAX_VALUE} inclusive.
 	 *
 	 * @see #positive()
-	 * @see #startingAt(long)
+	 * @see #increasingFrom(long)
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 * @see #decreasingFrom(long)
+	 * @see #steppingFrom(long, long)
 	 * @see #range(long, long)
+	 * @see #range(long, long, long)
+	 */
+	static LongSequence positiveFromZero() {
+		return range(0, Long.MAX_VALUE);
+	}
+
+	/**
+	 * An increasing {@code LongSequence} of {@code long} values starting at the given value. This sequence never
+	 * terminates but will wrap to {@link Long#MIN_VALUE} when passing {@link Long#MAX_VALUE}.
+	 *
+	 * @see #decreasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 * @see #steppingFrom(long, long)
+	 * @see #range(long, long)
+	 * @see #range(long, long, long)
+	 */
+	static LongSequence increasingFrom(long start) {
+		return steppingFrom(start, 1);
+	}
+
+	/**
+	 * A {@code Sequence} of all the negative {@code long} values starting at {@code -1} and ending at
+	 * {@link Long#MIN_VALUE}.
+	 *
+	 * @see #negativeFromZero()
+	 * @see #increasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #decreasingFrom(long)
+	 * @see #steppingFrom(long, long)
+	 * @see #range(long, long)
+	 * @see #range(long, long, long)
 	 */
 	static LongSequence negative() {
-		return range(-1L, Long.MIN_VALUE);
+		return range(-1, Long.MIN_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Long} values starting at the given value and ending at {@link
-	 * Long#MAX_VALUE}.
+	 * A {@code LongSequence} of all the negative {@code long} values starting at {@code 0} and ending at
+	 * {@link Long#MIN_VALUE} inclusive.
+	 *
+	 * @see #negative()
+	 * @see #increasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #decreasingFrom(long)
+	 * @see #steppingFrom(long, long)
+	 * @see #range(long, long)
+	 * @see #range(long, long, long)
 	 */
-	static LongSequence startingAt(long start) {
-		return range(start, Long.MAX_VALUE);
+	static LongSequence negativeFromZero() {
+		return range(0, Long.MIN_VALUE);
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Long} values between the given start and end positions, inclusive.
+	 * A decreasing {@code LongSequence} of {@code long} values starting at the given value. This sequence never
+	 * terminates but will wrap to {@link Long#MAX_VALUE} when passing {@link Long#MIN_VALUE}.
+	 *
+	 * @see #increasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 * @see #steppingFrom(long, long)
+	 * @see #range(long, long)
+	 * @see #range(long, long, long)
+	 */
+	static LongSequence decreasingFrom(long start) {
+		return steppingFrom(start, -1);
+	}
+
+	/**
+	 * A {@code LongSequence} of all the {@code long} values starting at the given value and stepping with the given
+	 * step. Pass in a negative step to create a decreasing sequence. This sequence never terminates but will wrap when
+	 * passing {@link Long#MAX_VALUE} or {@link Long#MIN_VALUE}.
+	 *
+	 * @see #range(long, long)
+	 * @see #range(long, long, long)
+	 * @see #increasingFrom(long)
+	 * @see #decreasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static LongSequence steppingFrom(long start, long step) {
+		return recurse(start, x -> x + step);
+	}
+
+	/**
+	 * A {@code LongSequence} of all the {@code long} values between the given start and end positions, inclusive.
+	 *
+	 * @see #range(long, long, long)
+	 * @see #steppingFrom(long, long)
+	 * @see #increasingFrom(long)
+	 * @see #decreasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
 	 */
 	static LongSequence range(long start, long end) {
 		LongUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
 		return recurse(start, next).endingAt(end);
 	}
 
+	/**
+	 * A {@code LongSequence} of the {@code long} values between the given start and end positions, stepping with
+	 * the given step. The step must be given as a positive value, even if the range is a decreasing range.
+	 *
+	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #range(long, long)
+	 * @see #steppingFrom(long, long)
+	 * @see #increasingFrom(long)
+	 * @see #decreasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static LongSequence range(long start, long end, long step) {
+		if (step < 0) throw new IllegalArgumentException("Require step >= 0");
+		return end >= start ?
+		       recurse(start, x -> x + step).endingAt(x -> x + step > end || x > Long.MAX_VALUE - step) :
+		       recurse(start, x -> x - step).endingAt(x -> x - step < end || x < Long.MIN_VALUE + step);
+	}
+
+	/**
+	 * Returns a {@code LongSequence} sequence produced by recursively applying the given operation to the given
+	 * seed, which forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on.
+	 * The returned {@code LongSequence} sequence never terminates naturally.
+	 *
+	 * @return a {@code LongSequence} sequence produced by recursively applying the given operation to the given seed
+	 *
+	 * @see #generate(LongSupplier)
+	 * @see #endingAt(long)
+	 * @see #until(long)
+	 */
 	static LongSequence recurse(long seed, LongUnaryOperator op) {
 		return () -> new InfiniteLongIterator() {
 			private long previous;
@@ -165,7 +294,7 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code IntSequence} that is generated from the given supplier and thus never terminates.
+	 * @return a {@code LongSequence} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(long, LongUnaryOperator)
 	 * @see #endingAt(long)
@@ -341,8 +470,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Append the {@link Long}s in the given {@link Stream} to the end of this {@code LongSequence}.
 	 * <p>
-	 * The appended
-	 * {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
+	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
 	 * Further traversals will result in {@link IllegalStateException} being thrown.
 	 */
 	default LongSequence append(Stream<Long> stream) {
@@ -398,8 +526,7 @@ public interface LongSequence extends LongIterable {
 		boolean started = false;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); started = true) {
 			long each = iterator.nextLong();
-			if (started)
-				result.append(delimiter);
+			if (started) result.append(delimiter);
 			result.append(each);
 		}
 
@@ -412,8 +539,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	default OptionalLong reduce(LongBinaryOperator operator) {
 		LongIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
+		if (!iterator.hasNext()) return OptionalLong.empty();
 
 		long result = iterator.reduce(iterator.next(), operator);
 		return OptionalLong.of(result);
@@ -421,7 +547,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * Reduce this {@code LongSequence} into a single {@code long} by iteratively applying the given binary operator to
-	 * the current result and each {@code long} in the sequence, starting with the given identity as the initial result.
+	 * the current result and each {@code long} in the sequence, starting with the given identity as the initial
+	 * result.
 	 */
 	default long reduce(long identity, LongBinaryOperator operator) {
 		return iterator().reduce(identity, operator);
@@ -433,8 +560,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	default OptionalLong first() {
 		LongIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
+		if (!iterator.hasNext()) return OptionalLong.empty();
 
 		return OptionalLong.of(iterator.nextLong());
 	}
@@ -447,8 +573,7 @@ public interface LongSequence extends LongIterable {
 		LongIterator iterator = iterator();
 
 		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
+		if (!iterator.hasNext()) return OptionalLong.empty();
 
 		return OptionalLong.of(iterator.nextLong());
 	}
@@ -462,8 +587,7 @@ public interface LongSequence extends LongIterable {
 
 		iterator.skip();
 		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
+		if (!iterator.hasNext()) return OptionalLong.empty();
 
 		return OptionalLong.of(iterator.nextLong());
 	}
@@ -474,8 +598,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	default OptionalLong last() {
 		LongIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
+		if (!iterator.hasNext()) return OptionalLong.empty();
 
 		long last;
 		do {
@@ -529,8 +652,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	default boolean all(LongPredicate predicate) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (!predicate.test(iterator.nextLong()))
-				return false;
+			if (!predicate.test(iterator.nextLong())) return false;
 		}
 		return true;
 	}
@@ -547,8 +669,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	default boolean any(LongPredicate predicate) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (predicate.test(iterator.nextLong()))
-				return true;
+			if (predicate.test(iterator.nextLong())) return true;
 		}
 		return false;
 	}

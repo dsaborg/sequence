@@ -336,7 +336,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return () -> new WindowingIterator<>(iterator(), window, step);
 	}
 
-	default Sequence<List<Entry<K, V>>> partition(int size) {
+	default Sequence<List<Entry<K, V>>> batch(int size) {
 		return window(size, size);
 	}
 

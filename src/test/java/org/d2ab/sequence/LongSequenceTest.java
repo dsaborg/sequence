@@ -537,29 +537,121 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void longs() {
-		assertThat(LongSequence.positive().limit(3L), contains(1L, 2L, 3L));
-		assertThat(LongSequence.positive().limit(127).last(), is(OptionalLong.of(127)));
+	public void positive() {
+		LongSequence positive = LongSequence.positive();
+		twice(() -> assertThat(positive.limit(3), contains(1L, 2L, 3L)));
 	}
 
 	@Test
-	public void longsStartingAt() {
-		assertThat(LongSequence.startingAt(1L).limit(3L), contains(1L, 2L, 3L));
-		assertThat(LongSequence.startingAt('\u1400').limit(3L).last(), is(OptionalLong.of('\u1402')));
-		assertThat(LongSequence.startingAt(Long.MAX_VALUE), contains(Long.MAX_VALUE));
-		assertThat(LongSequence.startingAt(Long.MAX_VALUE - 32767).count(), is(32768L));
+	public void positiveFromZero() {
+		LongSequence positiveFromZero = LongSequence.positiveFromZero();
+		twice(() -> assertThat(positiveFromZero.limit(3), contains(0L, 1L, 2L)));
 	}
 
 	@Test
-	public void longRange() {
-		assertThat(LongSequence.range(1L, 6L), contains(1L, 2L, 3L, 4L, 5L, 6L));
-		assertThat(LongSequence.range(6L, 1L), contains(6L, 5L, 4L, 3L, 2L, 1L));
-		assertThat(LongSequence.range(1L, 6L).count(), is(6L));
+	public void negative() {
+		LongSequence negative = LongSequence.negative();
+		twice(() -> assertThat(negative.limit(3), contains(-1L, -2L, -3L)));
+	}
+
+	@Test
+	public void negativeFromZero() {
+		LongSequence negativeFromZero = LongSequence.negativeFromZero();
+		twice(() -> assertThat(negativeFromZero.limit(3), contains(0L, -1L, -2L)));
+	}
+
+	@Test
+	public void decreasingFrom() {
+		LongSequence decreasing = LongSequence.decreasingFrom(-10);
+		twice(() -> assertThat(decreasing.limit(3), contains(-10L, -11L, -12L)));
+
+		LongSequence decreasingFrom2 = LongSequence.decreasingFrom(2);
+		twice(() -> assertThat(decreasingFrom2.limit(5), contains(2L, 1L, 0L, -1L, -2L)));
+
+		LongSequence decreasingFromMinValue = LongSequence.decreasingFrom(Long.MIN_VALUE);
+		twice(() -> assertThat(decreasingFromMinValue.limit(3),
+		                       contains(Long.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE - 1)));
+	}
+
+	@Test
+	public void increasingFrom() {
+		LongSequence increasingFrom10 = LongSequence.increasingFrom(10);
+		twice(() -> assertThat(increasingFrom10.limit(3), contains(10L, 11L, 12L)));
+
+		LongSequence increasingFrom_2 = LongSequence.increasingFrom(-2);
+		twice(() -> assertThat(increasingFrom_2.limit(5), contains(-2L, -1L, 0L, 1L, 2L)));
+
+		LongSequence increasingFromMaxValue = LongSequence.increasingFrom(Long.MAX_VALUE);
+		twice(() -> assertThat(increasingFromMaxValue.limit(3),
+		                       contains(Long.MAX_VALUE, Long.MIN_VALUE, Long.MIN_VALUE + 1)));
+	}
+
+	@Test
+	public void steppingFrom() {
+		LongSequence steppingFrom0Step10 = LongSequence.steppingFrom(0, 10);
+		twice(() -> assertThat(steppingFrom0Step10.limit(3), contains(0L, 10L, 20L)));
+
+		LongSequence steppingFrom0Step_10 = LongSequence.steppingFrom(0, -10);
+		twice(() -> assertThat(steppingFrom0Step_10.limit(3), contains(0L, -10L, -20L)));
+
+		LongSequence steppingFromMaxValueStep10 = LongSequence.steppingFrom(Long.MAX_VALUE, 10);
+		twice(() -> assertThat(steppingFromMaxValueStep10.limit(3),
+		                       contains(Long.MAX_VALUE, Long.MIN_VALUE + 9, Long.MIN_VALUE + 19)));
+	}
+
+	@Test
+	public void range() {
+		LongSequence range1to6 = LongSequence.range(1, 6);
+		twice(() -> assertThat(range1to6, contains(1L, 2L, 3L, 4L, 5L, 6L)));
+
+		LongSequence range6to1 = LongSequence.range(6L, 1L);
+		twice(() -> assertThat(range6to1, contains(6L, 5L, 4L, 3L, 2L, 1L)));
+
+		LongSequence range_2to2 = LongSequence.range(-2, 2);
+		twice(() -> assertThat(range_2to2, contains(-2L, -1L, 0L, 1L, 2L)));
+
+		LongSequence range2to_2 = LongSequence.range(2, -2);
+		twice(() -> assertThat(range2to_2, contains(2L, 1L, 0L, -1L, -2L)));
+
+		LongSequence maxValue = LongSequence.range(Long.MAX_VALUE - 3, Long.MAX_VALUE);
+		twice(() -> assertThat(maxValue,
+		                       contains(Long.MAX_VALUE - 3, Long.MAX_VALUE - 2, Long.MAX_VALUE - 1, Long.MAX_VALUE)));
+
+		LongSequence minValue = LongSequence.range(Long.MIN_VALUE + 3, Long.MIN_VALUE);
+		twice(() -> assertThat(minValue,
+		                       contains(Long.MIN_VALUE + 3, Long.MIN_VALUE + 2, Long.MIN_VALUE + 1, Long.MIN_VALUE)));
+	}
+
+	@Test
+	public void rangeWithStep() {
+		LongSequence range1to6step2 = LongSequence.range(1, 6, 2);
+		twice(() -> assertThat(range1to6step2, contains(1L, 3L, 5L)));
+
+		LongSequence range6to1step2 = LongSequence.range(6, 1, 2);
+		twice(() -> assertThat(range6to1step2, contains(6L, 4L, 2L)));
+
+		LongSequence range_6to6step2 = LongSequence.range(-6, 6, 3);
+		twice(() -> assertThat(range_6to6step2, contains(-6L, -3L, 0L, 3L, 6L)));
+
+		LongSequence range6to_6step2 = LongSequence.range(6, -6, 3);
+		twice(() -> assertThat(range6to_6step2, contains(6L, 3L, 0L, -3L, -6L)));
+
+		LongSequence maxValue = LongSequence.range(Long.MAX_VALUE - 2, Long.MAX_VALUE, 2);
+		twice(() -> assertThat(maxValue, contains(Long.MAX_VALUE - 2, Long.MAX_VALUE)));
+
+		LongSequence minValue = LongSequence.range(Long.MIN_VALUE + 2, Long.MIN_VALUE, 2);
+		twice(() -> assertThat(minValue, contains(Long.MIN_VALUE + 2, Long.MIN_VALUE)));
+
+		LongSequence crossingMaxValue = LongSequence.range(Long.MAX_VALUE - 3, Long.MAX_VALUE, 2);
+		twice(() -> assertThat(crossingMaxValue, contains(Long.MAX_VALUE - 3, Long.MAX_VALUE - 1)));
+
+		LongSequence crossingMinValue = LongSequence.range(Long.MIN_VALUE + 3, Long.MIN_VALUE, 2);
+		twice(() -> assertThat(crossingMinValue, contains(Long.MIN_VALUE + 3, Long.MIN_VALUE + 1)));
 	}
 
 	@Test
 	public void toChars() {
-		CharSeq charSeq = LongSequence.startingAt('a').limit(5).toChars();
+		CharSeq charSeq = LongSequence.increasingFrom('a').limit(5).toChars();
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
@@ -583,15 +675,15 @@ public class LongSequenceTest {
 
 	@Test
 	public void toIntsMapped() {
-		IntSequence intSequence =
-				LongSequence.startingAt(Integer.MAX_VALUE + 1L).limit(5).toInts(l -> (int) (l - Integer.MAX_VALUE));
-		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
+		IntSequence intSequence = LongSequence.increasingFrom(Integer.MAX_VALUE + 1L)
+				.toInts(l -> (int) (l - Integer.MAX_VALUE));
+		twice(() -> assertThat(intSequence.limit(5), contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void toDoublesMapped() {
-		DoubleSequence doubleSequence = LongSequence.positive().limit(5).toDoubles(l -> l / 2.0);
-		twice(() -> assertThat(doubleSequence, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
+		DoubleSequence doubleSequence = LongSequence.positive().toDoubles(l -> l / 2.0);
+		twice(() -> assertThat(doubleSequence.limit(5), contains(0.5, 1.0, 1.5, 2.0, 2.5)));
 	}
 
 	@Test
@@ -599,8 +691,8 @@ public class LongSequenceTest {
 		Sequence<Long> empty = LongSequence.empty().toSequence(l -> l + 1);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Long> longs = LongSequence.positive().limit(5).toSequence(l -> l + 1);
-		twice(() -> assertThat(longs, contains(2L, 3L, 4L, 5L, 6L)));
+		Sequence<Long> longs = LongSequence.positive().toSequence(l -> l + 1);
+		twice(() -> assertThat(longs.limit(5), contains(2L, 3L, 4L, 5L, 6L)));
 	}
 
 	@Test
@@ -608,8 +700,8 @@ public class LongSequenceTest {
 		Sequence<Long> empty = LongSequence.empty().box();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Long> longs = LongSequence.positive().limit(5).box();
-		twice(() -> assertThat(longs, contains(1L, 2L, 3L, 4L, 5L)));
+		Sequence<Long> longs = LongSequence.positive().box();
+		twice(() -> assertThat(longs.limit(5), contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
