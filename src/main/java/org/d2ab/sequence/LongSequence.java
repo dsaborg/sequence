@@ -406,7 +406,7 @@ public interface LongSequence extends LongIterable {
 	 * Map the {@code longs} in this {@code LongSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(LongFunction<T> mapper) {
-		return () -> new DelegatingIterator<Long, LongIterator, T, Iterator<T>>(iterator()) {
+		return () -> new DelegatingIterator<Long, LongIterator, T>(iterator()) {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextLong());

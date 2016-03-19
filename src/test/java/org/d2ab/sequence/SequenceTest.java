@@ -1181,9 +1181,21 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void intsFromZero() {
+		assertThat(Sequence.intsFromZero().limit(3), contains(0, 1, 2));
+		assertThat(Sequence.intsFromZero().limit(7777).last(), is(Optional.of(7776)));
+	}
+
+	@Test
 	public void longs() {
 		assertThat(Sequence.longs().limit(3), contains(1L, 2L, 3L));
 		assertThat(Sequence.longs().limit(7777).last(), is(Optional.of(7777L)));
+	}
+
+	@Test
+	public void longsFromZero() {
+		assertThat(Sequence.longsFromZero().limit(3), contains(0L, 1L, 2L));
+		assertThat(Sequence.longsFromZero().limit(7777).last(), is(Optional.of(7776L)));
 	}
 
 	@Test
@@ -1237,7 +1249,7 @@ public class SequenceTest {
 		CharSeq empty = Sequence.<Integer>empty().toChars(x -> (char) x.intValue());
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		CharSeq charSeq = Sequence.ints(0x61).limit(5).toChars(x -> (char) x.intValue());
+		CharSeq charSeq = Sequence.ints('a').limit(5).toChars(x -> (char) x.intValue());
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
@@ -1352,5 +1364,12 @@ public class SequenceTest {
 	public void swap() {
 		twice(() -> assertThat(_12345.swap((a, b) -> a == 2 && b == 3), contains(1, 3, 2, 4, 5)));
 		twice(() -> assertThat(_12345.swap((a, b) -> a == 2), contains(1, 3, 4, 5, 2)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void withIndex() {
+		assertThat(_12345.withIndex(),
+		           contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4), Pair.of(4L, 5)));
 	}
 }
