@@ -1369,7 +1369,8 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void withIndex() {
-		assertThat(_12345.withIndex(),
-		           contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4), Pair.of(4L, 5)));
+		BiSequence<Long, Integer> withIndex = _12345.withIndex();
+		twice(() -> assertThat(withIndex, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
+		                                           Pair.of(4L, 5))));
 	}
 }
