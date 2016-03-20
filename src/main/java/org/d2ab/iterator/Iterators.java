@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -75,7 +74,7 @@ public class Iterators {
 	 * Reduce the given iterator into a single element by iteratively applying the given binary operator to
 	 * the current result and each element in this sequence, starting with the given identity as the initial result.
 	 */
-	public static <T> T reduce(Iterator<? extends T> iterator, @Nullable T identity, BinaryOperator<T> operator) {
+	public static <T> T reduce(Iterator<? extends T> iterator, T identity, BinaryOperator<T> operator) {
 		T result = identity;
 		while (iterator.hasNext())
 			result = operator.apply(result, iterator.next());

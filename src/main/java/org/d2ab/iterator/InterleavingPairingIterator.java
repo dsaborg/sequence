@@ -18,7 +18,6 @@ package org.d2ab.iterator;
 
 import org.d2ab.util.Pair;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -41,7 +40,6 @@ public class InterleavingPairingIterator<T, U> implements Iterator<Pair<T, U>> {
 	}
 
 	@Override
-	@Nullable
 	public Pair<T, U> next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

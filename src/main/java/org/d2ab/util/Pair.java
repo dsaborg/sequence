@@ -19,7 +19,6 @@ package org.d2ab.util;
 import org.d2ab.function.Functions;
 import org.d2ab.function.QuaternaryFunction;
 
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
@@ -30,7 +29,7 @@ import java.util.function.*;
 import static java.util.Comparator.*;
 
 public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
-	static <T, U> Pair<T, U> of(@Nullable T left, @Nullable U right) {
+	static <T, U> Pair<T, U> of(T left, U right) {
 		return new Base<T, U>() {
 			@Override
 			public T getLeft() {
@@ -58,7 +57,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
-	static <T> Pair<T, T> unary(@Nullable T item) {
+	static <T> Pair<T, T> unary(T item) {
 		return new Base<T, T>() {
 			@Override
 			public T getLeft() {

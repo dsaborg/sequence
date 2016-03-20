@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -46,7 +45,6 @@ public class ChainingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

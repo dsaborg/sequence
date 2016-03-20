@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -57,7 +56,7 @@ public abstract class ForwardPeekingMappingIterator<T, U> extends DelegatingRefe
 		return mapped;
 	}
 
-	protected abstract T mapFollowing(boolean hasFollowing, @Nullable T following);
+	protected abstract T mapFollowing(boolean hasFollowing, T following);
 
-	protected abstract U mapNext(@Nullable T following);
+	protected abstract U mapNext(T following);
 }

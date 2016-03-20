@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.function.Function;
 
@@ -29,7 +28,6 @@ public class MappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
 	}
 
 	@Override
-	@Nullable
 	public U next() {
 		return mapper.apply(iterator.next());
 	}

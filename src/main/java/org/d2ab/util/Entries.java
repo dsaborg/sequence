@@ -19,7 +19,6 @@ package org.d2ab.util;
 import org.d2ab.function.Functions;
 import org.d2ab.function.QuaternaryFunction;
 
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,7 +48,7 @@ public class Entries {
 	 * Creates a new {@link Entry} with the given key and value. Calling {@link Entry#setValue(Object)} on the
 	 * entry will result in an {@link UnsupportedOperationException} being thrown.
 	 */
-	public static <K, V> Entry<K, V> of(@Nullable K key, @Nullable V value) {
+	public static <K, V> Entry<K, V> of(K key, V value) {
 		return new EntryImpl<>(key, value);
 	}
 
@@ -92,12 +91,10 @@ public class Entries {
 	}
 
 	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>> {
-		@Nullable
-		private final K key;
-		@Nullable
-		private final V value;
+			private final K key;
+			private final V value;
 
-		private EntryImpl(@Nullable K key, @Nullable V value) {
+		private EntryImpl(K key, V value) {
 			this.key = key;
 			this.value = value;
 		}

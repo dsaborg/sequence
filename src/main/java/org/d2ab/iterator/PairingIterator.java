@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -66,5 +65,5 @@ public abstract class PairingIterator<T, E> extends DelegatingReferenceIterator<
 		return result;
 	}
 
-	protected abstract E pair(T first, @Nullable T second);
+	protected abstract E pair(T first, T second);
 }

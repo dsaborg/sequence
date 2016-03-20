@@ -19,7 +19,6 @@ package org.d2ab.iterable.ints;
 import org.d2ab.iterator.ints.ChainingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -52,7 +51,7 @@ public class ChainingIntIterable implements IntIterable {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object o) {
+	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if ((o == null) || (getClass() != o.getClass()))

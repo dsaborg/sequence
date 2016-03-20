@@ -22,7 +22,6 @@ import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
 import org.d2ab.util.Entries;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
@@ -76,12 +75,12 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return iteratorSupplier::get;
 	}
 
-	static <K, V> EntrySequence<K, V> recurse(@Nullable K keySeed, @Nullable V valueSeed,
+	static <K, V> EntrySequence<K, V> recurse(K keySeed, V valueSeed,
 	                                          BiFunction<K, V, ? extends Entry<K, V>> op) {
 		return () -> new RecursiveIterator<>(Entries.of(keySeed, valueSeed), Entries.asUnaryOperator(op));
 	}
 
-	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(@Nullable K keySeed, @Nullable V valueSeed,
+	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(K keySeed, V valueSeed,
 	                                                    BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
 	                                                    BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
 		return () -> new RecursiveIterator<>(f.apply(keySeed, valueSeed), Entries.asUnaryOperator(f, g));

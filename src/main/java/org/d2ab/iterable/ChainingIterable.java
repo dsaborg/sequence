@@ -19,7 +19,6 @@ package org.d2ab.iterable;
 import org.d2ab.iterator.ChainingIterator;
 import org.d2ab.util.Arrayz;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -97,7 +96,7 @@ public class ChainingIterable<T> implements Iterable<T> {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object o) {
+	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if ((o == null) || (getClass() != o.getClass()))

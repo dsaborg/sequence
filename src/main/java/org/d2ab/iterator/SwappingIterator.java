@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.function.BiPredicate;
 
@@ -32,7 +31,7 @@ public class SwappingIterator<T> extends ForwardPeekingMappingIterator<T, T> {
 	}
 
 	@Override
-	protected T mapFollowing(boolean hasFollowing, @Nullable T following) {
+	protected T mapFollowing(boolean hasFollowing, T following) {
 		if (!hasFollowing || !swapPredicate.test(next, following)) {
 			return following;
 		}
@@ -43,7 +42,7 @@ public class SwappingIterator<T> extends ForwardPeekingMappingIterator<T, T> {
 	}
 
 	@Override
-	protected T mapNext(@Nullable T following) {
+	protected T mapNext(T following) {
 		return next;
 	}
 }

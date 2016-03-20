@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -36,7 +35,6 @@ public class ReverseIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

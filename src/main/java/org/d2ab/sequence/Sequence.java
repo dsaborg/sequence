@@ -27,7 +27,6 @@ import org.d2ab.iterator.longs.DelegatingLongIterator;
 import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
@@ -76,7 +75,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 */
-	static <T> Sequence<T> of(@Nullable T item) {
+	static <T> Sequence<T> of(T item) {
 		return from(singleton(item));
 	}
 
@@ -319,7 +318,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
 	 */
-	static <T> Sequence<T> recurse(@Nullable T seed, UnaryOperator<T> f) {
+	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
 		return () -> new RecursiveIterator<>(seed, f);
 	}
 
@@ -341,7 +340,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
 	 */
-	static <T, S> Sequence<S> recurse(@Nullable T seed, Function<? super T, ? extends S> f,
+	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f,
 	                                  Function<? super S, ? extends T> g) {
 		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
 	}
@@ -358,7 +357,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
 	 */
-	default Sequence<T> until(@Nullable T terminal) {
+	default Sequence<T> until(T terminal) {
 		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
@@ -374,7 +373,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
 	 */
-	default Sequence<T> endingAt(@Nullable T terminal) {
+	default Sequence<T> endingAt(T terminal) {
 		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
@@ -482,12 +481,12 @@ public interface Sequence<T> extends Iterable<T> {
 	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
 		return () -> new ForwardPeekingMappingIterator<T, U>(iterator()) {
 			@Override
-			protected T mapFollowing(boolean hasFollowing, @Nullable T following) {
+			protected T mapFollowing(boolean hasFollowing, T following) {
 				return following;
 			}
 
 			@Override
-			protected U mapNext(@Nullable T following) {
+			protected U mapNext(T following) {
 				return mapper.apply(next, following);
 			}
 		};
@@ -812,7 +811,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Reduce this {@code Sequence} into a single element by iteratively applying the given binary operator to
 	 * the current result and each element in this sequence, starting with the given identity as the initial result.
 	 */
-	default T reduce(@Nullable T identity, BinaryOperator<T> operator) {
+	default T reduce(T identity, BinaryOperator<T> operator) {
 		return Iterators.reduce(iterator(), identity, operator);
 	}
 
@@ -881,7 +880,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<Entry<T, T>> entries() {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
 			@Override
-			protected Entry<T, T> pair(T first, @Nullable T second) {
+			protected Entry<T, T> pair(T first, T second) {
 				return Entries.of(first, second);
 			}
 		};
@@ -895,7 +894,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<Pair<T, T>> pairs() {
 		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 1) {
 			@Override
-			protected Pair<T, T> pair(T first, @Nullable T second) {
+			protected Pair<T, T> pair(T first, T second) {
 				return Pair.of(first, second);
 			}
 		};
@@ -909,7 +908,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<Entry<T, T>> adjacentEntries() {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 2) {
 			@Override
-			protected Entry<T, T> pair(T first, @Nullable T second) {
+			protected Entry<T, T> pair(T first, T second) {
 				return Entries.of(first, second);
 			}
 		};
@@ -923,7 +922,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<Pair<T, T>> adjacentPairs() {
 		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 2) {
 			@Override
-			protected Pair<T, T> pair(T first, @Nullable T second) {
+			protected Pair<T, T> pair(T first, T second) {
 				return Pair.of(first, second);
 			}
 		};
@@ -1091,13 +1090,13 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<T> peekForward(BiConsumer<? super T, ? super T> action) {
 		return () -> new ForwardPeekingMappingIterator<T, T>(iterator()) {
 			@Override
-			protected T mapNext(@Nullable T following) {
+			protected T mapNext(T following) {
 				action.accept(next, following);
 				return next;
 			}
 
 			@Override
-			protected T mapFollowing(boolean hasFollowing, @Nullable T following) {
+			protected T mapFollowing(boolean hasFollowing, T following) {
 				return following;
 			}
 		};
@@ -1110,7 +1109,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<T> peekBack(BiConsumer<? super T, ? super T> action) {
 		return () -> new BackPeekingMappingIterator<T, T>(iterator()) {
 			@Override
-			protected T mapNext(@Nullable T next) {
+			protected T mapNext(T next) {
 				action.accept(previous, next);
 				return next;
 			}

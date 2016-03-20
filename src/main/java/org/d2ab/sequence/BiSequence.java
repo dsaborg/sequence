@@ -22,7 +22,6 @@ import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
 import org.d2ab.util.Pair;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -75,7 +74,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return iteratorSupplier::get;
 	}
 
-	static <L, R> BiSequence<L, R> recurse(@Nullable L leftSeed, @Nullable R rightSeed,
+	static <L, R> BiSequence<L, R> recurse(L leftSeed, R rightSeed,
 	                                       BiFunction<? super L, ? super R, ? extends Pair<L, R>> op) {
 		return recurse(Pair.of(leftSeed, rightSeed), Pair.asUnaryOperator(op));
 	}
@@ -84,7 +83,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return () -> new RecursiveIterator<>(seed, op);
 	}
 
-	static <L, R, LL, RR> BiSequence<LL, RR> recurse(@Nullable L leftSeed, @Nullable R rightSeed,
+	static <L, R, LL, RR> BiSequence<LL, RR> recurse(L leftSeed, R rightSeed,
 	                                                 BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> f,
 	                                                 BiFunction<? super LL, ? super RR, ? extends Pair<L, R>> g) {
 		return recurse(f.apply(leftSeed, rightSeed), Pair.asUnaryOperator(f, g));

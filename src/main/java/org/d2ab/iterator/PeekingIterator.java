@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
@@ -29,7 +28,6 @@ public class PeekingIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	@Nullable
 	public T next() {
 		T next = iterator.next();
 		action.accept(next);

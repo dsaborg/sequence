@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -49,7 +48,6 @@ public class DelimitingIterator<U extends R, R> extends UnaryReferenceIterator<R
 	}
 
 	@Override
-	@Nullable
 	public R next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

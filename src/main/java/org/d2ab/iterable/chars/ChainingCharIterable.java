@@ -19,7 +19,6 @@ package org.d2ab.iterable.chars;
 import org.d2ab.iterator.chars.ChainingCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -52,7 +51,7 @@ public class ChainingCharIterable implements CharIterable {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object o) {
+	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if ((o == null) || (getClass() != o.getClass()))

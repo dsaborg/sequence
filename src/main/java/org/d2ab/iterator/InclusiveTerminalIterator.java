@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -25,11 +24,10 @@ import java.util.function.Predicate;
 public class InclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
 	private final Predicate<? super T> terminalPredicate;
 
-	@Nullable
 	private T previous;
 	private boolean hasPrevious;
 
-	public InclusiveTerminalIterator(Iterator<T> iterator, @Nullable T terminal) {
+	public InclusiveTerminalIterator(Iterator<T> iterator, T terminal) {
 		this(iterator, o -> Objects.equals(o, terminal));
 	}
 
@@ -44,7 +42,6 @@ public class InclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
 	}
 
 	@Override
-	@Nullable
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();

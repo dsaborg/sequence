@@ -16,7 +16,6 @@
 
 package org.d2ab.collection;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
  * Utility methods for {@link Map} instances
  */
 public class Maps {
-	public static <K, V> Entry<K, V> entry(@Nullable K key, @Nullable V value) {
+	public static <K, V> Entry<K, V> entry(K key, V value) {
 		return new Entry<K, V>() {
 			@Override
 			public K getKey() {
@@ -50,7 +49,7 @@ public class Maps {
 		return new Builder<>(() -> constructor.apply(initialCapacity));
 	}
 
-	public static <K, V> Builder<K, V> builder(@Nullable K key, @Nullable V value) {
+	public static <K, V> Builder<K, V> builder(K key, V value) {
 		return Maps.<K, V>builder().put(key, value);
 	}
 
@@ -70,7 +69,7 @@ public class Maps {
 			this.constructor = constructor;
 		}
 
-		public Builder<K, V> put(@Nullable K key, @Nullable V value) {
+		public Builder<K, V> put(K key, V value) {
 			if (map == null)
 				map = constructor.get();
 			map.put(key, value);
