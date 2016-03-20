@@ -51,8 +51,8 @@ public interface IntSequence extends IntIterable {
 	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
 	 * created
 	 * from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code IntSequence} as
-	 * empty.
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
+	 * IntSequence} as empty.
 	 */
 	static IntSequence from(Iterator<Integer> iterator) {
 		return from(IntIterator.from(iterator));
@@ -260,7 +260,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #negativeFromZero()
 	 */
 	static IntSequence range(int start, int end, int step) {
-		if (step < 0) throw new IllegalArgumentException("Require step >= 0");
+		if (step < 0)
+			throw new IllegalArgumentException("Require step >= 0");
 		return end >= start ?
 		       recurse(start, x -> x + step).endingAt(x -> (long) x + step > end) :
 		       recurse(start, x -> x - step).endingAt(x -> (long) x - step < end);
@@ -510,7 +511,8 @@ public interface IntSequence extends IntIterable {
 		boolean started = false;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); started = true) {
 			int each = iterator.nextInt();
-			if (started) result.append(delimiter);
+			if (started)
+				result.append(delimiter);
 			result.append(each);
 		}
 
@@ -523,7 +525,8 @@ public interface IntSequence extends IntIterable {
 	 */
 	default OptionalInt reduce(IntBinaryOperator operator) {
 		IntIterator iterator = iterator();
-		if (!iterator.hasNext()) return OptionalInt.empty();
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
 
 		int result = iterator.reduce(iterator.next(), operator);
 		return OptionalInt.of(result);
@@ -543,7 +546,8 @@ public interface IntSequence extends IntIterable {
 	 */
 	default OptionalInt first() {
 		IntIterator iterator = iterator();
-		if (!iterator.hasNext()) return OptionalInt.empty();
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
 
 		return OptionalInt.of(iterator.nextInt());
 	}
@@ -556,7 +560,8 @@ public interface IntSequence extends IntIterable {
 		IntIterator iterator = iterator();
 
 		iterator.skip();
-		if (!iterator.hasNext()) return OptionalInt.empty();
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
 
 		return OptionalInt.of(iterator.nextInt());
 	}
@@ -570,7 +575,8 @@ public interface IntSequence extends IntIterable {
 
 		iterator.skip();
 		iterator.skip();
-		if (!iterator.hasNext()) return OptionalInt.empty();
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
 
 		return OptionalInt.of(iterator.nextInt());
 	}
@@ -581,7 +587,8 @@ public interface IntSequence extends IntIterable {
 	 */
 	default OptionalInt last() {
 		IntIterator iterator = iterator();
-		if (!iterator.hasNext()) return OptionalInt.empty();
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
 
 		int last;
 		do {
@@ -635,7 +642,8 @@ public interface IntSequence extends IntIterable {
 	 */
 	default boolean all(IntPredicate predicate) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (!predicate.test(iterator.nextInt())) return false;
+			if (!predicate.test(iterator.nextInt()))
+				return false;
 		}
 		return true;
 	}
@@ -652,7 +660,8 @@ public interface IntSequence extends IntIterable {
 	 */
 	default boolean any(IntPredicate predicate) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (predicate.test(iterator.nextInt())) return true;
+			if (predicate.test(iterator.nextInt()))
+				return true;
 		}
 		return false;
 	}

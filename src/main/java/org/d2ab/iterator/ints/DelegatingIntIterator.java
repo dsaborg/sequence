@@ -23,8 +23,8 @@ import java.util.Iterator;
 /**
  * A superclass for delegating {@link IntIterator}s.
  */
-public abstract class DelegatingIntIterator<T, I extends Iterator<T>>
-		extends DelegatingIterator<T, I, Integer> implements IntIterator {
+public abstract class DelegatingIntIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Integer>
+		implements IntIterator {
 	public DelegatingIntIterator(I iterator) {
 		super(iterator);
 	}

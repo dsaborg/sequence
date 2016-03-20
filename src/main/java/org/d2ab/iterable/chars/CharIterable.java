@@ -101,7 +101,7 @@ public interface CharIterable extends Iterable<Character> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * <p>
 	 * <p>If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
 	 * passed
 	 * to {@link #forEachChar}; otherwise the action is adapted to an instance of {@code CharConsumer}, by boxing the
@@ -118,16 +118,17 @@ public interface CharIterable extends Iterable<Character> {
 	 * Performs the given action for each character in this {@code Iterable} until all elements have been processed or
 	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
 	 * Exceptions thrown by the action are relayed to the caller.
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 * <p>The default implementation behaves as if:
+	 * <p>
+	 * The default implementation behaves as if:
 	 * <pre>{@code
 	 * CharIterator iterator = iterator();
 	 * while (iterator.hasNext())
 	 *     action.accept(iterator.nextChar());
 	 * }</pre>
+	 *
+	 * @param action The action to be performed for each element
+	 *
+	 * @throws NullPointerException if the specified action is null
 	 */
 	default void forEachChar(CharConsumer action) {
 		requireNonNull(action);

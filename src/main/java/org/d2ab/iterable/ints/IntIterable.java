@@ -101,7 +101,7 @@ public interface IntIterable extends Iterable<Integer> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * <p>
 	 * <p>If the action is an instance of {@code IntConsumer} then it is cast to {@code IntConsumer} and passed
 	 * to {@link #forEachInt}; otherwise the action is adapted to an instance of {@code IntConsumer}, by boxing the
 	 * argument of {@code IntConsumer}, and then passed to {@link #forEachInt}.
@@ -117,16 +117,17 @@ public interface IntIterable extends Iterable<Integer> {
 	 * Performs the given action for each integer in this {@code Iterable} until all elements have been processed or
 	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
 	 * Exceptions thrown by the action are relayed to the caller.
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 * <p>The default implementation behaves as if:
+	 * <p>
+	 * The default implementation behaves as if:
 	 * <pre>{@code
 	 * IntIterator iterator = iterator();
 	 * while (iterator.hasNext())
 	 *     action.accept(iterator.nextInt());
 	 * }</pre>
+	 *
+	 * @param action The action to be performed for each element
+	 *
+	 * @throws NullPointerException if the specified action is null
 	 */
 	default void forEachInt(IntConsumer action) {
 		requireNonNull(action);

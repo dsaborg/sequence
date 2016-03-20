@@ -27,8 +27,7 @@ public class BackPeekingMappingDoubleIterator extends UnaryDoubleIterator {
 	private boolean hasPrevious;
 	private double previous = -1;
 
-	public BackPeekingMappingDoubleIterator(DoubleIterator iterator,
-	                                        double firstPrevious,
+	public BackPeekingMappingDoubleIterator(DoubleIterator iterator, double firstPrevious,
 	                                        DoubleBinaryOperator mapper) {
 		super(iterator);
 		this.firstPrevious = firstPrevious;

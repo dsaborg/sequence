@@ -82,10 +82,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	}
 
 	static <K, V, KK, VV> UnaryOperator<Pair<KK, VV>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
-			                                                                                                   Pair<KK, VV>> f,
-
+			Pair<KK, VV>> f,
 	                                                                  BiFunction<? super KK, ? super VV, ? extends
-			                                                                                                     Pair<K, V>> g) {
+			                                                                  Pair<K, V>> g) {
 
 		Function<? super Pair<K, V>, ? extends Pair<KK, VV>> f1 = asFunction(f);
 		Function<? super Pair<KK, VV>, ? extends Pair<K, V>> g1 = asFunction(g);
@@ -97,8 +96,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	}
 
 	static <K, V, R> Function<? super Pair<K, V>, ? extends R> asFunction(BiFunction<? super K, ? super V, ? extends
-			                                                                                                       R>
-			                                                                      mapper) {
+			R> mapper) {
 		return entry -> mapper.apply(entry.getLeft(), entry.getRight());
 	}
 
@@ -249,8 +247,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		private static final Function<Pair, Object> GET_RIGHT = (Function<Pair, Object>) Pair::getRight;
 
 		@SuppressWarnings("unchecked")
-		private static final Comparator<Pair> COMPARATOR =
-				comparing(GET_LEFT, NULLS_FIRST).thenComparing(GET_RIGHT, NULLS_FIRST);
+		private static final Comparator<Pair> COMPARATOR = comparing(GET_LEFT, NULLS_FIRST).thenComparing(GET_RIGHT,
+		                                                                                                  NULLS_FIRST);
 
 		public static String format(Object o) {
 			if (o instanceof String) {

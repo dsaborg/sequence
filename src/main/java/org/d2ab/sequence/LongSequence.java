@@ -52,8 +52,8 @@ public interface LongSequence extends LongIterable {
 	 * Create an {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that {@code LongSequence}
 	 * created
 	 * from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code LongSequence} as
-	 * empty.
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
+	 * LongSequence} as empty.
 	 */
 	static LongSequence from(Iterator<Long> iterator) {
 		return from(LongIterator.from(iterator));
@@ -262,7 +262,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #negativeFromZero()
 	 */
 	static LongSequence range(long start, long end, long step) {
-		if (step < 0) throw new IllegalArgumentException("Require step >= 0");
+		if (step < 0)
+			throw new IllegalArgumentException("Require step >= 0");
 		return end >= start ?
 		       recurse(start, x -> x + step).endingAt(x -> x + step > end || x > Long.MAX_VALUE - step) :
 		       recurse(start, x -> x - step).endingAt(x -> x - step < end || x < Long.MIN_VALUE + step);
@@ -526,7 +527,8 @@ public interface LongSequence extends LongIterable {
 		boolean started = false;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); started = true) {
 			long each = iterator.nextLong();
-			if (started) result.append(delimiter);
+			if (started)
+				result.append(delimiter);
 			result.append(each);
 		}
 
@@ -539,7 +541,8 @@ public interface LongSequence extends LongIterable {
 	 */
 	default OptionalLong reduce(LongBinaryOperator operator) {
 		LongIterator iterator = iterator();
-		if (!iterator.hasNext()) return OptionalLong.empty();
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
 
 		long result = iterator.reduce(iterator.next(), operator);
 		return OptionalLong.of(result);
@@ -560,7 +563,8 @@ public interface LongSequence extends LongIterable {
 	 */
 	default OptionalLong first() {
 		LongIterator iterator = iterator();
-		if (!iterator.hasNext()) return OptionalLong.empty();
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
 
 		return OptionalLong.of(iterator.nextLong());
 	}
@@ -573,7 +577,8 @@ public interface LongSequence extends LongIterable {
 		LongIterator iterator = iterator();
 
 		iterator.skip();
-		if (!iterator.hasNext()) return OptionalLong.empty();
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
 
 		return OptionalLong.of(iterator.nextLong());
 	}
@@ -587,7 +592,8 @@ public interface LongSequence extends LongIterable {
 
 		iterator.skip();
 		iterator.skip();
-		if (!iterator.hasNext()) return OptionalLong.empty();
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
 
 		return OptionalLong.of(iterator.nextLong());
 	}
@@ -598,7 +604,8 @@ public interface LongSequence extends LongIterable {
 	 */
 	default OptionalLong last() {
 		LongIterator iterator = iterator();
-		if (!iterator.hasNext()) return OptionalLong.empty();
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
 
 		long last;
 		do {
@@ -652,7 +659,8 @@ public interface LongSequence extends LongIterable {
 	 */
 	default boolean all(LongPredicate predicate) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (!predicate.test(iterator.nextLong())) return false;
+			if (!predicate.test(iterator.nextLong()))
+				return false;
 		}
 		return true;
 	}
@@ -669,7 +677,8 @@ public interface LongSequence extends LongIterable {
 	 */
 	default boolean any(LongPredicate predicate) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (predicate.test(iterator.nextLong())) return true;
+			if (predicate.test(iterator.nextLong()))
+				return true;
 		}
 		return false;
 	}

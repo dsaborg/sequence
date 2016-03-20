@@ -67,7 +67,7 @@ public class Iterables {
 		else if (container instanceof Pair)
 			return from((Iterable<T>) ((Pair<T, T>) container)::iterator);
 		else
-			throw new ClassCastException("Required an Iterable, Iterator, Array or Stream but got: " +
-			                             container.getClass());
+			throw new ClassCastException(
+					"Required an Iterable, Iterator, Array or Stream but got: " + container.getClass());
 	}
 }

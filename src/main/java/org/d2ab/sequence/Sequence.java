@@ -319,7 +319,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
 	 */
-	static <T> Sequence<T> recurse(@Nullable T seed, UnaryOperator<T> f)  {
+	static <T> Sequence<T> recurse(@Nullable T seed, UnaryOperator<T> f) {
 		return () -> new RecursiveIterator<>(seed, f);
 	}
 
@@ -341,8 +341,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
 	 */
-	static <T, S> Sequence<S> recurse(@Nullable T seed,
-	                                  Function<? super T, ? extends S> f,
+	static <T, S> Sequence<S> recurse(@Nullable T seed, Function<? super T, ? extends S> f,
 	                                  Function<? super S, ? extends T> g) {
 		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
 	}
@@ -647,8 +646,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap() {
 		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper =
-				(Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
+		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
+				.<Entry<K, V>>identity();
 		return toMap(mapper);
 	}
 
@@ -715,8 +714,8 @@ public interface Sequence<T> extends Iterable<T> {
 	default <K, V> SortedMap<K, V> toSortedMap() {
 		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;
 		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper =
-				(Function<? super T, ? extends Entry<K, V>>) Function.<Entry<K, V>>identity();
+		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
+				.<Entry<K, V>>identity();
 		return toMap(supplier, mapper);
 	}
 

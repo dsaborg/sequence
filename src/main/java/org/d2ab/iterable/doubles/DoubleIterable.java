@@ -101,7 +101,7 @@ public interface DoubleIterable extends Iterable<Double> {
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * <p>
 	 * <p>If the action is an instance of {@code DoubleConsumer} then it is cast to {@code DoubleConsumer} and
 	 * passed to {@link #forEachDouble}; otherwise the action is adapted to an instance of {@code DoubleConsumer}, by
 	 * boxing the argument of {@code DoubleConsumer}, and then passed to {@link #forEachDouble}.
@@ -117,16 +117,17 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * Performs the given action for each double in this {@code Iterable} until all elements have been processed or
 	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
 	 * Exceptions thrown by the action are relayed to the caller.
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 * <p>The default implementation behaves as if:
+	 * <p>
+	 * The default implementation behaves as if:
 	 * <pre>{@code
 	 * DoubleIterator iterator = iterator();
 	 * while (iterator.hasNext())
 	 *     action.accept(iterator.nextDouble());
 	 * }</pre>
+	 *
+	 * @param action The action to be performed for each element
+	 *
+	 * @throws NullPointerException if the specified action is null
 	 */
 	default void forEachDouble(DoubleConsumer action) {
 		requireNonNull(action);

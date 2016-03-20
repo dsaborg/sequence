@@ -75,8 +75,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return iteratorSupplier::get;
 	}
 
-	static <L, R> BiSequence<L, R> recurse(@Nullable L leftSeed,
-	                                       @Nullable R rightSeed,
+	static <L, R> BiSequence<L, R> recurse(@Nullable L leftSeed, @Nullable R rightSeed,
 	                                       BiFunction<? super L, ? super R, ? extends Pair<L, R>> op) {
 		return recurse(Pair.of(leftSeed, rightSeed), Pair.asUnaryOperator(op));
 	}
@@ -85,8 +84,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return () -> new RecursiveIterator<>(seed, op);
 	}
 
-	static <L, R, LL, RR> BiSequence<LL, RR> recurse(@Nullable L leftSeed,
-	                                                 @Nullable R rightSeed,
+	static <L, R, LL, RR> BiSequence<LL, RR> recurse(@Nullable L leftSeed, @Nullable R rightSeed,
 	                                                 BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> f,
 	                                                 BiFunction<? super LL, ? super RR, ? extends Pair<L, R>> g) {
 		return recurse(f.apply(leftSeed, rightSeed), Pair.asUnaryOperator(f, g));
@@ -130,8 +128,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
-	default <LL, RR> BiSequence<LL, RR> flatten(BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>>
-			                                            mapper) {
+	default <LL, RR> BiSequence<LL, RR> flatten(
+			BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>> mapper) {
 		ChainingIterable<Pair<LL, RR>> result = new ChainingIterable<>();
 		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = Pair.asFunction(mapper);
 		Consumer<? super Iterable<Pair<LL, RR>>> append = result::append;
@@ -279,7 +277,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	default Pair<L, R> reduce(Pair<L, R> identity, BinaryOperator<Pair<L, R>> operator, Iterator<Pair<L, R>>
-			                                                                                    iterator) {
+			iterator) {
 		Pair<L, R> result = identity;
 		while (iterator.hasNext())
 			result = operator.apply(result, iterator.next());

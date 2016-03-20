@@ -39,8 +39,8 @@ public class Entries {
 	private static final Function<Entry, Object> GET_VALUE = (Function<Entry, Object>) Entry::getValue;
 
 	@SuppressWarnings("unchecked")
-	private static final Comparator<Entry> COMPARATOR =
-			comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE, NULLS_FIRST);
+	private static final Comparator<Entry> COMPARATOR = comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE,
+	                                                                                                  NULLS_FIRST);
 
 	private Entries() {
 	}
@@ -59,18 +59,18 @@ public class Entries {
 	}
 
 	public static <K, V> UnaryOperator<Entry<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
-			                                                                                                 Entry<K,
-					                                                                                                      V>> op) {
+			Entry<K, V>> op) {
 		return entry -> op.apply(entry.getKey(), entry.getValue());
 	}
 
-	public static <K, V, KK, VV> UnaryOperator<Entry<KK, VV>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
-	                                                                          BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
+	public static <K, V, KK, VV> UnaryOperator<Entry<KK, VV>> asUnaryOperator(
+			BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
+			BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
 		return Functions.toUnaryOperator(asFunction(f), asFunction(g));
 	}
 
 	public static <K, V> BinaryOperator<Entry<K, V>> asBinaryOperator(QuaternaryFunction<? super K, ? super V, ? super
-			                                                                                                           K, ? super V, ? extends Entry<K, V>> f) {
+			K, ? super V, ? extends Entry<K, V>> f) {
 		return (e1, e2) -> f.apply(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue());
 	}
 
@@ -78,9 +78,8 @@ public class Entries {
 		return entry -> mapper.apply(entry.getKey(), entry.getValue());
 	}
 
-	public static <K, V, KK, VV> Function<Entry<K, V>, Entry<KK, VV>> asFunction(Function<? super K, ? extends KK>
-			                                                                             keyMapper, Function<? super V, ? extends VV>
-			                                                                             valueMapper) {
+	public static <K, V, KK, VV> Function<Entry<K, V>, Entry<KK, VV>> asFunction(
+			Function<? super K, ? extends KK> keyMapper, Function<? super V, ? extends VV> valueMapper) {
 		return entry -> of(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
 	}
 

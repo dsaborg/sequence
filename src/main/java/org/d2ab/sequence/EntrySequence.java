@@ -76,14 +76,12 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return iteratorSupplier::get;
 	}
 
-	static <K, V> EntrySequence<K, V> recurse(@Nullable K keySeed,
-	                                          @Nullable V valueSeed,
+	static <K, V> EntrySequence<K, V> recurse(@Nullable K keySeed, @Nullable V valueSeed,
 	                                          BiFunction<K, V, ? extends Entry<K, V>> op) {
 		return () -> new RecursiveIterator<>(Entries.of(keySeed, valueSeed), Entries.asUnaryOperator(op));
 	}
 
-	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(@Nullable K keySeed,
-	                                                    @Nullable V valueSeed,
+	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(@Nullable K keySeed, @Nullable V valueSeed,
 	                                                    BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
 	                                                    BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
 		return () -> new RecursiveIterator<>(f.apply(keySeed, valueSeed), Entries.asUnaryOperator(f, g));
@@ -127,13 +125,13 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
-	default <KK, VV> EntrySequence<KK, VV> flatten(BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>>
-			                                               mapper) {
+	default <KK, VV> EntrySequence<KK, VV> flatten(
+			BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>> mapper) {
 		return flatten(Entries.asFunction(mapper));
 	}
 
-	default <KK, VV> EntrySequence<KK, VV> flatten(Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>>
-			                                               mapper) {
+	default <KK, VV> EntrySequence<KK, VV> flatten(
+			Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>> mapper) {
 		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
 		toSequence(mapper).forEach(result::append);
 		return result::iterator;
@@ -278,8 +276,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return reduce(Entries.of(key, value), Entries.asBinaryOperator(operator), iterator());
 	}
 
-	default Entry<K, V> reduce(Entry<K, V> identity,
-	                           BinaryOperator<Entry<K, V>> operator,
+	default Entry<K, V> reduce(Entry<K, V> identity, BinaryOperator<Entry<K, V>> operator,
 	                           Iterator<Entry<K, V>> iterator) {
 		Entry<K, V> result = identity;
 		while (iterator.hasNext())

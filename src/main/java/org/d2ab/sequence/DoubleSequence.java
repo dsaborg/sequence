@@ -120,9 +120,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * A {@code Sequence} of all the {@link Double} values between the given start and end positions, inclusive, using
 	 * the given step between iterations and the given accuracy to check whether the end value has occurred.
 	 *
-	 * @see #steppingFrom(double, double)
-	 *
 	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #steppingFrom(double, double)
 	 */
 	static DoubleSequence range(double start, double end, double step, double accuracy) {
 		if (step < 0)
