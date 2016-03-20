@@ -72,7 +72,8 @@ public final class OptionalChar {
 	 */
 	public char getAsChar() {
 		if (!present)
-			throw new NoSuchElementException("No char value");
+			throw new NoSuchElementException();
+
 		return value;
 	}
 
@@ -111,27 +112,28 @@ public final class OptionalChar {
 	 * supplier.
 	 */
 	public <T extends Throwable> char orElseThrow(Supplier<T> supplier) throws T {
-		if (present)
-			return value;
-		else
+		if (!present)
 			throw supplier.get();
+
+		return value;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (getClass() != o.getClass())
+			return false;
+
+		OptionalChar that = (OptionalChar) o;
+		return present == that.present && value == that.value;
 	}
 
 	@Override
 	public int hashCode() {
-		return present ? Character.hashCode(value) : 0;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-
-		if (!(obj instanceof OptionalChar))
-			return false;
-
-		OptionalChar other = (OptionalChar) obj;
-		return (present && other.present) ? value == other.value : present == other.present;
+		int result = (present ? 1 : 0);
+		result = 31 * result + (int) value;
+		return result;
 	}
 
 	@Override
