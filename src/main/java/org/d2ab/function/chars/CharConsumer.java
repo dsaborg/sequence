@@ -16,49 +16,26 @@
 
 package org.d2ab.function.chars;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 /**
- * Represents an operation that accepts a single {@code char}-valued argument and returns no result.
- * <p>
- * This is the primitive type specialization of {@link Consumer} for {@code char}. Unlike most other functional
- * interfaces, {@code CharConsumer} is expected to operate via side-effects.
- * <p>
- * This is a functional interface whose functional method is {@link #accept(char)}.
- *
- * @see Consumer
- * @see IntConsumer
+ * A specialization of {@link Consumer} that accepts {@code char} values. Adapted from {@link IntConsumer} and the like.
  */
 @FunctionalInterface
 public interface CharConsumer {
 	/**
-	 * Returns a composed {@code CharConsumer} that performs, in sequence, this operation followed by the {@code after}
-	 * operation.
-	 * <p>
-	 * If performing either operation throws an exception, it is relayed to the caller of the composed operation. If
-	 * performing this operation throws an exception, the {@code after} operation will not be performed.
-	 *
-	 * @param after the operation to perform after this operation
-	 *
-	 * @return a composed {@code CharConsumer} that performs in sequence this operation followed by the {@code after}
-	 * operation
-	 *
-	 * @throws NullPointerException if {@code after} is null
+	 * Perform this action on the given value.
 	 */
-	default CharConsumer andThen(CharConsumer after) {
-		Objects.requireNonNull(after);
-		return (char t) -> {
-			accept(t);
-			after.accept(t);
-		};
-	}
+	void accept(char c);
 
 	/**
-	 * Performs this operation on the given argument.
-	 *
-	 * @param value the input argument
+	 * Combine this consumer with another consumer whose action is always performed after this consumer's action.
 	 */
-	void accept(char value);
+	default CharConsumer andThen(CharConsumer consumer) {
+		return t -> {
+			accept(t);
+			consumer.accept(t);
+		};
+	}
 }

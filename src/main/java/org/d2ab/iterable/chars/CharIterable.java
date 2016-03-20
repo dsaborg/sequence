@@ -31,6 +31,26 @@ import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
+	@Override
+	CharIterator iterator();
+
+	/**
+	 * Perform the given action for each {@code char} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Character> consumer) {
+		forEachChar((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
+	}
+
+	/**
+	 * Perform the given action for each {@code char} in this iterable.
+	 */
+	default void forEachChar(CharConsumer consumer) {
+		CharIterator iterator = iterator();
+		while (iterator.hasNext())
+			consumer.accept(iterator.nextChar());
+	}
+
 	/**
 	 * Converts a container of some kind into a possibly once-only {@link CharIterable}.
 	 *
@@ -94,47 +114,5 @@ public interface CharIterable extends Iterable<Character> {
 
 	static CharIterable from(Stream<Character> stream) {
 		return from(stream.iterator());
-	}
-
-	@Override
-	CharIterator iterator();
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <p>If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
-	 * passed
-	 * to {@link #forEachChar}; otherwise the action is adapted to an instance of {@code CharConsumer}, by boxing the
-	 * argument of {@code CharConsumer}, and then passed to {@link #forEachChar}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Character> action) {
-		requireNonNull(action);
-
-		forEachChar((action instanceof CharConsumer) ? (CharConsumer) action : action::accept);
-	}
-
-	/**
-	 * Performs the given action for each character in this {@code Iterable} until all elements have been processed or
-	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
-	 * Exceptions thrown by the action are relayed to the caller.
-	 * <p>
-	 * The default implementation behaves as if:
-	 * <pre>{@code
-	 * CharIterator iterator = iterator();
-	 * while (iterator.hasNext())
-	 *     action.accept(iterator.nextChar());
-	 * }</pre>
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 */
-	default void forEachChar(CharConsumer action) {
-		requireNonNull(action);
-
-		CharIterator iterator = iterator();
-		while (iterator.hasNext())
-			action.accept(iterator.nextChar());
 	}
 }

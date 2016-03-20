@@ -22,14 +22,9 @@ import java.util.function.Function;
  * A specialization of {@link Function} that takes a {@code char} value and returns an object.
  */
 @FunctionalInterface
-public interface CharFunction<R> {
-
+public interface CharFunction<T> {
 	/**
-	 * Applies this function to the given argument.
-	 *
-	 * @param value the function argument
-	 *
-	 * @return the function result
+	 * Apply this function to the given value.
 	 */
-	R apply(char value);
+	T apply(char c);
 }

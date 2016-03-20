@@ -31,6 +31,26 @@ import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
+	@Override
+	IntIterator iterator();
+
+	/**
+	 * Performs the given action for each {@code int} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Integer> consumer) {
+		forEachInt((consumer instanceof IntConsumer) ? (IntConsumer) consumer : consumer::accept);
+	}
+
+	/**
+	 * Performs the given action for each {@code int} in this iterable.
+	 */
+	default void forEachInt(IntConsumer consumer) {
+		IntIterator iterator = iterator();
+		while (iterator.hasNext())
+			consumer.accept(iterator.nextInt());
+	}
+
 	/**
 	 * Converts a container of some kind into a possibly once-only {@link IntIterable}.
 	 *
@@ -94,46 +114,5 @@ public interface IntIterable extends Iterable<Integer> {
 
 	static IntIterable from(Stream<Integer> stream) {
 		return from(stream.iterator());
-	}
-
-	@Override
-	IntIterator iterator();
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <p>If the action is an instance of {@code IntConsumer} then it is cast to {@code IntConsumer} and passed
-	 * to {@link #forEachInt}; otherwise the action is adapted to an instance of {@code IntConsumer}, by boxing the
-	 * argument of {@code IntConsumer}, and then passed to {@link #forEachInt}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Integer> action) {
-		requireNonNull(action);
-
-		forEachInt((action instanceof IntConsumer) ? (IntConsumer) action : action::accept);
-	}
-
-	/**
-	 * Performs the given action for each integer in this {@code Iterable} until all elements have been processed or
-	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
-	 * Exceptions thrown by the action are relayed to the caller.
-	 * <p>
-	 * The default implementation behaves as if:
-	 * <pre>{@code
-	 * IntIterator iterator = iterator();
-	 * while (iterator.hasNext())
-	 *     action.accept(iterator.nextInt());
-	 * }</pre>
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 */
-	default void forEachInt(IntConsumer action) {
-		requireNonNull(action);
-
-		IntIterator iterator = iterator();
-		while (iterator.hasNext())
-			action.accept(iterator.nextInt());
 	}
 }

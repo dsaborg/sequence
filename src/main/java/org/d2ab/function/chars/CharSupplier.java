@@ -16,25 +16,16 @@
 
 package org.d2ab.function.chars;
 
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
- * Represents a supplier of {@code char}-valued results.  This is the {@code char}-producing primitive specialization of
- * {@link Supplier}.
- * <p>
- * <p>There is no requirement that a distinct result be returned each time the supplier is invoked.
- * <p>
- * <p>This is a functional interface whose functional method is {@link #getAsChar()}.
- *
- * @see Supplier
- * @since 1.8
+ * A specialization of {@link Supplier} for {@code char} values. Adapted from {@link IntSupplier} and the like.
  */
 @FunctionalInterface
 public interface CharSupplier {
 	/**
-	 * Gets a result.
-	 *
-	 * @return a result
+	 * Get the next {@code char} from this supplier.
 	 */
 	char getAsChar();
 }

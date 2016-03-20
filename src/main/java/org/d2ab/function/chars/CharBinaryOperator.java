@@ -19,25 +19,12 @@ package org.d2ab.function.chars;
 import java.util.function.BinaryOperator;
 
 /**
- * Represents an operation upon two {@code char}-valued operands and producing an {@code char}-valued result.   This is
- * the primitive type specialization of {@link BinaryOperator} for {@code char}.
- * <p>
- * <p>This is a <a href="package-summary.html">functional interface</a> whose functional method is {@link
- * #applyAsChar(char, char)}.
- *
- * @see BinaryOperator
- * @see CharUnaryOperator
- * @since 1.8
+ * A {@link BinaryOperator} on {@code char} values.
  */
 @FunctionalInterface
 public interface CharBinaryOperator {
 	/**
-	 * Applies this operator to the given operands.
-	 *
-	 * @param left  the first operand
-	 * @param right the second operand
-	 *
-	 * @return the operator result
+	 * Applies this operation to the given {@code char} values.
 	 */
-	char applyAsChar(char left, char right);
+	char applyAsChar(char c1, char c2);
 }

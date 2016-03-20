@@ -31,6 +31,26 @@ import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
+	@Override
+	LongIterator iterator();
+
+	/**
+	 * Performs the given action for each {@code long} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Long> consumer) {
+		forEachLong((consumer instanceof LongConsumer) ? (LongConsumer) consumer : consumer::accept);
+	}
+
+	/**
+	 * Performs the given action for each {@code long} in this iterable.
+	 */
+	default void forEachLong(LongConsumer consumer) {
+		LongIterator iterator = iterator();
+		while (iterator.hasNext())
+			consumer.accept(iterator.nextLong());
+	}
+
 	/**
 	 * Converts a container of some kind into a possibly once-only {@link LongIterable}.
 	 *
@@ -94,47 +114,5 @@ public interface LongIterable extends Iterable<Long> {
 
 	static LongIterable from(Stream<Long> stream) {
 		return from(stream.iterator());
-	}
-
-	@Override
-	LongIterator iterator();
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <p>If the action is an instance of {@code LongConsumer} then it is cast to {@code LongConsumer} and
-	 * passed
-	 * to {@link #forEachLong}; otherwise the action is adapted to an instance of {@code LongConsumer}, by boxing the
-	 * argument of {@code LongConsumer}, and then passed to {@link #forEachLong}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Long> action) {
-		requireNonNull(action);
-
-		forEachLong((action instanceof LongConsumer) ? (LongConsumer) action : action::accept);
-	}
-
-	/**
-	 * Performs the given action for each long in this {@code Iterable} until all elements have been processed or
-	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
-	 * Exceptions thrown by the action are relayed to the caller.
-	 * <p>
-	 * The default implementation behaves as if:
-	 * <pre>{@code
-	 * LongIterator iterator = iterator();
-	 * while (iterator.hasNext())
-	 *     action.accept(iterator.nextLong());
-	 * }</pre>
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 */
-	default void forEachLong(LongConsumer action) {
-		requireNonNull(action);
-
-		LongIterator iterator = iterator();
-		while (iterator.hasNext())
-			action.accept(iterator.nextLong());
 	}
 }

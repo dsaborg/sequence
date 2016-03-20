@@ -17,27 +17,16 @@
 package org.d2ab.function.chars;
 
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 /**
- * Represents a function that produces an char-valued result.  This is the
- * {@code char}-producing primitive specialization for {@link Function}.
- * <p>
- * <p>This is a functional interface whose functional method is {@link #applyAsChar(Object)}.
- *
- * @param <T> the type of the input to the function
- *
- * @see Function
- * @since 1.8
+ * A primitive specialization of {@link Function} that produces a {@code char} value for an input value of a given type.
+ * Adapted from {@link ToIntFunction} and the like.
  */
 @FunctionalInterface
 public interface ToCharFunction<T> {
-
 	/**
-	 * Applies this function to the given argument.
-	 *
-	 * @param value the function argument
-	 *
-	 * @return the function result
+	 * Apply this function to the given input value.
 	 */
-	char applyAsChar(T value);
+	char applyAsChar(T v);
 }

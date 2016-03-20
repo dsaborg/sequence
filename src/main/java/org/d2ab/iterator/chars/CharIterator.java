@@ -22,7 +22,6 @@ import org.d2ab.iterable.chars.CharIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 
@@ -41,6 +40,37 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 			throw new NoSuchElementException();
 		}
 	};
+
+	/**
+	 * Return the next {@code char} in this iterator.
+	 */
+	char nextChar();
+
+	/**
+	 * Return the next {@code char} boxed into a {@link Character}.
+	 */
+	@Override
+	default Character next() {
+		return nextChar();
+	}
+
+
+	/**
+	 * Perform the given action once for each remaining {@code char} in this iterator.
+	 */
+	@Override
+	default void forEachRemaining(CharConsumer consumer) {
+		while (hasNext())
+			consumer.accept(nextChar());
+	}
+
+	/**
+	 * Perform the given action once for each remaining {@code char} in this iterator.
+	 */
+	@Override
+	default void forEachRemaining(Consumer<? super Character> consumer) {
+		forEachRemaining((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
+	}
 
 	static CharIterator of(char... chars) {
 		return new ArrayCharIterator(chars);
@@ -78,10 +108,16 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		};
 	}
 
+	/**
+	 * Skip one {@code char} in this iterator.
+	 */
 	default void skip() {
 		skip(1);
 	}
 
+	/**
+	 * Skip the given number of {@code char}s in this iterator.
+	 */
 	default void skip(long steps) {
 		long count = 0;
 		while ((count++ < steps) && hasNext()) {
@@ -89,39 +125,8 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		}
 	}
 
-	/**
-	 * Returns the next {@code char} element in the iteration.
-	 *
-	 * @return the next {@code char} element in the iteration
-	 *
-	 * @throws NoSuchElementException if the iteration has no more elements
-	 */
-	char nextChar();
-
 	default CharIterable asIterable() {
 		return () -> this;
-	}
-
-	/**
-	 * Performs the given action for each remaining element until all elements have been processed or the action throws
-	 * an exception.  Actions are performed in the order of iteration, if that order is specified. Exceptions thrown by
-	 * the action are relayed to the caller.
-	 * <p>
-	 * The default implementation behaves as if:
-	 * <pre>{@code
-	 *     while (hasNext())
-	 *         action.accept(nextChar());
-	 * }</pre>
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 */
-	@Override
-	default void forEachRemaining(CharConsumer action) {
-		Objects.requireNonNull(action);
-		while (hasNext())
-			action.accept(nextChar());
 	}
 
 	/**
@@ -133,31 +138,5 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		while (hasNext())
 			result = operator.applyAsChar(result, nextChar());
 		return result;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <p>The default implementation boxes the result of calling {@link #nextChar()}, and returns that boxed
-	 * result.
-	 */
-	@Override
-	default Character next() {
-		return nextChar();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <p>If the action is an instance of {@code CharConsumer} then it is cast to {@code CharConsumer} and
-	 * passed
-	 * to {@link #forEachRemaining}; otherwise the action is adapted to an instance of {@code CharConsumer}, by boxing
-	 * the argument of {@code CharConsumer}, and then passed to {@link #forEachRemaining}.
-	 */
-	@Override
-	default void forEachRemaining(Consumer<? super Character> action) {
-		Objects.requireNonNull(action);
-
-		forEachRemaining((action instanceof CharConsumer) ? (CharConsumer) action : action::accept);
 	}
 }

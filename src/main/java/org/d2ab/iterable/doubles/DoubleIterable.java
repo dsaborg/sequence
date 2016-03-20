@@ -31,6 +31,26 @@ import static java.util.Objects.requireNonNull;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
+	@Override
+	DoubleIterator iterator();
+
+	/**
+	 * Performs the given action for each {@code double} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Double> consumer) {
+		forEachDouble((consumer instanceof DoubleConsumer) ? (DoubleConsumer) consumer : consumer::accept);
+	}
+
+	/**
+	 * Performs the given action for each {@code double} in this iterable.
+	 */
+	default void forEachDouble(DoubleConsumer consumer) {
+		DoubleIterator iterator = iterator();
+		while (iterator.hasNext())
+			consumer.accept(iterator.nextDouble());
+	}
+
 	/**
 	 * Converts a container of some kind into a possibly once-only {@link DoubleIterable}.
 	 *
@@ -94,46 +114,5 @@ public interface DoubleIterable extends Iterable<Double> {
 
 	static DoubleIterable from(Stream<Double> stream) {
 		return from(stream.iterator());
-	}
-
-	@Override
-	DoubleIterator iterator();
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <p>If the action is an instance of {@code DoubleConsumer} then it is cast to {@code DoubleConsumer} and
-	 * passed to {@link #forEachDouble}; otherwise the action is adapted to an instance of {@code DoubleConsumer}, by
-	 * boxing the argument of {@code DoubleConsumer}, and then passed to {@link #forEachDouble}.
-	 */
-	@Override
-	default void forEach(Consumer<? super Double> action) {
-		requireNonNull(action);
-
-		forEachDouble((action instanceof DoubleConsumer) ? (DoubleConsumer) action : action::accept);
-	}
-
-	/**
-	 * Performs the given action for each double in this {@code Iterable} until all elements have been processed or
-	 * the action throws an exception. Actions are performed in the order of iteration, if that order is specified.
-	 * Exceptions thrown by the action are relayed to the caller.
-	 * <p>
-	 * The default implementation behaves as if:
-	 * <pre>{@code
-	 * DoubleIterator iterator = iterator();
-	 * while (iterator.hasNext())
-	 *     action.accept(iterator.nextDouble());
-	 * }</pre>
-	 *
-	 * @param action The action to be performed for each element
-	 *
-	 * @throws NullPointerException if the specified action is null
-	 */
-	default void forEachDouble(DoubleConsumer action) {
-		requireNonNull(action);
-
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
-			action.accept(iterator.nextDouble());
 	}
 }
