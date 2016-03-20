@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class SequenceTest {
-	private final Sequence<Integer> empty = Sequence.<Integer>empty();
+	private final Sequence<Integer> empty = Sequence.empty();
 	private final Sequence<Integer> _1 = Sequence.of(1);
 	private final Sequence<Integer> _12 = Sequence.of(1, 2);
 	private final Sequence<Integer> _123 = Sequence.of(1, 2, 3);
@@ -106,7 +106,7 @@ public class SequenceTest {
 
 	@Test
 	public void ofNone() {
-		Sequence<Integer> sequence = Sequence.<Integer>of();
+		Sequence<Integer> sequence = Sequence.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -177,7 +177,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromNoIterables() {
-		Sequence<Integer> sequenceFromNoIterables = Sequence.<Integer>from();
+		Sequence<Integer> sequenceFromNoIterables = Sequence.from();
 
 		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
 	}
@@ -1368,9 +1368,9 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void withIndex() {
-		BiSequence<Long, Integer> withIndex = _12345.withIndex();
-		twice(() -> assertThat(withIndex, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
+	public void index() {
+		BiSequence<Long, Integer> indexed = _12345.index();
+		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
 		                                           Pair.of(4L, 5))));
 	}
 }

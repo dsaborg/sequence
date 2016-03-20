@@ -1288,7 +1288,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new SwappingIterator<>(iterator(), swapper);
 	}
 
-	default BiSequence<Long, T> withIndex() {
+	default BiSequence<Long, T> index() {
 		return () -> new DelegatingReferenceIterator<T, Pair<Long, T>>(iterator()) {
 			private long index;
 
