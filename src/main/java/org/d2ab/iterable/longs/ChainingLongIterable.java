@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Daniel Skogquist Åborg
+ * Copyright 2016 Daniel Skogquist Åborg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.Objects;
 import static java.util.Arrays.asList;
 
 /**
- *
+ * A {@link LongIterable} that can chain together several {@link LongIterable}s into one unbroken sequence.
  */
 public class ChainingLongIterable implements LongIterable {
 	private final Collection<LongIterable> iterables = new ArrayList<>();

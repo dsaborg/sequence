@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Daniel Skogquist Åborg
+ * Copyright 2016 Daniel Skogquist Åborg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.BitSet;
 import static java.util.Objects.requireNonNull;
 
 /**
- *
+ * Utility methods for {@link BitSet}s.
  */
 public class BitSets {
 	private BitSets() {
