@@ -247,7 +247,7 @@ public class EntrySequenceTest {
 	@Test
 	public void then() {
 		EntrySequence<String, Integer> then = _123.then(EntrySequence.of(entries456))
-				.then(EntrySequence.of(entries789));
+		                                          .then(EntrySequence.of(entries789));
 
 		twice(() -> assertThat(then,
 		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
@@ -298,7 +298,7 @@ public class EntrySequenceTest {
 	@Test
 	public void filterAndMap() {
 		EntrySequence<Integer, String> evens = _123456789.filter((s, x) -> x % 2 == 0)
-				.map(Integer::parseInt, Object::toString);
+		                                                 .map(Integer::parseInt, Object::toString);
 
 		twice(() -> assertThat(evens, contains(Entries.of(2, "2"), Entries.of(4, "4"), Entries.of(6, "6"),
 		                                       Entries.of(8, "8"))));
@@ -325,9 +325,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void mapIsLazy() {
-		EntrySequence<Integer, String> mapped = EntrySequence.of(Entries.of("1", 1), null) // null will be hit when
-				// mapping
-				.map((s, i) -> Entries.of(parseInt(s), i.toString()));
+		EntrySequence<Integer, String> mapped = EntrySequence.of(Entries.of("1", 1), null) // null will be hit on map
+		                                                     .map((s, i) -> Entries.of(parseInt(s), i.toString()));
 
 		twice(() -> {
 			// NPE here if not lazy
@@ -383,7 +382,7 @@ public class EntrySequenceTest {
 	@Test
 	public void endingAtPredicate() {
 		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345)
-				.endingAt(e -> e.equals(Entries.of("3", 3)));
+		                                                       .endingAt(e -> e.equals(Entries.of("3", 3)));
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
@@ -408,7 +407,7 @@ public class EntrySequenceTest {
 	@Test
 	public void endingAtBinaryPredicate() {
 		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345)
-				.endingAt((k, v) -> k.equals("3") && v == 3);
+		                                                       .endingAt((k, v) -> k.equals("3") && v == 3);
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 

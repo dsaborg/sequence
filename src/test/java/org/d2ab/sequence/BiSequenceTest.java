@@ -288,7 +288,7 @@ public class BiSequenceTest {
 	@Test
 	public void filterAndMap() {
 		BiSequence<Integer, String> evens = _123456789.filter((s, x) -> x % 2 == 0)
-				.map(Integer::parseInt, Object::toString);
+		                                              .map(Integer::parseInt, Object::toString);
 
 		twice(() -> assertThat(evens, contains(Pair.of(2, "2"), Pair.of(4, "4"), Pair.of(6, "6"), Pair.of(8, "8"))));
 	}
@@ -313,9 +313,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void mapIsLazy() {
-		BiSequence<Integer, String> mapped = BiSequence.of(Pair.of("1", 1), null) // null will be hit when
-				// mapping
-				.map((s, i) -> Pair.of(parseInt(s), i.toString()));
+		BiSequence<Integer, String> mapped = BiSequence.of(Pair.of("1", 1), null) // null will be hit when mapping
+		                                               .map((s, i) -> Pair.of(parseInt(s), i.toString()));
 
 		twice(() -> {
 			// NPE here if not lazy
@@ -652,7 +651,7 @@ public class BiSequenceTest {
 		twice(() -> assertThat(oneDistinct, contains(Pair.of("17", 17))));
 
 		BiSequence<String, Integer> twoDuplicatesDistinct = BiSequence.of(Pair.of("17", 17), Pair.of("17", 17))
-				.distinct();
+		                                                              .distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(Pair.of("17", 17))));
 
 		BiSequence<String, Integer> nineDistinct = random9.distinct();

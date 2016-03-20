@@ -835,7 +835,7 @@ public class SequenceTest {
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
 		BiSequence<Integer, String> threeBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))
-				.toBiSequence();
+		                                                      .toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -849,7 +849,7 @@ public class SequenceTest {
 		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence = Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"))
-				.toEntrySequence();
+		                                                          .toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
 
 		EntrySequence<Integer, String> threeEntrySequence = Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"),
@@ -1371,6 +1371,6 @@ public class SequenceTest {
 	public void index() {
 		BiSequence<Long, Integer> indexed = _12345.index();
 		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
-		                                           Pair.of(4L, 5))));
+		                                         Pair.of(4L, 5))));
 	}
 }
