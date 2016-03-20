@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,11 +26,11 @@ import java.util.function.BiPredicate;
  * Base class for iterators the can peek at the following item of each item in the iteration.
  */
 public class PredicatePartitioningIterator<T> extends DelegatingReferenceIterator<T, List<T>> {
-	private final BiPredicate<T, T> predicate;
+	private final BiPredicate<? super T, ? super T> predicate;
 	private T next;
 	private boolean hasNext;
 
-	public PredicatePartitioningIterator(Iterator<T> iterator, BiPredicate<T, T> predicate) {
+	public PredicatePartitioningIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}

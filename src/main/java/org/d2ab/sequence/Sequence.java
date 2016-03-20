@@ -980,7 +980,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the current
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
-	default Sequence<List<T>> batch(BiPredicate<T, T> predicate) {
+	default Sequence<List<T>> batch(BiPredicate<? super T, ? super T> predicate) {
 		return () -> new PredicatePartitioningIterator<>(iterator(), predicate);
 	}
 
@@ -1197,7 +1197,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten(Function)
 	 * @see #flatten()
 	 */
-	default CharSeq toChars(ToCharFunction<T> mapper) {
+	default CharSeq toChars(ToCharFunction<? super T> mapper) {
 		return () -> new DelegatingCharIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public char nextChar() {
@@ -1217,7 +1217,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten(Function)
 	 * @see #flatten()
 	 */
-	default IntSequence toInts(ToIntFunction<T> mapper) {
+	default IntSequence toInts(ToIntFunction<? super T> mapper) {
 		return () -> new DelegatingIntIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public int nextInt() {
@@ -1237,7 +1237,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten(Function)
 	 * @see #flatten()
 	 */
-	default LongSequence toLongs(ToLongFunction<T> mapper) {
+	default LongSequence toLongs(ToLongFunction<? super T> mapper) {
 		return () -> new DelegatingLongIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public long nextLong() {
@@ -1257,7 +1257,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten(Function)
 	 * @see #flatten()
 	 */
-	default DoubleSequence toDoubles(ToDoubleFunction<T> mapper) {
+	default DoubleSequence toDoubles(ToDoubleFunction<? super T> mapper) {
 		return () -> new DelegatingDoubleIterator<T, Iterator<T>>(iterator()) {
 			@Override
 			public double nextDouble() {
