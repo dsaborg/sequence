@@ -874,6 +874,6 @@ public class IntSequenceTest {
 
 		Sequence<IntSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(67), contains(5, 43), contains(3, 5, 7, 24), contains(5, 67))));
+		                       contains(contains(6, 6), contains(1, 7), contains(1, 2, 17), contains(5), contains(4))));
 	}
 }
