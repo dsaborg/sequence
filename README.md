@@ -13,16 +13,16 @@
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java.
 
-It aims to be roughly feature complete with sequential `Stream`s, with some additional convenience methods.
-In particular it allows easier collecting into common `Collection`s without having to use `Collector`s,
-better handling of `Map`s which allows transformation and filtering of `Map.Entry` as first-class citizens,
-and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterator`s. `Sequence`s go to
+It aims to be roughly feature complete with sequential `Streams`, with some additional convenience methods.
+In particular it allows easier collecting into common `Collections` without having to use `Collectors`,
+better handling of `Maps` which allows transformation and filtering of `Map.Entry` as first-class citizens,
+and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterators`. `Sequences` go to
 great lengths to be as lazy and late-evaluating as possible, with minimal overhead.
 
-`Sequence`s use Java 8 lambdas in much the same way as `Stream`s do, but is based on `Iterable`s and `Iterator`s instead
-of a pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers wanting
-to perform common data processing tasks on moderately small collections. If you need parallel iteration or are 
-processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
+`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables` and
+`Iterators` instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
+for programmers wanting to perform common data processing tasks on moderately small collections. If you need parallel
+iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -125,7 +125,7 @@ assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c"
 
 #### Recursion
 
-There is full support for infinite recursive `Sequence`s, including termination at a known value.
+There is full support for infinite recursive `Sequences`, including termination at a known value.
 
 ```Java
 Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> p.shiftLeft(p.apply(Integer::sum)))
@@ -158,7 +158,7 @@ assertThat(factorial, is(6227020800L));
 
 #### Pairs
 
-When iterating over sequences of `Pair`s of item, `BiSequence` provides native operators and transformations:
+When iterating over sequences of `Pairs` of item, `BiSequence` provides native operators and transformations:
 
 ```Java
 BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
@@ -172,7 +172,7 @@ assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969
 
 #### Maps
 
-`Map`s are handled as `Sequence`s of `Entry`, with special transformation methods that convert to/from `Map`s.
+`Maps` are handled as `Sequences` of `Entry`, with special transformation methods that convert to/from `Maps`.
 
 ```Java
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
@@ -184,7 +184,7 @@ Map<Integer, String> map = keyValueSequence.toMap();
 assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 ```
 
-You can also map `Entry` `Sequence`s to `Pair`s which allows more expressive transformation and filtering.
+You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
 
 ```Java
 Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
@@ -238,7 +238,7 @@ DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
 assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
 
-The primitive `Sequence`s also have mapping methods that peek on the previous and next elements:
+The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
 
 ```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
@@ -250,8 +250,8 @@ assertThat(titleCase.asString(), is("Hello Lexicon"));
 
 #### Partitioning
 
-Both regular and primitive `Sequence`s have advanced windowing and partitioning methods, allowing you to divide up
-`Sequence`s in various ways, including a partitioning method that uses a `BiPredicate` to determine which two
+Both regular and primitive `Sequences` have advanced windowing and partitioning methods, allowing you to divide up
+`Sequences` in various ways, including a partitioning method that uses a `BiPredicate` to determine which two
 elements to create a batch between.
 
 ```Java
@@ -266,6 +266,6 @@ assertThat(consonantsWovels,
 
 ### Conclusion
 
-Go ahead and give it a try and experience a leaner way to `Stream` your `Sequence`s! :bowtie:
+Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
 
 Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)! :heart:
