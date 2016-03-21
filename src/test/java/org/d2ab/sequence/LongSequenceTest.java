@@ -48,6 +48,7 @@ public class LongSequenceTest {
 
 	private final LongSequence oneRandom = LongSequence.of(17L);
 	private final LongSequence twoRandom = LongSequence.of(17L, 32L);
+	private final LongSequence threeRandom = LongSequence.of(17L, 32L, 12L);
 	private final LongSequence nineRandom = LongSequence.of(6L, 6L, 1L, 7L, 1L, 2L, 17L, 5L, 4L);
 
 	@Test
@@ -805,5 +806,72 @@ public class LongSequenceTest {
 	public void mapForward() {
 		twice(() -> assertThat(_123.mapForward(17L, (i, n) -> i), contains(1L, 2L, 3L)));
 		twice(() -> assertThat(_123.mapForward(17L, (i, n) -> n), contains(2L, 3L, 17L)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void window() {
+		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3), contains(contains(1L))));
+		twice(() -> assertThat(_12.window(3), contains(contains(1L, 2L))));
+		twice(() -> assertThat(_123.window(3), contains(contains(1L, 2L, 3L))));
+		twice(() -> assertThat(_1234.window(3), contains(contains(1L, 2L, 3L), contains(2L, 3L, 4L))));
+		twice(() -> assertThat(_12345.window(3), contains(contains(1L, 2L, 3L), contains(2L, 3L, 4L), contains(3L, 4L, 5L))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void windowWithStep() {
+		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 2), contains(contains(1L))));
+		twice(() -> assertThat(_12.window(3, 2), contains(contains(1L, 2L))));
+		twice(() -> assertThat(_123.window(3, 2), contains(contains(1L, 2L, 3L))));
+		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1L, 2L, 3L), contains(3L, 4L))));
+		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1L, 2L, 3L), contains(3L, 4L, 5L))));
+		twice(() -> assertThat(_123456789.window(3, 2),
+		                       contains(contains(1L, 2L, 3L), contains(3L, 4L, 5L), contains(5L, 6L, 7L), contains(7L, 8L, 9L))));
+
+		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 4), contains(contains(1L))));
+		twice(() -> assertThat(_12.window(3, 4), contains(contains(1L, 2L))));
+		twice(() -> assertThat(_123.window(3, 4), contains(contains(1L, 2L, 3L))));
+		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1L, 2L, 3L))));
+		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1L, 2L, 3L), contains(5L))));
+		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1L, 2L, 3L), contains(5L, 6L, 7L), contains(9L))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batch() {
+		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.batch(3), contains(contains(1L))));
+		twice(() -> assertThat(_12.batch(3), contains(contains(1L, 2L))));
+		twice(() -> assertThat(_123.batch(3), contains(contains(1L, 2L, 3L))));
+		twice(() -> assertThat(_1234.batch(3), contains(contains(1L, 2L, 3L), contains(4L))));
+		twice(() -> assertThat(_12345.batch(3), contains(contains(1L, 2L, 3L), contains(4L, 5L))));
+		twice(() -> assertThat(_123456789.batch(3), contains(contains(1L, 2L, 3L), contains(4L, 5L, 6L), contains(7L, 8L, 9L))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnPredicate() {
+		Sequence<LongSequence> emptyPartitioned = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<LongSequence> onePartitioned = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(onePartitioned, contains(contains(1L))));
+
+		Sequence<LongSequence> twoPartitioned = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoPartitioned, contains(contains(1L, 2L))));
+
+		Sequence<LongSequence> threePartitioned = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threePartitioned, contains(contains(1L, 2L, 3L))));
+
+		Sequence<LongSequence> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomPartitioned, contains(contains(17L, 32L), contains(12L))));
+
+		Sequence<LongSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(6L, 6L), contains(1L, 7L), contains(1L, 2L, 17L), contains(5L), contains(4L))));
 	}
 }

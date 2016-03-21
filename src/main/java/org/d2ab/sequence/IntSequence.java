@@ -898,4 +898,5 @@ public interface IntSequence extends IntIterable {
 	 */
 	default Sequence<IntSequence> batch(IntBiPredicate predicate) {
 		return () -> new PredicatePartitioningIntIterator<>(iterator(), predicate);
-	}}
+	}
+}

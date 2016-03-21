@@ -16,6 +16,8 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.function.ints.IntBiPredicate;
+import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.function.longs.LongToCharFunction;
 import org.d2ab.iterable.longs.ChainingLongIterable;
 import org.d2ab.iterable.longs.LongIterable;
@@ -23,6 +25,8 @@ import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.PredicatePartitioningIntIterator;
+import org.d2ab.iterator.ints.WindowingIntIterator;
 import org.d2ab.iterator.longs.*;
 import org.d2ab.util.Arrayz;
 
@@ -856,5 +860,40 @@ public interface LongSequence extends LongIterable {
 	 */
 	default LongSequence repeat(long times) {
 		return () -> new RepeatingLongIterator(this, times);
+	}
+
+	/**
+	 * Window the elements of this {@code LongSequence} into a sequence of {@code LongSequence}s of elements, each with
+	 * the size of the given window. The first item in each list is the second item in the previous list. The final
+	 * {@code LongSequence} may be shorter than the window. This is equivalent to {@code window(window, 1)}.
+	 */
+	default Sequence<LongSequence> window(int window) {
+		return window(window, 1);
+	}
+
+	/**
+	 * Window the elements of this {@code LongSequence} into a sequence of {@code LongSequence}s of elements, each with
+	 * the size of the given window, stepping {@code step} elements between each window. If the given step is less than
+	 * the window size, the windows will overlap each other.
+	 */
+	default Sequence<LongSequence> window(int window, int step) {
+		return () -> new WindowingLongIterator(iterator(), window, step);
+	}
+
+	/**
+	 * Batch the elements of this {@code LongSequence} into a sequence of {@code LongSequence}s of distinct elements,
+	 * each with the given batch size. This is equivalent to {@code window(size, size)}.
+	 */
+	default Sequence<LongSequence> batch(int size) {
+		return window(size, size);
+	}
+
+	/**
+	 * Batch the elements of this {@code LongSequence} into a sequence of {@code LongSequence}s of distinct elements,
+	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
+	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
+	 */
+	default Sequence<LongSequence> batch(LongBiPredicate predicate) {
+		return () -> new PredicatePartitioningLongIterator<>(iterator(), predicate);
 	}
 }

@@ -48,6 +48,7 @@ public class DoubleSequenceTest {
 
 	private final DoubleSequence oneRandom = DoubleSequence.of(17.0);
 	private final DoubleSequence twoRandom = DoubleSequence.of(17.0, 32.0);
+	private final DoubleSequence threeRandom = DoubleSequence.of(17.0, 32.0, 12.0);
 	private final DoubleSequence nineRandom = DoubleSequence.of(6.0, 6.0, 1.0, 7.0, 1.0, 2.0, 17.0, 5.0, 4.0);
 
 	@Test
@@ -748,5 +749,72 @@ public class DoubleSequenceTest {
 	public void mapForward() {
 		twice(() -> assertThat(_123.mapForward(17.0, (x, n) -> x), contains(1.0, 2.0, 3.0)));
 		twice(() -> assertThat(_123.mapForward(17.0, (x, n) -> n), contains(2.0, 3.0, 17.0)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void window() {
+		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3), contains(contains(1.0))));
+		twice(() -> assertThat(_12.window(3), contains(contains(1.0, 2.0))));
+		twice(() -> assertThat(_123.window(3), contains(contains(1.0, 2.0, 3.0))));
+		twice(() -> assertThat(_1234.window(3), contains(contains(1.0, 2.0, 3.0), contains(2.0, 3.0, 4.0))));
+		twice(() -> assertThat(_12345.window(3), contains(contains(1.0, 2.0, 3.0), contains(2.0, 3.0, 4.0), contains(3.0, 4.0, 5.0))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void windowWithStep() {
+		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 2), contains(contains(1.0))));
+		twice(() -> assertThat(_12.window(3, 2), contains(contains(1.0, 2.0))));
+		twice(() -> assertThat(_123.window(3, 2), contains(contains(1.0, 2.0, 3.0))));
+		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0))));
+		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0, 5.0))));
+		twice(() -> assertThat(_123456789.window(3, 2),
+		                       contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0, 5.0), contains(5.0, 6.0, 7.0), contains(7.0, 8.0, 9.0))));
+
+		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 4), contains(contains(1.0))));
+		twice(() -> assertThat(_12.window(3, 4), contains(contains(1.0, 2.0))));
+		twice(() -> assertThat(_123.window(3, 4), contains(contains(1.0, 2.0, 3.0))));
+		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1.0, 2.0, 3.0))));
+		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1.0, 2.0, 3.0), contains(5.0))));
+		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1.0, 2.0, 3.0), contains(5.0, 6.0, 7.0), contains(9.0))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batch() {
+		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.batch(3), contains(contains(1.0))));
+		twice(() -> assertThat(_12.batch(3), contains(contains(1.0, 2.0))));
+		twice(() -> assertThat(_123.batch(3), contains(contains(1.0, 2.0, 3.0))));
+		twice(() -> assertThat(_1234.batch(3), contains(contains(1.0, 2.0, 3.0), contains(4.0))));
+		twice(() -> assertThat(_12345.batch(3), contains(contains(1.0, 2.0, 3.0), contains(4.0, 5.0))));
+		twice(() -> assertThat(_123456789.batch(3), contains(contains(1.0, 2.0, 3.0), contains(4.0, 5.0, 6.0), contains(7.0, 8.0, 9.0))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnPredicate() {
+		Sequence<DoubleSequence> emptyPartitioned = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<DoubleSequence> onePartitioned = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(onePartitioned, contains(contains(1.0))));
+
+		Sequence<DoubleSequence> twoPartitioned = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoPartitioned, contains(contains(1.0, 2.0))));
+
+		Sequence<DoubleSequence> threePartitioned = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threePartitioned, contains(contains(1.0, 2.0, 3.0))));
+
+		Sequence<DoubleSequence> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomPartitioned, contains(contains(17.0, 32.0), contains(12.0))));
+
+		Sequence<DoubleSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5.0), contains(4.0))));
 	}
 }

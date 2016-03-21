@@ -16,11 +16,15 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.function.doubles.DoubleBiPredicate;
+import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
 import org.d2ab.iterator.doubles.*;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.iterator.longs.PredicatePartitioningLongIterator;
+import org.d2ab.iterator.longs.WindowingLongIterator;
 import org.d2ab.util.Arrayz;
 
 import java.util.Arrays;
@@ -731,5 +735,40 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default DoubleSequence repeat(long times) {
 		return () -> new RepeatingDoubleIterator(this, times);
+	}
+
+	/**
+	 * Window the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of elements, each with
+	 * the size of the given window. The first item in each list is the second item in the previous list. The final
+	 * {@code DoubleSequence} may be shorter than the window. This is equivalent to {@code window(window, 1)}.
+	 */
+	default Sequence<DoubleSequence> window(int window) {
+		return window(window, 1);
+	}
+
+	/**
+	 * Window the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of elements, each with
+	 * the size of the given window, stepping {@code step} elements between each window. If the given step is less than
+	 * the window size, the windows will overlap each other.
+	 */
+	default Sequence<DoubleSequence> window(int window, int step) {
+		return () -> new WindowingDoubleIterator(iterator(), window, step);
+	}
+
+	/**
+	 * Batch the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct elements,
+	 * each with the given batch size. This is equivalent to {@code window(size, size)}.
+	 */
+	default Sequence<DoubleSequence> batch(int size) {
+		return window(size, size);
+	}
+
+	/**
+	 * Batch the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct elements,
+	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
+	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
+	 */
+	default Sequence<DoubleSequence> batch(DoubleBiPredicate predicate) {
+		return () -> new PredicatePartitioningDoubleIterator<>(iterator(), predicate);
 	}
 }
