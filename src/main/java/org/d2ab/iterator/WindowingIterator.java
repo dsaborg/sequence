@@ -45,9 +45,9 @@ public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		List<T> result = new ArrayList<>(partition);
+		List<T> next = new ArrayList<>(partition);
 
-		if (partition.size() > step) {
+		if (step < partition.size()) {
 			for (int i = 0; i < step && !partition.isEmpty(); i++)
 				partition.removeFirst();
 		} else {
@@ -57,6 +57,6 @@ public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>
 		}
 
 		started = true;
-		return result;
+		return next;
 	}
 }

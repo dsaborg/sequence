@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.chars;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.d2ab.function.chars.CharBiPredicate;
+import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.sequence.CharSeq;
+
+import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.function.BiPredicate;
 
 /**
- * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
+ * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningIterator<T> extends DelegatingReferenceIterator<T, List<T>> {
-	private final BiPredicate<? super T, ? super T> predicate;
-	private T next;
+public class PredicatePartitioningCharIterator<T> extends DelegatingIterator<Character, CharIterator, CharSeq> {
+	private final CharBiPredicate predicate;
+	private char next;
 	private boolean hasNext;
 
-	public PredicatePartitioningIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> predicate) {
+	public PredicatePartitioningCharIterator(CharIterator iterator, CharBiPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}
@@ -39,29 +40,35 @@ public class PredicatePartitioningIterator<T> extends DelegatingReferenceIterato
 	@Override
 	public boolean hasNext() {
 		if (!hasNext && super.hasNext()) {
-			next = iterator.next();
+			next = iterator.nextChar();
 			hasNext = true;
 		}
 		return hasNext;
 	}
 
 	@Override
-	public List<T> next() {
+	public CharSeq next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		List<T> buffer = new ArrayList<>();
+		char[] buffer = new char[3];
+		int size = 0;
 		do {
-			buffer.add(next);
+			if (buffer.length == size)
+				buffer = Arrays.copyOf(buffer, buffer.length * 2);
+			buffer[size++] = next;
+
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
-			T following = iterator.next();
+			char following = iterator.nextChar();
 			boolean split = predicate.test(next, following);
 			next = following;
 			if (split)
 				break;
 		} while (hasNext);
-		return buffer;
+		if (buffer.length > size)
+			buffer = Arrays.copyOf(buffer, size);
+		return CharSeq.of(buffer);
 	}
 }

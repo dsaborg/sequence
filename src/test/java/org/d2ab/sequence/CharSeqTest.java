@@ -49,6 +49,7 @@ public class CharSeqTest {
 
 	private final CharSeq oneRandom = CharSeq.of('q');
 	private final CharSeq twoRandom = CharSeq.of('q', 'w');
+	private final CharSeq threeRandom = CharSeq.of('q', 'w', 'd');
 	private final CharSeq nineRandom = CharSeq.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
 
 	@Test
@@ -708,5 +709,77 @@ public class CharSeqTest {
 	public void mapForward() {
 		twice(() -> assertThat(abc.mapForward('_', (c, n) -> c), contains('a', 'b', 'c')));
 		twice(() -> assertThat(abc.mapForward('_', (c, n) -> n), contains('b', 'c', '_')));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void window() {
+		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
+		twice(() -> assertThat(a.window(3), contains(contains('a'))));
+		twice(() -> assertThat(ab.window(3), contains(contains('a', 'b'))));
+		twice(() -> assertThat(abc.window(3), contains(contains('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.window(3), contains(contains('a', 'b', 'c'), contains('b', 'c', 'd'))));
+		twice(() -> assertThat(abcde.window(3),
+		                       contains(contains('a', 'b', 'c'), contains('b', 'c', 'd'), contains('c', 'd', 'e'))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void windowWithStep() {
+		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
+		twice(() -> assertThat(a.window(3, 2), contains(contains('a'))));
+		twice(() -> assertThat(ab.window(3, 2), contains(contains('a', 'b'))));
+		twice(() -> assertThat(abc.window(3, 2), contains(contains('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.window(3, 2), contains(contains('a', 'b', 'c'), contains('c', 'd'))));
+		twice(() -> assertThat(abcde.window(3, 2), contains(contains('a', 'b', 'c'), contains('c', 'd', 'e'))));
+		twice(() -> assertThat(abcdefghi.window(3, 2),
+		                       contains(contains('a', 'b', 'c'), contains('c', 'd', 'e'), contains('e', 'f', 'g'),
+		                                contains('g', 'h', 'i'))));
+
+		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
+		twice(() -> assertThat(a.window(3, 4), contains(contains('a'))));
+		twice(() -> assertThat(ab.window(3, 4), contains(contains('a', 'b'))));
+		twice(() -> assertThat(abc.window(3, 4), contains(contains('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.window(3, 4), contains(contains('a', 'b', 'c'))));
+		twice(() -> assertThat(abcde.window(3, 4), contains(contains('a', 'b', 'c'), contains('e'))));
+		twice(() -> assertThat(abcdefghi.window(3, 4),
+		                       contains(contains('a', 'b', 'c'), contains('e', 'f', 'g'), contains('i'))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batch() {
+		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
+		twice(() -> assertThat(a.batch(3), contains(contains('a'))));
+		twice(() -> assertThat(ab.batch(3), contains(contains('a', 'b'))));
+		twice(() -> assertThat(abc.batch(3), contains(contains('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.batch(3), contains(contains('a', 'b', 'c'), contains('d'))));
+		twice(() -> assertThat(abcde.batch(3), contains(contains('a', 'b', 'c'), contains('d', 'e'))));
+		twice(() -> assertThat(abcdefghi.batch(3),
+		                       contains(contains('a', 'b', 'c'), contains('d', 'e', 'f'), contains('g', 'h', 'i'))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnPredicate() {
+		Sequence<CharSeq> emptyPartitioned = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<CharSeq> onePartitioned = a.batch((a, b) -> a > b);
+		twice(() -> assertThat(onePartitioned, contains(contains('a'))));
+
+		Sequence<CharSeq> twoPartitioned = ab.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoPartitioned, contains(contains('a', 'b'))));
+
+		Sequence<CharSeq> threePartitioned = abc.batch((a, b) -> a > b);
+		twice(() -> assertThat(threePartitioned, contains(contains('a', 'b', 'c'))));
+
+		Sequence<CharSeq> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomPartitioned, contains(contains('q', 'w'), contains('d'))));
+
+		Sequence<CharSeq> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains('f', 'f'), contains('a', 'g'), contains('a', 'b', 'q'), contains('e'),
+		                                contains('d'))));
 	}
 }

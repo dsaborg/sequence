@@ -959,7 +959,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
-	 * of the given window, stepping {@code step} elements between each window.
+	 * of the given window, stepping {@code step} elements between each window. If the given step is less than the
+	 * window size, the windows will overlap each other.
 	 */
 	default Sequence<List<T>> window(int window, int step) {
 		return () -> new WindowingIterator<>(iterator(), window, step);

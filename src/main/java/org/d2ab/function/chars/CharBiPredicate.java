@@ -16,37 +16,36 @@
 
 package org.d2ab.function.chars;
 
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
 /**
- * A specialization of {@link Predicate} for {@code char} values. Adapted from {@link IntPredicate} and the like.
+ * A specialization of {@link BiPredicate} for {@code char} values.
  */
 @FunctionalInterface
-public interface CharPredicate {
+public interface CharBiPredicate {
 	/**
-	 * Test this predicate against the given {@code char}.
+	 * Test this predicate against the given two {@code char}s.
 	 */
-	boolean test(char c);
+	boolean test(char c1, char c2);
 
 	/**
 	 * Negate this predicate, returning a predicate that always returns the opposite values.
 	 */
-	default CharPredicate negate() {
-		return x -> !test(x);
+	default CharBiPredicate negate() {
+		return (x1, x2) -> !test(x1, x2);
 	}
 
 	/**
 	 * Combine this predicate with another predicate using "{@code and}" boolean logic.
 	 */
-	default CharPredicate and(CharPredicate predicate) {
-		return x -> test(x) && predicate.test(x);
+	default CharBiPredicate and(CharBiPredicate predicate) {
+		return (x1, x2) -> test(x1, x2) && predicate.test(x1, x2);
 	}
 
 	/**
 	 * Combine this predicate with another predicate using "{@code or}" boolean logic.
 	 */
-	default CharPredicate or(CharPredicate predicate) {
-		return x -> test(x) || predicate.test(x);
+	default CharBiPredicate or(CharBiPredicate predicate) {
+		return (x1, x2) -> test(x1, x2) || predicate.test(x1, x2);
 	}
 }
