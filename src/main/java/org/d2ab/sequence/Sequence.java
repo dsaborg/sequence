@@ -951,7 +951,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
 	 * of the given window. The first item in each list is the second item in the previous list. The final list may
-	 * be shorter than the window.
+	 * be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<List<T>> window(int window) {
 		return window(window, 1);
@@ -968,7 +968,7 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Batch the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, each with
-	 * the given batch size.
+	 * the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<List<T>> batch(int size) {
 		return window(size, size);

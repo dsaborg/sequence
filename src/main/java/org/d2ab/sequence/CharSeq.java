@@ -26,7 +26,6 @@ import org.d2ab.util.primitive.OptionalChar;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -699,16 +698,16 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
+	 * Window the elements of this {@code CharSeq} into a sequence of {@code CharSeq}s of elements, each with the size
 	 * of the given window. The first item in each list is the second item in the previous list. The final list may
-	 * be shorter than the window.
+	 * be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<CharSeq> window(int window) {
 		return window(window, 1);
 	}
 
 	/**
-	 * Window the elements of this {@link Sequence} into a sequence of {@link CharSeq}s of elements, each with the size
+	 * Window the elements of this {@link Sequence} into a sequence of {@code CharSeq}s of elements, each with the size
 	 * of the given window, stepping {@code step} elements between each window. If the given step is less than the
 	 * window size, the windows will overlap each other.
 	 */
@@ -717,15 +716,15 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Batch the elements of this {@link Sequence} into a sequence of {@link CharSeq}s of distinct elements, each with
-	 * the given batch size.
+	 * Batch the elements of this {@link Sequence} into a sequence of {@code CharSeq}s of distinct elements, each with
+	 * the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<CharSeq> batch(int size) {
 		return window(size, size);
 	}
 
 	/**
-	 * Batch the elements of this {@link Sequence} into a sequence of {@link CharSeq}s of distinct elements, where the
+	 * Batch the elements of this {@link Sequence} into a sequence of {@code CharSeq}s of distinct elements, where the
 	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the current
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */

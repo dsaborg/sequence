@@ -48,6 +48,7 @@ public class IntSequenceTest {
 
 	private final IntSequence oneRandom = IntSequence.of(17);
 	private final IntSequence twoRandom = IntSequence.of(17, 32);
+	private final IntSequence threeRandom = IntSequence.of(17, 32, 12);
 	private final IntSequence nineRandom = IntSequence.of(6, 6, 1, 7, 1, 2, 17, 5, 4);
 
 	@Test
@@ -807,5 +808,72 @@ public class IntSequenceTest {
 	public void mapForward() {
 		twice(() -> assertThat(_123.mapForward(17, (i, n) -> i), contains(1, 2, 3)));
 		twice(() -> assertThat(_123.mapForward(17, (i, n) -> n), contains(2, 3, 17)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void window() {
+		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3), contains(contains(1))));
+		twice(() -> assertThat(_12.window(3), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.window(3), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3), contains(contains(1, 2, 3), contains(2, 3, 4))));
+		twice(() -> assertThat(_12345.window(3), contains(contains(1, 2, 3), contains(2, 3, 4), contains(3, 4, 5))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void windowWithStep() {
+		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 2), contains(contains(1))));
+		twice(() -> assertThat(_12.window(3, 2), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.window(3, 2), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1, 2, 3), contains(3, 4))));
+		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1, 2, 3), contains(3, 4, 5))));
+		twice(() -> assertThat(_123456789.window(3, 2),
+		                       contains(contains(1, 2, 3), contains(3, 4, 5), contains(5, 6, 7), contains(7, 8, 9))));
+
+		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
+		twice(() -> assertThat(_1.window(3, 4), contains(contains(1))));
+		twice(() -> assertThat(_12.window(3, 4), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.window(3, 4), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1, 2, 3), contains(5))));
+		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1, 2, 3), contains(5, 6, 7), contains(9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batch() {
+		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
+		twice(() -> assertThat(_1.batch(3), contains(contains(1))));
+		twice(() -> assertThat(_12.batch(3), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.batch(3), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.batch(3), contains(contains(1, 2, 3), contains(4))));
+		twice(() -> assertThat(_12345.batch(3), contains(contains(1, 2, 3), contains(4, 5))));
+		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnPredicate() {
+		Sequence<IntSequence> emptyPartitioned = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<IntSequence> onePartitioned = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(onePartitioned, contains(contains(1))));
+
+		Sequence<IntSequence> twoPartitioned = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoPartitioned, contains(contains(1, 2))));
+
+		Sequence<IntSequence> threePartitioned = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threePartitioned, contains(contains(1, 2, 3))));
+
+		Sequence<IntSequence> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomPartitioned, contains(contains(17, 32), contains(12))));
+
+		Sequence<IntSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(67), contains(5, 43), contains(3, 5, 7, 24), contains(5, 67))));
 	}
 }
