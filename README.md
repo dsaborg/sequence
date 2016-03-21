@@ -13,16 +13,16 @@
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java.
 
-It aims to be roughly feature complete with sequential `Streams`, with some additional convenience methods.
-In particular it allows easier collecting into common `Collections` without having to use `Collectors`,
-better handling of `Maps` which allows transformation and filtering of `Map` `Entries` as first-class citizens,
-and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterators`. `Sequences` go to
+It aims to be roughly feature complete with sequential `Stream`s, with some additional convenience methods.
+In particular it allows easier collecting into common `Collection`s without having to use `Collector`s,
+better handling of `Map`s which allows transformation and filtering of `Map.Entry` as first-class citizens,
+and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterator`s. `Sequence`s go to
 great lengths to be as lazy and late-evaluating as possible, with minimal overhead.
 
-`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on `Iterables` and `Iterators` instead
+`Sequence`s use Java 8 lambdas in much the same way as `Stream`s do, but is based on `Iterable`s and `Iterator`s instead
 of a pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers wanting
 to perform common data processing tasks on moderately small collections. If you need parallel iteration or are 
-processing over 1 million or so entries, use parallel `Streams`.
+processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -71,8 +71,8 @@ dependencies {
 
 #### Iterable
 
-Because `Sequences` are `Iterables` you can re-use them safely after you have already traversed them, as long as they're
-backed by an `Iterable`/`Collection`, not an `Iterator` or `Stream`, of course.
+Because each `Sequence` is an `Iterable` you can re-use them safely after you have already traversed them, as long as
+they're backed by an `Iterable`, `Collection` or array of course, not a once only `Iterator` or `Stream`.
 
 ```Java
 Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
@@ -86,7 +86,7 @@ Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
 assertThat(squares, contains(16, 25, 36, 49, 64));
 ```
 
-Also because `Sequences` are `Iterables` they work beautifully in foreach loops:
+Also because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
 
 ```Java
 Sequence<Integer> sequence = Sequence.ints().limit(3);
@@ -114,7 +114,7 @@ assertThat(transformed, contains("1", "2", "3"));
 
 #### Streams
 
-`Sequences` interoperate beautifully with `Streams`, through the expected `from(Stream)` and `.stream()` methods.
+`Sequence` interoperates beautifully with `Stream`, through the expected `from(Stream)` and `.stream()` methods.
 
 ```Java
 Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
@@ -125,13 +125,12 @@ assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c"
 
 #### Recursion
 
-There is full support for infinite recursive `Sequences`, including termination at a known value.
+There is full support for infinite recursive `Sequence`s, including termination at a known value.
 
 ```Java
-Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1),
-                                               pair -> pair.shiftedLeft(pair.apply(Integer::sum)))
+Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> p.shiftLeft(p.apply(Integer::sum)))
                                       .map(Pair::getLeft)
-                                      .until(55);
+                                      .endingAt(34);
 
 assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
@@ -148,7 +147,7 @@ assertThat(sequence,
 
 #### Reduction
 
-Also the standard reduction operations are available as per `Stream`:
+The standard reduction operations are available as per `Stream`:
 
 ```Java
 Sequence<Long> thirteen = Sequence.recurse(1L, i -> i + 1).limit(13);
@@ -159,8 +158,7 @@ assertThat(factorial, is(6227020800L));
 
 #### Pairs
 
-When iterating over sequences of pairs of item, there is ```BiSequence``` which provides native operators and
-transformations across lists of pairs of items:
+When iterating over sequences of `Pair`s of item, `BiSequence` provides native operators and transformations:
 
 ```Java
 BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
@@ -174,7 +172,7 @@ assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969
 
 #### Maps
 
-`Maps` are handled as `Sequences` of `Entry`, with special transformation methods that convert to/from `Maps`.
+`Map`s are handled as `Sequence`s of `Entry`, with special transformation methods that convert to/from `Map`s.
 
 ```Java
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
@@ -186,7 +184,7 @@ Map<Integer, String> map = keyValueSequence.toMap();
 assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 ```
 
-You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
+You can also map `Entry` `Sequence`s to `Pair`s which allows more expressive transformation and filtering.
 
 ```Java
 Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
@@ -240,7 +238,7 @@ DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
 assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
 
-The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
+The primitive `Sequence`s also have mapping methods that peek on the previous and next elements:
 
 ```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
@@ -252,8 +250,8 @@ assertThat(titleCase.asString(), is("Hello Lexicon"));
 
 #### Partitioning
 
-Both regular and primitive sequences have advanced windowing and partitioning methods, allowing you to divide up
-sequences in various ways, including a partitioning method that uses a binary predicate to determine which two
+Both regular and primitive `Sequence`s have advanced windowing and partitioning methods, allowing you to divide up
+`Sequence`s in various ways, including a partitioning method that uses a `BiPredicate` to determine which two
 elements to create a batch between.
 
 ```Java
@@ -268,6 +266,6 @@ assertThat(consonantsWovels,
 
 ### Conclusion
 
-Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
+Go ahead and give it a try and experience a leaner way to `Stream` your `Sequence`s! :bowtie:
 
 Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)! :heart:

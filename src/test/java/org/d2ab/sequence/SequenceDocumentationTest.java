@@ -100,9 +100,9 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), pair -> pair.shiftLeft(pair.apply(Integer::sum)))
+		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> p.shiftLeft(p.apply(Integer::sum)))
 		                                      .map(Pair::getLeft)
-		                                      .until(55);
+		                                      .endingAt(34);
 
 		assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 	}
