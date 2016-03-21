@@ -201,8 +201,11 @@ public class SequenceDocumentationTest {
 		                                  "Barack Obama (2005)"));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void window() {
-
+	public void partitionConsonantsWovels() {
+		CharSeq word = CharSeq.from("terrain");
+		Sequence<CharSeq> consonantsWovels = word.batch((a, b) -> ("aeoiuy".indexOf(a) == -1) != ("aeoiuy".indexOf(b) == -1));
+		assertThat(consonantsWovels, contains(contains('t'), contains('e'), contains('r', 'r'), contains('a', 'i'), contains('n')));
 	}
 }

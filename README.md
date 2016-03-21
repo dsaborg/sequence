@@ -252,6 +252,18 @@ CharSeq titleCase = CharSeq.from("hello_lexicon")
 assertThat(titleCase.asString(), is("Hello Lexicon"));
 ```
 
+#### Partitioning
+
+Both regular and primitive sequences have advanced windowing and partitioning methods, allowing you to divide up
+sequences in various ways, including a partitioning method that uses a binary predicate to determine which two
+elements to create a batch between.
+
+```Java
+CharSeq word = CharSeq.from("terrain");
+Sequence<CharSeq> consonantsWovels = word.batch((a, b) -> ("aeoiuy".indexOf(a) == -1) != ("aeoiuy".indexOf(b) == -1));
+assertThat(consonantsWovels, contains(contains('t'), contains('e'), contains('r', 'r'), contains('a', 'i'), contains('n')));
+```
+
 ### Conclusion
 
 Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
