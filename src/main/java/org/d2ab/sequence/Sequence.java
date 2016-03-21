@@ -873,7 +873,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@link Sequence} into a sequence of overlapping {@link Entry} elements. Each entry
+	 * Pair the elements of this {@code Sequence} into a sequence of overlapping {@link Entry} elements. Each entry
 	 * overlaps the value item with the key item of the next entry. If there is only one item in the sequence, the
 	 * first pair returned has that item as a key and null as the value.
 	 */
@@ -887,7 +887,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
+	 * Pair the elements of this {@code Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
 	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
 	 * has a null as the second item.
 	 */
@@ -901,7 +901,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@link Sequence} into a sequence of {@link Entry} elements. Each entry is adjacent to
+	 * Pair the elements of this {@code Sequence} into a sequence of {@link Entry} elements. Each entry is adjacent to
 	 * the next entry. If there is an uneven amount of items in the list, the final entry returned has a null as the
 	 * value item.
 	 */
@@ -915,7 +915,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@link Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
+	 * Pair the elements of this {@code Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
 	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
 	 * has a null as the second item.
 	 */
@@ -949,7 +949,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
+	 * Window the elements of this {@code Sequence} into a sequence of {@link List}s of elements, each with the size
 	 * of the given window. The first item in each list is the second item in the previous list. The final list may
 	 * be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
@@ -958,7 +958,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Window the elements of this {@link Sequence} into a sequence of {@link List}s of elements, each with the size
+	 * Window the elements of this {@code Sequence} into a sequence of {@link List}s of elements, each with the size
 	 * of the given window, stepping {@code step} elements between each window. If the given step is less than the
 	 * window size, the windows will overlap each other.
 	 */
@@ -972,7 +972,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Batch the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, each with
+	 * Batch the elements of this {@code Sequence} into a sequence of {@link List}s of distinct elements, each with
 	 * the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<Sequence<T>> batch(int size) {
@@ -980,7 +980,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Batch the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, where the
+	 * Batch the elements of this {@code Sequence} into a sequence of {@link List}s of distinct elements, where the
 	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the current
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
