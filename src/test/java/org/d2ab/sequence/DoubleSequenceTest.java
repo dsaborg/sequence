@@ -759,7 +759,8 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_12.window(3), contains(contains(1.0, 2.0))));
 		twice(() -> assertThat(_123.window(3), contains(contains(1.0, 2.0, 3.0))));
 		twice(() -> assertThat(_1234.window(3), contains(contains(1.0, 2.0, 3.0), contains(2.0, 3.0, 4.0))));
-		twice(() -> assertThat(_12345.window(3), contains(contains(1.0, 2.0, 3.0), contains(2.0, 3.0, 4.0), contains(3.0, 4.0, 5.0))));
+		twice(() -> assertThat(_12345.window(3),
+		                       contains(contains(1.0, 2.0, 3.0), contains(2.0, 3.0, 4.0), contains(3.0, 4.0, 5.0))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -772,7 +773,8 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0))));
 		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0, 5.0))));
 		twice(() -> assertThat(_123456789.window(3, 2),
-		                       contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0, 5.0), contains(5.0, 6.0, 7.0), contains(7.0, 8.0, 9.0))));
+		                       contains(contains(1.0, 2.0, 3.0), contains(3.0, 4.0, 5.0), contains(5.0, 6.0, 7.0),
+		                                contains(7.0, 8.0, 9.0))));
 
 		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
 		twice(() -> assertThat(_1.window(3, 4), contains(contains(1.0))));
@@ -780,7 +782,8 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_123.window(3, 4), contains(contains(1.0, 2.0, 3.0))));
 		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1.0, 2.0, 3.0))));
 		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1.0, 2.0, 3.0), contains(5.0))));
-		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1.0, 2.0, 3.0), contains(5.0, 6.0, 7.0), contains(9.0))));
+		twice(() -> assertThat(_123456789.window(3, 4),
+		                       contains(contains(1.0, 2.0, 3.0), contains(5.0, 6.0, 7.0), contains(9.0))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -792,7 +795,8 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_123.batch(3), contains(contains(1.0, 2.0, 3.0))));
 		twice(() -> assertThat(_1234.batch(3), contains(contains(1.0, 2.0, 3.0), contains(4.0))));
 		twice(() -> assertThat(_12345.batch(3), contains(contains(1.0, 2.0, 3.0), contains(4.0, 5.0))));
-		twice(() -> assertThat(_123456789.batch(3), contains(contains(1.0, 2.0, 3.0), contains(4.0, 5.0, 6.0), contains(7.0, 8.0, 9.0))));
+		twice(() -> assertThat(_123456789.batch(3),
+		                       contains(contains(1.0, 2.0, 3.0), contains(4.0, 5.0, 6.0), contains(7.0, 8.0, 9.0))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -815,6 +819,7 @@ public class DoubleSequenceTest {
 
 		Sequence<DoubleSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5.0), contains(4.0))));
+		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5.0),
+		                                contains(4.0))));
 	}
 }

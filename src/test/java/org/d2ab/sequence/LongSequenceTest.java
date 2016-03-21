@@ -816,7 +816,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_12.window(3), contains(contains(1L, 2L))));
 		twice(() -> assertThat(_123.window(3), contains(contains(1L, 2L, 3L))));
 		twice(() -> assertThat(_1234.window(3), contains(contains(1L, 2L, 3L), contains(2L, 3L, 4L))));
-		twice(() -> assertThat(_12345.window(3), contains(contains(1L, 2L, 3L), contains(2L, 3L, 4L), contains(3L, 4L, 5L))));
+		twice(() -> assertThat(_12345.window(3),
+		                       contains(contains(1L, 2L, 3L), contains(2L, 3L, 4L), contains(3L, 4L, 5L))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -829,7 +830,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1L, 2L, 3L), contains(3L, 4L))));
 		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1L, 2L, 3L), contains(3L, 4L, 5L))));
 		twice(() -> assertThat(_123456789.window(3, 2),
-		                       contains(contains(1L, 2L, 3L), contains(3L, 4L, 5L), contains(5L, 6L, 7L), contains(7L, 8L, 9L))));
+		                       contains(contains(1L, 2L, 3L), contains(3L, 4L, 5L), contains(5L, 6L, 7L),
+		                                contains(7L, 8L, 9L))));
 
 		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
 		twice(() -> assertThat(_1.window(3, 4), contains(contains(1L))));
@@ -837,7 +839,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_123.window(3, 4), contains(contains(1L, 2L, 3L))));
 		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1L, 2L, 3L))));
 		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1L, 2L, 3L), contains(5L))));
-		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1L, 2L, 3L), contains(5L, 6L, 7L), contains(9L))));
+		twice(() -> assertThat(_123456789.window(3, 4),
+		                       contains(contains(1L, 2L, 3L), contains(5L, 6L, 7L), contains(9L))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -849,7 +852,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_123.batch(3), contains(contains(1L, 2L, 3L))));
 		twice(() -> assertThat(_1234.batch(3), contains(contains(1L, 2L, 3L), contains(4L))));
 		twice(() -> assertThat(_12345.batch(3), contains(contains(1L, 2L, 3L), contains(4L, 5L))));
-		twice(() -> assertThat(_123456789.batch(3), contains(contains(1L, 2L, 3L), contains(4L, 5L, 6L), contains(7L, 8L, 9L))));
+		twice(() -> assertThat(_123456789.batch(3),
+		                       contains(contains(1L, 2L, 3L), contains(4L, 5L, 6L), contains(7L, 8L, 9L))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -872,6 +876,7 @@ public class LongSequenceTest {
 
 		Sequence<LongSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6L, 6L), contains(1L, 7L), contains(1L, 2L, 17L), contains(5L), contains(4L))));
+		                       contains(contains(6L, 6L), contains(1L, 7L), contains(1L, 2L, 17L), contains(5L),
+		                                contains(4L))));
 	}
 }

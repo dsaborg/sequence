@@ -851,7 +851,8 @@ public class IntSequenceTest {
 		twice(() -> assertThat(_123.batch(3), contains(contains(1, 2, 3))));
 		twice(() -> assertThat(_1234.batch(3), contains(contains(1, 2, 3), contains(4))));
 		twice(() -> assertThat(_12345.batch(3), contains(contains(1, 2, 3), contains(4, 5))));
-		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9))));
+		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)
+		)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -874,6 +875,7 @@ public class IntSequenceTest {
 
 		Sequence<IntSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6, 6), contains(1, 7), contains(1, 2, 17), contains(5), contains(4))));
+		                       contains(contains(6, 6), contains(1, 7), contains(1, 2, 17), contains(5), contains(4)
+		                       )));
 	}
 }
