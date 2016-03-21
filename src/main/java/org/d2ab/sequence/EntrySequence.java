@@ -50,6 +50,17 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return of(Entries.of(left, right));
 	}
 
+	@SuppressWarnings("unchecked")
+	static <K, V> EntrySequence<K, V> ofEntries(Object... os) {
+		if (os.length % 2 != 0)
+			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
+
+		List<Entry<K, V>> entries = new ArrayList<>();
+		for (int i = 0; i < os.length; i += 2)
+			entries.add(Entries.of((K) os[i], (V) os[i + 1]));
+		return from(entries);
+	}
+
 	@SafeVarargs
 	static <K, V> EntrySequence<K, V> from(Iterable<? extends Entry<K, V>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);

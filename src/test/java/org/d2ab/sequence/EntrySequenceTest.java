@@ -84,6 +84,16 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void ofPair() {
+		assertThat(EntrySequence.ofEntry("1", 1), contains(Entries.of("1", 1)));
+	}
+
+	@Test
+	public void ofPairs() {
+		assertThat(EntrySequence.ofEntries("1", 1, "2", 2, "3", 3), contains(entries123));
+	}
+
+	@Test
 	public void forLoop() {
 		twice(() -> {
 			for (Entry<String, Integer> ignored : empty)

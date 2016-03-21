@@ -76,6 +76,16 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void ofPair() {
+		assertThat(BiSequence.ofPair("1", 1), contains(Pair.of("1", 1)));
+	}
+
+	@Test
+	public void ofPairs() {
+		assertThat(BiSequence.ofPairs("1", 1, "2", 2, "3", 3), contains(entries123));
+	}
+
+	@Test
 	public void forLoop() {
 		twice(() -> {
 			for (Pair<String, Integer> ignored : empty)

@@ -190,10 +190,8 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void biSequence() {
-		BiSequence<String, Integer> presidents = BiSequence.ofPair("Abraham Lincoln", 1861)
-		                                                   .appendPair("Richard Nixon", 1969)
-		                                                   .appendPair("George Bush", 2001)
-		                                                   .appendPair("Barack Obama", 2005);
+		BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
+		                                                            "George Bush", 2001, "Barack Obama", 2005);
 
 		Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
 

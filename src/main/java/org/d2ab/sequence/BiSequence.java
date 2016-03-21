@@ -49,6 +49,17 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return of(Pair.of(left, right));
 	}
 
+	@SuppressWarnings("unchecked")
+	static <T, U> BiSequence<T, U> ofPairs(Object... os) {
+		if (os.length % 2 != 0)
+			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
+
+		List<Pair<T, U>> pairs = new ArrayList<>();
+		for (int i = 0; i < os.length; i += 2)
+			pairs.add(Pair.of((T) os[i], (U) os[i+1]));
+		return from(pairs);
+	}
+
 	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>> iterable) {
 		return iterable::iterator;
 	}
