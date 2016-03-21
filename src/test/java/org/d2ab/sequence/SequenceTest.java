@@ -862,67 +862,67 @@ public class SequenceTest {
 	@Test
 	public void window() {
 		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
-		twice(() -> assertThat(_1.window(3), contains(singletonList(1))));
-		twice(() -> assertThat(_12.window(3), contains(asList(1, 2))));
-		twice(() -> assertThat(_123.window(3), contains(asList(1, 2, 3))));
-		twice(() -> assertThat(_1234.window(3), contains(asList(1, 2, 3), asList(2, 3, 4))));
-		twice(() -> assertThat(_12345.window(3), contains(asList(1, 2, 3), asList(2, 3, 4), asList(3, 4, 5))));
+		twice(() -> assertThat(_1.window(3), contains(contains(1))));
+		twice(() -> assertThat(_12.window(3), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.window(3), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3), contains(contains(1, 2, 3), contains(2, 3, 4))));
+		twice(() -> assertThat(_12345.window(3), contains(contains(1, 2, 3), contains(2, 3, 4), contains(3, 4, 5))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void windowWithStep() {
 		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
-		twice(() -> assertThat(_1.window(3, 2), contains(singletonList(1))));
-		twice(() -> assertThat(_12.window(3, 2), contains(asList(1, 2))));
-		twice(() -> assertThat(_123.window(3, 2), contains(asList(1, 2, 3))));
-		twice(() -> assertThat(_1234.window(3, 2), contains(asList(1, 2, 3), asList(3, 4))));
-		twice(() -> assertThat(_12345.window(3, 2), contains(asList(1, 2, 3), asList(3, 4, 5))));
+		twice(() -> assertThat(_1.window(3, 2), contains(contains(1))));
+		twice(() -> assertThat(_12.window(3, 2), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.window(3, 2), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1, 2, 3), contains(3, 4))));
+		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1, 2, 3), contains(3, 4, 5))));
 		twice(() -> assertThat(_123456789.window(3, 2),
-		                       contains(asList(1, 2, 3), asList(3, 4, 5), asList(5, 6, 7), asList(7, 8, 9))));
+		                       contains(contains(1, 2, 3), contains(3, 4, 5), contains(5, 6, 7), contains(7, 8, 9))));
 
 		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
-		twice(() -> assertThat(_1.window(3, 4), contains(singletonList(1))));
-		twice(() -> assertThat(_12.window(3, 4), contains(asList(1, 2))));
-		twice(() -> assertThat(_123.window(3, 4), contains(asList(1, 2, 3))));
-		twice(() -> assertThat(_1234.window(3, 4), contains(asList(1, 2, 3))));
-		twice(() -> assertThat(_12345.window(3, 4), contains(asList(1, 2, 3), singletonList(5))));
-		twice(() -> assertThat(_123456789.window(3, 4), contains(asList(1, 2, 3), asList(5, 6, 7), singletonList(9))));
+		twice(() -> assertThat(_1.window(3, 4), contains(contains(1))));
+		twice(() -> assertThat(_12.window(3, 4), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.window(3, 4), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1, 2, 3), contains(5))));
+		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1, 2, 3), contains(5, 6, 7), contains(9))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batch() {
 		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
-		twice(() -> assertThat(_1.batch(3), contains(singletonList(1))));
-		twice(() -> assertThat(_12.batch(3), contains(asList(1, 2))));
-		twice(() -> assertThat(_123.batch(3), contains(asList(1, 2, 3))));
-		twice(() -> assertThat(_1234.batch(3), contains(asList(1, 2, 3), singletonList(4))));
-		twice(() -> assertThat(_12345.batch(3), contains(asList(1, 2, 3), asList(4, 5))));
-		twice(() -> assertThat(_123456789.batch(3), contains(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9))));
+		twice(() -> assertThat(_1.batch(3), contains(contains(1))));
+		twice(() -> assertThat(_12.batch(3), contains(contains(1, 2))));
+		twice(() -> assertThat(_123.batch(3), contains(contains(1, 2, 3))));
+		twice(() -> assertThat(_1234.batch(3), contains(contains(1, 2, 3), contains(4))));
+		twice(() -> assertThat(_12345.batch(3), contains(contains(1, 2, 3), contains(4, 5))));
+		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<List<Integer>> emptyPartitioned = empty.batch((a, b) -> a > b);
+		Sequence<Sequence<Integer>> emptyPartitioned = empty.batch((a, b) -> a > b);
 		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
 
-		Sequence<List<Integer>> onePartitioned = _1.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(singletonList(1))));
+		Sequence<Sequence<Integer>> onePartitioned = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(onePartitioned, contains(contains(1))));
 
-		Sequence<List<Integer>> twoPartitioned = _12.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(asList(1, 2))));
+		Sequence<Sequence<Integer>> twoPartitioned = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoPartitioned, contains(contains(1, 2))));
 
-		Sequence<List<Integer>> threePartitioned = _123.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(asList(1, 2, 3))));
+		Sequence<Sequence<Integer>> threePartitioned = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threePartitioned, contains(contains(1, 2, 3))));
 
-		Sequence<List<Integer>> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(asList(2, 3), singletonList(1))));
+		Sequence<Sequence<Integer>> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomPartitioned, contains(contains(2, 3), contains(1))));
 
-		Sequence<List<Integer>> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
+		Sequence<Sequence<Integer>> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(singletonList(67), asList(5, 43), asList(3, 5, 7, 24), asList(5, 67))));
+		                       contains(contains(67), contains(5, 43), contains(3, 5, 7, 24), contains(5, 67))));
 	}
 
 	@Test

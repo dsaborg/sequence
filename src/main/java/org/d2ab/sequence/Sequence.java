@@ -953,7 +953,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * of the given window. The first item in each list is the second item in the previous list. The final list may
 	 * be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
-	default Sequence<List<T>> window(int window) {
+	default Sequence<Sequence<T>> window(int window) {
 		return window(window, 1);
 	}
 
@@ -962,15 +962,20 @@ public interface Sequence<T> extends Iterable<T> {
 	 * of the given window, stepping {@code step} elements between each window. If the given step is less than the
 	 * window size, the windows will overlap each other.
 	 */
-	default Sequence<List<T>> window(int window, int step) {
-		return () -> new WindowingIterator<>(iterator(), window, step);
+	default Sequence<Sequence<T>> window(int window, int step) {
+		return () -> new WindowingIterator<T, Sequence<T>>(iterator(), window, step) {
+			@Override
+			protected Sequence<T> toSequence(List<T> list) {
+				return Sequence.from(list);
+			}
+		};
 	}
 
 	/**
 	 * Batch the elements of this {@link Sequence} into a sequence of {@link List}s of distinct elements, each with
 	 * the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
-	default Sequence<List<T>> batch(int size) {
+	default Sequence<Sequence<T>> batch(int size) {
 		return window(size, size);
 	}
 
@@ -979,7 +984,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the current
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
-	default Sequence<List<T>> batch(BiPredicate<? super T, ? super T> predicate) {
+	default Sequence<Sequence<T>> batch(BiPredicate<? super T, ? super T> predicate) {
 		return () -> new PredicatePartitioningIterator<>(iterator(), predicate);
 	}
 

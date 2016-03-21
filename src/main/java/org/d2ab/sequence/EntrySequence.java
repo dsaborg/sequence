@@ -335,15 +335,20 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return Optional.of(last);
 	}
 
-	default Sequence<List<Entry<K, V>>> window(int window) {
+	default Sequence<EntrySequence<K, V>> window(int window) {
 		return window(window, 1);
 	}
 
-	default Sequence<List<Entry<K, V>>> window(int window, int step) {
-		return () -> new WindowingIterator<>(iterator(), window, step);
+	default Sequence<EntrySequence<K, V>> window(int window, int step) {
+		return () -> new WindowingIterator<Entry<K, V>, EntrySequence<K, V>>(iterator(), window, step) {
+			@Override
+			protected EntrySequence<K, V> toSequence(List<Entry<K, V>> list) {
+				return EntrySequence.from(list);
+			}
+		};
 	}
 
-	default Sequence<List<Entry<K, V>>> batch(int size) {
+	default Sequence<EntrySequence<K, V>> batch(int size) {
 		return window(size, size);
 	}
 

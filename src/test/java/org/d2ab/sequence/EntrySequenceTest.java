@@ -648,23 +648,23 @@ public class EntrySequenceTest {
 	@Test
 	public void window() {
 		twice(() -> assertThat(_12345.window(3),
-		                       contains(asList(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
-		                                asList(Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4)),
-		                                asList(Entries.of("3", 3), Entries.of("4", 4), Entries.of("5", 5)))));
+		                       contains(contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
+		                                contains(Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4)),
+		                                contains(Entries.of("3", 3), Entries.of("4", 4), Entries.of("5", 5)))));
 	}
 
 	@Test
 	public void windowWithStep() {
 		twice(() -> assertThat(_12345.window(3, 2),
-		                       contains(asList(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
-		                                asList(Entries.of("3", 3), Entries.of("4", 4), Entries.of("5", 5)))));
+		                       contains(contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
+		                                contains(Entries.of("3", 3), Entries.of("4", 4), Entries.of("5", 5)))));
 	}
 
 	@Test
 	public void batch() {
 		twice(() -> assertThat(_12345.batch(3),
-		                       contains(asList(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
-		                                asList(Entries.of("4", 4), Entries.of("5", 5)))));
+		                       contains(contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
+		                                contains(Entries.of("4", 4), Entries.of("5", 5)))));
 	}
 
 	@Test

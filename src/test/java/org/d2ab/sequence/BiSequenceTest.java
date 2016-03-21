@@ -629,22 +629,22 @@ public class BiSequenceTest {
 
 	@Test
 	public void window() {
-		twice(() -> assertThat(_12345.window(3), contains(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                  asList(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
-		                                                  asList(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
+		twice(() -> assertThat(_12345.window(3), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                                  contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
+		                                                  contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@Test
 	public void windowWithStep() {
-		twice(() -> assertThat(_12345.window(3, 2), contains(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                     asList(Pair.of("3", 3), Pair.of("4", 4),
+		twice(() -> assertThat(_12345.window(3, 2), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                                     contains(Pair.of("3", 3), Pair.of("4", 4),
 		                                                            Pair.of("5", 5)))));
 	}
 
 	@Test
 	public void batch() {
-		twice(() -> assertThat(_12345.batch(3), contains(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                 asList(Pair.of("4", 4), Pair.of("5", 5)))));
+		twice(() -> assertThat(_12345.batch(3), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                                 contains(Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@Test

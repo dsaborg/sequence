@@ -18,7 +18,7 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>> {
+public abstract class WindowingIterator<T, S> extends DelegatingReferenceIterator<T, S> {
 	private final int window;
 	private final int step;
 
@@ -41,7 +41,7 @@ public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>
 	}
 
 	@Override
-	public List<T> next() {
+	public S next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
@@ -57,6 +57,8 @@ public class WindowingIterator<T> extends DelegatingReferenceIterator<T, List<T>
 		}
 
 		started = true;
-		return next;
+		return toSequence(next);
 	}
+
+	protected abstract S toSequence(List<T> list);
 }

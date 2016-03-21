@@ -335,15 +335,20 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return Optional.of(last);
 	}
 
-	default Sequence<List<Pair<L, R>>> window(int window) {
+	default Sequence<BiSequence<L, R>> window(int window) {
 		return window(window, 1);
 	}
 
-	default Sequence<List<Pair<L, R>>> window(int window, int step) {
-		return () -> new WindowingIterator<>(iterator(), window, step);
+	default Sequence<BiSequence<L, R>> window(int window, int step) {
+		return () -> new WindowingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), window, step) {
+			@Override
+			protected BiSequence<L, R> toSequence(List<Pair<L, R>> list) {
+				return BiSequence.from(list);
+			}
+		};
 	}
 
-	default Sequence<List<Pair<L, R>>> batch(int size) {
+	default Sequence<BiSequence<L, R>> batch(int size) {
 		return window(size, size);
 	}
 
