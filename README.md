@@ -256,9 +256,10 @@ elements to create a batch between.
 
 ```Java
 CharSeq word = CharSeq.from("terrain");
+String vowels = "aeoiuy";
 
 Sequence<CharSeq> consonantsVowels = word.batch(
-        (a, b) -> ("aeoiuy".indexOf(a) == -1) != ("aeoiuy".indexOf(b) == -1));
+        (a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1));
 
 assertThat(consonantsVowels,
            contains(contains('t'), contains('e'), contains('r', 'r'), contains('a', 'i'), contains('n')));
