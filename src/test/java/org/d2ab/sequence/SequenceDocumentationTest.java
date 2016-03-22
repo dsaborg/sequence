@@ -205,10 +205,10 @@ public class SequenceDocumentationTest {
 		CharSeq word = CharSeq.from("terrain");
 		String vowels = "aeoiuy";
 
-		Sequence<CharSeq> consonantsVowels = word.batch(
-				(a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1));
+		Sequence<String> consonantsVowels = word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) ==
+		                                                                                       -1))
+		                                        .map(CharSeq::asString);
 
-		assertThat(consonantsVowels,
-		           contains(contains('t'), contains('e'), contains('r', 'r'), contains('a', 'i'), contains('n')));
+		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 	}
 }
