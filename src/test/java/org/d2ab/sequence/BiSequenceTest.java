@@ -52,8 +52,8 @@ public class BiSequenceTest {
 	                                                                     Pair.of("9", 9));
 	private final BiSequence<String, Integer> random1 = BiSequence.of(Pair.of("17", 17));
 	private final BiSequence<String, Integer> random2 = BiSequence.of(Pair.of("17", 17), Pair.of("32", 32));
-	private final BiSequence<String, Integer> random3 = BiSequence.of(Pair.of("2", 2), Pair.of("3", 3),
-	                                                                  Pair.of("4", 4));
+	private final BiSequence<String, Integer> random3 = BiSequence.of(Pair.of("4", 4), Pair.of("2", 2),
+	                                                                  Pair.of("3", 3));
 	private final BiSequence<String, Integer> random9 = BiSequence.of(Pair.of("67", 67), Pair.of("5", 5),
 	                                                                  Pair.of("43", 43), Pair.of("3", 3),
 	                                                                  Pair.of("5", 5), Pair.of("7", 7),
@@ -631,20 +631,77 @@ public class BiSequenceTest {
 	public void window() {
 		twice(() -> assertThat(_12345.window(3), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
 		                                                  contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
-		                                                  contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
+		                                                  contains(Pair.of("3", 3), Pair.of("4", 4),
+		                                                           Pair.of("5", 5)))));
 	}
 
 	@Test
 	public void windowWithStep() {
-		twice(() -> assertThat(_12345.window(3, 2), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                     contains(Pair.of("3", 3), Pair.of("4", 4),
-		                                                            Pair.of("5", 5)))));
+		twice(() -> assertThat(_12345.window(3, 2),
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@Test
 	public void batch() {
 		twice(() -> assertThat(_12345.batch(3), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
 		                                                 contains(Pair.of("4", 4), Pair.of("5", 5)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnPredicate() {
+		Sequence<BiSequence<String, Integer>> emptyPartitioned = empty.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<BiSequence<String, Integer>> onePartitioned = _1.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(onePartitioned, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<BiSequence<String, Integer>> twoPartitioned = _12.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(twoPartitioned, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threePartitioned = _123.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(threePartitioned,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<BiSequence<String, Integer>> threeRandomPartitioned = random3.batch(
+				(a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(threeRandomPartitioned,
+		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<BiSequence<String, Integer>> nineRandomPartitioned = random9.batch(
+				(a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
+		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
+		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnQuaternaryPredicate() {
+		Sequence<BiSequence<String, Integer>> emptyPartitioned = empty.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<BiSequence<String, Integer>> onePartitioned = _1.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(onePartitioned, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<BiSequence<String, Integer>> twoPartitioned = _12.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(twoPartitioned, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threePartitioned = _123.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threePartitioned,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<BiSequence<String, Integer>> threeRandomPartitioned = random3.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threeRandomPartitioned,
+		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<BiSequence<String, Integer>> nineRandomPartitioned = random9.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
+		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
+		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
 	}
 
 	@Test

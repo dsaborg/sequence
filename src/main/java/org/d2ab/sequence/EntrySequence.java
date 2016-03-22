@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.QuaternaryFunction;
+import org.d2ab.function.QuaternaryPredicate;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
@@ -350,6 +351,30 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	default Sequence<EntrySequence<K, V>> batch(int size) {
 		return window(size, size);
+	}
+
+	/**
+	 * Batch the elements of this {@code EntrySequence} into a sequence of {@link EntrySequence}s of distinct elements,
+	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
+	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
+	 */
+	default Sequence<EntrySequence<K, V>> batch(BiPredicate<? super Entry<K, V>, ? super Entry<K, V>> predicate) {
+		return () -> new PredicatePartitioningIterator<Entry<K, V>, EntrySequence<K, V>>(iterator(), predicate) {
+			@Override
+			protected EntrySequence<K, V> toSequence(List<Entry<K, V>> list) {
+				return EntrySequence.from(list);
+			}
+		};
+	}
+
+	/**
+	 * Batch the elements of this {@code EntrySequence} into a sequence of {@link EntrySequence}s of distinct elements,
+	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
+	 * the keys and values of the current and next items in the iteration, and if it returns true a partition is
+	 * created between the elements.
+	 */
+	default Sequence<EntrySequence<K, V>> batch(QuaternaryPredicate<? super K, ? super V, ? super K, ? super V> predicate) {
+		return batch((e1, e2) -> predicate.test(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue()));
 	}
 
 	default EntrySequence<K, V> step(int step) {

@@ -984,7 +984,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<Sequence<T>> batch(BiPredicate<? super T, ? super T> predicate) {
-		return () -> new PredicatePartitioningIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningIterator<T, Sequence<T>>(iterator(), predicate) {
+			@Override
+			protected Sequence<T> toSequence(List<T> list) {
+				return Sequence.from(list);
+			}
+		};
 	}
 
 	/**

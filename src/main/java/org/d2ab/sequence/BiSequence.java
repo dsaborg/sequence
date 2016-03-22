@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.QuaternaryFunction;
+import org.d2ab.function.QuaternaryPredicate;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
@@ -350,6 +351,30 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default Sequence<BiSequence<L, R>> batch(int size) {
 		return window(size, size);
+	}
+
+	/**
+	 * Batch the elements of this {@code BiSequence} into a sequence of {@link BiSequence}s of distinct elements, where
+	 * the given predicate determines where to split the lists of partitioned elements. The predicate is given the
+	 * current and next item in the iteration, and if it returns true a partition is created between the elements.
+	 */
+	default Sequence<BiSequence<L, R>> batch(BiPredicate<? super Pair<L, R>, ? super Pair<L, R>> predicate) {
+		return () -> new PredicatePartitioningIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), predicate) {
+			@Override
+			protected BiSequence<L, R> toSequence(List<Pair<L, R>> list) {
+				return BiSequence.from(list);
+			}
+		};
+	}
+
+	/**
+	 * Batch the elements of this {@code EntrySequence} into a sequence of {@link EntrySequence}s of distinct elements,
+	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
+	 * the left and right values of the current and next items in the iteration, and if it returns true a partition is
+	 * created between the elements.
+	 */
+	default Sequence<BiSequence<L, R>> batch(QuaternaryPredicate<? super L, ? super R, ? super L, ? super R> predicate) {
+		return batch((p1, p2) -> predicate.test(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight()));
 	}
 
 	default BiSequence<L, R> step(int step) {

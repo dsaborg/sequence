@@ -20,6 +20,7 @@ import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.util.Arrayz;
 import org.d2ab.util.Entries;
+import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.*;
@@ -56,8 +57,8 @@ public class EntrySequenceTest {
 	private final EntrySequence<String, Integer> random1 = EntrySequence.of(Entries.of("17", 17));
 	private final EntrySequence<String, Integer> random2 = EntrySequence.of(Entries.of("17", 17), Entries.of("32",
 	                                                                                                         32));
-	private final EntrySequence<String, Integer> random3 = EntrySequence.of(Entries.of("2", 2), Entries.of("3", 3),
-	                                                                        Entries.of("4", 4));
+	private final EntrySequence<String, Integer> random3 = EntrySequence.of(Entries.of("4", 4), Entries.of("2", 2),
+	                                                                        Entries.of("3", 3));
 	private final EntrySequence<String, Integer> random9 = EntrySequence.of(Entries.of("67", 67), Entries.of("5", 5),
 	                                                                        Entries.of("43", 43), Entries.of("3", 3),
 	                                                                        Entries.of("5", 5), Entries.of("7", 7),
@@ -665,6 +666,62 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(_12345.batch(3),
 		                       contains(contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3)),
 		                                contains(Entries.of("4", 4), Entries.of("5", 5)))));
+	}
+
+	@SuppressWarnings("uncheckeed")
+	@Test
+	public void batchOnPredicate() {
+		Sequence<EntrySequence<String, Integer>> emptyPartitioned = empty.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<EntrySequence<String, Integer>> onePartitioned = _1.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(onePartitioned, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<EntrySequence<String, Integer>> twoPartitioned = _12.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(twoPartitioned, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> threePartitioned = _123.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(threePartitioned,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<EntrySequence<String, Integer>> threeRandomPartitioned = random3.batch(
+				(a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(threeRandomPartitioned,
+		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<EntrySequence<String, Integer>> nineRandomPartitioned = random9.batch(
+				(a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
+		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
+		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void batchOnQuaternaryPredicate() {
+		Sequence<EntrySequence<String, Integer>> emptyPartitioned = empty.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+
+		Sequence<EntrySequence<String, Integer>> onePartitioned = _1.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(onePartitioned, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<EntrySequence<String, Integer>> twoPartitioned = _12.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(twoPartitioned, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> threePartitioned = _123.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threePartitioned,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<EntrySequence<String, Integer>> threeRandomPartitioned = random3.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threeRandomPartitioned,
+		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
+
+		Sequence<EntrySequence<String, Integer>> nineRandomPartitioned = random9.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(nineRandomPartitioned,
+		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
+		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
+		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
 	}
 
 	@Test

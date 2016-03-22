@@ -16,8 +16,6 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.sequence.Sequence;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +26,7 @@ import java.util.function.BiPredicate;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningIterator<T> extends DelegatingReferenceIterator<T, Sequence<T>> {
+public abstract class PredicatePartitioningIterator<T, S> extends DelegatingReferenceIterator<T, S> {
 	private final BiPredicate<? super T, ? super T> predicate;
 	private T next;
 	private boolean hasNext;
@@ -48,7 +46,7 @@ public class PredicatePartitioningIterator<T> extends DelegatingReferenceIterato
 	}
 
 	@Override
-	public Sequence<T> next() {
+	public S next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
@@ -65,6 +63,8 @@ public class PredicatePartitioningIterator<T> extends DelegatingReferenceIterato
 				break;
 		} while (hasNext);
 
-		return Sequence.from(buffer);
+		return toSequence(buffer);
 	}
+
+	protected abstract S toSequence(List<T> list);
 }
