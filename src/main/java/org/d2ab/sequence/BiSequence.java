@@ -184,10 +184,13 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>> mapper) {
+		return flatten(Pair.asFunction(mapper));
+	}
+
+	default <LL, RR> BiSequence<LL, RR> flatten(
+			Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function) {
 		ChainingIterable<Pair<LL, RR>> result = new ChainingIterable<>();
-		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = Pair.asFunction(mapper);
-		Consumer<? super Iterable<Pair<LL, RR>>> append = result::append;
-		Sequence.from(this).map(function).forEach(append);
+		toSequence(function).forEach(result::append);
 		return result::iterator;
 	}
 
