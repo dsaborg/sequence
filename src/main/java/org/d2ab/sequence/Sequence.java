@@ -79,22 +79,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
-	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
-	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
-	 */
-	static <T> Sequence<T> from(Iterator<T> iterator) {
-		return () -> iterator;
-	}
-
-	/**
 	 * Create a {@code Sequence} from an {@link Iterable} of items.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
+	 * @see #from(Iterator)
 	 */
 	static <T> Sequence<T> from(Iterable<T> iterable) {
 		return iterable::iterator;
@@ -114,17 +103,15 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} from {@link Iterator}s of items supplied by the given {@link Supplier}. Every time the
-	 * {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of elements.
-	 * This is similar to creating a {@code Sequence} from an {@link Iterable}.
+	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
+	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
-	 * @see #from(Iterator)
 	 */
-	static <T> Sequence<T> from(Supplier<? extends Iterator<T>> iteratorSupplier) {
-		return iteratorSupplier::get;
+	static <T> Sequence<T> from(Iterator<T> iterator) {
+		return () -> iterator;
 	}
 
 	/**
@@ -132,7 +119,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException} when
 	 * the {@link Stream} is requested again.
 	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)

@@ -98,7 +98,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	@SuppressWarnings("unchecked")
-	static <T, U> BiSequence<T, U> ofPairs(Object... os) {
+	static <T, U, V> BiSequence<T, U> ofPairs(V... os) {
 		if (os.length % 2 != 0)
 			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
 
@@ -108,25 +108,54 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return from(pairs);
 	}
 
+	/**
+	 * Create a {@code BiSequence} from an {@link Iterable} of pairs.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable...)
+	 */
 	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>> iterable) {
 		return iterable::iterator;
 	}
 
+	/**
+	 * Create a concatenated {@code BiSequence} from several {@link Iterable}s of pairs which are concatenated together
+	 * to form the stream of pairs in the {@code BiSequence}.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 */
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> from(Iterable<? extends Pair<L, R>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);
 	}
 
+	/**
+	 * Create a {@code BiSequence} from an {@link Iterator} of pairs. Note that {@code BiSequence}s created from {@link
+	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code BiSequence} as empty.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 */
 	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
 		return () -> iterator;
 	}
 
+	/**
+	 * Create a {@code BiSequence} from a {@link Stream} of pairs. Note that {@code BiSequence}s created from
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will cause an
+	 * {@link IllegalStateException} when the {@link Stream} is requested again.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 * @see #from(Iterator)
+	 */
 	static <L, R> BiSequence<L, R> from(Stream<Pair<L, R>> stream) {
 		return stream::iterator;
-	}
-
-	static <L, R> BiSequence<L, R> from(Supplier<? extends Iterator<Pair<L, R>>> iteratorSupplier) {
-		return iteratorSupplier::get;
 	}
 
 	static <L, R> BiSequence<L, R> recurse(L leftSeed, R rightSeed,
@@ -194,11 +223,19 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return result::iterator;
 	}
 
+	/**
+	 * Flatten the left side of each pair in this sequence, applying multiples of left values returned by the given
+	 * mapper to the same right value of each pair.
+	 */
 	default <LL> BiSequence<LL, R> flattenLeft(
 			Function<? super Pair<L, R>, ? extends Iterable<LL>> mapper) {
 		return () -> new LeftFlatteningPairIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Flatten the right side of each pair in this sequence, applying multiples of right values returned by the given
+	 * mapper to the same left value of each pair.
+	 */
 	default <RR> BiSequence<L, RR> flattenRight(
 			Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper) {
 		return () -> new RightFlatteningPairIterator<>(iterator(), mapper);

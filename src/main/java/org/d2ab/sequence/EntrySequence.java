@@ -22,6 +22,7 @@ import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
 import org.d2ab.util.Entries;
+import org.d2ab.util.Pair;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -99,7 +100,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	@SuppressWarnings("unchecked")
-	static <K, V> EntrySequence<K, V> ofEntries(Object... os) {
+	static <K, V, T> EntrySequence<K, V> ofEntries(T... os) {
 		if (os.length % 2 != 0)
 			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
 
@@ -109,25 +110,55 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return from(entries);
 	}
 
+	/**
+	 * Create an {@code EntrySequence} from an {@link Iterable} of entries.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable...)
+	 */
+	static <K, V> EntrySequence<K, V> from(Iterable<Entry<K, V>> iterable) {
+		return iterable::iterator;
+	}
+
+	/**
+	 * Create a concatenated {@code EntrySequence} from several {@link Iterable}s of entries which are concatenated
+	 * together to form the stream of entries in the {@code EntrySequence}.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 */
 	@SafeVarargs
 	static <K, V> EntrySequence<K, V> from(Iterable<? extends Entry<K, V>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);
 	}
 
-	static <K, V> EntrySequence<K, V> from(Iterable<Entry<K, V>> iterable) {
-		return iterable::iterator;
-	}
-
+	/**
+	 * Create an {@code EntrySequence} from an {@link Iterator} of entries. Note that {@code EntrySequence}s created
+	 * from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
+	 * {@code EntrySequence} as empty.
+	 *
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #from(Iterable)
+	 */
 	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
 		return () -> iterator;
 	}
 
+	/**
+	 * Create an {@code EntrySequence} from a {@link Stream} of entries. Note that {@code EntrySequence}s created from
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will cause an
+	 * {@link IllegalStateException} when the {@link Stream} is requested again.
+	 *
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #from(Iterable)
+	 * @see #from(Iterator)
+	 */
 	static <K, V> EntrySequence<K, V> from(Stream<Entry<K, V>> stream) {
 		return stream::iterator;
-	}
-
-	static <K, V> EntrySequence<K, V> from(Supplier<? extends Iterator<Entry<K, V>>> iteratorSupplier) {
-		return iteratorSupplier::get;
 	}
 
 	static <K, V> EntrySequence<K, V> recurse(K keySeed, V valueSeed, BiFunction<K, V, ? extends Entry<K, V>> op) {
@@ -190,11 +221,19 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return result::iterator;
 	}
 
+	/**
+	 * Flatten the keys of each entry in this sequence, applying multiples of keys returned by the given
+	 * mapper to the same value of each entry.
+	 */
 	default <KK> EntrySequence<KK, V> flattenKeys(
 			Function<? super Entry<K, V>, ? extends Iterable<KK>> mapper) {
 		return () -> new KeyFlatteningEntryIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Flatten the values of each entry in this sequence, applying multiples of values returned by the given
+	 * mapper to the same key of each entry.
+	 */
 	default <VV> EntrySequence<K, VV> flattenValues(
 			Function<? super Entry<K, V>, ? extends Iterable<VV>> mapper) {
 		return () -> new ValueFlatteningEntryIterator<>(iterator(), mapper);
