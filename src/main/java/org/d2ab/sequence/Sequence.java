@@ -58,6 +58,27 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Create a {@code Sequence} with one item.
+	 *
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 */
+	static <T> Sequence<T> of(T item) {
+		return from(singleton(item));
+	}
+
+	/**
+	 * Create a {@code Sequence} with the given items.
+	 *
+	 * @see #of(Object)
+	 * @see #from(Iterable)
+	 */
+	@SafeVarargs
+	static <T> Sequence<T> of(T... items) {
+		return from(asList(items));
+	}
+
+	/**
 	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
 	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
 	 *
@@ -70,16 +91,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} with one item.
-	 *
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
-	 */
-	static <T> Sequence<T> of(T item) {
-		return from(singleton(item));
-	}
-
-	/**
 	 * Create a {@code Sequence} from an {@link Iterable} of items.
 	 *
 	 * @see #of(Object)
@@ -87,17 +98,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> from(Iterable<T> iterable) {
 		return iterable::iterator;
-	}
-
-	/**
-	 * Create a {@code Sequence} with the given items.
-	 *
-	 * @see #of(Object)
-	 * @see #from(Iterable)
-	 */
-	@SafeVarargs
-	static <T> Sequence<T> of(T... items) {
-		return from(asList(items));
 	}
 
 	/**

@@ -38,19 +38,66 @@ import static java.util.Collections.emptyIterator;
  */
 @FunctionalInterface
 public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
+	/**
+	 * Create an empty {@code EntrySequence} with no items.
+	 *
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #ofEntry(Object, Object)
+	 * @see #ofEntries(Object...)
+	 * @see #from(Iterable)
+	 */
+	static <K, V> EntrySequence<K, V> empty() {
+		return from(emptyIterator());
+	}
+
+	/**
+	 * Create an {@code EntrySequence} with one {@link Entry}.
+	 *
+	 * @see #of(Entry...)
+	 * @see #ofEntry(Object, Object)
+	 * @see #ofEntries(Object...)
+	 * @see #from(Iterable)
+	 */
 	static <K, V> EntrySequence<K, V> of(Entry<K, V> item) {
 		return from(Collections.singleton(item));
 	}
 
+	/**
+	 * Create an {@code EntrySequence} with the given {@link Entry} list.
+	 *
+	 * @see #of(Entry)
+	 * @see #ofEntry(Object, Object)
+	 * @see #ofEntries(Object...)
+	 * @see #from(Iterable)
+	 */
 	@SafeVarargs
 	static <K, V> EntrySequence<K, V> of(Entry<K, V>... items) {
 		return from(asList(items));
 	}
 
+	/**
+	 * Create an {@code EntrySequence} with one {@link Entry} of the given key and value.
+	 *
+	 * @see #ofEntries(Object...)
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #from(Iterable)
+	 */
 	static <K, V> EntrySequence<K, V> ofEntry(K left, V right) {
 		return of(Entries.of(left, right));
 	}
 
+	/**
+	 * Create an {@code EntrySequence} with an {@link Entry} list created from the given keys and values in sequence in
+	 * the input array.
+	 *
+	 * @throws IllegalArgumentException if the array of keys and values is not of even length.
+	 * @see #ofEntry(Object, Object)
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #from(Iterable)
+	 */
 	@SuppressWarnings("unchecked")
 	static <K, V> EntrySequence<K, V> ofEntries(Object... os) {
 		if (os.length % 2 != 0)
@@ -71,10 +118,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return iterable::iterator;
 	}
 
-	static <K, V> EntrySequence<K, V> empty() {
-		return from(emptyIterator());
-	}
-
 	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
 		return () -> iterator;
 	}
@@ -87,8 +130,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return iteratorSupplier::get;
 	}
 
-	static <K, V> EntrySequence<K, V> recurse(K keySeed, V valueSeed,
-	                                          BiFunction<K, V, ? extends Entry<K, V>> op) {
+	static <K, V> EntrySequence<K, V> recurse(K keySeed, V valueSeed, BiFunction<K, V, ? extends Entry<K, V>> op) {
 		return () -> new RecursiveIterator<>(Entries.of(keySeed, valueSeed), Entries.asUnaryOperator(op));
 	}
 
@@ -146,6 +188,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
 		toSequence(mapper).forEach(result::append);
 		return result::iterator;
+	}
+
+	default <KK> EntrySequence<KK, V> flattenKeys(
+			Function<? super Entry<K, V>, ? extends Iterable<KK>> mapper) {
+		return () -> new KeyFlatteningEntryIterator<>(iterator(), mapper);
+	}
+
+	default <VV> EntrySequence<K, VV> flattenValues(
+			Function<? super Entry<K, V>, ? extends Iterable<VV>> mapper) {
+		return () -> new ValueFlatteningEntryIterator<>(iterator(), mapper);
 	}
 
 	default EntrySequence<K, V> until(Entry<K, V> terminal) {
@@ -373,7 +425,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * the keys and values of the current and next items in the iteration, and if it returns true a partition is
 	 * created between the elements.
 	 */
-	default Sequence<EntrySequence<K, V>> batch(QuaternaryPredicate<? super K, ? super V, ? super K, ? super V> predicate) {
+	default Sequence<EntrySequence<K, V>> batch(
+			QuaternaryPredicate<? super K, ? super V, ? super K, ? super V> predicate) {
 		return batch((e1, e2) -> predicate.test(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue()));
 	}
 

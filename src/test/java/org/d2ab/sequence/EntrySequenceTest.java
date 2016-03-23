@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -980,5 +981,25 @@ public class EntrySequenceTest {
 		           contains(Entries.of("2", 2), Entries.of("9", 9), Entries.of("4", 4), Entries.of("6", 6),
 		                    Entries.of("8", 8), Entries.of("7", 7), Entries.of("5", 5), Entries.of("1", 1),
 		                    Entries.of("3", 3)));
+	}
+
+	@Test
+	public void flattenKeys() {
+		EntrySequence<String, Integer> flattened =
+				EntrySequence.<List<String>, Integer>ofEntries(asList("1", "2", "3"), 1, emptyList(), "4",
+				                                               asList("5", "6", "7"), 3).flattenKeys(Entry::getKey);
+		twice(() -> assertThat(flattened,
+		                       contains(Entries.of("1", 1), Entries.of("2", 1), Entries.of("3", 1), Entries.of("5", 3),
+		                                Entries.of("6", 3), Entries.of("7", 3))));
+	}
+
+	@Test
+	public void flattenValues() {
+		EntrySequence<String, Integer> flattened =
+				EntrySequence.<String, List<Integer>>ofEntries("1", asList(1, 2, 3), "2", emptyList(), "3",
+				                                               asList(2, 3, 4)).flattenValues(Entry::getValue);
+		twice(() -> assertThat(flattened,
+		                       contains(Entries.of("1", 1), Entries.of("1", 2), Entries.of("1", 3), Entries.of("3", 2),
+		                                Entries.of("3", 3), Entries.of("3", 4))));
 	}
 }

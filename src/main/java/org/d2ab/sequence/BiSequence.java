@@ -37,19 +37,66 @@ import static java.util.Collections.emptyIterator;
  */
 @FunctionalInterface
 public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
+	/**
+	 * Create an empty {@code BiSequence} with no items.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #ofPair(Object, Object)
+	 * @see #ofPairs(Object...)
+	 * @see #from(Iterable)
+	 */
+	static <L, R> BiSequence<L, R> empty() {
+		return from(emptyIterator());
+	}
+
+	/**
+	 * Create a {@code BiSequence} with one {@link Pair}.
+	 *
+	 * @see #of(Pair...)
+	 * @see #ofPair(Object, Object)
+	 * @see #ofPairs(Object...)
+	 * @see #from(Iterable)
+	 */
 	static <L, R> BiSequence<L, R> of(Pair<L, R> item) {
 		return from(Collections.singleton(item));
 	}
 
+	/**
+	 * Create a {@code BiSequence} with the given {@link Pair}s.
+	 *
+	 * @see #of(Pair)
+	 * @see #ofPair(Object, Object)
+	 * @see #ofPairs(Object...)
+	 * @see #from(Iterable)
+	 */
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> of(Pair<L, R>... items) {
 		return from(asList(items));
 	}
 
+	/**
+	 * Create a {@code BiSequence} with one {@link Pair} of the given left and right values.
+	 *
+	 * @see #ofPairs(Object...)
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 */
 	static <L, R> BiSequence<L, R> ofPair(L left, R right) {
 		return of(Pair.of(left, right));
 	}
 
+	/**
+	 * Create a {@code BiSequence} with {@link Pair}s of the given left and right values given in sequence in the input
+	 * array.
+	 *
+	 * @throws IllegalArgumentException if the array of left and right values is not of even length.
+	 * @see #ofPair(Object, Object)
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 */
 	@SuppressWarnings("unchecked")
 	static <T, U> BiSequence<T, U> ofPairs(Object... os) {
 		if (os.length % 2 != 0)
@@ -57,7 +104,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 		List<Pair<T, U>> pairs = new ArrayList<>();
 		for (int i = 0; i < os.length; i += 2)
-			pairs.add(Pair.of((T) os[i], (U) os[i+1]));
+			pairs.add(Pair.of((T) os[i], (U) os[i + 1]));
 		return from(pairs);
 	}
 
@@ -68,10 +115,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> from(Iterable<? extends Pair<L, R>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);
-	}
-
-	static <L, R> BiSequence<L, R> empty() {
-		return from(emptyIterator());
 	}
 
 	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
@@ -146,6 +189,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		Consumer<? super Iterable<Pair<LL, RR>>> append = result::append;
 		Sequence.from(this).map(function).forEach(append);
 		return result::iterator;
+	}
+
+	default <LL> BiSequence<LL, R> flattenLeft(
+			Function<? super Pair<L, R>, ? extends Iterable<LL>> mapper) {
+		return () -> new LeftFlatteningPairIterator<>(iterator(), mapper);
+	}
+
+	default <RR> BiSequence<L, RR> flattenRight(
+			Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper) {
+		return () -> new RightFlatteningPairIterator<>(iterator(), mapper);
 	}
 
 	default BiSequence<L, R> until(Pair<L, R> terminal) {
@@ -373,7 +426,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * the left and right values of the current and next items in the iteration, and if it returns true a partition is
 	 * created between the elements.
 	 */
-	default Sequence<BiSequence<L, R>> batch(QuaternaryPredicate<? super L, ? super R, ? super L, ? super R> predicate) {
+	default Sequence<BiSequence<L, R>> batch(
+			QuaternaryPredicate<? super L, ? super R, ? super L, ? super R> predicate) {
 		return batch((p1, p2) -> predicate.test(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight()));
 	}
 

@@ -52,8 +52,8 @@ public class Entries {
 		return new EntryImpl<>(key, value);
 	}
 
-	public static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> each) {
-		result.put(each.getKey(), each.getValue());
+	public static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> entry) {
+		result.put(entry.getKey(), entry.getValue());
 		return result;
 	}
 
