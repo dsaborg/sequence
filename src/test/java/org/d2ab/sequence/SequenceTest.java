@@ -712,17 +712,17 @@ public class SequenceTest {
 		twice(() -> assertThat(emptyEntries, is(emptyIterable())));
 
 		Sequence<Entry<Integer, Integer>> oneEntries = _1.entries();
-		twice(() -> assertThat(oneEntries, contains(Entries.of(1, null))));
+		twice(() -> assertThat(oneEntries, contains(Entries.one(1, null))));
 
 		Sequence<Entry<Integer, Integer>> twoEntries = _12.entries();
-		twice(() -> assertThat(twoEntries, contains(Entries.of(1, 2))));
+		twice(() -> assertThat(twoEntries, contains(Entries.one(1, 2))));
 
 		Sequence<Entry<Integer, Integer>> threeEntries = _123.entries();
-		twice(() -> assertThat(threeEntries, contains(Entries.of(1, 2), Entries.of(2, 3))));
+		twice(() -> assertThat(threeEntries, contains(Entries.one(1, 2), Entries.one(2, 3))));
 
 		Sequence<Entry<Integer, Integer>> fiveEntries = _12345.entries();
 		twice(() -> assertThat(fiveEntries,
-		                       contains(Entries.of(1, 2), Entries.of(2, 3), Entries.of(3, 4), Entries.of(4, 5))));
+		                       contains(Entries.one(1, 2), Entries.one(2, 3), Entries.one(3, 4), Entries.one(4, 5))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -811,17 +811,17 @@ public class SequenceTest {
 		EntrySequence<Integer, String> emptyEntrySequence = empty.toEntrySequence();
 		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
 
-		EntrySequence<Integer, String> oneEntrySequence = Sequence.of(Entries.of(1, "1")).toEntrySequence();
-		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
+		EntrySequence<Integer, String> oneEntrySequence = Sequence.of(Entries.one(1, "1")).toEntrySequence();
+		twice(() -> assertThat(oneEntrySequence, contains(Entries.one(1, "1"))));
 
-		EntrySequence<Integer, String> twoEntrySequence = Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"))
+		EntrySequence<Integer, String> twoEntrySequence = Sequence.of(Entries.one(1, "1"), Entries.one(2, "2"))
 		                                                          .toEntrySequence();
-		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
+		twice(() -> assertThat(twoEntrySequence, contains(Entries.one(1, "1"), Entries.one(2, "2"))));
 
-		EntrySequence<Integer, String> threeEntrySequence = Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"),
-		                                                                Entries.of(3, "3")).toEntrySequence();
+		EntrySequence<Integer, String> threeEntrySequence = Sequence.of(Entries.one(1, "1"), Entries.one(2, "2"),
+		                                                                Entries.one(3, "3")).toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
-		                       contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
+		                       contains(Entries.one(1, "1"), Entries.one(2, "2"), Entries.one(3, "3"))));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -50,6 +50,6 @@ public class KeyFlatteningEntryIterator<
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		return Entries.of(keyIterator.next(), entry.getValue());
+		return Entries.one(keyIterator.next(), entry.getValue());
 	}
 }

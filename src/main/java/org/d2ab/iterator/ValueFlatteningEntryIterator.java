@@ -50,6 +50,6 @@ public class ValueFlatteningEntryIterator<
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		return Entries.of(entry.getKey(), valueIterator.next());
+		return Entries.one(entry.getKey(), valueIterator.next());
 	}
 }

@@ -162,7 +162,7 @@ public class SequenceDocumentationTest {
 
 		EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
 		                                                           .filter((k, v) -> v % 2 != 0)
-		                                                           .map((k, v) -> Entries.of(v, k));
+		                                                           .map((k, v) -> Entries.one(v, k));
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}

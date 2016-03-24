@@ -71,10 +71,6 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
-	static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> predicate) {
-		return Entries.asPredicate(predicate).test(entry);
-	}
-
 	static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends Pair<K, V>>
 			                                                        op) {
 		return entry -> op.apply(entry.getLeft(), entry.getRight());

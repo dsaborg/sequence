@@ -48,7 +48,7 @@ public class Entries {
 	 * Creates a new {@link Entry} with the given key and value. Calling {@link Entry#setValue(Object)} on the
 	 * entry will result in an {@link UnsupportedOperationException} being thrown.
 	 */
-	public static <K, V> Entry<K, V> of(K key, V value) {
+	public static <K, V> Entry<K, V> one(K key, V value) {
 		return new EntryImpl<>(key, value);
 	}
 
@@ -79,7 +79,7 @@ public class Entries {
 
 	public static <K, V, KK, VV> Function<Entry<K, V>, Entry<KK, VV>> asFunction(
 			Function<? super K, ? extends KK> keyMapper, Function<? super V, ? extends VV> valueMapper) {
-		return entry -> of(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
+		return entry -> one(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
 	}
 
 	public static <K, V> Predicate<Entry<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
@@ -88,6 +88,10 @@ public class Entries {
 
 	public static <K, V> Consumer<Entry<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
 		return entry -> action.accept(entry.getKey(), entry.getValue());
+	}
+
+	public static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> predicate) {
+		return asPredicate(predicate).test(entry);
 	}
 
 	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>> {
