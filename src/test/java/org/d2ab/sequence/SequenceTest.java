@@ -156,15 +156,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() {
-		Supplier<Iterator<Integer>> iterators = () -> asList(1, 2, 3).iterator();
-
-		Sequence<Integer> sequenceFromIterators = Sequence.from(iterators);
-
-		twice(() -> assertThat(sequenceFromIterators, contains(1, 2, 3)));
-	}
-
-	@Test
 	public void fromIterables() {
 		Iterable<Integer> first = asList(1, 2, 3);
 		Iterable<Integer> second = asList(4, 5, 6);
@@ -563,21 +554,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void toMapWithWithMapper() {
-		Function<Integer, Entry<Integer, String>> mapper = i -> Entries.of(i, String.valueOf(i));
-
-		twice(() -> {
-			Map<Integer, String> map = _123.toMap(mapper);
-			assertThat(map, instanceOf(HashMap.class));
-			assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
-
-			Map<Integer, String> linkedMap = _123.toMap((Supplier<Map<Integer, String>>) LinkedHashMap::new, mapper);
-			assertThat(linkedMap, instanceOf(HashMap.class));
-			assertThat(linkedMap, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
-		});
-	}
-
-	@Test
 	public void toMapWithMappers() {
 		twice(() -> {
 			Map<String, Integer> map = _123.toMap(Object::toString, Function.identity());
@@ -607,16 +583,6 @@ public class SequenceTest {
 			Map<String, Integer> map = sequence.toSortedMap();
 			assertThat(map, instanceOf(TreeMap.class));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
-		});
-	}
-
-	@Test
-	public void toSortedMapWithMapper() {
-		twice(() -> {
-			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(x -> Entries.of(x.toString(), x));
-
-			assertThat(sortedMap, instanceOf(TreeMap.class));
-			assertThat(sortedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 

@@ -100,7 +100,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	@SuppressWarnings("unchecked")
-	static <K, V, T> EntrySequence<K, V> ofEntries(T... os) {
+	static <K, V> EntrySequence<K, V> ofEntries(Object... os) {
 		if (os.length % 2 != 0)
 			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
 
@@ -113,8 +113,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * Create an {@code EntrySequence} from an {@link Iterable} of entries.
 	 *
-	 * @see #of(Pair)
-	 * @see #of(Pair...)
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
 	 * @see #from(Iterable...)
 	 */
 	static <K, V> EntrySequence<K, V> from(Iterable<Entry<K, V>> iterable) {
@@ -125,8 +125,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * Create a concatenated {@code EntrySequence} from several {@link Iterable}s of entries which are concatenated
 	 * together to form the stream of entries in the {@code EntrySequence}.
 	 *
-	 * @see #of(Pair)
-	 * @see #of(Pair...)
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
 	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
@@ -281,32 +281,63 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return map(Entries.asFunction(keyMapper, valueMapper));
 	}
 
+	/**
+	 * Skip a set number of steps in this {@code EntrySequence}.
+	 */
 	default EntrySequence<K, V> skip(int skip) {
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
+	/**
+	 * Limit the maximum number of results returned by this {@code EntrySequence}.
+	 */
 	default EntrySequence<K, V> limit(int limit) {
 		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
-	@SuppressWarnings("unchecked")
-	default EntrySequence<K, V> then(EntrySequence<K, V> then) {
-		return () -> new ChainingIterator<>(this, then);
-	}
-
+	/**
+	 * Filter the elements in this {@code EntrySequence}, keeping only the elements that match the given
+	 * {@link BiPredicate}.
+	 */
 	default EntrySequence<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
 		return filter(Entries.asPredicate(predicate));
 	}
 
+	/**
+	 * Filter the elements in this {@code EntrySequence}, keeping only the entries that match the given
+	 * {@link Predicate}.
+	 */
 	default EntrySequence<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
+	/**
+	 * Flatten the elements in this {@code EntrySequence} according to the given mapper {@link BiFunction}. The
+	 * resulting {@code EntrySequence} contains the elements that is the result of applying the mapper
+	 * {@link BiFunction} to each element, appended together inline as a single {@code EntrySequence}.
+	 *
+	 * @see #flatten(Function)
+	 * @see #flattenKeys(Function)
+	 * @see #flattenValues(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function)
+	 */
 	default <KK, VV> EntrySequence<KK, VV> flatten(
 			BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>> mapper) {
 		return flatten(Entries.asFunction(mapper));
 	}
 
+	/**
+	 * Flatten the elements in this {@code EntrySequence} according to the given mapper {@link Function}. The
+	 * resulting {@code EntrySequence} contains the entries that is the result of applying the mapper
+	 * {@link Function} to each entry, appended together inline as a single {@code EntrySequence}.
+	 *
+	 * @see #flatten(BiFunction)
+	 * @see #flattenKeys(Function)
+	 * @see #flattenValues(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function)
+	 */
 	default <KK, VV> EntrySequence<KK, VV> flatten(
 			Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>> mapper) {
 		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
@@ -317,6 +348,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * Flatten the keys of each entry in this sequence, applying multiples of keys returned by the given
 	 * mapper to the same value of each entry.
+	 *
+	 * @see #flattenValues(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten(BiFunction)
 	 */
 	default <KK> EntrySequence<KK, V> flattenKeys(
 			Function<? super Entry<K, V>, ? extends Iterable<KK>> mapper) {
@@ -326,48 +361,149 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * Flatten the values of each entry in this sequence, applying multiples of values returned by the given
 	 * mapper to the same key of each entry.
+	 *
+	 * @see #flattenKeys(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten(BiFunction)
 	 */
 	default <VV> EntrySequence<K, VV> flattenValues(
 			Function<? super Entry<K, V>, ? extends Iterable<VV>> mapper) {
 		return () -> new ValueFlatteningEntryIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} just before the given element is encountered, not including the element in
+	 * the {@code EntrySequence}.
+	 *
+	 * @see #until(Predicate)
+	 * @see #endingAt(Entry)
+	 * @see #generate(Supplier)
+	 * @see #recurse
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> until(Entry<K, V> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} when the given element is encountered, including the element as the last
+	 * element in the {@code EntrySequence}.
+	 *
+	 * @see #endingAt(Predicate)
+	 * @see #until(Entry)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> endingAt(Entry<K, V> terminal) {
 		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} just before the entry with the given key and value is encountered,
+	 * not including the entry in the {@code EntrySequence}.
+	 *
+	 * @see #until(Entry)
+	 * @see #until(Predicate)
+	 * @see #until(BiPredicate)
+	 * @see #endingAt(Entry)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> until(K key, V value) {
 		return until(Entries.of(key, value));
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} when the entry the given key and value is encountered,
+	 * including the element as the last element in the {@code EntrySequence}.
+	 *
+	 * @see #endingAt(Entry)
+	 * @see #endingAt(Predicate)
+	 * @see #endingAt(BiPredicate)
+	 * @see #until(Entry)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> endingAt(K key, V value) {
 		return endingAt(Entries.of(key, value));
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} just before the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code EntrySequence}.
+	 *
+	 * @see #until(Predicate)
+	 * @see #until(Object, Object)
+	 * @see #until(Entry)
+	 * @see #endingAt(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> until(BiPredicate<? super K, ? super V> terminal) {
 		return until(Entries.asPredicate(terminal));
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the last element in the {@code EntrySequence}.
+	 *
+	 * @see #endingAt(Predicate)
+	 * @see #endingAt(Object, Object)
+	 * @see #endingAt(Entry)
+	 * @see #until(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> endingAt(BiPredicate<? super K, ? super V> terminal) {
 		return endingAt(Entries.asPredicate(terminal));
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} just before the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code EntrySequence}.
+	 *
+	 * @see #until(BiPredicate)
+	 * @see #until(Entry)
+	 * @see #endingAt(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> until(Predicate<? super Entry<K, V>> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Terminate this {@code EntrySequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the last element in the {@code EntrySequence}.
+	 *
+	 * @see #endingAt(BiPredicate)
+	 * @see #endingAt(Entry)
+	 * @see #until(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Entry, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default EntrySequence<K, V> endingAt(Predicate<? super Entry<K, V>> terminal) {
 		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into an array.
+	 */
 	default Entry<K, V>[] toArray() {
 		return toArray(Entry[]::new);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into an array of the type determined by the given array
+	 * constructor.
+	 */
 	default Entry<K, V>[] toArray(IntFunction<Entry<K, V>[]> constructor) {
 		List list = toList();
 		@SuppressWarnings("unchecked")
@@ -375,55 +511,100 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return array;
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link List}.
+	 */
 	default List<Entry<K, V>> toList() {
 		return toList(ArrayList::new);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link List} of the type determined by the given
+	 * constructor.
+	 */
 	default List<Entry<K, V>> toList(Supplier<List<Entry<K, V>>> constructor) {
 		return toCollection(constructor);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link Set}.
+	 */
 	default Set<Entry<K, V>> toSet() {
 		return toSet(HashSet::new);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link Set} of the type determined by the given
+	 * constructor.
+	 */
 	default <S extends Set<Entry<K, V>>> S toSet(Supplier<? extends S> constructor) {
 		return toCollection(constructor);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link SortedSet}.
+	 */
 	default SortedSet<Entry<K, V>> toSortedSet() {
 		return toSet(TreeSet::new);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link Map}.
+	 */
 	default Map<K, V> toMap() {
 		return toMap(HashMap::new);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link Map} of the type determined by the given
+	 * constructor.
+	 */
 	default <M extends Map<K, V>> M toMap(Supplier<? extends M> constructor) {
-		M result = constructor.get();
-		forEach(each -> Entries.put(result, each));
-		return result;
+		return collect(constructor, Entries::put);
 	}
 
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link SortedMap}.
+	 */
 	default SortedMap<K, V> toSortedMap() {
 		return toMap(TreeMap::new);
 	}
 
+	/**
+	 * Collect this {@code EntrySequence} into a {@link Collection} of the type determined by the given constructor.
+	 */
 	default <C extends Collection<Entry<K, V>>> C toCollection(Supplier<? extends C> constructor) {
 		return collect(constructor, Collection::add);
 	}
 
+	/**
+	 * Collect this {@code EntrySequence} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Entry<K, V>> adder) {
-		C result = constructor.get();
-		forEach(each -> adder.accept(result, each));
-		return result;
+		return collectInto(constructor.get(), adder);
 	}
 
+	/**
+	 * Collect this {@code EntrySequence} into an arbitrary container using the given {@link Collector}.
+	 */
 	default <S, R> S collect(Collector<Entry<K, V>, R, S> collector) {
-		R result = collector.supplier().get();
-		BiConsumer<R, Entry<K, V>> accumulator = collector.accumulator();
-		forEach(each -> accumulator.accept(result, each));
-		return collector.finisher().apply(result);
+		R intermediary = collect(collector.supplier(), collector.accumulator());
+		return collector.finisher().apply(intermediary);
+	}
+
+	/**
+	 * Collect this {@code EntrySequence} into the given {@link Collection}.
+	 */
+	default <U extends Collection<Entry<K, V>>> U collectInto(U collection) {
+		return collectInto(collection, Collection::add);
+	}
+
+	/**
+	 * Collect this {@code EntrySequence} into the given container, using the given adder.
+	 */
+	default <C> C collectInto(C result, BiConsumer<? super C, ? super Entry<K, V>> adder) {
+		forEach(entry -> adder.accept(result, entry));
+		return result;
 	}
 
 	default String join(String delimiter) {

@@ -98,7 +98,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	@SuppressWarnings("unchecked")
-	static <T, U, V> BiSequence<T, U> ofPairs(V... os) {
+	static <T, U> BiSequence<T, U> ofPairs(Object... os) {
 		if (os.length % 2 != 0)
 			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
 
@@ -276,32 +276,63 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return map(p -> p.map(leftMapper, rightMapper));
 	}
 
+	/**
+	 * Skip a set number of steps in this {@code BiSequence}.
+	 */
 	default BiSequence<L, R> skip(int skip) {
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
+	/**
+	 * Limit the maximum number of results returned by this {@code BiSequence}.
+	 */
 	default BiSequence<L, R> limit(int limit) {
 		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
-	@SuppressWarnings("unchecked")
-	default BiSequence<L, R> then(BiSequence<L, R> then) {
-		return () -> new ChainingIterator<>(this, then);
-	}
-
+	/**
+	 * Filter the elements in this {@code BiSequence}, keeping only the elements that match the given
+	 * {@link BiPredicate}.
+	 */
 	default BiSequence<L, R> filter(BiPredicate<? super L, ? super R> predicate) {
 		return filter(Pair.asPredicate(predicate));
 	}
 
+	/**
+	 * Filter the elements in this {@code BiSequence}, keeping only the pairs that match the given
+	 * {@link Predicate}.
+	 */
 	default BiSequence<L, R> filter(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
+	/**
+	 * Flatten the elements in this {@code BiSequence} according to the given mapper {@link BiFunction}. The resulting
+	 * {@code BiSequence} contains the elements that is the result of applying the mapper {@link BiFunction} to each
+	 * element, appended together inline as a single {@code BiSequence}.
+	 *
+	 * @see #flatten(Function)
+	 * @see #flattenLeft(Function)
+	 * @see #flattenRight(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function)
+	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>> mapper) {
 		return flatten(Pair.asFunction(mapper));
 	}
 
+	/**
+	 * Flatten the elements in this {@code BiSequence} according to the given mapper {@link Function}. The resulting
+	 * {@code BiSequence} contains the pairs that is the result of applying the mapper {@link Function} to each
+	 * pair, appended together inline as a single {@code BiSequence}.
+	 *
+	 * @see #flatten(BiFunction)
+	 * @see #flattenLeft(Function)
+	 * @see #flattenRight(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function)
+	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function) {
 		ChainingIterable<Pair<LL, RR>> result = new ChainingIterable<>();
@@ -312,6 +343,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * Flatten the left side of each pair in this sequence, applying multiples of left values returned by the given
 	 * mapper to the same right value of each pair.
+	 *
+	 * @see #flattenRight(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten(BiFunction)
 	 */
 	default <LL> BiSequence<LL, R> flattenLeft(
 			Function<? super Pair<L, R>, ? extends Iterable<LL>> mapper) {
@@ -321,48 +356,149 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * Flatten the right side of each pair in this sequence, applying multiples of right values returned by the given
 	 * mapper to the same left value of each pair.
+	 *
+	 * @see #flattenLeft(Function)
+	 * @see #flatten(Function)
+	 * @see #flatten(BiFunction)
 	 */
 	default <RR> BiSequence<L, RR> flattenRight(
 			Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper) {
 		return () -> new RightFlatteningPairIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} just before the given element is encountered, not including the element in the
+	 * {@code BiSequence}.
+	 *
+	 * @see #until(Predicate)
+	 * @see #endingAt(Pair)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> until(Pair<L, R> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} when the given element is encountered, including the element as the last
+	 * element in the {@code BiSequence}.
+	 *
+	 * @see #endingAt(Predicate)
+	 * @see #until(Pair)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> endingAt(Pair<L, R> terminal) {
 		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} just before the pair with the given left and right components is encountered,
+	 * not including the pair in the {@code BiSequence}.
+	 *
+	 * @see #until(Pair)
+	 * @see #until(Predicate)
+	 * @see #until(BiPredicate)
+	 * @see #endingAt(Pair)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> until(L left, R right) {
 		return until(Pair.of(left, right));
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} when the pair with the given left and right components is encountered,
+	 * including the element as the last element in the {@code BiSequence}.
+	 *
+	 * @see #endingAt(Pair)
+	 * @see #endingAt(Predicate)
+	 * @see #endingAt(BiPredicate)
+	 * @see #until(Pair)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> endingAt(L left, R right) {
 		return endingAt(Pair.of(left, right));
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} just before the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code BiSequence}.
+	 *
+	 * @see #until(Predicate)
+	 * @see #until(Object, Object)
+	 * @see #until(Pair)
+	 * @see #endingAt(BiPredicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> until(BiPredicate<? super L, ? super R> terminal) {
 		return until(Pair.asPredicate(terminal));
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the last element in the {@code BiSequence}.
+	 *
+	 * @see #endingAt(Predicate)
+	 * @see #endingAt(Object, Object)
+	 * @see #endingAt(Pair)
+	 * @see #until(BiPredicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> endingAt(BiPredicate<? super L, ? super R> terminal) {
 		return endingAt(Pair.asPredicate(terminal));
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} just before the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code BiSequence}.
+	 *
+	 * @see #until(BiPredicate)
+	 * @see #until(Pair)
+	 * @see #endingAt(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> until(Predicate<? super Pair<L, R>> terminal) {
 		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Terminate this {@code BiSequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the last element in the {@code BiSequence}.
+	 *
+	 * @see #endingAt(BiPredicate)
+	 * @see #endingAt(Pair)
+	 * @see #until(Predicate)
+	 * @see #generate(Supplier)
+	 * @see #recurse(Pair, UnaryOperator)
+	 * @see #repeat()
+	 */
 	default BiSequence<L, R> endingAt(Predicate<? super Pair<L, R>> terminal) {
 		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into an array.
+	 */
 	default Pair<L, R>[] toArray() {
 		return toArray(Pair[]::new);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into an array of the type determined by the given array
+	 * constructor.
+	 */
 	default Pair<L, R>[] toArray(IntFunction<Pair<L, R>[]> constructor) {
 		List list = toList();
 		@SuppressWarnings("unchecked")
@@ -370,55 +506,100 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return array;
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link List}.
+	 */
 	default List<Pair<L, R>> toList() {
 		return toList(ArrayList::new);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link List} of the type determined by the given
+	 * constructor.
+	 */
 	default List<Pair<L, R>> toList(Supplier<List<Pair<L, R>>> constructor) {
 		return toCollection(constructor);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link Set}.
+	 */
 	default Set<Pair<L, R>> toSet() {
 		return toSet(HashSet::new);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link Set} of the type determined by the given
+	 * constructor.
+	 */
 	default <S extends Set<Pair<L, R>>> S toSet(Supplier<? extends S> constructor) {
 		return toCollection(constructor);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link SortedSet}.
+	 */
 	default SortedSet<Pair<L, R>> toSortedSet() {
 		return toSet(TreeSet::new);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link Map}.
+	 */
 	default Map<L, R> toMap() {
 		return toMap(HashMap::new);
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link Map} of the type determined by the given
+	 * constructor.
+	 */
 	default <M extends Map<L, R>> M toMap(Supplier<? extends M> constructor) {
-		M result = constructor.get();
-		forEach(each -> each.put(result));
-		return result;
+		return collect(constructor, (result, pair) -> pair.put(result));
 	}
 
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link SortedMap}.
+	 */
 	default SortedMap<L, R> toSortedMap() {
 		return toMap(TreeMap::new);
 	}
 
+	/**
+	 * Collect this {@code BiSequence} into a {@link Collection} of the type determined by the given constructor.
+	 */
 	default <C extends Collection<Pair<L, R>>> C toCollection(Supplier<? extends C> constructor) {
 		return collect(constructor, Collection::add);
 	}
 
+	/**
+	 * Collect this {@code BiSequence} into an arbitrary container using the given constructor and adder.
+	 */
 	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Pair<L, R>> adder) {
-		C result = constructor.get();
-		forEach(each -> adder.accept(result, each));
-		return result;
+		return collectInto(constructor.get(), adder);
 	}
 
+	/**
+	 * Collect this {@code BiSequence} into an arbitrary container using the given {@link Collector}.
+	 */
 	default <S, C> S collect(Collector<Pair<L, R>, C, S> collector) {
-		C result = collector.supplier().get();
-		BiConsumer<C, Pair<L, R>> accumulator = collector.accumulator();
-		forEach(each -> accumulator.accept(result, each));
-		return collector.finisher().apply(result);
+		C intermediary = collect(collector.supplier(), collector.accumulator());
+		return collector.finisher().apply(intermediary);
+	}
+
+	/**
+	 * Collect this {@code BiSequence} into the given {@link Collection}.
+	 */
+	default <U extends Collection<Pair<L, R>>> U collectInto(U collection) {
+		return collectInto(collection, Collection::add);
+	}
+
+	/**
+	 * Collect this {@code Sequence} into the given container, using the given adder.
+	 */
+	default <C> C collectInto(C result, BiConsumer<? super C, ? super Pair<L, R>> adder) {
+		forEach(pair -> adder.accept(result, pair));
+		return result;
 	}
 
 	default String join(String delimiter) {

@@ -537,7 +537,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Flatten the elements in this {@code Sequence} according to the given mapper {@link Function}. The resulting
 	 * {@code Sequence} contains the elements that is the result of applying the mapper {@link Function} to each
-	 * element, appended together inline as a {@code Sequence}.
+	 * element, appended together inline as a single {@code Sequence}.
 	 *
 	 * @see #flatten()
 	 * @see #map(Function)
@@ -629,30 +629,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
 	default <K, V> Map<K, V> toMap() {
-		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
-				.<Entry<K, V>>identity();
-		return toMap(mapper);
-	}
-
-	/**
-	 * Convert this {@code Sequence} of into a {@link Map}, using the given mapper {@link Function} to convert each
-	 * element into a {@link Map.Entry}.
-	 */
-	default <K, V> Map<K, V> toMap(Function<? super T, ? extends Entry<K, V>> mapper) {
-		Supplier<Map<K, V>> supplier = HashMap::new;
-		return toMap(supplier, mapper);
-	}
-
-	/**
-	 * Convert this {@code Sequence} of into a {@link Map} of the type determined by the given constructor, using the
-	 * given mapper {@link Function} to convert each element into a {@link Map.Entry}.
-	 */
-	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
-	                                            Function<? super T, ? extends Entry<K, V>> mapper) {
-		M result = constructor.get();
-		forEach(each -> Entries.put(result, mapper.apply(each)));
-		return result;
+		return toMap(HashMap::new);
 	}
 
 	/**
@@ -661,10 +638,10 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
-	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier) {
+	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
 		@SuppressWarnings("unchecked")
-		Function<T, Entry<K, V>> mapper = e -> (Entry<K, V>) e;
-		return toMap(supplier, mapper);
+		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
+		return entrySequence.collect(constructor, Entries::put);
 	}
 
 	/**
@@ -685,9 +662,8 @@ public interface Sequence<T> extends Iterable<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
 	                                            Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
-		M result = constructor.get();
-		forEach(each -> result.put(keyMapper.apply(each), valueMapper.apply(each)));
-		return result;
+		return collect(constructor, (result, element) -> result.put(keyMapper.apply(element),
+		                                                            valueMapper.apply(element)));
 	}
 
 	/**
@@ -696,21 +672,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
 	default <K, V> SortedMap<K, V> toSortedMap() {
-		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;
-		@SuppressWarnings("unchecked")
-		Function<? super T, ? extends Entry<K, V>> mapper = (Function<? super T, ? extends Entry<K, V>>) Function
-				.<Entry<K, V>>identity();
-		return toMap(supplier, mapper);
-	}
-
-	/**
-	 * Convert this {@code Sequence} of into a {@link SortedMap}, using the given mapper {@link Function} to convert
-	 * each
-	 * element into a {@link Map.Entry}.
-	 */
-	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Entry<K, V>> mapper) {
-		Supplier<? extends SortedMap<K, V>> supplier = TreeMap::new;
-		return toMap(supplier, mapper);
+		return toMap(TreeMap::new);
 	}
 
 	/**

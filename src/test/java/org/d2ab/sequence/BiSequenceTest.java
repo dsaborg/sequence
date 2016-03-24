@@ -168,15 +168,6 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void fromIteratorSupplier() {
-		Supplier<Iterator<Pair<String, Integer>>> iterators = () -> Arrayz.iterator(entries123);
-
-		BiSequence<String, Integer> sequenceFromIterators = BiSequence.from(iterators);
-
-		twice(() -> assertThat(sequenceFromIterators, contains(entries123)));
-	}
-
-	@Test
 	public void fromIterables() {
 		Iterable<Pair<String, Integer>> first = asList(entries123);
 		Iterable<Pair<String, Integer>> second = asList(entries456);
@@ -248,20 +239,20 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void then() {
-		BiSequence<String, Integer> then = _123.then(BiSequence.of(entries456)).then(BiSequence.of(entries789));
+	public void append() {
+		BiSequence<String, Integer> appended = _123.append(BiSequence.of(entries456)).append(BiSequence.of(entries789));
 
-		twice(() -> assertThat(then, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		twice(() -> assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
 		                                      Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                      Pair.of("9", 9))));
 	}
 
 	@Test
-	public void thenIsLazy() {
+	public void appendIsLazy() {
 		Iterator<Pair<String, Integer>> first = Arrayz.iterator(entries123);
 		Iterator<Pair<String, Integer>> second = Arrayz.iterator(entries456);
 
-		BiSequence<String, Integer> then = BiSequence.from(first).then(() -> second);
+		BiSequence<String, Integer> then = BiSequence.from(first).append(() -> second);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -273,11 +264,11 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
+	public void appendIsLazyWhenSkippingHasNext() {
 		Iterator<Pair<String, Integer>> first = Arrayz.iterator(Pair.of("1", 1));
 		Iterator<Pair<String, Integer>> second = Arrayz.iterator(Pair.of("2", 2));
 
-		BiSequence<String, Integer> sequence = BiSequence.from(first).then(BiSequence.from(second));
+		BiSequence<String, Integer> sequence = BiSequence.from(first).append(BiSequence.from(second));
 
 		// check delayed iteration
 		Iterator<Pair<String, Integer>> iterator = sequence.iterator();

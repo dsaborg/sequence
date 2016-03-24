@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
 
 @SuppressWarnings("unchecked")
 public class EntrySequenceTest {
-	private final EntrySequence<String, Integer> empty = EntrySequence.<String, Integer>empty();
+	private final EntrySequence<String, Integer> empty = EntrySequence.empty();
 	private final EntrySequence<String, Integer> _1 = EntrySequence.of(Entries.of("1", 1));
 	private final EntrySequence<String, Integer> _12 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2));
 	private final EntrySequence<String, Integer> _123 = EntrySequence.of(Entries.of("1", 1), Entries.of("2", 2),
@@ -140,7 +140,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void ofNone() {
-		EntrySequence<String, Integer> sequence = EntrySequence.<String, Integer>of();
+		EntrySequence<String, Integer> sequence = EntrySequence.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -174,15 +174,6 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> sequenceFromIterable = EntrySequence.from(iterable);
 
 		twice(() -> assertThat(sequenceFromIterable, contains(entries123)));
-	}
-
-	@Test
-	public void fromIteratorSupplier() {
-		Supplier<Iterator<Entry<String, Integer>>> iterators = () -> Arrayz.iterator(entries123);
-
-		EntrySequence<String, Integer> sequenceFromIterators = EntrySequence.from(iterators);
-
-		twice(() -> assertThat(sequenceFromIterators, contains(entries123)));
 	}
 
 	@Test
@@ -257,38 +248,38 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void then() {
-		EntrySequence<String, Integer> then = _123.then(EntrySequence.of(entries456))
-		                                          .then(EntrySequence.of(entries789));
+	public void append() {
+		EntrySequence<String, Integer> appended = _123.append(EntrySequence.of(entries456))
+		                                              .append(EntrySequence.of(entries789));
 
-		twice(() -> assertThat(then,
+		twice(() -> assertThat(appended,
 		                       contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
 		                                Entries.of("5", 5), Entries.of("6", 6), Entries.of("7", 7), Entries.of("8", 8),
 		                                Entries.of("9", 9))));
 	}
 
 	@Test
-	public void thenIsLazy() {
+	public void appendIsLazy() {
 		Iterator<Entry<String, Integer>> first = Arrayz.iterator(entries123);
 		Iterator<Entry<String, Integer>> second = Arrayz.iterator(entries456);
 
-		EntrySequence<String, Integer> then = EntrySequence.from(first).then(() -> second);
+		EntrySequence<String, Integer> appended = EntrySequence.from(first).append(() -> second);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
 
-		assertThat(then, contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
+		assertThat(appended, contains(Entries.of("1", 1), Entries.of("2", 2), Entries.of("3", 3), Entries.of("4", 4),
 		                          Entries.of("5", 5), Entries.of("6", 6)));
-		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
+		assertThat(appended, is(emptyIterable())); // iterators exhausted on second run
 	}
 
 	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
+	public void appendIsLazyWhenSkippingHasNext() {
 		Iterator<Entry<String, Integer>> first = Arrayz.iterator(Entries.of("1", 1));
 		Iterator<Entry<String, Integer>> second = Arrayz.iterator(Entries.of("2", 2));
 
-		EntrySequence<String, Integer> sequence = EntrySequence.from(first).then(EntrySequence.from(second));
+		EntrySequence<String, Integer> sequence = EntrySequence.from(first).append(EntrySequence.from(second));
 
 		// check delayed iteration
 		Iterator<Entry<String, Integer>> iterator = sequence.iterator();
