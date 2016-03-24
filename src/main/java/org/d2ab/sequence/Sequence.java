@@ -294,8 +294,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Returns a {@code Sequence} produced by recursively applying the given operation to the given seed, which forms
-	 * the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned
-	 * {@code Sequence} never terminates naturally.
+	 * the first element of the sequence, the second being {@code f(seed)}, the third [@code f(f(seed))} and so on.
+	 * The returned {@code Sequence} never terminates naturally.
 	 *
 	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
 	 *
