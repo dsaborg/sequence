@@ -90,8 +90,8 @@ public class Entries {
 		return entry -> action.accept(entry.getKey(), entry.getValue());
 	}
 
-	public static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> predicate) {
-		return asPredicate(predicate).test(entry);
+	public static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> biPredicate) {
+		return asPredicate(biPredicate).test(entry);
 	}
 
 	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>> {
