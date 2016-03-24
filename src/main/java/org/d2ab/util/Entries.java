@@ -38,8 +38,8 @@ public class Entries {
 	private static final Function<Entry, Object> GET_VALUE = (Function<Entry, Object>) Entry::getValue;
 
 	@SuppressWarnings("unchecked")
-	private static final Comparator<Entry> COMPARATOR = comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE,
-	                                                                                                  NULLS_FIRST);
+	private static final Comparator<Entry> COMPARATOR =
+			comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE, NULLS_FIRST);
 
 	private Entries() {
 	}
@@ -95,8 +95,8 @@ public class Entries {
 	}
 
 	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>> {
-			private final K key;
-			private final V value;
+		private final K key;
+		private final V value;
 
 		private EntryImpl(K key, V value) {
 			this.key = key;

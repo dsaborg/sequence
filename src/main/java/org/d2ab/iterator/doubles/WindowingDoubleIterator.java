@@ -42,8 +42,7 @@ public class WindowingDoubleIterator extends DelegatingIterator<Double, DoubleIt
 		while (size < window && iterator.hasNext())
 			partition[size++] = iterator.nextDouble();
 
-		return size == window ||
-		       size > 0 && (!started || size > window - step && !iterator.hasNext());
+		return size == window || size > 0 && (!started || size > window - step && !iterator.hasNext());
 	}
 
 	@Override

@@ -33,12 +33,11 @@ public class ChainingIterableTest {
 	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc = new ChainingIterable<>(asList("a", "b", "c"));
 	@SuppressWarnings("unchecked")
-	private final ChainingIterable<String> abc_def = new ChainingIterable<>(asList("a", "b", "c"),
-	                                                                        asList("d", "e", "f"));
+	private final ChainingIterable<String> abc_def =
+			new ChainingIterable<>(asList("a", "b", "c"), asList("d", "e", "f"));
 	@SuppressWarnings("unchecked")
-	private final ChainingIterable<String> abc_def_ghi = new ChainingIterable<>(asList("a", "b", "c"),
-	                                                                            asList("d", "e", "f"),
-	                                                                            asList("g", "h", "i"));
+	private final ChainingIterable<String> abc_def_ghi =
+			new ChainingIterable<>(asList("a", "b", "c"), asList("d", "e", "f"), asList("g", "h", "i"));
 
 	@Test
 	public void empty() {

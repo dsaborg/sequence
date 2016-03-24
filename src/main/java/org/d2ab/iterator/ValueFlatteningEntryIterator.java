@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-public class ValueFlatteningEntryIterator<
-		K, V, VV> extends DelegatingReferenceIterator<Map.Entry<K, V>, Map.Entry<K, VV>> {
+public class ValueFlatteningEntryIterator<K, V, VV>
+		extends DelegatingReferenceIterator<Map.Entry<K, V>, Map.Entry<K, VV>> {
 	private final Function<? super Map.Entry<K, V>, ? extends Iterable<VV>> mapper;
 
 	private Iterator<VV> valueIterator = Iterators.empty();

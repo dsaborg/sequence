@@ -54,7 +54,6 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		return nextChar();
 	}
 
-
 	/**
 	 * Perform the given action once for each remaining {@code char} in this iterator.
 	 */

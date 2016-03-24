@@ -17,14 +17,11 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
-import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
 import org.d2ab.iterator.doubles.*;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.iterator.longs.PredicatePartitioningLongIterator;
-import org.d2ab.iterator.longs.WindowingLongIterator;
 import org.d2ab.util.Arrayz;
 
 import java.util.Arrays;
@@ -738,7 +735,8 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Window the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of elements, each with
+	 * Window the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of elements, each
+	 * with
 	 * the size of the given window. The first item in each list is the second item in the previous list. The final
 	 * {@code DoubleSequence} may be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
@@ -747,7 +745,8 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Window the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of elements, each with
+	 * Window the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of elements, each
+	 * with
 	 * the size of the given window, stepping {@code step} elements between each window. If the given step is less than
 	 * the window size, the windows will overlap each other.
 	 */
@@ -756,7 +755,8 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Batch the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct elements,
+	 * Batch the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
+	 * elements,
 	 * each with the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<DoubleSequence> batch(int size) {
@@ -764,7 +764,8 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Batch the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct elements,
+	 * Batch the elements of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
+	 * elements,
 	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */

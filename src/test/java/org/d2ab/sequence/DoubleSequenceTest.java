@@ -819,7 +819,8 @@ public class DoubleSequenceTest {
 
 		Sequence<DoubleSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5.0),
+		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5
+		.0),
 		                                contains(4.0))));
 	}
 }

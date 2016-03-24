@@ -43,37 +43,35 @@ public class EntrySequenceTest {
 	private final EntrySequence<String, Integer> empty = EntrySequence.empty();
 	private final EntrySequence<String, Integer> _1 = EntrySequence.of(Entries.one("1", 1));
 	private final EntrySequence<String, Integer> _12 = EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2));
-	private final EntrySequence<String, Integer> _123 = EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2),
-	                                                                     Entries.one("3", 3));
-	private final EntrySequence<String, Integer> _1234 = EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2),
-	                                                                      Entries.one("3", 3), Entries.one("4", 4));
-	private final EntrySequence<String, Integer> _12345 = EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2),
-	                                                                       Entries.one("3", 3), Entries.one("4", 4),
-	                                                                       Entries.one("5", 5));
-	private final EntrySequence<String, Integer> _123456789 = EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2),
-	                                                                           Entries.one("3", 3), Entries.one("4", 4),
-	                                                                           Entries.one("5", 5), Entries.one("6", 6),
-	                                                                           Entries.one("7", 7), Entries.one("8", 8),
-	                                                                           Entries.one("9", 9));
+	private final EntrySequence<String, Integer> _123 =
+			EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3));
+	private final EntrySequence<String, Integer> _1234 =
+			EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4));
+	private final EntrySequence<String, Integer> _12345 =
+			EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
+			                 Entries.one("5", 5));
+	private final EntrySequence<String, Integer> _123456789 =
+			EntrySequence.of(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
+			                 Entries.one("5", 5), Entries.one("6", 6), Entries.one("7", 7), Entries.one("8", 8),
+			                 Entries.one("9", 9));
 	private final EntrySequence<String, Integer> random1 = EntrySequence.of(Entries.one("17", 17));
-	private final EntrySequence<String, Integer> random2 = EntrySequence.of(Entries.one("17", 17), Entries.one("32",
-	                                                                                                           32));
-	private final EntrySequence<String, Integer> random3 = EntrySequence.of(Entries.one("4", 4), Entries.one("2", 2),
-	                                                                        Entries.one("3", 3));
-	private final EntrySequence<String, Integer> random9 = EntrySequence.of(Entries.one("67", 67), Entries.one("5", 5),
-	                                                                        Entries.one("43", 43), Entries.one("3", 3),
-	                                                                        Entries.one("5", 5), Entries.one("7", 7),
-	                                                                        Entries.one("24", 24), Entries.one("5", 5),
-	                                                                        Entries.one("67", 67));
-	private final Entry<String, Integer>[] entries123 = new Entry[]{Entries.one("1", 1), Entries.one("2", 2),
-	                                                                Entries.one("3", 3)};
-	private final Entry<String, Integer>[] entries12345 = new Entry[]{Entries.one("1", 1), Entries.one("2", 2),
-	                                                                  Entries.one("3", 3), Entries.one("4", 4),
-	                                                                  Entries.one("5", 5)};
-	private final Entry<String, Integer>[] entries456 = new Entry[]{Entries.one("4", 4), Entries.one("5", 5),
-	                                                                Entries.one("6", 6)};
-	private final Entry<String, Integer>[] entries789 = new Entry[]{Entries.one("7", 7), Entries.one("8", 8),
-	                                                                Entries.one("9", 9)};
+	private final EntrySequence<String, Integer> random2 =
+			EntrySequence.of(Entries.one("17", 17), Entries.one("32", 32));
+	private final EntrySequence<String, Integer> random3 =
+			EntrySequence.of(Entries.one("4", 4), Entries.one("2", 2), Entries.one("3", 3));
+	private final EntrySequence<String, Integer> random9 =
+			EntrySequence.of(Entries.one("67", 67), Entries.one("5", 5), Entries.one("43", 43), Entries.one("3", 3),
+			                 Entries.one("5", 5), Entries.one("7", 7), Entries.one("24", 24), Entries.one("5", 5),
+			                 Entries.one("67", 67));
+	private final Entry<String, Integer>[] entries123 =
+			new Entry[]{Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3)};
+	private final Entry<String, Integer>[] entries12345 =
+			new Entry[]{Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
+			            Entries.one("5", 5)};
+	private final Entry<String, Integer>[] entries456 =
+			new Entry[]{Entries.one("4", 4), Entries.one("5", 5), Entries.one("6", 6)};
+	private final Entry<String, Integer>[] entries789 =
+			new Entry[]{Entries.one("7", 7), Entries.one("8", 8), Entries.one("9", 9)};
 
 	@Test
 	public void ofOne() {
@@ -152,9 +150,10 @@ public class EntrySequenceTest {
 
 	@Test
 	public void ofWithNulls() {
-		EntrySequence<String, Integer> sequence = EntrySequence.of(Entries.one("1", 1), Entries.one(null, 2),
-		                                                           Entries.one("3", 3), Entries.one("4", null),
-		                                                           Entries.one(null, null));
+		EntrySequence<String, Integer> sequence =
+				EntrySequence.of(Entries.one("1", 1), Entries.one(null, 2), Entries.one("3", 3), Entries.one("4",
+				                                                                                             null),
+				                 Entries.one(null, null));
 
 		twice(() -> assertThat(sequence, contains(Entries.one("1", 1), Entries.one(null, 2), Entries.one("3", 3),
 		                                          Entries.one("4", null), Entries.one(null, null))));
@@ -185,9 +184,9 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 
 		twice(() -> assertThat(sequenceFromIterables,
-		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
-		                                Entries.one("5", 5), Entries.one("6", 6), Entries.one("7", 7), Entries.one("8", 8),
-		                                Entries.one("9", 9))));
+		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                                Entries.one("4", 4), Entries.one("5", 5), Entries.one("6", 6),
+		                                Entries.one("7", 7), Entries.one("8", 8), Entries.one("9", 9))));
 	}
 
 	@Test
@@ -199,9 +198,9 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 
 		twice(() -> assertThat(sequenceFromIterables,
-		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
-		                                Entries.one("5", 5), Entries.one("6", 6), Entries.one("7", 7), Entries.one("8", 8),
-		                                Entries.one("9", 9))));
+		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                                Entries.one("4", 4), Entries.one("5", 5), Entries.one("6", 6),
+		                                Entries.one("7", 7), Entries.one("8", 8), Entries.one("9", 9))));
 	}
 
 	@Test
@@ -249,13 +248,12 @@ public class EntrySequenceTest {
 
 	@Test
 	public void append() {
-		EntrySequence<String, Integer> appended = _123.append(EntrySequence.of(entries456))
-		                                              .append(EntrySequence.of(entries789));
+		EntrySequence<String, Integer> appended =
+				_123.append(EntrySequence.of(entries456)).append(EntrySequence.of(entries789));
 
-		twice(() -> assertThat(appended,
-		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
-		                                Entries.one("5", 5), Entries.one("6", 6), Entries.one("7", 7), Entries.one("8", 8),
-		                                Entries.one("9", 9))));
+		twice(() -> assertThat(appended, contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                                          Entries.one("4", 4), Entries.one("5", 5), Entries.one("6", 6),
+		                                          Entries.one("7", 7), Entries.one("8", 8), Entries.one("9", 9))));
 	}
 
 	@Test
@@ -269,8 +267,9 @@ public class EntrySequenceTest {
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
 
-		assertThat(appended, contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
-		                              Entries.one("5", 5), Entries.one("6", 6)));
+		assertThat(appended,
+		           contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
+		                    Entries.one("5", 5), Entries.one("6", 6)));
 		assertThat(appended, is(emptyIterable())); // iterators exhausted on second run
 	}
 
@@ -300,8 +299,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void filterAndMap() {
-		EntrySequence<Integer, String> evens = _123456789.filter((s, x) -> x % 2 == 0)
-		                                                 .map(Integer::parseInt, Object::toString);
+		EntrySequence<Integer, String> evens =
+				_123456789.filter((s, x) -> x % 2 == 0).map(Integer::parseInt, Object::toString);
 
 		twice(() -> assertThat(evens, contains(Entries.one(2, "2"), Entries.one(4, "4"), Entries.one(6, "6"),
 		                                       Entries.one(8, "8"))));
@@ -321,8 +320,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void mapEntryFunction() {
-		EntrySequence<Integer, String> mapped = _123.map(
-				p -> Entries.one(parseInt(p.getKey()), p.getValue().toString()));
+		EntrySequence<Integer, String> mapped =
+				_123.map(p -> Entries.one(parseInt(p.getKey()), p.getValue().toString()));
 		twice(() -> assertThat(mapped, contains(Entries.one(1, "1"), Entries.one(2, "2"), Entries.one(3, "3"))));
 	}
 
@@ -348,9 +347,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void recurse() {
-		EntrySequence<String, Integer> sequence = EntrySequence.recurse("1", 1,
-		                                                                (k, v) -> Entries.one(String.valueOf(v + 1),
-		                                                                                     v + 1));
+		EntrySequence<String, Integer> sequence =
+				EntrySequence.recurse("1", 1, (k, v) -> Entries.one(String.valueOf(v + 1), v + 1));
 		twice(() -> assertThat(sequence.limit(3),
 		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3))));
 	}
@@ -384,8 +382,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void endingAtPredicate() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345)
-		                                                       .endingAt(e -> e.equals(Entries.one("3", 3)));
+		EntrySequence<String, Integer> sequence =
+				EntrySequence.from(_12345).endingAt(e -> e.equals(Entries.one("3", 3)));
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
@@ -409,8 +407,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void endingAtBinaryPredicate() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345)
-		                                                       .endingAt((k, v) -> k.equals("3") && v == 3);
+		EntrySequence<String, Integer> sequence =
+				EntrySequence.from(_12345).endingAt((k, v) -> k.equals("3") && v == 3);
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
@@ -544,8 +542,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void reduce() {
-		BinaryOperator<Entry<String, Integer>> sumEntry = (r, e) -> Entries.one(r.getKey() + e.getKey(),
-		                                                                       r.getValue() + e.getValue());
+		BinaryOperator<Entry<String, Integer>> sumEntry =
+				(r, e) -> Entries.one(r.getKey() + e.getKey(), r.getValue() + e.getValue());
 
 		twice(() -> {
 			assertThat(empty.reduce(sumEntry), is(Optional.empty()));
@@ -557,9 +555,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void reduceQuaternary() {
-		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) ->
-				Entries
-				.one(rk + ek, rv + ev);
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry =
+				(rk, rv, ek, ev) -> Entries.one(rk + ek, rv + ev);
 
 		twice(() -> {
 			assertThat(empty.reduce(sumEntry), is(Optional.empty()));
@@ -571,8 +568,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void reduceWithIdentity() {
-		BinaryOperator<Entry<String, Integer>> sumEntry = (r, e) -> Entries.one(r.getKey() + e.getKey(),
-		                                                                       r.getValue() + e.getValue());
+		BinaryOperator<Entry<String, Integer>> sumEntry =
+				(r, e) -> Entries.one(r.getKey() + e.getKey(), r.getValue() + e.getValue());
 		twice(() -> {
 			assertThat(empty.reduce(Entries.one("17", 17), sumEntry), is(Entries.one("17", 17)));
 			assertThat(_1.reduce(Entries.one("17", 17), sumEntry), is(Entries.one("171", 18)));
@@ -583,9 +580,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void reduceQuaternaryWithIdentity() {
-		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry = (rk, rv, ek, ev) ->
-				Entries
-				.one(rk + ek, rv + ev);
+		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry =
+				(rk, rv, ek, ev) -> Entries.one(rk + ek, rv + ev);
 
 		twice(() -> {
 			assertThat(empty.reduce("17", 17, sumEntry), is(Entries.one("17", 17)));
@@ -676,13 +672,13 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(threePartitioned,
 		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
 
-		Sequence<EntrySequence<String, Integer>> threeRandomPartitioned = random3.batch(
-				(a, b) -> a.getValue() > b.getValue());
+		Sequence<EntrySequence<String, Integer>> threeRandomPartitioned =
+				random3.batch((a, b) -> a.getValue() > b.getValue());
 		twice(() -> assertThat(threeRandomPartitioned,
 		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
 
-		Sequence<EntrySequence<String, Integer>> nineRandomPartitioned = random9.batch(
-				(a, b) -> a.getValue() > b.getValue());
+		Sequence<EntrySequence<String, Integer>> nineRandomPartitioned =
+				random9.batch((a, b) -> a.getValue() > b.getValue());
 		twice(() -> assertThat(nineRandomPartitioned,
 		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
 		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
@@ -730,13 +726,15 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> oneDistinct = random1.distinct();
 		twice(() -> assertThat(oneDistinct, contains(Entries.one("17", 17))));
 
-		EntrySequence<String, Integer> twoDuplicatesDistinct = EntrySequence.of(Entries.one("17", 17),
-		                                                                        Entries.one("17", 17)).distinct();
+		EntrySequence<String, Integer> twoDuplicatesDistinct =
+				EntrySequence.of(Entries.one("17", 17), Entries.one("17", 17)).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(Entries.one("17", 17))));
 
 		EntrySequence<String, Integer> nineDistinct = random9.distinct();
-		twice(() -> assertThat(nineDistinct, contains(Entries.one("67", 67), Entries.one("5", 5), Entries.one("43", 43),
-		                                              Entries.one("3", 3), Entries.one("7", 7), Entries.one("24", 24))));
+		twice(() -> assertThat(nineDistinct, contains(Entries.one("67", 67), Entries.one("5", 5), Entries.one("43",
+		                                                                                                      43),
+		                                              Entries.one("3", 3), Entries.one("7", 7),
+		                                              Entries.one("24", 24))));
 	}
 
 	@Test
@@ -852,18 +850,18 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> repeatTwo = _12.repeat();
 		twice(() -> assertThat(repeatTwo.limit(5),
-		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("1", 1), Entries.one("2", 2),
-		                                Entries.one("1", 1))));
+		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("1", 1),
+		                                Entries.one("2", 2), Entries.one("1", 1))));
 
 		EntrySequence<String, Integer> repeatThree = _123.repeat();
 		twice(() -> assertThat(repeatThree.limit(8),
-		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("1", 1),
-		                                Entries.one("2", 2), Entries.one("3", 3), Entries.one("1", 1),
-		                                Entries.one("2", 2))));
+		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                                Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                                Entries.one("1", 1), Entries.one("2", 2))));
 
 		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
-			private List<Entry<String, Integer>> list = asList(Entries.one("1", 1), Entries.one("2", 2),
-			                                                   Entries.one("3", 3));
+			private List<Entry<String, Integer>> list =
+					asList(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3));
 			int end = list.size();
 
 			@Override
@@ -891,13 +889,12 @@ public class EntrySequenceTest {
 		                                           Entries.one("2", 2))));
 
 		EntrySequence<String, Integer> repeatThree = _123.repeat(2);
-		twice(() -> assertThat(repeatThree,
-		                       contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("1", 1),
-		                                Entries.one("2", 2), Entries.one("3", 3))));
+		twice(() -> assertThat(repeatThree, contains(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                                             Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3))));
 
 		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
-			private List<Entry<String, Integer>> list = asList(Entries.one("1", 1), Entries.one("2", 2),
-			                                                   Entries.one("3", 3));
+			private List<Entry<String, Integer>> list =
+					asList(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3));
 			int end = list.size();
 
 			@Override
@@ -939,13 +936,13 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(twoReversed, contains(Entries.one("2", 2), Entries.one("1", 1))));
 
 		EntrySequence<String, Integer> threeReversed = _123.reverse();
-		twice(() -> assertThat(threeReversed, contains(Entries.one("3", 3), Entries.one("2", 2), Entries.one("1", 1))));
+		twice(() -> assertThat(threeReversed, contains(Entries.one("3", 3), Entries.one("2", 2), Entries.one("1", 1)
+		)));
 
 		EntrySequence<String, Integer> nineReversed = _123456789.reverse();
-		twice(() -> assertThat(nineReversed,
-		                       contains(Entries.one("9", 9), Entries.one("8", 8), Entries.one("7", 7), Entries.one("6", 6),
-		                                Entries.one("5", 5), Entries.one("4", 4), Entries.one("3", 3), Entries.one("2", 2),
-		                                Entries.one("1", 1))));
+		twice(() -> assertThat(nineReversed, contains(Entries.one("9", 9), Entries.one("8", 8), Entries.one("7", 7),
+		                                              Entries.one("6", 6), Entries.one("5", 5), Entries.one("4", 4),
+		                                              Entries.one("3", 3), Entries.one("2", 2), Entries.one("1", 1))));
 	}
 
 	@Test
@@ -955,9 +952,9 @@ public class EntrySequenceTest {
 		assertThat(_12.shuffle(), containsInAnyOrder(Entries.one("1", 1), Entries.one("2", 2)));
 		assertThat(_123.shuffle(), containsInAnyOrder(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3)));
 		assertThat(_123456789.shuffle(),
-		           containsInAnyOrder(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3), Entries.one("4", 4),
-		                              Entries.one("5", 5), Entries.one("6", 6), Entries.one("7", 7), Entries.one("8", 8),
-		                              Entries.one("9", 9)));
+		           containsInAnyOrder(Entries.one("1", 1), Entries.one("2", 2), Entries.one("3", 3),
+		                              Entries.one("4", 4), Entries.one("5", 5), Entries.one("6", 6),
+		                              Entries.one("7", 7), Entries.one("8", 8), Entries.one("9", 9)));
 	}
 
 	@Test
@@ -979,9 +976,8 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> flattened =
 				EntrySequence.<List<String>, Integer>ofEntries(asList("1", "2", "3"), 1, emptyList(), "4",
 				                                               asList("5", "6", "7"), 3).flattenKeys(Entry::getKey);
-		twice(() -> assertThat(flattened,
-		                       contains(Entries.one("1", 1), Entries.one("2", 1), Entries.one("3", 1), Entries.one("5", 3),
-		                                Entries.one("6", 3), Entries.one("7", 3))));
+		twice(() -> assertThat(flattened, contains(Entries.one("1", 1), Entries.one("2", 1), Entries.one("3", 1),
+		                                           Entries.one("5", 3), Entries.one("6", 3), Entries.one("7", 3))));
 	}
 
 	@Test
@@ -989,8 +985,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> flattened =
 				EntrySequence.<String, List<Integer>>ofEntries("1", asList(1, 2, 3), "2", emptyList(), "3",
 				                                               asList(2, 3, 4)).flattenValues(Entry::getValue);
-		twice(() -> assertThat(flattened,
-		                       contains(Entries.one("1", 1), Entries.one("1", 2), Entries.one("1", 3), Entries.one("3", 2),
-		                                Entries.one("3", 3), Entries.one("3", 4))));
+		twice(() -> assertThat(flattened, contains(Entries.one("1", 1), Entries.one("1", 2), Entries.one("1", 3),
+		                                           Entries.one("3", 2), Entries.one("3", 3), Entries.one("3", 4))));
 	}
 }

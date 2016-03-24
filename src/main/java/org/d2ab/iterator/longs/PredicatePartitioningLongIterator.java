@@ -16,12 +16,9 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.function.ints.IntBiPredicate;
 import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.sequence.IntSequence;
 import org.d2ab.sequence.LongSequence;
 
 import java.util.Arrays;

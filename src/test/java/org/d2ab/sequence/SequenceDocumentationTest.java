@@ -36,10 +36,8 @@ import static org.junit.Assert.assertThat;
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
-		                             .filter(x -> (x % 2) == 0)
-		                             .map(Object::toString)
-		                             .toList();
+		List<String> evens =
+				Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0).map(Object::toString).toList();
 
 		assertThat(evens, contains("2", "4", "6", "8"));
 	}
@@ -160,9 +158,8 @@ public class SequenceDocumentationTest {
 	public void entrySequence() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
-		                                                           .filter((k, v) -> v % 2 != 0)
-		                                                           .map((k, v) -> Entries.one(v, k));
+		EntrySequence<Integer, String> oddsInverted =
+				EntrySequence.from(original).filter((k, v) -> v % 2 != 0).map((k, v) -> Entries.one(v, k));
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}
@@ -190,8 +187,9 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void biSequence() {
-		BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
-		                                                            "George Bush", 2001, "Barack Obama", 2005);
+		BiSequence<String, Integer> presidents =
+				BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969, "George Bush", 2001, "Barack Obama",
+				                   2005);
 
 		Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
 
@@ -205,9 +203,8 @@ public class SequenceDocumentationTest {
 		CharSeq word = CharSeq.from("terrain");
 		String vowels = "aeoiuy";
 
-		Sequence<String> consonantsVowels = word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) ==
-		                                                                                       -1))
-		                                        .map(CharSeq::asString);
+		Sequence<String> consonantsVowels =
+				word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1)).map(CharSeq::asString);
 
 		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 	}

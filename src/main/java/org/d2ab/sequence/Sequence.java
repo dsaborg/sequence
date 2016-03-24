@@ -662,8 +662,8 @@ public interface Sequence<T> extends Iterable<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
 	                                            Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
-		return collect(constructor, (result, element) -> result.put(keyMapper.apply(element),
-		                                                            valueMapper.apply(element)));
+		return collect(constructor,
+		               (result, element) -> result.put(keyMapper.apply(element), valueMapper.apply(element)));
 	}
 
 	/**

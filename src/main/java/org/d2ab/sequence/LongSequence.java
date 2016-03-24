@@ -16,7 +16,6 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.ints.IntBiPredicate;
 import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.function.longs.LongToCharFunction;
 import org.d2ab.iterable.longs.ChainingLongIterable;
@@ -25,8 +24,6 @@ import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
-import org.d2ab.iterator.ints.PredicatePartitioningIntIterator;
-import org.d2ab.iterator.ints.WindowingIntIterator;
 import org.d2ab.iterator.longs.*;
 import org.d2ab.util.Arrayz;
 

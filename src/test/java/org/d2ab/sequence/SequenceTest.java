@@ -310,8 +310,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
-		                                                   asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence =
+				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -350,8 +350,8 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(),
-		                                                   asList(5, 6).iterator());
+		Sequence<Iterator<Integer>> sequence =
+				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -800,8 +800,8 @@ public class SequenceTest {
 		BiSequence<Integer, String> twoBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
-		BiSequence<Integer, String> threeBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))
-		                                                      .toBiSequence();
+		BiSequence<Integer, String> threeBiSequence =
+				Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3")).toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -814,12 +814,12 @@ public class SequenceTest {
 		EntrySequence<Integer, String> oneEntrySequence = Sequence.of(Entries.one(1, "1")).toEntrySequence();
 		twice(() -> assertThat(oneEntrySequence, contains(Entries.one(1, "1"))));
 
-		EntrySequence<Integer, String> twoEntrySequence = Sequence.of(Entries.one(1, "1"), Entries.one(2, "2"))
-		                                                          .toEntrySequence();
+		EntrySequence<Integer, String> twoEntrySequence =
+				Sequence.of(Entries.one(1, "1"), Entries.one(2, "2")).toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Entries.one(1, "1"), Entries.one(2, "2"))));
 
-		EntrySequence<Integer, String> threeEntrySequence = Sequence.of(Entries.one(1, "1"), Entries.one(2, "2"),
-		                                                                Entries.one(3, "3")).toEntrySequence();
+		EntrySequence<Integer, String> threeEntrySequence =
+				Sequence.of(Entries.one(1, "1"), Entries.one(2, "2"), Entries.one(3, "3")).toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Entries.one(1, "1"), Entries.one(2, "2"), Entries.one(3, "3"))));
 	}
@@ -865,7 +865,8 @@ public class SequenceTest {
 		twice(() -> assertThat(_123.batch(3), contains(contains(1, 2, 3))));
 		twice(() -> assertThat(_1234.batch(3), contains(contains(1, 2, 3), contains(4))));
 		twice(() -> assertThat(_12345.batch(3), contains(contains(1, 2, 3), contains(4, 5))));
-		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9))));
+		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)
+		)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1002,8 +1003,8 @@ public class SequenceTest {
 
 	@Test
 	public void peek() {
-		Sequence<Integer> peek = _123.peek(
-				x -> assertThat(x, is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(3)))));
+		Sequence<Integer> peek =
+				_123.peek(x -> assertThat(x, is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(3)))));
 		twice(() -> assertThat(peek, contains(1, 2, 3)));
 	}
 

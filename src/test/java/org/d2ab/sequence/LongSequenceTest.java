@@ -676,8 +676,8 @@ public class LongSequenceTest {
 
 	@Test
 	public void toIntsMapped() {
-		IntSequence intSequence = LongSequence.increasingFrom(Integer.MAX_VALUE + 1L)
-		                                      .toInts(l -> (int) (l - Integer.MAX_VALUE));
+		IntSequence intSequence =
+				LongSequence.increasingFrom(Integer.MAX_VALUE + 1L).toInts(l -> (int) (l - Integer.MAX_VALUE));
 		twice(() -> assertThat(intSequence.limit(5), contains(1, 2, 3, 4, 5)));
 	}
 

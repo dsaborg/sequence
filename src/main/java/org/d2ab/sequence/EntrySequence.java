@@ -230,7 +230,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence,
 	 *          applied to the first mapped element f(keySeed, valueSeed) to produce the second unmapped value
 	 *
-	 * @return an {@code EntrySequence} produced by recursively applying the given mapper and incrementer operations to the
+	 * @return an {@code EntrySequence} produced by recursively applying the given mapper and incrementer operations
+	 * to the
 	 * given seeds
 	 *
 	 * @see #recurse(Entry, UnaryOperator)
@@ -353,8 +354,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #flatten(Function)
 	 * @see #flatten(BiFunction)
 	 */
-	default <KK> EntrySequence<KK, V> flattenKeys(
-			Function<? super Entry<K, V>, ? extends Iterable<KK>> mapper) {
+	default <KK> EntrySequence<KK, V> flattenKeys(Function<? super Entry<K, V>, ? extends Iterable<KK>> mapper) {
 		return () -> new KeyFlatteningEntryIterator<>(iterator(), mapper);
 	}
 
@@ -366,8 +366,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #flatten(Function)
 	 * @see #flatten(BiFunction)
 	 */
-	default <VV> EntrySequence<K, VV> flattenValues(
-			Function<? super Entry<K, V>, ? extends Iterable<VV>> mapper) {
+	default <VV> EntrySequence<K, VV> flattenValues(Function<? super Entry<K, V>, ? extends Iterable<VV>> mapper) {
 		return () -> new ValueFlatteningEntryIterator<>(iterator(), mapper);
 	}
 
@@ -432,7 +431,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
-	 * Terminate this {@code EntrySequence} just before the given predicate is satisfied, not including the element that
+	 * Terminate this {@code EntrySequence} just before the given predicate is satisfied, not including the element
+	 * that
 	 * satisfies the predicate in the {@code EntrySequence}.
 	 *
 	 * @see #until(Predicate)
@@ -464,7 +464,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
-	 * Terminate this {@code EntrySequence} just before the given predicate is satisfied, not including the element that
+	 * Terminate this {@code EntrySequence} just before the given predicate is satisfied, not including the element
+	 * that
 	 * satisfies the predicate in the {@code EntrySequence}.
 	 *
 	 * @see #until(BiPredicate)

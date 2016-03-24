@@ -348,8 +348,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 * @see #flatten(BiFunction)
 	 */
-	default <LL> BiSequence<LL, R> flattenLeft(
-			Function<? super Pair<L, R>, ? extends Iterable<LL>> mapper) {
+	default <LL> BiSequence<LL, R> flattenLeft(Function<? super Pair<L, R>, ? extends Iterable<LL>> mapper) {
 		return () -> new LeftFlatteningPairIterator<>(iterator(), mapper);
 	}
 
@@ -361,8 +360,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 * @see #flatten(BiFunction)
 	 */
-	default <RR> BiSequence<L, RR> flattenRight(
-			Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper) {
+	default <RR> BiSequence<L, RR> flattenRight(Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper) {
 		return () -> new RightFlatteningPairIterator<>(iterator(), mapper);
 	}
 
