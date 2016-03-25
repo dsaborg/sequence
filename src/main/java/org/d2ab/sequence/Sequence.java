@@ -1128,9 +1128,11 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order.
 	 */
 	default Sequence<T> shuffle() {
-		List<T> list = toList();
-		Collections.shuffle(list);
-		return from(list);
+		return () -> {
+			List<T> list = toList();
+			Collections.shuffle(list);
+			return list.iterator();
+		};
 	}
 
 	/**
@@ -1138,9 +1140,11 @@ public interface Sequence<T> extends Iterable<T> {
 	 * random generator.
 	 */
 	default Sequence<T> shuffle(Random md) {
-		List<T> list = toList();
-		Collections.shuffle(list, md);
-		return from(list);
+		return () -> {
+			List<T> list = toList();
+			Collections.shuffle(list, md);
+			return list.iterator();
+		};
 	}
 
 	/**

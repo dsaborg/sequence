@@ -963,9 +963,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order.
 	 */
 	default BiSequence<L, R> shuffle() {
-		List<Pair<L, R>> list = toList();
-		Collections.shuffle(list);
-		return from(list);
+		return () -> {
+			List<Pair<L, R>> list = toList();
+			Collections.shuffle(list);
+			return list.iterator();
+		};
 	}
 
 	/**
@@ -973,8 +975,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * given random generator.
 	 */
 	default BiSequence<L, R> shuffle(Random md) {
-		List<Pair<L, R>> list = toList();
-		Collections.shuffle(list, md);
-		return from(list);
+		return () -> {
+			List<Pair<L, R>> list = toList();
+			Collections.shuffle(list, md);
+			return list.iterator();
+		};
 	}
 }

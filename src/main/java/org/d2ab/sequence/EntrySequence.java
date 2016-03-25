@@ -973,9 +973,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order.
 	 */
 	default EntrySequence<K, V> shuffle() {
-		List<Entry<K, V>> list = toList();
-		Collections.shuffle(list);
-		return from(list);
+		return () -> {
+			List<Entry<K, V>> list = toList();
+			Collections.shuffle(list);
+			return list.iterator();
+		};
 	}
 
 	/**
@@ -983,8 +985,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * given random generator.
 	 */
 	default EntrySequence<K, V> shuffle(Random md) {
-		List<Entry<K, V>> list = toList();
-		Collections.shuffle(list, md);
-		return from(list);
+		return () -> {
+			List<Entry<K, V>> list = toList();
+			Collections.shuffle(list, md);
+			return list.iterator();
+		};
 	}
 }
