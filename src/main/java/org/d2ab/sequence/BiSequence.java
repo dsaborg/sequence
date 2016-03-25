@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
@@ -600,10 +601,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return result;
 	}
 
+	/**
+	 * Join this {@code BiSequence} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code BiSequence} into a string separated by the given delimiter, with the given prefix and suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
@@ -619,40 +626,45 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return result.toString();
 	}
 
+	/**
+	 * Reduce this {@code BiSequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each pair in this sequence.
+	 */
 	default Optional<Pair<L, R>> reduce(BinaryOperator<Pair<L, R>> operator) {
-		Iterator<Pair<L, R>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		Pair<L, R> result = reduce(iterator.next(), operator, iterator);
-		return Optional.of(result);
+		return Iterators.reduce(iterator(), operator);
 	}
 
+	/**
+	 * Reduce this {@code BiSequence} into a single element by iteratively applying the given function to
+	 * the current result and each element in this sequence. The function is passed the left and right components of
+	 * the result pair, followed by the left and right components of the current pair, respectively.
+	 */
 	default Optional<Pair<L, R>> reduce(QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
-		Iterator<Pair<L, R>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		Pair<L, R> result = reduce(iterator.next(), Pair.asBinaryOperator(operator), iterator);
-		return Optional.of(result);
+		return reduce(Pair.asBinaryOperator(operator));
 	}
 
+	/**
+	 * Reduce this {@code BiSequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each pair in this sequence, starting with the given identity as the initial result.
+	 */
 	default Pair<L, R> reduce(Pair<L, R> identity, BinaryOperator<Pair<L, R>> operator) {
-		return reduce(identity, operator, iterator());
+		return Iterators.reduce(iterator(), identity, operator);
 	}
 
+	/**
+	 * Reduce this {@code BiSequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each entry in this sequence, starting with the given identity as the initial result.
+	 * The function is passed the left and right components of the result, followed by the left and right components of
+	 * the current entry, respectively.
+	 */
 	default Pair<L, R> reduce(L left, R right, QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
-		return reduce(Pair.of(left, right), Pair.asBinaryOperator(operator), iterator());
+		return reduce(Pair.of(left, right), Pair.asBinaryOperator(operator));
 	}
 
-	default Pair<L, R> reduce(Pair<L, R> identity, BinaryOperator<Pair<L, R>> operator, Iterator<Pair<L, R>>
-			iterator) {
-		Pair<L, R> result = identity;
-		while (iterator.hasNext())
-			result = operator.apply(result, iterator.next());
-		return result;
-	}
-
+	/**
+	 * @return the first pair of this {@code BiSequence} or an empty {@link Optional} if there are no pairs in the
+	 * {@code BiSequence}.
+	 */
 	default Optional<Pair<L, R>> first() {
 		Iterator<Pair<L, R>> iterator = iterator();
 		if (!iterator.hasNext())
@@ -661,6 +673,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the second pair of this {@code BiSequence} or an empty {@link Optional} if there are one or less pairs
+	 * in the {@code BiSequence}.
+	 */
 	default Optional<Pair<L, R>> second() {
 		Iterator<Pair<L, R>> iterator = iterator();
 
@@ -671,6 +687,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the third pair of this {@code BiSequence} or an empty {@link Optional} if there are two or less pairs
+	 * in the {@code BiSequence}.
+	 */
 	default Optional<Pair<L, R>> third() {
 		Iterator<Pair<L, R>> iterator = iterator();
 
@@ -681,6 +701,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the last pair of this {@code BiSequence} or an empty {@link Optional} if there are no pairs in the
+	 * {@code BiSequence}.
+	 */
 	default Optional<Pair<L, R>> last() {
 		Iterator<Pair<L, R>> iterator = iterator();
 		if (!iterator.hasNext())
@@ -694,10 +718,21 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return Optional.of(last);
 	}
 
+	/**
+	 * Window the elements of this {@code BiSequence} into a {@link Sequence} of {@code BiSequence}s of pairs, each
+	 * with the size of the given window. The first item in each sequence is the second item in the previous sequence.
+	 * The final sequence may be shorter than the window. This method is equivalent to {@code window(window, 1)}.
+	 */
 	default Sequence<BiSequence<L, R>> window(int window) {
 		return window(window, 1);
 	}
 
+	/**
+	 * Window the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of elements, each with the
+	 * size of the given window, stepping {@code step} elements between each window. If the given step is less than the
+	 * window size, the windows will overlap each other. If the step is larger than the window size, elements will be
+	 * skipped in between windows.
+	 */
 	default Sequence<BiSequence<L, R>> window(int window, int step) {
 		return () -> new WindowingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), window, step) {
 			@Override
@@ -707,6 +742,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * Batch the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of distinct elements, each
+	 * with the given batch size. This method is equivalent to {@code window(size, size)}.
+	 */
 	default Sequence<BiSequence<L, R>> batch(int size) {
 		return window(size, size);
 	}
@@ -736,30 +775,52 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return batch((p1, p2) -> predicate.test(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight()));
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code BiSequence}.
+	 */
 	default BiSequence<L, R> step(int step) {
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
+	/**
+	 * @return a {@code BiSequence} where each item in this {@code BiSequence} occurs only once, the first time it is
+	 * encountered.
+	 */
 	default BiSequence<L, R> distinct() {
 		return () -> new DistinctIterator<>(iterator());
 	}
 
+	/**
+	 * @return this {@code BiSequence} sorted according to the natural order.
+	 */
 	default BiSequence<L, R> sorted() {
 		return () -> new SortingIterator<>(iterator());
 	}
 
+	/**
+	 * @return this {@code BiSequence} sorted according to the given {@link Comparator}.
+	 */
 	default BiSequence<L, R> sorted(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
 		return () -> new SortingIterator<>(iterator(), comparator);
 	}
 
+	/**
+	 * @return the minimal element in this {@code BiSequence} according to the given {@link Comparator}.
+	 */
 	default Optional<Pair<L, R>> min(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
 	}
 
+	/**
+	 * @return the maximum element in this {@code BiSequence} according to the given {@link Comparator}.
+	 */
 	default Optional<Pair<L, R>> max(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
 		return reduce(BinaryOperator.maxBy(comparator));
 	}
 
+	/**
+	 * @return the count of elements in this {@code BiSequence}.
+	 */
 	default int count() {
 		int count = 0;
 		for (Pair<L, R> ignored : this)
@@ -767,6 +828,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return count;
 	}
 
+	/**
+	 * @return this {@code BiSequence} as a {@link Stream} of pairs.
+	 */
+	default Stream<Pair<L, R>> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
+
+	/**
+	 * @return true if all elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(BiPredicate<? super L, ? super R> biPredicate) {
 		Predicate<? super Pair<L, R>> predicate = Pair.asPredicate(biPredicate);
 		for (Pair<L, R> each : this)
@@ -775,10 +846,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return true;
 	}
 
+	/**
+	 * @return true if no elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(BiPredicate<? super L, ? super R> predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any element in this {@code BiSequence} satisfies the given predicate, false otherwise.
+	 */
 	default boolean any(BiPredicate<? super L, ? super R> biPredicate) {
 		Predicate<? super Pair<L, R>> predicate = Pair.asPredicate(biPredicate);
 		for (Pair<L, R> each : this)
@@ -787,65 +864,114 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link Consumer} to see each element in this {@code BiSequence} as it is traversed.
+	 */
 	default BiSequence<L, R> peek(BiConsumer<L, R> action) {
 		Consumer<? super Pair<L, R>> consumer = Pair.asConsumer(action);
 		return () -> new PeekingIterator<>(iterator(), consumer);
 	}
 
+	/**
+	 * Append the elements of the given {@link Iterator} to the end of this {@code BiSequence}.
+	 * <p>
+	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
+	 */
 	default BiSequence<L, R> append(Iterator<? extends Pair<L, R>> iterator) {
 		return append(Iterables.from(iterator));
 	}
 
+	/**
+	 * Append the elements of the given {@link Iterable} to the end of this {@code BiSequence}.
+	 */
 	default BiSequence<L, R> append(Iterable<? extends Pair<L, R>> that) {
 		@SuppressWarnings("unchecked")
 		Iterable<Pair<L, R>> chainingSequence = new ChainingIterable<>(this, that);
 		return chainingSequence::iterator;
 	}
 
+	/**
+	 * Append the given elements to the end of this {@code BiSequence}.
+	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> append(Pair<L, R>... entries) {
 		return append(Iterables.from(entries));
 	}
 
+	/**
+	 * Append the given pair to the end of this {@code BiSequence}.
+	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> appendPair(L left, R right) {
 		return append(Pair.of(left, right));
 	}
 
+	/**
+	 * Append the elements of the given {@link Stream} to the end of this {@code BiSequence}.
+	 * <p>
+	 * The resulting {@code BiSequence} can only be traversed once, further attempts to traverse will results in a
+	 * {@link IllegalStateException}.
+	 */
 	default BiSequence<L, R> append(Stream<Pair<L, R>> stream) {
 		return append(Iterables.from(stream));
 	}
 
+	/**
+	 * Convert this {@code BiSequence} to a {@link Sequence} of {@link Pair}s.
+	 */
 	default Sequence<Pair<L, R>> toSequence() {
 		return Sequence.from(this);
 	}
 
-	default <T> Sequence<T> toSequence(BiFunction<L, R, T> mapper) {
+	/**
+	 * Convert this {@code BiSequence} to a {@link Sequence} where each item is generated by the given mapper.
+	 */
+	default <T> Sequence<T> toSequence(BiFunction<? super L, ? super R, ? extends T> mapper) {
 		return toSequence(Pair.asFunction(mapper));
 	}
 
+	/**
+	 * Convert this {@code BiSequence} to a {@link Sequence} where each item is generated by the given mapper.
+	 */
 	default <T> Sequence<T> toSequence(Function<? super Pair<L, R>, ? extends T> mapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Repeat this {@code BiSequence} forever, producing a sequence that never terminates unless the original sequence
+	 * is empty in which case the resulting sequence is also empty.
+	 */
 	default BiSequence<L, R> repeat() {
 		return () -> new RepeatingIterator<>(this, -1);
 	}
 
+	/**
+	 * Repeat this {@code BiSequence} the given number of times.
+	 */
 	default BiSequence<L, R> repeat(long times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
 
+	/**
+	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in reverse order.
+	 */
 	default BiSequence<L, R> reverse() {
 		return () -> new ReverseIterator<>(iterator());
 	}
 
+	/**
+	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order.
+	 */
 	default BiSequence<L, R> shuffle() {
 		List<Pair<L, R>> list = toList();
 		Collections.shuffle(list);
 		return from(list);
 	}
 
+	/**
+	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order as determined by the
+	 * given random generator.
+	 */
 	default BiSequence<L, R> shuffle(Random md) {
 		List<Pair<L, R>> list = toList();
 		Collections.shuffle(list, md);

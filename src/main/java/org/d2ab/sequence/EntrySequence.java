@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
@@ -608,10 +609,17 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return result;
 	}
 
+	/**
+	 * Join this {@code EntrySequence} into a string separated by the given delimiter.
+	 */
 	default String join(String delimiter) {
 		return join("", delimiter, "");
 	}
 
+	/**
+	 * Join this {@code EntrySequence} into a string separated by the given delimiter, with the given prefix and
+	 * suffix.
+	 */
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
@@ -627,40 +635,45 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return result.toString();
 	}
 
+	/**
+	 * Reduce this {@code EntrySequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each entry in this sequence.
+	 */
 	default Optional<Entry<K, V>> reduce(BinaryOperator<Entry<K, V>> operator) {
-		Iterator<Entry<K, V>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		Entry<K, V> result = reduce(iterator.next(), operator, iterator);
-		return Optional.of(result);
+		return Iterators.reduce(iterator(), operator);
 	}
 
+	/**
+	 * Reduce this {@code EntrySequence} into a single element by iteratively applying the given function to
+	 * the current result and each entry in this sequence. The function is passed the key and value of the result,
+	 * followed by the keys and values of the current entry, respectively.
+	 */
 	default Optional<Entry<K, V>> reduce(QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
-		Iterator<Entry<K, V>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		Entry<K, V> result = reduce(iterator.next(), Entries.asBinaryOperator(operator), iterator);
-		return Optional.of(result);
+		return reduce(Entries.asBinaryOperator(operator));
 	}
 
+	/**
+	 * Reduce this {@code EntrySequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each entry in this sequence, starting with the given identity as the initial result.
+	 */
 	default Entry<K, V> reduce(Entry<K, V> identity, BinaryOperator<Entry<K, V>> operator) {
-		return reduce(identity, operator, iterator());
+		return Iterators.reduce(iterator(), identity, operator);
 	}
 
+	/**
+	 * Reduce this {@code EntrySequence} into a single element by iteratively applying the given binary operator to
+	 * the current result and each entry in this sequence, starting with the given identity as the initial result.
+	 * The function is passed the key and value of the result, followed by the keys and values of the current entry,
+	 * respectively.
+	 */
 	default Entry<K, V> reduce(K key, V value, QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
-		return reduce(Entries.one(key, value), Entries.asBinaryOperator(operator), iterator());
+		return reduce(Entries.one(key, value), Entries.asBinaryOperator(operator));
 	}
 
-	default Entry<K, V> reduce(Entry<K, V> identity, BinaryOperator<Entry<K, V>> operator,
-	                           Iterator<Entry<K, V>> iterator) {
-		Entry<K, V> result = identity;
-		while (iterator.hasNext())
-			result = operator.apply(result, iterator.next());
-		return result;
-	}
-
+	/**
+	 * @return the first entry of this {@code EntrySequence} or an empty {@link Optional} if there are no entries in
+	 * the {@code EntrySequence}.
+	 */
 	default Optional<Entry<K, V>> first() {
 		Iterator<Entry<K, V>> iterator = iterator();
 		if (!iterator.hasNext())
@@ -669,6 +682,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the second entry of this {@code EntrySequence} or an empty {@link Optional} if there are one or less
+	 * entries in the {@code EntrySequence}.
+	 */
 	default Optional<Entry<K, V>> second() {
 		Iterator<Entry<K, V>> iterator = iterator();
 
@@ -679,6 +696,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the third entry of this {@code EntrySequence} or an empty {@link Optional} if there are two or less
+	 * entries in the {@code EntrySequence}.
+	 */
 	default Optional<Entry<K, V>> third() {
 		Iterator<Entry<K, V>> iterator = iterator();
 
@@ -689,6 +710,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * @return the last entry of this {@code EntrySequence} or an empty {@link Optional} if there are no entries in
+	 * the {@code EntrySequence}.
+	 */
 	default Optional<Entry<K, V>> last() {
 		Iterator<Entry<K, V>> iterator = iterator();
 		if (!iterator.hasNext())
@@ -702,10 +727,22 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return Optional.of(last);
 	}
 
+	/**
+	 * Window the elements of this {@code EntrySequence} into a {@link Sequence} of {@code EntrySequence}s of entrues,
+	 * each with the size of the given window. The first item in each sequence is the second item in the previous
+	 * sequence. The final sequence may be shorter than the window. This method is equivalent to
+	 * {@code window(window, 1)}.
+	 */
 	default Sequence<EntrySequence<K, V>> window(int window) {
 		return window(window, 1);
 	}
 
+	/**
+	 * Window the elements of this {@code EntrySequence} into a sequence of {@code EntrySequence}s of elements, each
+	 * with the size of the given window, stepping {@code step} elements between each window. If the given step is less
+	 * than the window size, the windows will overlap each other. If the step is larger than the window size, elements
+	 * will be skipped in between windows.
+	 */
 	default Sequence<EntrySequence<K, V>> window(int window, int step) {
 		return () -> new WindowingIterator<Entry<K, V>, EntrySequence<K, V>>(iterator(), window, step) {
 			@Override
@@ -715,6 +752,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		};
 	}
 
+	/**
+	 * Batch the elements of this {@code EntrySequence} into a sequence of {@code EntrySequence}s of distinct elements,
+	 * each with the given batch size. This method is equivalent to {@code window(size, size)}.
+	 */
 	default Sequence<EntrySequence<K, V>> batch(int size) {
 		return window(size, size);
 	}
@@ -744,30 +785,52 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return batch((e1, e2) -> predicate.test(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue()));
 	}
 
+	/**
+	 * Skip x number of steps in between each invocation of the iterator of this {@code EntrySequence}.
+	 */
 	default EntrySequence<K, V> step(int step) {
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
+	/**
+	 * @return an {@code EntrySequence} where each item in this {@code EntrySequence} occurs only once, the first time
+	 * it is encountered.
+	 */
 	default EntrySequence<K, V> distinct() {
 		return () -> new DistinctIterator<>(iterator());
 	}
 
+	/**
+	 * @return this {@code EntrySequence} sorted according to the natural order.
+	 */
 	default EntrySequence<K, V> sorted() {
 		return () -> new SortingIterator<>(iterator());
 	}
 
+	/**
+	 * @return this {@code EntrySequence} sorted according to the given {@link Comparator}.
+	 */
 	default EntrySequence<K, V> sorted(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
 		return () -> new SortingIterator<>(iterator(), comparator);
 	}
 
+	/**
+	 * @return the minimal element in this {@code EntrySequence} according to the given {@link Comparator}.
+	 */
 	default Optional<Entry<K, V>> min(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
 	}
 
+	/**
+	 * @return the maximum element in this {@code EntrySequence} according to the given {@link Comparator}.
+	 */
 	default Optional<Entry<K, V>> max(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
 		return reduce(BinaryOperator.maxBy(comparator));
 	}
 
+	/**
+	 * @return the count of elements in this {@code EntrySequence}.
+	 */
 	default int count() {
 		int count = 0;
 		for (Entry<K, V> ignored : this)
@@ -775,6 +838,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return count;
 	}
 
+	/**
+	 * @return this {@code EntrySequence} as a {@link Stream} of entries.
+	 */
+	default Stream<Entry<K, V>> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
+
+	/**
+	 * @return true if all elements in this {@code EntrySequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean all(BiPredicate<? super K, ? super V> biPredicate) {
 		Predicate<? super Entry<K, V>> predicate = Entries.asPredicate(biPredicate);
 		for (Entry<K, V> each : this)
@@ -783,10 +856,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return true;
 	}
 
+	/**
+	 * @return true if no elements in this {@code EntrySequence} satisfy the given predicate, false otherwise.
+	 */
 	default boolean none(BiPredicate<? super K, ? super V> predicate) {
 		return !any(predicate);
 	}
 
+	/**
+	 * @return true if any element in this {@code EntrySequence} satisfies the given predicate, false otherwise.
+	 */
 	default boolean any(BiPredicate<? super K, ? super V> biPredicate) {
 		Predicate<? super Entry<K, V>> predicate = Entries.asPredicate(biPredicate);
 		for (Entry<K, V> each : this)
@@ -795,65 +874,114 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 		return false;
 	}
 
+	/**
+	 * Allow the given {@link Consumer} to see each element in this {@code EntrySequence} as it is traversed.
+	 */
 	default EntrySequence<K, V> peek(BiConsumer<K, V> action) {
 		Consumer<? super Entry<K, V>> consumer = Entries.asConsumer(action);
 		return () -> new PeekingIterator<>(iterator(), consumer);
 	}
 
+	/**
+	 * Append the elements of the given {@link Iterator} to the end of this {@code EntrySequence}.
+	 * <p>
+	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
+	 */
 	default EntrySequence<K, V> append(Iterator<? extends Entry<K, V>> iterator) {
 		return append(Iterables.from(iterator));
 	}
 
+	/**
+	 * Append the elements of the given {@link Iterable} to the end of this {@code EntrySequence}.
+	 */
 	default EntrySequence<K, V> append(Iterable<? extends Entry<K, V>> that) {
 		@SuppressWarnings("unchecked")
 		Iterable<Entry<K, V>> chainingSequence = new ChainingIterable<>(this, that);
 		return chainingSequence::iterator;
 	}
 
+	/**
+	 * Append the given elements to the end of this {@code EntrySequence}.
+	 */
 	@SuppressWarnings("unchecked")
 	default EntrySequence<K, V> append(Entry<K, V>... entries) {
 		return append(Iterables.from(entries));
 	}
 
+	/**
+	 * Append the given entry to the end of this {@code EntrySequence}.
+	 */
 	@SuppressWarnings("unchecked")
 	default EntrySequence<K, V> appendEntry(K key, V value) {
 		return append(Entries.one(key, value));
 	}
 
+	/**
+	 * Append the elements of the given {@link Stream} to the end of this {@code EntrySequence}.
+	 * <p>
+	 * The resulting {@code BiSequence} can only be traversed once, further attempts to traverse will results in a
+	 * {@link IllegalStateException}.
+	 */
 	default EntrySequence<K, V> append(Stream<Entry<K, V>> stream) {
 		return append(Iterables.from(stream));
 	}
 
+	/**
+	 * Convert this {@code EntrySequence} to a {@link Sequence} of {@link Entry} elements.
+	 */
 	default Sequence<Entry<K, V>> toSequence() {
 		return Sequence.from(this);
 	}
 
+	/**
+	 * Convert this {@code EntrySequence} to a {@link Sequence} where each item is generated by the given mapper.
+	 */
 	default <T> Sequence<T> toSequence(BiFunction<? super K, ? super V, ? extends T> mapper) {
 		return toSequence(Entries.asFunction(mapper));
 	}
 
+	/**
+	 * Convert this {@code EntrySequence} to a {@link Sequence} where each item is generated by the given mapper.
+	 */
 	default <T> Sequence<T> toSequence(Function<? super Entry<K, V>, ? extends T> mapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
+	/**
+	 * Repeat this {@code EntrySequence} forever, producing a sequence that never terminates unless the original
+	 * sequence is empty in which case the resulting sequence is also empty.
+	 */
 	default EntrySequence<K, V> repeat() {
 		return () -> new RepeatingIterator<>(this, -1);
 	}
 
+	/**
+	 * Repeat this {@code EntrySequence} the given number of times.
+	 */
 	default EntrySequence<K, V> repeat(long times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
 
+	/**
+	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in reverse order.
+	 */
 	default EntrySequence<K, V> reverse() {
 		return () -> new ReverseIterator<>(iterator());
 	}
 
+	/**
+	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order.
+	 */
 	default EntrySequence<K, V> shuffle() {
 		List<Entry<K, V>> list = toList();
 		Collections.shuffle(list);
 		return from(list);
 	}
 
+	/**
+	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order as determined by the
+	 * given random generator.
+	 */
 	default EntrySequence<K, V> shuffle(Random md) {
 		List<Entry<K, V>> list = toList();
 		Collections.shuffle(list, md);

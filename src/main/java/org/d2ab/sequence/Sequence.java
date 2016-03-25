@@ -896,18 +896,19 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Window the elements of this {@code Sequence} into a sequence of {@link Sequence}s of elements, each with the
-	 * size of the given window. The first item in each list is the second item in the previous list. The final list
-	 * may be shorter than the window. This is equivalent to {@code window(window, 1)}.
+	 * Window the elements of this {@code Sequence} into a sequence of {@code Sequence}s of elements, each with the
+	 * size of the given window. The first item in each sequence is the second item in the previous sequence. The final
+	 * sequence may be shorter than the window. This method is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<Sequence<T>> window(int window) {
 		return window(window, 1);
 	}
 
 	/**
-	 * Window the elements of this {@code Sequence} into a sequence of {@link Sequence}s of elements, each with the
+	 * Window the elements of this {@code Sequence} into a sequence of {@code Sequence}s of elements, each with the
 	 * size of the given window, stepping {@code step} elements between each window. If the given step is less than the
-	 * window size, the windows will overlap each other.
+	 * window size, the windows will overlap each other. If the step is larger than the window size, elements will be
+	 * skipped in between windows.
 	 */
 	default Sequence<Sequence<T>> window(int window, int step) {
 		return () -> new WindowingIterator<T, Sequence<T>>(iterator(), window, step) {
@@ -919,15 +920,15 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Batch the elements of this {@code Sequence} into a sequence of {@link Sequence}s of distinct elements, each with
-	 * the given batch size. This is equivalent to {@code window(size, size)}.
+	 * Batch the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, each with
+	 * the given batch size. This method is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<Sequence<T>> batch(int size) {
 		return window(size, size);
 	}
 
 	/**
-	 * Batch the elements of this {@code Sequence} into a sequence of {@link Sequence}s of distinct elements, where the
+	 * Batch the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, where the
 	 * given predicate determines where to split the lists of partitioned elements. The predicate is given the current
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
@@ -989,7 +990,7 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * @return the count of elements in this sequence.
+	 * @return the count of elements in this {@code Sequence}.
 	 */
 	default long count() {
 		long count = 0;
