@@ -246,6 +246,13 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void appendPair() {
+		BiSequence<String, Integer> appended = _123.appendPair("4", 4);
+		twice(() -> assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)
+		)));
+	}
+
+	@Test
 	public void appendIsLazy() {
 		Iterator<Pair<String, Integer>> first = Arrayz.iterator(entries123);
 		Iterator<Pair<String, Integer>> second = Arrayz.iterator(entries456);
@@ -492,6 +499,17 @@ public class BiSequenceTest {
 			Deque<Pair<String, Integer>> deque = _123.collect(ArrayDeque::new, ArrayDeque::add);
 
 			assertThat(deque, instanceOf(ArrayDeque.class));
+			assertThat(deque, contains(entries123));
+		});
+	}
+
+	@Test
+	public void collectInto() {
+		twice(() -> {
+			ArrayDeque<Pair<String, Integer>> original = new ArrayDeque<>();
+			Deque<Pair<String, Integer>> deque = _123.collectInto(original, ArrayDeque::add);
+
+			assertThat(deque, is(sameInstance(original)));
 			assertThat(deque, contains(entries123));
 		});
 	}
@@ -941,6 +959,20 @@ public class BiSequenceTest {
 		assertThat(_123456789.shuffle(seed),
 		           contains(Pair.of("2", 2), Pair.of("9", 9), Pair.of("4", 4), Pair.of("6", 6), Pair.of("8", 8),
 		                    Pair.of("7", 7), Pair.of("5", 5), Pair.of("1", 1), Pair.of("3", 3)));
+	}
+
+	@Test
+	public void flatten() {
+		BiSequence<String, Integer> flattened = _123.flatten(pair -> asList(pair, Pair.of("0", 0)));
+		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
+		                                           Pair.of("3", 3), Pair.of("0", 0))));
+	}
+
+	@Test
+	public void flattenBiFunction() {
+		BiSequence<String, Integer> flattened = _123.flatten((l, r) -> asList(Pair.of(l, r), Pair.of("0", 0)));
+		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
+		                                           Pair.of("3", 3), Pair.of("0", 0))));
 	}
 
 	@Test
