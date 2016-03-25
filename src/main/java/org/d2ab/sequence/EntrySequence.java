@@ -87,7 +87,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> EntrySequence<K, V> ofEntry(K left, V right) {
-		return of(Entries.one(left, right));
+		return of(Entries.of(left, right));
 	}
 
 	/**
@@ -107,7 +107,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 		List<Entry<K, V>> entries = new ArrayList<>();
 		for (int i = 0; i < os.length; i += 2)
-			entries.add(Entries.one((K) os[i], (V) os[i + 1]));
+			entries.add(Entries.of((K) os[i], (V) os[i + 1]));
 		return from(entries);
 	}
 
@@ -200,7 +200,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #until(Entry)
 	 */
 	static <K, V> EntrySequence<K, V> recurse(K keySeed, V valueSeed, BiFunction<K, V, ? extends Entry<K, V>> op) {
-		return recurse(Entries.one(keySeed, valueSeed), Entries.asUnaryOperator(op));
+		return recurse(Entries.of(keySeed, valueSeed), Entries.asUnaryOperator(op));
 	}
 
 	/**
@@ -412,7 +412,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #repeat()
 	 */
 	default EntrySequence<K, V> until(K key, V value) {
-		return until(Entries.one(key, value));
+		return until(Entries.of(key, value));
 	}
 
 	/**
@@ -428,7 +428,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #repeat()
 	 */
 	default EntrySequence<K, V> endingAt(K key, V value) {
-		return endingAt(Entries.one(key, value));
+		return endingAt(Entries.of(key, value));
 	}
 
 	/**
@@ -667,7 +667,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * respectively.
 	 */
 	default Entry<K, V> reduce(K key, V value, QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
-		return reduce(Entries.one(key, value), Entries.asBinaryOperator(operator));
+		return reduce(Entries.of(key, value), Entries.asBinaryOperator(operator));
 	}
 
 	/**
@@ -913,7 +913,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	@SuppressWarnings("unchecked")
 	default EntrySequence<K, V> appendEntry(K key, V value) {
-		return append(Entries.one(key, value));
+		return append(Entries.of(key, value));
 	}
 
 	/**

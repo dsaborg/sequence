@@ -48,7 +48,7 @@ public class Entries {
 	 * Creates a new {@link Entry} with the given key and value. Calling {@link Entry#setValue(Object)} on the
 	 * entry will result in an {@link UnsupportedOperationException} being thrown.
 	 */
-	public static <K, V> Entry<K, V> one(K key, V value) {
+	public static <K, V> Entry<K, V> of(K key, V value) {
 		return new EntryImpl<>(key, value);
 	}
 
@@ -79,7 +79,7 @@ public class Entries {
 
 	public static <K, V, KK, VV> Function<Entry<K, V>, Entry<KK, VV>> asFunction(
 			Function<? super K, ? extends KK> keyMapper, Function<? super V, ? extends VV> valueMapper) {
-		return entry -> one(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
+		return entry -> of(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
 	}
 
 	public static <K, V> Predicate<Entry<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {

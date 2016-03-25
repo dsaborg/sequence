@@ -828,7 +828,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
 			@Override
 			protected Entry<T, T> pair(T first, T second) {
-				return Entries.one(first, second);
+				return Entries.of(first, second);
 			}
 		};
 	}
@@ -856,7 +856,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 2) {
 			@Override
 			protected Entry<T, T> pair(T first, T second) {
-				return Entries.one(first, second);
+				return Entries.of(first, second);
 			}
 		};
 	}
