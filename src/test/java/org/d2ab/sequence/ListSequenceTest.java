@@ -232,9 +232,10 @@ public class ListSequenceTest {
 		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
 				ListSequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
-		Sequence<Integer> flatMap = sequence.flatten(ListSequence::from);
+		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 
-		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
+		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
+		assertThat(flatMap, is(emptyIterable()));
 	}
 
 	@Test
@@ -452,7 +453,7 @@ public class ListSequenceTest {
 	public void toMap() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		Sequence<Entry<String, Integer>> sequence = ListSequence.from(original);
+		Sequence<Entry<String, Integer>> sequence = ListSequence.from(new ArrayList<>(original.entrySet()));
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toMap();
@@ -489,7 +490,7 @@ public class ListSequenceTest {
 	public void toSortedMap() {
 		Map<String, Integer> original = Maps.builder("3", 3).put("1", 1).put("4", 4).put("2", 2).build();
 
-		Sequence<Entry<String, Integer>> sequence = ListSequence.from(original);
+		Sequence<Entry<String, Integer>> sequence = ListSequence.from(new ArrayList<>(original.entrySet()));
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toSortedMap();

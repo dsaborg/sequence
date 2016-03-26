@@ -19,8 +19,6 @@ package org.d2ab.sequence;
 import org.d2ab.iterable.ChainingIterable;
 
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -44,31 +42,6 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		return from(asList(items));
 	}
 
-	/**
-	 * Collect the elements in the given {@link Iterable} into a {@link List} and return a {@code ListSequence} from
-	 * it.
-	 */
-	public static <T> Sequence<T> from(Iterable<T> iterable) {
-		if (iterable instanceof ListSequence)
-			return (ListSequence<T>) iterable;
-		if (iterable instanceof List)
-			return from((List<T>) iterable);
-
-		List<T> list = new ArrayList<>();
-		iterable.forEach(list::add);
-		return from(list);
-	}
-
-	public static <T> Sequence<T> from(Iterator<T> iterator) {
-		List<T> list = new ArrayList<>();
-		iterator.forEachRemaining(list::add);
-		return from(list);
-	}
-
-	public static <T> Sequence<T> from(Stream<T> stream) {
-		return from(stream.collect(Collectors.toList()));
-	}
-
 	public static <T> Sequence<T> from(List<T> list) {
 		return new ListSequence<T>() {
 			@Override
@@ -76,10 +49,6 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				return list;
 			}
 		};
-	}
-
-	public static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
-		return from(map.entrySet());
 	}
 
 	@Override

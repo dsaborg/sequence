@@ -84,7 +84,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> from(Iterable<T> iterable) {
 		if (iterable instanceof List)
-			return ListSequence.from(iterable);
+			return ListSequence.from((List<T>) iterable);
 
 		return iterable::iterator;
 	}
