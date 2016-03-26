@@ -24,6 +24,7 @@ import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.util.Arrayz;
 import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 
@@ -97,8 +98,15 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 */
+	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	static <T> Sequence<T> from(Iterable<T>... iterables) {
+		if (Sequence.of(iterables).all(iterable -> iterable instanceof List)) {
+			List<List<T>> lists = new ArrayList<>(iterables.length);
+			Arrayz.forEach(iterable -> lists.add((List<T>) iterable), iterables);
+			return ChainedListSequence.from(lists);
+		}
+
 		return new ChainingIterable<>(iterables)::iterator;
 	}
 

@@ -54,12 +54,20 @@ public class SequenceTest {
 
 	@Test
 	public void ofOne() {
-		twice(() -> assertThat(_1, contains(1)));
+		Sequence<Integer> sequence = Sequence.of(1);
+		twice(() -> assertThat(sequence, contains(1)));
 	}
 
 	@Test
 	public void ofMany() {
-		twice(() -> assertThat(_123, contains(1, 2, 3)));
+		Sequence<Integer> sequence = Sequence.of(1, 2, 3);
+		twice(() -> assertThat(sequence, contains(1, 2, 3)));
+	}
+
+	@Test
+	public void ofList() {
+		Sequence<Integer> sequence = Sequence.from(asList(1, 2, 3), asList(4, 5, 6));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
@@ -346,7 +354,7 @@ public class SequenceTest {
 		}))).flatten();
 
 		twice(() -> {
-			// NPE if not lazy - see below
+			// IllegalStateException if not lazy - see below
 			Iterator<Integer> iterator = flattened.iterator();
 			assertThat(iterator.next(), is(1));
 			assertThat(iterator.next(), is(2));
