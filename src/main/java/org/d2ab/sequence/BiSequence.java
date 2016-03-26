@@ -666,11 +666,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> first() {
-		Iterator<Pair<L, R>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+		return get(0);
 	}
 
 	/**
@@ -678,13 +674,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * in the {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> second() {
-		Iterator<Pair<L, R>> iterator = iterator();
-
-		Iterators.skip(iterator);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+		return get(1);
 	}
 
 	/**
@@ -692,13 +682,15 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * in the {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> third() {
-		Iterator<Pair<L, R>> iterator = iterator();
+		return get(2);
+	}
 
-		Iterators.skip(iterator, 2);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
+	 * than the index.
+	 */
+	default Optional<Pair<L, R>> get(long index) {
+		return Iterators.get(iterator(), index);
 	}
 
 	/**

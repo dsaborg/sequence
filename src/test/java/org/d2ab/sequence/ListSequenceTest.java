@@ -38,18 +38,18 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class SequenceTest {
-	private final Sequence<Integer> empty = Sequence.empty();
-	private final Sequence<Integer> _1 = Sequence.of(1);
-	private final Sequence<Integer> _12 = Sequence.of(1, 2);
-	private final Sequence<Integer> _123 = Sequence.of(1, 2, 3);
-	private final Sequence<Integer> _1234 = Sequence.of(1, 2, 3, 4);
-	private final Sequence<Integer> _12345 = Sequence.of(1, 2, 3, 4, 5);
-	private final Sequence<Integer> _123456789 = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
-	private final Sequence<Integer> oneRandom = Sequence.of(17);
-	private final Sequence<Integer> twoRandom = Sequence.of(17, 32);
-	private final Sequence<Integer> threeRandom = Sequence.of(2, 3, 1);
-	private final Sequence<Integer> nineRandom = Sequence.of(67, 5, 43, 3, 5, 7, 24, 5, 67);
+public class ListSequenceTest {
+	private final Sequence<Integer> empty = ListSequence.empty();
+	private final Sequence<Integer> _1 = ListSequence.of(1);
+	private final Sequence<Integer> _12 = ListSequence.of(1, 2);
+	private final Sequence<Integer> _123 = ListSequence.of(1, 2, 3);
+	private final Sequence<Integer> _1234 = ListSequence.of(1, 2, 3, 4);
+	private final Sequence<Integer> _12345 = ListSequence.of(1, 2, 3, 4, 5);
+	private final Sequence<Integer> _123456789 = ListSequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+	private final Sequence<Integer> oneRandom = ListSequence.of(17);
+	private final Sequence<Integer> twoRandom = ListSequence.of(17, 32);
+	private final Sequence<Integer> threeRandom = ListSequence.of(2, 3, 1);
+	private final Sequence<Integer> nineRandom = ListSequence.of(67, 5, 43, 3, 5, 7, 24, 5, 67);
 
 	@Test
 	public void ofOne() {
@@ -106,7 +106,7 @@ public class SequenceTest {
 
 	@Test
 	public void ofNone() {
-		Sequence<Integer> sequence = Sequence.of();
+		Sequence<Integer> sequence = ListSequence.of();
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -118,59 +118,9 @@ public class SequenceTest {
 
 	@Test
 	public void ofNulls() {
-		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
+		Sequence<Integer> sequence = ListSequence.of(1, null, 2, 3, null);
 
 		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
-	}
-
-	@Test
-	public void fromSequence() {
-		Sequence<Integer> fromSequence = Sequence.from(_123);
-
-		twice(() -> assertThat(fromSequence, contains(1, 2, 3)));
-	}
-
-	@Test
-	public void fromIterable() {
-		Iterable<Integer> iterable = () -> asList(1, 2, 3).iterator();
-
-		Sequence<Integer> sequenceFromIterable = Sequence.from(iterable);
-
-		twice(() -> assertThat(sequenceFromIterable, contains(1, 2, 3)));
-	}
-
-	@Test
-	public void fromStream() {
-		Sequence<Integer> sequenceFromStream = Sequence.from(asList(1, 2, 3).stream());
-
-		assertThat(sequenceFromStream, contains(1, 2, 3));
-		expecting(IllegalStateException.class, sequenceFromStream::iterator);
-	}
-
-	@Test
-	public void fromEmptyStream() {
-		Sequence<Integer> sequenceFromStream = Sequence.from(Stream.of());
-
-		assertThat(sequenceFromStream, is(emptyIterable()));
-		expecting(IllegalStateException.class, sequenceFromStream::iterator);
-	}
-
-	@Test
-	public void fromIterables() {
-		Iterable<Integer> first = asList(1, 2, 3);
-		Iterable<Integer> second = asList(4, 5, 6);
-		Iterable<Integer> third = asList(7, 8, 9);
-
-		Sequence<Integer> sequenceFromIterables = Sequence.from(first, second, third);
-
-		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-	}
-
-	@Test
-	public void fromNoIterables() {
-		Sequence<Integer> sequenceFromNoIterables = Sequence.from();
-
-		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
 	}
 
 	@Test
@@ -210,8 +160,8 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void append() {
-		Sequence<Integer> appended = _123.append(Sequence.of(4, 5, 6)).append(Sequence.of(7, 8));
+	public void appendIterable() {
+		Sequence<Integer> appended = _123.append(ListSequence.of(4, 5, 6)).append(ListSequence.of(7, 8));
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
@@ -246,48 +196,16 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void appendIsLazy() {
-		Iterator<Integer> first = asList(1, 2, 3).iterator();
-		Iterator<Integer> second = asList(4, 5, 6).iterator();
-		Iterator<Integer> third = asList(7, 8).iterator();
-
-		Sequence<Integer> then = Sequence.from(first).append(() -> second).append(() -> third);
-
-		// check delayed iteration
-		assertThat(first.hasNext(), is(true));
-		assertThat(second.hasNext(), is(true));
-		assertThat(third.hasNext(), is(true));
-
-		assertThat(then, contains(1, 2, 3, 4, 5, 6, 7, 8));
-		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
-	}
-
-	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
-		Iterator<Integer> first = singletonList(1).iterator();
-		Iterator<Integer> second = singletonList(2).iterator();
-
-		Sequence<Integer> sequence = Sequence.from(first).append(() -> second);
-
-		// check delayed iteration
-		Iterator<Integer> iterator = sequence.iterator();
-		assertThat(iterator.next(), is(1));
-		assertThat(iterator.next(), is(2));
-		assertThat(iterator.hasNext(), is(false));
-
-		assertThat(sequence, is(emptyIterable())); // second run is empty
-	}
-
-	@Test
 	public void filter() {
-		Sequence<Integer> filtered = Sequence.of(1, 2, 3, 4, 5, 6, 7).filter(i -> (i % 2) == 0);
+		Sequence<Integer> filtered = ListSequence.of(1, 2, 3, 4, 5, 6, 7).filter(i -> (i % 2) == 0);
 
 		twice(() -> assertThat(filtered, contains(2, 4, 6)));
 	}
 
 	@Test
 	public void flatMapIterables() {
-		Sequence<List<Integer>> sequence = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
+		@SuppressWarnings("unchecked")
+		Sequence<List<Integer>> sequence = ListSequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
 
 		Sequence<Integer> flatMap = sequence.flatten(Function.identity());
 
@@ -296,7 +214,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapLazy() {
-		Sequence<Integer> flatMap = Sequence.of(asList(1, 2), (Iterable<Integer>) () -> {
+		@SuppressWarnings("unchecked")
+		Sequence<Integer> flatMap = ListSequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}).flatten(Function.identity());
 
@@ -310,32 +229,35 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterators() {
+		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
-				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
-		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
-		assertThat(flatMap, is(emptyIterable()));
+				ListSequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
+		Sequence<Integer> flatMap = sequence.flatten(ListSequence::from);
+
+		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void flatMapArrays() {
-		Sequence<Integer[]> sequence = Sequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
+		Sequence<Integer[]> sequence = ListSequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
+		Sequence<Integer> flatMap = sequence.flatten(ListSequence::of);
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void flattenIterables() {
-		Sequence<Integer> flattened = Sequence.of(asList(1, 2), asList(3, 4), asList(5, 6)).flatten();
+		@SuppressWarnings("unchecked")
+		Sequence<Integer> flattened = ListSequence.of(asList(1, 2), asList(3, 4), asList(5, 6)).flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void flattenLazy() {
-		Sequence<Integer> flattened = Sequence.of(asList(1, 2), (Iterable<Integer>) () -> {
+		@SuppressWarnings("unchecked")
+		Sequence<Integer> flattened = ListSequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}).flatten();
 
@@ -350,8 +272,9 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterators() {
+		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
-				Sequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
+				ListSequence.of(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator());
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -359,7 +282,7 @@ public class SequenceTest {
 
 	@Test
 	public void flattenArrays() {
-		Sequence<Integer[]> sequence = Sequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
+		Sequence<Integer[]> sequence = ListSequence.of(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
 		Sequence<Integer> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -373,7 +296,7 @@ public class SequenceTest {
 
 	@Test
 	public void mapIsLazy() {
-		Sequence<Integer> sequence = Sequence.of(1, null);
+		Sequence<Integer> sequence = ListSequence.of(1, null);
 
 		twice(() -> {
 			Iterator<String> iterator = sequence.map(Object::toString).iterator(); // NPE here if not lazy
@@ -411,66 +334,56 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void recurse() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1);
-		twice(() -> assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
-	}
-
-	@Test
-	public void recurseTwins() {
-		Sequence<String> sequence = Sequence.recurse(1, Object::toString, s -> Integer.parseInt(s) + 1);
-		twice(() -> assertThat(sequence.limit(10), contains("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")));
-	}
-
-	@Test
 	public void untilTerminal() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7).until(5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
 	}
 
 	@Test
 	public void untilNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).untilNull();
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, null, 6, 7).untilNull();
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilPredicate() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(i -> i == 7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7).until(i -> i == 5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
 	}
 
 	@Test
 	public void endingAtTerminal() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7).endingAt(5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).endingAtNull();
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, null)));
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, null, 6, 7).endingAtNull();
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, null)));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(i -> i == 7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7).endingAt(i -> i == 5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void toList() {
-		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
+		List<Integer> original = asList(1, 2, 3, 4, 5, 6, 7);
+		Sequence<Integer> sequence = ListSequence.from(original);
 
 		twice(() -> {
 			List<Integer> list = sequence.toList();
+			assertThat(list, sameInstance(original));
 			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
 		});
 	}
 
 	@Test
 	public void toLinkedList() {
-		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7);
 
 		twice(() -> {
 			List<Integer> list = sequence.toList(LinkedList::new);
@@ -481,7 +394,7 @@ public class SequenceTest {
 
 	@Test
 	public void toSet() {
-		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7);
 
 		twice(() -> {
 			Set<Integer> set = sequence.toSet();
@@ -492,7 +405,7 @@ public class SequenceTest {
 
 	@Test
 	public void toSortedSet() {
-		Sequence<Integer> sequence = Sequence.of(1, 5, 2, 6, 3, 4, 7);
+		Sequence<Integer> sequence = ListSequence.of(1, 5, 2, 6, 3, 4, 7);
 
 		twice(() -> {
 			SortedSet<Integer> sortedSet = sequence.toSortedSet();
@@ -503,7 +416,7 @@ public class SequenceTest {
 
 	@Test
 	public void toSetWithType() {
-		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, 6, 7);
+		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5, 6, 7);
 
 		twice(() -> {
 			Set<Integer> set = sequence.toSet(LinkedHashSet::new);
@@ -539,7 +452,7 @@ public class SequenceTest {
 	public void toMap() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
-		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
+		Sequence<Entry<String, Integer>> sequence = ListSequence.from(original);
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toMap();
@@ -576,7 +489,7 @@ public class SequenceTest {
 	public void toSortedMap() {
 		Map<String, Integer> original = Maps.builder("3", 3).put("1", 1).put("4", 4).put("2", 2).build();
 
-		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
+		Sequence<Entry<String, Integer>> sequence = ListSequence.from(original);
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toSortedMap();
@@ -695,19 +608,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void get() {
-		twice(() -> assertThat(empty.get(0), is(Optional.empty())));
-		twice(() -> assertThat(empty.get(17), is(Optional.empty())));
-		twice(() -> assertThat(_1.get(0), is(Optional.of(1))));
-		twice(() -> assertThat(_1.get(1), is(Optional.empty())));
-		twice(() -> assertThat(_1.get(17), is(Optional.empty())));
-		twice(() -> assertThat(_12345.get(0), is(Optional.of(1))));
-		twice(() -> assertThat(_12345.get(1), is(Optional.of(2))));
-		twice(() -> assertThat(_12345.get(4), is(Optional.of(5))));
-		twice(() -> assertThat(_12345.get(17), is(Optional.empty())));
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -806,14 +706,14 @@ public class SequenceTest {
 		BiSequence<Integer, String> emptyBiSequence = empty.toBiSequence();
 		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
 
-		BiSequence<Integer, String> oneBiSequence = Sequence.of(Pair.of(1, "1")).toBiSequence();
+		BiSequence<Integer, String> oneBiSequence = ListSequence.of(Pair.of(1, "1")).toBiSequence();
 		twice(() -> assertThat(oneBiSequence, contains(Pair.of(1, "1"))));
 
-		BiSequence<Integer, String> twoBiSequence = Sequence.of(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
+		BiSequence<Integer, String> twoBiSequence = ListSequence.of(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
 		BiSequence<Integer, String> threeBiSequence =
-				Sequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3")).toBiSequence();
+				ListSequence.of(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3")).toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -823,15 +723,15 @@ public class SequenceTest {
 		EntrySequence<Integer, String> emptyEntrySequence = empty.toEntrySequence();
 		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
 
-		EntrySequence<Integer, String> oneEntrySequence = Sequence.of(Entries.of(1, "1")).toEntrySequence();
+		EntrySequence<Integer, String> oneEntrySequence = ListSequence.of(Entries.of(1, "1")).toEntrySequence();
 		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.of(Entries.of(1, "1"), Entries.of(2, "2")).toEntrySequence();
+				ListSequence.of(Entries.of(1, "1"), Entries.of(2, "2")).toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
 
 		EntrySequence<Integer, String> threeEntrySequence =
-				Sequence.of(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3")).toEntrySequence();
+				ListSequence.of(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3")).toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
@@ -917,7 +817,7 @@ public class SequenceTest {
 		Sequence<Integer> oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains(17)));
 
-		Sequence<Integer> twoDuplicatesDistinct = Sequence.of(17, 17).distinct();
+		Sequence<Integer> twoDuplicatesDistinct = ListSequence.of(17, 17).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17)));
 
 		Sequence<Integer> nineDistinct = nineRandom.distinct();

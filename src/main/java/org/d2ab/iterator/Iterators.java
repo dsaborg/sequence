@@ -48,8 +48,7 @@ public class Iterators {
 	}
 
 	public static void skip(Iterator<?> iterator, long steps) {
-		long count = steps;
-		while (count-- > 0 && iterator.hasNext())
+		while (steps-- > 0 && iterator.hasNext())
 			iterator.next();
 	}
 
@@ -79,5 +78,17 @@ public class Iterators {
 		while (iterator.hasNext())
 			result = operator.apply(result, iterator.next());
 		return result;
+	}
+
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
+	 * items than the index.
+	 */
+	public static <T> Optional<T> get(Iterator<T> iterator, long index) {
+		skip(iterator, index);
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		return Optional.of(iterator.next());
 	}
 }

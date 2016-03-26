@@ -675,11 +675,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> first() {
-		Iterator<Entry<K, V>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+		return get(0);
 	}
 
 	/**
@@ -687,13 +683,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * entries in the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> second() {
-		Iterator<Entry<K, V>> iterator = iterator();
-
-		Iterators.skip(iterator);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+		return get(1);
 	}
 
 	/**
@@ -701,13 +691,15 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * entries in the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> third() {
-		Iterator<Entry<K, V>> iterator = iterator();
+		return get(2);
+	}
 
-		Iterators.skip(iterator, 2);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
+	 * than the index.
+	 */
+	default Optional<Entry<K, V>> get(long index) {
+		return Iterators.get(iterator(), index);
 	}
 
 	/**

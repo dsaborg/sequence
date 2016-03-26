@@ -34,9 +34,6 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyIterator;
-import static java.util.Collections.singleton;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
 
@@ -54,7 +51,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterable)
 	 */
 	static <T> Sequence<T> empty() {
-		return from(emptyIterator());
+		return ListSequence.empty();
 	}
 
 	/**
@@ -64,7 +61,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterable)
 	 */
 	static <T> Sequence<T> of(T item) {
-		return from(singleton(item));
+		return ListSequence.of(item);
 	}
 
 	/**
@@ -75,7 +72,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SafeVarargs
 	static <T> Sequence<T> of(T... items) {
-		return from(asList(items));
+		return ListSequence.of(items);
 	}
 
 	/**
@@ -86,6 +83,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterator)
 	 */
 	static <T> Sequence<T> from(Iterable<T> iterable) {
+		if (iterable instanceof List)
+			return ListSequence.from(iterable);
+
 		return iterable::iterator;
 	}
 
@@ -503,18 +503,16 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Append the elements of the given {@link Iterable} to the end of this {@code Sequence}.
 	 */
-	default Sequence<T> append(Iterable<T> that) {
-		@SuppressWarnings("unchecked")
-		Iterable<T> chainingSequence = new ChainingIterable<>(this, that);
-		return chainingSequence::iterator;
+	default Sequence<T> append(Iterable<T> iterable) {
+		return new ChainingIterable<>(this, iterable)::iterator;
 	}
 
 	/**
 	 * Append the given elements to the end of this {@code Sequence}.
 	 */
 	@SuppressWarnings("unchecked")
-	default Sequence<T> append(T... objects) {
-		return append(Iterables.from(objects));
+	default Sequence<T> append(T... items) {
+		return append(Iterables.from(items));
 	}
 
 	/**
@@ -688,7 +686,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Collect this {@code Sequence} into a {@link Collection} of the type determined by the given constructor.
 	 */
 	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
-		return collect(constructor, Collection::add);
+		return collectInto(constructor.get());
 	}
 
 	/**
@@ -767,11 +765,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@code Sequence}.
 	 */
 	default Optional<T> first() {
-		Iterator<T> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+		return get(0);
 	}
 
 	/**
@@ -779,13 +773,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * elements in the {@code Sequence}.
 	 */
 	default Optional<T> second() {
-		Iterator<T> iterator = iterator();
-
-		Iterators.skip(iterator);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+		return get(1);
 	}
 
 	/**
@@ -793,13 +781,15 @@ public interface Sequence<T> extends Iterable<T> {
 	 * elements in the {@code Sequence}.
 	 */
 	default Optional<T> third() {
-		Iterator<T> iterator = iterator();
+		return get(2);
+	}
 
-		Iterators.skip(iterator, 2);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		return Optional.of(iterator.next());
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than
+	 * the index.
+	 */
+	default Optional<T> get(long index) {
+		return Iterators.get(iterator(), index);
 	}
 
 	/**
@@ -914,7 +904,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new WindowingIterator<T, Sequence<T>>(iterator(), window, step) {
 			@Override
 			protected Sequence<T> toSequence(List<T> list) {
-				return Sequence.from(list);
+				return ListSequence.from(list);
 			}
 		};
 	}
@@ -936,7 +926,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PredicatePartitioningIterator<T, Sequence<T>>(iterator(), predicate) {
 			@Override
 			protected Sequence<T> toSequence(List<T> list) {
-				return Sequence.from(list);
+				return ListSequence.from(list);
 			}
 		};
 	}
