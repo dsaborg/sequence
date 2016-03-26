@@ -19,6 +19,7 @@ package org.d2ab.iterable;
 import org.d2ab.util.Pair;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -69,5 +70,34 @@ public class Iterables {
 		else
 			throw new ClassCastException(
 					"Required an Iterable, Iterator, Array or Stream but got: " + container.getClass());
+	}
+
+	/**
+	 * @return true if all elements in this {@code Sequence} satisfy the given predicate, false otherwise.
+	 */
+	public static <T> boolean all(Iterable<T> iterable, Predicate<? super T> predicate) {
+		for (T each : iterable) {
+			if (!predicate.test(each))
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @return true if no elements in this {@code Sequence} satisfy the given predicate, false otherwise.
+	 */
+	public static <T> boolean none(Iterable<T> iterable, Predicate<? super T> predicate) {
+		return !any(iterable, predicate);
+	}
+
+	/**
+	 * @return true if any element in this {@code Sequence} satisfies the given predicate, false otherwise.
+	 */
+	public static <T> boolean any(Iterable<T> iterable, Predicate<? super T> predicate) {
+		for (T each : iterable) {
+			if (predicate.test(each))
+				return true;
+		}
+		return false;
 	}
 }

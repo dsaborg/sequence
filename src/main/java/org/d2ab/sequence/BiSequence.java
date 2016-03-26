@@ -831,11 +831,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @return true if all elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(BiPredicate<? super L, ? super R> biPredicate) {
-		Predicate<? super Pair<L, R>> predicate = Pair.asPredicate(biPredicate);
-		for (Pair<L, R> each : this)
-			if (!predicate.test(each))
-				return false;
-		return true;
+		return Iterables.all(this, Pair.asPredicate(biPredicate));
 	}
 
 	/**
@@ -849,11 +845,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @return true if any element in this {@code BiSequence} satisfies the given predicate, false otherwise.
 	 */
 	default boolean any(BiPredicate<? super L, ? super R> biPredicate) {
-		Predicate<? super Pair<L, R>> predicate = Pair.asPredicate(biPredicate);
-		for (Pair<L, R> each : this)
-			if (predicate.test(each))
-				return true;
-		return false;
+		return Iterables.any(this, Pair.asPredicate(biPredicate));
 	}
 
 	/**

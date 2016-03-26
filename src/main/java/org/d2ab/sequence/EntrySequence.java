@@ -841,11 +841,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @return true if all elements in this {@code EntrySequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(BiPredicate<? super K, ? super V> biPredicate) {
-		Predicate<? super Entry<K, V>> predicate = Entries.asPredicate(biPredicate);
-		for (Entry<K, V> each : this)
-			if (!predicate.test(each))
-				return false;
-		return true;
+		return Iterables.all(this, Entries.asPredicate(biPredicate));
 	}
 
 	/**
@@ -859,11 +855,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @return true if any element in this {@code EntrySequence} satisfies the given predicate, false otherwise.
 	 */
 	default boolean any(BiPredicate<? super K, ? super V> biPredicate) {
-		Predicate<? super Entry<K, V>> predicate = Entries.asPredicate(biPredicate);
-		for (Entry<K, V> each : this)
-			if (predicate.test(each))
-				return true;
-		return false;
+		return Iterables.any(this, Entries.asPredicate(biPredicate));
 	}
 
 	/**

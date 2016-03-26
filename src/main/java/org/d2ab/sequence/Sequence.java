@@ -1008,11 +1008,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return true if all elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(Predicate<? super T> predicate) {
-		for (T each : this) {
-			if (!predicate.test(each))
-				return false;
-		}
-		return true;
+		return Iterables.all(this, predicate);
 	}
 
 	/**
@@ -1026,11 +1022,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return true if any element in this {@code Sequence} satisfies the given predicate, false otherwise.
 	 */
 	default boolean any(Predicate<? super T> predicate) {
-		for (T each : this) {
-			if (predicate.test(each))
-				return true;
-		}
-		return false;
+		return Iterables.any(this, predicate);
 	}
 
 	/**
