@@ -33,11 +33,13 @@ public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (hasNext) { // already checked
+		if (hasNext) {
+			// already checked
 			return true;
 		}
 
-		do { // find next matching, bail out if EOF
+		do {
+			// find next matching, bail out if EOF
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				return false;
@@ -53,6 +55,7 @@ public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
+
 		T nextValue = next;
 		hasNext = false;
 		next = null;

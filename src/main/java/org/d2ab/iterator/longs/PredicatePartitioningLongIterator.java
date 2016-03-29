@@ -72,4 +72,9 @@ public class PredicatePartitioningLongIterator<T> extends DelegatingIterator<Lon
 			buffer = Arrays.copyOf(buffer, size);
 		return LongSequence.of(buffer);
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

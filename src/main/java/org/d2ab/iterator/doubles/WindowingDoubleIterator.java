@@ -64,4 +64,9 @@ public class WindowingDoubleIterator extends DelegatingIterator<Double, DoubleIt
 		started = true;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

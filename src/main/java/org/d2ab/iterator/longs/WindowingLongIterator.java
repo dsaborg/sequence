@@ -64,4 +64,9 @@ public class WindowingLongIterator extends DelegatingIterator<Long, LongIterator
 		started = true;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -52,4 +52,9 @@ public class KeyFlatteningEntryIterator<K, V, KK>
 
 		return Entries.of(keyIterator.next(), entry.getValue());
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

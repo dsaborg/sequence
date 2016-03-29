@@ -66,4 +66,9 @@ public abstract class PairingIterator<T, E> extends DelegatingReferenceIterator<
 	}
 
 	protected abstract E pair(T first, T second);
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

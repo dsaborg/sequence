@@ -49,8 +49,8 @@ public class SequenceTest {
 	private final Sequence<Integer> oneRandom = Sequence.from(new ArrayDeque<>(singletonList(17)));
 	private final Sequence<Integer> twoRandom = Sequence.from(new ArrayDeque<>(asList(17, 32)));
 	private final Sequence<Integer> threeRandom = Sequence.from(new ArrayDeque<>(asList(2, 3, 1)));
-	private final Sequence<Integer> nineRandom =
-			Sequence.from(new ArrayDeque<>(asList(67, 5, 43, 3, 5, 7, 24, 5, 67)));
+	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(asList(67, 5, 43, 3, 5, 7, 24, 5,
+	                                                                                   67)));
 
 	@Test
 	public void ofOne() {
@@ -321,8 +321,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(
-				new ArrayDeque<>(asList(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator()
-				)));
+				new ArrayDeque<>(asList(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator())));
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -330,8 +329,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapArrays() {
-		Sequence<Integer[]> sequence = Sequence.from(
-				new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
+		Sequence<Integer[]> sequence =
+				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
 
@@ -365,8 +364,7 @@ public class SequenceTest {
 	@Test
 	public void flattenIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(
-				new ArrayDeque<>(asList(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator()
-				)));
+				new ArrayDeque<>(asList(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator())));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -374,8 +372,8 @@ public class SequenceTest {
 
 	@Test
 	public void flattenArrays() {
-		Sequence<Integer[]> sequence = Sequence.from(
-				new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
+		Sequence<Integer[]> sequence =
+				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
 
 		Sequence<Integer> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -834,12 +832,13 @@ public class SequenceTest {
 		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(asList(Entries.of(1, "1"), Entries.of(2, "2"))))
-				        .toEntrySequence();
+				Sequence.from(new ArrayDeque<Entry>(asList(Entries.of(1, "1"), Entries.of(2, "2")))).toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
 
-		EntrySequence<Integer, String> threeEntrySequence = Sequence.from(
-				new ArrayDeque<Entry>(asList(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3")))).toEntrySequence();
+		EntrySequence<Integer, String> threeEntrySequence =
+				Sequence.from(new ArrayDeque<Entry>(asList(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3,
+				                                                                                              "3"))))
+				        .toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
 	}
@@ -1359,5 +1358,45 @@ public class SequenceTest {
 		BiSequence<Long, Integer> indexed = _12345.index();
 		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
 		                                         Pair.of(4L, 5))));
+	}
+
+	@Test
+	public void remoteIterator() {
+		Iterator<Integer> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(2, 4, 5)));
+	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		Sequence<Integer> filtered = _12345.filter(x -> x % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(_12345, contains(2, 4)));
+	}
+
+	@Test
+	public void removeAllAfterAppend() {
+		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
+		appended.removeAll();
+
+		twice(() -> assertThat(appended, is(emptyIterable())));
+		twice(() -> assertThat(_1, is(emptyIterable())));
+	}
+
+	@Test
+	public void removeAllAfterMapBack() {
+		Sequence<Integer> mappedFiltered =
+				_12345.mapBack((x, y) -> x != null ? x + y : y).filter(x -> x % 3 != 0);
+		mappedFiltered.removeAll();
+
+		twice(() -> assertThat(mappedFiltered, contains(2, 7)));
+		twice(() -> assertThat(_12345, contains(2, 5)));
 	}
 }

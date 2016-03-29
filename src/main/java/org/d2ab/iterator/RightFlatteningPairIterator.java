@@ -50,4 +50,9 @@ public class RightFlatteningPairIterator<L, R, RR> extends DelegatingReferenceIt
 
 		return Pair.of(pair.getLeft(), rightIterator.next());
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

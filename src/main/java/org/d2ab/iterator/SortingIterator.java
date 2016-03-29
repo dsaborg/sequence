@@ -57,4 +57,9 @@ public class SortingIterator<T> extends UnaryReferenceIterator<T> {
 
 		return sortedIterator.next();
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

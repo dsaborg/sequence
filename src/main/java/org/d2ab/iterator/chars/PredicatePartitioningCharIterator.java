@@ -71,4 +71,9 @@ public class PredicatePartitioningCharIterator<T> extends DelegatingIterator<Cha
 			buffer = Arrays.copyOf(buffer, size);
 		return CharSeq.of(buffer);
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

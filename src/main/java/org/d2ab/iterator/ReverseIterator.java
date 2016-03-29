@@ -47,4 +47,9 @@ public class ReverseIterator<T> extends UnaryReferenceIterator<T> {
 
 		return listIterator.previous();
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

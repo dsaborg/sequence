@@ -72,4 +72,9 @@ public class PredicatePartitioningIntIterator<T> extends DelegatingIterator<Inte
 			buffer = Arrays.copyOf(buffer, size);
 		return IntSequence.of(buffer);
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

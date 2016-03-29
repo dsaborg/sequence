@@ -100,4 +100,11 @@ public class Iterables {
 		}
 		return false;
 	}
+
+	public static <T> void removeAll(Iterable<T> iterable) {
+		for (Iterator<T> iterator = iterable.iterator(); iterator.hasNext(); ) {
+			iterator.next();
+			iterator.remove();
+		}
+	}
 }

@@ -61,4 +61,9 @@ public class ForwardPeekingMappingDoubleIterator extends UnaryDoubleIterator {
 		hasCurrent = hasNext;
 		return result;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

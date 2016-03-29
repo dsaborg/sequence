@@ -64,4 +64,9 @@ public class WindowingIntIterator extends DelegatingIterator<Integer, IntIterato
 		started = true;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

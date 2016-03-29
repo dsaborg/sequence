@@ -64,4 +64,9 @@ public class WindowingCharIterator extends DelegatingIterator<Character, CharIte
 		started = true;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

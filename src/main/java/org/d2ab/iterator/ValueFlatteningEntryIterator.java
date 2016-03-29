@@ -52,4 +52,9 @@ public class ValueFlatteningEntryIterator<K, V, VV>
 
 		return Entries.of(entry.getKey(), valueIterator.next());
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

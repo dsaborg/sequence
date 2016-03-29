@@ -67,4 +67,9 @@ public abstract class PredicatePartitioningIterator<T, S> extends DelegatingRefe
 	}
 
 	protected abstract S toSequence(List<T> list);
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

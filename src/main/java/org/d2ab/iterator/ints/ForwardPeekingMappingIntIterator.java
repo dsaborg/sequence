@@ -61,4 +61,9 @@ public class ForwardPeekingMappingIntIterator extends UnaryIntIterator {
 		hasCurrent = hasNext;
 		return result;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -32,4 +32,9 @@ public abstract class DelegatingIterator<T, I extends Iterator<T>, U> implements
 	public boolean hasNext() {
 		return iterator.hasNext();
 	}
+
+	@Override
+	public void remove() {
+		iterator.remove();
+	}
 }

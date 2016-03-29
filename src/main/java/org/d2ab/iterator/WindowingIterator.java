@@ -61,4 +61,9 @@ public abstract class WindowingIterator<T, S> extends DelegatingReferenceIterato
 	}
 
 	protected abstract S toSequence(List<T> list);
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

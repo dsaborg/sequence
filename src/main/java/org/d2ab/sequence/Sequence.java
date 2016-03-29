@@ -1249,4 +1249,8 @@ public interface Sequence<T> extends Iterable<T> {
 			}
 		};
 	}
+
+	default void removeAll() {
+		Iterables.removeAll(this);
+	}
 }

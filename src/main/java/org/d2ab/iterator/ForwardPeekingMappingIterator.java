@@ -59,4 +59,9 @@ public abstract class ForwardPeekingMappingIterator<T, U> extends DelegatingRefe
 	protected abstract T mapFollowing(boolean hasFollowing, T following);
 
 	protected abstract U mapNext(T following);
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

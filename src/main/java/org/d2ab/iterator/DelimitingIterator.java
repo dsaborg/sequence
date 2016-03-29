@@ -65,4 +65,9 @@ public class DelimitingIterator<U extends R, R> extends UnaryReferenceIterator<R
 		boolean sendDelimiter = delimiter.isPresent() && !(delimiterNext = !delimiterNext);
 		return sendDelimiter ? delimiter.get() : iterator.next();
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

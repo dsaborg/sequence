@@ -72,4 +72,9 @@ public class PredicatePartitioningDoubleIterator<T> extends DelegatingIterator<D
 			buffer = Arrays.copyOf(buffer, size);
 		return DoubleSequence.of(buffer);
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }
