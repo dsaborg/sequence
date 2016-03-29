@@ -21,7 +21,7 @@ import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -90,7 +91,7 @@ public class SequenceDocumentationTest {
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
-		Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
+		Stream<String> abcd = asList("a", "b", "c", "d").stream();
 		Stream<String> abbccd = Sequence.from(abcd).pairs().<String>flatten().stream();
 
 		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
@@ -115,7 +116,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void functionalInterface() {
-		List list = Arrays.asList(1, 2, 3, 4, 5);
+		List list = asList(1, 2, 3, 4, 5);
 
 		// Sequence as @FunctionalInterface of list's Iterator
 		Sequence<Integer> sequence = list::iterator;
@@ -207,5 +208,25 @@ public class SequenceDocumentationTest {
 				word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1)).map(CharSeq::asString);
 
 		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
+	}
+
+	@Test
+	public void removeAll() {
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+		Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
+
+		assertThat(list, contains(2, 4));
+	}
+
+	@Test
+	public void updatingCollection() {
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+		Sequence<Integer> sequence = Sequence.from(list);
+
+		list.add(6);
+
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 	}
 }

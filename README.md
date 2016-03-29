@@ -264,6 +264,29 @@ Sequence<String> consonantsVowels = word.batch((a, b) -> (vowels.indexOf(a) == -
 assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 ```
 
+#### Updating
+
+`Sequences` have full support for updating the underlying collection, where possible, both through `Iterator#remove()`
+and by modifying the underlying collection directly in between iterations.
+
+```Java
+List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
+
+assertThat(list, contains(2, 4));
+```
+
+```Java
+List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+Sequence<Integer> sequence = Sequence.from(list);
+
+list.add(6);
+
+assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+```
+
 ### Conclusion
 
 Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
