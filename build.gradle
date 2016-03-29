@@ -19,7 +19,7 @@ apply plugin: 'java-library-distribution'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = '0.14.0'
+version = '0.15.0'
 group = 'org.d2ab'
 archivesBaseName = project.name
 
