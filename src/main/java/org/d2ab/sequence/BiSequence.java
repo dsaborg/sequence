@@ -965,4 +965,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 			return list.iterator();
 		};
 	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
+	default void removeAll() {
+		Iterables.removeAll(this);
+	}
 }

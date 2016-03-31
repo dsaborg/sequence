@@ -127,6 +127,11 @@ public abstract class ListSequence<T> implements Sequence<T> {
 					public T next() {
 						return listIterator.previous();
 					}
+
+					@Override
+					public void remove() {
+						listIterator.remove();
+					}
 				};
 			}
 		};

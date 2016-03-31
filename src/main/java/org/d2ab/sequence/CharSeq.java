@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.chars.*;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.chars.ChainingCharIterable;
 import org.d2ab.iterable.chars.CharIterable;
 import org.d2ab.iterator.chars.*;
@@ -274,6 +275,11 @@ public interface CharSeq extends CharIterable {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextChar());
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
 			}
 		};
 	}
@@ -730,5 +736,12 @@ public interface CharSeq extends CharIterable {
 	 */
 	default Sequence<CharSeq> batch(CharBiPredicate predicate) {
 		return () -> new PredicatePartitioningCharIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
+	default void removeAll() {
+		Iterables.removeAll(this);
 	}
 }

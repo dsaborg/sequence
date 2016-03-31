@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
 import org.d2ab.iterator.doubles.*;
@@ -245,6 +246,11 @@ public interface DoubleSequence extends DoubleIterable {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextDouble());
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
 			}
 		};
 	}
@@ -661,6 +667,11 @@ public interface DoubleSequence extends DoubleIterable {
 			public boolean hasNext() {
 				return iterator.hasNext();
 			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		};
 	}
 
@@ -714,6 +725,11 @@ public interface DoubleSequence extends DoubleIterable {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextDouble());
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
 			}
 		};
 	}
@@ -771,5 +787,12 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default Sequence<DoubleSequence> batch(DoubleBiPredicate predicate) {
 		return () -> new PredicatePartitioningDoubleIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
+	default void removeAll() {
+		Iterables.removeAll(this);
 	}
 }

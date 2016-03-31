@@ -58,6 +58,11 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 			public int nextInt() {
 				return iterator.next();
 			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		};
 	}
 

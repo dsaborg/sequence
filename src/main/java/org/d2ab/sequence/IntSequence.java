@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.ints.IntBiPredicate;
 import org.d2ab.function.ints.IntToCharFunction;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
 import org.d2ab.iterator.chars.DelegatingCharIterator;
@@ -394,6 +395,11 @@ public interface IntSequence extends IntIterable {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextInt());
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
 			}
 		};
 	}
@@ -898,5 +904,12 @@ public interface IntSequence extends IntIterable {
 	 */
 	default Sequence<IntSequence> batch(IntBiPredicate predicate) {
 		return () -> new PredicatePartitioningIntIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
+	default void removeAll() {
+		Iterables.removeAll(this);
 	}
 }

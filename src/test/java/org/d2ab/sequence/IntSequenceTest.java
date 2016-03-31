@@ -878,4 +878,15 @@ public class IntSequenceTest {
 		                       contains(contains(6, 6), contains(1, 7), contains(1, 2, 17), contains(5), contains(4)
 		                       )));
 	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4));
+
+		IntSequence filtered = IntSequence.from(original).filter(x -> x % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(original, contains(2, 4)));
+	}
 }

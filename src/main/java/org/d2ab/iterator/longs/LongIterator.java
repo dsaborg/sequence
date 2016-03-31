@@ -58,6 +58,11 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			public long nextLong() {
 				return iterator.next();
 			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		};
 	}
 

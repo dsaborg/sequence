@@ -879,4 +879,15 @@ public class LongSequenceTest {
 		                       contains(contains(6L, 6L), contains(1L, 7L), contains(1L, 2L, 17L), contains(5L),
 		                                contains(4L))));
 	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		List<Long> original = new ArrayList<>(asList(1L, 2L, 3L, 4L));
+
+		LongSequence filtered = LongSequence.from(original).filter(x -> x % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(original, contains(2L, 4L)));
+	}
 }

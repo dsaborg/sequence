@@ -1011,7 +1011,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flattenBiFunction() {
-		EntrySequence<String, Integer> flattened = _123.flatten((k, v) -> asList(Entries.of(k, v), Entries.of("0", 0)));
+		EntrySequence<String, Integer> flattened = _123.flatten((k, v) -> asList(Entries.of(k, v), Entries.of("0",
+		                                                                                                      0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Entries.of("1", 1), Entries.of("0", 0), Entries.of("2", 2), Entries.of("0", 0),
 		                                Entries.of("3", 3), Entries.of("0", 0))));
@@ -1035,5 +1036,16 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(flattened,
 		                       contains(Entries.of("1", 1), Entries.of("1", 2), Entries.of("1", 3), Entries.of("3", 2),
 		                                Entries.of("3", 3), Entries.of("3", 4))));
+	}
+
+	@Test
+	public void removeAll() {
+		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+		EntrySequence<String, Integer> filtered = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(original.entrySet(), contains(Entries.of("2", 2), Entries.of("4", 4))));
 	}
 }

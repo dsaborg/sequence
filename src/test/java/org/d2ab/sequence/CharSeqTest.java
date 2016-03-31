@@ -782,4 +782,15 @@ public class CharSeqTest {
 		                       contains(contains('f', 'f'), contains('a', 'g'), contains('a', 'b', 'q'), contains('e'),
 		                                contains('d'))));
 	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		List<Character> original = new ArrayList<>(asList('a', 'b', 'c', 'd'));
+
+		CharSeq filtered = CharSeq.from(original).filter(x -> x == 'b');
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(original, contains('a', 'c', 'd')));
+	}
 }

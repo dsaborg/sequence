@@ -975,4 +975,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 			return list.iterator();
 		};
 	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
+	default void removeAll() {
+		Iterables.removeAll(this);
+	}
 }

@@ -822,4 +822,15 @@ public class DoubleSequenceTest {
 		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5.0),
 		                                contains(4.0))));
 	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		List<Double> original = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0));
+
+		DoubleSequence filtered = DoubleSequence.from(original).filter(x -> x % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(original, contains(2.0, 4.0)));
+	}
 }

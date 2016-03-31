@@ -1239,6 +1239,9 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new SwappingIterator<>(iterator(), swapper);
 	}
 
+	/**
+	 * @return a {@link BiSequence} of this sequence paired up with the index of each element.
+	 */
 	default BiSequence<Long, T> index() {
 		return () -> new DelegatingReferenceIterator<T, Pair<Long, T>>(iterator()) {
 			private long index;
@@ -1250,6 +1253,9 @@ public interface Sequence<T> extends Iterable<T> {
 		};
 	}
 
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}

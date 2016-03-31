@@ -90,6 +90,11 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 			public char nextChar() {
 				return iterator.next();
 			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		};
 	}
 
@@ -103,6 +108,11 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextInt();
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
 			}
 		};
 	}

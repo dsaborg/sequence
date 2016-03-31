@@ -1005,4 +1005,15 @@ public class BiSequenceTest {
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("1", 2), Pair.of("1", 3), Pair.of("3", 2),
 		                                           Pair.of("3", 3), Pair.of("3", 4))));
 	}
+
+	@Test
+	public void removeAll() {
+		List<Pair<String, Integer>> original = new ArrayList<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+
+		BiSequence<String, Integer> filtered = BiSequence.from(original).filter((l, r) -> r % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(original, contains(Pair.of("2", 2), Pair.of("4", 4))));
+	}
 }

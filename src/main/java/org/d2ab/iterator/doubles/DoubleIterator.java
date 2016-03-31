@@ -58,6 +58,11 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 			public double nextDouble() {
 				return iterator.next();
 			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		};
 	}
 

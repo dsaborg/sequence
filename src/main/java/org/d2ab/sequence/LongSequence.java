@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.function.longs.LongToCharFunction;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.longs.ChainingLongIterable;
 import org.d2ab.iterable.longs.LongIterable;
 import org.d2ab.iterator.DelegatingIterator;
@@ -892,5 +893,12 @@ public interface LongSequence extends LongIterable {
 	 */
 	default Sequence<LongSequence> batch(LongBiPredicate predicate) {
 		return () -> new PredicatePartitioningLongIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 */
+	default void removeAll() {
+		Iterables.removeAll(this);
 	}
 }
