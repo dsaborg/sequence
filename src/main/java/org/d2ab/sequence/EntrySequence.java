@@ -131,7 +131,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
-	static <K, V> EntrySequence<K, V> from(Iterable<? extends Entry<K, V>>... iterables) {
+	static <K, V> EntrySequence<K, V> from(Iterable<Entry<K, V>>... iterables) {
 		return () -> new ChainingIterator<>(iterables);
 	}
 

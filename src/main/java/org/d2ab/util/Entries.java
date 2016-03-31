@@ -90,7 +90,7 @@ public class Entries {
 		return entry -> action.accept(entry.getKey(), entry.getValue());
 	}
 
-	public static <K, V> boolean test(Entry<K, V> entry, BiPredicate<? super K, ? super V> biPredicate) {
+	public static <K, V> boolean test(Entry<K, V> entry, BiPredicate<K, V> biPredicate) {
 		return asPredicate(biPredicate).test(entry);
 	}
 

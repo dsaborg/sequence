@@ -207,17 +207,19 @@ public class ListSequenceTest {
 		@SuppressWarnings("unchecked")
 		Sequence<List<Integer>> sequence = ListSequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
 
-		Sequence<Integer> flatMap = sequence.flatten(Function.identity());
+		Function<List<Integer>, List<Integer>> identity = Function.identity();
+		Sequence<Integer> flatMap = sequence.flatten(identity);
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void flatMapLazy() {
+		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
 		@SuppressWarnings("unchecked")
 		Sequence<Integer> flatMap = ListSequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
-		}).flatten(Function.identity());
+		}).flatten(identity);
 
 		twice(() -> {
 			Iterator<Integer> iterator = flatMap.iterator(); // NPE if not lazy - expected later below
