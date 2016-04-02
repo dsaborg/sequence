@@ -550,11 +550,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Filter the elements in this {@code Sequence} while peeking at the previous element in the iteration, keeping
+	 * Filter the elements in this {@code Sequence} while peeking at the next element in the iteration, keeping
 	 * only the elements that match the given {@link BiPredicate}.
 	 * <p>
-	 * The predicate has access to the previous element and the next element in the iteration. {@code null} is provided
-	 * as the first previous value when the next element is the first value in the sequence.
+	 * The predicate has access to the current element and the next element in the iteration. {@code null} is provided
+	 * as the final next value when the current element is the last value in the sequence.
 	 */
 	default Sequence<T> filterForward(BiPredicate<? super T, ? super T> predicate) {
 		return () -> new ForwardPeekingFilteringIterator<>(iterator(), predicate);
