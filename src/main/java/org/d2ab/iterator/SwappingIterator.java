@@ -42,7 +42,7 @@ public class SwappingIterator<T> extends ForwardPeekingMappingIterator<T, T> {
 	}
 
 	@Override
-	protected T mapNext(T following) {
+	protected T mapNext(T next, T following) {
 		return next;
 	}
 }

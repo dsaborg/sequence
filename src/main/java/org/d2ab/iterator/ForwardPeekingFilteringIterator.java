@@ -18,50 +18,52 @@ package org.d2ab.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
 
-/**
- * Base class for iterators the can peek at the following item of each item in the iteration.
- */
-public abstract class ForwardPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
-	protected T next;
-	protected boolean hasNext;
+public class ForwardPeekingFilteringIterator<T> extends UnaryReferenceIterator<T> {
+	private final BiPredicate<? super T, ? super T> predicate;
+
+	private T next;
+	private boolean hasNext;
+	private T following;
+	private boolean hasFollowing;
 	private boolean started;
 
-	public ForwardPeekingMappingIterator(Iterator<T> iterator) {
+	public ForwardPeekingFilteringIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> predicate) {
 		super(iterator);
+		this.predicate = predicate;
 	}
 
 	@Override
 	public boolean hasNext() {
+		if (hasNext)
+			return true;
 		if (!started) {
 			if (iterator.hasNext()) {
-				next = iterator.next();
-				hasNext = true;
+				following = iterator.next();
+				hasFollowing = true;
 			}
 			started = true;
 		}
+		if (!hasFollowing)
+			return false;
+
+		do {
+			next = following;
+			hasFollowing = iterator.hasNext();
+			following = hasFollowing ? iterator.next() : null;
+		} while (!(hasNext = predicate.test(next, following)) && hasFollowing);
+
 		return hasNext;
 	}
 
 	@Override
-	public U next() {
-		if (!hasNext())
+	public T next() {
+		if (!hasNext()) {
 			throw new NoSuchElementException();
+		}
 
-		boolean hasFollowing = iterator.hasNext();
-		T following = mapFollowing(hasFollowing, hasFollowing ? iterator.next() : null);
-		U mapped = mapNext(next, following);
-		next = following;
-		hasNext = hasFollowing;
-		return mapped;
-	}
-
-	protected abstract T mapFollowing(boolean hasFollowing, T following);
-
-	protected abstract U mapNext(T next, T following);
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		hasNext = false;
+		return next;
 	}
 }

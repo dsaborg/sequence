@@ -452,13 +452,12 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Map this {@code Sequence} to another sequence while peeking at the previous element in the iteration.
 	 * <p>
 	 * The mapper has access to the previous element and the next element in the iteration. {@code null} is provided
-	 * as the first previous value when the next element is the first value in the sequence, and there is no previous
-	 * value.
+	 * as the first previous value when the next element is the first value in the sequence.
 	 */
 	default <U> Sequence<U> mapBack(BiFunction<? super T, ? super T, ? extends U> mapper) {
 		return () -> new BackPeekingMappingIterator<T, U>(iterator()) {
 			@Override
-			protected U mapNext(T next) {
+			protected U map(T previous, T next) {
 				return mapper.apply(previous, next);
 			}
 		};
@@ -468,8 +467,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Map this {@code Sequence} to another sequence while peeking at the following element in the iteration.
 	 * <p>
 	 * The mapper has access to the next element and the following element in the iteration. {@code null} is
-	 * provided as the last following value when the next element is the last value in the sequence and there is no
-	 * following value.
+	 * provided as the last following value when the next element is the last value in the sequence.
 	 */
 	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
 		return () -> new ForwardPeekingMappingIterator<T, U>(iterator()) {
@@ -479,7 +477,7 @@ public interface Sequence<T> extends Iterable<T> {
 			}
 
 			@Override
-			protected U mapNext(T following) {
+			protected U mapNext(T next, T following) {
 				return mapper.apply(next, following);
 			}
 		};
@@ -538,6 +536,28 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default Sequence<T> filter(Predicate<? super T> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the elements in this {@code Sequence} while peeking at the previous element in the iteration, keeping
+	 * only the elements that match the given {@link BiPredicate}.
+	 * <p>
+	 * The predicate has access to the previous element and the next element in the iteration. {@code null} is provided
+	 * as the first previous value when the next element is the first value in the sequence.
+	 */
+	default Sequence<T> filterBack(BiPredicate<? super T, ? super T> predicate) {
+		return () -> new BackPeekingFilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the elements in this {@code Sequence} while peeking at the previous element in the iteration, keeping
+	 * only the elements that match the given {@link BiPredicate}.
+	 * <p>
+	 * The predicate has access to the previous element and the next element in the iteration. {@code null} is provided
+	 * as the first previous value when the next element is the first value in the sequence.
+	 */
+	default Sequence<T> filterForward(BiPredicate<? super T, ? super T> predicate) {
+		return () -> new ForwardPeekingFilteringIterator<>(iterator(), predicate);
 	}
 
 	/**
@@ -1039,7 +1059,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<T> peekForward(BiConsumer<? super T, ? super T> action) {
 		return () -> new ForwardPeekingMappingIterator<T, T>(iterator()) {
 			@Override
-			protected T mapNext(T following) {
+			protected T mapNext(T next, T following) {
 				action.accept(next, following);
 				return next;
 			}
@@ -1058,7 +1078,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<T> peekBack(BiConsumer<? super T, ? super T> action) {
 		return () -> new BackPeekingMappingIterator<T, T>(iterator()) {
 			@Override
-			protected T mapNext(T next) {
+			protected T map(T previous, T next) {
 				action.accept(previous, next);
 				return next;
 			}

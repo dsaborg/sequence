@@ -18,28 +18,49 @@ package org.d2ab.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
 
 /**
  * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public abstract class BackPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
-	protected T previous;
+public class BackPeekingFilteringIterator<T> extends UnaryReferenceIterator<T> {
+	private final BiPredicate<? super T, ? super T> predicate;
 
-	public BackPeekingMappingIterator(Iterator<T> iterator) {
+	private T next;
+	private boolean hasNext;
+
+	public BackPeekingFilteringIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> predicate) {
 		super(iterator);
+		this.predicate = predicate;
 	}
 
 	@Override
-	public U next() {
+	public boolean hasNext() {
+		if (hasNext) {
+			// already checked
+			return true;
+		}
+
+		T previous;
+		do {
+			// find next matching, bail out if EOF
+			hasNext = iterator.hasNext();
+			if (!hasNext)
+				return false;
+			previous = next;
+			next = iterator.next();
+		} while (!predicate.test(previous, next));
+
+		// found matching value
+		return true;
+	}
+
+	@Override
+	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T next = iterator.next();
-
-		U mapped = map(previous, next);
-		previous = next;
-		return mapped;
+		hasNext = false;
+		return next;
 	}
-
-	protected abstract U map(T previous, T next);
 }

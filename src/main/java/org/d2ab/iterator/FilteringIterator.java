@@ -56,9 +56,7 @@ public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
 			throw new NoSuchElementException();
 		}
 
-		T nextValue = next;
 		hasNext = false;
-		next = null;
-		return nextValue;
+		return next;
 	}
 }

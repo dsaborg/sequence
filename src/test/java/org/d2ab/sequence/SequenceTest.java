@@ -296,6 +296,24 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void filterBack() {
+		Sequence<Integer> filteredLess = nineRandom.filterBack((p, i) -> p == null || p < i);
+		twice(() -> assertThat(filteredLess, contains(67, 43, 5, 7, 24, 67)));
+
+		Sequence<Integer> filteredGreater = nineRandom.filterBack((p, i) -> p == null || p > i);
+		twice(() -> assertThat(filteredGreater, contains(67, 5, 3, 5)));
+	}
+
+	@Test
+	public void filterForward() {
+		Sequence<Integer> filteredLess = nineRandom.filterForward((i, f) -> f == null || f < i);
+		twice(() -> assertThat(filteredLess, contains(67, 43, 24, 67)));
+
+		Sequence<Integer> filteredGreater = nineRandom.filterForward((i, f) -> f == null || f > i);
+		twice(() -> assertThat(filteredGreater, contains(5, 3, 5, 7, 5, 67)));
+	}
+
+	@Test
 	public void flatMapIterables() {
 		Sequence<List<Integer>> sequence = Sequence.from(asList(asList(1, 2), asList(3, 4), asList(5, 6)));
 
@@ -313,7 +331,7 @@ public class SequenceTest {
 		}))).flatten(identity);
 
 		twice(() -> {
-			Iterator<Integer> iterator = flatMap.iterator(); // NPE if not lazy - expected later below
+			Iterator<Integer> iterator = flatMap.iterator(); // ISE if not lazy - expected later below
 			assertThat(iterator.next(), is(1));
 			assertThat(iterator.next(), is(2));
 			expecting(IllegalStateException.class, iterator::next);
