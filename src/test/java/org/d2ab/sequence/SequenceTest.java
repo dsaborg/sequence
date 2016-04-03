@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -460,34 +461,46 @@ public class SequenceTest {
 
 	@Test
 	public void peekBack() {
-		twice(() -> assertThat(_123.peekBack((p, n) -> {
-			assertThat(n, is(oneOf(1, 2, 3)));
-			assertThat(p, is(n == 1 ? null : n - 1));
-		}), contains(1, 2, 3)));
+		twice(() -> {
+			AtomicInteger value = new AtomicInteger(1);
+			assertThat(_123.peekBack((p, n) -> {
+				assertThat(n, is(value.getAndIncrement()));
+				assertThat(p, is(n == 1 ? null : n - 1));
+			}), contains(1, 2, 3));
+		});
 	}
 
 	@Test
 	public void peekForward() {
-		twice(() -> assertThat(_123.peekForward((n, f) -> {
-			assertThat(n, is(oneOf(1, 2, 3)));
-			assertThat(f, is(n == 3 ? null : n + 1));
-		}), contains(1, 2, 3)));
+		twice(() -> {
+			AtomicInteger value = new AtomicInteger(1);
+			assertThat(_123.peekForward((n, f) -> {
+				assertThat(n, is(value.getAndIncrement()));
+				assertThat(f, is(n == 3 ? null : n + 1));
+			}), contains(1, 2, 3));
+		});
 	}
 
 	@Test
 	public void peekBackWithReplacement() {
-		twice(() -> assertThat(_123.peekBack(117, (p, n) -> {
-			assertThat(n, is(oneOf(1, 2, 3)));
-			assertThat(p, is(n == 1 ? 117 : n - 1));
-		}), contains(1, 2, 3)));
+		twice(() -> {
+			AtomicInteger value = new AtomicInteger(1);
+			assertThat(_123.peekBack(117, (p, n) -> {
+				assertThat(n, is(value.getAndIncrement()));
+				assertThat(p, is(n == 1 ? 117 : n - 1));
+			}), contains(1, 2, 3));
+		});
 	}
 
 	@Test
 	public void peekForwardWithReplacement() {
-		twice(() -> assertThat(_123.peekForward(117, (n, f) -> {
-			assertThat(n, is(oneOf(1, 2, 3)));
-			assertThat(f, is(n == 3 ? 117 : n + 1));
-		}), contains(1, 2, 3)));
+		twice(() -> {
+			AtomicInteger value = new AtomicInteger(1);
+			assertThat(_123.peekForward(117, (n, f) -> {
+				assertThat(n, is(value.getAndIncrement()));
+				assertThat(f, is(n == 3 ? 117 : n + 1));
+			}), contains(1, 2, 3));
+		});
 	}
 
 	@Test
@@ -1088,9 +1101,13 @@ public class SequenceTest {
 
 	@Test
 	public void peek() {
+		AtomicInteger value = new AtomicInteger(1);
 		Sequence<Integer> peek =
-				_123.peek(x -> assertThat(x, is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(3)))));
-		twice(() -> assertThat(peek, contains(1, 2, 3)));
+				_123.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twice(() -> {
+			value.set(1);
+			assertThat(peek, contains(1, 2, 3));
+		});
 	}
 
 	@Test
