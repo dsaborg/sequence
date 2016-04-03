@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * A {@link Sequence} backed by a {@link List}.
@@ -110,7 +111,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				List<T> list = ListSequence.this.toList();
 				List<T> reversed = new ArrayList<>(list);
 				Collections.reverse(reversed);
-				return reversed;
+				return unmodifiableList(reversed);
 			}
 
 			@Override
@@ -146,7 +147,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				List<S> list = (List<S>) ListSequence.this.toList();
 				List<S> sorted = new ArrayList<>(list);
 				Collections.sort(sorted);
-				return sorted;
+				return unmodifiableList(sorted);
 			}
 		};
 	}
@@ -160,7 +161,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				List<T> list = ListSequence.this.toList();
 				List<T> sorted = new ArrayList<>(list);
 				Collections.sort(sorted, comparator);
-				return sorted;
+				return unmodifiableList(sorted);
 			}
 		};
 	}
@@ -174,7 +175,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				List<T> list = ListSequence.this.toList();
 				List<T> shuffled = new ArrayList<>(list);
 				Collections.shuffle(shuffled);
-				return shuffled;
+				return unmodifiableList(shuffled);
 			}
 		};
 	}
@@ -188,7 +189,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				List<T> list = ListSequence.this.toList();
 				List<T> shuffled = new ArrayList<>(list);
 				Collections.shuffle(shuffled, md);
-				return shuffled;
+				return unmodifiableList(shuffled);
 			}
 		};
 	}
