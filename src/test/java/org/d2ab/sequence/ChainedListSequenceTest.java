@@ -40,26 +40,37 @@ import static org.junit.Assert.fail;
 
 public class ChainedListSequenceTest {
 	private final Sequence<Integer> empty = ChainedListSequence.empty();
-	private final Sequence<Integer> _1 = ChainedListSequence.of(1);
 	@SuppressWarnings("unchecked")
-	private final Sequence<Integer> _12 = ChainedListSequence.from(singletonList(1), singletonList(2));
+	private final Sequence<Integer> _1 = ChainedListSequence.from(new ArrayList<>(singletonList(1)));
 	@SuppressWarnings("unchecked")
-	private final Sequence<Integer> _123 = ChainedListSequence.from(asList(1, 2), singletonList(3));
+	private final Sequence<Integer> _12 =
+			ChainedListSequence.from(new ArrayList<>(singletonList(1)), new ArrayList<>(singletonList(2)));
 	@SuppressWarnings("unchecked")
-	private final Sequence<Integer> _1234 = ChainedListSequence.from(asList(1, 2), asList(3, 4));
+	private final Sequence<Integer> _123 =
+			ChainedListSequence.from(new ArrayList<>(asList(1, 2)), new ArrayList<>(singletonList(3)));
 	@SuppressWarnings("unchecked")
-	private final Sequence<Integer> _12345 = ChainedListSequence.from(asList(1, 2), asList(3, 4), singletonList(5));
+	private final Sequence<Integer> _1234 =
+			ChainedListSequence.from(new ArrayList<>(asList(1, 2)), new ArrayList<>(asList(3, 4)));
+	@SuppressWarnings("unchecked")
+	private final Sequence<Integer> _12345 =
+			ChainedListSequence.from(new ArrayList<>(asList(1, 2)), new ArrayList<>(asList(3, 4)),
+			                         new ArrayList<>(singletonList(5)));
 	@SuppressWarnings("unchecked")
 	private final Sequence<Integer> _123456789 =
-			ChainedListSequence.from(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9));
-	private final Sequence<Integer> oneRandom = ChainedListSequence.of(17);
+			ChainedListSequence.from(new ArrayList<>(asList(1, 2, 3)), new ArrayList<>(asList(4, 5, 6)),
+			                         new ArrayList<>(asList(7, 8, 9)));
 	@SuppressWarnings("unchecked")
-	private final Sequence<Integer> twoRandom = ChainedListSequence.from(singletonList(17), singletonList(32));
+	private final Sequence<Integer> oneRandom = ChainedListSequence.from(new ArrayList<>(singletonList(17)));
 	@SuppressWarnings("unchecked")
-	private final Sequence<Integer> threeRandom = ChainedListSequence.from(asList(2, 3), singletonList(1));
+	private final Sequence<Integer> twoRandom =
+			ChainedListSequence.from(new ArrayList<>(singletonList(17)), new ArrayList<>(singletonList(32)));
+	@SuppressWarnings("unchecked")
+	private final Sequence<Integer> threeRandom =
+			ChainedListSequence.from(new ArrayList<>(asList(2, 3)), new ArrayList<>(singletonList(1)));
 	@SuppressWarnings("unchecked")
 	private final Sequence<Integer> nineRandom =
-			ChainedListSequence.from(asList(67, 5, 43), asList(3, 5, 7), asList(24, 5, 67));
+			ChainedListSequence.from(new ArrayList<>(asList(67, 5, 43)), new ArrayList<>(asList(3, 5, 7)),
+			                         new ArrayList<>(asList(24, 5, 67)));
 
 	@Test
 	public void ofOne() {
@@ -1270,5 +1281,44 @@ public class ChainedListSequenceTest {
 		BiSequence<Long, Integer> indexed = _12345.index();
 		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
 		                                         Pair.of(4L, 5))));
+	}
+
+	@Test
+	public void iteratorRemove() {
+		Iterator<Integer> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(2, 4, 5)));
+	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		Sequence<Integer> filtered = _12345.filter(x -> x % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(_12345, contains(2, 4)));
+	}
+
+	@Test
+	public void removeAllAfterAppend() {
+		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
+		appended.removeAll();
+
+		twice(() -> assertThat(appended, is(emptyIterable())));
+		twice(() -> assertThat(_1, is(emptyIterable())));
+	}
+
+	@Test
+	public void removeAllAfterMapBack() {
+		Sequence<Integer> mappedFiltered = _12345.mapBack((x, y) -> x != null ? x + y : y).filter(x -> x % 3 != 0);
+		mappedFiltered.removeAll();
+
+		twice(() -> assertThat(mappedFiltered, contains(2, 7)));
+		twice(() -> assertThat(_12345, contains(2, 5)));
 	}
 }

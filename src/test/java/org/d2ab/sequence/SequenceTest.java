@@ -1381,7 +1381,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void remoteIterator() {
+	public void iteratorRemove() {
 		Iterator<Integer> iterator = _12345.iterator();
 		iterator.next();
 		iterator.remove();

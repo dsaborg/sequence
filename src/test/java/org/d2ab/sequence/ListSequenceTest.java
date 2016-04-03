@@ -40,16 +40,16 @@ import static org.junit.Assert.fail;
 
 public class ListSequenceTest {
 	private final Sequence<Integer> empty = ListSequence.empty();
-	private final Sequence<Integer> _1 = ListSequence.of(1);
-	private final Sequence<Integer> _12 = ListSequence.of(1, 2);
-	private final Sequence<Integer> _123 = ListSequence.of(1, 2, 3);
-	private final Sequence<Integer> _1234 = ListSequence.of(1, 2, 3, 4);
-	private final Sequence<Integer> _12345 = ListSequence.of(1, 2, 3, 4, 5);
-	private final Sequence<Integer> _123456789 = ListSequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
-	private final Sequence<Integer> oneRandom = ListSequence.of(17);
-	private final Sequence<Integer> twoRandom = ListSequence.of(17, 32);
-	private final Sequence<Integer> threeRandom = ListSequence.of(2, 3, 1);
-	private final Sequence<Integer> nineRandom = ListSequence.of(67, 5, 43, 3, 5, 7, 24, 5, 67);
+	private final Sequence<Integer> _1 = ListSequence.from(new ArrayList<>(singletonList(1)));
+	private final Sequence<Integer> _12 = ListSequence.from(new ArrayList<>(asList(1, 2)));
+	private final Sequence<Integer> _123 = ListSequence.from(new ArrayList<>(asList(1, 2, 3)));
+	private final Sequence<Integer> _1234 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4)));
+	private final Sequence<Integer> _12345 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5)));
+	private final Sequence<Integer> _123456789 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	private final Sequence<Integer> oneRandom = ListSequence.from(new ArrayList<>(singletonList(17)));
+	private final Sequence<Integer> twoRandom = ListSequence.from(new ArrayList<>(asList(17, 32)));
+	private final Sequence<Integer> threeRandom = ListSequence.from(new ArrayList<>(asList(2, 3, 1)));
+	private final Sequence<Integer> nineRandom = ListSequence.from(new ArrayList<>(asList(67, 5, 43, 3, 5, 7, 24, 5, 67)));
 
 	@Test
 	public void ofOne() {
@@ -1267,5 +1267,45 @@ public class ListSequenceTest {
 		BiSequence<Long, Integer> indexed = _12345.index();
 		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
 		                                         Pair.of(4L, 5))));
+	}
+
+	@Test
+	public void iteratorRemove() {
+		Iterator<Integer> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(2, 4, 5)));
+	}
+
+	@Test
+	public void removeAllAfterFilter() {
+		Sequence<Integer> filtered = _12345.filter(x -> x % 2 != 0);
+		filtered.removeAll();
+
+		twice(() -> assertThat(filtered, is(emptyIterable())));
+		twice(() -> assertThat(_12345, contains(2, 4)));
+	}
+
+	@Test
+	public void removeAllAfterAppend() {
+		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
+		appended.removeAll();
+
+		twice(() -> assertThat(appended, is(emptyIterable())));
+		twice(() -> assertThat(_1, is(emptyIterable())));
+	}
+
+	@Test
+	public void removeAllAfterMapBack() {
+		Sequence<Integer> mappedFiltered =
+				_12345.mapBack((x, y) -> x != null ? x + y : y).filter(x -> x % 3 != 0);
+		mappedFiltered.removeAll();
+
+		twice(() -> assertThat(mappedFiltered, contains(2, 7)));
+		twice(() -> assertThat(_12345, contains(2, 5)));
 	}
 }
