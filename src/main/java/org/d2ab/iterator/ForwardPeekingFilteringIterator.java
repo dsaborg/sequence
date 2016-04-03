@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 
 public class ForwardPeekingFilteringIterator<T> extends UnaryReferenceIterator<T> {
+	private final T replacement;
 	private final BiPredicate<? super T, ? super T> predicate;
 
 	private T next;
@@ -29,8 +30,10 @@ public class ForwardPeekingFilteringIterator<T> extends UnaryReferenceIterator<T
 	private boolean hasFollowing;
 	private boolean started;
 
-	public ForwardPeekingFilteringIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> predicate) {
+	public ForwardPeekingFilteringIterator(Iterator<T> iterator, T replacement,
+	                                       BiPredicate<? super T, ? super T> predicate) {
 		super(iterator);
+		this.replacement = replacement;
 		this.predicate = predicate;
 	}
 
@@ -51,7 +54,7 @@ public class ForwardPeekingFilteringIterator<T> extends UnaryReferenceIterator<T
 		do {
 			next = following;
 			hasFollowing = iterator.hasNext();
-			following = hasFollowing ? iterator.next() : null;
+			following = hasFollowing ? iterator.next() : replacement;
 		} while (!(hasNext = predicate.test(next, following)) && hasFollowing);
 
 		return hasNext;

@@ -26,7 +26,7 @@ public class SwappingIterator<T> extends ForwardPeekingMappingIterator<T, T> {
 	private final BiPredicate<? super T, ? super T> swapPredicate;
 
 	public SwappingIterator(Iterator<T> iterator, BiPredicate<? super T, ? super T> swapPredicate) {
-		super(iterator);
+		super(iterator, null);
 		this.swapPredicate = swapPredicate;
 	}
 

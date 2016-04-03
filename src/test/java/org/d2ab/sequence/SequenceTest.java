@@ -305,11 +305,29 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void filterBackWithReplacement() {
+		Sequence<Integer> filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
+		twice(() -> assertThat(filteredLess, contains(43, 5, 7, 24, 67)));
+
+		Sequence<Integer> filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
+		twice(() -> assertThat(filteredGreater, contains(67, 5, 3, 5)));
+	}
+
+	@Test
 	public void filterForward() {
 		Sequence<Integer> filteredLess = nineRandom.filterForward((i, f) -> f == null || f < i);
 		twice(() -> assertThat(filteredLess, contains(67, 43, 24, 67)));
 
 		Sequence<Integer> filteredGreater = nineRandom.filterForward((i, f) -> f == null || f > i);
+		twice(() -> assertThat(filteredGreater, contains(5, 3, 5, 7, 5, 67)));
+	}
+
+	@Test
+	public void filterForwardWithReplacement() {
+		Sequence<Integer> filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
+		twice(() -> assertThat(filteredLess, contains(67, 43, 24)));
+
+		Sequence<Integer> filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
 		twice(() -> assertThat(filteredGreater, contains(5, 3, 5, 7, 5, 67)));
 	}
 
@@ -429,6 +447,18 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void mapBackWithReplacement() {
+		twice(() -> assertThat(_123.mapBack(117, (p, n) -> p), contains(117, 1, 2)));
+		twice(() -> assertThat(_123.mapBack(117, (p, n) -> n), contains(1, 2, 3)));
+	}
+
+	@Test
+	public void mapForwardWithReplacement() {
+		twice(() -> assertThat(_123.mapForward(117, (n, f) -> n), contains(1, 2, 3)));
+		twice(() -> assertThat(_123.mapForward(117, (n, f) -> f), contains(2, 3, 117)));
+	}
+
+	@Test
 	public void peekBack() {
 		twice(() -> assertThat(_123.peekBack((p, n) -> {
 			assertThat(n, is(oneOf(1, 2, 3)));
@@ -441,6 +471,22 @@ public class SequenceTest {
 		twice(() -> assertThat(_123.peekForward((n, f) -> {
 			assertThat(n, is(oneOf(1, 2, 3)));
 			assertThat(f, is(n == 3 ? null : n + 1));
+		}), contains(1, 2, 3)));
+	}
+
+	@Test
+	public void peekBackWithReplacement() {
+		twice(() -> assertThat(_123.peekBack(117, (p, n) -> {
+			assertThat(n, is(oneOf(1, 2, 3)));
+			assertThat(p, is(n == 1 ? 117 : n - 1));
+		}), contains(1, 2, 3)));
+	}
+
+	@Test
+	public void peekForwardWithReplacement() {
+		twice(() -> assertThat(_123.peekForward(117, (n, f) -> {
+			assertThat(n, is(oneOf(1, 2, 3)));
+			assertThat(f, is(n == 3 ? 117 : n + 1));
 		}), contains(1, 2, 3)));
 	}
 

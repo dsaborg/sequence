@@ -23,12 +23,14 @@ import java.util.NoSuchElementException;
  * Base class for iterators the can peek at the following item of each item in the iteration.
  */
 public abstract class ForwardPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
+	private final T replacement;
 	protected T next;
 	protected boolean hasNext;
 	private boolean started;
 
-	public ForwardPeekingMappingIterator(Iterator<T> iterator) {
+	public ForwardPeekingMappingIterator(Iterator<T> iterator, T replacement) {
 		super(iterator);
+		this.replacement = replacement;
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public abstract class ForwardPeekingMappingIterator<T, U> extends DelegatingRefe
 			throw new NoSuchElementException();
 
 		boolean hasFollowing = iterator.hasNext();
-		T following = mapFollowing(hasFollowing, hasFollowing ? iterator.next() : null);
+		T following = mapFollowing(hasFollowing, hasFollowing ? iterator.next() : replacement);
 		U mapped = mapNext(next, following);
 		next = following;
 		hasNext = hasFollowing;

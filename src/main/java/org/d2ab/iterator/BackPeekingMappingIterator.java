@@ -25,8 +25,9 @@ import java.util.NoSuchElementException;
 public abstract class BackPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
 	protected T previous;
 
-	public BackPeekingMappingIterator(Iterator<T> iterator) {
+	public BackPeekingMappingIterator(Iterator<T> iterator, T replacement) {
 		super(iterator);
+		this.previous = replacement;
 	}
 
 	@Override

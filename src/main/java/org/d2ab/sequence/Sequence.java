@@ -453,9 +453,35 @@ public interface Sequence<T> extends Iterable<T> {
 	 * <p>
 	 * The mapper has access to the previous element and the next element in the iteration. {@code null} is provided
 	 * as the first previous value when the next element is the first value in the sequence.
+	 *
+	 * @see #mapBack(Object, BiFunction)
 	 */
 	default <U> Sequence<U> mapBack(BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return () -> new BackPeekingMappingIterator<T, U>(iterator()) {
+		return mapBack(null, mapper);
+	}
+
+	/**
+	 * Map this {@code Sequence} to another sequence while peeking at the following element in the iteration.
+	 * <p>
+	 * The mapper has access to the next element and the following element in the iteration. {@code null} is
+	 * provided as the last following value when the next element is the last value in the sequence.
+	 *
+	 * @see #mapForward(Object, BiFunction)
+	 */
+	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
+		return mapForward(null, mapper);
+	}
+
+	/**
+	 * Map this {@code Sequence} to another sequence while peeking at the previous element in the iteration.
+	 * <p>
+	 * The mapper has access to the previous element and the next element in the iteration. The given replacement value
+	 * is provided as a prefix to the sequence for the first value in the sequence.
+	 *
+	 * @see #mapBack(BiFunction)
+	 */
+	default <U> Sequence<U> mapBack(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
+		return () -> new BackPeekingMappingIterator<T, U>(iterator(), replacement) {
 			@Override
 			protected U map(T previous, T next) {
 				return mapper.apply(previous, next);
@@ -466,11 +492,13 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Map this {@code Sequence} to another sequence while peeking at the following element in the iteration.
 	 * <p>
-	 * The mapper has access to the next element and the following element in the iteration. {@code null} is
-	 * provided as the last following value when the next element is the last value in the sequence.
+	 * The mapper has access to the next element and the following element in the iteration. The given replacement
+	 * value is provided as a suffix to the sequence for the last value in the sequence.
+	 *
+	 * @see #mapForward(BiFunction)
 	 */
-	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return () -> new ForwardPeekingMappingIterator<T, U>(iterator()) {
+	default <U> Sequence<U> mapForward(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
+		return () -> new ForwardPeekingMappingIterator<T, U>(iterator(), replacement) {
 			@Override
 			protected T mapFollowing(boolean hasFollowing, T following) {
 				return following;
@@ -543,10 +571,25 @@ public interface Sequence<T> extends Iterable<T> {
 	 * only the elements that match the given {@link BiPredicate}.
 	 * <p>
 	 * The predicate has access to the previous element and the next element in the iteration. {@code null} is provided
-	 * as the first previous value when the next element is the first value in the sequence.
+	 * as a prefix to the sequence for first value in the sequence.
+	 *
+	 * @see #filterBack(Object, BiPredicate)
 	 */
 	default Sequence<T> filterBack(BiPredicate<? super T, ? super T> predicate) {
-		return () -> new BackPeekingFilteringIterator<>(iterator(), predicate);
+		return filterBack(null, predicate);
+	}
+
+	/**
+	 * Filter the elements in this {@code Sequence} while peeking at the previous element in the iteration, keeping
+	 * only the elements that match the given {@link BiPredicate}.
+	 * <p>
+	 * The predicate has access to the previous element and the next element in the iteration. The given replacement
+	 * value is provided as a prefix to the sequence for the first value in the sequence.
+	 *
+	 * @see #filterBack(BiPredicate)
+	 */
+	default Sequence<T> filterBack(T replacement, BiPredicate<? super T, ? super T> predicate) {
+		return () -> new BackPeekingFilteringIterator<>(iterator(), replacement, predicate);
 	}
 
 	/**
@@ -554,10 +597,25 @@ public interface Sequence<T> extends Iterable<T> {
 	 * only the elements that match the given {@link BiPredicate}.
 	 * <p>
 	 * The predicate has access to the current element and the next element in the iteration. {@code null} is provided
-	 * as the final next value when the current element is the last value in the sequence.
+	 * as a suffix to the sequence for the last value in the sequence.
+	 *
+	 * @see #filterForward(Object, BiPredicate)
 	 */
 	default Sequence<T> filterForward(BiPredicate<? super T, ? super T> predicate) {
-		return () -> new ForwardPeekingFilteringIterator<>(iterator(), predicate);
+		return filterForward(null, predicate);
+	}
+
+	/**
+	 * Filter the elements in this {@code Sequence} while peeking at the next element in the iteration, keeping
+	 * only the elements that match the given {@link BiPredicate}.
+	 * <p>
+	 * The predicate has access to the current element and the next element in the iteration. The given replacement
+	 * value is provided as a suffix to the sequence for the last value in the sequence.
+	 *
+	 * @see #filterForward(BiPredicate)
+	 */
+	default Sequence<T> filterForward(T replacement, BiPredicate<? super T, ? super T> predicate) {
+		return () -> new ForwardPeekingFilteringIterator<>(iterator(), replacement, predicate);
 	}
 
 	/**
@@ -1055,9 +1113,31 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Allow the given {@link BiConsumer} to see each and its following element in this {@code Sequence} as it is
 	 * traversed. In the last iteration, the following item will be null.
+	 *
+	 * @see #peekForward(Object, BiConsumer)
 	 */
 	default Sequence<T> peekForward(BiConsumer<? super T, ? super T> action) {
-		return () -> new ForwardPeekingMappingIterator<T, T>(iterator()) {
+		return peekForward(null, action);
+	}
+
+	/**
+	 * Allow the given {@link BiConsumer} to see each and its previous element in this {@code Sequence} as it is
+	 * traversed. In the first iteration, the previous item will be null.
+	 *
+	 * @see #peekBack(Object, BiConsumer)
+	 */
+	default Sequence<T> peekBack(BiConsumer<? super T, ? super T> action) {
+		return peekBack(null, action);
+	}
+
+	/**
+	 * Allow the given {@link BiConsumer} to see each and its following element in this {@code Sequence} as it is
+	 * traversed. In the last iteration, the following item will have the given replacement value.
+	 *
+	 * @see #peekForward(BiConsumer)
+	 */
+	default Sequence<T> peekForward(T replacement, BiConsumer<? super T, ? super T> action) {
+		return () -> new ForwardPeekingMappingIterator<T, T>(iterator(), replacement) {
 			@Override
 			protected T mapNext(T next, T following) {
 				action.accept(next, following);
@@ -1073,10 +1153,12 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Allow the given {@link BiConsumer} to see each and its previous element in this {@code Sequence} as it is
-	 * traversed. In the first iteration, the previous item will be null.
+	 * traversed. In the first iteration, the previous item will have the given replacement value.
+	 *
+	 * @see #peekBack(BiConsumer)
 	 */
-	default Sequence<T> peekBack(BiConsumer<? super T, ? super T> action) {
-		return () -> new BackPeekingMappingIterator<T, T>(iterator()) {
+	default Sequence<T> peekBack(T replacement, BiConsumer<? super T, ? super T> action) {
+		return () -> new BackPeekingMappingIterator<T, T>(iterator(), replacement) {
 			@Override
 			protected T map(T previous, T next) {
 				action.accept(previous, next);
