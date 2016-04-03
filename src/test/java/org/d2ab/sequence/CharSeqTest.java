@@ -271,6 +271,24 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void filterBack() {
+		CharSeq filteredLess = nineRandom.filterBack('z', (p, i) -> p < i);
+		twice(() -> assertThat(filteredLess, contains('g', 'b', 'q')));
+
+		CharSeq filteredGreater = nineRandom.filterBack('z', (p, i) -> p > i);
+		twice(() -> assertThat(filteredGreater, contains('f', 'a', 'a', 'e', 'd')));
+	}
+
+	@Test
+	public void filterForward() {
+		CharSeq filteredLess = nineRandom.filterForward('z', (i, f) -> f < i);
+		twice(() -> assertThat(filteredLess, contains('f', 'g', 'q', 'e')));
+
+		CharSeq filteredGreater = nineRandom.filterForward('z', (i, f) -> f > i);
+		twice(() -> assertThat(filteredGreater, contains('a', 'a', 'b', 'd')));
+	}
+
+	@Test
 	public void map() {
 		CharSeq mapped = abc.map(c -> (char) (c + 1));
 		twice(() -> assertThat(mapped, contains('b', 'c', 'd')));

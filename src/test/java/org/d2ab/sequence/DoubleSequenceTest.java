@@ -270,6 +270,24 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void filterBack() {
+		DoubleSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
+		twice(() -> assertThat(filteredLess, contains(7.0, 2.0, 17.0)));
+
+		DoubleSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
+		twice(() -> assertThat(filteredGreater, contains(6.0, 1.0, 1.0, 5.0, 4.0)));
+	}
+
+	@Test
+	public void filterForward() {
+		DoubleSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
+		twice(() -> assertThat(filteredLess, contains(6.0, 7.0, 17.0, 5.0)));
+
+		DoubleSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
+		twice(() -> assertThat(filteredGreater, contains(1.0, 1.0, 2.0, 4.0)));
+	}
+
+	@Test
 	public void map() {
 		DoubleSequence mapped = _123.map(c -> c + 1.0);
 		twice(() -> assertThat(mapped, contains(2.0, 3.0, 4.0)));

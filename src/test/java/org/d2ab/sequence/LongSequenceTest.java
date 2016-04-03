@@ -270,6 +270,24 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void filterBack() {
+		LongSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
+		twice(() -> assertThat(filteredLess, contains(7L, 2L, 17L)));
+
+		LongSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
+		twice(() -> assertThat(filteredGreater, contains(6L, 1L, 1L, 5L, 4L)));
+	}
+
+	@Test
+	public void filterForward() {
+		LongSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
+		twice(() -> assertThat(filteredLess, contains(6L, 7L, 17L, 5L)));
+
+		LongSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
+		twice(() -> assertThat(filteredGreater, contains(1L, 1L, 2L, 4L)));
+	}
+
+	@Test
 	public void map() {
 		LongSequence mapped = _123.map(c -> c + 1L);
 		twice(() -> assertThat(mapped, contains(2L, 3L, 4L)));

@@ -499,6 +499,29 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Filter this {@code LongSequence} to another sequence of longs while peeking at the previous value in the
+	 * sequence.
+	 * <p>
+	 * The predicate has access to the previous int and the current int in the iteration. If the current int is
+	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
+	 * the first previous value.
+	 */
+	default LongSequence filterBack(long firstPrevious, LongBiPredicate predicate) {
+		return () -> new BackPeekingFilteringLongIterator(iterator(), firstPrevious, predicate);
+	}
+
+	/**
+	 * Filter this {@code LongSequence} to another sequence of longs while peeking at the next int in the sequence.
+	 * <p>
+	 * The predicate has access to the current int and the next int in the iteration. If the current int is
+	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
+	 * the last next value.
+	 */
+	default LongSequence filterForward(long lastNext, LongBiPredicate predicate) {
+		return () -> new ForwardPeekingFilteringLongIterator(iterator(), lastNext, predicate);
+	}
+
+	/**
 	 * Collect this {@code LongSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {

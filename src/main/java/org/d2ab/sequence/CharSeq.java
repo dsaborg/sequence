@@ -367,6 +367,29 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Filter this {@code CharSeq} to another sequence of chars while peeking at the previous value in the
+	 * sequence.
+	 * <p>
+	 * The predicate has access to the previous int and the current int in the iteration. If the current int is
+	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
+	 * the first previous value.
+	 */
+	default CharSeq filterBack(char firstPrevious, CharBiPredicate predicate) {
+		return () -> new BackPeekingFilteringCharIterator(iterator(), firstPrevious, predicate);
+	}
+
+	/**
+	 * Filter this {@code CharSeq} to another sequence of chars while peeking at the next int in the sequence.
+	 * <p>
+	 * The predicate has access to the current int and the next int in the iteration. If the current int is
+	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
+	 * the last next value.
+	 */
+	default CharSeq filterForward(char lastNext, CharBiPredicate predicate) {
+		return () -> new ForwardPeekingFilteringCharIterator(iterator(), lastNext, predicate);
+	}
+
+	/**
 	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {

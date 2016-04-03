@@ -270,6 +270,24 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void filterBack() {
+		IntSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
+		twice(() -> assertThat(filteredLess, contains(7, 2, 17)));
+
+		IntSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
+		twice(() -> assertThat(filteredGreater, contains(6, 1, 1, 5, 4)));
+	}
+
+	@Test
+	public void filterForward() {
+		IntSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
+		twice(() -> assertThat(filteredLess, contains(6, 7, 17, 5)));
+
+		IntSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
+		twice(() -> assertThat(filteredGreater, contains(1, 1, 2, 4)));
+	}
+
+	@Test
 	public void map() {
 		IntSequence mapped = _123.map(c -> c + 1);
 		twice(() -> assertThat(mapped, contains(2, 3, 4)));
