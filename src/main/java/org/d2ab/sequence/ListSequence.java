@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.ReverseList;
 import org.d2ab.iterable.ChainingIterable;
 
 import java.util.*;
@@ -108,32 +109,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		return new ListSequence<T>() {
 			@Override
 			public List<T> toList() {
-				List<T> list = ListSequence.this.toList();
-				List<T> reversed = new ArrayList<>(list);
-				Collections.reverse(reversed);
-				return unmodifiableList(reversed);
-			}
-
-			@Override
-			public Iterator<T> iterator() {
-				List<T> list = ListSequence.this.toList();
-				ListIterator<T> listIterator = list.listIterator(list.size());
-				return new Iterator<T>() {
-					@Override
-					public boolean hasNext() {
-						return listIterator.hasPrevious();
-					}
-
-					@Override
-					public T next() {
-						return listIterator.previous();
-					}
-
-					@Override
-					public void remove() {
-						listIterator.remove();
-					}
-				};
+				return ReverseList.from(ListSequence.this.toList());
 			}
 		};
 	}

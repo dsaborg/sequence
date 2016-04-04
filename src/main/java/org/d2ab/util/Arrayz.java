@@ -75,4 +75,17 @@ public class Arrayz {
 		array[i] = array[j];
 		array[j] = temp;
 	}
+
+	public static void swap(Object[] array, int i, int j) {
+		requireNonNull(array);
+		Object temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	public static void reverse(Object[] array) {
+		for (int i = 0; i < array.length / 2; i++) {
+			swap(array, i, array.length - i - 1);
+		}
+	}
 }
