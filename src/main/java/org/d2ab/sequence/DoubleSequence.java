@@ -20,6 +20,7 @@ import org.d2ab.function.doubles.DoubleBiPredicate;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.*;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
@@ -78,7 +79,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Create a {@code DoubleSequence} with the given doubles.
 	 */
 	static DoubleSequence of(double... cs) {
-		return () -> new ArrayDoubleIterator(cs);
+		return () -> DoubleIterator.of(cs);
 	}
 
 	/**
@@ -235,24 +236,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Map the {@code doubles} in this {@code DoubleSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(DoubleFunction<T> mapper) {
-		return () -> new Iterator<T>() {
-			private final DoubleIterator iterator = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public T next() {
-				return mapper.apply(iterator.nextDouble());
-			}
-
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
-		};
+		return () -> Iterators.from(iterator(), mapper);
 	}
 
 	/**
@@ -562,9 +546,11 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #reverse()
 	 */
 	default DoubleSequence sorted() {
-		double[] array = toArray();
-		Arrays.sort(array);
-		return () -> DoubleIterator.of(array);
+		return () -> {
+			double[] array = toArray();
+			Arrays.sort(array);
+			return DoubleIterator.of(array);
+		};
 	}
 
 	/**
@@ -622,11 +608,11 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #sorted()
 	 */
 	default DoubleSequence reverse() {
-		double[] array = toArray();
-		for (int i = 0; i < (array.length / 2); i++) {
-			Arrayz.swap(array, i, array.length - 1 - i);
-		}
-		return of(array);
+		return () -> {
+			double[] array = toArray();
+			Arrayz.reverse(array);
+			return DoubleIterator.of(array);
+		};
 	}
 
 	/**
@@ -658,19 +644,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * double.
 	 */
 	default IntSequence toInts() {
-		return () -> new IntIterator() {
-			DoubleIterator iterator = iterator();
-
-			@Override
-			public int nextInt() {
-				return (int) iterator.nextDouble();
-			}
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-		};
+		return () -> IntIterator.from(iterator());
 	}
 
 	/**
@@ -678,24 +652,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * double.
 	 */
 	default LongSequence toLongs() {
-		return () -> new LongIterator() {
-			DoubleIterator iterator = iterator();
-
-			@Override
-			public long nextLong() {
-				return (long) iterator.nextDouble();
-			}
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
-		};
+		return () -> LongIterator.from(iterator());
 	}
 
 	/**
@@ -710,19 +667,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Convert this sequence of doubles to a sequence of ints using the given converter function.
 	 */
 	default IntSequence toInts(DoubleToIntFunction mapper) {
-		return () -> new IntIterator() {
-			DoubleIterator iterator = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public int nextInt() {
-				return mapper.applyAsInt(iterator.nextDouble());
-			}
-		};
+		return () -> IntIterator.from(iterator(), mapper);
 	}
 
 	/**
@@ -737,24 +682,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Convert this sequence of doubles to a sequence of longs using the given converter function.
 	 */
 	default LongSequence toLongs(DoubleToLongFunction mapper) {
-		return () -> new LongIterator() {
-			DoubleIterator iterator = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public long nextLong() {
-				return mapper.applyAsLong(iterator.nextDouble());
-			}
-
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
-		};
+		return () -> LongIterator.from(iterator(), mapper);
 	}
 
 	/**

@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.function.DoubleBinaryOperator;
+import java.util.function.IntToDoubleFunction;
+import java.util.function.LongToDoubleFunction;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -48,20 +50,46 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	}
 
 	static DoubleIterator from(Iterator<Double> iterator) {
-		return new DoubleIterator() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
+		return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
 			@Override
 			public double nextDouble() {
 				return iterator.next();
 			}
+		};
+	}
 
+	static DoubleIterator from(PrimitiveIterator.OfLong iterator) {
+		return new DelegatingDoubleIterator<Long, PrimitiveIterator.OfLong>(iterator) {
 			@Override
-			public void remove() {
-				iterator.remove();
+			public double nextDouble() {
+				return iterator.nextLong();
+			}
+		};
+	}
+
+	static DoubleIterator from(PrimitiveIterator.OfLong iterator, LongToDoubleFunction mapper) {
+		return new DelegatingDoubleIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.nextLong());
+			}
+		};
+	}
+
+	static DoubleIterator from(PrimitiveIterator.OfInt iterator) {
+		return new DelegatingDoubleIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+			@Override
+			public double nextDouble() {
+				return iterator.nextInt();
+			}
+		};
+	}
+
+	static DoubleIterator from(PrimitiveIterator.OfInt iterator, IntToDoubleFunction mapper) {
+		return new DelegatingDoubleIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.nextInt());
 			}
 		};
 	}

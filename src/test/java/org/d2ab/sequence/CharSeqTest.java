@@ -461,6 +461,15 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void sortedWithUpdates() {
+		List<Character> backing = new ArrayList<>(List.of('b', 'c', 'a'));
+		CharSeq sorted = CharSeq.from(backing).sorted();
+
+		backing.add('d');
+		assertThat(sorted, contains('a', 'b', 'c', 'd'));
+	}
+
+	@Test
 	public void min() {
 		OptionalChar emptyMin = empty.min();
 		twice(() -> assertThat(emptyMin, is(OptionalChar.empty())));
@@ -569,6 +578,15 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void reverseWithUpdates() {
+		List<Character> backing = new ArrayList<>(List.of('a', 'b', 'c'));
+		CharSeq reversed = CharSeq.from(backing).reverse();
+
+		backing.add('d');
+		assertThat(reversed, contains('d', 'c', 'b', 'a'));
+	}
+
+	@Test
 	public void chars() {
 		assertThat(CharSeq.all().limit(3), contains('\u0000', '\u0001', '\u0002'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
@@ -606,6 +624,15 @@ public class CharSeqTest {
 
 		IntSequence intSequence = CharSeq.all().limit(5).toInts();
 		twice(() -> assertThat(intSequence, contains(0, 1, 2, 3, 4)));
+	}
+
+	@Test
+	public void toIntsMapped() {
+		IntSequence emptyIntSequence = empty.toInts(c -> c + 1);
+		twice(() -> assertThat(emptyIntSequence, is(emptyIterable())));
+
+		IntSequence intSequence = CharSeq.all().limit(5).toInts(c -> c + 1);
+		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test

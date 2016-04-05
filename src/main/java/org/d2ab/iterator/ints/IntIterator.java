@@ -16,12 +16,16 @@
 
 package org.d2ab.iterator.ints;
 
+import org.d2ab.function.ints.CharToIntFunction;
 import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
+import java.util.function.DoubleToIntFunction;
 import java.util.function.IntBinaryOperator;
+import java.util.function.LongToIntFunction;
 
 /**
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
@@ -48,20 +52,64 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(Iterator<Integer> iterator) {
-		return new IntIterator() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
+		return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.next();
 			}
+		};
+	}
 
+	static IntIterator from(PrimitiveIterator.OfDouble iterator) {
+		return new DelegatingIntIterator<Double, PrimitiveIterator.OfDouble>(iterator) {
 			@Override
-			public void remove() {
-				iterator.remove();
+			public int nextInt() {
+				return (int) iterator.nextDouble();
+			}
+		};
+	}
+
+	static IntIterator from(PrimitiveIterator.OfDouble iterator, DoubleToIntFunction mapper) {
+		return new DelegatingIntIterator<Double, PrimitiveIterator.OfDouble>(iterator) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.nextDouble());
+			}
+		};
+	}
+
+	static IntIterator from(CharIterator iterator) {
+		return new DelegatingIntIterator<Character, CharIterator>(iterator) {
+			@Override
+			public int nextInt() {
+				return iterator.nextChar();
+			}
+		};
+	}
+
+	static IntIterator from(CharIterator iterator, CharToIntFunction mapper) {
+		return new DelegatingIntIterator<Character, CharIterator>(iterator) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.nextChar());
+			}
+		};
+	}
+
+	static IntIterator from(PrimitiveIterator.OfLong iterator) {
+		return new DelegatingIntIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+			@Override
+			public int nextInt() {
+				return (int) iterator.nextLong();
+			}
+		};
+	}
+
+	static IntIterator from(PrimitiveIterator.OfLong iterator, LongToIntFunction mapper) {
+		return new DelegatingIntIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.nextLong());
 			}
 		};
 	}

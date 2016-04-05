@@ -16,10 +16,16 @@
 
 package org.d2ab.iterator;
 
+import org.d2ab.function.chars.CharFunction;
+import org.d2ab.iterator.chars.CharIterator;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.PrimitiveIterator;
 import java.util.function.BinaryOperator;
+import java.util.function.DoubleFunction;
+import java.util.function.IntFunction;
 
 public class Iterators {
 	private static final Iterator EMPTY = new Iterator() {
@@ -40,6 +46,33 @@ public class Iterators {
 	@SuppressWarnings("unchecked")
 	public static <T> Iterator<T> empty() {
 		return EMPTY;
+	}
+
+	public static <T> Iterator<T> from(CharIterator iterator, CharFunction<T> mapper) {
+		return new DelegatingIterator<Character, CharIterator, T>(iterator) {
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextChar());
+			}
+		};
+	}
+
+	public static <T> Iterator<T> from(PrimitiveIterator.OfInt iterator, IntFunction<T> mapper) {
+		return new DelegatingIterator<Integer, PrimitiveIterator.OfInt, T>(iterator) {
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextInt());
+			}
+		};
+	}
+
+	public static <T> Iterator<T> from(PrimitiveIterator.OfDouble iterator, DoubleFunction<T> mapper) {
+		return new DelegatingIterator<Double, PrimitiveIterator.OfDouble, T>(iterator) {
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextDouble());
+			}
+		};
 	}
 
 	public static void skip(Iterator<?> iterator) {

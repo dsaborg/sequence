@@ -448,6 +448,15 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void sortedWithUpdates() {
+		List<Long> backing = new ArrayList<>(List.of(2L, 3L, 1L));
+		LongSequence sorted = LongSequence.from(backing).sorted();
+
+		backing.add(4L);
+		assertThat(sorted, contains(1L, 2L, 3L, 4L));
+	}
+
+	@Test
 	public void min() {
 		OptionalLong emptyMin = empty.min();
 		twice(() -> assertThat(emptyMin, is(OptionalLong.empty())));
@@ -553,6 +562,15 @@ public class LongSequenceTest {
 
 		LongSequence nineReversed = _123456789.reverse();
 		twice(() -> assertThat(nineReversed, contains(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L)));
+	}
+
+	@Test
+	public void reverseWithUpdates() {
+		List<Long> backing = new ArrayList<>(List.of(1L, 2L, 3L));
+		LongSequence reversed = LongSequence.from(backing).reverse();
+
+		backing.add(4L);
+		assertThat(reversed, contains(4L, 3L, 2L, 1L));
 	}
 
 	@Test

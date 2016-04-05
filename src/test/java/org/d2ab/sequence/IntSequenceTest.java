@@ -448,6 +448,15 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void sortedWithUpdates() {
+		List<Integer> backing = new ArrayList<>(List.of(2, 3, 1));
+		IntSequence sorted = IntSequence.from(backing).sorted();
+
+		backing.add(4);
+		assertThat(sorted, contains(1, 2, 3, 4));
+	}
+
+	@Test
 	public void min() {
 		OptionalInt emptyMin = empty.min();
 		twice(() -> assertThat(emptyMin, is(OptionalInt.empty())));
@@ -553,6 +562,15 @@ public class IntSequenceTest {
 
 		IntSequence nineReversed = _123456789.reverse();
 		twice(() -> assertThat(nineReversed, contains(9, 8, 7, 6, 5, 4, 3, 2, 1)));
+	}
+
+	@Test
+	public void reverseWithUpdates() {
+		List<Integer> backing = new ArrayList<>(List.of(1, 2, 3));
+		IntSequence reversed = IntSequence.from(backing).reverse();
+
+		backing.add(4);
+		assertThat(reversed, contains(4, 3, 2, 1));
 	}
 
 	@Test

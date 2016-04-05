@@ -21,6 +21,8 @@ import org.d2ab.iterable.longs.LongIterable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
+import java.util.function.DoubleToLongFunction;
+import java.util.function.IntToLongFunction;
 import java.util.function.LongBinaryOperator;
 
 /**
@@ -48,20 +50,46 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	static LongIterator from(Iterator<Long> iterator) {
-		return new LongIterator() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
+		return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
 			@Override
 			public long nextLong() {
 				return iterator.next();
 			}
+		};
+	}
 
+	static LongIterator from(PrimitiveIterator.OfDouble iterator) {
+		return new DelegatingLongIterator<Double, PrimitiveIterator.OfDouble>(iterator) {
 			@Override
-			public void remove() {
-				iterator.remove();
+			public long nextLong() {
+				return (long) iterator.nextDouble();
+			}
+		};
+	}
+
+	static LongIterator from(PrimitiveIterator.OfDouble iterator, DoubleToLongFunction mapper) {
+		return new DelegatingLongIterator<Double, PrimitiveIterator.OfDouble>(iterator) {
+			@Override
+			public long nextLong() {
+				return mapper.applyAsLong(iterator.nextDouble());
+			}
+		};
+	}
+
+	static LongIterator from(PrimitiveIterator.OfInt iterator) {
+		return new DelegatingLongIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+			@Override
+			public long nextLong() {
+				return iterator.nextInt();
+			}
+		};
+	}
+
+	static LongIterator from(PrimitiveIterator.OfInt iterator, IntToLongFunction mapper) {
+		return new DelegatingLongIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+			@Override
+			public long nextLong() {
+				return mapper.applyAsLong(iterator.nextInt());
 			}
 		};
 	}
@@ -72,9 +100,8 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 
 	default void skip(long steps) {
 		long count = 0;
-		while ((count++ < steps) && hasNext()) {
+		while ((count++ < steps) && hasNext())
 			nextLong();
-		}
 	}
 
 	default LongIterable asIterable() {

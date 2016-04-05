@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.longs;
+package org.d2ab.function.chars;
 
 /**
  * A functional interface for converting from {@code long} values to {@code char} values.

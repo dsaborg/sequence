@@ -18,6 +18,8 @@ package org.d2ab.iterator.chars;
 
 import org.d2ab.function.chars.CharBinaryOperator;
 import org.d2ab.function.chars.CharConsumer;
+import org.d2ab.function.chars.IntToCharFunction;
+import org.d2ab.function.chars.LongToCharFunction;
 import org.d2ab.iterable.chars.CharIterable;
 
 import java.util.Iterator;
@@ -80,39 +82,46 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(Iterator<Character> iterator) {
-		return new CharIterator() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
+		return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override
 			public char nextChar() {
 				return iterator.next();
 			}
-
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
 		};
 	}
 
-	static CharIterator from(OfInt iterator) {
-		return new CharIterator() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
+	static CharIterator from(PrimitiveIterator.OfInt iterator) {
+		return new DelegatingCharIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextInt();
 			}
+		};
+	}
 
+	static CharIterator from(PrimitiveIterator.OfInt iterator, IntToCharFunction mapper) {
+		return new DelegatingCharIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
 			@Override
-			public void remove() {
-				iterator.remove();
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.nextInt());
+			}
+		};
+	}
+
+	static CharIterator from(PrimitiveIterator.OfLong iterator) {
+		return new DelegatingCharIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+			@Override
+			public char nextChar() {
+				return (char) iterator.nextLong();
+			}
+		};
+	}
+
+	static CharIterator from(PrimitiveIterator.OfLong iterator, LongToCharFunction mapper) {
+		return new DelegatingCharIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.nextLong());
 			}
 		};
 	}

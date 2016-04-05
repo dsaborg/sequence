@@ -17,11 +17,13 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.chars.*;
+import org.d2ab.function.ints.CharToIntFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.chars.ChainingCharIterable;
 import org.d2ab.iterable.chars.CharIterable;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.*;
-import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.Arrayz;
 import org.d2ab.util.primitive.OptionalChar;
 
@@ -83,7 +85,7 @@ public interface CharSeq extends CharIterable {
 	 * Create a {@code CharSeq} with the given characters.
 	 */
 	static CharSeq of(char... cs) {
-		return () -> new ArrayCharIterator(cs);
+		return () -> CharIterator.of(cs);
 	}
 
 	/**
@@ -264,24 +266,7 @@ public interface CharSeq extends CharIterable {
 	 * Map the {@code chars} in this {@code CharSeq} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(CharFunction<T> mapper) {
-		return () -> new Iterator<T>() {
-			private final CharIterator iterator = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public T next() {
-				return mapper.apply(iterator.nextChar());
-			}
-
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
-		};
+		return () -> Iterators.from(iterator(), mapper);
 	}
 
 	/**
@@ -597,9 +582,11 @@ public interface CharSeq extends CharIterable {
 	 * @see #reverse()
 	 */
 	default CharSeq sorted() {
-		char[] array = toArray();
-		Arrays.sort(array);
-		return () -> CharIterator.of(array);
+		return () -> {
+			char[] array = toArray();
+			Arrays.sort(array);
+			return CharIterator.of(array);
+		};
 	}
 
 	/**
@@ -657,11 +644,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #sorted()
 	 */
 	default CharSeq reverse() {
-		char[] array = toArray();
-		for (int i = 0; i < (array.length / 2); i++) {
-			Arrayz.swap(array, i, array.length - 1 - i);
-		}
-		return of(array);
+		return () -> CharIterator.of(Arrayz.reverse(toArray()));
 	}
 
 	/**
@@ -702,12 +685,14 @@ public interface CharSeq extends CharIterable {
 	 * Convert this sequence of characters to a sequence of ints corresponding to the integer value of each character.
 	 */
 	default IntSequence toInts() {
-		return () -> new DelegatingIntIterator<Character, CharIterator>(iterator()) {
-			@Override
-			public int nextInt() {
-				return iterator.nextChar();
-			}
-		};
+		return () -> IntIterator.from(iterator());
+	}
+
+	/**
+	 * Convert this sequence of characters to a sequence of ints corresponding to the integer value of each character.
+	 */
+	default IntSequence toInts(CharToIntFunction mapper) {
+		return () -> IntIterator.from(iterator(), mapper);
 	}
 
 	/**

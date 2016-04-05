@@ -17,9 +17,8 @@
 package org.d2ab.function.ints;
 
 /**
- * A functional interface for converting from {@code int} values to {@code char} values.
+ * A functional interface for converting {@code char} values to {@code int} values.
  */
-@FunctionalInterface
-public interface IntToCharFunction {
-	char applyAsChar(int i);
+public interface CharToIntFunction {
+	int applyAsInt(char value);
 }

@@ -16,15 +16,16 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.function.chars.IntToCharFunction;
 import org.d2ab.function.ints.IntBiPredicate;
-import org.d2ab.function.ints.IntToCharFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
-import org.d2ab.iterator.chars.DelegatingCharIterator;
-import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
+import org.d2ab.iterator.Iterators;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.*;
-import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.util.Arrayz;
 
 import java.util.Arrays;
@@ -81,7 +82,7 @@ public interface IntSequence extends IntIterable {
 	 * Create a {@code IntSequence} with the given ints.
 	 */
 	static IntSequence of(int... cs) {
-		return () -> new ArrayIntIterator(cs);
+		return () -> IntIterator.of(cs);
 	}
 
 	/**
@@ -384,24 +385,7 @@ public interface IntSequence extends IntIterable {
 	 * Map the {@code ints} in this {@code IntSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(IntFunction<T> mapper) {
-		return () -> new Iterator<T>() {
-			private final IntIterator iterator = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public T next() {
-				return mapper.apply(iterator.nextInt());
-			}
-
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
-		};
+		return () -> Iterators.from(iterator(), mapper);
 	}
 
 	/**
@@ -716,9 +700,11 @@ public interface IntSequence extends IntIterable {
 	 * @see #reverse()
 	 */
 	default IntSequence sorted() {
-		int[] array = toArray();
-		Arrays.sort(array);
-		return () -> IntIterator.of(array);
+		return () -> {
+			int[] array = toArray();
+			Arrays.sort(array);
+			return IntIterator.of(array);
+		};
 	}
 
 	/**
@@ -776,11 +762,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #sorted()
 	 */
 	default IntSequence reverse() {
-		int[] array = toArray();
-		for (int i = 0; i < (array.length / 2); i++) {
-			Arrayz.swap(array, i, array.length - 1 - i);
-		}
-		return of(array);
+		return () -> IntIterator.of(Arrayz.reverse(toArray()));
 	}
 
 	/**
@@ -810,72 +792,42 @@ public interface IntSequence extends IntIterable {
 	 * Convert this sequence of ints to a sequence of chars corresponding to the downcast char value of each int.
 	 */
 	default CharSeq toChars() {
-		return () -> new DelegatingCharIterator<Integer, IntIterator>(iterator()) {
-			@Override
-			public char nextChar() {
-				return (char) iterator.nextInt();
-			}
-		};
+		return () -> CharIterator.from(iterator());
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of longs.
 	 */
 	default LongSequence toLongs() {
-		return () -> new DelegatingLongIterator<Integer, IntIterator>(iterator()) {
-			@Override
-			public long nextLong() {
-				return iterator.nextInt();
-			}
-		};
+		return () -> LongIterator.from(iterator());
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of doubles corresponding to the cast double value of each int.
 	 */
 	default DoubleSequence toDoubles() {
-		return () -> new DelegatingDoubleIterator<Integer, IntIterator>(iterator()) {
-			@Override
-			public double nextDouble() {
-				return iterator.nextInt();
-			}
-		};
+		return () -> DoubleIterator.from(iterator());
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of chars using the given converter function.
 	 */
 	default CharSeq toChars(IntToCharFunction mapper) {
-		return () -> new DelegatingCharIterator<Integer, IntIterator>(iterator()) {
-			@Override
-			public char nextChar() {
-				return mapper.applyAsChar(iterator.nextInt());
-			}
-		};
+		return () -> CharIterator.from(iterator(), mapper);
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of longs using the given converter function.
 	 */
 	default LongSequence toLongs(IntToLongFunction mapper) {
-		return () -> new DelegatingLongIterator<Integer, IntIterator>(iterator()) {
-			@Override
-			public long nextLong() {
-				return mapper.applyAsLong(iterator.nextInt());
-			}
-		};
+		return () -> LongIterator.from(iterator(), mapper);
 	}
 
 	/**
 	 * Convert this sequence of ints to a sequence of doubles using the given converter function.
 	 */
 	default DoubleSequence toDoubles(IntToDoubleFunction mapper) {
-		return () -> new DelegatingDoubleIterator<Integer, IntIterator>(iterator()) {
-			@Override
-			public double nextDouble() {
-				return mapper.applyAsDouble(iterator.nextInt());
-			}
-		};
+		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
 	/**

@@ -433,6 +433,15 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void sortedWithUpdates() {
+		List<Double> backing = new ArrayList<>(List.of(2.0, 3.0, 1.0));
+		DoubleSequence sorted = DoubleSequence.from(backing).sorted();
+
+		backing.add(4.0);
+		assertThat(sorted, contains(1.0, 2.0, 3.0, 4.0));
+	}
+
+	@Test
 	public void min() {
 		OptionalDouble emptyMin = empty.min();
 		twice(() -> assertThat(emptyMin, is(OptionalDouble.empty())));
@@ -538,6 +547,15 @@ public class DoubleSequenceTest {
 
 		DoubleSequence nineReversed = _123456789.reverse();
 		twice(() -> assertThat(nineReversed, contains(9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0)));
+	}
+
+	@Test
+	public void reverseWithUpdates() {
+		List<Double> backing = new ArrayList<>(List.of(1.0, 2.0, 3.0));
+		DoubleSequence reversed = DoubleSequence.from(backing).reverse();
+
+		backing.add(4.0);
+		assertThat(reversed, contains(4.0, 3.0, 2.0, 1.0));
 	}
 
 	@Test
