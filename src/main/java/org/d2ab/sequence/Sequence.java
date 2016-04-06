@@ -249,7 +249,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #longs(long)
 	 */
 	static Sequence<Long> range(long start, long end) {
-		UnaryOperator<Long> next = (end > start) ? i -> i + 1 : i -> i - 1;
+		UnaryOperator<Long> next = (end > start) ? i -> ++i : i -> --i;
 		return recurse(start, next).endingAt(end);
 	}
 
@@ -888,9 +888,8 @@ public interface Sequence<T> extends Iterable<T> {
 			return Optional.empty();
 
 		T last;
-		do {
-			last = iterator.next();
-		} while (iterator.hasNext());
+		do
+			last = iterator.next(); while (iterator.hasNext());
 
 		return Optional.of(last);
 	}
@@ -1067,7 +1066,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default long count() {
 		long count = 0;
-		for (Iterator iterator = iterator(); iterator.hasNext(); iterator.next())
+		for (T ignored : this)
 			count++;
 		return count;
 	}
