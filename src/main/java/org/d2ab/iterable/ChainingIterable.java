@@ -39,7 +39,7 @@ public class ChainingIterable<T> implements Iterable<T> {
 
 	@SafeVarargs
 	public ChainingIterable(Iterable<? extends T>... iterables) {
-		Arrayz.forEach(e -> this.iterables.add(requireNonNull(e)), iterables);
+		Arrayz.forEach(iterables, e -> this.iterables.add(requireNonNull(e)));
 	}
 
 	public static <U> Iterable<U> flatten(Iterable<?> containers) {

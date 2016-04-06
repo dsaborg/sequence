@@ -54,16 +54,16 @@ public class DelimitingIterator<U, V> extends UnaryReferenceIterator<U> {
 
 		if (!prefixDone && prefix.isPresent()) {
 			prefixDone = true;
-			return prefix.get();
+			return (U) prefix.get();
 		}
 
 		if (!iterator.hasNext() && suffix.isPresent() && !suffixDone) {
 			suffixDone = true;
-			return suffix.get();
+			return (U) suffix.get();
 		}
 
 		boolean sendDelimiter = delimiter.isPresent() && !(delimiterNext = !delimiterNext);
-		return sendDelimiter ? delimiter.get() : iterator.next();
+		return sendDelimiter ? (U) delimiter.get() : iterator.next();
 	}
 
 	@Override

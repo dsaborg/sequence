@@ -101,9 +101,10 @@ public interface Sequence<T> extends Iterable<T> {
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	static <T> Sequence<T> from(Iterable<T>... iterables) {
-		if (Sequence.of(iterables).all(iterable -> iterable instanceof List)) {
+		Sequence<Iterable<T>> iterableSequence = Sequence.of(iterables);
+		if (iterableSequence.all(iterable -> iterable instanceof List)) {
 			List<List<T>> lists = new ArrayList<>(iterables.length);
-			Arrayz.forEach(iterable -> lists.add((List<T>) iterable), iterables);
+			iterableSequence.map(iterable -> (List<T>) iterable).forEach(lists::add);
 			return ChainedListSequence.from(lists);
 		}
 

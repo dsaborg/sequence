@@ -31,8 +31,7 @@ public class Arrayz {
 	private Arrayz() {
 	}
 
-	@SafeVarargs
-	public static <T> void forEach(Consumer<? super T> action, T... array) {
+	public static <T> void forEach(T[] array, Consumer<? super T> action) {
 		requireNonNull(action);
 		for (T item : requireNonNull(array))
 			action.accept(item);
