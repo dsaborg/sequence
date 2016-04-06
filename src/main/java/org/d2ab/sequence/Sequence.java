@@ -1036,12 +1036,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return this {@code Sequence} sorted according to the natural order. Must be a (@code Sequence} of
 	 * {@link Comparable} or a {@link ClassCastException} is thrown during traversal.
 	 */
+	@SuppressWarnings("unchecked")
 	default <S extends Comparable<? super S>> Sequence<S> sorted() {
-		return () -> {
-			@SuppressWarnings("unchecked")
-			Iterator<S> comparableIterator = (Iterator<S>) iterator();
-			return new SortingIterator<>(comparableIterator);
-		};
+		return () -> new SortingIterator<>((Iterator<S>) iterator());
 	}
 
 	/**
@@ -1171,33 +1168,36 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Delimit each element in this {@code Sequence} with the given delimiter element.
 	 */
 	@SuppressWarnings("unchecked")
-	default <V extends R, R> Sequence<R> delimit(V delimiter) {
-		return () -> new DelimitingIterator(iterator(), Optional.empty(), Optional.of(delimiter), Optional.empty());
+	default <U, V> Sequence<U> delimit(V delimiter) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.of(delimiter),
+		                                      Optional.empty());
 	}
 
 	/**
 	 * Delimit the elements in this {@code Sequence} with the given delimiter, prefix and suffix elements.
 	 */
 	@SuppressWarnings("unchecked")
-	default <V extends R, R> Sequence<R> delimit(V prefix, V delimiter, V suffix) {
-		return () -> new DelimitingIterator(iterator(), Optional.of(prefix), Optional.of(delimiter),
-		                                    Optional.of(suffix));
+	default <U, V> Sequence<U> delimit(V prefix, V delimiter, V suffix) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.of(delimiter),
+		                                      Optional.of(suffix));
 	}
 
 	/**
 	 * Prefix the elements in this {@code Sequence} with the given prefix element.
 	 */
 	@SuppressWarnings("unchecked")
-	default <V extends R, R> Sequence<R> prefix(V prefix) {
-		return () -> new DelimitingIterator(iterator(), Optional.of(prefix), Optional.empty(), Optional.empty());
+	default <U, V> Sequence<U> prefix(V prefix) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.empty(),
+		                                      Optional.empty());
 	}
 
 	/**
 	 * Suffix the elements in this {@code Sequence} with the given suffix element.
 	 */
 	@SuppressWarnings("unchecked")
-	default <V extends R, R> Sequence<R> suffix(V suffix) {
-		return () -> new DelimitingIterator(iterator(), Optional.empty(), Optional.empty(), Optional.of(suffix));
+	default <U, V> Sequence<U> suffix(V suffix) {
+		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.empty(),
+		                                      Optional.of(suffix));
 	}
 
 	/**

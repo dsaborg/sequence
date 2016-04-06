@@ -23,17 +23,17 @@ import java.util.Optional;
 /**
  * An {@link Iterator} that delimits the items of another {@link Iterator} with a delimiter object.
  */
-public class DelimitingIterator<U extends R, R> extends UnaryReferenceIterator<R> {
-	private Optional<? extends U> prefix;
-	private Optional<? extends U> delimiter;
-	private Optional<? extends U> suffix;
+public class DelimitingIterator<U, V> extends UnaryReferenceIterator<U> {
+	private Optional<? extends V> prefix;
+	private Optional<? extends V> delimiter;
+	private Optional<? extends V> suffix;
 
 	private boolean delimiterNext;
 	private boolean prefixDone;
 	private boolean suffixDone;
 
-	public DelimitingIterator(Iterator<R> iterator, Optional<? extends U> prefix, Optional<? extends U> delimiter,
-	                          Optional<? extends U> suffix) {
+	public DelimitingIterator(Iterator<U> iterator, Optional<? extends V> prefix, Optional<? extends V> delimiter,
+	                          Optional<? extends V> suffix) {
 		super(iterator);
 		this.prefix = prefix;
 		this.delimiter = delimiter;
@@ -48,7 +48,7 @@ public class DelimitingIterator<U extends R, R> extends UnaryReferenceIterator<R
 	}
 
 	@Override
-	public R next() {
+	public U next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
