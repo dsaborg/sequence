@@ -27,8 +27,6 @@ import java.util.function.DoubleConsumer;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
-
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
 	@Override
@@ -64,8 +62,6 @@ public interface DoubleIterable extends Iterable<Double> {
 	 */
 	@SuppressWarnings("unchecked")
 	static DoubleIterable from(Object container) {
-		requireNonNull(container);
-
 		if (container instanceof DoubleIterable)
 			return (DoubleIterable) container;
 		else if (container instanceof Iterable)

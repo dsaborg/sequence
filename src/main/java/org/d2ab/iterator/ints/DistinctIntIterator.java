@@ -16,14 +16,14 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.collection.Tracker;
+import org.d2ab.collection.LongMemoizer;
 
 import java.util.NoSuchElementException;
 
 public class DistinctIntIterator extends UnaryIntIterator {
 	private static final int THRESHOLD = 256;
 
-	private final Tracker seen = new Tracker(THRESHOLD);
+	private final LongMemoizer seen = new LongMemoizer(THRESHOLD);
 
 	private int next;
 	private boolean hasNext;

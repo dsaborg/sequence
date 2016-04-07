@@ -27,8 +27,6 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
-
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
 	@Override
@@ -64,8 +62,6 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	@SuppressWarnings("unchecked")
 	static CharIterable from(Object container) {
-		requireNonNull(container);
-
 		if (container instanceof CharIterable)
 			return (CharIterable) container;
 		else if (container instanceof Iterable)

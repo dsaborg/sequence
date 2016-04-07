@@ -18,7 +18,10 @@ package org.d2ab.iterator.longs;
 
 import org.d2ab.iterable.longs.LongIterable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
@@ -29,10 +32,8 @@ public class InterleavingLongIterator implements LongIterator {
 	private int current;
 
 	public InterleavingLongIterator(LongIterable... iterables) {
-		for (LongIterable iterable : iterables) {
-			LongIterator iterator = Objects.requireNonNull(iterable).iterator();
-			iterators.add(Objects.requireNonNull(iterator));
-		}
+		for (LongIterable iterable : iterables)
+			iterators.add(iterable.iterator());
 	}
 
 	@Override

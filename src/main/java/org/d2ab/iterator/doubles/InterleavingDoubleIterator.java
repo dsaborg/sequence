@@ -18,7 +18,10 @@ package org.d2ab.iterator.doubles;
 
 import org.d2ab.iterable.doubles.DoubleIterable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
@@ -29,10 +32,8 @@ public class InterleavingDoubleIterator implements DoubleIterator {
 	private int current;
 
 	public InterleavingDoubleIterator(DoubleIterable... iterables) {
-		for (DoubleIterable iterable : iterables) {
-			DoubleIterator iterator = Objects.requireNonNull(iterable).iterator();
-			iterators.add(Objects.requireNonNull(iterator));
-		}
+		for (DoubleIterable iterable : iterables)
+			iterators.add(iterable.iterator());
 	}
 
 	@Override

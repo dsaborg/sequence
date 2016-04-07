@@ -27,8 +27,6 @@ import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
-
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
 	@Override
@@ -64,8 +62,6 @@ public interface LongIterable extends Iterable<Long> {
 	 */
 	@SuppressWarnings("unchecked")
 	static LongIterable from(Object container) {
-		requireNonNull(container);
-
 		if (container instanceof LongIterable)
 			return (LongIterable) container;
 		else if (container instanceof Iterable)

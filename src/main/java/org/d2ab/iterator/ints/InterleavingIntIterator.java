@@ -18,7 +18,10 @@ package org.d2ab.iterator.ints;
 
 import org.d2ab.iterable.ints.IntIterable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
@@ -29,10 +32,8 @@ public class InterleavingIntIterator implements IntIterator {
 	private int current;
 
 	public InterleavingIntIterator(IntIterable... iterables) {
-		for (IntIterable iterable : iterables) {
-			IntIterator iterator = Objects.requireNonNull(iterable).iterator();
-			iterators.add(Objects.requireNonNull(iterator));
-		}
+		for (IntIterable iterable : iterables)
+			iterators.add(iterable.iterator());
 	}
 
 	@Override

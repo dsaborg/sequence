@@ -21,7 +21,6 @@ import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
@@ -32,7 +31,7 @@ public class ChainingCharIterable implements CharIterable {
 	private final Collection<CharIterable> iterables = new ArrayList<>();
 
 	public ChainingCharIterable(CharIterable... iterables) {
-		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
+		asList(iterables).forEach(this.iterables::add);
 	}
 
 	public ChainingCharIterable append(CharIterable iterable) {

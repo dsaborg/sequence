@@ -21,7 +21,6 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
@@ -32,7 +31,7 @@ public class ChainingDoubleIterable implements DoubleIterable {
 	private final Collection<DoubleIterable> iterables = new ArrayList<>();
 
 	public ChainingDoubleIterable(DoubleIterable... iterables) {
-		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
+		asList(iterables).forEach(this.iterables::add);
 	}
 
 	public ChainingDoubleIterable append(DoubleIterable iterable) {

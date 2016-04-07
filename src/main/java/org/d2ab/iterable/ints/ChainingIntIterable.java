@@ -21,7 +21,6 @@ import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
@@ -32,7 +31,7 @@ public class ChainingIntIterable implements IntIterable {
 	private final Collection<IntIterable> iterables = new ArrayList<>();
 
 	public ChainingIntIterable(IntIterable... iterables) {
-		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
+		asList(iterables).forEach(this.iterables::add);
 	}
 
 	public ChainingIntIterable append(IntIterable iterable) {

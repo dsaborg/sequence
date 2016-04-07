@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
-
 public class ChainingIterable<T> implements Iterable<T> {
 	private final Collection<Iterable<? extends T>> iterables = new ArrayList<>();
 
@@ -34,55 +32,51 @@ public class ChainingIterable<T> implements Iterable<T> {
 	}
 
 	public ChainingIterable(Iterable<? extends T> iterable) {
-		iterables.add(requireNonNull(iterable));
+		iterables.add(iterable);
 	}
 
 	@SafeVarargs
 	public ChainingIterable(Iterable<? extends T>... iterables) {
-		Arrayz.forEach(iterables, e -> this.iterables.add(requireNonNull(e)));
+		Arrayz.forEach(iterables, this.iterables::add);
 	}
 
 	public static <U> Iterable<U> flatten(Iterable<?> containers) {
-		return new ChainingIterable<U>().flatAppend(requireNonNull(containers));
+		return new ChainingIterable<U>().flatAppend(containers);
 	}
 
 	public static <T, U> Iterable<U> flatten(Iterable<? extends T> iterable,
 	                                         Function<? super T, ? extends Iterable<U>> mapper) {
-		requireNonNull(mapper);
-		requireNonNull(iterable);
 		ChainingIterable<U> result = new ChainingIterable<>();
 		iterable.forEach(each -> result.append(mapper.apply(each)));
 		return result;
 	}
 
 	public Iterable<T> flatAppend(Object container) {
-		requireNonNull(container);
-		append(Iterables.from(container));
-		return this;
+		return append(Iterables.from(container));
 	}
 
 	public Iterable<T> flatAppend(Iterable<?> containers) {
-		for (Object each : requireNonNull(containers))
-			append(Iterables.from(each));
+		for (Object each : containers)
+			flatAppend(each);
 		return this;
 	}
 
 	public Iterable<T> append(Iterable<T> iterable) {
-		iterables.add(requireNonNull(iterable));
+		iterables.add(iterable);
 		return this;
 	}
 
 	public Iterable<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(requireNonNull(iterator)));
+		return append(Iterables.from(iterator));
 	}
 
 	@SuppressWarnings("unchecked")
 	public Iterable<T> append(T... objects) {
-		return append(Iterables.from(requireNonNull(objects)));
+		return append(Iterables.from(objects));
 	}
 
 	public Iterable<T> append(Stream<T> stream) {
-		return append(Iterables.from(requireNonNull(stream)));
+		return append(Iterables.from(stream));
 	}
 
 	@Override

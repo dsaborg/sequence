@@ -27,8 +27,6 @@ import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
-
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
 	@Override
@@ -64,8 +62,6 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	@SuppressWarnings("unchecked")
 	static IntIterable from(Object container) {
-		requireNonNull(container);
-
 		if (container instanceof IntIterable)
 			return (IntIterable) container;
 		else if (container instanceof Iterable)

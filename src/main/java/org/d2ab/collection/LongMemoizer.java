@@ -17,18 +17,32 @@
 package org.d2ab.collection;
 
 import java.util.BitSet;
-
-import static java.util.Objects.requireNonNull;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Utility methods for {@link BitSet}s.
+ * Tracks presence of longs, for example used to calculate distinct entries. Uses a mix between a {@link Set} and a
+ * {@link BitSet} for remembering values. Uses a {@link BitSet} up to a threshold value, then uses a regular
+ * {@link Set}.
  */
-public class BitSets {
-	private BitSets() {
+public class LongMemoizer {
+	private final int threshold;
+	private final Set<Long> high = new HashSet<>();
+	private final BitSet low;
+
+	public LongMemoizer(int threshold) {
+		this.threshold = threshold;
+		low = new BitSet(threshold);
+	}
+
+	public boolean add(long l) {
+		if (l < threshold)
+			return add(low, (int) l);
+		else
+			return high.add(l);
 	}
 
 	public static boolean add(BitSet bitSet, int index) {
-		requireNonNull(bitSet);
 		boolean cleared = !bitSet.get(index);
 		if (cleared) {
 			bitSet.set(index);

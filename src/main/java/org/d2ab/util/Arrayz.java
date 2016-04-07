@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * Utilities for arrays, similar to {@link Arrays} with a few extras like iterators and {@link #forEach}.
  */
@@ -32,19 +30,18 @@ public class Arrayz {
 	}
 
 	public static <T> void forEach(T[] array, Consumer<? super T> action) {
-		requireNonNull(action);
-		for (T item : requireNonNull(array))
+		for (T item : array)
 			action.accept(item);
 	}
 
 	@SafeVarargs
 	public static <T> Iterator<T> iterator(T... items) {
-		return new ArrayIterator<>(requireNonNull(items));
+		return new ArrayIterator<>(items);
 	}
 
 	@SafeVarargs
 	public static <T> Iterable<T> iterable(T... items) {
-		return () -> iterator(requireNonNull(items));
+		return () -> iterator(items);
 	}
 
 	public static void swap(long[] array, int i, int j) {

@@ -18,7 +18,10 @@ package org.d2ab.iterator.chars;
 
 import org.d2ab.iterable.chars.CharIterable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} that interleaves the streams of two other {@link Iterator}s with each other.
@@ -29,10 +32,8 @@ public class InterleavingCharIterator implements CharIterator {
 	private int current;
 
 	public InterleavingCharIterator(CharIterable... iterables) {
-		for (CharIterable iterable : iterables) {
-			CharIterator iterator = Objects.requireNonNull(iterable).iterator();
-			iterators.add(Objects.requireNonNull(iterator));
-		}
+		for (CharIterable iterable : iterables)
+			iterators.add(iterable.iterator());
 	}
 
 	@Override

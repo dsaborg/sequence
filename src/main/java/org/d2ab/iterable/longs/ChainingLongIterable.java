@@ -21,7 +21,6 @@ import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
@@ -32,7 +31,7 @@ public class ChainingLongIterable implements LongIterable {
 	private final Collection<LongIterable> iterables = new ArrayList<>();
 
 	public ChainingLongIterable(LongIterable... iterables) {
-		asList(iterables).forEach(e -> this.iterables.add(Objects.requireNonNull(e)));
+		asList(iterables).forEach(this.iterables::add);
 	}
 
 	public ChainingLongIterable append(LongIterable iterable) {

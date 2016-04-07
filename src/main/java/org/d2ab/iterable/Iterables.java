@@ -23,24 +23,22 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Objects.requireNonNull;
 
 public class Iterables {
 	private Iterables() {
 	}
 
 	public static <T> Iterable<T> from(Iterator<T> iterator) {
-		requireNonNull(iterator);
 		return () -> iterator;
 	}
 
 	@SafeVarargs
 	public static <T> Iterable<T> from(T... objects) {
-		return asList(requireNonNull(objects));
+		return asList(objects);
 	}
 
 	public static <T> Iterable<T> from(Stream<T> stream) {
-		return requireNonNull(stream)::iterator;
+		return stream::iterator;
 	}
 
 	/**
@@ -56,7 +54,6 @@ public class Iterables {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Iterable<T> from(Object container) {
-		requireNonNull(container);
 		if (container instanceof Iterable)
 			return (Iterable<T>) container;
 		else if (container instanceof Iterator)
