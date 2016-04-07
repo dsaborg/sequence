@@ -49,7 +49,7 @@ public class DoubleSequenceTest {
 	private final DoubleSequence oneRandom = DoubleSequence.of(17.0);
 	private final DoubleSequence twoRandom = DoubleSequence.of(17.0, 32.0);
 	private final DoubleSequence threeRandom = DoubleSequence.of(17.0, 32.0, 12.0);
-	private final DoubleSequence nineRandom = DoubleSequence.of(6.0, 6.0, 1.0, 7.0, 1.0, 2.0, 17.0, 5.0, 4.0);
+	private final DoubleSequence nineRandom = DoubleSequence.of(6.0, 6.0, 1.0, -7.0, 1.0, 2.0, 17.0, 5.0, 4.0);
 
 	@Test
 	public void ofOne() {
@@ -272,19 +272,19 @@ public class DoubleSequenceTest {
 	@Test
 	public void filterBack() {
 		DoubleSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
-		twice(() -> assertThat(filteredLess, contains(7.0, 2.0, 17.0)));
+		twice(() -> assertThat(filteredLess, contains(1.0, 2.0, 17.0)));
 
 		DoubleSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
-		twice(() -> assertThat(filteredGreater, contains(6.0, 1.0, 1.0, 5.0, 4.0)));
+		twice(() -> assertThat(filteredGreater, contains(6.0, 1.0, -7.0, 5.0, 4.0)));
 	}
 
 	@Test
 	public void filterForward() {
 		DoubleSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
-		twice(() -> assertThat(filteredLess, contains(6.0, 7.0, 17.0, 5.0)));
+		twice(() -> assertThat(filteredLess, contains(6.0, 1.0, 17.0, 5.0)));
 
 		DoubleSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
-		twice(() -> assertThat(filteredGreater, contains(1.0, 1.0, 2.0, 4.0)));
+		twice(() -> assertThat(filteredGreater, contains(-7.0, 1.0, 2.0, 4.0)));
 	}
 
 	@Test
@@ -429,7 +429,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(twoSorted, contains(17.0, 32.0)));
 
 		DoubleSequence nineSorted = nineRandom.sorted();
-		twice(() -> assertThat(nineSorted, contains(1.0, 1.0, 2.0, 4.0, 5.0, 6.0, 6.0, 7.0, 17.0)));
+		twice(() -> assertThat(nineSorted, contains(-7.0, 1.0, 1.0, 2.0, 4.0, 5.0, 6.0, 6.0, 17.0)));
 	}
 
 	@Test
@@ -453,7 +453,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(twoMin, is(OptionalDouble.of(17.0))));
 
 		OptionalDouble nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalDouble.of(1.0))));
+		twice(() -> assertThat(nineMin, is(OptionalDouble.of(-7.0))));
 	}
 
 	@Test
@@ -855,7 +855,7 @@ public class DoubleSequenceTest {
 
 		Sequence<DoubleSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6.0, 6.0), contains(1.0, 7.0), contains(1.0, 2.0, 17.0), contains(5.0),
+		                       contains(contains(6.0, 6.0), contains(1.0), contains(-7.0, 1.0, 2.0, 17.0), contains(5.0),
 		                                contains(4.0))));
 	}
 

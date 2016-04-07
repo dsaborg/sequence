@@ -36,16 +36,16 @@ public class LongMemoizer {
 	}
 
 	public boolean add(long l) {
-		if (l < threshold)
+		if (l >= 0 && l < threshold)
 			return add(low, (int) l);
 		else
 			return high.add(l);
 	}
 
 	public static boolean add(BitSet bitSet, int index) {
-		boolean cleared = !bitSet.get(index);
-		if (cleared)
+		boolean add = !bitSet.get(index);
+		if (add)
 			bitSet.set(index);
-		return cleared;
+		return add;
 	}
 }

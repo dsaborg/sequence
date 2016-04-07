@@ -49,7 +49,7 @@ public class IntSequenceTest {
 	private final IntSequence oneRandom = IntSequence.of(17);
 	private final IntSequence twoRandom = IntSequence.of(17, 32);
 	private final IntSequence threeRandom = IntSequence.of(17, 32, 12);
-	private final IntSequence nineRandom = IntSequence.of(6, 6, 1, 7, 1, 2, 17, 5, 4);
+	private final IntSequence nineRandom = IntSequence.of(6, 6, 1, -7, 1, 2, 17, 5, 4);
 
 	@Test
 	public void ofOne() {
@@ -272,19 +272,19 @@ public class IntSequenceTest {
 	@Test
 	public void filterBack() {
 		IntSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
-		twice(() -> assertThat(filteredLess, contains(7, 2, 17)));
+		twice(() -> assertThat(filteredLess, contains(1, 2, 17)));
 
 		IntSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
-		twice(() -> assertThat(filteredGreater, contains(6, 1, 1, 5, 4)));
+		twice(() -> assertThat(filteredGreater, contains(6, 1, -7, 5, 4)));
 	}
 
 	@Test
 	public void filterForward() {
 		IntSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
-		twice(() -> assertThat(filteredLess, contains(6, 7, 17, 5)));
+		twice(() -> assertThat(filteredLess, contains(6, 1, 17, 5)));
 
 		IntSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
-		twice(() -> assertThat(filteredGreater, contains(1, 1, 2, 4)));
+		twice(() -> assertThat(filteredGreater, contains(-7, 1, 2, 4)));
 	}
 
 	@Test
@@ -429,7 +429,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17)));
 
 		IntSequence nineDistinct = nineRandom.distinct();
-		twice(() -> assertThat(nineDistinct, contains(6, 1, 7, 2, 17, 5, 4)));
+		twice(() -> assertThat(nineDistinct, contains(6, 1, -7, 2, 17, 5, 4)));
 	}
 
 	@Test
@@ -444,7 +444,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(twoSorted, contains(17, 32)));
 
 		IntSequence nineSorted = nineRandom.sorted();
-		twice(() -> assertThat(nineSorted, contains(1, 1, 2, 4, 5, 6, 6, 7, 17)));
+		twice(() -> assertThat(nineSorted, contains(-7, 1, 1, 2, 4, 5, 6, 6, 17)));
 	}
 
 	@Test
@@ -468,7 +468,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(twoMin, is(OptionalInt.of(17))));
 
 		OptionalInt nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalInt.of(1))));
+		twice(() -> assertThat(nineMin, is(OptionalInt.of(-7))));
 	}
 
 	@Test
@@ -911,7 +911,7 @@ public class IntSequenceTest {
 
 		Sequence<IntSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6, 6), contains(1, 7), contains(1, 2, 17), contains(5), contains(4)
+		                       contains(contains(6, 6), contains(1), contains(-7, 1, 2, 17), contains(5), contains(4)
 		                       )));
 	}
 

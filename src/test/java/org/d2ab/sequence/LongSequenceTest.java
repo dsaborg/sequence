@@ -49,7 +49,7 @@ public class LongSequenceTest {
 	private final LongSequence oneRandom = LongSequence.of(17L);
 	private final LongSequence twoRandom = LongSequence.of(17L, 32L);
 	private final LongSequence threeRandom = LongSequence.of(17L, 32L, 12L);
-	private final LongSequence nineRandom = LongSequence.of(6L, 6L, 1L, 7L, 1L, 2L, 17L, 5L, 4L);
+	private final LongSequence nineRandom = LongSequence.of(6L, 6L, 1L, -7L, 1L, 2L, 17L, 5L, 4L);
 
 	@Test
 	public void ofOne() {
@@ -272,19 +272,19 @@ public class LongSequenceTest {
 	@Test
 	public void filterBack() {
 		LongSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
-		twice(() -> assertThat(filteredLess, contains(7L, 2L, 17L)));
+		twice(() -> assertThat(filteredLess, contains(1L, 2L, 17L)));
 
 		LongSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
-		twice(() -> assertThat(filteredGreater, contains(6L, 1L, 1L, 5L, 4L)));
+		twice(() -> assertThat(filteredGreater, contains(6L, 1L, -7L, 5L, 4L)));
 	}
 
 	@Test
 	public void filterForward() {
 		LongSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
-		twice(() -> assertThat(filteredLess, contains(6L, 7L, 17L, 5L)));
+		twice(() -> assertThat(filteredLess, contains(6L, 1L, 17L, 5L)));
 
 		LongSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
-		twice(() -> assertThat(filteredGreater, contains(1L, 1L, 2L, 4L)));
+		twice(() -> assertThat(filteredGreater, contains(-7L, 1L, 2L, 4L)));
 	}
 
 	@Test
@@ -429,7 +429,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17L)));
 
 		LongSequence nineDistinct = nineRandom.distinct();
-		twice(() -> assertThat(nineDistinct, contains(6L, 1L, 7L, 2L, 17L, 5L, 4L)));
+		twice(() -> assertThat(nineDistinct, contains(6L, 1L, -7L, 2L, 17L, 5L, 4L)));
 	}
 
 	@Test
@@ -444,7 +444,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(twoSorted, contains(17L, 32L)));
 
 		LongSequence nineSorted = nineRandom.sorted();
-		twice(() -> assertThat(nineSorted, contains(1L, 1L, 2L, 4L, 5L, 6L, 6L, 7L, 17L)));
+		twice(() -> assertThat(nineSorted, contains(-7L, 1L, 1L, 2L, 4L, 5L, 6L, 6L, 17L)));
 	}
 
 	@Test
@@ -468,7 +468,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(twoMin, is(OptionalLong.of(17L))));
 
 		OptionalLong nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalLong.of(1L))));
+		twice(() -> assertThat(nineMin, is(OptionalLong.of(-7L))));
 	}
 
 	@Test
@@ -912,7 +912,7 @@ public class LongSequenceTest {
 
 		Sequence<LongSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains(6L, 6L), contains(1L, 7L), contains(1L, 2L, 17L), contains(5L),
+		                       contains(contains(6L, 6L), contains(1L), contains(-7L, 1L, 2L, 17L), contains(5L),
 		                                contains(4L))));
 	}
 
