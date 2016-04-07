@@ -836,6 +836,6 @@ public class CharSeqTest {
 		filtered.removeAll();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
-		twice(() -> assertThat(original, contains('a', 'c', 'd')));
+		assertThat(original, contains('a', 'c', 'd'));
 	}
 }

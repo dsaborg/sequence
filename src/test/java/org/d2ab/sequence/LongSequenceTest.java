@@ -924,6 +924,6 @@ public class LongSequenceTest {
 		filtered.removeAll();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
-		twice(() -> assertThat(original, contains(2L, 4L)));
+		assertThat(original, contains(2L, 4L));
 	}
 }

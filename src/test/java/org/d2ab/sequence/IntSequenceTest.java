@@ -923,6 +923,6 @@ public class IntSequenceTest {
 		filtered.removeAll();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
-		twice(() -> assertThat(original, contains(2, 4)));
+		assertThat(original, contains(2, 4));
 	}
 }

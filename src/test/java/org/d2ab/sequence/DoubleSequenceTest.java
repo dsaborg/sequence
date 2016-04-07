@@ -867,6 +867,6 @@ public class DoubleSequenceTest {
 		filtered.removeAll();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
-		twice(() -> assertThat(original, contains(2.0, 4.0)));
+		assertThat(original, contains(2.0, 4.0));
 	}
 }
