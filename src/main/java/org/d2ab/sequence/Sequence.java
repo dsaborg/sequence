@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Maps;
 import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
@@ -24,8 +25,6 @@ import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.longs.DelegatingLongIterator;
-import org.d2ab.util.Arrayz;
-import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -726,7 +725,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
 		@SuppressWarnings("unchecked")
 		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
-		return entrySequence.collect(constructor, Entries::put);
+		return entrySequence.collect(constructor, Maps::put);
 	}
 
 	/**
@@ -904,7 +903,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
 			@Override
 			protected Entry<T, T> pair(T first, T second) {
-				return Entries.of(first, second);
+				return Maps.entry(first, second);
 			}
 		};
 	}
@@ -932,7 +931,7 @@ public interface Sequence<T> extends Iterable<T> {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 2) {
 			@Override
 			protected Entry<T, T> pair(T first, T second) {
-				return Entries.of(first, second);
+				return Maps.entry(first, second);
 			}
 		};
 	}

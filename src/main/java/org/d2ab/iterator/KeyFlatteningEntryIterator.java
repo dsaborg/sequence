@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.util.Entries;
+import org.d2ab.collection.Maps;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class KeyFlatteningEntryIterator<K, V, KK>
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		return Entries.of(keyIterator.next(), entry.getValue());
+		return Maps.entry(keyIterator.next(), entry.getValue());
 	}
 
 	@Override

@@ -44,9 +44,8 @@ public class LongMemoizer {
 
 	public static boolean add(BitSet bitSet, int index) {
 		boolean cleared = !bitSet.get(index);
-		if (cleared) {
+		if (cleared)
 			bitSet.set(index);
-		}
 		return cleared;
 	}
 }

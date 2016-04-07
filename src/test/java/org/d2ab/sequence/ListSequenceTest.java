@@ -18,7 +18,6 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.util.Arrayz;
-import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -640,17 +639,17 @@ public class ListSequenceTest {
 		twice(() -> assertThat(emptyEntries, is(emptyIterable())));
 
 		Sequence<Entry<Integer, Integer>> oneEntries = _1.entries();
-		twice(() -> assertThat(oneEntries, contains(Entries.of(1, null))));
+		twice(() -> assertThat(oneEntries, contains(Maps.entry(1, null))));
 
 		Sequence<Entry<Integer, Integer>> twoEntries = _12.entries();
-		twice(() -> assertThat(twoEntries, contains(Entries.of(1, 2))));
+		twice(() -> assertThat(twoEntries, contains(Maps.entry(1, 2))));
 
 		Sequence<Entry<Integer, Integer>> threeEntries = _123.entries();
-		twice(() -> assertThat(threeEntries, contains(Entries.of(1, 2), Entries.of(2, 3))));
+		twice(() -> assertThat(threeEntries, contains(Maps.entry(1, 2), Maps.entry(2, 3))));
 
 		Sequence<Entry<Integer, Integer>> fiveEntries = _12345.entries();
 		twice(() -> assertThat(fiveEntries,
-		                       contains(Entries.of(1, 2), Entries.of(2, 3), Entries.of(3, 4), Entries.of(4, 5))));
+		                       contains(Maps.entry(1, 2), Maps.entry(2, 3), Maps.entry(3, 4), Maps.entry(4, 5))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -739,17 +738,17 @@ public class ListSequenceTest {
 		EntrySequence<Integer, String> emptyEntrySequence = empty.toEntrySequence();
 		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
 
-		EntrySequence<Integer, String> oneEntrySequence = ListSequence.of(Entries.of(1, "1")).toEntrySequence();
-		twice(() -> assertThat(oneEntrySequence, contains(Entries.of(1, "1"))));
+		EntrySequence<Integer, String> oneEntrySequence = ListSequence.of(Maps.entry(1, "1")).toEntrySequence();
+		twice(() -> assertThat(oneEntrySequence, contains(Maps.entry(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence =
-				ListSequence.of(Entries.of(1, "1"), Entries.of(2, "2")).toEntrySequence();
-		twice(() -> assertThat(twoEntrySequence, contains(Entries.of(1, "1"), Entries.of(2, "2"))));
+				ListSequence.of(Maps.entry(1, "1"), Maps.entry(2, "2")).toEntrySequence();
+		twice(() -> assertThat(twoEntrySequence, contains(Maps.entry(1, "1"), Maps.entry(2, "2"))));
 
 		EntrySequence<Integer, String> threeEntrySequence =
-				ListSequence.of(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3")).toEntrySequence();
+				ListSequence.of(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3")).toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
-		                       contains(Entries.of(1, "1"), Entries.of(2, "2"), Entries.of(3, "3"))));
+		                       contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
 	}
 
 	@SuppressWarnings("unchecked")

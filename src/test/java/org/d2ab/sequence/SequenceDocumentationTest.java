@@ -17,7 +17,6 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.util.Entries;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -160,7 +159,7 @@ public class SequenceDocumentationTest {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		EntrySequence<Integer, String> oddsInverted =
-				EntrySequence.from(original).filter((k, v) -> v % 2 != 0).map((k, v) -> Entries.of(v, k));
+				EntrySequence.from(original).filter((k, v) -> v % 2 != 0).map((k, v) -> Maps.entry(v, k));
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 	}
