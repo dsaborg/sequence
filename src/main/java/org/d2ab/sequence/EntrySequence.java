@@ -507,9 +507,9 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * constructor.
 	 */
 	default Entry<K, V>[] toArray(IntFunction<Entry<K, V>[]> constructor) {
-		List list = toList();
+		List<Entry<K, V>> list = toList();
 		@SuppressWarnings("unchecked")
-		Entry<K, V>[] array = (Entry<K, V>[]) list.toArray(constructor.apply(list.size()));
+		Entry<K, V>[] array = list.toArray(constructor.apply(list.size()));
 		return array;
 	}
 

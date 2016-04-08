@@ -101,15 +101,15 @@ it's very easy to create your own full-fledged `Sequence` instances that can be 
 through the default methods on the interface that carry the bulk of the burden.
 
 ```Java
-List list = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> list = asList(1, 2, 3, 4, 5);
 
 // Sequence as @FunctionalInterface of list's Iterator
 Sequence<Integer> sequence = list::iterator;
 
 // Operate on sequence as any other sequence using default methods
-Sequence<String> transformed = sequence.map(Object::toString).limit(3);
+Sequence<String> transformed = sequence.map(Object::toString);
 
-assertThat(transformed, contains("1", "2", "3"));
+assertThat(transformed.limit(3), contains("1", "2", "3"));
 ```
 
 #### Streams
@@ -117,7 +117,7 @@ assertThat(transformed, contains("1", "2", "3"));
 `Sequence` interoperates beautifully with `Stream`, through the expected `from(Stream)` and `.stream()` methods.
 
 ```Java
-Stream<String> abcd = Arrays.asList("a", "b", "c", "d").stream();
+Stream<String> abcd = asList("a", "b", "c", "d").stream();
 Stream<String> abbccd = Sequence.from(abcd).pairs().<String>flatten().stream();
 
 assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
@@ -150,7 +150,7 @@ assertThat(sequence,
 The standard reduction operations are available as per `Stream`:
 
 ```Java
-Sequence<Long> thirteen = Sequence.recurse(1L, i -> i + 1).limit(13);
+Sequence<Long> thirteen = Sequence.longs().limit(13);
 Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 assertThat(factorial, is(6227020800L));
@@ -204,7 +204,7 @@ Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put
 
 EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
                                                            .filter((k, v) -> v % 2 != 0)
-                                                           .map((k, v) -> Pair.of(v, k));
+                                                           .map((k, v) -> Maps.entry(v, k));
 
 assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
@@ -242,7 +242,7 @@ The primitive `Sequences` also have mapping methods that peek on the previous an
 
 ```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
-                           .mapBack((p, c) -> (p == -1 || p == '_') ? toUpperCase(c) : c)
+                           .mapBack('_', (p, c) -> p == '_' ? toUpperCase(c) : c)
                            .map(c -> (c == '_') ? ' ' : c);
 
 assertThat(titleCase.asString(), is("Hello Lexicon"));

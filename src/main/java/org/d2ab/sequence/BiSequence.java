@@ -501,9 +501,9 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * constructor.
 	 */
 	default Pair<L, R>[] toArray(IntFunction<Pair<L, R>[]> constructor) {
-		List list = toList();
+		List<Pair<L, R>> list = toList();
 		@SuppressWarnings("unchecked")
-		Pair<L, R>[] array = (Pair<L, R>[]) list.toArray(constructor.apply(list.size()));
+		Pair<L, R>[] array = list.toArray(constructor.apply(list.size()));
 		return array;
 	}
 

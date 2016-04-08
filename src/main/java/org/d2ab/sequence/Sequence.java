@@ -664,9 +664,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * constructor.
 	 */
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
-		List list = toList();
+		List<T> list = toList();
 		@SuppressWarnings("unchecked")
-		A[] array = (A[]) list.toArray(constructor.apply(list.size()));
+		A[] array = list.toArray(constructor.apply(list.size()));
 		return array;
 	}
 
