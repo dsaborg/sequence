@@ -110,21 +110,9 @@ public class SequenceDocumentationTest {
 	@Test
 	public void factorial() {
 		Sequence<Long> thirteen = Sequence.longs().limit(13);
-		Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
+		long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 		assertThat(factorial, is(6227020800L));
-	}
-
-	@Test
-	public void biSequence() {
-		BiSequence<String, Integer> presidents =
-				BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969, "George Bush", 2001, "Barack Obama",
-				                   2005);
-
-		Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
-
-		assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
-		                                  "Barack Obama (2005)"));
 	}
 
 	@Test
@@ -158,6 +146,18 @@ public class SequenceDocumentationTest {
 				EntrySequence.from(original).filter((k, v) -> v % 2 != 0).map((k, v) -> Maps.entry(v, k));
 
 		assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
+	}
+
+	@Test
+	public void biSequence() {
+		BiSequence<String, Integer> presidents =
+				BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969, "George Bush", 2001, "Barack Obama",
+				                   2005);
+
+		Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
+
+		assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
+		                                  "Barack Obama (2005)"));
 	}
 
 	@Test

@@ -13,14 +13,15 @@
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java.
 
-It aims to be roughly feature complete with sequential `Streams`, with some additional convenience methods.
-In particular it allows easier collecting into common `Collections` without having to use `Collectors`,
-better handling of `Maps` which allows transformation and filtering of `Map.Entry` as first-class citizens,
-and tighter integration with pre-Java 8 by being implemented in terms of `Iterable` and `Iterators`. `Sequences` go to
-great lengths to be as lazy and late-evaluating as possible, with minimal overhead.
+It aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for advanced
+traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
+better handling of `Maps` with `Map.Entry` as first-class citizens, tighter integration with the rest of Java by being
+implemented in terms of `Iterable`, advanced partitioning, mapping and filtering methods which allow you to peek at
+previous or next elements to make decisions during traversal. `Sequences` go to great lengths to be as lazy and
+late-evaluating as possible, with minimal overhead.
 
-`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables` and
-`Iterators` instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
+`Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables`
+instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
 for programmers wanting to perform common data processing tasks on moderately small collections. If you need parallel
 iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
@@ -72,7 +73,8 @@ dependencies {
 #### Iterable
 
 Because each `Sequence` is an `Iterable` you can re-use them safely after you have already traversed them, as long as
-they're backed by an `Iterable`, `Collection` or array of course, not a once only `Iterator` or `Stream`.
+they're backed by an `Iterable`, `Collection`, array or generated sequence, not an `Iterator` or `Stream` which can
+only be traversed once.
 
 ```Java
 Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
@@ -151,23 +153,9 @@ The standard reduction operations are available as per `Stream`:
 
 ```Java
 Sequence<Long> thirteen = Sequence.longs().limit(13);
-Long factorial = thirteen.reduce(1L, (r, i) -> r * i);
+long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 assertThat(factorial, is(6227020800L));
-```
-
-#### Pairs
-
-When iterating over sequences of `Pairs` of item, `BiSequence` provides native operators and transformations:
-
-```Java
-BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
-                                                            "George Bush", 2001, "Barack Obama", 2005);
-
-Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
-
-assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
-                                  "Barack Obama (2005)"));
 ```
 
 #### Maps
@@ -209,10 +197,24 @@ EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
 assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
 
+#### Pairs
+
+When iterating over sequences of `Pairs` of item, `BiSequence` provides native operators and transformations:
+
+```Java
+BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
+                                                            "George Bush", 2001, "Barack Obama", 2005);
+
+Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
+
+assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
+                                  "Barack Obama (2005)"));
+```
+
 #### Primitive
 
-There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing, `CharSeq`,
-`IntSequence`, `LongSequence` and `DoubleSequence`:
+There are also primitive versions of `Sequence` for `char`, `int`, `long` and `double` processing: `CharSeq`,
+`IntSequence`, `LongSequence` and `DoubleSequence`.
 
 ```Java
 CharSeq snakeCase = CharSeq.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
@@ -238,7 +240,9 @@ DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
 assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
 
-The primitive `Sequences` also have mapping methods that peek on the previous and next elements:
+#### Peeking
+
+`Sequences` also have mapping and filtering methods that peek on the previous and next elements:
 
 ```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
@@ -266,7 +270,7 @@ assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 
 #### Updating
 
-`Sequences` have full support for updating the underlying collection, where possible, both through `Iterator#remove()`
+`Sequences` have full support for updating the underlying collection where possible, both through `Iterator#remove()`
 and by modifying the underlying collection directly in between iterations.
 
 ```Java
@@ -291,4 +295,4 @@ assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 
 Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
 
-Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/)! :heart:
+Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/). :heart:

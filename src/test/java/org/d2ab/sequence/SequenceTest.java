@@ -344,6 +344,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapLazy() {
 		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
+
 		Sequence<Integer> flatMap = Sequence.from(new ArrayDeque<>(asList(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}))).flatten(identity);
@@ -360,7 +361,9 @@ public class SequenceTest {
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(
 				new ArrayDeque<>(asList(asList(1, 2).iterator(), asList(3, 4).iterator(), asList(5, 6).iterator())));
+
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
+
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
 	}
