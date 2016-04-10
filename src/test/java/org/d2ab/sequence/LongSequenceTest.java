@@ -27,8 +27,6 @@ import java.util.function.LongBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,9 +77,9 @@ public class LongSequenceTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachLong(c -> fail("Should not get called"));
-			_1.forEachLong(c -> assertThat(c, is(in(singletonList(1L)))));
-			_12.forEachLong(c -> assertThat(c, is(in(asList(1L, 2L)))));
-			_123.forEachLong(c -> assertThat(c, is(in(asList(1L, 2L, 3L)))));
+			_1.forEachLong(c -> assertThat(c, is(in(List.of(1L)))));
+			_12.forEachLong(c -> assertThat(c, is(in(List.of(1L, 2L)))));
+			_123.forEachLong(c -> assertThat(c, is(in(List.of(1L, 2L, 3L)))));
 		});
 	}
 
@@ -125,7 +123,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Long> iterable = () -> asList(1L, 2L, 3L).iterator();
+		Iterable<Long> iterable = () -> List.of(1L, 2L, 3L).iterator();
 
 		LongSequence sequenceFromIterable = LongSequence.from(iterable);
 
@@ -134,7 +132,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void fromStream() {
-		LongSequence sequenceFromStream = LongSequence.from(asList(1L, 2L, 3L).stream());
+		LongSequence sequenceFromStream = LongSequence.from(List.of(1L, 2L, 3L).stream());
 
 		assertThat(sequenceFromStream, contains(1L, 2L, 3L));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -150,7 +148,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void fromIteratorSupplier() {
-		Supplier<LongIterator> iterators = () -> LongIterator.from(asList(1L, 2L, 3L));
+		Supplier<LongIterator> iterators = () -> LongIterator.from(List.of(1L, 2L, 3L));
 
 		LongSequence sequenceFromIterators = LongSequence.from(iterators);
 
@@ -231,9 +229,9 @@ public class LongSequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		LongIterator first = LongIterator.from(asList(1L, 2L, 3L));
-		LongIterator second = LongIterator.from(asList(4L, 5L, 6L));
-		LongIterator third = LongIterator.from(asList(7L, 8L));
+		LongIterator first = LongIterator.from(List.of(1L, 2L, 3L));
+		LongIterator second = LongIterator.from(List.of(4L, 5L, 6L));
+		LongIterator third = LongIterator.from(List.of(7L, 8L));
 
 		LongSequence then = LongSequence.from(first).append(() -> second).append(() -> third);
 
@@ -756,7 +754,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), contains(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L)));
 
 		LongSequence repeatVarying = LongSequence.from(new LongIterable() {
-			private List<Long> list = asList(1L, 2L, 3L);
+			private List<Long> list = List.of(1L, 2L, 3L);
 			int end = list.size();
 
 			@Override
@@ -790,7 +788,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(repeatThree, contains(1L, 2L, 3L, 1L, 2L, 3L)));
 
 		LongSequence repeatVarying = LongSequence.from(new LongIterable() {
-			private List<Long> list = asList(1L, 2L, 3L);
+			private List<Long> list = List.of(1L, 2L, 3L);
 			int end = list.size();
 
 			@Override
@@ -826,7 +824,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
+		Queue<Long> queue = new ArrayDeque<>(List.of(1L, 2L, 3L, 4L, 5L));
 		LongSequence sequence = LongSequence.generate(queue::poll).endingAt(5L);
 
 		assertThat(sequence, contains(1L, 2L, 3L, 4L, 5L));
@@ -918,7 +916,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Long> original = new ArrayList<>(asList(1L, 2L, 3L, 4L));
+		List<Long> original = new ArrayList<>(List.of(1L, 2L, 3L, 4L));
 
 		LongSequence filtered = LongSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.removeAll();

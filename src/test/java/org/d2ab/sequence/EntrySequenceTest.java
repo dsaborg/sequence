@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -165,7 +164,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Entry<String, Integer>> iterable = asList(entries123);
+		Iterable<Entry<String, Integer>> iterable = List.of(entries123);
 
 		EntrySequence<String, Integer> sequenceFromIterable = EntrySequence.from(iterable);
 
@@ -174,9 +173,9 @@ public class EntrySequenceTest {
 
 	@Test
 	public void fromIterables() {
-		Iterable<Entry<String, Integer>> first = asList(entries123);
-		Iterable<Entry<String, Integer>> second = asList(entries456);
-		Iterable<Entry<String, Integer>> third = asList(entries789);
+		Iterable<Entry<String, Integer>> first = List.of(entries123);
+		Iterable<Entry<String, Integer>> second = List.of(entries456);
+		Iterable<Entry<String, Integer>> third = List.of(entries789);
 
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 
@@ -188,9 +187,9 @@ public class EntrySequenceTest {
 
 	@Test
 	public void fromEntryIterables() {
-		Iterable<Entry<String, Integer>> first = asList(entries123);
-		Iterable<Entry<String, Integer>> second = asList(entries456);
-		Iterable<Entry<String, Integer>> third = asList(entries789);
+		Iterable<Entry<String, Integer>> first = List.of(entries123);
+		Iterable<Entry<String, Integer>> second = List.of(entries456);
+		Iterable<Entry<String, Integer>> third = List.of(entries789);
 
 		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
 
@@ -889,7 +888,7 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
 			private List<Entry<String, Integer>> list =
-					asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+					List.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
 			int end = list.size();
 
 			@Override
@@ -923,7 +922,7 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
 			private List<Entry<String, Integer>> list =
-					asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+					List.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
 			int end = list.size();
 
 			@Override
@@ -1002,7 +1001,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flatten() {
-		EntrySequence<String, Integer> flattened = _123.flatten(entry -> asList(entry, Maps.entry("0", 0)));
+		EntrySequence<String, Integer> flattened = _123.flatten(entry -> List.of(entry, Maps.entry("0", 0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
 		                                Maps.entry("3", 3), Maps.entry("0", 0))));
@@ -1010,7 +1009,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flattenBiFunction() {
-		EntrySequence<String, Integer> flattened = _123.flatten((k, v) -> asList(Maps.entry(k, v), Maps.entry("0",
+		EntrySequence<String, Integer> flattened = _123.flatten((k, v) -> List.of(Maps.entry(k, v), Maps.entry("0",
 		                                                                                                      0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
@@ -1020,8 +1019,8 @@ public class EntrySequenceTest {
 	@Test
 	public void flattenKeys() {
 		EntrySequence<String, Integer> flattened =
-				EntrySequence.<List<String>, Integer>ofEntries(asList("1", "2", "3"), 1, emptyList(), "4",
-				                                               asList("5", "6", "7"), 3).flattenKeys(Entry::getKey);
+				EntrySequence.<List<String>, Integer>ofEntries(List.of("1", "2", "3"), 1, emptyList(), "4",
+				                                               List.of("5", "6", "7"), 3).flattenKeys(Entry::getKey);
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 1), Maps.entry("3", 1), Maps.entry("5", 3),
 		                                Maps.entry("6", 3), Maps.entry("7", 3))));
@@ -1030,8 +1029,8 @@ public class EntrySequenceTest {
 	@Test
 	public void flattenValues() {
 		EntrySequence<String, Integer> flattened =
-				EntrySequence.<String, List<Integer>>ofEntries("1", asList(1, 2, 3), "2", emptyList(), "3",
-				                                               asList(2, 3, 4)).flattenValues(Entry::getValue);
+				EntrySequence.<String, List<Integer>>ofEntries("1", List.of(1, 2, 3), "2", emptyList(), "3",
+				                                               List.of(2, 3, 4)).flattenValues(Entry::getValue);
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("1", 2), Maps.entry("1", 3), Maps.entry("3", 2),
 		                                Maps.entry("3", 3), Maps.entry("3", 4))));

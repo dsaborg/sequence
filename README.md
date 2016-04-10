@@ -103,7 +103,7 @@ it's very easy to create your own full-fledged `Sequence` instances that can be 
 through the default methods on the interface that carry the bulk of the burden.
 
 ```Java
-List<Integer> list = asList(1, 2, 3, 4, 5);
+List<Integer> list = List.of(1, 2, 3, 4, 5);
 
 // Sequence as @FunctionalInterface of list's Iterator
 Sequence<Integer> sequence = list::iterator;
@@ -120,7 +120,7 @@ assertThat(transformed.limit(3), contains("1", "2", "3"));
 and by modifying the underlying collection directly in between iterations.
 
 ```Java
-List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
 
 Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
 
@@ -128,7 +128,7 @@ assertThat(list, contains(2, 4));
 ```
 
 ```Java
-List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
 
 Sequence<Integer> sequence = Sequence.from(list);
 
@@ -142,7 +142,7 @@ assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 `Sequences` interoperate beautifully with `Stream`, through the expected `from(Stream)` and `.stream()` methods.
 
 ```Java
-Stream<String> abcd = asList("a", "b", "c", "d").stream();
+Stream<String> abcd = List.of("a", "b", "c", "d").stream();
 Stream<String> abbccd = Sequence.from(abcd).pairs().<String>flatten().stream();
 
 assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));

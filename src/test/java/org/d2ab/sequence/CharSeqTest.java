@@ -28,8 +28,6 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -80,9 +78,9 @@ public class CharSeqTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachChar(c -> fail("Should not get called"));
-			a.forEachChar(c -> assertThat(c, is(in(singletonList('a')))));
-			ab.forEachChar(c -> assertThat(c, is(in(asList('a', 'b')))));
-			abc.forEachChar(c -> assertThat(c, is(in(asList('a', 'b', 'c')))));
+			a.forEachChar(c -> assertThat(c, is(in(List.of('a')))));
+			ab.forEachChar(c -> assertThat(c, is(in(List.of('a', 'b')))));
+			abc.forEachChar(c -> assertThat(c, is(in(List.of('a', 'b', 'c')))));
 		});
 	}
 
@@ -126,7 +124,7 @@ public class CharSeqTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Character> iterable = () -> asList('a', 'b', 'c').iterator();
+		Iterable<Character> iterable = () -> List.of('a', 'b', 'c').iterator();
 
 		CharSeq sequenceFromIterable = CharSeq.from(iterable);
 
@@ -135,7 +133,7 @@ public class CharSeqTest {
 
 	@Test
 	public void fromStream() {
-		CharSeq sequenceFromStream = CharSeq.from(asList('a', 'b', 'c').stream());
+		CharSeq sequenceFromStream = CharSeq.from(List.of('a', 'b', 'c').stream());
 
 		assertThat(sequenceFromStream, contains('a', 'b', 'c'));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -151,7 +149,7 @@ public class CharSeqTest {
 
 	@Test
 	public void fromIteratorSupplier() {
-		Supplier<CharIterator> iterators = () -> CharIterator.from(asList('a', 'b', 'c'));
+		Supplier<CharIterator> iterators = () -> CharIterator.from(List.of('a', 'b', 'c'));
 
 		CharSeq sequenceFromIterators = CharSeq.from(iterators);
 
@@ -232,9 +230,9 @@ public class CharSeqTest {
 
 	@Test
 	public void appendIsLazy() {
-		CharIterator first = CharIterator.from(asList('a', 'b', 'c'));
-		CharIterator second = CharIterator.from(asList('d', 'e', 'f'));
-		CharIterator third = CharIterator.from(asList('g', 'h'));
+		CharIterator first = CharIterator.from(List.of('a', 'b', 'c'));
+		CharIterator second = CharIterator.from(List.of('d', 'e', 'f'));
+		CharIterator third = CharIterator.from(List.of('g', 'h'));
 
 		CharSeq then = CharSeq.from(first).append(() -> second).append(() -> third);
 
@@ -668,7 +666,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(repeatThree.limit(8), contains('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b')));
 
 		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
-			private List<Character> list = asList('a', 'b', 'c');
+			private List<Character> list = List.of('a', 'b', 'c');
 			int end = list.size();
 
 			@Override
@@ -702,7 +700,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(repeatThree, contains('a', 'b', 'c', 'a', 'b', 'c')));
 
 		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
-			private List<Character> list = asList('a', 'b', 'c');
+			private List<Character> list = List.of('a', 'b', 'c');
 			int end = list.size();
 
 			@Override
@@ -738,7 +736,7 @@ public class CharSeqTest {
 
 	@Test
 	public void generate() {
-		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
+		Queue<Character> queue = new ArrayDeque<>(List.of('a', 'b', 'c', 'd', 'e'));
 		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
 
 		assertThat(sequence, contains('a', 'b', 'c', 'd', 'e'));
@@ -830,7 +828,7 @@ public class CharSeqTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Character> original = new ArrayList<>(asList('a', 'b', 'c', 'd'));
+		List<Character> original = new ArrayList<>(List.of('a', 'b', 'c', 'd'));
 
 		CharSeq filtered = CharSeq.from(original).filter(x -> x == 'b');
 		filtered.removeAll();

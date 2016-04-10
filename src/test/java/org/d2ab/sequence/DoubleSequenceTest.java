@@ -27,8 +27,6 @@ import java.util.function.DoubleBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,9 +77,9 @@ public class DoubleSequenceTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachDouble(c -> fail("Should not get called"));
-			_1.forEachDouble(c -> assertThat(c, is(in(singletonList(1.0)))));
-			_12.forEachDouble(c -> assertThat(c, is(in(asList(1.0, 2.0)))));
-			_123.forEachDouble(c -> assertThat(c, is(in(asList(1.0, 2.0, 3.0)))));
+			_1.forEachDouble(c -> assertThat(c, is(in(List.of(1.0)))));
+			_12.forEachDouble(c -> assertThat(c, is(in(List.of(1.0, 2.0)))));
+			_123.forEachDouble(c -> assertThat(c, is(in(List.of(1.0, 2.0, 3.0)))));
 		});
 	}
 
@@ -125,7 +123,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Double> iterable = () -> asList(1.0, 2.0, 3.0).iterator();
+		Iterable<Double> iterable = () -> List.of(1.0, 2.0, 3.0).iterator();
 
 		DoubleSequence sequenceFromIterable = DoubleSequence.from(iterable);
 
@@ -134,7 +132,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void fromStream() {
-		DoubleSequence sequenceFromStream = DoubleSequence.from(asList(1.0, 2.0, 3.0).stream());
+		DoubleSequence sequenceFromStream = DoubleSequence.from(List.of(1.0, 2.0, 3.0).stream());
 
 		assertThat(sequenceFromStream, contains(1.0, 2.0, 3.0));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -150,7 +148,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void fromIteratorSupplier() {
-		Supplier<DoubleIterator> iterators = () -> DoubleIterator.from(asList(1.0, 2.0, 3.0));
+		Supplier<DoubleIterator> iterators = () -> DoubleIterator.from(List.of(1.0, 2.0, 3.0));
 
 		DoubleSequence sequenceFromIterators = DoubleSequence.from(iterators);
 
@@ -231,9 +229,9 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		DoubleIterator first = DoubleIterator.from(asList(1.0, 2.0, 3.0));
-		DoubleIterator second = DoubleIterator.from(asList(4.0, 5.0, 6.0));
-		DoubleIterator third = DoubleIterator.from(asList(7.0, 8.0));
+		DoubleIterator first = DoubleIterator.from(List.of(1.0, 2.0, 3.0));
+		DoubleIterator second = DoubleIterator.from(List.of(4.0, 5.0, 6.0));
+		DoubleIterator third = DoubleIterator.from(List.of(7.0, 8.0));
 
 		DoubleSequence then = DoubleSequence.from(first).append(() -> second).append(() -> third);
 
@@ -699,7 +697,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0)));
 
 		DoubleSequence repeatVarying = DoubleSequence.from(new DoubleIterable() {
-			private List<Double> list = asList(1.0, 2.0, 3.0);
+			private List<Double> list = List.of(1.0, 2.0, 3.0);
 			int end = list.size();
 
 			@Override
@@ -733,7 +731,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(repeatThree, contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0)));
 
 		DoubleSequence repeatVarying = DoubleSequence.from(new DoubleIterable() {
-			private List<Double> list = asList(1.0, 2.0, 3.0);
+			private List<Double> list = List.of(1.0, 2.0, 3.0);
 			int end = list.size();
 
 			@Override
@@ -769,7 +767,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
+		Queue<Double> queue = new ArrayDeque<>(List.of(1.0, 2.0, 3.0, 4.0, 5.0));
 		DoubleSequence sequence = DoubleSequence.generate(queue::poll).endingAt(5.0, 0.1);
 
 		assertThat(sequence, contains(1.0, 2.0, 3.0, 4.0, 5.0));
@@ -861,7 +859,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Double> original = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0));
+		List<Double> original = new ArrayList<>(List.of(1.0, 2.0, 3.0, 4.0));
 
 		DoubleSequence filtered = DoubleSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.removeAll();

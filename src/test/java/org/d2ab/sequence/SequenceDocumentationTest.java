@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -66,7 +65,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void functionalInterface() {
-		List<Integer> list = asList(1, 2, 3, 4, 5);
+		List<Integer> list = List.of(1, 2, 3, 4, 5);
 
 		// Sequence as @FunctionalInterface of list's Iterator
 		Sequence<Integer> sequence = list::iterator;
@@ -79,7 +78,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void removeAll() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
 
 		Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
 
@@ -88,7 +87,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void updatingCollection() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
 
 		Sequence<Integer> sequence = Sequence.from(list);
 
@@ -100,7 +99,7 @@ public class SequenceDocumentationTest {
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
-		Stream<String> abcd = asList("a", "b", "c", "d").stream();
+		Stream<String> abcd = List.of("a", "b", "c", "d").stream();
 		Stream<String> abbccd = Sequence.from(abcd).pairs().<String>flatten().stream();
 
 		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));

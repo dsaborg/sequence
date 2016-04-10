@@ -27,8 +27,6 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,9 +77,9 @@ public class IntSequenceTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachInt(c -> fail("Should not get called"));
-			_1.forEachInt(c -> assertThat(c, is(in(singletonList(1)))));
-			_12.forEachInt(c -> assertThat(c, is(in(asList(1, 2)))));
-			_123.forEachInt(c -> assertThat(c, is(in(asList(1, 2, 3)))));
+			_1.forEachInt(c -> assertThat(c, is(in(List.of(1)))));
+			_12.forEachInt(c -> assertThat(c, is(in(List.of(1, 2)))));
+			_123.forEachInt(c -> assertThat(c, is(in(List.of(1, 2, 3)))));
 		});
 	}
 
@@ -125,7 +123,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Integer> iterable = () -> asList(1, 2, 3).iterator();
+		Iterable<Integer> iterable = () -> List.of(1, 2, 3).iterator();
 
 		IntSequence sequenceFromIterable = IntSequence.from(iterable);
 
@@ -134,7 +132,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromStream() {
-		IntSequence sequenceFromStream = IntSequence.from(asList(1, 2, 3).stream());
+		IntSequence sequenceFromStream = IntSequence.from(List.of(1, 2, 3).stream());
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
@@ -150,7 +148,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromIteratorSupplier() {
-		Supplier<IntIterator> iterators = () -> IntIterator.from(asList(1, 2, 3));
+		Supplier<IntIterator> iterators = () -> IntIterator.from(List.of(1, 2, 3));
 
 		IntSequence sequenceFromIterators = IntSequence.from(iterators);
 
@@ -231,9 +229,9 @@ public class IntSequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		IntIterator first = IntIterator.from(asList(1, 2, 3));
-		IntIterator second = IntIterator.from(asList(4, 5, 6));
-		IntIterator third = IntIterator.from(asList(7, 8));
+		IntIterator first = IntIterator.from(List.of(1, 2, 3));
+		IntIterator second = IntIterator.from(List.of(4, 5, 6));
+		IntIterator third = IntIterator.from(List.of(7, 8));
 
 		IntSequence then = IntSequence.from(first).append(() -> second).append(() -> third);
 
@@ -758,7 +756,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), contains(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		IntSequence repeatVarying = IntSequence.from(new IntIterable() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = List.of(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -792,7 +790,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
 
 		IntSequence repeatVarying = IntSequence.from(new IntIterable() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = List.of(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -828,7 +826,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(List.of(1, 2, 3, 4, 5));
 		IntSequence sequence = IntSequence.generate(queue::poll).endingAt(5);
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
@@ -917,7 +915,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4));
+		List<Integer> original = new ArrayList<>(List.of(1, 2, 3, 4));
 
 		IntSequence filtered = IntSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.removeAll();

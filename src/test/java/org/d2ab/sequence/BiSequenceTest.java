@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -157,7 +156,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Pair<String, Integer>> iterable = asList(entries123);
+		Iterable<Pair<String, Integer>> iterable = List.of(entries123);
 
 		BiSequence<String, Integer> sequenceFromIterable = BiSequence.from(iterable);
 
@@ -166,9 +165,9 @@ public class BiSequenceTest {
 
 	@Test
 	public void fromIterables() {
-		Iterable<Pair<String, Integer>> first = asList(entries123);
-		Iterable<Pair<String, Integer>> second = asList(entries456);
-		Iterable<Pair<String, Integer>> third = asList(entries789);
+		Iterable<Pair<String, Integer>> first = List.of(entries123);
+		Iterable<Pair<String, Integer>> second = List.of(entries456);
+		Iterable<Pair<String, Integer>> third = List.of(entries789);
 
 		BiSequence<String, Integer> sequenceFromIterables = BiSequence.from(first, second, third);
 
@@ -180,9 +179,9 @@ public class BiSequenceTest {
 
 	@Test
 	public void fromPairIterables() {
-		Iterable<Pair<String, Integer>> first = asList(entries123);
-		Iterable<Pair<String, Integer>> second = asList(entries456);
-		Iterable<Pair<String, Integer>> third = asList(entries789);
+		Iterable<Pair<String, Integer>> first = List.of(entries123);
+		Iterable<Pair<String, Integer>> second = List.of(entries456);
+		Iterable<Pair<String, Integer>> third = List.of(entries789);
 
 		BiSequence<String, Integer> sequenceFromIterables = BiSequence.from(first, second, third);
 
@@ -867,7 +866,7 @@ public class BiSequenceTest {
 		                                Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2))));
 
 		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
-			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
+			private List<Pair<String, Integer>> list = List.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 			int end = list.size();
 
 			@Override
@@ -899,7 +898,7 @@ public class BiSequenceTest {
 		                                                                                                        1),
 		                                             Pair.of("2", 2), Pair.of("3", 3))));
 		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
-			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
+			private List<Pair<String, Integer>> list = List.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 			int end = list.size();
 
 			@Override
@@ -976,14 +975,14 @@ public class BiSequenceTest {
 
 	@Test
 	public void flatten() {
-		BiSequence<String, Integer> flattened = _123.flatten(pair -> asList(pair, Pair.of("0", 0)));
+		BiSequence<String, Integer> flattened = _123.flatten(pair -> List.of(pair, Pair.of("0", 0)));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
 		                                           Pair.of("3", 3), Pair.of("0", 0))));
 	}
 
 	@Test
 	public void flattenBiFunction() {
-		BiSequence<String, Integer> flattened = _123.flatten((l, r) -> asList(Pair.of(l, r), Pair.of("0", 0)));
+		BiSequence<String, Integer> flattened = _123.flatten((l, r) -> List.of(Pair.of(l, r), Pair.of("0", 0)));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
 		                                           Pair.of("3", 3), Pair.of("0", 0))));
 	}
@@ -991,8 +990,8 @@ public class BiSequenceTest {
 	@Test
 	public void flattenLeft() {
 		BiSequence<String, Integer> flattened =
-				BiSequence.<List<String>, Integer>ofPairs(asList("1", "2", "3"), 1, emptyList(), "4",
-				                                          asList("5", "6", "7"), 3).flattenLeft(Pair::getLeft);
+				BiSequence.<List<String>, Integer>ofPairs(List.of("1", "2", "3"), 1, emptyList(), "4",
+				                                          List.of("5", "6", "7"), 3).flattenLeft(Pair::getLeft);
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("2", 1), Pair.of("3", 1), Pair.of("5", 3),
 		                                           Pair.of("6", 3), Pair.of("7", 3))));
 	}
@@ -1000,15 +999,15 @@ public class BiSequenceTest {
 	@Test
 	public void flattenRight() {
 		BiSequence<String, Integer> flattened =
-				BiSequence.<String, List<Integer>>ofPairs("1", asList(1, 2, 3), "2", emptyList(), "3",
-				                                          asList(2, 3, 4)).flattenRight(Pair::getRight);
+				BiSequence.<String, List<Integer>>ofPairs("1", List.of(1, 2, 3), "2", emptyList(), "3",
+				                                          List.of(2, 3, 4)).flattenRight(Pair::getRight);
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("1", 2), Pair.of("1", 3), Pair.of("3", 2),
 		                                           Pair.of("3", 3), Pair.of("3", 4))));
 	}
 
 	@Test
 	public void removeAll() {
-		List<Pair<String, Integer>> original = new ArrayList<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+		List<Pair<String, Integer>> original = new ArrayList<>(List.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
 
 		BiSequence<String, Integer> filtered = BiSequence.from(original).filter((l, r) -> r % 2 != 0);
 		filtered.removeAll();
