@@ -114,9 +114,32 @@ Sequence<String> transformed = sequence.map(Object::toString);
 assertThat(transformed.limit(3), contains("1", "2", "3"));
 ```
 
+#### Updating
+
+`Sequences` have full support for updating the underlying collection where possible, both through `Iterator#remove()`
+and by modifying the underlying collection directly in between iterations.
+
+```Java
+List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
+
+assertThat(list, contains(2, 4));
+```
+
+```Java
+List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+Sequence<Integer> sequence = Sequence.from(list);
+
+list.add(6);
+
+assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+```
+
 #### Streams
 
-`Sequence` interoperates beautifully with `Stream`, through the expected `from(Stream)` and `.stream()` methods.
+`Sequences` interoperate beautifully with `Stream`, through the expected `from(Stream)` and `.stream()` methods.
 
 ```Java
 Stream<String> abcd = asList("a", "b", "c", "d").stream();
@@ -259,6 +282,12 @@ Both regular and primitive `Sequences` have advanced windowing and partitioning 
 elements to create a batch between.
 
 ```Java
+Sequence<Sequence<Integer>> batched = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).batch(3);
+
+assertThat(batched, contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)));
+```
+
+```Java
 CharSeq word = CharSeq.from("terrain");
 String vowels = "aeoiuy";
 
@@ -266,29 +295,6 @@ Sequence<String> consonantsVowels = word.batch((a, b) -> (vowels.indexOf(a) == -
                                         .map(CharSeq::asString);
 
 assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
-```
-
-#### Updating
-
-`Sequences` have full support for updating the underlying collection where possible, both through `Iterator#remove()`
-and by modifying the underlying collection directly in between iterations.
-
-```Java
-List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
-
-Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
-
-assertThat(list, contains(2, 4));
-```
-
-```Java
-List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
-
-Sequence<Integer> sequence = Sequence.from(list);
-
-list.add(6);
-
-assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 ```
 
 ### Conclusion

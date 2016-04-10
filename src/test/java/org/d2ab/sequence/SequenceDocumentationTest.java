@@ -77,6 +77,26 @@ public class SequenceDocumentationTest {
 		assertThat(transformed.limit(3), contains("1", "2", "3"));
 	}
 
+	@Test
+	public void removeAll() {
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+		Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
+
+		assertThat(list, contains(2, 4));
+	}
+
+	@Test
+	public void updatingCollection() {
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+
+		Sequence<Integer> sequence = Sequence.from(list);
+
+		list.add(6);
+
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+	}
+
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
@@ -199,6 +219,14 @@ public class SequenceDocumentationTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void partition() {
+		Sequence<Sequence<Integer>> batched = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).batch(3);
+
+		assertThat(batched, contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void partitionConsonantsVowels() {
 		CharSeq word = CharSeq.from("terrain");
 		String vowels = "aeoiuy";
@@ -207,25 +235,5 @@ public class SequenceDocumentationTest {
 				word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1)).map(CharSeq::asString);
 
 		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
-	}
-
-	@Test
-	public void removeAll() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
-
-		Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
-
-		assertThat(list, contains(2, 4));
-	}
-
-	@Test
-	public void updatingCollection() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
-
-		Sequence<Integer> sequence = Sequence.from(list);
-
-		list.add(6);
-
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 	}
 }
