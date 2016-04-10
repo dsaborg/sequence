@@ -295,6 +295,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		public T next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
+
 			switch (++index) {
 				case 1:
 					return pair.getLeft();

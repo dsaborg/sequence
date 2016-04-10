@@ -16,9 +16,11 @@
 
 package org.d2ab.iterable;
 
+import org.d2ab.collection.Maps;
 import org.d2ab.util.Pair;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -45,12 +47,12 @@ public class Iterables {
 	 * Converts a container of some kind into a possibly once-only {@link Iterable}.
 	 *
 	 * @param container the non-null container to turn into an {@link Iterable}, can be one of {@link Iterable}, {@link
-	 *                  Iterator}, {@link Stream} or {@code Array}.
+	 *                  Iterator}, {@link Stream}, {@code Array}, {@link Pair} or {@link Map.Entry}.
 	 *
 	 * @return the container as an iterable.
 	 *
-	 * @throws ClassCastException if the container is not one of {@link Iterable}, {@link Iterator}, {@link Stream} or
-	 *                            {@code Array}
+	 * @throws ClassCastException if the container is not one of {@link Iterable}, {@link Iterator}, {@link Stream},
+	 *                            {@code Array}, {@link Pair} or {@link Map.Entry}
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Iterable<T> from(Object container) {
@@ -63,10 +65,12 @@ public class Iterables {
 		else if (container instanceof Object[])
 			return from((T[]) container);
 		else if (container instanceof Pair)
-			return from((Iterable<T>) ((Pair<T, T>) container)::iterator);
+			return ((Pair<T, T>) container)::iterator;
+		else if (container instanceof Map.Entry)
+			return () -> Maps.iterator((Map.Entry<T, T>) container);
 		else
 			throw new ClassCastException(
-					"Required an Iterable, Iterator, Array or Stream but got: " + container.getClass());
+					"Required an Iterable, Iterator, Array, Stream, Pair or Entry but got: " + container.getClass());
 	}
 
 	/**

@@ -19,11 +19,8 @@ package org.d2ab.collection;
 import org.d2ab.function.Functions;
 import org.d2ab.function.QuaternaryFunction;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.*;
 
 import static java.util.Comparator.comparing;
@@ -104,6 +101,10 @@ public class Maps {
 		return asPredicate(biPredicate).test(entry);
 	}
 
+	public static <T> Iterator<T> iterator(Entry<? extends T, ? extends T> entry) {
+		return new EntryIterator<>(entry);
+	}
+
 	public static class Builder<K, V> {
 		private Supplier<Map<K, V>> constructor;
 		private Map<K, V> map;
@@ -176,6 +177,36 @@ public class Maps {
 		@Override
 		public int compareTo(Entry<K, V> that) {
 			return COMPARATOR.compare(this, that);
+		}
+	}
+
+	static class EntryIterator<K extends T, V extends T, T> implements Iterator<T> {
+		private final Entry<K, V> entry;
+		int index;
+
+		public EntryIterator(Entry<K, V> entry) {
+			this.entry = entry;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return index < 2;
+		}
+
+		@Override
+		public T next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+
+			switch (++index) {
+				case 1:
+					return entry.getKey();
+				case 2:
+					return entry.getValue();
+				default:
+					// Can't happen due to above check
+					throw new IllegalStateException();
+			}
 		}
 	}
 }

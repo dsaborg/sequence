@@ -637,8 +637,8 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Flatten the elements in this {@code Sequence}. The resulting {@code Sequence} contains the elements that is the
 	 * result of flattening each element, inline. Allowed elements that can be flattened are {@link Iterator},
-	 * {@link Iterable}, {@code array}, {@link Pair} and {@link Stream}. Elements of another type will result in a
-	 * {@link ClassCastException}.
+	 * {@link Iterable}, {@code object array}, {@link Pair}, {@link Entry} and {@link Stream}. Elements of another type
+	 * will result in a {@link ClassCastException}.
 	 *
 	 * @throws ClassCastException if a non-collection element is encountered in the {@code Sequence}.
 	 * @see #flatten(Function)

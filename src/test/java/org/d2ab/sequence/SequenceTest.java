@@ -418,6 +418,24 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void flattenPairs() {
+		Sequence<Pair<String, Integer>> sequence =
+				Sequence.from(new ArrayDeque<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		Sequence<Object> flattened = sequence.flatten();
+		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
+	}
+
+	@Test
+	public void flattenEntries() {
+		Sequence<Entry<String, Integer>> sequence =
+				Sequence.from(new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		Sequence<Object> flattened = sequence.flatten();
+		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
+	}
+
+	@Test
 	public void map() {
 		Sequence<String> mapped = _123.map(Object::toString);
 		twice(() -> assertThat(mapped, contains("1", "2", "3")));
