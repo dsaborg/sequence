@@ -26,7 +26,8 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.function.*;
 
-import static java.util.Comparator.*;
+import static java.util.Comparator.comparing;
+import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
 
 public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	static <T, U> Pair<T, U> of(T left, U right) {
@@ -235,14 +236,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 
 	abstract class Base<L, R> implements Pair<L, R> {
 		@SuppressWarnings("unchecked")
-		private static final Comparator NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
-
-		private static final Function<Pair, Object> GET_LEFT = (Function<Pair, Object>) Pair::getLeft;
-		private static final Function<Pair, Object> GET_RIGHT = (Function<Pair, Object>) Pair::getRight;
-
-		@SuppressWarnings("unchecked")
 		private static final Comparator<Pair> COMPARATOR =
-				comparing(GET_LEFT, NULLS_FIRST).thenComparing(GET_RIGHT, NULLS_FIRST);
+				comparing((Function<Pair, Object>) Pair::getLeft, naturalOrderNullsFirst()).thenComparing(
+						(Function<Pair, Object>) Pair::getRight, naturalOrderNullsFirst());
 
 		public static String format(Object o) {
 			if (o instanceof String) {

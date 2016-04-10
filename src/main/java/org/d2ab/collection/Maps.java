@@ -26,19 +26,17 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.*;
 
-import static java.util.Comparator.*;
+import static java.util.Comparator.comparing;
+import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
 
 /**
  * Utility methods for {@link Map} instances
  */
 public class Maps {
 	@SuppressWarnings("unchecked")
-	private static final Comparator NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
-	private static final Function<Entry, Object> GET_KEY = (Function<Entry, Object>) Entry::getKey;
-	private static final Function<Entry, Object> GET_VALUE = (Function<Entry, Object>) Entry::getValue;
-	@SuppressWarnings("unchecked")
 	private static final Comparator<Entry> COMPARATOR =
-			comparing(GET_KEY, NULLS_FIRST).thenComparing(GET_VALUE, NULLS_FIRST);
+			comparing((Function<Entry, Object>) Entry::getKey, naturalOrderNullsFirst()).thenComparing(
+					(Function<Entry, Object>) Entry::getValue, naturalOrderNullsFirst());
 
 	public static <K, V> Builder<K, V> builder(IntFunction<Map<K, V>> constructor, int initialCapacity) {
 		return new Builder<>(() -> constructor.apply(initialCapacity));
