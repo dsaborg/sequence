@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -59,14 +60,8 @@ public class SequenceTest {
 
 	@Test
 	public void ofMany() {
-		Sequence<Integer> sequence = Sequence.of(1, 2, 3);
-		twice(() -> assertThat(sequence, contains(1, 2, 3)));
-	}
-
-	@Test
-	public void ofList() {
-		Sequence<Integer> sequence = Sequence.from(List.of(1, 2, 3), List.of(4, 5, 6));
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
+		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -78,7 +73,7 @@ public class SequenceTest {
 
 		twice(() -> {
 			int expected = 1;
-			for (int i : _123)
+			for (int i : _12345)
 				assertThat(i, is(expected++));
 		});
 	}
@@ -87,9 +82,15 @@ public class SequenceTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
-			_1.forEach(i -> assertThat(i, is(in(List.of(1)))));
-			_12.forEach(i -> assertThat(i, is(in(List.of(1, 2)))));
-			_123.forEach(i -> assertThat(i, is(in(List.of(1, 2, 3)))));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach(i -> assertThat(i, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12.forEach(i -> assertThat(i, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12345.forEach(i -> assertThat(i, is(value.getAndIncrement())));
 		});
 	}
 
@@ -125,17 +126,17 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void ofNulls() {
-		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) () -> asList(1, null, 2, 3, null).iterator());
+	public void fromNulls() {
+		Sequence<Integer> sequence = Sequence.from(Arrayz.iterable(1, null, 2, 3, null));
 
 		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
 	}
 
 	@Test
 	public void fromSequence() {
-		Sequence<Integer> fromSequence = Sequence.from(_123);
+		Sequence<Integer> fromSequence = Sequence.from(_12345);
 
-		twice(() -> assertThat(fromSequence, contains(1, 2, 3)));
+		twice(() -> assertThat(fromSequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -256,9 +257,9 @@ public class SequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		Iterator<Integer> first = List.of(1, 2, 3).iterator();
-		Iterator<Integer> second = List.of(4, 5, 6).iterator();
-		Iterator<Integer> third = List.of(7, 8).iterator();
+		Iterator<Integer> first = Arrayz.iterator(1, 2, 3);
+		Iterator<Integer> second = Arrayz.iterator(4, 5, 6);
+		Iterator<Integer> third = Arrayz.iterator(7, 8);
 
 		Sequence<Integer> then = Sequence.from(first).append(() -> second).append(() -> third);
 
@@ -272,9 +273,9 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
-		Iterator<Integer> first = List.of(1).iterator();
-		Iterator<Integer> second = List.of(2).iterator();
+	public void appendIsLazyWhenSkippingHasNext() {
+		Iterator<Integer> first = Arrayz.iterator(1);
+		Iterator<Integer> second = Arrayz.iterator(2);
 
 		Sequence<Integer> sequence = Sequence.from(first).append(() -> second);
 
@@ -359,7 +360,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(new ArrayDeque<>(
-				List.of(List.of(1, 2).iterator(), List.of(3, 4).iterator(), List.of(5, 6).iterator())));
+				List.of(Arrayz.iterator(1, 2), Arrayz.iterator(3, 4), Arrayz.iterator(5, 6))));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 
@@ -405,7 +406,7 @@ public class SequenceTest {
 	@Test
 	public void flattenIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(new ArrayDeque<>(
-				List.of(List.of(1, 2).iterator(), List.of(3, 4).iterator(), List.of(5, 6).iterator())));
+				List.of(Arrayz.iterator(1, 2), Arrayz.iterator(3, 4), Arrayz.iterator(5, 6))));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -441,16 +442,18 @@ public class SequenceTest {
 
 	@Test
 	public void map() {
-		Sequence<String> mapped = _123.map(Object::toString);
-		twice(() -> assertThat(mapped, contains("1", "2", "3")));
+		Sequence<String> mapped = _12345.map(Object::toString);
+		twice(() -> assertThat(mapped, contains("1", "2", "3", "4", "5")));
 	}
 
 	@Test
 	public void mapIsLazy() {
 		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) () -> asList(1, null).iterator());
 
+		Sequence<String> mapped = sequence.map(Object::toString);
+
 		twice(() -> {
-			Iterator<String> iterator = sequence.map(Object::toString).iterator(); // NPE here if not lazy
+			Iterator<String> iterator = mapped.iterator(); // NPE here if not lazy
 			assertThat(iterator.next(), is("1"));
 			expecting(NullPointerException.class, iterator::next);
 		});
@@ -458,171 +461,195 @@ public class SequenceTest {
 
 	@Test
 	public void mapBack() {
-		twice(() -> assertThat(_123.mapBack((p, n) -> p), contains(null, 1, 2)));
-		twice(() -> assertThat(_123.mapBack((p, n) -> n), contains(1, 2, 3)));
+		Sequence<Integer> mapBackPrevious = _12345.mapBack((p, n) -> p);
+		twice(() -> assertThat(mapBackPrevious, contains(null, 1, 2, 3, 4)));
+
+		Sequence<Integer> mapBack = _12345.mapBack((p, n) -> n);
+		twice(() -> assertThat(mapBack, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapForward() {
-		twice(() -> assertThat(_123.mapForward((n, f) -> n), contains(1, 2, 3)));
-		twice(() -> assertThat(_123.mapForward((n, f) -> f), contains(2, 3, null)));
+		Sequence<Integer> mapForward = _12345.mapForward((c, n) -> c);
+		twice(() -> assertThat(mapForward, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> mapForwardNext = _12345.mapForward((c, n) -> n);
+		twice(() -> assertThat(mapForwardNext, contains(2, 3, 4, 5, null)));
 	}
 
 	@Test
 	public void mapBackWithReplacement() {
-		twice(() -> assertThat(_123.mapBack(117, (p, n) -> p), contains(117, 1, 2)));
-		twice(() -> assertThat(_123.mapBack(117, (p, n) -> n), contains(1, 2, 3)));
+		Sequence<Integer> mapBackPrevious = _12345.mapBack(117, (p, n) -> p);
+		twice(() -> assertThat(mapBackPrevious, contains(117, 1, 2, 3, 4)));
+
+		Sequence<Integer> mapBack = _12345.mapBack(117, (p, n) -> n);
+		twice(() -> assertThat(mapBack, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapForwardWithReplacement() {
-		twice(() -> assertThat(_123.mapForward(117, (n, f) -> n), contains(1, 2, 3)));
-		twice(() -> assertThat(_123.mapForward(117, (n, f) -> f), contains(2, 3, 117)));
+		Sequence<Integer> mapForward = _12345.mapForward(117, (c, n) -> c);
+		twice(() -> assertThat(mapForward, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> mapForwardNext = _12345.mapForward(117, (c, n) -> n);
+		twice(() -> assertThat(mapForwardNext, contains(2, 3, 4, 5, 117)));
 	}
 
 	@Test
 	public void peekBack() {
+		AtomicInteger value = new AtomicInteger();
+		Sequence<Integer> peekBack = _12345.peekBack((p, n) -> {
+			assertThat(n, is(value.getAndIncrement()));
+			assertThat(p, is(n == 1 ? null : n - 1));
+		});
+
 		twice(() -> {
-			AtomicInteger value = new AtomicInteger(1);
-			assertThat(_123.peekBack((p, n) -> {
-				assertThat(n, is(value.getAndIncrement()));
-				assertThat(p, is(n == 1 ? null : n - 1));
-			}), contains(1, 2, 3));
+			value.set(1);
+			assertThat(peekBack, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void peekForward() {
+		AtomicInteger value = new AtomicInteger();
+		Sequence<Integer> peekForward = _12345.peekForward((n, f) -> {
+			assertThat(n, is(value.getAndIncrement()));
+			assertThat(f, is(n == 5 ? null : n + 1));
+		});
+
 		twice(() -> {
-			AtomicInteger value = new AtomicInteger(1);
-			assertThat(_123.peekForward((n, f) -> {
-				assertThat(n, is(value.getAndIncrement()));
-				assertThat(f, is(n == 3 ? null : n + 1));
-			}), contains(1, 2, 3));
+			value.set(1);
+			assertThat(peekForward, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void peekBackWithReplacement() {
+		AtomicInteger value = new AtomicInteger();
+		Sequence<Integer> peekBack = _12345.peekBack(117, (p, n) -> {
+			assertThat(n, is(value.getAndIncrement()));
+			assertThat(p, is(n == 1 ? 117 : n - 1));
+		});
+
 		twice(() -> {
-			AtomicInteger value = new AtomicInteger(1);
-			assertThat(_123.peekBack(117, (p, n) -> {
-				assertThat(n, is(value.getAndIncrement()));
-				assertThat(p, is(n == 1 ? 117 : n - 1));
-			}), contains(1, 2, 3));
+			value.set(1);
+			assertThat(peekBack, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void peekForwardWithReplacement() {
+		AtomicInteger value = new AtomicInteger();
+		Sequence<Integer> peekForward = _12345.peekForward(117, (n, f) -> {
+			assertThat(n, is(value.getAndIncrement()));
+			assertThat(f, is(n == 5 ? 117 : n + 1));
+		});
+
 		twice(() -> {
-			AtomicInteger value = new AtomicInteger(1);
-			assertThat(_123.peekForward(117, (n, f) -> {
-				assertThat(n, is(value.getAndIncrement()));
-				assertThat(f, is(n == 3 ? 117 : n + 1));
-			}), contains(1, 2, 3));
+			value.set(1);
+			assertThat(peekForward, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void recurse() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1);
-		twice(() -> assertThat(sequence.limit(10), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+		twice(() -> assertThat(sequence.limit(5), contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void recurseTwins() {
-		Sequence<String> sequence = Sequence.recurse(1, Object::toString, s -> Integer.parseInt(s) + 1);
-		twice(() -> assertThat(sequence.limit(10), contains("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")));
+		Sequence<String> sequence = Sequence.recurse(1, Object::toString, s -> parseInt(s) + 1);
+		twice(() -> assertThat(sequence.limit(5), contains("1", "2", "3", "4", "5")));
 	}
 
 	@Test
 	public void untilTerminal() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
 	}
 
 	@Test
 	public void untilNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).untilNull();
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 5) ? (i + 1) : null).untilNull();
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilPredicate() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(i -> i == 7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6)));
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(i -> i == 5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
 	}
 
 	@Test
 	public void endingAtTerminal() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 10) ? (i + 1) : null).endingAtNull();
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, null)));
+		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 5) ? (i + 1) : null).endingAtNull();
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, null)));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		Sequence<Integer> sequence = _123456789.endingAt(i -> i == 7);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7)));
+		Sequence<Integer> sequence = _12345.endingAt(i -> i == 7);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void toList() {
 		twice(() -> {
-			List<Integer> list = _123456789.toList();
+			List<Integer> list = _12345.toList();
 			assertThat(list, is(instanceOf(ArrayList.class)));
-			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7, 8, 9));
+			assertThat(list, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void toLinkedList() {
 		twice(() -> {
-			List<Integer> list = _123456789.toList(LinkedList::new);
+			List<Integer> list = _12345.toList(LinkedList::new);
 			assertThat(list, instanceOf(LinkedList.class));
-			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7, 8, 9));
+			assertThat(list, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void toSet() {
 		twice(() -> {
-			Set<Integer> set = _123456789.toSet();
+			Set<Integer> set = _12345.toSet();
 			assertThat(set, instanceOf(HashSet.class));
-			assertThat(set, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9));
+			assertThat(set, containsInAnyOrder(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void toSortedSet() {
 		twice(() -> {
-			SortedSet<Integer> sortedSet = _123456789.toSortedSet();
+			SortedSet<Integer> sortedSet = _12345.toSortedSet();
 			assertThat(sortedSet, instanceOf(TreeSet.class));
-			assertThat(sortedSet, contains(1, 2, 3, 4, 5, 6, 7, 8, 9));
+			assertThat(sortedSet, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void toSetWithType() {
 		twice(() -> {
-			Set<Integer> set = _123456789.toSet(LinkedHashSet::new);
+			Set<Integer> set = _12345.toSet(LinkedHashSet::new);
 			assertThat(set, instanceOf(LinkedHashSet.class));
-			assertThat(set, contains(1, 2, 3, 4, 5, 6, 7, 8, 9));
+			assertThat(set, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void toCollection() {
 		twice(() -> {
-			Deque<Integer> deque = _123.toCollection(ArrayDeque::new);
+			Deque<Integer> deque = _12345.toCollection(ArrayDeque::new);
 			assertThat(deque, instanceOf(ArrayDeque.class));
-			assertThat(deque, contains(1, 2, 3));
+			assertThat(deque, contains(1, 2, 3, 4, 5));
 		});
 	}
 
@@ -630,9 +657,9 @@ public class SequenceTest {
 	public void collectIntoCollection() {
 		twice(() -> {
 			Deque<Integer> deque = new ArrayDeque<>();
-			Deque<Integer> result = _123.collectInto(deque);
+			Deque<Integer> result = _12345.collectInto(deque);
 			assertThat(result, is(sameInstance(deque)));
-			assertThat(result, contains(1, 2, 3));
+			assertThat(result, contains(1, 2, 3, 4, 5));
 		});
 	}
 
@@ -699,10 +726,10 @@ public class SequenceTest {
 	@Test
 	public void collect() {
 		twice(() -> {
-			Deque<Integer> deque = _123.collect(ArrayDeque::new, ArrayDeque::add);
+			Deque<Integer> deque = _12345.collect(ArrayDeque::new, ArrayDeque::add);
 
 			assertThat(deque, instanceOf(ArrayDeque.class));
-			assertThat(deque, contains(1, 2, 3));
+			assertThat(deque, contains(1, 2, 3, 4, 5));
 		});
 	}
 
@@ -710,36 +737,36 @@ public class SequenceTest {
 	public void collectIntoContainer() {
 		twice(() -> {
 			Deque<Integer> deque = new ArrayDeque<>();
-			Deque<Integer> result = _123.collectInto(deque, Deque::add);
+			Deque<Integer> result = _12345.collectInto(deque, Deque::add);
 
 			assertThat(result, is(sameInstance(deque)));
-			assertThat(result, contains(1, 2, 3));
+			assertThat(result, contains(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(_123.toArray(), is(arrayContaining(1, 2, 3))));
+		twice(() -> assertThat(_12345.toArray(), is(arrayContaining(1, 2, 3, 4, 5))));
 	}
 
 	@Test
 	public void toArrayWithType() {
-		twice(() -> assertThat(_123.toArray(Integer[]::new), arrayContaining(1, 2, 3)));
+		twice(() -> assertThat(_12345.toArray(Integer[]::new), arrayContaining(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void collector() {
-		twice(() -> assertThat(_123.collect(Collectors.toList()), contains(1, 2, 3)));
+		twice(() -> assertThat(_12345.collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void join() {
-		twice(() -> assertThat(_123.join(", "), is("1, 2, 3")));
+		twice(() -> assertThat(_12345.join(", "), is("1, 2, 3, 4, 5")));
 	}
 
 	@Test
 	public void joinWithPrefixAndSuffix() {
-		twice(() -> assertThat(_123.join("<", ", ", ">"), is("<1, 2, 3>")));
+		twice(() -> assertThat(_12345.join("<", ", ", ">"), is("<1, 2, 3, 4, 5>")));
 	}
 
 	@Test
@@ -748,7 +775,7 @@ public class SequenceTest {
 			assertThat(empty.reduce(Integer::sum), is(Optional.empty()));
 			assertThat(_1.reduce(Integer::sum), is(Optional.of(1)));
 			assertThat(_12.reduce(Integer::sum), is(Optional.of(3)));
-			assertThat(_123.reduce(Integer::sum), is(Optional.of(6)));
+			assertThat(_12345.reduce(Integer::sum), is(Optional.of(15)));
 		});
 	}
 
@@ -758,7 +785,7 @@ public class SequenceTest {
 			assertThat(empty.reduce(17, Integer::sum), is(17));
 			assertThat(_1.reduce(17, Integer::sum), is(18));
 			assertThat(_12.reduce(17, Integer::sum), is(20));
-			assertThat(_123.reduce(17, Integer::sum), is(23));
+			assertThat(_12345.reduce(17, Integer::sum), is(32));
 		});
 	}
 
@@ -768,7 +795,7 @@ public class SequenceTest {
 			assertThat(empty.first(), is(Optional.empty()));
 			assertThat(_1.first(), is(Optional.of(1)));
 			assertThat(_12.first(), is(Optional.of(1)));
-			assertThat(_123.first(), is(Optional.of(1)));
+			assertThat(_12345.first(), is(Optional.of(1)));
 		});
 	}
 
@@ -799,9 +826,11 @@ public class SequenceTest {
 	public void get() {
 		twice(() -> assertThat(empty.get(0), is(Optional.empty())));
 		twice(() -> assertThat(empty.get(17), is(Optional.empty())));
+
 		twice(() -> assertThat(_1.get(0), is(Optional.of(1))));
 		twice(() -> assertThat(_1.get(1), is(Optional.empty())));
 		twice(() -> assertThat(_1.get(17), is(Optional.empty())));
+
 		twice(() -> assertThat(_12345.get(0), is(Optional.of(1))));
 		twice(() -> assertThat(_12345.get(1), is(Optional.of(2))));
 		twice(() -> assertThat(_12345.get(4), is(Optional.of(5))));
@@ -814,7 +843,7 @@ public class SequenceTest {
 			assertThat(empty.last(), is(Optional.empty()));
 			assertThat(_1.last(), is(Optional.of(1)));
 			assertThat(_12.last(), is(Optional.of(2)));
-			assertThat(_123.last(), is(Optional.of(3)));
+			assertThat(_12345.last(), is(Optional.of(5)));
 		});
 	}
 
@@ -1121,8 +1150,9 @@ public class SequenceTest {
 
 	@Test
 	public void peek() {
-		AtomicInteger value = new AtomicInteger(1);
+		AtomicInteger value = new AtomicInteger();
 		Sequence<Integer> peek = _123.peek(x -> assertThat(x, is(value.getAndIncrement())));
+
 		twice(() -> {
 			value.set(1);
 			assertThat(peek, contains(1, 2, 3));
@@ -1131,11 +1161,11 @@ public class SequenceTest {
 
 	@Test
 	public void stream() {
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(empty, is(emptyIterable()));
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		assertThat(_123.stream().collect(Collectors.toList()), contains(1, 2, 3));
-		assertThat(_123, contains(1, 2, 3));
+		twice(() -> assertThat(_12345.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -1264,72 +1294,107 @@ public class SequenceTest {
 
 	@Test
 	public void ints() {
-		assertThat(Sequence.ints().limit(3), contains(1, 2, 3));
-		assertThat(Sequence.ints().limit(7777).last(), is(Optional.of(7777)));
+		Sequence<Integer> ints = Sequence.ints();
+		twice(() -> assertThat(ints.limit(3), contains(1, 2, 3)));
+		twice(() -> assertThat(ints.limit(7777).last(), is(Optional.of(7777))));
 	}
 
 	@Test
 	public void intsFromZero() {
-		assertThat(Sequence.intsFromZero().limit(3), contains(0, 1, 2));
-		assertThat(Sequence.intsFromZero().limit(7777).last(), is(Optional.of(7776)));
+		Sequence<Integer> intsFromZero = Sequence.intsFromZero();
+		twice(() -> assertThat(intsFromZero.limit(3), contains(0, 1, 2)));
+		twice(() -> assertThat(intsFromZero.limit(7777).last(), is(Optional.of(7776))));
 	}
 
 	@Test
 	public void longs() {
-		assertThat(Sequence.longs().limit(3), contains(1L, 2L, 3L));
-		assertThat(Sequence.longs().limit(7777).last(), is(Optional.of(7777L)));
+		Sequence<Long> longs = Sequence.longs();
+		twice(() -> assertThat(longs.limit(3), contains(1L, 2L, 3L)));
+		twice(() -> assertThat(longs.limit(7777).last(), is(Optional.of(7777L))));
 	}
 
 	@Test
 	public void longsFromZero() {
-		assertThat(Sequence.longsFromZero().limit(3), contains(0L, 1L, 2L));
-		assertThat(Sequence.longsFromZero().limit(7777).last(), is(Optional.of(7776L)));
+		Sequence<Long> longsFromZero = Sequence.longsFromZero();
+		twice(() -> assertThat(longsFromZero.limit(3), contains(0L, 1L, 2L)));
+		twice(() -> assertThat(longsFromZero.limit(7777).last(), is(Optional.of(7776L))));
 	}
 
 	@Test
 	public void chars() {
-		assertThat(Sequence.chars().limit(3), contains('\u0000', '\u0001', '\u0002'));
-		assertThat(Sequence.chars().limit(0xC0).last(), is(Optional.of('¿')));
-		assertThat(Sequence.chars().count(), is(65536L));
+		Sequence<Character> chars = Sequence.chars();
+		twice(() -> assertThat(chars.limit(3), contains('\u0000', '\u0001', '\u0002')));
+		twice(() -> assertThat(chars.limit(0xC0).last(), is(Optional.of('¿'))));
+		twice(() -> assertThat(chars.count(), is(65536L)));
 	}
 
 	@Test
 	public void intsStartingAt() {
-		assertThat(Sequence.ints(17).limit(3), contains(17, 18, 19));
-		assertThat(Sequence.ints(777).limit(7000).last(), is(Optional.of(7776)));
-		assertThat(Sequence.ints(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
+		Sequence<Integer> startingAtMinus17 = Sequence.ints(-17);
+		twice(() -> assertThat(startingAtMinus17.limit(3), contains(-17, -16, -15)));
+
+		Sequence<Integer> startingAt17 = Sequence.ints(17);
+		twice(() -> assertThat(startingAt17.limit(3), contains(17, 18, 19)));
+
+		Sequence<Integer> startingAt777 = Sequence.ints(777);
+		twice(() -> assertThat(startingAt777.limit(7000).last(), is(Optional.of(7776))));
+
+		Sequence<Integer> startingAtMaxValue = Sequence.ints(Integer.MAX_VALUE);
+		twice(() -> assertThat(startingAtMaxValue, contains(Integer.MAX_VALUE)));
 	}
 
 	@Test
 	public void longsStartingAt() {
-		assertThat(Sequence.longs(17).limit(3), contains(17L, 18L, 19L));
-		assertThat(Sequence.longs(777).limit(7000).last(), is(Optional.of(7776L)));
-		assertThat(Sequence.longs(Long.MAX_VALUE), contains(Long.MAX_VALUE));
+		Sequence<Long> startingAtMinus17 = Sequence.longs(-17);
+		twice(() -> assertThat(startingAtMinus17.limit(3), contains(-17L, -16L, -15L)));
+
+		Sequence<Long> startingAt17 = Sequence.longs(17);
+		twice(() -> assertThat(startingAt17.limit(3), contains(17L, 18L, 19L)));
+
+		Sequence<Long> startingAt777 = Sequence.longs(777);
+		twice(() -> assertThat(startingAt777.limit(7000).last(), is(Optional.of(7776L))));
+
+		Sequence<Long> startingAtMaxValue = Sequence.longs(Long.MAX_VALUE);
+		twice(() -> assertThat(startingAtMaxValue, contains(Long.MAX_VALUE)));
 	}
 
 	@Test
 	public void charsStartingAt() {
-		assertThat(Sequence.chars('A').limit(3), contains('A', 'B', 'C'));
-		assertThat(Sequence.chars('\u1400').limit(3).last(), is(Optional.of('\u1402')));
-		assertThat(Sequence.chars(Character.MAX_VALUE), contains(Character.MAX_VALUE));
+		Sequence<Character> startingAtA = Sequence.chars('A');
+		twice(() -> assertThat(startingAtA.limit(3), contains('A', 'B', 'C')));
+
+		Sequence<Character> startingAt1400 = Sequence.chars('\u1400');
+		twice(() -> assertThat(startingAt1400.limit(3).last(), is(Optional.of('\u1402'))));
+
+		Sequence<Character> startingAtMaxValue = Sequence.chars(Character.MAX_VALUE);
+		twice(() -> assertThat(startingAtMaxValue, contains(Character.MAX_VALUE)));
 	}
 
 	@Test
 	public void intRange() {
-		assertThat(Sequence.range(17, 20), contains(17, 18, 19, 20));
-		assertThat(Sequence.range(20, 17), contains(20, 19, 18, 17));
+		Sequence<Integer> range17to20 = Sequence.range(17, 20);
+		twice(() -> assertThat(range17to20, contains(17, 18, 19, 20)));
+
+		Sequence<Integer> range20to17 = Sequence.range(20, 17);
+		twice(() -> assertThat(range20to17, contains(20, 19, 18, 17)));
 	}
 
 	@Test
 	public void longRange() {
-		assertThat(Sequence.range(17L, 20L), contains(17L, 18L, 19L, 20L));
-		assertThat(Sequence.range(20L, 17L), contains(20L, 19L, 18L, 17L));
+		Sequence<Long> range17to20 = Sequence.range(17L, 20L);
+		twice(() -> assertThat(range17to20, contains(17L, 18L, 19L, 20L)));
+
+		Sequence<Long> range20to17 = Sequence.range(20L, 17L);
+		twice(() -> assertThat(range20to17, contains(20L, 19L, 18L, 17L)));
 	}
 
 	@Test
 	public void charRange() {
-		assertThat(Sequence.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
-		assertThat(Sequence.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
+		Sequence<Character> rangeAtoF = Sequence.range('A', 'F');
+		twice(() -> assertThat(rangeAtoF, contains('A', 'B', 'C', 'D', 'E', 'F')));
+
+		Sequence<Character> rangeFtoA = Sequence.range('F', 'A');
+		twice(() -> assertThat(rangeFtoA, contains('F', 'E', 'D', 'C', 'B', 'A')));
 	}
 
 	@Test
@@ -1490,14 +1555,5 @@ public class SequenceTest {
 
 		twice(() -> assertThat(appended, is(emptyIterable())));
 		twice(() -> assertThat(_1, is(emptyIterable())));
-	}
-
-	@Test
-	public void removeAllAfterMapBack() {
-		Sequence<Integer> mappedFiltered = _12345.mapBack((x, y) -> x != null ? x + y : y).filter(x -> x % 3 != 0);
-		mappedFiltered.removeAll();
-
-		twice(() -> assertThat(mappedFiltered, contains(2, 7)));
-		twice(() -> assertThat(_12345, contains(2, 5)));
 	}
 }

@@ -26,14 +26,17 @@ public class Tests {
 			action.run();
 			fail("Expected " + exceptionClass.getName());
 		} catch (Throwable t) {
-			if (!exceptionClass.isInstance(t)) {
+			if (!exceptionClass.isInstance(t))
 				throw t;
-			}
 		}
 	}
 
 	public static void twice(Runnable action) {
-		action.run();
-		action.run();
+		times(2, action);
+	}
+
+	public static void times(int times, Runnable action) {
+		while (times-- > 0)
+			action.run();
 	}
 }
