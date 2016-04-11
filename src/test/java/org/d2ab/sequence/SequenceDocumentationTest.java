@@ -35,23 +35,25 @@ import static org.junit.Assert.assertThat;
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens =
-				Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> (x % 2) == 0).map(Object::toString).toList();
+		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
+		                             .filter(x -> x % 2 == 0)
+		                             .map(Object::toString)
+		                             .toList();
 
 		assertThat(evens, contains("2", "4", "6", "8"));
 	}
 
 	@Test
 	public void reuseOfSequence() {
-		Sequence<Integer> singulars = Sequence.ints().limit(10); // Digits 1..10
+		Sequence<Integer> singulars = Sequence.range(1, 9); // Digits 1..9
 
-		// using sequence of ints 1..10 first time to get odd numbers between 1 and 10
+		// using sequence of ints 1..9 first time to get odd numbers between 1 and 9
 		Sequence<Integer> odds = singulars.step(2);
 		assertThat(odds, contains(1, 3, 5, 7, 9));
 
-		// re-using the same sequence again to get squares of numbers between 4 and 9
-		Sequence<Integer> squares = singulars.map(i -> i * i).skip(3).limit(5);
-		assertThat(squares, contains(16, 25, 36, 49, 64));
+		// re-using the same sequence again to get squares of numbers between 4 and 8
+		Sequence<Integer> squares = singulars.map(i -> i * i);
+		assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 	}
 
 	@Test
