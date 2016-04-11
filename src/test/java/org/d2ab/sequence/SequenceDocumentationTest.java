@@ -58,11 +58,13 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void sequenceInForeach() {
-		Sequence<Integer> sequence = Sequence.ints().limit(3);
+		Sequence<Integer> sequence = Sequence.ints().limit(5);
 
 		int x = 1;
 		for (int i : sequence)
 			assertThat(i, is(x++));
+
+		assertThat(x, is(6));
 	}
 
 	@Test

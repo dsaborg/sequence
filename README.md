@@ -91,11 +91,13 @@ assertThat(squares.skip(3).limit(5), contains(16, 25, 36, 49, 64));
 Also because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
 
 ```Java
-Sequence<Integer> sequence = Sequence.ints().limit(3);
+Sequence<Integer> sequence = Sequence.ints().limit(5);
 
 int x = 1;
 for (int i : sequence)
     assertThat(i, is(x++));
+
+assertThat(x, is(6));
 ```
 
 Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` method of `Iterable` to be implemented,
