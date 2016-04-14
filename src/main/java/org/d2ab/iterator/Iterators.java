@@ -19,10 +19,7 @@ package org.d2ab.iterator;
 import org.d2ab.function.chars.CharFunction;
 import org.d2ab.iterator.chars.CharIterator;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.PrimitiveIterator;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
@@ -123,5 +120,11 @@ public class Iterators {
 			return Optional.empty();
 
 		return Optional.of(iterator.next());
+	}
+
+	public static <T> List<T> toList(Iterator<T> iterator) {
+		List<T> list = new ArrayList<>();
+		iterator.forEachRemaining(list::add);
+		return list;
 	}
 }

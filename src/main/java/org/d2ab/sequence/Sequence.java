@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -134,6 +135,60 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> from(Stream<T> stream) {
 		return stream::iterator;
+	}
+
+	/**
+	 * Create a {@code Sequence} with the given items.
+	 *
+	 * @see #of(Object)
+	 * @see #from(Iterable)
+	 */
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	static <T> Sequence<T> copy(T... items) {
+		return of(Arrays.copyOf(items, items.length));
+	}
+
+	/**
+	 * Create a {@code Sequence} from an {@link Iterable} of items.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterator)
+	 */
+	static <T> Sequence<T> copy(Iterable<T> iterable) {
+		List<T> list = new ArrayList<>();
+		if (iterable instanceof Collection)
+			list.addAll((Collection<T>) iterable);
+		else
+			iterable.forEach(list::add);
+		return from(list);
+	}
+
+	/**
+	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
+	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 */
+	static <T> Sequence<T> copy(Iterator<T> iterator) {
+		return from(Iterators.toList(iterator));
+	}
+
+	/**
+	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
+	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException} when
+	 * the {@link Stream} is requested again.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 * @see #from(Iterator)
+	 */
+	static <T> Sequence<T> copy(Stream<T> stream) {
+		return from(stream.collect(Collectors.toList()));
 	}
 
 	/**

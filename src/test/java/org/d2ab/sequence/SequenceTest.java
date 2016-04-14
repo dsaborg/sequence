@@ -183,6 +183,63 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void copyArray() {
+		Integer[] integers = {1, 2, 3, 4, 5};
+		Sequence<Integer> copy = Sequence.copy(integers);
+		integers[0] = 17;
+
+		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void copyCollection() {
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		Sequence<Integer> copy = Sequence.copy(list);
+		list.set(0, 17);
+
+		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+
+		copy.removeAll();
+		twice(() -> assertThat(copy, is(emptyIterable())));
+	}
+
+	@Test
+	public void copyIterable() {
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		Sequence<Integer> copy = Sequence.copy(list::iterator);
+		list.set(0, 17);
+
+		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+
+		copy.removeAll();
+		twice(() -> assertThat(copy, is(emptyIterable())));
+	}
+
+	@Test
+	public void copyIterator() {
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		Sequence<Integer> copy = Sequence.copy(list.iterator());
+		list.set(0, 17);
+
+		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+
+		copy.removeAll();
+		twice(() -> assertThat(copy, is(emptyIterable())));
+	}
+
+	@Test
+	public void copyStream() {
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		Sequence<Integer> copy = Sequence.copy(list.stream());
+		list.set(0, 17);
+
+		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+
+		copy.removeAll();
+		twice(() -> assertThat(copy, is(emptyIterable())));
+	}
+
+	@Test
 	public void skip() {
 		Sequence<Integer> skipNone = _123.skip(0);
 		twice(() -> assertThat(skipNone, contains(1, 2, 3)));
