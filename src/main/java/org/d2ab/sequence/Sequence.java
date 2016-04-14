@@ -138,10 +138,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} with the given items.
+	 * Create a {@code Sequence} with a copy of the given items.
 	 *
-	 * @see #of(Object)
-	 * @see #from(Iterable)
+	 * @see #copy(Iterable)
+	 * @see #copy(Iterator)
+	 * @see #copy(Stream)
 	 */
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
@@ -150,11 +151,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} from an {@link Iterable} of items.
+	 * Create a {@code Sequence} with a copy of an {@link Iterable} of items.
 	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterator)
+	 * @see #copy(Object...)
+	 * @see #copy(Iterator)
+	 * @see #copy(Stream)
 	 */
 	static <T> Sequence<T> copy(Iterable<T> iterable) {
 		List<T> list = new ArrayList<>();
@@ -166,26 +167,22 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
-	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
+	 * Create a {@code Sequence} with a copy of an {@link Iterator} of items.
 	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
+	 * @see #copy(Object...)
+	 * @see #copy(Iterable)
+	 * @see #copy(Stream)
 	 */
 	static <T> Sequence<T> copy(Iterator<T> iterator) {
 		return from(Iterators.toList(iterator));
 	}
 
 	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException} when
-	 * the {@link Stream} is requested again.
+	 * Create a {@code Sequence} with a copy of a {@link Stream} of items.
 	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
-	 * @see #from(Iterator)
+	 * @see #copy(Object...)
+	 * @see #copy(Iterable)
+	 * @see #copy(Iterator)
 	 */
 	static <T> Sequence<T> copy(Stream<T> stream) {
 		return from(stream.collect(Collectors.toList()));
