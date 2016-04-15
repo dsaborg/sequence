@@ -42,7 +42,7 @@ public class ForwardPeekingFilteringCharIterator extends DelegatingCharIterator<
 			return true;
 		if (!started) {
 			if (iterator.hasNext()) {
-				following = iterator.next();
+				following = iterator.nextChar();
 				hasFollowing = true;
 			}
 			started = true;
@@ -53,7 +53,7 @@ public class ForwardPeekingFilteringCharIterator extends DelegatingCharIterator<
 		do {
 			next = following;
 			hasFollowing = iterator.hasNext();
-			following = hasFollowing ? iterator.next() : lastNext;
+			following = hasFollowing ? iterator.nextChar() : lastNext;
 		} while (!(hasNext = predicate.test(next, following)) && hasFollowing);
 
 		return hasNext;

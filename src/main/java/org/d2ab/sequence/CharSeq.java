@@ -413,7 +413,7 @@ public interface CharSeq extends CharIterable {
 		if (!iterator.hasNext())
 			return OptionalChar.empty();
 
-		Character identity = iterator.next();
+		Character identity = iterator.nextChar();
 		char result = iterator.reduce(identity, operator);
 		return OptionalChar.of(result);
 	}

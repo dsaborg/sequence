@@ -42,7 +42,7 @@ public class ForwardPeekingFilteringLongIterator extends DelegatingLongIterator<
 			return true;
 		if (!started) {
 			if (iterator.hasNext()) {
-				following = iterator.next();
+				following = iterator.nextLong();
 				hasFollowing = true;
 			}
 			started = true;
@@ -53,7 +53,7 @@ public class ForwardPeekingFilteringLongIterator extends DelegatingLongIterator<
 		do {
 			next = following;
 			hasFollowing = iterator.hasNext();
-			following = hasFollowing ? iterator.next() : lastNext;
+			following = hasFollowing ? iterator.nextLong() : lastNext;
 		} while (!(hasNext = predicate.test(next, following)) && hasFollowing);
 
 		return hasNext;

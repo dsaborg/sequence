@@ -28,6 +28,7 @@ import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -645,25 +646,25 @@ public class IntSequenceTest {
 	@Test
 	public void positive() {
 		IntSequence positive = IntSequence.positive();
-		twice(() -> assertThat(positive.limit(3), containsInts(1, 2, 3)));
+		twice(() -> assertThat(positive.limit(5), containsInts(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void positiveFromZero() {
 		IntSequence positiveFromZero = IntSequence.positiveFromZero();
-		twice(() -> assertThat(positiveFromZero.limit(3), containsInts(0, 1, 2)));
+		twice(() -> assertThat(positiveFromZero.limit(5), containsInts(0, 1, 2, 3, 4)));
 	}
 
 	@Test
 	public void negative() {
 		IntSequence negative = IntSequence.negative();
-		twice(() -> assertThat(negative.limit(3), containsInts(-1, -2, -3)));
+		twice(() -> assertThat(negative.limit(5), containsInts(-1, -2, -3, -4, -5)));
 	}
 
 	@Test
 	public void negativeFromZero() {
 		IntSequence negativeFromZero = IntSequence.negativeFromZero();
-		twice(() -> assertThat(negativeFromZero.limit(3), containsInts(0, -1, -2)));
+		twice(() -> assertThat(negativeFromZero.limit(5), containsInts(0, -1, -2, -3, -4)));
 	}
 
 	@Test
@@ -682,7 +683,7 @@ public class IntSequenceTest {
 	@Test
 	public void increasingFrom() {
 		IntSequence increasingFrom10 = IntSequence.increasingFrom(10);
-		twice(() -> assertThat(increasingFrom10.limit(3), containsInts(10, 11, 12)));
+		twice(() -> assertThat(increasingFrom10.limit(5), containsInts(10, 11, 12, 13, 14)));
 
 		IntSequence increasingFrom_2 = IntSequence.increasingFrom(-2);
 		twice(() -> assertThat(increasingFrom_2.limit(5), containsInts(-2, -1, 0, 1, 2)));
@@ -695,10 +696,10 @@ public class IntSequenceTest {
 	@Test
 	public void steppingFrom() {
 		IntSequence steppingFrom0Step10 = IntSequence.steppingFrom(0, 10);
-		twice(() -> assertThat(steppingFrom0Step10.limit(3), containsInts(0, 10, 20)));
+		twice(() -> assertThat(steppingFrom0Step10.limit(5), containsInts(0, 10, 20, 30, 40)));
 
 		IntSequence steppingFrom0Step_10 = IntSequence.steppingFrom(0, -10);
-		twice(() -> assertThat(steppingFrom0Step_10.limit(3), containsInts(0, -10, -20)));
+		twice(() -> assertThat(steppingFrom0Step_10.limit(5), containsInts(0, -10, -20, -30, -40)));
 
 		IntSequence steppingFromMaxValueStep10 = IntSequence.steppingFrom(Integer.MAX_VALUE, 10);
 		twice(() -> assertThat(steppingFromMaxValueStep10.limit(3),
@@ -759,41 +760,40 @@ public class IntSequenceTest {
 
 	@Test
 	public void toChars() {
-		CharSeq charSeq = IntSequence.increasingFrom('a').toChars();
-		twice(() -> assertThat(charSeq.limit(5), contains('a', 'b', 'c', 'd', 'e')));
+		CharSeq charSeq = IntSequence.increasingFrom('a').limit(5).toChars();
+		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void toLongs() {
-		LongSequence longSequence = IntSequence.positive().toLongs();
-		twice(() -> assertThat(longSequence.limit(5), contains(1L, 2L, 3L, 4L, 5L)));
+		LongSequence longSequence = _12345.toLongs();
+		twice(() -> assertThat(longSequence, contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
 	public void toDoubles() {
-		DoubleSequence doubleSequence = IntSequence.positive().toDoubles();
-		twice(() -> assertThat(doubleSequence.limit(5), contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+		DoubleSequence doubleSequence = _12345.toDoubles();
+		twice(() -> assertThat(doubleSequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 
 	@Test
 	public void toCharsMapped() {
-		CharSeq charSeq = IntSequence.positiveFromZero().toChars(i -> (char) ('a' + i));
-		twice(() -> assertThat(charSeq.limit(5), contains('a', 'b', 'c', 'd', 'e')));
+		CharSeq charSeq = _12345.toChars(i -> (char) ('a' + i - 1));
+		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void toLongsMapped() {
 		long maxInt = Integer.MAX_VALUE;
 
-		LongSequence longSequence = IntSequence.positive().toLongs(i -> i * maxInt);
-		twice(() -> assertThat(longSequence.limit(5),
-		                       contains(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
+		LongSequence longSequence = _12345.toLongs(i -> i * maxInt);
+		twice(() -> assertThat(longSequence, contains(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
 	}
 
 	@Test
 	public void toDoublesMapped() {
-		DoubleSequence doubleSequence = IntSequence.positive().toDoubles(i -> i / 2.0);
-		twice(() -> assertThat(doubleSequence.limit(5), contains(0.5, 1.0, 1.5, 2.0, 2.5)));
+		DoubleSequence doubleSequence = _12345.toDoubles(i -> i / 2.0);
+		twice(() -> assertThat(doubleSequence, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
 	}
 
 	@Test
@@ -801,8 +801,8 @@ public class IntSequenceTest {
 		Sequence<Integer> empty = IntSequence.empty().toSequence(i -> i + 1);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Integer> ints = IntSequence.positive().toSequence(i -> i + 1);
-		twice(() -> assertThat(ints.limit(5), contains(2, 3, 4, 5, 6)));
+		Sequence<Integer> ints = _12345.toSequence(i -> i + 1);
+		twice(() -> assertThat(ints, contains(2, 3, 4, 5, 6)));
 	}
 
 	@Test
@@ -810,8 +810,8 @@ public class IntSequenceTest {
 		Sequence<Integer> empty = IntSequence.empty().box();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Integer> ints = IntSequence.positive().box();
-		twice(() -> assertThat(ints.limit(5), contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> ints = _12345.box();
+		twice(() -> assertThat(ints, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test

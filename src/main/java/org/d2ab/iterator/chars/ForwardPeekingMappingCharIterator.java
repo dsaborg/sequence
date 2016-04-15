@@ -41,7 +41,7 @@ public class ForwardPeekingMappingCharIterator extends UnaryCharIterator {
 	public boolean hasNext() {
 		if (!started) {
 			if (iterator.hasNext()) {
-				current = iterator.next();
+				current = iterator.nextChar();
 				hasCurrent = true;
 			}
 			started = true;

@@ -560,7 +560,7 @@ public interface LongSequence extends LongIterable {
 		if (!iterator.hasNext())
 			return OptionalLong.empty();
 
-		long result = iterator.reduce(iterator.next(), operator);
+		long result = iterator.reduce(iterator.nextLong(), operator);
 		return OptionalLong.of(result);
 	}
 
