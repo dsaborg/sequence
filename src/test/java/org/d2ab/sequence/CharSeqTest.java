@@ -67,9 +67,11 @@ public class CharSeqTest {
 		});
 
 		twice(() -> {
-			int expected = 'a';
-			for (int i : abc)
-				assertThat(i, is(expected++));
+			char expected = 'a';
+			for (char c : abcde)
+				assertThat(c, is(expected++));
+
+			assertThat(expected, is('f'));
 		});
 	}
 
@@ -576,14 +578,14 @@ public class CharSeqTest {
 
 	@Test
 	public void chars() {
-		assertThat(CharSeq.all().limit(3), contains('\u0000', '\u0001', '\u0002'));
+		assertThat(CharSeq.all().limit(5), contains('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
 		assertThat(CharSeq.all().count(), is(65536L));
 	}
 
 	@Test
 	public void charsStartingAt() {
-		assertThat(CharSeq.startingAt('A').limit(3), contains('A', 'B', 'C'));
+		assertThat(CharSeq.startingAt('A').limit(5), contains('A', 'B', 'C', 'D', 'E'));
 		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
 		assertThat(CharSeq.startingAt(Character.MAX_VALUE), contains(Character.MAX_VALUE));
 		assertThat(CharSeq.startingAt('\u8000').count(), is(32768L));

@@ -751,7 +751,7 @@ public class DoubleSequenceTest {
 		Sequence<Double> empty = DoubleSequence.empty().toSequence(d -> d + 1);
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Double> doubles = DoubleSequence.steppingFrom(1, 1).limit(5).toSequence(d -> d + 1);
+		Sequence<Double> doubles = _12345.toSequence(d -> d + 1);
 		twice(() -> assertThat(doubles, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
 	}
 
@@ -760,7 +760,7 @@ public class DoubleSequenceTest {
 		Sequence<Double> empty = DoubleSequence.empty().box();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Sequence<Double> doubles = DoubleSequence.steppingFrom(1, 1).limit(5).box();
+		Sequence<Double> doubles = _12345.box();
 		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 

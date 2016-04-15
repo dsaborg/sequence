@@ -67,8 +67,10 @@ public class LongSequenceTest {
 
 		twice(() -> {
 			long expected = 1L;
-			for (long i : _123)
+			for (long i : _12345)
 				assertThat(i, is(expected++));
+
+			assertThat(expected, is(6L));
 		});
 	}
 
