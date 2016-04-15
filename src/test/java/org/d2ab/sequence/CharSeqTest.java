@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.chars.CharBinaryOperator;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.chars.CharIterable;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
@@ -27,7 +28,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -48,6 +48,18 @@ public class CharSeqTest {
 	private final CharSeq twoRandom = CharSeq.of('q', 'w');
 	private final CharSeq threeRandom = CharSeq.of('q', 'w', 'd');
 	private final CharSeq nineRandom = CharSeq.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
+
+	@Test
+	public void empty() {
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
+
+	@Test
+	public void ofNone() {
+		CharSeq sequence = CharSeq.of();
+
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
 
 	@Test
 	public void ofOne() {
@@ -105,47 +117,48 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void ofNone() {
-		CharSeq sequence = CharSeq.of();
-
-		twice(() -> assertThat(sequence, is(emptyIterable())));
-	}
-
-	@Test
-	public void empty() {
-		twice(() -> assertThat(empty, is(emptyIterable())));
-	}
-
-	@Test
-	public void fromSequence() {
-		CharSeq fromSequence = CharSeq.from(abc);
-
-		twice(() -> assertThat(fromSequence, contains('a', 'b', 'c')));
-	}
-
-	@Test
 	public void fromIterable() {
-		Iterable<Character> iterable = () -> List.of('a', 'b', 'c').iterator();
+		CharSeq seq = CharSeq.from(Iterables.of('a', 'b', 'c', 'd', 'e'));
 
-		CharSeq sequenceFromIterable = CharSeq.from(iterable);
+		twice(() -> assertThat(seq, contains('a', 'b', 'c', 'd', 'e')));
+	}
 
-		twice(() -> assertThat(sequenceFromIterable, contains('a', 'b', 'c')));
+	@Test
+	public void fromCharIterable() {
+		CharSeq seq = CharSeq.from(CharIterable.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(seq, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void fromIterator() {
+		CharSeq seq = CharSeq.from(Iterators.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void fromCharIterator() {
+		CharSeq seq = CharSeq.from(CharIterator.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
 	}
 
 	@Test
 	public void fromStream() {
-		CharSeq sequenceFromStream = CharSeq.from(List.of('a', 'b', 'c').stream());
+		CharSeq seq = CharSeq.from(Stream.of('a', 'b', 'c', 'd', 'e'));
 
-		assertThat(sequenceFromStream, contains('a', 'b', 'c'));
-		expecting(IllegalStateException.class, sequenceFromStream::iterator);
+		assertThat(seq, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
 	}
 
 	@Test
 	public void fromEmptyStream() {
-		CharSeq sequenceFromStream = CharSeq.from(Stream.of());
+		CharSeq seq = CharSeq.from(Stream.of());
 
-		assertThat(sequenceFromStream, is(emptyIterable()));
-		expecting(IllegalStateException.class, sequenceFromStream::iterator);
+		twice(() -> assertThat(seq, is(emptyIterable())));
 	}
 
 	@Test
@@ -185,10 +198,32 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void append() {
-		CharSeq appended = abc.append(CharSeq.of('d', 'e', 'f')).append(CharSeq.of('g', 'h'));
+	public void appendArray() {
+		CharSeq appended = abc.append('d', 'e', 'f').append('g', 'h');
 
 		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+	}
+
+	@Test
+	public void appendCharIterable() {
+		CharSeq appended = abc.append(CharIterable.of('d', 'e', 'f')).append(CharIterable.of('g', 'h'));
+
+		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+	}
+
+	@Test
+	public void appendIterable() {
+		CharSeq appended = abc.append(Iterables.of('d', 'e', 'f')).append(Iterables.of('g', 'h'));
+
+		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+	}
+
+	@Test
+	public void appendCharIterator() {
+		CharSeq appended = abc.append(CharIterator.of('d', 'e', 'f')).append(CharIterator.of('g', 'h'));
+
+		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(appended, contains('a', 'b', 'c'));
 	}
 
 	@Test
@@ -204,45 +239,29 @@ public class CharSeqTest {
 		CharSeq appended = abc.append(Stream.of('d', 'e', 'f')).append(Stream.of('g', 'h'));
 
 		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
-
-		CharIterator iterator = appended.iterator();
-		assertThat(iterator.nextChar(), is('a')); // First three are ok
-		assertThat(iterator.nextChar(), is('b'));
-		assertThat(iterator.nextChar(), is('c'));
-
-		expecting(NoSuchElementException.class, iterator::nextChar); // Hitting Stream that is exhausted
-	}
-
-	@Test
-	public void appendArray() {
-		CharSeq appended = abc.append('d', 'e', 'f').append('g', 'h');
-
-		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+		assertThat(appended, contains('a', 'b', 'c'));
 	}
 
 	@Test
 	public void appendIsLazy() {
-		CharIterator first = CharIterator.from(List.of('a', 'b', 'c'));
-		CharIterator second = CharIterator.from(List.of('d', 'e', 'f'));
-		CharIterator third = CharIterator.from(List.of('g', 'h'));
+		CharIterator first = CharIterator.of('a', 'b', 'c');
+		CharIterator second = CharIterator.of('d', 'e', 'f');
+		CharIterator third = CharIterator.of('g', 'h');
 
-		CharSeq then = CharSeq.from(first).append(() -> second).append(() -> third);
+		CharSeq.from(first).append(second).append(third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
 		assertThat(third.hasNext(), is(true));
-
-		assertThat(then, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
-		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
 	}
 
 	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
+	public void appendIsLazyWhenSkippingHasNext() {
 		CharIterator first = CharIterator.of('a');
 		CharIterator second = CharIterator.of('b');
 
-		CharSeq sequence = CharSeq.from(first).append(() -> second);
+		CharSeq sequence = CharSeq.from(first).append(second);
 
 		// check delayed iteration
 		CharIterator iterator = sequence.iterator();

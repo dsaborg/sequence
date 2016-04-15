@@ -309,23 +309,20 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		DoubleIterator first = DoubleIterator.from(List.of(1.0, 2.0, 3.0));
-		DoubleIterator second = DoubleIterator.from(List.of(4.0, 5.0, 6.0));
-		DoubleIterator third = DoubleIterator.from(List.of(7.0, 8.0));
+		DoubleIterator first = DoubleIterator.of(1.0, 2.0, 3.0);
+		DoubleIterator second = DoubleIterator.of(4.0, 5.0, 6.0);
+		DoubleIterator third = DoubleIterator.of(7.0, 8.0);
 
-		DoubleSequence then = DoubleSequence.from(first).append(() -> second).append(() -> third);
+		DoubleSequence.from(first).append(second).append(third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
 		assertThat(third.hasNext(), is(true));
-
-		assertThat(then, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
-		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
 	}
 
 	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
+	public void appendIsLazyWhenSkippingHasNext() {
 		DoubleIterator first = DoubleIterator.of(1.0);
 		DoubleIterator second = DoubleIterator.of(2.0);
 

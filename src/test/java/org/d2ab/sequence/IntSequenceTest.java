@@ -317,11 +317,11 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void thenIsLazyWhenSkippingHasNext() {
+	public void appendIsLazyWhenSkippingHasNext() {
 		IntIterator first = IntIterator.of(1);
 		IntIterator second = IntIterator.of(2);
 
-		IntSequence sequence = IntSequence.from(first).append(() -> second);
+		IntSequence sequence = IntSequence.from(first).append(second);
 
 		// check delayed iteration
 		IntIterator iterator = sequence.iterator();

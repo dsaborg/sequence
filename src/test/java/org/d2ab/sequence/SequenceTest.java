@@ -134,13 +134,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromSequence() {
-		Sequence<Integer> fromSequence = Sequence.from(_12345);
-
-		twice(() -> assertThat(fromSequence, contains(1, 2, 3, 4, 5)));
-	}
-
-	@Test
 	public void fromIterable() {
 		Iterable<Integer> iterable = () -> List.of(1, 2, 3).iterator();
 

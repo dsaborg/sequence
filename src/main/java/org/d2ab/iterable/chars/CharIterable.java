@@ -89,7 +89,7 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	static CharIterable from(CharIterator iterator) {
-		return iterator.asIterable();
+		return () -> iterator;
 	}
 
 	static CharIterable from(Iterator<Character> iterator) {

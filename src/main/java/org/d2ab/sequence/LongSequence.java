@@ -93,7 +93,7 @@ public interface LongSequence extends LongIterable {
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	static LongSequence from(Stream<Long> stream) {
-		return from(stream::iterator);
+		return from(stream.iterator());
 	}
 
 	/**

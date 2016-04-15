@@ -20,7 +20,6 @@ import org.d2ab.function.chars.CharBinaryOperator;
 import org.d2ab.function.chars.CharConsumer;
 import org.d2ab.function.chars.IntToCharFunction;
 import org.d2ab.function.chars.LongToCharFunction;
-import org.d2ab.iterable.chars.CharIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -141,10 +140,6 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		while ((count++ < steps) && hasNext()) {
 			nextChar();
 		}
-	}
-
-	default CharIterable asIterable() {
-		return () -> this;
 	}
 
 	/**

@@ -49,12 +49,17 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Create a {@code CharSeq} from an {@link Iterator} of {@code Character} values. Note that {@code
-	 * CharSeq}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code CharSeq} as empty.
+	 * Create a {@code CharSeq} with the given characters.
 	 */
-	static CharSeq from(Iterator<Character> iterator) {
-		return from(CharIterator.from(iterator));
+	static CharSeq of(char... cs) {
+		return () -> CharIterator.of(cs);
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a {@link CharSequence}.
+	 */
+	static CharSeq from(CharSequence csq) {
+		return () -> new CharSequenceCharIterator(csq);
 	}
 
 	/**
@@ -68,6 +73,15 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Create a {@code CharSeq} from an {@link Iterator} of {@code Character} values. Note that {@code
+	 * CharSeq}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
+	 * register the {@code CharSeq} as empty.
+	 */
+	static CharSeq from(Iterator<Character> iterator) {
+		return from(CharIterator.from(iterator));
+	}
+
+	/**
 	 * Create a {@code CharSeq} from a {@link CharIterable}.
 	 */
 	static CharSeq from(CharIterable iterable) {
@@ -75,35 +89,20 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Create a {@code CharSeq} from a {@link CharSequence}.
-	 */
-	static CharSeq from(CharSequence csq) {
-		return () -> new CharSequenceCharIterator(csq);
-	}
-
-	/**
-	 * Create a {@code CharSeq} with the given characters.
-	 */
-	static CharSeq of(char... cs) {
-		return () -> CharIterator.of(cs);
-	}
-
-	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException}
-	 * when the {@link Stream} is requested again.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 */
-	static CharSeq from(Stream<Character> stream) {
-		return from(stream::iterator);
-	}
-
-	/**
 	 * Create a {@code CharSeq} from an {@link Iterable} of {@code Character} values.
 	 */
 	static CharSeq from(Iterable<Character> iterable) {
 		return () -> CharIterator.from(iterable);
+	}
+
+	/**
+	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
+	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq} as empty.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 */
+	static CharSeq from(Stream<Character> stream) {
+		return from(stream.iterator());
 	}
 
 	/**
@@ -275,10 +274,10 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Append the {@link Character}s in the given {@link Iterable} to the end of this {@code CharSeq}.
+	 * Append the given {@code chars} to the end of this {@code CharSeq}.
 	 */
-	default CharSeq append(Iterable<Character> iterable) {
-		return append(CharIterable.from(iterable));
+	default CharSeq append(char... characters) {
+		return append(CharIterable.of(characters));
 	}
 
 	/**
@@ -289,12 +288,19 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Append the {@link Character}s in the given {@link Iterable} to the end of this {@code CharSeq}.
+	 */
+	default CharSeq append(Iterable<Character> iterable) {
+		return append(CharIterable.from(iterable));
+	}
+
+	/**
 	 * Append the {@code chars} in the given {@link CharIterator} to the end of this {@code CharSeq}.
 	 * <p>
 	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
 	 */
 	default CharSeq append(CharIterator iterator) {
-		return append(iterator.asIterable());
+		return append(CharIterable.from(iterator));
 	}
 
 	/**
@@ -304,13 +310,6 @@ public interface CharSeq extends CharIterable {
 	 */
 	default CharSeq append(Iterator<Character> iterator) {
 		return append(CharIterable.from(iterator));
-	}
-
-	/**
-	 * Append the given {@code chars} to the end of this {@code CharSeq}.
-	 */
-	default CharSeq append(char... characters) {
-		return append(CharIterable.of(characters));
 	}
 
 	/**
