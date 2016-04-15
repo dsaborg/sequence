@@ -42,7 +42,7 @@ public class ForwardPeekingFilteringDoubleIterator extends DelegatingDoubleItera
 			return true;
 		if (!started) {
 			if (iterator.hasNext()) {
-				following = iterator.next();
+				following = iterator.nextDouble();
 				hasFollowing = true;
 			}
 			started = true;
@@ -53,7 +53,7 @@ public class ForwardPeekingFilteringDoubleIterator extends DelegatingDoubleItera
 		do {
 			next = following;
 			hasFollowing = iterator.hasNext();
-			following = hasFollowing ? iterator.next() : lastNext;
+			following = hasFollowing ? iterator.nextDouble() : lastNext;
 		} while (!(hasNext = predicate.test(next, following)) && hasFollowing);
 
 		return hasNext;

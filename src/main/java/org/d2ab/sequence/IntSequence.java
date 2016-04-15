@@ -82,6 +82,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * Create a {@code IntSequence} from a {@link IntIterable}.
+	 *
+	 * @see #cache(IntIterable)
 	 */
 	static IntSequence from(IntIterable iterable) {
 		return iterable::iterator;
@@ -89,6 +91,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * Create a {@code IntSequence} from an {@link Iterable} of {@code Integer} values.
+	 *
+	 * @see #cache(Iterable)
 	 */
 	static IntSequence from(Iterable<Integer> iterable) {
 		return () -> IntIterator.from(iterable);
@@ -118,13 +122,14 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Create an {@code IntSequence} from a cached copy of an {@link Iterator} of {@link Integer}s.
+	 * Create an {@code IntSequence} from a cached copy of a {@link PrimitiveIterator.OfInt}.
 	 *
 	 * @see #cache(Iterator)
 	 * @see #cache(IntStream)
 	 * @see #cache(Stream)
 	 * @see #cache(IntIterable)
 	 * @see #cache(Iterable)
+	 * @see #from(PrimitiveIterator.OfInt)
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
 		int[] cache = new int[10];
@@ -148,6 +153,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Stream)
 	 * @see #cache(IntIterable)
 	 * @see #cache(Iterable)
+	 * @see #from(Iterator)
 	 */
 	static IntSequence cache(Iterator<Integer> iterator) {
 		return cache(IntIterator.from(iterator));
@@ -161,9 +167,10 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
+	 * @see #from(IntStream)
 	 */
-	static IntSequence cache(IntStream intStream) {
-		return cache(intStream.iterator());
+	static IntSequence cache(IntStream stream) {
+		return cache(stream.iterator());
 	}
 
 	/**
@@ -174,6 +181,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
+	 * @see #from(Stream)
 	 */
 	static IntSequence cache(Stream<Integer> stream) {
 		return cache(stream.iterator());
@@ -187,6 +195,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Stream)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
+	 * @see #from(IntIterable)
 	 */
 	static IntSequence cache(IntIterable iterable) {
 		return cache(iterable.iterator());
@@ -200,6 +209,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Stream)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
+	 * @see #from(Iterable)
 	 */
 	static IntSequence cache(Iterable<Integer> iterable) {
 		return cache(iterable.iterator());

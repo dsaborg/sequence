@@ -41,7 +41,7 @@ public class ForwardPeekingMappingDoubleIterator extends UnaryDoubleIterator {
 		if (!started) {
 			started = true;
 			if (iterator.hasNext()) {
-				current = iterator.next();
+				current = iterator.nextDouble();
 				hasCurrent = true;
 			}
 		}

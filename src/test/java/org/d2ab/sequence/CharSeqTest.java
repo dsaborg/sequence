@@ -25,7 +25,6 @@ import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.d2ab.test.Tests.expecting;
@@ -145,15 +144,6 @@ public class CharSeqTest {
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
-	}
-
-	@Test
-	public void fromIteratorSupplier() {
-		Supplier<CharIterator> iterators = () -> CharIterator.from(List.of('a', 'b', 'c'));
-
-		CharSeq sequenceFromIterators = CharSeq.from(iterators);
-
-		twice(() -> assertThat(sequenceFromIterators, contains('a', 'b', 'c')));
 	}
 
 	@Test

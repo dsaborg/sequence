@@ -53,6 +53,10 @@ public interface IntIterable extends Iterable<Integer> {
 		return () -> new ArrayIntIterator(integers);
 	}
 
+	static IntIterable from(Integer... integers) {
+		return from(Arrays.asList(integers));
+	}
+
 	static IntIterable from(Iterable<Integer> iterable) {
 		if (iterable instanceof IntIterable)
 			return (IntIterable) iterable;
@@ -66,10 +70,6 @@ public interface IntIterable extends Iterable<Integer> {
 
 	static IntIterable from(Iterator<Integer> iterator) {
 		return () -> IntIterator.from(iterator);
-	}
-
-	static IntIterable from(Integer... integers) {
-		return from(Arrays.asList(integers));
 	}
 
 	static IntIterable from(IntStream intStream) {

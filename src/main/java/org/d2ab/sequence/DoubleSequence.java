@@ -29,6 +29,7 @@ import org.d2ab.util.Arrayz;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalDouble;
+import java.util.PrimitiveIterator;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -50,32 +51,6 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Create an {@code DoubleSequence} from an
-	 * {@link Iterator} of {@code Double} values. Note that {@code DoubleSequence} created from {@link Iterator}s
-	 * cannot be passed over more than once. Further attempts will register the {@code DoubleSequence} as empty.
-	 */
-	static DoubleSequence from(Iterator<Double> iterator) {
-		return from(DoubleIterator.from(iterator));
-	}
-
-	/**
-	 * Create a {@code DoubleSequence} from a {@link DoubleIterator} of double values. Note that {@code
-	 * DoubleSequence}s created from {@link DoubleIterator}s cannot be passed over more than once. Further attempts
-	 * will
-	 * register the {@code DoubleSequence} as empty.
-	 */
-	static DoubleSequence from(DoubleIterator iterator) {
-		return () -> iterator;
-	}
-
-	/**
-	 * Create a {@code DoubleSequence} from a {@link DoubleIterable}.
-	 */
-	static DoubleSequence from(DoubleIterable iterable) {
-		return iterable::iterator;
-	}
-
-	/**
 	 * Create a {@code DoubleSequence} with the given doubles.
 	 */
 	static DoubleSequence of(double... cs) {
@@ -83,30 +58,161 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Create a {@code Sequence} from {@link Iterator}s of items supplied by the given {@link Supplier}. Every time
-	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
-	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
+	 * Create a {@code DoubleSequence} from a {@link PrimitiveIterator.OfDouble} of double values. Note that {@code
+	 * DoubleSequence}s created from {@link PrimitiveIterator.OfDouble}s cannot be passed over more than once. Further
+	 * attempts will register the {@code DoubleSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfDouble)
 	 */
-	static DoubleSequence from(Supplier<? extends DoubleIterator> iteratorSupplier) {
-		return iteratorSupplier::get;
+	static DoubleSequence from(PrimitiveIterator.OfDouble iterator) {
+		return () -> DoubleIterator.from(iterator);
 	}
 
 	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException}
-	 * when the {@link Stream} is requested again.
+	 * Create a {@code DoubleSequence} from an {@link Iterator} of {@code Double} values. Note that
+	 * {@code DoubleSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts
+	 * will register the {@code DoubleSequence} as empty.
 	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(Iterator)
 	 */
-	static DoubleSequence from(Stream<Double> stream) {
-		return from(stream::iterator);
+	static DoubleSequence from(Iterator<Double> iterator) {
+		return from(DoubleIterator.from(iterator));
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a {@link DoubleIterable}.
+	 *
+	 * @see #cache(DoubleIterable)
+	 */
+	static DoubleSequence from(DoubleIterable iterable) {
+		return iterable::iterator;
 	}
 
 	/**
 	 * Create a {@code DoubleSequence} from an {@link Iterable} of {@code Double} values.
+	 *
+	 * @see #cache(Iterable)
 	 */
 	static DoubleSequence from(Iterable<Double> iterable) {
 		return () -> DoubleIterator.from(iterable);
+	}
+
+	/**
+	 * Create a {@code Sequence} from a {@link DoubleStream} of items. Note that {@code DoubleSequence}s created from
+	 * {@link DoubleStream}s cannot be passed over more than once. Further attempts will register the
+	 * {@code DoubleSequence} as empty.
+	 *
+	 * @throws IllegalStateException if the {@link DoubleStream} is exhausted.
+	 * @see #cache(DoubleStream)
+	 */
+	static DoubleSequence from(DoubleStream stream) {
+		return from(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code DoubleSequence}s created from
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the
+	 * {@code DoubleSequence} as empty.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(Stream)
+	 */
+	static DoubleSequence from(Stream<Double> stream) {
+		return from(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a cached copy of a {@link PrimitiveIterator.OfDouble}.
+	 *
+	 * @see #cache(Iterator)
+	 * @see #cache(DoubleStream)
+	 * @see #cache(Stream)
+	 * @see #cache(DoubleIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(PrimitiveIterator.OfDouble)
+	 */
+	static DoubleSequence cache(PrimitiveIterator.OfDouble iterator) {
+		double[] cache = new double[10];
+		int position = 0;
+		while (iterator.hasNext()) {
+			double next = iterator.nextDouble();
+			if (position == cache.length)
+				cache = Arrays.copyOf(cache, cache.length * 2);
+			cache[position++] = next;
+		}
+		if (cache.length > position)
+			cache = Arrays.copyOf(cache, position);
+		return of(cache);
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a cached copy of an {@link Iterator} of {@link Double}s.
+	 *
+	 * @see #cache(PrimitiveIterator.OfDouble)
+	 * @see #cache(DoubleStream)
+	 * @see #cache(Stream)
+	 * @see #cache(DoubleIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(Iterator)
+	 */
+	static DoubleSequence cache(Iterator<Double> iterator) {
+		return cache(DoubleIterator.from(iterator));
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a cached copy of a {@link DoubleStream}.
+	 *
+	 * @see #cache(Stream)
+	 * @see #cache(DoubleIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(PrimitiveIterator.OfDouble)
+	 * @see #cache(Iterator)
+	 * @see #from(DoubleStream)
+	 */
+	static DoubleSequence cache(DoubleStream stream) {
+		return cache(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a cached copy of a {@link Stream} of {@link Double}s.
+	 *
+	 * @see #cache(DoubleStream)
+	 * @see #cache(DoubleIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(PrimitiveIterator.OfDouble)
+	 * @see #cache(Iterator)
+	 * @see #from(Stream)
+	 */
+	static DoubleSequence cache(Stream<Double> stream) {
+		return cache(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a cached copy of an {@link DoubleIterable}.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(DoubleStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfDouble)
+	 * @see #cache(Iterator)
+	 * @see #from(DoubleIterable)
+	 */
+	static DoubleSequence cache(DoubleIterable iterable) {
+		return cache(iterable.iterator());
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a cached copy of an {@link Iterable} of {@code Double} values.
+	 *
+	 * @see #cache(DoubleIterable)
+	 * @see #cache(DoubleStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfDouble)
+	 * @see #cache(Iterator)
+	 * @see #from(Iterable)
+	 */
+	static DoubleSequence cache(Iterable<Double> iterable) {
+		return cache(iterable.iterator());
 	}
 
 	/**
@@ -254,10 +360,10 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Append the {@link Double}s in the given {@link Iterable} to the end of this {@code DoubleSequence}.
+	 * Append the given {@code doubles} to the end of this {@code DoubleSequence}.
 	 */
-	default DoubleSequence append(Iterable<Double> iterable) {
-		return append(DoubleIterable.from(iterable));
+	default DoubleSequence append(double... doubles) {
+		return append(DoubleIterable.of(doubles));
 	}
 
 	/**
@@ -268,13 +374,21 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Append the {@code doubles} in the given {@link DoubleIterator} to the end of this {@code DoubleSequence}.
+	 * Append the {@link Double}s in the given {@link Iterable} to the end of this {@code DoubleSequence}.
+	 */
+	default DoubleSequence append(Iterable<Double> iterable) {
+		return append(DoubleIterable.from(iterable));
+	}
+
+	/**
+	 * Append the {@code doubles} in the given {@link PrimitiveIterator.OfDouble} to the end of this
+	 * {@code DoubleSequence}.
 	 * <p>
 	 * The appended {@code doubles} will only be available on the first traversal of the resulting {@code
 	 * DoubleSequence}.
 	 */
-	default DoubleSequence append(DoubleIterator iterator) {
-		return append(iterator.asIterable());
+	default DoubleSequence append(PrimitiveIterator.OfDouble iterator) {
+		return append(DoubleIterable.from(iterator));
 	}
 
 	/**
@@ -288,29 +402,22 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Append the given {@code doubles} to the end of this {@code DoubleSequence}.
+	 * Append the {@code double} values of the given {@link DoubleStream} to the end of this {@code DoubleSequence}.
+	 * <p>
+	 * The appended {@link Double}s will only be available on the first traversal of the resulting
+	 * {@code DoubleSequence}.
 	 */
-	default DoubleSequence append(double... doubles) {
-		return append(DoubleIterable.of(doubles));
+	default DoubleSequence append(DoubleStream stream) {
+		return append(DoubleIterable.from(stream));
 	}
 
 	/**
 	 * Append the {@link Double}s in the given {@link Stream} to the end of this {@code DoubleSequence}.
 	 * <p>
 	 * The appended {@link Double}s will only be available on the first traversal of the resulting
-	 * {@code DoubleSequence}. Further traversals will result in {@link IllegalStateException} being thrown.
+	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(Stream<Double> stream) {
-		return append(DoubleIterable.from(stream));
-	}
-
-	/**
-	 * Append the {@code double} values of the given {@link DoubleStream} to the end of this {@code DoubleSequence}.
-	 * <p>
-	 * The appended {@code doubles} will only be available on the first traversal of the resulting
-	 * {@code DoubleSequence}. Further traversals will result in {@link IllegalStateException} being thrown.
-	 */
-	default DoubleSequence append(DoubleStream stream) {
 		return append(DoubleIterable.from(stream));
 	}
 
@@ -326,7 +433,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Filter this {@code DoubleSequence} to another sequence of doubles while peeking at the previous value in the
 	 * sequence.
 	 * <p>
-	 * The predicate has access to the previous int and the current int in the iteration. If the current int is
+	 * The predicate has access to the previous double and the current double in the iteration. If the current double is
 	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
 	 * the first previous value.
 	 */
@@ -335,9 +442,9 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Filter this {@code DoubleSequence} to another sequence of doubles while peeking at the next int in the sequence.
+	 * Filter this {@code DoubleSequence} to another sequence of doubles while peeking at the next double in the sequence.
 	 * <p>
-	 * The predicate has access to the current int and the next int in the iteration. If the current int is
+	 * The predicate has access to the current double and the next double in the iteration. If the current double is
 	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
 	 * the last next value.
 	 */
@@ -394,7 +501,7 @@ public interface DoubleSequence extends DoubleIterable {
 		if (!iterator.hasNext())
 			return OptionalDouble.empty();
 
-		double result = iterator.reduce(iterator.next(), operator);
+		double result = iterator.reduce(iterator.nextDouble(), operator);
 		return OptionalDouble.of(result);
 	}
 

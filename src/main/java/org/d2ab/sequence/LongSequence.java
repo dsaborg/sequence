@@ -86,15 +86,6 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Create a {@code Sequence} from {@link Iterator}s of items supplied by the given {@link Supplier}. Every time
-	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
-	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
-	 */
-	static LongSequence from(Supplier<? extends LongIterator> iteratorSupplier) {
-		return iteratorSupplier::get;
-	}
-
-	/**
 	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
 	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException}
 	 * when the {@link Stream} is requested again.
@@ -502,7 +493,7 @@ public interface LongSequence extends LongIterable {
 	 * Filter this {@code LongSequence} to another sequence of longs while peeking at the previous value in the
 	 * sequence.
 	 * <p>
-	 * The predicate has access to the previous int and the current int in the iteration. If the current int is
+	 * The predicate has access to the previous long and the current long in the iteration. If the current long is
 	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
 	 * the first previous value.
 	 */
@@ -511,9 +502,9 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Filter this {@code LongSequence} to another sequence of longs while peeking at the next int in the sequence.
+	 * Filter this {@code LongSequence} to another sequence of longs while peeking at the next long in the sequence.
 	 * <p>
-	 * The predicate has access to the current int and the next int in the iteration. If the current int is
+	 * The predicate has access to the current long and the next long in the iteration. If the current long is
 	 * the last value in the sequence, and there is no next value, the provided replacement value is used as
 	 * the last next value.
 	 */

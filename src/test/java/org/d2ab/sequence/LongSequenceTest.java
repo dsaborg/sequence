@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.function.LongBinaryOperator;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.d2ab.test.Tests.expecting;
@@ -144,15 +143,6 @@ public class LongSequenceTest {
 
 		assertThat(sequenceFromStream, is(emptyIterable()));
 		expecting(IllegalStateException.class, sequenceFromStream::iterator);
-	}
-
-	@Test
-	public void fromIteratorSupplier() {
-		Supplier<LongIterator> iterators = () -> LongIterator.from(List.of(1L, 2L, 3L));
-
-		LongSequence sequenceFromIterators = LongSequence.from(iterators);
-
-		twice(() -> assertThat(sequenceFromIterators, contains(1L, 2L, 3L)));
 	}
 
 	@Test

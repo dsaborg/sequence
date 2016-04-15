@@ -16,8 +16,6 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterable.doubles.DoubleIterable;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -50,10 +48,25 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	}
 
 	static DoubleIterator from(Iterator<Double> iterator) {
+		if (iterator instanceof PrimitiveIterator.OfDouble)
+			return from((PrimitiveIterator.OfDouble) iterator);
+
 		return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
 			@Override
 			public double nextDouble() {
 				return iterator.next();
+			}
+		};
+	}
+
+	static DoubleIterator from(PrimitiveIterator.OfDouble iterator) {
+		if (iterator instanceof DoubleIterator)
+			return (DoubleIterator) iterator;
+
+		return new DelegatingDoubleIterator<Double, PrimitiveIterator.OfDouble>(iterator) {
+			@Override
+			public double nextDouble() {
+				return iterator.nextDouble();
 			}
 		};
 	}
@@ -103,10 +116,6 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		while ((count++ < steps) && hasNext()) {
 			nextDouble();
 		}
-	}
-
-	default DoubleIterable asIterable() {
-		return () -> this;
 	}
 
 	default double reduce(double identity, DoubleBinaryOperator operator) {
