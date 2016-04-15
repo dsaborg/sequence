@@ -31,6 +31,7 @@ import org.d2ab.util.Arrayz;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalInt;
+import java.util.PrimitiveIterator;
 import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -51,24 +52,32 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
-	 * created
-	 * from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
-	 * IntSequence} as empty.
+	 * Create an {@code IntSequence} with the given ints.
 	 */
-	static IntSequence from(Iterator<Integer> iterator) {
-		return from(IntIterator.from(iterator));
+	static IntSequence of(int... cs) {
+		return () -> IntIterator.of(cs);
 	}
 
 	/**
-	 * Create a {@code IntSequence} from a {@link IntIterator} of int values. Note that {@code
-	 * IntSequence}s created from {@link IntIterator}s cannot be passed over more than once. Further attempts
-	 * will
-	 * register the {@code IntSequence} as empty.
+	 * Create a {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s created from
+	 * {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will register the {@code
+	 * IntSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfInt)
 	 */
-	static IntSequence from(IntIterator iterator) {
-		return () -> iterator;
+	static IntSequence from(PrimitiveIterator.OfInt iterator) {
+		return () -> IntIterator.from(iterator);
+	}
+
+	/**
+	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
+	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
+	 * IntSequence} as empty.
+	 *
+	 * @see #cache(Iterator)
+	 */
+	static IntSequence from(Iterator<Integer> iterator) {
+		return from(IntIterator.from(iterator));
 	}
 
 	/**
@@ -79,37 +88,121 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Create a {@code IntSequence} with the given ints.
-	 */
-	static IntSequence of(int... cs) {
-		return () -> IntIterator.of(cs);
-	}
-
-	/**
-	 * Create a {@code Sequence} from {@link Iterator}s of items supplied by the given {@link Supplier}. Every time
-	 * the {@code Sequence} is to be iterated over, the {@link Supplier} is used to create the initial stream of
-	 * elements. This is similar to creating a {@code Sequence} from an {@link Iterable}.
-	 */
-	static IntSequence from(Supplier<? extends IntIterator> iteratorSupplier) {
-		return iteratorSupplier::get;
-	}
-
-	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException}
-	 * when the {@link Stream} is requested again.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 */
-	static IntSequence from(Stream<Integer> stream) {
-		return from(stream::iterator);
-	}
-
-	/**
 	 * Create a {@code IntSequence} from an {@link Iterable} of {@code Integer} values.
 	 */
 	static IntSequence from(Iterable<Integer> iterable) {
 		return () -> IntIterator.from(iterable);
+	}
+
+	/**
+	 * Create an {@code IntSequence} from an {@link IntStream} of items. Note that {@code IntSequences} created from {@link
+	 * IntStream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence} as
+	 * empty.
+	 *
+	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
+	 * @see #cache(IntStream)
+	 */
+	static IntSequence from(IntStream stream) {
+		return from(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from{@link
+	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence} as empty.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(Stream)
+	 */
+	static IntSequence from(Stream<Integer> stream) {
+		return from(stream.iterator());
+	}
+
+	/**
+	 * Create an {@code IntSequence} from a cached copy of an {@link Iterator} of {@link Integer}s.
+	 *
+	 * @see #cache(Iterator)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(IntIterable)
+	 * @see #cache(Iterable)
+	 */
+	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
+		int[] cache = new int[10];
+		int position = 0;
+		while (iterator.hasNext()) {
+			int next = iterator.nextInt();
+			if (position == cache.length)
+				cache = Arrays.copyOf(cache, cache.length * 2);
+			cache[position++] = next;
+		}
+		if (cache.length > position)
+			cache = Arrays.copyOf(cache, position);
+		return of(cache);
+	}
+
+	/**
+	 * Create an {@code IntSequence} from a cached copy of an {@link Iterator} of {@link Integer}s.
+	 *
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(IntIterable)
+	 * @see #cache(Iterable)
+	 */
+	static IntSequence cache(Iterator<Integer> iterator) {
+		return cache(IntIterator.from(iterator));
+	}
+
+	/**
+	 * Create an {@code IntSequence} from a cached copy of an {@link IntStream}.
+	 *
+	 * @see #cache(Stream)
+	 * @see #cache(IntIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 */
+	static IntSequence cache(IntStream intStream) {
+		return cache(intStream.iterator());
+	}
+
+	/**
+	 * Create an {@code IntSequence} from a cached copy of a {@link Stream} of {@link Integer}s.
+	 *
+	 * @see #cache(IntStream)
+	 * @see #cache(IntIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 */
+	static IntSequence cache(Stream<Integer> stream) {
+		return cache(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code IntSequence} from a cached copy of an {@link IntIterable}.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 */
+	static IntSequence cache(IntIterable iterable) {
+		return cache(iterable.iterator());
+	}
+
+	/**
+	 * Create a {@code IntSequence} from a cached copy of an {@link Iterable} of {@code Integer} values.
+	 *
+	 * @see #cache(IntIterable)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 */
+	static IntSequence cache(Iterable<Integer> iterable) {
+		return cache(iterable.iterator());
 	}
 
 	/**
@@ -403,10 +496,10 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Append the {@link Integer}s in the given {@link Iterable} to the end of this {@code IntSequence}.
+	 * Append the given {@code ints} to the end of this {@code IntSequence}.
 	 */
-	default IntSequence append(Iterable<Integer> iterable) {
-		return append(IntIterable.from(iterable));
+	default IntSequence append(int... ints) {
+		return append(IntIterable.of(ints));
 	}
 
 	/**
@@ -417,49 +510,55 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * Append the {@link Integer}s in the given {@link Iterable} to the end of this {@code IntSequence}.
+	 */
+	default IntSequence append(Iterable<Integer> iterable) {
+		return append(IntIterable.from(iterable));
+	}
+
+	/**
 	 * Append the {@code ints} in the given {@link IntIterator} to the end of this {@code IntSequence}.
 	 * <p>
 	 * The appended {@code ints} will only be available on the first traversal of the resulting {@code IntSequence}.
+	 *
+	 * @see #cache(PrimitiveIterator.OfInt)
 	 */
-	default IntSequence append(IntIterator iterator) {
-		return append(iterator.asIterable());
+	default IntSequence append(PrimitiveIterator.OfInt iterator) {
+		return append(IntIterable.from(iterator));
 	}
 
 	/**
 	 * Append the {@link Integer}s in the given {@link Iterator} to the end of this {@code IntSequence}.
 	 * <p>
-	 * The appended
-	 * {@link Integer}s will only be available on the first traversal of the resulting {@code IntSequence}.
+	 * The appended {@link Integer}s will only be available on the first traversal of the resulting
+	 * {@code IntSequence}.
+	 *
+	 * @see #cache(Iterator)
 	 */
 	default IntSequence append(Iterator<Integer> iterator) {
 		return append(IntIterable.from(iterator));
 	}
 
 	/**
-	 * Append the given {@code ints} to the end of this {@code IntSequence}.
+	 * Append the {@code int} values of the given {@link IntStream} to the end of this {@code IntSequence}.
+	 * <p>
+	 * The appended {@code ints} will only be available on the first traversal of the resulting {@code IntSequence}.
+	 *
+	 * @see #cache(IntStream)
 	 */
-	default IntSequence append(int... ints) {
-		return append(IntIterable.of(ints));
+	default IntSequence append(IntStream stream) {
+		return append(IntIterable.from(stream));
 	}
 
 	/**
 	 * Append the {@link Integer}s in the given {@link Stream} to the end of this {@code IntSequence}.
 	 * <p>
-	 * The appended
-	 * {@link Integer}s will only be available on the first traversal of the resulting {@code IntSequence}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 * The appended {@link Integer}s will only be available on the first traversal of the resulting
+	 * {@code IntSequence}.
+	 *
+	 * @see #cache(Stream)
 	 */
 	default IntSequence append(Stream<Integer> stream) {
-		return append(IntIterable.from(stream));
-	}
-
-	/**
-	 * Append the {@code int} values of the given {@link IntStream} to the end of this {@code IntSequence}.
-	 * <p>
-	 * The appended {@code ints} will only be available on the first traversal of the resulting {@code IntSequence}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
-	 */
-	default IntSequence append(IntStream stream) {
 		return append(IntIterable.from(stream));
 	}
 
@@ -542,7 +641,7 @@ public interface IntSequence extends IntIterable {
 		if (!iterator.hasNext())
 			return OptionalInt.empty();
 
-		int result = iterator.reduce(iterator.next(), operator);
+		int result = iterator.reduce(iterator.nextInt(), operator);
 		return OptionalInt.of(result);
 	}
 

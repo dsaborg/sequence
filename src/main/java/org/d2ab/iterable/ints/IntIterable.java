@@ -18,10 +18,10 @@ package org.d2ab.iterable.ints;
 
 import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.util.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
@@ -49,63 +49,31 @@ public interface IntIterable extends Iterable<Integer> {
 			consumer.accept(iterator.nextInt());
 	}
 
-	/**
-	 * Converts a container of some kind into a possibly once-only {@link IntIterable}.
-	 *
-	 * @param container the non-null container to turn into an {@link IntIterable}, can be one of {@link Iterable},
-	 *                  {@link IntIterable}, {@link Iterator}, {@link IntIterator}, {@link Stream} of {@link
-	 *                  Integer}s, {@link IntStream}, array of {@link Integer}s, or int array.
-	 *
-	 * @return the container as a {@link IntIterable}.
-	 *
-	 * @throws ClassCastException if the container is not one of the permitted classes.
-	 */
-	@SuppressWarnings("unchecked")
-	static IntIterable from(Object container) {
-		if (container instanceof IntIterable)
-			return (IntIterable) container;
-		else if (container instanceof Iterable)
-			return from((Iterable<Integer>) container);
-		else if (container instanceof IntIterator)
-			return from((IntIterator) container);
-		else if (container instanceof Stream)
-			return from((Iterator<Integer>) container);
-		else if (container instanceof IntStream)
-			return from((IntStream) container);
-		else if (container instanceof int[])
-			return of((int[]) container);
-		else if (container instanceof Integer[])
-			return from((Integer[]) container);
-		else if (container instanceof Pair)
-			return from(((Pair<Integer, Integer>) container)::iterator);
-		else
-			throw new ClassCastException("Required an Iterable, IntIterable, Iterator, IntIterator, array of " +
-			                             "Integer, int array, Stream of Integer, or IntStream but got: " +
-			                             container.getClass());
+	static IntIterable of(int... integers) {
+		return () -> new ArrayIntIterator(integers);
 	}
 
 	static IntIterable from(Iterable<Integer> iterable) {
+		if (iterable instanceof IntIterable)
+			return (IntIterable) iterable;
+
 		return () -> IntIterator.from(iterable);
 	}
 
-	static IntIterable from(IntIterator iterator) {
-		return iterator.asIterable();
+	static IntIterable from(PrimitiveIterator.OfInt iterator) {
+		return () -> IntIterator.from(iterator);
 	}
 
 	static IntIterable from(Iterator<Integer> iterator) {
 		return () -> IntIterator.from(iterator);
 	}
 
-	static IntIterable from(IntStream intStream) {
-		return from(IntIterator.from(intStream.iterator()));
-	}
-
-	static IntIterable of(int... integers) {
-		return () -> new ArrayIntIterator(integers);
-	}
-
 	static IntIterable from(Integer... integers) {
 		return from(Arrays.asList(integers));
+	}
+
+	static IntIterable from(IntStream intStream) {
+		return from(intStream.iterator());
 	}
 
 	static IntIterable from(Stream<Integer> stream) {

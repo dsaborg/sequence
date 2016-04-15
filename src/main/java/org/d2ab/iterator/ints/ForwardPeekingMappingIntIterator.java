@@ -41,7 +41,7 @@ public class ForwardPeekingMappingIntIterator extends UnaryIntIterator {
 		if (!started) {
 			started = true;
 			if (iterator.hasNext()) {
-				current = iterator.next();
+				current = iterator.nextInt();
 				hasCurrent = true;
 			}
 		}

@@ -17,7 +17,6 @@
 package org.d2ab.iterator.ints;
 
 import org.d2ab.function.ints.CharToIntFunction;
-import org.d2ab.iterable.ints.IntIterable;
 import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Iterator;
@@ -52,10 +51,25 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(Iterator<Integer> iterator) {
+		if (iterator instanceof PrimitiveIterator.OfInt)
+			return from((PrimitiveIterator.OfInt) iterator);
+
 		return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.next();
+			}
+		};
+	}
+
+	static IntIterator from(PrimitiveIterator.OfInt iterator) {
+		if (iterator instanceof IntIterator)
+			return (IntIterator) iterator;
+
+		return new DelegatingIntIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+			@Override
+			public int nextInt() {
+				return iterator.nextInt();
 			}
 		};
 	}
@@ -123,10 +137,6 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		while ((count++ < steps) && hasNext()) {
 			nextInt();
 		}
-	}
-
-	default IntIterable asIterable() {
-		return () -> this;
 	}
 
 	default int reduce(int identity, IntBinaryOperator operator) {

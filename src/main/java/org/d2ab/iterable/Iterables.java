@@ -35,7 +35,7 @@ public class Iterables {
 	}
 
 	@SafeVarargs
-	public static <T> Iterable<T> from(T... objects) {
+	public static <T> Iterable<T> of(T... objects) {
 		return asList(objects);
 	}
 
@@ -63,7 +63,7 @@ public class Iterables {
 		else if (container instanceof Stream)
 			return from((Stream<T>) container);
 		else if (container instanceof Object[])
-			return from((T[]) container);
+			return of((T[]) container);
 		else if (container instanceof Pair)
 			return ((Pair<T, T>) container)::iterator;
 		else if (container instanceof Map.Entry)
