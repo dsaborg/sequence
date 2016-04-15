@@ -18,11 +18,12 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
-import org.d2ab.util.Arrayz;
+import org.d2ab.iterator.Iterators;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -71,6 +72,28 @@ public class EntrySequenceTest {
 			new Entry[]{Maps.entry("7", 7), Maps.entry("8", 8), Maps.entry("9", 9)};
 
 	@Test
+	public void empty() {
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
+
+	@Test
+	public void ofNone() {
+		EntrySequence<String, Integer> sequence = EntrySequence.of();
+
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void ofWithNulls() {
+		EntrySequence<String, Integer> sequence =
+				EntrySequence.of(Maps.entry("1", 1), Maps.entry(null, 2), null, Maps.entry("4", null),
+				                 Maps.entry(null, null));
+
+		twice(() -> assertThat(sequence, contains(Maps.entry("1", 1), Maps.entry(null, 2), null,
+		                                          Maps.entry("4", null), Maps.entry(null, null))));
+	}
+
+	@Test
 	public void ofOne() {
 		twice(() -> assertThat(_1, contains(Maps.entry("1", 1))));
 	}
@@ -99,18 +122,26 @@ public class EntrySequenceTest {
 
 		twice(() -> {
 			int expected = 1;
-			for (Entry<String, Integer> i : _123)
-				assertThat(i, is(Maps.entry(String.valueOf(expected), expected++)));
+			for (Entry<String, Integer> e : _12345)
+				assertThat(e, is(Maps.entry(String.valueOf(expected), expected++)));
+
+			assertThat(expected, is(6));
 		});
 	}
 
 	@Test
 	public void forEach() {
 		twice(() -> {
-			empty.forEach(i -> fail("Should not get called"));
-			_1.forEach(i -> assertThat(i, is(in(entries123))));
-			_12.forEach(i -> assertThat(i, is(in(entries123))));
-			_123.forEach(i -> assertThat(i, is(in(entries123))));
+			empty.forEach(e -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
+
+			value.set(1);
+			_12.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
+
+			value.set(1);
+			_12345.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
 		});
 	}
 
@@ -134,66 +165,30 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void ofNone() {
-		EntrySequence<String, Integer> sequence = EntrySequence.of();
-
-		twice(() -> assertThat(sequence, is(emptyIterable())));
-	}
-
-	@Test
-	public void empty() {
-		twice(() -> assertThat(empty, is(emptyIterable())));
-	}
-
-	@Test
-	public void ofWithNulls() {
-		EntrySequence<String, Integer> sequence =
-				EntrySequence.of(Maps.entry("1", 1), Maps.entry(null, 2), Maps.entry("3", 3), Maps.entry("4", null),
-				                 Maps.entry(null, null));
-
-		twice(() -> assertThat(sequence, contains(Maps.entry("1", 1), Maps.entry(null, 2), Maps.entry("3", 3),
-		                                          Maps.entry("4", null), Maps.entry(null, null))));
-	}
-
-	@Test
 	public void fromEntrySequence() {
-		EntrySequence<String, Integer> fromEntrySequence = EntrySequence.from(_123);
+		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345);
 
-		twice(() -> assertThat(fromEntrySequence, contains(entries123)));
+		twice(() -> assertThat(sequence, contains(entries12345)));
 	}
 
 	@Test
 	public void fromIterable() {
-		Iterable<Entry<String, Integer>> iterable = List.of(entries123);
+		Iterable<Entry<String, Integer>> iterable = List.of(entries12345)::iterator;
 
-		EntrySequence<String, Integer> sequenceFromIterable = EntrySequence.from(iterable);
+		EntrySequence<String, Integer> sequence = EntrySequence.from(iterable);
 
-		twice(() -> assertThat(sequenceFromIterable, contains(entries123)));
+		twice(() -> assertThat(sequence, contains(entries12345)));
 	}
 
 	@Test
 	public void fromIterables() {
-		Iterable<Entry<String, Integer>> first = List.of(entries123);
-		Iterable<Entry<String, Integer>> second = List.of(entries456);
-		Iterable<Entry<String, Integer>> third = List.of(entries789);
+		Iterable<Entry<String, Integer>> first = List.of(entries123)::iterator;
+		Iterable<Entry<String, Integer>> second = List.of(entries456)::iterator;
+		Iterable<Entry<String, Integer>> third = List.of(entries789)::iterator;
 
-		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
+		EntrySequence<String, Integer> sequence = EntrySequence.from(first, second, third);
 
-		twice(() -> assertThat(sequenceFromIterables,
-		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
-		                                Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
-		                                Maps.entry("9", 9))));
-	}
-
-	@Test
-	public void fromEntryIterables() {
-		Iterable<Entry<String, Integer>> first = List.of(entries123);
-		Iterable<Entry<String, Integer>> second = List.of(entries456);
-		Iterable<Entry<String, Integer>> third = List.of(entries789);
-
-		EntrySequence<String, Integer> sequenceFromIterables = EntrySequence.from(first, second, third);
-
-		twice(() -> assertThat(sequenceFromIterables,
+		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
 		                                Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
@@ -201,9 +196,57 @@ public class EntrySequenceTest {
 
 	@Test
 	public void fromNoIterables() {
-		EntrySequence<String, Integer> sequenceFromNoIterables = EntrySequence.from(new Iterable[]{});
+		EntrySequence<String, Integer> sequence = EntrySequence.from(new Iterable[0]);
 
-		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheCollection() {
+		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		EntrySequence<String, Integer> cached = EntrySequence.cache(list);
+		list.set(0, Maps.entry("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheIterable() {
+		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		EntrySequence<String, Integer> cached = EntrySequence.cache(list::iterator);
+		list.set(0, Maps.entry("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheIterator() {
+		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		EntrySequence<String, Integer> cached = EntrySequence.cache(list.iterator());
+		list.set(0, Maps.entry("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheStream() {
+		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		EntrySequence<String, Integer> cached = EntrySequence.cache(list.stream());
+		list.set(0, Maps.entry("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
@@ -262,8 +305,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		Iterator<Entry<String, Integer>> first = Arrayz.iterator(entries123);
-		Iterator<Entry<String, Integer>> second = Arrayz.iterator(entries456);
+		Iterator<Entry<String, Integer>> first = Iterators.of(entries123);
+		Iterator<Entry<String, Integer>> second = Iterators.of(entries456);
 
 		EntrySequence<String, Integer> appended = EntrySequence.from(first).append(() -> second);
 
@@ -278,8 +321,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void appendIsLazyWhenSkippingHasNext() {
-		Iterator<Entry<String, Integer>> first = Arrayz.iterator(Maps.entry("1", 1));
-		Iterator<Entry<String, Integer>> second = Arrayz.iterator(Maps.entry("2", 2));
+		Iterator<Entry<String, Integer>> first = Iterators.of(Maps.entry("1", 1));
+		Iterator<Entry<String, Integer>> second = Iterators.of(Maps.entry("2", 2));
 
 		EntrySequence<String, Integer> sequence = EntrySequence.from(first).append(EntrySequence.from(second));
 

@@ -45,6 +45,11 @@ public class Iterators {
 		return EMPTY;
 	}
 
+	@SafeVarargs
+	public static <T> Iterator<T> of(T... items) {
+		return new ArrayIterator<>(items);
+	}
+
 	public static <T> Iterator<T> from(CharIterator iterator, CharFunction<T> mapper) {
 		return new DelegatingIterator<Character, CharIterator, T>(iterator) {
 			@Override

@@ -18,11 +18,12 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
-import org.d2ab.util.Arrayz;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -62,6 +63,29 @@ public class BiSequenceTest {
 	private final Pair<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
 	@Test
+	public void empty() {
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
+
+	@Test
+	public void ofNone() {
+		BiSequence<String, Integer> sequence = BiSequence.of();
+
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void ofWithNulls() {
+		BiSequence<String, Integer> sequence =
+				BiSequence.of(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
+				              Pair.of(null, null));
+
+		twice(() -> assertThat(sequence,
+		                       contains(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
+		                                Pair.of(null, null))));
+	}
+
+	@Test
 	public void ofOne() {
 		twice(() -> assertThat(_1, contains(Pair.of("1", 1))));
 	}
@@ -90,18 +114,26 @@ public class BiSequenceTest {
 
 		twice(() -> {
 			int expected = 1;
-			for (Pair<String, Integer> i : _123)
+			for (Pair<String, Integer> i : _12345)
 				assertThat(i, is(Pair.of(String.valueOf(expected), expected++)));
+
+			assertThat(expected, is(6));
 		});
 	}
 
 	@Test
 	public void forEach() {
 		twice(() -> {
-			empty.forEach(i -> fail("Should not get called"));
-			_1.forEach(i -> assertThat(i, is(in(entries123))));
-			_12.forEach(i -> assertThat(i, is(in(entries123))));
-			_123.forEach(i -> assertThat(i, is(in(entries123))));
+			empty.forEach(p -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach(p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
+
+			value.set(1);
+			_12.forEach(p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
+
+			value.set(1);
+			_12345.forEach(p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
 		});
 	}
 
@@ -125,67 +157,30 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void ofNone() {
-		BiSequence<String, Integer> sequence = BiSequence.of();
-
-		twice(() -> assertThat(sequence, is(emptyIterable())));
-	}
-
-	@Test
-	public void empty() {
-		twice(() -> assertThat(empty, is(emptyIterable())));
-	}
-
-	@Test
-	public void ofWithNulls() {
-		BiSequence<String, Integer> sequence =
-				BiSequence.of(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
-				              Pair.of(null, null));
-
-		twice(() -> assertThat(sequence,
-		                       contains(Pair.of("1", 1), Pair.of(null, 2), Pair.of("3", 3), Pair.of("4", null),
-		                                Pair.of(null, null))));
-	}
-
-	@Test
 	public void fromBiSequence() {
-		BiSequence<String, Integer> fromBiSequence = BiSequence.from(_123);
+		BiSequence<String, Integer> sequence = BiSequence.from(_12345);
 
-		twice(() -> assertThat(fromBiSequence, contains(entries123)));
+		twice(() -> assertThat(sequence, contains(entries12345)));
 	}
 
 	@Test
 	public void fromIterable() {
-		Iterable<Pair<String, Integer>> iterable = List.of(entries123);
+		Iterable<Pair<String, Integer>> iterable = List.of(entries12345)::iterator;
 
-		BiSequence<String, Integer> sequenceFromIterable = BiSequence.from(iterable);
+		BiSequence<String, Integer> sequence = BiSequence.from(iterable);
 
-		twice(() -> assertThat(sequenceFromIterable, contains(entries123)));
+		twice(() -> assertThat(sequence, contains(entries12345)));
 	}
 
 	@Test
 	public void fromIterables() {
-		Iterable<Pair<String, Integer>> first = List.of(entries123);
-		Iterable<Pair<String, Integer>> second = List.of(entries456);
-		Iterable<Pair<String, Integer>> third = List.of(entries789);
+		Iterable<Pair<String, Integer>> first = List.of(entries123)::iterator;
+		Iterable<Pair<String, Integer>> second = List.of(entries456)::iterator;
+		Iterable<Pair<String, Integer>> third = List.of(entries789)::iterator;
 
-		BiSequence<String, Integer> sequenceFromIterables = BiSequence.from(first, second, third);
+		BiSequence<String, Integer> sequence = BiSequence.from(first, second, third);
 
-		twice(() -> assertThat(sequenceFromIterables,
-		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
-		                                Pair.of("9", 9))));
-	}
-
-	@Test
-	public void fromPairIterables() {
-		Iterable<Pair<String, Integer>> first = List.of(entries123);
-		Iterable<Pair<String, Integer>> second = List.of(entries456);
-		Iterable<Pair<String, Integer>> third = List.of(entries789);
-
-		BiSequence<String, Integer> sequenceFromIterables = BiSequence.from(first, second, third);
-
-		twice(() -> assertThat(sequenceFromIterables,
+		twice(() -> assertThat(sequence,
 		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
 		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                Pair.of("9", 9))));
@@ -193,9 +188,45 @@ public class BiSequenceTest {
 
 	@Test
 	public void fromNoIterables() {
-		BiSequence<String, Integer> sequenceFromNoIterables = BiSequence.from(new Iterable[0]);
+		BiSequence<String, Integer> sequence = BiSequence.from(new Iterable[0]);
 
-		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheIterable() {
+		List<Pair<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		BiSequence<String, Integer> cached = BiSequence.cache(list::iterator);
+		list.set(0, Pair.of("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheIterator() {
+		List<Pair<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		BiSequence<String, Integer> cached = BiSequence.cache(list.iterator());
+		list.set(0, Pair.of("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheStream() {
+		List<Pair<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		BiSequence<String, Integer> cached = BiSequence.cache(list.stream());
+		list.set(0, Pair.of("17", 17));
+
+		twice(() -> assertThat(cached, contains(entries12345)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
@@ -253,8 +284,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		Iterator<Pair<String, Integer>> first = Arrayz.iterator(entries123);
-		Iterator<Pair<String, Integer>> second = Arrayz.iterator(entries456);
+		Iterator<Pair<String, Integer>> first = Iterators.of(entries123);
+		Iterator<Pair<String, Integer>> second = Iterators.of(entries456);
 
 		BiSequence<String, Integer> then = BiSequence.from(first).append(() -> second);
 
@@ -269,8 +300,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void appendIsLazyWhenSkippingHasNext() {
-		Iterator<Pair<String, Integer>> first = Arrayz.iterator(Pair.of("1", 1));
-		Iterator<Pair<String, Integer>> second = Arrayz.iterator(Pair.of("2", 2));
+		Iterator<Pair<String, Integer>> first = Iterators.of(Pair.of("1", 1));
+		Iterator<Pair<String, Integer>> second = Iterators.of(Pair.of("2", 2));
 
 		BiSequence<String, Integer> sequence = BiSequence.from(first).append(BiSequence.from(second));
 

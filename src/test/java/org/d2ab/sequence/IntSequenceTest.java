@@ -18,9 +18,9 @@ package org.d2ab.sequence;
 
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.util.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -279,7 +279,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void appendIterator() {
-		IntSequence appended = _123.append(Arrayz.iterator(4, 5, 6)).append(Arrayz.iterator(7, 8));
+		IntSequence appended = _123.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
 
 		assertThat(appended, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, containsInts(1, 2, 3));

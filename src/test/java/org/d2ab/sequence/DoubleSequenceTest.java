@@ -17,9 +17,9 @@
 package org.d2ab.sequence;
 
 import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.util.Arrayz;
 import org.junit.Test;
 
 import java.util.*;
@@ -200,7 +200,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void appendIterator() {
-		DoubleSequence appended = _123.append(Arrayz.iterator(4.0, 5.0, 6.0)).append(Arrayz.iterator(7.0, 8.0));
+		DoubleSequence appended = _123.append(Iterators.of(4.0, 5.0, 6.0)).append(Iterators.of(7.0, 8.0));
 
 		assertThat(appended, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
 		assertThat(appended, contains(1.0, 2.0, 3.0));

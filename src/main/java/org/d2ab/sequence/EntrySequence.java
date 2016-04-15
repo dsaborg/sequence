@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -150,8 +151,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * Create an {@code EntrySequence} from a {@link Stream} of entries. Note that {@code EntrySequence}s created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will cause an
-	 * {@link IllegalStateException} when the {@link Stream} is requested again.
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the
+	 * {@code EntrySequence} as empty.
 	 *
 	 * @see #of(Entry)
 	 * @see #of(Entry...)
@@ -159,7 +160,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterator)
 	 */
 	static <K, V> EntrySequence<K, V> from(Stream<Entry<K, V>> stream) {
-		return stream::iterator;
+		return from(stream.iterator());
 	}
 
 	/**
@@ -172,6 +173,39 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	static <K, V> EntrySequence<K, V> from(Map<K, V> map) {
 		return map.entrySet()::iterator;
+	}
+
+	/**
+	 * Create an {@code EntrySequence} with a cached copy of an {@link Iterable} of entries.
+	 *
+	 * @see #cache(Iterator)
+	 * @see #cache(Stream)
+	 * @see #from(Iterable)
+	 */
+	static <K, V> EntrySequence<K, V> cache(Iterable<Entry<K, V>> iterable) {
+		return from(Iterables.toList(iterable));
+	}
+
+	/**
+	 * Create an {@code EntrySequence} with a cached copy of an {@link Iterator} of entries.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(Stream)
+	 * @see #from(Iterator)
+	 */
+	static <K, V> EntrySequence<K, V> cache(Iterator<Entry<K, V>> iterator) {
+		return from(Iterators.toList(iterator));
+	}
+
+	/**
+	 * Create an {@code EntrySequence} with a cached copy of a {@link Stream} of entries.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(Iterator)
+	 * @see #from(Stream)
+	 */
+	static <K, V> EntrySequence<K, V> cache(Stream<Entry<K, V>> stream) {
+		return from(stream.collect(Collectors.toList()));
 	}
 
 	/**
@@ -889,7 +923,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	@SuppressWarnings("unchecked")
 	default EntrySequence<K, V> append(Entry<K, V>... entries) {
-		return append(Iterables.from(entries));
+		return append(Iterables.of(entries));
 	}
 
 	/**
@@ -903,8 +937,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * Append the elements of the given {@link Stream} to the end of this {@code EntrySequence}.
 	 * <p>
-	 * The resulting {@code BiSequence} can only be traversed once, further attempts to traverse will results in a
-	 * {@link IllegalStateException}.
+	 * The appended elements will only be available on the first traversal of the resulting {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> append(Stream<Entry<K, V>> stream) {
 		return append(Iterables.from(stream));

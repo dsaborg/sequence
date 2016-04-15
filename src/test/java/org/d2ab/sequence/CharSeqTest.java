@@ -18,9 +18,9 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.chars.CharBinaryOperator;
 import org.d2ab.iterable.chars.CharIterable;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.DelegatingCharIterator;
-import org.d2ab.util.Arrayz;
 import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
 
@@ -201,7 +201,7 @@ public class CharSeqTest {
 
 	@Test
 	public void appendIterator() {
-		CharSeq appended = abc.append(Arrayz.iterator('d', 'e', 'f')).append(Arrayz.iterator('g', 'h'));
+		CharSeq appended = abc.append(Iterators.of('d', 'e', 'f')).append(Iterators.of('g', 'h'));
 
 		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 		assertThat(appended, contains('a', 'b', 'c'));

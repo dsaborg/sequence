@@ -118,6 +118,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
+	 * @see #cache(Iterator)
 	 */
 	static <T> Sequence<T> from(Iterator<T> iterator) {
 		return () -> iterator;
@@ -125,66 +126,48 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException} when
-	 * the {@link Stream} is requested again.
+	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 * @see #from(Iterator)
+	 * @see #cache(Stream)
 	 */
 	static <T> Sequence<T> from(Stream<T> stream) {
-		return stream::iterator;
+		return from(stream.iterator());
 	}
 
 	/**
-	 * Create a {@code Sequence} with a copy of the given items.
+	 * Create a {@code Sequence} with a cached copy of an {@link Iterable} of items.
 	 *
-	 * @see #copy(Iterable)
-	 * @see #copy(Iterator)
-	 * @see #copy(Stream)
+	 * @see #cache(Iterator)
+	 * @see #cache(Stream)
+	 * @see #from(Iterable)
 	 */
-	@SuppressWarnings("unchecked")
-	@SafeVarargs
-	static <T> Sequence<T> copy(T... items) {
-		return of(Arrays.copyOf(items, items.length));
+	static <T> Sequence<T> cache(Iterable<T> iterable) {
+		return from(Iterables.toList(iterable));
 	}
 
 	/**
-	 * Create a {@code Sequence} with a copy of an {@link Iterable} of items.
+	 * Create a {@code Sequence} with a cached copy of an {@link Iterator} of items.
 	 *
-	 * @see #copy(Object...)
-	 * @see #copy(Iterator)
-	 * @see #copy(Stream)
+	 * @see #cache(Iterable)
+	 * @see #cache(Stream)
+	 * @see #from(Iterator)
 	 */
-	static <T> Sequence<T> copy(Iterable<T> iterable) {
-		List<T> list = new ArrayList<>();
-		if (iterable instanceof Collection)
-			list.addAll((Collection<T>) iterable);
-		else
-			iterable.forEach(list::add);
-		return from(list);
-	}
-
-	/**
-	 * Create a {@code Sequence} with a copy of an {@link Iterator} of items.
-	 *
-	 * @see #copy(Object...)
-	 * @see #copy(Iterable)
-	 * @see #copy(Stream)
-	 */
-	static <T> Sequence<T> copy(Iterator<T> iterator) {
+	static <T> Sequence<T> cache(Iterator<T> iterator) {
 		return from(Iterators.toList(iterator));
 	}
 
 	/**
-	 * Create a {@code Sequence} with a copy of a {@link Stream} of items.
+	 * Create a {@code Sequence} with a cached copy of a {@link Stream} of items.
 	 *
-	 * @see #copy(Object...)
-	 * @see #copy(Iterable)
-	 * @see #copy(Iterator)
+	 * @see #cache(Iterable)
+	 * @see #cache(Iterator)
+	 * @see #from(Stream)
 	 */
-	static <T> Sequence<T> copy(Stream<T> stream) {
+	static <T> Sequence<T> cache(Stream<T> stream) {
 		return from(stream.collect(Collectors.toList()));
 	}
 
@@ -578,34 +561,39 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Append the elements of the given {@link Iterator} to the end of this {@code Sequence}.
-	 * <p>
-	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
+	 * Append the given elements to the end of this {@code Sequence}.
 	 */
-	default Sequence<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(iterator));
+	@SuppressWarnings("unchecked")
+	default Sequence<T> append(T... items) {
+		return append(Iterables.of(items));
 	}
 
 	/**
 	 * Append the elements of the given {@link Iterable} to the end of this {@code Sequence}.
+	 *
+	 * @see #cache(Iterable)
 	 */
 	default Sequence<T> append(Iterable<T> iterable) {
 		return new ChainingIterable<>(this, iterable)::iterator;
 	}
 
 	/**
-	 * Append the given elements to the end of this {@code Sequence}.
+	 * Append the elements of the given {@link Iterator} to the end of this {@code Sequence}.
+	 * <p>
+	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
+	 *
+	 * @see #cache(Iterator)
 	 */
-	@SuppressWarnings("unchecked")
-	default Sequence<T> append(T... items) {
-		return append(Iterables.from(items));
+	default Sequence<T> append(Iterator<T> iterator) {
+		return append(Iterables.from(iterator));
 	}
 
 	/**
 	 * Append the elements of the given {@link Stream} to the end of this {@code Sequence}.
 	 * <p>
-	 * The resulting {@code Sequence} can only be traversed once, further attempts to traverse will results in a
-	 * {@link IllegalStateException}.
+	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
+	 *
+	 * @see #cache(Stream)
 	 */
 	default Sequence<T> append(Stream<T> stream) {
 		return append(Iterables.from(stream));

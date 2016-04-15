@@ -17,30 +17,28 @@
 package org.d2ab.iterable;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.iterator.ArrayIterator;
 import org.d2ab.util.Pair;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-
 public class Iterables {
 	private Iterables() {
+	}
+
+	@SafeVarargs
+	public static <T> Iterable<T> of(T... objects) {
+		return () -> new ArrayIterator<>(objects);
 	}
 
 	public static <T> Iterable<T> from(Iterator<T> iterator) {
 		return () -> iterator;
 	}
 
-	@SafeVarargs
-	public static <T> Iterable<T> of(T... objects) {
-		return asList(objects);
-	}
-
 	public static <T> Iterable<T> from(Stream<T> stream) {
-		return stream::iterator;
+		return from(stream.iterator());
 	}
 
 	/**
@@ -107,5 +105,14 @@ public class Iterables {
 			iterator.next();
 			iterator.remove();
 		}
+	}
+
+	public static <T> List<T> toList(Iterable<T> iterable) {
+		List<T> list = new ArrayList<>();
+		if (iterable instanceof Collection)
+			list.addAll((Collection<T>) iterable);
+		else
+			iterable.forEach(list::add);
+		return list;
 	}
 }

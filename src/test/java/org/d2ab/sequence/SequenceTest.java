@@ -17,7 +17,8 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.util.Arrayz;
+import org.d2ab.iterable.Iterables;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -127,7 +128,7 @@ public class SequenceTest {
 
 	@Test
 	public void fromNulls() {
-		Sequence<Integer> sequence = Sequence.from(Arrayz.iterable(1, null, 2, 3, null));
+		Sequence<Integer> sequence = Sequence.from(Iterables.of(1, null, 2, 3, null));
 
 		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
 	}
@@ -153,15 +154,14 @@ public class SequenceTest {
 		Sequence<Integer> sequenceFromStream = Sequence.from(List.of(1, 2, 3).stream());
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
-		expecting(IllegalStateException.class, sequenceFromStream::iterator);
+		assertThat(sequenceFromStream, is(emptyIterable()));
 	}
 
 	@Test
 	public void fromEmptyStream() {
 		Sequence<Integer> sequenceFromStream = Sequence.from(Stream.of());
 
-		assertThat(sequenceFromStream, is(emptyIterable()));
-		expecting(IllegalStateException.class, sequenceFromStream::iterator);
+		twice(() -> assertThat(sequenceFromStream, is(emptyIterable())));
 	}
 
 	@Test
@@ -183,60 +183,51 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void copyArray() {
-		Integer[] integers = {1, 2, 3, 4, 5};
-		Sequence<Integer> copy = Sequence.copy(integers);
-		integers[0] = 17;
+	public void cacheCollection() {
+		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		Sequence<Integer> cached = Sequence.cache(list);
+		list.set(0, 17);
 
-		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(cached, contains(1, 2, 3, 4, 5)));
+
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
-	public void copyCollection() {
+	public void cacheIterable() {
 		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
-		Sequence<Integer> copy = Sequence.copy(list);
+		Sequence<Integer> cached = Sequence.cache(list::iterator);
 		list.set(0, 17);
 
-		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(cached, contains(1, 2, 3, 4, 5)));
 
-		copy.removeAll();
-		twice(() -> assertThat(copy, is(emptyIterable())));
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
-	public void copyIterable() {
+	public void cacheIterator() {
 		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
-		Sequence<Integer> copy = Sequence.copy(list::iterator);
+		Sequence<Integer> cached = Sequence.cache(list.iterator());
 		list.set(0, 17);
 
-		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(cached, contains(1, 2, 3, 4, 5)));
 
-		copy.removeAll();
-		twice(() -> assertThat(copy, is(emptyIterable())));
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
-	public void copyIterator() {
+	public void cacheStream() {
 		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
-		Sequence<Integer> copy = Sequence.copy(list.iterator());
+		Sequence<Integer> cached = Sequence.cache(list.stream());
 		list.set(0, 17);
 
-		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(cached, contains(1, 2, 3, 4, 5)));
 
-		copy.removeAll();
-		twice(() -> assertThat(copy, is(emptyIterable())));
-	}
-
-	@Test
-	public void copyStream() {
-		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
-		Sequence<Integer> copy = Sequence.copy(list.stream());
-		list.set(0, 17);
-
-		twice(() -> assertThat(copy, contains(1, 2, 3, 4, 5)));
-
-		copy.removeAll();
-		twice(() -> assertThat(copy, is(emptyIterable())));
+		cached.removeAll();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
@@ -285,7 +276,7 @@ public class SequenceTest {
 
 	@Test
 	public void appendIterator() {
-		Sequence<Integer> appended = _123.append(Arrayz.iterator(4, 5, 6)).append(Arrayz.iterator(7, 8));
+		Sequence<Integer> appended = _123.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));
@@ -296,13 +287,7 @@ public class SequenceTest {
 		Sequence<Integer> appended = _123.append(Stream.of(4, 5, 6)).append(Stream.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
-
-		Iterator<Integer> iterator = appended.iterator();
-		assertThat(iterator.next(), is(1)); // First three are ok
-		assertThat(iterator.next(), is(2));
-		assertThat(iterator.next(), is(3));
-
-		expecting(IllegalStateException.class, iterator::next); // Hitting Stream that is exhausted
+		assertThat(appended, contains(1, 2, 3));
 	}
 
 	@Test
@@ -314,25 +299,22 @@ public class SequenceTest {
 
 	@Test
 	public void appendIsLazy() {
-		Iterator<Integer> first = Arrayz.iterator(1, 2, 3);
-		Iterator<Integer> second = Arrayz.iterator(4, 5, 6);
-		Iterator<Integer> third = Arrayz.iterator(7, 8);
+		Iterator<Integer> first = Iterators.of(1, 2, 3);
+		Iterator<Integer> second = Iterators.of(4, 5, 6);
+		Iterator<Integer> third = Iterators.of(7, 8);
 
-		Sequence<Integer> then = Sequence.from(first).append(() -> second).append(() -> third);
+		Sequence.from(first).append(() -> second).append(() -> third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
 		assertThat(second.hasNext(), is(true));
 		assertThat(third.hasNext(), is(true));
-
-		assertThat(then, contains(1, 2, 3, 4, 5, 6, 7, 8));
-		assertThat(then, is(emptyIterable())); // iterators exhausted on second run
 	}
 
 	@Test
 	public void appendIsLazyWhenSkippingHasNext() {
-		Iterator<Integer> first = Arrayz.iterator(1);
-		Iterator<Integer> second = Arrayz.iterator(2);
+		Iterator<Integer> first = Iterators.of(1);
+		Iterator<Integer> second = Iterators.of(2);
 
 		Sequence<Integer> sequence = Sequence.from(first).append(() -> second);
 
@@ -417,7 +399,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(new ArrayDeque<>(
-				List.of(Arrayz.iterator(1, 2), Arrayz.iterator(3, 4), Arrayz.iterator(5, 6))));
+				List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 
@@ -463,7 +445,7 @@ public class SequenceTest {
 	@Test
 	public void flattenIterators() {
 		Sequence<Iterator<Integer>> sequence = Sequence.from(new ArrayDeque<>(
-				List.of(Arrayz.iterator(1, 2), Arrayz.iterator(3, 4), Arrayz.iterator(5, 6))));
+				List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));

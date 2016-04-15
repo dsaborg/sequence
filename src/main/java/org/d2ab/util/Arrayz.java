@@ -16,10 +16,7 @@
 
 package org.d2ab.util;
 
-import org.d2ab.iterator.ArrayIterator;
-
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
@@ -32,16 +29,6 @@ public class Arrayz {
 	public static <T> void forEach(T[] array, Consumer<? super T> action) {
 		for (T item : array)
 			action.accept(item);
-	}
-
-	@SafeVarargs
-	public static <T> Iterator<T> iterator(T... items) {
-		return new ArrayIterator<>(items);
-	}
-
-	@SafeVarargs
-	public static <T> Iterable<T> iterable(T... items) {
-		return () -> iterator(items);
 	}
 
 	public static void swap(long[] array, int i, int j) {

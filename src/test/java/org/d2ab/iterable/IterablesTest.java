@@ -16,7 +16,6 @@
 
 package org.d2ab.iterable;
 
-import org.d2ab.util.Arrayz;
 import org.junit.Test;
 
 import static org.d2ab.test.Tests.twice;
@@ -26,16 +25,16 @@ import static org.junit.Assert.assertThat;
 public class IterablesTest {
 	@Test
 	public void of() {
-		Iterable<Integer> empty = Arrayz.iterable();
+		Iterable<Integer> empty = Iterables.of();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		Iterable<Integer> one = Arrayz.iterable(1);
+		Iterable<Integer> one = Iterables.of(1);
 		twice(() -> assertThat(one, contains(1)));
 
-		Iterable<Integer> two = Arrayz.iterable(1, 2);
+		Iterable<Integer> two = Iterables.of(1, 2);
 		twice(() -> assertThat(two, contains(1, 2)));
 
-		Iterable<Integer> three = Arrayz.iterable(1, 2, 3);
+		Iterable<Integer> three = Iterables.of(1, 2, 3);
 		twice(() -> assertThat(three, contains(1, 2, 3)));
 	}
 }

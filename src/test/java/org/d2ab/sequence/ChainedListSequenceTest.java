@@ -17,7 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.util.Arrayz;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -188,7 +188,7 @@ public class ChainedListSequenceTest {
 
 	@Test
 	public void appendIterator() {
-		Sequence<Integer> appended = _123.append(Arrayz.iterator(4, 5, 6)).append(Arrayz.iterator(7, 8));
+		Sequence<Integer> appended = _123.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(appended, contains(1, 2, 3));
@@ -199,13 +199,7 @@ public class ChainedListSequenceTest {
 		Sequence<Integer> appended = _123.append(Stream.of(4, 5, 6)).append(Stream.of(7, 8));
 
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
-
-		Iterator<Integer> iterator = appended.iterator();
-		assertThat(iterator.next(), is(1)); // First three are ok
-		assertThat(iterator.next(), is(2));
-		assertThat(iterator.next(), is(3));
-
-		expecting(IllegalStateException.class, iterator::next); // Hitting Stream that is exhausted
+		assertThat(appended, contains(1, 2, 3));
 	}
 
 	@Test

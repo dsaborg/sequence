@@ -51,14 +51,19 @@ public class ChainingIterable<T> implements Iterable<T> {
 		return result;
 	}
 
-	public Iterable<T> flatAppend(Object container) {
-		return append(Iterables.from(container));
-	}
-
 	public Iterable<T> flatAppend(Iterable<?> containers) {
 		for (Object each : containers)
 			flatAppend(each);
 		return this;
+	}
+
+	public Iterable<T> flatAppend(Object container) {
+		return append(Iterables.from(container));
+	}
+
+	@SuppressWarnings("unchecked")
+	public Iterable<T> append(T... objects) {
+		return append(Iterables.of(objects));
 	}
 
 	public Iterable<T> append(Iterable<T> iterable) {
@@ -68,11 +73,6 @@ public class ChainingIterable<T> implements Iterable<T> {
 
 	public Iterable<T> append(Iterator<T> iterator) {
 		return append(Iterables.from(iterator));
-	}
-
-	@SuppressWarnings("unchecked")
-	public Iterable<T> append(T... objects) {
-		return append(Iterables.from(objects));
 	}
 
 	public Iterable<T> append(Stream<T> stream) {

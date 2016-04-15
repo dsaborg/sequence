@@ -26,6 +26,7 @@ import org.d2ab.util.Pair;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -147,8 +148,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * Create a {@code BiSequence} from a {@link Stream} of pairs. Note that {@code BiSequence}s created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will cause an
-	 * {@link IllegalStateException} when the {@link Stream} is requested again.
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code BiSequence} as
+	 * empty.
 	 *
 	 * @see #of(Pair)
 	 * @see #of(Pair...)
@@ -156,7 +157,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #from(Iterator)
 	 */
 	static <L, R> BiSequence<L, R> from(Stream<Pair<L, R>> stream) {
-		return stream::iterator;
+		return from(stream.iterator());
 	}
 
 	/**
@@ -169,6 +170,39 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	static <K, V> BiSequence<K, V> from(Map<K, V> map) {
 		return Sequence.from(map.entrySet()).map(Pair::from)::iterator;
+	}
+
+	/**
+	 * Create a {@code BiSequence} with a cached copy of an {@link Iterable} of pairs.
+	 *
+	 * @see #cache(Iterator)
+	 * @see #cache(Stream)
+	 * @see #from(Iterable)
+	 */
+	static <L, R> BiSequence<L, R> cache(Iterable<Pair<L, R>> iterable) {
+		return from(Iterables.toList(iterable));
+	}
+
+	/**
+	 * Create a {@code BiSequence} with a cached copy of an {@link Iterator} of pairs.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(Stream)
+	 * @see #from(Iterator)
+	 */
+	static <L, R> BiSequence<L, R> cache(Iterator<Pair<L, R>> iterator) {
+		return from(Iterators.toList(iterator));
+	}
+
+	/**
+	 * Create a {@code BiSequence} with a cached copy of a {@link Stream} of pairs.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(Iterator)
+	 * @see #from(Stream)
+	 */
+	static <L, R> BiSequence<L, R> cache(Stream<Pair<L, R>> stream) {
+		return from(stream.collect(Collectors.toList()));
 	}
 
 	/**
@@ -688,7 +722,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code BiSequence} is smaller
 	 * than the index.
 	 */
 	default Optional<Pair<L, R>> get(long index) {
@@ -759,7 +793,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
-	 * Batch the elements of this {@code EntrySequence} into a sequence of {@link EntrySequence}s of distinct elements,
+	 * Batch the elements of this {@code BiSequence} into a sequence of {@link BiSequence}s of distinct elements,
 	 * where the given predicate determines where to split the lists of partitioned elements. The predicate is given
 	 * the left and right values of the current and next items in the iteration, and if it returns true a partition is
 	 * created between the elements.
@@ -881,7 +915,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> append(Pair<L, R>... entries) {
-		return append(Iterables.from(entries));
+		return append(Iterables.of(entries));
 	}
 
 	/**
@@ -895,8 +929,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * Append the elements of the given {@link Stream} to the end of this {@code BiSequence}.
 	 * <p>
-	 * The resulting {@code BiSequence} can only be traversed once, further attempts to traverse will results in a
-	 * {@link IllegalStateException}.
+	 * The appended elements will only be available on the first traversal of the resulting {@code BiSequence}.
 	 */
 	default BiSequence<L, R> append(Stream<Pair<L, R>> stream) {
 		return append(Iterables.from(stream));
