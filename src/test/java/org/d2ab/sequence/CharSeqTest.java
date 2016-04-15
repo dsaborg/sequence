@@ -26,8 +26,11 @@ import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -37,17 +40,17 @@ import static org.junit.Assert.fail;
 public class CharSeqTest {
 	private final CharSeq empty = CharSeq.empty();
 
-	private final CharSeq a = CharSeq.of('a');
-	private final CharSeq ab = CharSeq.of('a', 'b');
-	private final CharSeq abc = CharSeq.of('a', 'b', 'c');
-	private final CharSeq abcd = CharSeq.of('a', 'b', 'c', 'd');
-	private final CharSeq abcde = CharSeq.of('a', 'b', 'c', 'd', 'e');
-	private final CharSeq abcdefghi = CharSeq.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i');
+	private final CharSeq a = CharSeq.from(StrictCharIterable.of('a'));
+	private final CharSeq ab = CharSeq.from(StrictCharIterable.of('a', 'b'));
+	private final CharSeq abc = CharSeq.from(StrictCharIterable.of('a', 'b', 'c'));
+	private final CharSeq abcd = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd'));
+	private final CharSeq abcde = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e'));
+	private final CharSeq abcdefghi = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'));
 
-	private final CharSeq oneRandom = CharSeq.of('q');
-	private final CharSeq twoRandom = CharSeq.of('q', 'w');
-	private final CharSeq threeRandom = CharSeq.of('q', 'w', 'd');
-	private final CharSeq nineRandom = CharSeq.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd');
+	private final CharSeq oneRandom = CharSeq.from(StrictCharIterable.of('q'));
+	private final CharSeq twoRandom = CharSeq.from(StrictCharIterable.of('q', 'w'));
+	private final CharSeq threeRandom = CharSeq.from(StrictCharIterable.of('q', 'w', 'd'));
+	private final CharSeq nineRandom = CharSeq.from(StrictCharIterable.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd'));
 
 	@Test
 	public void empty() {
@@ -63,12 +66,12 @@ public class CharSeqTest {
 
 	@Test
 	public void ofOne() {
-		twice(() -> assertThat(a, contains('a')));
+		twice(() -> assertThat(a, containsChars('a')));
 	}
 
 	@Test
 	public void ofMany() {
-		twice(() -> assertThat(abc, contains('a', 'b', 'c')));
+		twice(() -> assertThat(abc, containsChars('a', 'b', 'c')));
 	}
 
 	@Test
@@ -80,7 +83,7 @@ public class CharSeqTest {
 
 		twice(() -> {
 			char expected = 'a';
-			for (char c : abcde)
+			for (char c : CharSeq.of('a', 'b', 'c', 'd', 'e'))
 				assertThat(c, is(expected++));
 
 			assertThat(expected, is('f'));
@@ -91,9 +94,15 @@ public class CharSeqTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachChar(c -> fail("Should not get called"));
-			a.forEachChar(c -> assertThat(c, is(in(List.of('a')))));
-			ab.forEachChar(c -> assertThat(c, is(in(List.of('a', 'b')))));
-			abc.forEachChar(c -> assertThat(c, is(in(List.of('a', 'b', 'c')))));
+
+			AtomicInteger value = new AtomicInteger('a');
+			a.forEachChar(c -> assertThat(c, is((char) value.getAndIncrement())));
+
+			value.set('a');
+			ab.forEachChar(c -> assertThat(c, is((char) value.getAndIncrement())));
+
+			value.set('a');
+			abcde.forEachChar(c -> assertThat(c, is((char) value.getAndIncrement())));
 		});
 	}
 
@@ -120,21 +129,21 @@ public class CharSeqTest {
 	public void fromIterable() {
 		CharSeq seq = CharSeq.from(Iterables.of('a', 'b', 'c', 'd', 'e'));
 
-		twice(() -> assertThat(seq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void fromCharIterable() {
 		CharSeq seq = CharSeq.from(CharIterable.of('a', 'b', 'c', 'd', 'e'));
 
-		twice(() -> assertThat(seq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void fromIterator() {
 		CharSeq seq = CharSeq.from(Iterators.of('a', 'b', 'c', 'd', 'e'));
 
-		assertThat(seq, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
 		assertThat(seq, is(emptyIterable()));
 	}
 
@@ -142,7 +151,7 @@ public class CharSeqTest {
 	public void fromCharIterator() {
 		CharSeq seq = CharSeq.from(CharIterator.of('a', 'b', 'c', 'd', 'e'));
 
-		assertThat(seq, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
 		assertThat(seq, is(emptyIterable()));
 	}
 
@@ -150,7 +159,7 @@ public class CharSeqTest {
 	public void fromStream() {
 		CharSeq seq = CharSeq.from(Stream.of('a', 'b', 'c', 'd', 'e'));
 
-		assertThat(seq, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
 		assertThat(seq, is(emptyIterable()));
 	}
 
@@ -164,13 +173,13 @@ public class CharSeqTest {
 	@Test
 	public void skip() {
 		CharSeq skipNone = abc.skip(0);
-		twice(() -> assertThat(skipNone, contains('a', 'b', 'c')));
+		twice(() -> assertThat(skipNone, containsChars('a', 'b', 'c')));
 
 		CharSeq skipOne = abc.skip(1);
-		twice(() -> assertThat(skipOne, contains('b', 'c')));
+		twice(() -> assertThat(skipOne, containsChars('b', 'c')));
 
 		CharSeq skipTwo = abc.skip(2);
-		twice(() -> assertThat(skipTwo, contains('c')));
+		twice(() -> assertThat(skipTwo, containsChars('c')));
 
 		CharSeq skipThree = abc.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
@@ -185,61 +194,61 @@ public class CharSeqTest {
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
 		CharSeq limitOne = abc.limit(1);
-		twice(() -> assertThat(limitOne, contains('a')));
+		twice(() -> assertThat(limitOne, containsChars('a')));
 
 		CharSeq limitTwo = abc.limit(2);
-		twice(() -> assertThat(limitTwo, contains('a', 'b')));
+		twice(() -> assertThat(limitTwo, containsChars('a', 'b')));
 
 		CharSeq limitThree = abc.limit(3);
-		twice(() -> assertThat(limitThree, contains('a', 'b', 'c')));
+		twice(() -> assertThat(limitThree, containsChars('a', 'b', 'c')));
 
 		CharSeq limitFour = abc.limit(4);
-		twice(() -> assertThat(limitFour, contains('a', 'b', 'c')));
+		twice(() -> assertThat(limitFour, containsChars('a', 'b', 'c')));
 	}
 
 	@Test
 	public void appendArray() {
 		CharSeq appended = abc.append('d', 'e', 'f').append('g', 'h');
 
-		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+		twice(() -> assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
 	}
 
 	@Test
 	public void appendCharIterable() {
 		CharSeq appended = abc.append(CharIterable.of('d', 'e', 'f')).append(CharIterable.of('g', 'h'));
 
-		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+		twice(() -> assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
 	}
 
 	@Test
 	public void appendIterable() {
 		CharSeq appended = abc.append(Iterables.of('d', 'e', 'f')).append(Iterables.of('g', 'h'));
 
-		twice(() -> assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+		twice(() -> assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
 	}
 
 	@Test
 	public void appendCharIterator() {
 		CharSeq appended = abc.append(CharIterator.of('d', 'e', 'f')).append(CharIterator.of('g', 'h'));
 
-		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
-		assertThat(appended, contains('a', 'b', 'c'));
+		assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(appended, containsChars('a', 'b', 'c'));
 	}
 
 	@Test
 	public void appendIterator() {
 		CharSeq appended = abc.append(Iterators.of('d', 'e', 'f')).append(Iterators.of('g', 'h'));
 
-		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
-		assertThat(appended, contains('a', 'b', 'c'));
+		assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(appended, containsChars('a', 'b', 'c'));
 	}
 
 	@Test
 	public void appendStream() {
 		CharSeq appended = abc.append(Stream.of('d', 'e', 'f')).append(Stream.of('g', 'h'));
 
-		assertThat(appended, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
-		assertThat(appended, contains('a', 'b', 'c'));
+		assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(appended, containsChars('a', 'b', 'c'));
 	}
 
 	@Test
@@ -274,63 +283,63 @@ public class CharSeqTest {
 
 	@Test
 	public void filter() {
-		CharSeq filtered = CharSeq.of('a', 'b', 'c', 'd', 'e', 'f', 'g').filter(i -> (i % 2) == 0);
+		CharSeq filtered = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e', 'f', 'g')).filter(i -> (i % 2) == 0);
 
-		twice(() -> assertThat(filtered, contains('b', 'd', 'f')));
+		twice(() -> assertThat(filtered, containsChars('b', 'd', 'f')));
 	}
 
 	@Test
 	public void filterBack() {
 		CharSeq filteredLess = nineRandom.filterBack('z', (p, i) -> p < i);
-		twice(() -> assertThat(filteredLess, contains('g', 'b', 'q')));
+		twice(() -> assertThat(filteredLess, containsChars('g', 'b', 'q')));
 
 		CharSeq filteredGreater = nineRandom.filterBack('z', (p, i) -> p > i);
-		twice(() -> assertThat(filteredGreater, contains('f', 'a', 'a', 'e', 'd')));
+		twice(() -> assertThat(filteredGreater, containsChars('f', 'a', 'a', 'e', 'd')));
 	}
 
 	@Test
 	public void filterForward() {
 		CharSeq filteredLess = nineRandom.filterForward('z', (i, f) -> f < i);
-		twice(() -> assertThat(filteredLess, contains('f', 'g', 'q', 'e')));
+		twice(() -> assertThat(filteredLess, containsChars('f', 'g', 'q', 'e')));
 
 		CharSeq filteredGreater = nineRandom.filterForward('z', (i, f) -> f > i);
-		twice(() -> assertThat(filteredGreater, contains('a', 'a', 'b', 'd')));
+		twice(() -> assertThat(filteredGreater, containsChars('a', 'a', 'b', 'd')));
 	}
 
 	@Test
 	public void map() {
 		CharSeq mapped = abc.map(c -> (char) (c + 1));
-		twice(() -> assertThat(mapped, contains('b', 'c', 'd')));
+		twice(() -> assertThat(mapped, containsChars('b', 'c', 'd')));
 	}
 
 	@Test
 	public void recurse() {
 		CharSeq recursive = CharSeq.recurse('a', c -> (char) (c + 1));
-		twice(() -> assertThat(recursive.limit(10), contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j')));
+		twice(() -> assertThat(recursive.limit(10), containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j')));
 	}
 
 	@Test
 	public void untilTerminal() {
 		CharSeq until = CharSeq.recurse('a', x -> (char) (x + 1)).until('g');
-		twice(() -> assertThat(until, contains('a', 'b', 'c', 'd', 'e', 'f')));
+		twice(() -> assertThat(until, containsChars('a', 'b', 'c', 'd', 'e', 'f')));
 	}
 
 	@Test
 	public void endingAtTerminal() {
 		CharSeq endingAt = CharSeq.recurse('a', x -> (char) (x + 1)).endingAt('g');
-		twice(() -> assertThat(endingAt, contains('a', 'b', 'c', 'd', 'e', 'f', 'g')));
+		twice(() -> assertThat(endingAt, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g')));
 	}
 
 	@Test
 	public void untilPredicate() {
 		CharSeq until = CharSeq.recurse('a', x -> (char) (x + 1)).until(c -> c == 'g');
-		twice(() -> assertThat(until, contains('a', 'b', 'c', 'd', 'e', 'f')));
+		twice(() -> assertThat(until, containsChars('a', 'b', 'c', 'd', 'e', 'f')));
 	}
 
 	@Test
 	public void endingAtPredicate() {
 		CharSeq endingAt = CharSeq.recurse('a', x -> (char) (x + 1)).endingAt(c -> c == 'g');
-		twice(() -> assertThat(endingAt, contains('a', 'b', 'c', 'd', 'e', 'f', 'g')));
+		twice(() -> assertThat(endingAt, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g')));
 	}
 
 	@Test
@@ -436,7 +445,7 @@ public class CharSeqTest {
 	@Test
 	public void step() {
 		CharSeq stepThree = abcdefghi.step(3);
-		twice(() -> assertThat(stepThree, contains('a', 'd', 'g')));
+		twice(() -> assertThat(stepThree, containsChars('a', 'd', 'g')));
 	}
 
 	@Test
@@ -445,13 +454,13 @@ public class CharSeqTest {
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
 
 		CharSeq oneDistinct = oneRandom.distinct();
-		twice(() -> assertThat(oneDistinct, contains('q')));
+		twice(() -> assertThat(oneDistinct, containsChars('q')));
 
-		CharSeq twoDuplicatesDistinct = CharSeq.of('q', 'q').distinct();
-		twice(() -> assertThat(twoDuplicatesDistinct, contains('q')));
+		CharSeq twoDuplicatesDistinct = CharSeq.from(StrictCharIterable.of('q', 'q')).distinct();
+		twice(() -> assertThat(twoDuplicatesDistinct, containsChars('q')));
 
 		CharSeq nineDistinct = nineRandom.distinct();
-		twice(() -> assertThat(nineDistinct, contains('f', 'a', 'g', 'b', 'q', 'e', 'd')));
+		twice(() -> assertThat(nineDistinct, containsChars('f', 'a', 'g', 'b', 'q', 'e', 'd')));
 	}
 
 	@Test
@@ -460,13 +469,13 @@ public class CharSeqTest {
 		twice(() -> assertThat(emptySorted, emptyIterable()));
 
 		CharSeq oneSorted = oneRandom.sorted();
-		twice(() -> assertThat(oneSorted, contains('q')));
+		twice(() -> assertThat(oneSorted, containsChars('q')));
 
 		CharSeq twoSorted = twoRandom.sorted();
-		twice(() -> assertThat(twoSorted, contains('q', 'w')));
+		twice(() -> assertThat(twoSorted, containsChars('q', 'w')));
 
 		CharSeq nineSorted = nineRandom.sorted();
-		twice(() -> assertThat(nineSorted, contains('a', 'a', 'b', 'd', 'e', 'f', 'f', 'g', 'q')));
+		twice(() -> assertThat(nineSorted, containsChars('a', 'a', 'b', 'd', 'e', 'f', 'f', 'g', 'q')));
 	}
 
 	@Test
@@ -475,7 +484,7 @@ public class CharSeqTest {
 		CharSeq sorted = CharSeq.from(backing).sorted();
 
 		backing.add('d');
-		assertThat(sorted, contains('a', 'b', 'c', 'd'));
+		assertThat(sorted, containsChars('a', 'b', 'c', 'd'));
 	}
 
 	@Test
@@ -540,32 +549,32 @@ public class CharSeqTest {
 	@Test
 	public void peek() {
 		CharSeq peek = abc.peek(x -> assertThat(x, is(both(greaterThan('@')).and(lessThan('d')))));
-		twice(() -> assertThat(peek, contains('a', 'b', 'c')));
+		twice(() -> assertThat(peek, containsChars('a', 'b', 'c')));
 	}
 
 	@Test
 	public void prefix() {
 		CharSeq prefixEmpty = empty.prefix('[');
-		twice(() -> assertThat(prefixEmpty, contains('[')));
+		twice(() -> assertThat(prefixEmpty, containsChars('[')));
 
 		CharSeq prefix = abc.prefix('[');
-		twice(() -> assertThat(prefix, contains('[', 'a', 'b', 'c')));
+		twice(() -> assertThat(prefix, containsChars('[', 'a', 'b', 'c')));
 	}
 
 	@Test
 	public void suffix() {
 		CharSeq suffixEmpty = empty.suffix(']');
-		twice(() -> assertThat(suffixEmpty, contains(']')));
+		twice(() -> assertThat(suffixEmpty, containsChars(']')));
 
 		CharSeq suffix = abc.suffix(']');
-		twice(() -> assertThat(suffix, contains('a', 'b', 'c', ']')));
+		twice(() -> assertThat(suffix, containsChars('a', 'b', 'c', ']')));
 	}
 
 	@Test
 	public void interleave() {
 		assertThat(empty.interleave(empty), is(emptyIterable()));
-		assertThat(abc.interleave(abcde), contains('a', 'a', 'b', 'b', 'c', 'c', 'd', 'e'));
-		assertThat(abcde.interleave(abc), contains('a', 'a', 'b', 'b', 'c', 'c', 'd', 'e'));
+		assertThat(abc.interleave(abcde), containsChars('a', 'a', 'b', 'b', 'c', 'c', 'd', 'e'));
+		assertThat(abcde.interleave(abc), containsChars('a', 'a', 'b', 'b', 'c', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -574,16 +583,16 @@ public class CharSeqTest {
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
 
 		CharSeq oneReversed = a.reverse();
-		twice(() -> assertThat(oneReversed, contains('a')));
+		twice(() -> assertThat(oneReversed, containsChars('a')));
 
 		CharSeq twoReversed = ab.reverse();
-		twice(() -> assertThat(twoReversed, contains('b', 'a')));
+		twice(() -> assertThat(twoReversed, containsChars('b', 'a')));
 
 		CharSeq threeReversed = abc.reverse();
-		twice(() -> assertThat(threeReversed, contains('c', 'b', 'a')));
+		twice(() -> assertThat(threeReversed, containsChars('c', 'b', 'a')));
 
 		CharSeq nineReversed = abcdefghi.reverse();
-		twice(() -> assertThat(nineReversed, contains('i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a')));
+		twice(() -> assertThat(nineReversed, containsChars('i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a')));
 	}
 
 	@Test
@@ -592,28 +601,28 @@ public class CharSeqTest {
 		CharSeq reversed = CharSeq.from(backing).reverse();
 
 		backing.add('d');
-		assertThat(reversed, contains('d', 'c', 'b', 'a'));
+		assertThat(reversed, containsChars('d', 'c', 'b', 'a'));
 	}
 
 	@Test
 	public void chars() {
-		assertThat(CharSeq.all().limit(5), contains('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
+		assertThat(CharSeq.all().limit(5), containsChars('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
 		assertThat(CharSeq.all().count(), is(65536L));
 	}
 
 	@Test
 	public void charsStartingAt() {
-		assertThat(CharSeq.startingAt('A').limit(5), contains('A', 'B', 'C', 'D', 'E'));
+		assertThat(CharSeq.startingAt('A').limit(5), containsChars('A', 'B', 'C', 'D', 'E'));
 		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
-		assertThat(CharSeq.startingAt(Character.MAX_VALUE), contains(Character.MAX_VALUE));
+		assertThat(CharSeq.startingAt(Character.MAX_VALUE), containsChars(Character.MAX_VALUE));
 		assertThat(CharSeq.startingAt('\u8000').count(), is(32768L));
 	}
 
 	@Test
 	public void charRange() {
-		assertThat(CharSeq.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
-		assertThat(CharSeq.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
+		assertThat(CharSeq.range('A', 'F'), containsChars('A', 'B', 'C', 'D', 'E', 'F'));
+		assertThat(CharSeq.range('F', 'A'), containsChars('F', 'E', 'D', 'C', 'B', 'A'));
 		assertThat(CharSeq.range('A', 'F').count(), is(6L));
 	}
 
@@ -632,7 +641,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(emptyIntSequence, is(emptyIterable())));
 
 		IntSequence intSequence = CharSeq.all().limit(5).toInts();
-		twice(() -> assertThat(intSequence, contains(0, 1, 2, 3, 4)));
+		twice(() -> assertThat(intSequence, containsInts(0, 1, 2, 3, 4)));
 	}
 
 	@Test
@@ -641,7 +650,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(emptyIntSequence, is(emptyIterable())));
 
 		IntSequence intSequence = CharSeq.all().limit(5).toInts(c -> c + 1);
-		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(intSequence, containsInts(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -668,13 +677,13 @@ public class CharSeqTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		CharSeq repeatOne = a.repeat();
-		twice(() -> assertThat(repeatOne.limit(3), contains('a', 'a', 'a')));
+		twice(() -> assertThat(repeatOne.limit(3), containsChars('a', 'a', 'a')));
 
 		CharSeq repeatTwo = ab.repeat();
-		twice(() -> assertThat(repeatTwo.limit(5), contains('a', 'b', 'a', 'b', 'a')));
+		twice(() -> assertThat(repeatTwo.limit(5), containsChars('a', 'b', 'a', 'b', 'a')));
 
 		CharSeq repeatThree = abc.repeat();
-		twice(() -> assertThat(repeatThree.limit(8), contains('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b')));
+		twice(() -> assertThat(repeatThree.limit(8), containsChars('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b')));
 
 		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
 			private List<Character> list = List.of('a', 'b', 'c');
@@ -693,7 +702,7 @@ public class CharSeqTest {
 				};
 			}
 		}).repeat();
-		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b', 'a'));
+		assertThat(repeatVarying, containsChars('a', 'b', 'c', 'a', 'b', 'a'));
 	}
 
 	@Test
@@ -702,13 +711,13 @@ public class CharSeqTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		CharSeq repeatOne = a.repeat(2);
-		twice(() -> assertThat(repeatOne, contains('a', 'a')));
+		twice(() -> assertThat(repeatOne, containsChars('a', 'a')));
 
 		CharSeq repeatTwo = ab.repeat(2);
-		twice(() -> assertThat(repeatTwo, contains('a', 'b', 'a', 'b')));
+		twice(() -> assertThat(repeatTwo, containsChars('a', 'b', 'a', 'b')));
 
 		CharSeq repeatThree = abc.repeat(2);
-		twice(() -> assertThat(repeatThree, contains('a', 'b', 'c', 'a', 'b', 'c')));
+		twice(() -> assertThat(repeatThree, containsChars('a', 'b', 'c', 'a', 'b', 'c')));
 
 		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
 			private List<Character> list = List.of('a', 'b', 'c');
@@ -727,7 +736,7 @@ public class CharSeqTest {
 				};
 			}
 		}).repeat(2);
-		assertThat(repeatVarying, contains('a', 'b', 'c', 'a', 'b'));
+		assertThat(repeatVarying, containsChars('a', 'b', 'c', 'a', 'b'));
 	}
 
 	@Test
@@ -750,67 +759,67 @@ public class CharSeqTest {
 		Queue<Character> queue = new ArrayDeque<>(List.of('a', 'b', 'c', 'd', 'e'));
 		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
 
-		assertThat(sequence, contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void mapBack() {
-		twice(() -> assertThat(abc.mapBack('_', (p, c) -> p), contains('_', 'a', 'b')));
-		twice(() -> assertThat(abc.mapBack('_', (p, c) -> c), contains('a', 'b', 'c')));
+		twice(() -> assertThat(abc.mapBack('_', (p, c) -> p), containsChars('_', 'a', 'b')));
+		twice(() -> assertThat(abc.mapBack('_', (p, c) -> c), containsChars('a', 'b', 'c')));
 	}
 
 	@Test
 	public void mapForward() {
-		twice(() -> assertThat(abc.mapForward('_', (c, n) -> c), contains('a', 'b', 'c')));
-		twice(() -> assertThat(abc.mapForward('_', (c, n) -> n), contains('b', 'c', '_')));
+		twice(() -> assertThat(abc.mapForward('_', (c, n) -> c), containsChars('a', 'b', 'c')));
+		twice(() -> assertThat(abc.mapForward('_', (c, n) -> n), containsChars('b', 'c', '_')));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void window() {
 		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
-		twice(() -> assertThat(a.window(3), contains(contains('a'))));
-		twice(() -> assertThat(ab.window(3), contains(contains('a', 'b'))));
-		twice(() -> assertThat(abc.window(3), contains(contains('a', 'b', 'c'))));
-		twice(() -> assertThat(abcd.window(3), contains(contains('a', 'b', 'c'), contains('b', 'c', 'd'))));
+		twice(() -> assertThat(a.window(3), contains(containsChars('a'))));
+		twice(() -> assertThat(ab.window(3), contains(containsChars('a', 'b'))));
+		twice(() -> assertThat(abc.window(3), contains(containsChars('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.window(3), contains(containsChars('a', 'b', 'c'), containsChars('b', 'c', 'd'))));
 		twice(() -> assertThat(abcde.window(3),
-		                       contains(contains('a', 'b', 'c'), contains('b', 'c', 'd'), contains('c', 'd', 'e'))));
+		                       contains(containsChars('a', 'b', 'c'), containsChars('b', 'c', 'd'), containsChars('c', 'd', 'e'))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void windowWithStep() {
 		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
-		twice(() -> assertThat(a.window(3, 2), contains(contains('a'))));
-		twice(() -> assertThat(ab.window(3, 2), contains(contains('a', 'b'))));
-		twice(() -> assertThat(abc.window(3, 2), contains(contains('a', 'b', 'c'))));
-		twice(() -> assertThat(abcd.window(3, 2), contains(contains('a', 'b', 'c'), contains('c', 'd'))));
-		twice(() -> assertThat(abcde.window(3, 2), contains(contains('a', 'b', 'c'), contains('c', 'd', 'e'))));
+		twice(() -> assertThat(a.window(3, 2), contains(containsChars('a'))));
+		twice(() -> assertThat(ab.window(3, 2), contains(containsChars('a', 'b'))));
+		twice(() -> assertThat(abc.window(3, 2), contains(containsChars('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.window(3, 2), contains(containsChars('a', 'b', 'c'), containsChars('c', 'd'))));
+		twice(() -> assertThat(abcde.window(3, 2), contains(containsChars('a', 'b', 'c'), containsChars('c', 'd', 'e'))));
 		twice(() -> assertThat(abcdefghi.window(3, 2),
-		                       contains(contains('a', 'b', 'c'), contains('c', 'd', 'e'), contains('e', 'f', 'g'),
-		                                contains('g', 'h', 'i'))));
+		                       contains(containsChars('a', 'b', 'c'), containsChars('c', 'd', 'e'), containsChars('e', 'f', 'g'),
+		                                containsChars('g', 'h', 'i'))));
 
 		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
-		twice(() -> assertThat(a.window(3, 4), contains(contains('a'))));
-		twice(() -> assertThat(ab.window(3, 4), contains(contains('a', 'b'))));
-		twice(() -> assertThat(abc.window(3, 4), contains(contains('a', 'b', 'c'))));
-		twice(() -> assertThat(abcd.window(3, 4), contains(contains('a', 'b', 'c'))));
-		twice(() -> assertThat(abcde.window(3, 4), contains(contains('a', 'b', 'c'), contains('e'))));
+		twice(() -> assertThat(a.window(3, 4), contains(containsChars('a'))));
+		twice(() -> assertThat(ab.window(3, 4), contains(containsChars('a', 'b'))));
+		twice(() -> assertThat(abc.window(3, 4), contains(containsChars('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.window(3, 4), contains(containsChars('a', 'b', 'c'))));
+		twice(() -> assertThat(abcde.window(3, 4), contains(containsChars('a', 'b', 'c'), containsChars('e'))));
 		twice(() -> assertThat(abcdefghi.window(3, 4),
-		                       contains(contains('a', 'b', 'c'), contains('e', 'f', 'g'), contains('i'))));
+		                       contains(containsChars('a', 'b', 'c'), containsChars('e', 'f', 'g'), containsChars('i'))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batch() {
 		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
-		twice(() -> assertThat(a.batch(3), contains(contains('a'))));
-		twice(() -> assertThat(ab.batch(3), contains(contains('a', 'b'))));
-		twice(() -> assertThat(abc.batch(3), contains(contains('a', 'b', 'c'))));
-		twice(() -> assertThat(abcd.batch(3), contains(contains('a', 'b', 'c'), contains('d'))));
-		twice(() -> assertThat(abcde.batch(3), contains(contains('a', 'b', 'c'), contains('d', 'e'))));
+		twice(() -> assertThat(a.batch(3), contains(containsChars('a'))));
+		twice(() -> assertThat(ab.batch(3), contains(containsChars('a', 'b'))));
+		twice(() -> assertThat(abc.batch(3), contains(containsChars('a', 'b', 'c'))));
+		twice(() -> assertThat(abcd.batch(3), contains(containsChars('a', 'b', 'c'), containsChars('d'))));
+		twice(() -> assertThat(abcde.batch(3), contains(containsChars('a', 'b', 'c'), containsChars('d', 'e'))));
 		twice(() -> assertThat(abcdefghi.batch(3),
-		                       contains(contains('a', 'b', 'c'), contains('d', 'e', 'f'), contains('g', 'h', 'i'))));
+		                       contains(containsChars('a', 'b', 'c'), containsChars('d', 'e', 'f'), containsChars('g', 'h', 'i'))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -820,21 +829,21 @@ public class CharSeqTest {
 		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
 
 		Sequence<CharSeq> onePartitioned = a.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(contains('a'))));
+		twice(() -> assertThat(onePartitioned, contains(containsChars('a'))));
 
 		Sequence<CharSeq> twoPartitioned = ab.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(contains('a', 'b'))));
+		twice(() -> assertThat(twoPartitioned, contains(containsChars('a', 'b'))));
 
 		Sequence<CharSeq> threePartitioned = abc.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(contains('a', 'b', 'c'))));
+		twice(() -> assertThat(threePartitioned, contains(containsChars('a', 'b', 'c'))));
 
 		Sequence<CharSeq> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(contains('q', 'w'), contains('d'))));
+		twice(() -> assertThat(threeRandomPartitioned, contains(containsChars('q', 'w'), containsChars('d'))));
 
 		Sequence<CharSeq> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(contains('f', 'f'), contains('a', 'g'), contains('a', 'b', 'q'), contains('e'),
-		                                contains('d'))));
+		                       contains(containsChars('f', 'f'), containsChars('a', 'g'), containsChars('a', 'b', 'q'), containsChars('e'),
+		                                containsChars('d'))));
 	}
 
 	@Test
@@ -846,5 +855,41 @@ public class CharSeqTest {
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		assertThat(original, contains('a', 'c', 'd'));
+	}
+
+	@FunctionalInterface
+	private interface StrictCharIterable extends CharIterable {
+		static CharIterable from(CharIterable iterable) {
+			return () -> StrictCharIterator.from(iterable.iterator());
+		}
+
+		static CharIterable of(char... values) {
+			return () -> StrictCharIterator.of(values);
+		}
+	}
+
+	private interface StrictCharIterator extends CharIterator {
+		static CharIterator from(CharIterator iterator) {
+			return new CharIterator() {
+				@Override
+				public boolean hasNext() {
+					return iterator.hasNext();
+				}
+
+				@Override
+				public char nextChar() {
+					return iterator.nextChar();
+				}
+
+				@Override
+				public Character next() {
+					throw new UnsupportedOperationException();
+				}
+			};
+		}
+
+		static CharIterator of(char... values) {
+			return from(CharIterator.of(values));
+		}
 	}
 }
