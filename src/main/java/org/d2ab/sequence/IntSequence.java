@@ -21,6 +21,7 @@ import org.d2ab.function.ints.IntBiPredicate;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
@@ -28,6 +29,8 @@ import org.d2ab.iterator.ints.*;
 import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.util.Arrayz;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalInt;
@@ -119,6 +122,34 @@ public interface IntSequence extends IntIterable {
 	 */
 	static IntSequence from(Stream<Integer> stream) {
 		return from(stream.iterator());
+	}
+
+	/**
+	 * Create an {@code IntSequence} from an {@link InputStream} which iterates over the bytes provided in the
+	 * input stream as ints. The {@link InputStream} must support {@link InputStream#reset} or the {@code IntSequence}
+	 * will only be available to iterate over once. The {@link InputStream} will be reset in between iterations,
+	 * if possible. If an {@link IOException} occurs during iteration, an {@link IterationException} will be thrown.
+	 * The {@link InputStream} will not be closed by the {@code IntSequence} when iteration finishes, it must be closed
+	 * externally when iteration is finished.
+	 */
+	static IntSequence from(InputStream inputStream) {
+		return new IntSequence() {
+			boolean started;
+
+			@Override
+			public IntIterator iterator() {
+				if (started)
+					try {
+						inputStream.reset();
+					} catch (IOException e) {
+						// do nothing, let input stream exhaust itself
+					}
+				else
+					started = true;
+
+				return new InputStreamIntIterator(inputStream);
+			}
+		};
 	}
 
 	/**

@@ -26,6 +26,9 @@ import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -186,6 +189,24 @@ public class CharSeqTest {
 		CharSeq seq = CharSeq.from(Stream.of());
 
 		twice(() -> assertThat(seq, is(emptyIterable())));
+	}
+
+	@Test
+	public void fromReader() throws IOException {
+		Reader reader = new StringReader("abcde");
+
+		CharSeq seq = CharSeq.from(reader);
+		twice(() -> assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void fromReaderAlreadyBegun() throws IOException {
+		Reader reader = new StringReader("abcde");
+		assertThat((char) reader.read(), is('a'));
+
+		CharSeq seq = CharSeq.from(reader);
+		assertThat(seq, containsChars('b', 'c', 'd', 'e'));
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

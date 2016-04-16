@@ -21,12 +21,15 @@ import org.d2ab.function.ints.CharToIntFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.chars.ChainingCharIterable;
 import org.d2ab.iterable.chars.CharIterable;
+import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.*;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.Arrayz;
 import org.d2ab.util.primitive.OptionalChar;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
@@ -135,6 +138,33 @@ public interface CharSeq extends CharIterable {
 	 */
 	static CharSeq from(IntStream stream) {
 		return from(CharIterator.from(stream.iterator()));
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a {@link Reader} which iterates over the characters provided in the reader.
+	 * The {@link Reader} must support {@link Reader#reset} or the {@code CharSeq} will only be available to iterate
+	 * over once. The {@link Reader} will be reset in between iterations, if possible. If an {@link IOException}
+	 * occurs during iteration, an {@link IterationException} will be thrown. The {@link Reader} will not be closed
+	 * by the {@code CharSeq} when iteration finishes, it must be closed externally when iteration is finished.
+	 */
+	static CharSeq from(Reader reader) {
+		return new CharSeq() {
+			boolean started;
+
+			@Override
+			public CharIterator iterator() {
+				if (started)
+					try {
+						reader.reset();
+					} catch (IOException e) {
+						// do nothing, let reader exhaust itself
+					}
+				else
+					started = true;
+
+				return new ReaderCharIterator(reader);
+			}
+		};
 	}
 
 	/**

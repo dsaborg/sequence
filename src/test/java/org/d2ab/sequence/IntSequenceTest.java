@@ -23,6 +23,9 @@ import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
@@ -169,6 +172,24 @@ public class IntSequenceTest {
 		IntSequence sequence = IntSequence.from(Stream.of());
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void fromInputStream() {
+		InputStream inputStream = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+
+		IntSequence seq = IntSequence.from(inputStream);
+		twice(() -> assertThat(seq, containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void fromInputStreamWhenBegun() throws IOException {
+		InputStream inputStream = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+		assertThat(inputStream.read(), is(1));
+
+		IntSequence seq = IntSequence.from(inputStream);
+		assertThat(seq, containsInts(2, 3, 4, 5));
+		assertThat(seq, containsInts(1, 2, 3, 4, 5));
 	}
 
 	@Test
