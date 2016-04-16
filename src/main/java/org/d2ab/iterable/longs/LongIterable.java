@@ -18,10 +18,10 @@ package org.d2ab.iterable.longs;
 
 import org.d2ab.iterator.longs.ArrayLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
@@ -49,63 +49,31 @@ public interface LongIterable extends Iterable<Long> {
 			consumer.accept(iterator.nextLong());
 	}
 
-	/**
-	 * Converts a container of some kind into a possibly once-only {@link LongIterable}.
-	 *
-	 * @param container the non-null container to turn into an {@link LongIterable}, can be one of {@link Iterable},
-	 *                  {@link LongIterable}, {@link Iterator}, {@link LongIterator}, {@link Stream} of {@link
-	 *                  Long}s, {@link LongStream}, array of {@link Long}s, or long array.
-	 *
-	 * @return the container as a {@link LongIterable}.
-	 *
-	 * @throws ClassCastException if the container is not one of the permitted classes.
-	 */
-	@SuppressWarnings("unchecked")
-	static LongIterable from(Object container) {
-		if (container instanceof LongIterable)
-			return (LongIterable) container;
-		else if (container instanceof Iterable)
-			return from((Iterable<Long>) container);
-		else if (container instanceof LongIterator)
-			return from((LongIterator) container);
-		else if (container instanceof Stream)
-			return from((Iterator<Long>) container);
-		else if (container instanceof LongStream)
-			return from((LongStream) container);
-		else if (container instanceof long[])
-			return of((long[]) container);
-		else if (container instanceof Long[])
-			return from((Long[]) container);
-		else if (container instanceof Pair)
-			return from(((Pair<Long, Long>) container)::iterator);
-		else
-			throw new ClassCastException("Required an Iterable, LongIterable, Iterator, LongIterator, array of " +
-			                             "Long, long array, Stream of Long, or LongStream but got: " +
-			                             container.getClass());
-	}
-
-	static LongIterable from(Iterable<Long> iterable) {
-		return () -> LongIterator.from(iterable);
-	}
-
-	static LongIterable from(LongIterator iterator) {
-		return iterator.asIterable();
-	}
-
-	static LongIterable from(Iterator<Long> iterator) {
-		return () -> LongIterator.from(iterator);
-	}
-
-	static LongIterable from(LongStream longStream) {
-		return from(LongIterator.from(longStream.iterator()));
-	}
-
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
 	}
 
 	static LongIterable from(Long... longs) {
 		return from(Arrays.asList(longs));
+	}
+
+	static LongIterable from(Iterable<Long> iterable) {
+		if (iterable instanceof LongIterable)
+			return (LongIterable) iterable;
+
+		return () -> LongIterator.from(iterable);
+	}
+
+	static LongIterable from(PrimitiveIterator.OfLong iterator) {
+		return () -> LongIterator.from(iterator);
+	}
+
+	static LongIterable from(Iterator<Long> iterator) {
+		return () -> LongIterator.from(iterator);
+	}
+
+	static LongIterable from(LongStream stream) {
+		return from(stream.iterator());
 	}
 
 	static LongIterable from(Stream<Long> stream) {

@@ -16,8 +16,6 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.iterable.longs.LongIterable;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -49,7 +47,22 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		return from(iterable.iterator());
 	}
 
+	static LongIterator from(PrimitiveIterator.OfLong iterator) {
+		if (iterator instanceof LongIterator)
+			return (LongIterator) iterator;
+
+		return new DelegatingLongIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+			@Override
+			public long nextLong() {
+				return iterator.nextLong();
+			}
+		};
+	}
+
 	static LongIterator from(Iterator<Long> iterator) {
+		if (iterator instanceof PrimitiveIterator.OfLong)
+			return from((PrimitiveIterator.OfLong) iterator);
+
 		return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
 			@Override
 			public long nextLong() {
@@ -102,10 +115,6 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		long count = 0;
 		while ((count++ < steps) && hasNext())
 			nextLong();
-	}
-
-	default LongIterable asIterable() {
-		return () -> this;
 	}
 
 	default long reduce(long identity, LongBinaryOperator operator) {

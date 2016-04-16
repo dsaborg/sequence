@@ -54,8 +54,8 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Create an {@code IntSequence} with the given ints.
 	 */
-	static IntSequence of(int... cs) {
-		return () -> IntIterator.of(cs);
+	static IntSequence of(int... is) {
+		return () -> IntIterator.of(is);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Iterable)
 	 */
 	static IntSequence from(Iterable<Integer> iterable) {
-		return () -> IntIterator.from(iterable);
+		return from(IntIterable.from(iterable));
 	}
 
 	/**

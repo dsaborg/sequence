@@ -31,6 +31,7 @@ import org.d2ab.util.Arrayz;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.OptionalLong;
+import java.util.PrimitiveIterator;
 import java.util.function.*;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -51,56 +52,167 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Create a {@code LongSequence} with the given longs.
+	 */
+	static LongSequence of(long... ls) {
+		return () -> new ArrayLongIterator(ls);
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a {@link PrimitiveIterator.OfLong} of long values. Note that {@code
+	 * LongSequence}s created from {@link PrimitiveIterator.OfLong}s cannot be passed over more than once. Further
+	 * attempts will register the {@code LongSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 */
+	static LongSequence from(PrimitiveIterator.OfLong iterator) {
+		return () -> LongIterator.from(iterator);
+	}
+
+	/**
 	 * Create an {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that {@code LongSequence}
-	 * created
-	 * from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
+	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
 	 * LongSequence} as empty.
+	 *
+	 * @see #cache(Iterator)
 	 */
 	static LongSequence from(Iterator<Long> iterator) {
 		return from(LongIterator.from(iterator));
 	}
 
 	/**
-	 * Create a {@code LongSequence} from a {@link LongIterator} of long values. Note that {@code
-	 * LongSequence}s created from {@link LongIterator}s cannot be passed over more than once. Further attempts
-	 * will
-	 * register the {@code LongSequence} as empty.
-	 */
-	static LongSequence from(LongIterator iterator) {
-		return () -> iterator;
-	}
-
-	/**
 	 * Create a {@code LongSequence} from a {@link LongIterable}.
+	 *
+	 * @see #cache(LongIterable)
 	 */
 	static LongSequence from(LongIterable iterable) {
 		return iterable::iterator;
 	}
 
 	/**
-	 * Create a {@code LongSequence} with the given longs.
+	 * Create a {@code LongSequence} from an {@link Iterable} of {@code Long} values.
+	 *
+	 * @see #cache(Iterable)
 	 */
-	static LongSequence of(long... cs) {
-		return () -> new ArrayLongIterator(cs);
+	static LongSequence from(Iterable<Long> iterable) {
+		return from(LongIterable.from(iterable));
+	}
+
+	/**
+	 * Create a {@code Sequence} from a {@link LongStream} of items. Note that {@code Sequences} created from {@link
+	 * LongStream}s cannot be passed over more than once. Further attempts will register the {@code LongSequence} as
+	 * empty.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(LongStream)
+	 */
+	static LongSequence from(LongStream stream) {
+		return from(stream.iterator());
 	}
 
 	/**
 	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will cause an {@link IllegalStateException}
-	 * when the {@link Stream} is requested again.
+	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code LongSequence} as empty.
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(Stream)
 	 */
 	static LongSequence from(Stream<Long> stream) {
 		return from(stream.iterator());
 	}
 
 	/**
-	 * Create a {@code LongSequence} from an {@link Iterable} of {@code Long} values.
+	 * Create a {@code LongSequence} from a cached copy of a {@link PrimitiveIterator.OfLong}.
+	 *
+	 * @see #cache(Iterator)
+	 * @see #cache(LongStream)
+	 * @see #cache(Stream)
+	 * @see #cache(LongIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(PrimitiveIterator.OfLong)
 	 */
-	static LongSequence from(Iterable<Long> iterable) {
-		return () -> LongIterator.from(iterable);
+	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
+		long[] cache = new long[10];
+		int position = 0;
+		while (iterator.hasNext()) {
+			long next = iterator.nextLong();
+			if (position == cache.length)
+				cache = Arrays.copyOf(cache, cache.length * 2);
+			cache[position++] = next;
+		}
+		if (cache.length > position)
+			cache = Arrays.copyOf(cache, position);
+		return of(cache);
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a cached copy of an {@link Iterator} of {@link Long}s.
+	 *
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 * @see #cache(LongStream)
+	 * @see #cache(Stream)
+	 * @see #cache(LongIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(Iterator)
+	 */
+	static LongSequence cache(Iterator<Long> iterator) {
+		return cache(LongIterator.from(iterator));
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a cached copy of a {@link LongStream}.
+	 *
+	 * @see #cache(Stream)
+	 * @see #cache(LongIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 * @see #cache(Iterator)
+	 * @see #from(LongStream)
+	 */
+	static LongSequence cache(LongStream stream) {
+		return cache(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a cached copy of a {@link Stream} of {@link Long}s.
+	 *
+	 * @see #cache(LongStream)
+	 * @see #cache(LongIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 * @see #cache(Iterator)
+	 * @see #from(Stream)
+	 */
+	static LongSequence cache(Stream<Long> stream) {
+		return cache(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a cached copy of an {@link LongIterable}.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(LongStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 * @see #cache(Iterator)
+	 * @see #from(LongIterable)
+	 */
+	static LongSequence cache(LongIterable iterable) {
+		return cache(iterable.iterator());
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a cached copy of an {@link Iterable} of {@code Long} values.
+	 *
+	 * @see #cache(LongIterable)
+	 * @see #cache(LongStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 * @see #cache(Iterator)
+	 * @see #from(Iterable)
+	 */
+	static LongSequence cache(Iterable<Long> iterable) {
+		return cache(iterable.iterator());
 	}
 
 	/**
@@ -423,17 +535,24 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Append the {@link Long}s in the given {@link Iterable} to the end of this {@code LongSequence}.
+	 * Append the given {@code longs} to the end of this {@code LongSequence}.
 	 */
-	default LongSequence append(Iterable<Long> iterable) {
-		return append(LongIterable.from(iterable));
+	default LongSequence append(long... longs) {
+		return append(LongIterable.of(longs));
 	}
 
 	/**
 	 * Append the {@code longs} in the given {@link LongIterable} to the end of this {@code LongSequence}.
 	 */
-	default LongSequence append(LongIterable that) {
-		return new ChainingLongIterable(this, that)::iterator;
+	default LongSequence append(LongIterable iterable) {
+		return new ChainingLongIterable(this, iterable)::iterator;
+	}
+
+	/**
+	 * Append the {@link Long}s in the given {@link Iterable} to the end of this {@code LongSequence}.
+	 */
+	default LongSequence append(Iterable<Long> iterable) {
+		return append(LongIterable.from(iterable));
 	}
 
 	/**
@@ -442,7 +561,7 @@ public interface LongSequence extends LongIterable {
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(LongIterator iterator) {
-		return append(iterator.asIterable());
+		return append(LongIterable.from(iterator));
 	}
 
 	/**
@@ -455,10 +574,13 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Append the given {@code longs} to the end of this {@code LongSequence}.
+	 * Append the {@code long} values of the given {@link LongStream} to the end of this {@code LongSequence}.
+	 * <p>
+	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
+	 * Further traversals will result in {@link IllegalStateException} being thrown.
 	 */
-	default LongSequence append(long... longs) {
-		return append(LongIterable.of(longs));
+	default LongSequence append(LongStream stream) {
+		return append(LongIterable.from(stream));
 	}
 
 	/**
@@ -468,16 +590,6 @@ public interface LongSequence extends LongIterable {
 	 * Further traversals will result in {@link IllegalStateException} being thrown.
 	 */
 	default LongSequence append(Stream<Long> stream) {
-		return append(LongIterable.from(stream));
-	}
-
-	/**
-	 * Append the {@code long} values of the given {@link LongStream} to the end of this {@code LongSequence}.
-	 * <p>
-	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
-	 */
-	default LongSequence append(LongStream stream) {
 		return append(LongIterable.from(stream));
 	}
 

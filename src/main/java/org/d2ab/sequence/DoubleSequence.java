@@ -53,8 +53,8 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Create a {@code DoubleSequence} with the given doubles.
 	 */
-	static DoubleSequence of(double... cs) {
-		return () -> DoubleIterator.of(cs);
+	static DoubleSequence of(double... ds) {
+		return () -> DoubleIterator.of(ds);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(Iterable)
 	 */
 	static DoubleSequence from(Iterable<Double> iterable) {
-		return () -> DoubleIterator.from(iterable);
+		return from(DoubleIterable.from(iterable));
 	}
 
 	/**

@@ -58,6 +58,9 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	static DoubleIterable from(Iterable<Double> iterable) {
+		if (iterable instanceof DoubleIterable)
+			return (DoubleIterable) iterable;
+
 		return () -> DoubleIterator.from(iterable);
 	}
 
