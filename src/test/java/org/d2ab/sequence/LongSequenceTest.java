@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -170,6 +171,48 @@ public class LongSequenceTest {
 		LongSequence sequence = LongSequence.from(Stream.of());
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void cachePrimitiveIteratorOfLong() {
+		LongSequence cached = LongSequence.cache(LongIterator.of(1L, 2L, 3L, 4L, 5L));
+
+		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void cacheIterator() {
+		LongSequence cached = LongSequence.cache(Iterators.of(1L, 2L, 3L, 4L, 5L));
+
+		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void cacheLongIterable() {
+		LongSequence cached = LongSequence.cache(LongIterable.of(1L, 2L, 3L, 4L, 5L));
+
+		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void cacheIterable() {
+		LongSequence cached = LongSequence.cache(Iterables.of(1L, 2L, 3L, 4L, 5L));
+
+		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void cacheLongStream() {
+		LongSequence cached = LongSequence.cache(LongStream.of(1L, 2L, 3L, 4L, 5L));
+
+		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void cacheStream() {
+		LongSequence cached = LongSequence.cache(Stream.of(1L, 2L, 3L, 4L, 5L));
+
+		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test

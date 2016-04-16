@@ -180,7 +180,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		IntSequence cached = IntSequence.cache(List.of(1, 2, 3, 4, 5).iterator());
+		IntSequence cached = IntSequence.cache(Iterators.of(1, 2, 3, 4, 5));
 
 		twice(() -> assertThat(cached, containsInts(1, 2, 3, 4, 5)));
 	}
@@ -194,7 +194,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		IntSequence cached = IntSequence.cache(List.of(1, 2, 3, 4, 5)::iterator);
+		IntSequence cached = IntSequence.cache(Iterables.of(1, 2, 3, 4, 5));
 
 		twice(() -> assertThat(cached, containsInts(1, 2, 3, 4, 5)));
 	}
@@ -208,7 +208,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void cacheStream() {
-		IntSequence cached = IntSequence.cache(List.of(1, 2, 3, 4, 5).stream());
+		IntSequence cached = IntSequence.cache(Stream.of(1, 2, 3, 4, 5));
 
 		twice(() -> assertThat(cached, containsInts(1, 2, 3, 4, 5)));
 	}

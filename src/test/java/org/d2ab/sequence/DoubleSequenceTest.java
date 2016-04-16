@@ -184,7 +184,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		DoubleSequence cached = DoubleSequence.cache(List.of(1.0, 2.0, 3.0, 4.0, 5.0).iterator());
+		DoubleSequence cached = DoubleSequence.cache(Iterators.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		twice(() -> assertThat(cached, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
@@ -198,7 +198,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		DoubleSequence cached = DoubleSequence.cache(List.of(1.0, 2.0, 3.0, 4.0, 5.0)::iterator);
+		DoubleSequence cached = DoubleSequence.cache(Iterables.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		twice(() -> assertThat(cached, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
@@ -212,7 +212,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void cacheStream() {
-		DoubleSequence cached = DoubleSequence.cache(List.of(1.0, 2.0, 3.0, 4.0, 5.0).stream());
+		DoubleSequence cached = DoubleSequence.cache(Stream.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		twice(() -> assertThat(cached, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
