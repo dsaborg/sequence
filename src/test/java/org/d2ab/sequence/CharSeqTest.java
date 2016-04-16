@@ -22,11 +22,13 @@ import org.d2ab.iterable.chars.CharIterable;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.DelegatingCharIterator;
+import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
@@ -156,8 +158,24 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void fromPrimitiveIteratorOfInt() {
+		CharSeq seq = CharSeq.from(IntIterator.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
 	public void fromStream() {
 		CharSeq seq = CharSeq.from(Stream.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void fromIntStream() {
+		CharSeq seq = CharSeq.from(IntStream.of('a', 'b', 'c', 'd', 'e'));
 
 		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
 		assertThat(seq, is(emptyIterable()));
@@ -168,6 +186,55 @@ public class CharSeqTest {
 		CharSeq seq = CharSeq.from(Stream.of());
 
 		twice(() -> assertThat(seq, is(emptyIterable())));
+	}
+
+	@Test
+	public void cachePrimitiveIteratorOfInt() {
+		CharSeq cached = CharSeq.cache(IntIterator.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void cacheCharIterator() {
+		CharSeq cached = CharSeq.cache(CharIterator.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void cacheIterator() {
+		CharSeq cached = CharSeq.cache(Iterators.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void cacheCharIterable() {
+		CharSeq cached = CharSeq.cache(CharIterable.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void cacheIterable() {
+		CharSeq cached = CharSeq.cache(Iterables.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void cacheIntStream() {
+		CharSeq cached = CharSeq.cache(IntStream.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void cacheStream() {
+		CharSeq cached = CharSeq.cache(Stream.of('a', 'b', 'c', 'd', 'e'));
+
+		twice(() -> assertThat(cached, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test

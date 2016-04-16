@@ -577,7 +577,6 @@ public interface LongSequence extends LongIterable {
 	 * Append the {@code long} values of the given {@link LongStream} to the end of this {@code LongSequence}.
 	 * <p>
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
 	 */
 	default LongSequence append(LongStream stream) {
 		return append(LongIterable.from(stream));
@@ -587,7 +586,6 @@ public interface LongSequence extends LongIterable {
 	 * Append the {@link Long}s in the given {@link Stream} to the end of this {@code LongSequence}.
 	 * <p>
 	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
 	 */
 	default LongSequence append(Stream<Long> stream) {
 		return append(LongIterable.from(stream));

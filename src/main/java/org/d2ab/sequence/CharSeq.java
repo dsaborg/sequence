@@ -29,6 +29,7 @@ import org.d2ab.util.primitive.OptionalChar;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -65,17 +66,31 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Create a {@code CharSeq} from a {@link CharIterator} of character values. Note that {@code
 	 * CharSeq}s created from {@link CharIterator}s cannot be passed over more than once. Further attempts
-	 * will
-	 * register the {@code CharSeq} as empty.
+	 * will register the {@code CharSeq} as empty.
+	 *
+	 * @see #cache(CharIterator)
 	 */
 	static CharSeq from(CharIterator iterator) {
 		return () -> iterator;
 	}
 
 	/**
+	 * Create a {@code CharSeq} from a {@link PrimitiveIterator.OfInt} of character values. Note that {@code
+	 * CharSeq}s created from {@link PrimitiveIterator.OfInt}s cannot be passed over more than once. Further attempts
+	 * will register the {@code CharSeq} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 */
+	static CharSeq from(PrimitiveIterator.OfInt iterator) {
+		return from(CharIterator.from(iterator));
+	}
+
+	/**
 	 * Create a {@code CharSeq} from an {@link Iterator} of {@code Character} values. Note that {@code
 	 * CharSeq}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
 	 * register the {@code CharSeq} as empty.
+	 *
+	 * @see #cache(Iterator)
 	 */
 	static CharSeq from(Iterator<Character> iterator) {
 		return from(CharIterator.from(iterator));
@@ -83,6 +98,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Create a {@code CharSeq} from a {@link CharIterable}.
+	 *
+	 * @see #cache(CharIterable)
 	 */
 	static CharSeq from(CharIterable iterable) {
 		return iterable::iterator;
@@ -90,23 +107,153 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Create a {@code CharSeq} from an {@link Iterable} of {@code Character} values.
+	 *
+	 * @see #cache(Iterable)
 	 */
 	static CharSeq from(Iterable<Character> iterable) {
 		return () -> CharIterator.from(iterable);
 	}
 
 	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
+	 * Create a {@code CharSeq} from a {@link Stream} of items. Note that {@code CharSeq} created from {@link
 	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq} as empty.
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(Stream)
 	 */
 	static CharSeq from(Stream<Character> stream) {
 		return from(stream.iterator());
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
+	 * Create a {@code CharSeq} from an {@link IntStream} of char values. Note that {@code CharSeq} created from
+	 * {@link IntStream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq} as
+	 * empty.
+	 *
+	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
+	 * @see #cache(IntStream)
+	 */
+	static CharSeq from(IntStream stream) {
+		return from(CharIterator.from(stream.iterator()));
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of a {@link CharIterator}.
+	 *
+	 * @see #cache(Iterator)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(CharIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(CharIterator)
+	 */
+	static CharSeq cache(CharIterator iterator) {
+		char[] cache = new char[10];
+		int position = 0;
+		while (iterator.hasNext()) {
+			char next = iterator.nextChar();
+			if (position == cache.length)
+				cache = Arrays.copyOf(cache, cache.length * 2);
+			cache[position++] = next;
+		}
+		if (cache.length > position)
+			cache = Arrays.copyOf(cache, position);
+		return of(cache);
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of an {@link PrimitiveIterator.OfInt} of char values.
+	 *
+	 * @see #cache(CharIterator)
+	 * @see #cache(Iterator)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(CharIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(Iterator)
+	 */
+	static CharSeq cache(PrimitiveIterator.OfInt iterator) {
+		return cache(CharIterator.from(iterator));
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of an {@link Iterator} of {@link Character}s.
+	 *
+	 * @see #cache(CharIterator)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(CharIterable)
+	 * @see #cache(Iterable)
+	 * @see #from(Iterator)
+	 */
+	static CharSeq cache(Iterator<Character> iterator) {
+		return cache(CharIterator.from(iterator));
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of a {@link IntStream} of char values.
+	 *
+	 * @see #cache(Stream)
+	 * @see #cache(CharIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(CharIterator)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 * @see #from(IntStream)
+	 */
+	static CharSeq cache(IntStream stream) {
+		return cache(CharIterator.from(stream.iterator()));
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of a {@link Stream} of {@link Character}s.
+	 *
+	 * @see #cache(IntStream)
+	 * @see #cache(CharIterable)
+	 * @see #cache(Iterable)
+	 * @see #cache(CharIterator)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 * @see #from(Stream)
+	 */
+	static CharSeq cache(Stream<Character> stream) {
+		return cache(stream.iterator());
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of an {@link CharIterable}.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(CharIterator)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 * @see #from(CharIterable)
+	 */
+	static CharSeq cache(CharIterable iterable) {
+		return cache(iterable.iterator());
+	}
+
+	/**
+	 * Create a {@code CharSeq} from a cached copy of an {@link Iterable} of {@code Character} values.
+	 *
+	 * @see #cache(CharIterable)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(CharIterator)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 * @see #from(Iterable)
+	 */
+	static CharSeq cache(Iterable<Character> iterable) {
+		return cache(iterable.iterator());
+	}
+
+	/**
+	 * A {@code CharSeq} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
 	 * {@link Character#MAX_VALUE}.
 	 *
 	 * @see #startingAt(char)
@@ -119,7 +266,7 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
+	 * A {@code CharSeq} of all the {@link Character} values starting at the given value and ending at {@link
 	 * Character#MAX_VALUE}.
 	 *
 	 * @see #all()
@@ -132,7 +279,7 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * A {@code Sequence} of all the {@link Character} values between the given start and end positions, inclusive.
+	 * A {@code CharSeq} of all the {@link Character} values between the given start and end positions, inclusive.
 	 *
 	 * @see #all()
 	 * @see #startingAt(char)
@@ -304,19 +451,29 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Append the {@code chars} in the given {@link PrimitiveIterator.OfInt} to the end of this {@code CharSeq}.
+	 * <p>
+	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
+	 */
+	default CharSeq append(PrimitiveIterator.OfInt iterator) {
+		return append(CharIterator.from(iterator));
+	}
+
+	/**
 	 * Append the {@link Character}s in the given {@link Iterator} to the end of this {@code CharSeq}.
 	 * <p>
 	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
 	 */
 	default CharSeq append(Iterator<Character> iterator) {
-		return append(CharIterable.from(iterator));
+		return append(CharIterator.from(iterator));
 	}
 
 	/**
 	 * Append the {@link Character}s in the given {@link Stream} to the end of this {@code CharSeq}.
 	 * <p>
 	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	default CharSeq append(Stream<Character> stream) {
 		return append(CharIterable.from(stream));
@@ -327,7 +484,8 @@ public interface CharSeq extends CharIterable {
 	 * {@code CharSeq}.
 	 * <p>
 	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
-	 * Further traversals will result in {@link IllegalStateException} being thrown.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	default CharSeq append(IntStream stream) {
 		return append(CharIterable.from(stream));

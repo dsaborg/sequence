@@ -19,10 +19,10 @@ package org.d2ab.iterable.chars;
 import org.d2ab.function.chars.CharConsumer;
 import org.d2ab.iterator.chars.ArrayCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.util.Pair;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -49,39 +49,12 @@ public interface CharIterable extends Iterable<Character> {
 			consumer.accept(iterator.nextChar());
 	}
 
-	/**
-	 * Converts a container of some kind into a possibly once-only {@link CharIterable}.
-	 *
-	 * @param container the non-null container to turn into an {@link CharIterable}, can be one of {@link Iterable},
-	 *                  {@link CharIterable}, {@link Iterator}, {@link CharIterator}, {@link Stream} of {@link
-	 *                  Character}s, {@link IntStream}, array of {@link Character}s, or char array.
-	 *
-	 * @return the container as a {@link CharIterable}.
-	 *
-	 * @throws ClassCastException if the container is not one of the permitted classes.
-	 */
-	@SuppressWarnings("unchecked")
-	static CharIterable from(Object container) {
-		if (container instanceof CharIterable)
-			return (CharIterable) container;
-		else if (container instanceof Iterable)
-			return from((Iterable<Character>) container);
-		else if (container instanceof CharIterator)
-			return from((CharIterator) container);
-		else if (container instanceof Stream)
-			return from((Iterator<Character>) container);
-		else if (container instanceof IntStream)
-			return from((IntStream) container);
-		else if (container instanceof char[])
-			return of((char[]) container);
-		else if (container instanceof Character[])
-			return from((Character[]) container);
-		else if (container instanceof Pair)
-			return from(((Pair<Character, Character>) container)::iterator);
-		else
-			throw new ClassCastException("Required an Iterable, CharIterable, Iterator, CharIterator, array of " +
-			                             "Character, char array, Stream of Character, or IntStream but got: " +
-			                             container.getClass());
+	static CharIterable of(char... characters) {
+		return () -> new ArrayCharIterator(characters);
+	}
+
+	static CharIterable from(Character... characters) {
+		return from(Arrays.asList(characters));
 	}
 
 	static CharIterable from(Iterable<Character> iterable) {
@@ -92,23 +65,19 @@ public interface CharIterable extends Iterable<Character> {
 		return () -> iterator;
 	}
 
+	static CharIterable from(PrimitiveIterator.OfInt iterator) {
+		return from(CharIterator.from(iterator));
+	}
+
 	static CharIterable from(Iterator<Character> iterator) {
-		return () -> CharIterator.from(iterator);
-	}
-
-	static CharIterable from(IntStream charStream) {
-		return from(CharIterator.from(charStream.iterator()));
-	}
-
-	static CharIterable of(char... characters) {
-		return () -> new ArrayCharIterator(characters);
-	}
-
-	static CharIterable from(Character... characters) {
-		return from(Arrays.asList(characters));
+		return from(CharIterator.from(iterator));
 	}
 
 	static CharIterable from(Stream<Character> stream) {
+		return from(stream.iterator());
+	}
+
+	static CharIterable from(IntStream stream) {
 		return from(stream.iterator());
 	}
 }
