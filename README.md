@@ -3,6 +3,8 @@
 
 ##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
 
+Follow me on Twitter [daniel2aborg](http://twitter.com/daniel2aborg) to receive updates about Sequence.
+
 * [Overview](#overview)
 * [Install](#install)
 * [Usage](#usage)
