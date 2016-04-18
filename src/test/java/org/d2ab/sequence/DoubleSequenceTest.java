@@ -24,12 +24,14 @@ import org.d2ab.iterator.doubles.MappedDoubleIterator;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.DoubleBinaryOperator;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -70,9 +72,10 @@ public class DoubleSequenceTest {
 				fail("Should not get called");
 		});
 
+		DoubleSequence sequence = DoubleSequence.of(1, 2, 3, 4, 5);
 		twice(() -> {
 			double expected = 1.0;
-			for (double d : DoubleSequence.of(1, 2, 3, 4, 5))
+			for (double d : sequence)
 				assertThat(d, is(expected++));
 
 			assertThat(expected, is(6.0));
@@ -83,9 +86,15 @@ public class DoubleSequenceTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachDouble(c -> fail("Should not get called"));
-			_1.forEachDouble(c -> assertThat(c, is(in(List.of(1.0)))));
-			_12.forEachDouble(c -> assertThat(c, is(in(List.of(1.0, 2.0)))));
-			_123.forEachDouble(c -> assertThat(c, is(in(List.of(1.0, 2.0, 3.0)))));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEachDouble(c -> assertThat(c, is((double) value.getAndIncrement())));
+
+			value.set(1);
+			_12.forEachDouble(c -> assertThat(c, is((double) value.getAndIncrement())));
+
+			value.set(1);
+			_123.forEachDouble(c -> assertThat(c, is((double) value.getAndIncrement())));
 		});
 	}
 
@@ -232,6 +241,24 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
 		DoubleSequence skipFour = _123.skip(4);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
+	public void skipTail() {
+		DoubleSequence skipNone = _123.skipTail(0);
+		twice(() -> assertThat(skipNone, containsDoubles(1, 2, 3)));
+
+		DoubleSequence skipOne = _123.skipTail(1);
+		twice(() -> assertThat(skipOne, containsDoubles(1, 2)));
+
+		DoubleSequence skipTwo = _123.skipTail(2);
+		twice(() -> assertThat(skipTwo, containsDoubles(1)));
+
+		DoubleSequence skipThree = _123.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		DoubleSequence skipFour = _123.skipTail(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
@@ -671,16 +698,16 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
 		LongSequence _0 = DoubleSequence.steppingFrom(0, 1).limit(5).toLongs();
-		twice(() -> assertThat(_0, contains(0L, 1L, 2L, 3L, 4L)));
+		twice(() -> assertThat(_0, containsLongs(0L, 1L, 2L, 3L, 4L)));
 
 		LongSequence _0_5 = DoubleSequence.steppingFrom(0.5, 1).limit(5).toLongs();
-		twice(() -> assertThat(_0_5, contains(0L, 1L, 2L, 3L, 4L)));
+		twice(() -> assertThat(_0_5, containsLongs(0L, 1L, 2L, 3L, 4L)));
 
 		LongSequence _0_9999 = DoubleSequence.steppingFrom(0.9999, 1).limit(5).toLongs();
-		twice(() -> assertThat(_0_9999, contains(0L, 1L, 2L, 3L, 4L)));
+		twice(() -> assertThat(_0_9999, containsLongs(0L, 1L, 2L, 3L, 4L)));
 
 		LongSequence _1 = DoubleSequence.steppingFrom(1, 1).limit(5).toLongs();
-		twice(() -> assertThat(_1, contains(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(_1, containsLongs(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
@@ -710,19 +737,19 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
 		LongSequence _1 = DoubleSequence.steppingFrom(1, 1).limit(5).toRoundedLongs();
-		twice(() -> assertThat(_1, contains(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(_1, containsLongs(1L, 2L, 3L, 4L, 5L)));
 
 		LongSequence _0_99999 = DoubleSequence.steppingFrom(0.99999, 1).limit(5).toRoundedLongs();
-		twice(() -> assertThat(_0_99999, contains(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(_0_99999, containsLongs(1L, 2L, 3L, 4L, 5L)));
 
 		LongSequence _0_5 = DoubleSequence.steppingFrom(0.5, 1).limit(5).toRoundedLongs();
-		twice(() -> assertThat(_0_5, contains(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(_0_5, containsLongs(1L, 2L, 3L, 4L, 5L)));
 
 		LongSequence _0_49999 = DoubleSequence.steppingFrom(0.49999, 1).limit(5).toRoundedLongs();
-		twice(() -> assertThat(_0_49999, contains(0L, 1L, 2L, 3L, 4L)));
+		twice(() -> assertThat(_0_49999, containsLongs(0L, 1L, 2L, 3L, 4L)));
 
 		LongSequence _0 = DoubleSequence.steppingFrom(0, 1).limit(5).toRoundedLongs();
-		twice(() -> assertThat(_0, contains(0L, 1L, 2L, 3L, 4L)));
+		twice(() -> assertThat(_0, containsLongs(0L, 1L, 2L, 3L, 4L)));
 	}
 
 	@Test
@@ -740,7 +767,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
 		LongSequence doubledHalves = DoubleSequence.range(0.5, 1.5, 0.5, 0.1).toLongs(d -> (long) (d * 2));
-		twice(() -> assertThat(doubledHalves, contains(1L, 2L, 3L)));
+		twice(() -> assertThat(doubledHalves, containsLongs(1L, 2L, 3L)));
 	}
 
 	@Test

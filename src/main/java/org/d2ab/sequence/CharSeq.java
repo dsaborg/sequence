@@ -444,6 +444,16 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Skip a set number of {@code chars} at the end of this {@code CharSequence}.
+	 */
+	default CharSeq skipTail(int skip) {
+		if (skip == 0)
+			return this;
+
+		return () -> new TailSkippingCharIterator(iterator(), skip);
+	}
+
+	/**
 	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
 	 */
 	default CharSeq limit(long limit) {

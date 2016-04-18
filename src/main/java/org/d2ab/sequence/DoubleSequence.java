@@ -353,6 +353,16 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * Skip a set number of {@code doubles} at the end of this {@code DoubleSequence}.
+	 */
+	default DoubleSequence skipTail(int skip) {
+		if (skip == 0)
+			return this;
+
+		return () -> new TailSkippingDoubleIterator(iterator(), skip);
+	}
+
+	/**
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
 	default DoubleSequence limit(long limit) {

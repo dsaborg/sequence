@@ -86,9 +86,10 @@ public class CharSeqTest {
 				fail("Should not get called");
 		});
 
+		CharSeq seq = CharSeq.of('a', 'b', 'c', 'd', 'e');
 		twice(() -> {
 			char expected = 'a';
-			for (char c : CharSeq.of('a', 'b', 'c', 'd', 'e'))
+			for (char c : seq)
 				assertThat(c, is(expected++));
 
 			assertThat(expected, is('f'));
@@ -273,6 +274,24 @@ public class CharSeqTest {
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
 		CharSeq skipFour = abc.skip(4);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
+	public void skipTail() {
+		CharSeq skipNone = abc.skipTail(0);
+		twice(() -> assertThat(skipNone, containsChars('a', 'b', 'c')));
+
+		CharSeq skipOne = abc.skipTail(1);
+		twice(() -> assertThat(skipOne, containsChars('a', 'b')));
+
+		CharSeq skipTwo = abc.skipTail(2);
+		twice(() -> assertThat(skipTwo, containsChars('a')));
+
+		CharSeq skipThree = abc.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		CharSeq skipFour = abc.skipTail(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
