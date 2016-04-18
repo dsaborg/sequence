@@ -116,6 +116,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #of(Pair)
 	 * @see #of(Pair...)
 	 * @see #from(Iterable...)
+	 * @see #cache(Iterable)
 	 */
 	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>> iterable) {
 		return iterable::iterator;
@@ -141,6 +142,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #of(Pair)
 	 * @see #of(Pair...)
 	 * @see #from(Iterable)
+	 * @see #cache(Iterator)
 	 */
 	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
 		return () -> iterator;
@@ -155,6 +157,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #of(Pair...)
 	 * @see #from(Iterable)
 	 * @see #from(Iterator)
+	 * @see #cache(Stream)
 	 */
 	static <L, R> BiSequence<L, R> from(Stream<Pair<L, R>> stream) {
 		return from(stream.iterator());

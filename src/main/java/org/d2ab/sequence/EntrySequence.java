@@ -118,6 +118,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #of(Entry)
 	 * @see #of(Entry...)
 	 * @see #from(Iterable...)
+	 * @see #cache(Iterable)
 	 */
 	static <K, V> EntrySequence<K, V> from(Iterable<Entry<K, V>> iterable) {
 		return iterable::iterator;
@@ -144,6 +145,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #of(Entry)
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
+	 * @see #cache(Iterator)
 	 */
 	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
 		return () -> iterator;
@@ -158,6 +160,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
 	 * @see #from(Iterator)
+	 * @see #cache(Stream)
 	 */
 	static <K, V> EntrySequence<K, V> from(Stream<Entry<K, V>> stream) {
 		return from(stream.iterator());
