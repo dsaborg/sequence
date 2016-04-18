@@ -32,8 +32,9 @@ public class RecursiveIterator<T> implements InfiniteIterator<T> {
 
 	@Override
 	public T next() {
-		previous = hasPrevious ? op.apply(previous) : seed;
+		T next = hasPrevious ? op.apply(previous) : seed;
+		previous = next;
 		hasPrevious = true;
-		return previous;
+		return next;
 	}
 }
