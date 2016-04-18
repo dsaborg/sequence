@@ -1039,6 +1039,28 @@ public class IntSequenceTest {
 		                                containsInts(5), containsInts(4))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<IntSequence> emptySplit = empty.split(x -> x % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<IntSequence> oneSplit = _1.split(x -> x % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(containsInts(1))));
+
+		Sequence<IntSequence> twoSplit = _12.split(x -> x % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(containsInts(1, 2))));
+
+		Sequence<IntSequence> threeSplit = _123.split(x -> x % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(containsInts(1, 2))));
+
+		Sequence<IntSequence> fiveSplit = _12345.split(x -> x % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(containsInts(1, 2), containsInts(4, 5))));
+
+		Sequence<IntSequence> nineSplit = _123456789.split(x -> x % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(containsInts(1, 2), containsInts(4, 5), containsInts(7, 8))));
+	}
+
 	@Test
 	public void removeAllAfterFilter() {
 		List<Integer> original = new ArrayList<>(List.of(1, 2, 3, 4));

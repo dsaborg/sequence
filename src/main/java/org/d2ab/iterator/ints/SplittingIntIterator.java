@@ -14,43 +14,49 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.ints;
 
-import java.util.ArrayList;
+import org.d2ab.iterator.MappedIterator;
+import org.d2ab.sequence.IntSequence;
+
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 /**
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public abstract class SplittingIterator<T, S> extends MappedReferenceIterator<T, S> {
-	private final Predicate<? super T> predicate;
+public class SplittingIntIterator extends MappedIterator<Integer, IntIterator, IntSequence> {
+	private final IntPredicate predicate;
 
-	public SplittingIterator(Iterator<T> iterator, Predicate<? super T> predicate) {
+	public SplittingIntIterator(IntIterator iterator, IntPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}
 
 	@Override
-	public S next() {
+	public IntSequence next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		List<T> buffer = new ArrayList<>();
+		int position = 0;
+		int[] buffer = new int[10];
 		while (iterator.hasNext()) {
-			T next = iterator.next();
+			int next = iterator.nextInt();
 			if (predicate.test(next))
 				break;
-			buffer.add(next);
+			if (buffer.length == position)
+				buffer = Arrays.copyOf(buffer, buffer.length * 2);
+			buffer[position++] = next;
 		}
 
-		return toSequence(buffer);
-	}
+		if (position < buffer.length)
+			buffer = Arrays.copyOf(buffer, position);
 
-	protected abstract S toSequence(List<T> list);
+		return IntSequence.of(buffer);
+	}
 
 	@Override
 	public void remove() {

@@ -282,8 +282,8 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void appendDoubleIterable() {
-		DoubleSequence appended = _123.append(StrictDoubleIterable.of(4.0, 5.0, 6.0))
-		                              .append(StrictDoubleIterable.of(7.0, 8.0));
+		DoubleSequence appended =
+				_123.append(StrictDoubleIterable.of(4.0, 5.0, 6.0)).append(StrictDoubleIterable.of(7.0, 8.0));
 
 		twice(() -> assertThat(appended, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)));
 	}
@@ -967,6 +967,29 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(nineRandomPartitioned, contains(containsDoubles(6.0, 6.0), containsDoubles(1.0),
 		                                                       containsDoubles(-7.0, 1.0, 2.0, 17.0),
 		                                                       containsDoubles(5.0), containsDoubles(4.0))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<DoubleSequence> emptySplit = empty.split(x -> x % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<DoubleSequence> oneSplit = _1.split(x -> x % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(containsDoubles(1))));
+
+		Sequence<DoubleSequence> twoSplit = _12.split(x -> x % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(containsDoubles(1, 2))));
+
+		Sequence<DoubleSequence> threeSplit = _123.split(x -> x % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(containsDoubles(1, 2))));
+
+		Sequence<DoubleSequence> fiveSplit = _12345.split(x -> x % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(containsDoubles(1, 2), containsDoubles(4, 5))));
+
+		Sequence<DoubleSequence> nineSplit = _123456789.split(x -> x % 3 == 0);
+		twice(() -> assertThat(nineSplit,
+		                       contains(containsDoubles(1, 2), containsDoubles(4, 5), containsDoubles(7, 8))));
 	}
 
 	@Test

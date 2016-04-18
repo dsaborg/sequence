@@ -55,7 +55,8 @@ public class CharSeqTest {
 	private final CharSeq oneRandom = CharSeq.from(StrictCharIterable.of('q'));
 	private final CharSeq twoRandom = CharSeq.from(StrictCharIterable.of('q', 'w'));
 	private final CharSeq threeRandom = CharSeq.from(StrictCharIterable.of('q', 'w', 'd'));
-	private final CharSeq nineRandom = CharSeq.from(StrictCharIterable.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd'));
+	private final CharSeq nineRandom = CharSeq.from(StrictCharIterable.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e',
+	                                                                      'd'));
 
 	@Test
 	public void empty() {
@@ -390,7 +391,8 @@ public class CharSeqTest {
 
 	@Test
 	public void filter() {
-		CharSeq filtered = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e', 'f', 'g')).filter(i -> (i % 2) == 0);
+		CharSeq filtered =
+				CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e', 'f', 'g')).filter(i -> (i % 2) == 0);
 
 		twice(() -> assertThat(filtered, containsChars('b', 'd', 'f')));
 	}
@@ -889,8 +891,8 @@ public class CharSeqTest {
 		twice(() -> assertThat(ab.window(3), contains(containsChars('a', 'b'))));
 		twice(() -> assertThat(abc.window(3), contains(containsChars('a', 'b', 'c'))));
 		twice(() -> assertThat(abcd.window(3), contains(containsChars('a', 'b', 'c'), containsChars('b', 'c', 'd'))));
-		twice(() -> assertThat(abcde.window(3),
-		                       contains(containsChars('a', 'b', 'c'), containsChars('b', 'c', 'd'), containsChars('c', 'd', 'e'))));
+		twice(() -> assertThat(abcde.window(3), contains(containsChars('a', 'b', 'c'), containsChars('b', 'c', 'd'),
+		                                                 containsChars('c', 'd', 'e'))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -901,10 +903,11 @@ public class CharSeqTest {
 		twice(() -> assertThat(ab.window(3, 2), contains(containsChars('a', 'b'))));
 		twice(() -> assertThat(abc.window(3, 2), contains(containsChars('a', 'b', 'c'))));
 		twice(() -> assertThat(abcd.window(3, 2), contains(containsChars('a', 'b', 'c'), containsChars('c', 'd'))));
-		twice(() -> assertThat(abcde.window(3, 2), contains(containsChars('a', 'b', 'c'), containsChars('c', 'd', 'e'))));
+		twice(() -> assertThat(abcde.window(3, 2),
+		                       contains(containsChars('a', 'b', 'c'), containsChars('c', 'd', 'e'))));
 		twice(() -> assertThat(abcdefghi.window(3, 2),
-		                       contains(containsChars('a', 'b', 'c'), containsChars('c', 'd', 'e'), containsChars('e', 'f', 'g'),
-		                                containsChars('g', 'h', 'i'))));
+		                       contains(containsChars('a', 'b', 'c'), containsChars('c', 'd', 'e'),
+		                                containsChars('e', 'f', 'g'), containsChars('g', 'h', 'i'))));
 
 		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
 		twice(() -> assertThat(a.window(3, 4), contains(containsChars('a'))));
@@ -913,7 +916,8 @@ public class CharSeqTest {
 		twice(() -> assertThat(abcd.window(3, 4), contains(containsChars('a', 'b', 'c'))));
 		twice(() -> assertThat(abcde.window(3, 4), contains(containsChars('a', 'b', 'c'), containsChars('e'))));
 		twice(() -> assertThat(abcdefghi.window(3, 4),
-		                       contains(containsChars('a', 'b', 'c'), containsChars('e', 'f', 'g'), containsChars('i'))));
+		                       contains(containsChars('a', 'b', 'c'), containsChars('e', 'f', 'g'),
+		                                containsChars('i'))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -925,8 +929,8 @@ public class CharSeqTest {
 		twice(() -> assertThat(abc.batch(3), contains(containsChars('a', 'b', 'c'))));
 		twice(() -> assertThat(abcd.batch(3), contains(containsChars('a', 'b', 'c'), containsChars('d'))));
 		twice(() -> assertThat(abcde.batch(3), contains(containsChars('a', 'b', 'c'), containsChars('d', 'e'))));
-		twice(() -> assertThat(abcdefghi.batch(3),
-		                       contains(containsChars('a', 'b', 'c'), containsChars('d', 'e', 'f'), containsChars('g', 'h', 'i'))));
+		twice(() -> assertThat(abcdefghi.batch(3), contains(containsChars('a', 'b', 'c'), containsChars('d', 'e', 'f'),
+		                                                    containsChars('g', 'h', 'i'))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -949,8 +953,31 @@ public class CharSeqTest {
 
 		Sequence<CharSeq> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(containsChars('f', 'f'), containsChars('a', 'g'), containsChars('a', 'b', 'q'), containsChars('e'),
-		                                containsChars('d'))));
+		                       contains(containsChars('f', 'f'), containsChars('a', 'g'), containsChars('a', 'b', 'q'),
+		                                containsChars('e'), containsChars('d'))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<CharSeq> emptySplit = empty.split(x -> (x - 0x60) % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<CharSeq> oneSplit = a.split(x -> (x - 0x60) % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(containsChars('a'))));
+
+		Sequence<CharSeq> twoSplit = ab.split(x -> (x - 0x60) % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(containsChars('a', 'b'))));
+
+		Sequence<CharSeq> threeSplit = abc.split(x -> (x - 0x60) % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(containsChars('a', 'b'))));
+
+		Sequence<CharSeq> fiveSplit = abcde.split(x -> (x - 0x60) % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(containsChars('a', 'b'), containsChars('d', 'e'))));
+
+		Sequence<CharSeq> nineSplit = abcdefghi.split(x -> (x - 0x60) % 3 == 0);
+		twice(() -> assertThat(nineSplit,
+		                       contains(containsChars('a', 'b'), containsChars('d', 'e'), containsChars('g', 'h'))));
 	}
 
 	@Test

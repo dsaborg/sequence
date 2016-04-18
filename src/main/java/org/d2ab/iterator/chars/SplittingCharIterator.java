@@ -14,43 +14,49 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.chars;
 
-import java.util.ArrayList;
+import org.d2ab.function.chars.CharPredicate;
+import org.d2ab.iterator.MappedIterator;
+import org.d2ab.sequence.CharSeq;
+
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 
 /**
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public abstract class SplittingIterator<T, S> extends MappedReferenceIterator<T, S> {
-	private final Predicate<? super T> predicate;
+public class SplittingCharIterator extends MappedIterator<Character, CharIterator, CharSeq> {
+	private final CharPredicate predicate;
 
-	public SplittingIterator(Iterator<T> iterator, Predicate<? super T> predicate) {
+	public SplittingCharIterator(CharIterator iterator, CharPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}
 
 	@Override
-	public S next() {
+	public CharSeq next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		List<T> buffer = new ArrayList<>();
+		int position = 0;
+		char[] buffer = new char[10];
 		while (iterator.hasNext()) {
-			T next = iterator.next();
+			char next = iterator.nextChar();
 			if (predicate.test(next))
 				break;
-			buffer.add(next);
+			if (buffer.length == position)
+				buffer = Arrays.copyOf(buffer, buffer.length * 2);
+			buffer[position++] = next;
 		}
 
-		return toSequence(buffer);
-	}
+		if (position < buffer.length)
+			buffer = Arrays.copyOf(buffer, position);
 
-	protected abstract S toSequence(List<T> list);
+		return CharSeq.of(buffer);
+	}
 
 	@Override
 	public void remove() {

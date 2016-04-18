@@ -1002,6 +1002,28 @@ public class LongSequenceTest {
 		                                containsLongs(5L), containsLongs(4L))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<LongSequence> emptySplit = empty.split(x -> x % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<LongSequence> oneSplit = _1.split(x -> x % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(containsLongs(1))));
+
+		Sequence<LongSequence> twoSplit = _12.split(x -> x % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(containsLongs(1, 2))));
+
+		Sequence<LongSequence> threeSplit = _123.split(x -> x % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(containsLongs(1, 2))));
+
+		Sequence<LongSequence> fiveSplit = _12345.split(x -> x % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(containsLongs(1, 2), containsLongs(4, 5))));
+
+		Sequence<LongSequence> nineSplit = _123456789.split(x -> x % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(containsLongs(1, 2), containsLongs(4, 5), containsLongs(7, 8))));
+	}
+
 	@Test
 	public void removeAllAfterFilter() {
 		List<Long> original = new ArrayList<>(List.of(1L, 2L, 3L, 4L));

@@ -1032,6 +1032,15 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct
+	 * elements, where the given predicate determines which {@code ints} to split the partitioned elements around. The
+	 * {@code ints} matching the predicate are not included in the result.
+	 */
+	default Sequence<IntSequence> split(IntPredicate predicate) {
+		return () -> new SplittingIntIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
 	 */
 	default void removeAll() {

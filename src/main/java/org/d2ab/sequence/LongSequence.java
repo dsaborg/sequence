@@ -998,6 +998,15 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Split the {@code longs} of this {@code LongSequence} into a sequence of {@code LongSequence}s of distinct
+	 * elements, where the given predicate determines which {@code longs} to split the partitioned elements around. The
+	 * {@code longs} matching the predicate are not included in the result.
+	 */
+	default Sequence<LongSequence> split(LongPredicate predicate) {
+		return () -> new SplittingLongIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
 	 */
 	default void removeAll() {

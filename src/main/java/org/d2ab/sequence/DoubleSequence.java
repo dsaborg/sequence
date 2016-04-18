@@ -858,6 +858,15 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * Split the {@code doubles} of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
+	 * elements, where the given predicate determines which {@code doubles} to split the partitioned elements around. The
+	 * {@code doubles} matching the predicate are not included in the result.
+	 */
+	default Sequence<DoubleSequence> split(DoublePredicate predicate) {
+		return () -> new SplittingDoubleIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
 	 */
 	default void removeAll() {
