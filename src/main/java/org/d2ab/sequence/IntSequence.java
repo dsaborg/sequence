@@ -530,6 +530,16 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * Skip a set number of {@code ints} at the end of this {@code IntSequence}.
+	 */
+	default IntSequence skipTail(int skip) {
+		if (skip == 0)
+			return this;
+
+		return () -> new TailSkippingIntIterator(iterator(), skip);
+	}
+
+	/**
 	 * Limit the maximum number of {@code ints} returned by this {@code IntSequence}.
 	 */
 	default IntSequence limit(long limit) {

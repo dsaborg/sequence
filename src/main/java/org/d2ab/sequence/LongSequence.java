@@ -528,6 +528,16 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Skip a set number of {@code longs} at the end of this {@code LongSequence}.
+	 */
+	default LongSequence skipTail(int skip) {
+		if (skip == 0)
+			return this;
+
+		return () -> new TailSkippingLongIterator(iterator(), skip);
+	}
+
+	/**
 	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
 	 */
 	default LongSequence limit(long limit) {

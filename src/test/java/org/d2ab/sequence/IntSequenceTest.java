@@ -27,12 +27,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -71,9 +74,10 @@ public class IntSequenceTest {
 				fail("Should not get called");
 		});
 
+		IntSequence sequence = IntSequence.of(1, 2, 3, 4, 5);
 		twice(() -> {
 			int expected = 1;
-			for (int i : IntSequence.of(1, 2, 3, 4, 5))
+			for (int i : sequence)
 				assertThat(i, is(expected++));
 
 			assertThat(expected, is(6));
@@ -84,9 +88,15 @@ public class IntSequenceTest {
 	public void forEach() {
 		twice(() -> {
 			empty.forEachInt(c -> fail("Should not get called"));
-			_1.forEachInt(c -> assertThat(c, is(in(List.of(1)))));
-			_12.forEachInt(c -> assertThat(c, is(in(List.of(1, 2)))));
-			_123.forEachInt(c -> assertThat(c, is(in(List.of(1, 2, 3)))));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEachInt(c -> assertThat(c, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12.forEachInt(c -> assertThat(c, is(value.getAndIncrement())));
+
+			value.set(1);
+			_123.forEachInt(c -> assertThat(c, is(value.getAndIncrement())));
 		});
 	}
 
@@ -176,7 +186,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromInputStream() {
-		InputStream inputStream = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 
 		IntSequence seq = IntSequence.from(inputStream);
 		twice(() -> assertThat(seq, containsInts(1, 2, 3, 4, 5)));
@@ -184,7 +194,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromInputStreamWhenBegun() throws IOException {
-		InputStream inputStream = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 		assertThat(inputStream.read(), is(1));
 
 		IntSequence seq = IntSequence.from(inputStream);
@@ -249,6 +259,24 @@ public class IntSequenceTest {
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
 		IntSequence skipFour = _123.skip(4);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
+	public void skipTail() {
+		IntSequence skipNone = _123.skipTail(0);
+		twice(() -> assertThat(skipNone, containsInts(1, 2, 3)));
+
+		IntSequence skipOne = _123.skipTail(1);
+		twice(() -> assertThat(skipOne, containsInts(1, 2)));
+
+		IntSequence skipTwo = _123.skipTail(2);
+		twice(() -> assertThat(skipTwo, containsInts(1)));
+
+		IntSequence skipThree = _123.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		IntSequence skipFour = _123.skipTail(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
@@ -782,13 +810,13 @@ public class IntSequenceTest {
 	@Test
 	public void toChars() {
 		CharSeq charSeq = IntSequence.increasingFrom('a').limit(5).toChars();
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void toLongs() {
 		LongSequence longSequence = _12345.toLongs();
-		twice(() -> assertThat(longSequence, contains(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(longSequence, containsLongs(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
@@ -800,7 +828,7 @@ public class IntSequenceTest {
 	@Test
 	public void toCharsMapped() {
 		CharSeq charSeq = _12345.toChars(i -> (char) ('a' + i - 1));
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
@@ -808,19 +836,20 @@ public class IntSequenceTest {
 		long maxInt = Integer.MAX_VALUE;
 
 		LongSequence longSequence = _12345.toLongs(i -> i * maxInt);
-		twice(() -> assertThat(longSequence, contains(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
+		twice(() -> assertThat(longSequence,
+		                       containsLongs(maxInt, 2L * maxInt, 3L * maxInt, 4L * maxInt, 5L * maxInt)));
 	}
 
 	@Test
 	public void toDoublesMapped() {
 		DoubleSequence doubleSequence = _12345.toDoubles(i -> i / 2.0);
-		twice(() -> assertThat(doubleSequence, contains(0.5, 1.0, 1.5, 2.0, 2.5)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(0.5, 1.0, 1.5, 2.0, 2.5)));
 	}
 
 	@Test
 	public void toSequence() {
-		Sequence<Integer> empty = IntSequence.empty().toSequence(i -> i + 1);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		Sequence<Integer> emptySequence = empty.toSequence(i -> i + 1);
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
 
 		Sequence<Integer> ints = _12345.toSequence(i -> i + 1);
 		twice(() -> assertThat(ints, contains(2, 3, 4, 5, 6)));

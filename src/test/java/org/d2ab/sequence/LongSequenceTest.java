@@ -19,8 +19,8 @@ package org.d2ab.sequence;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.longs.LongIterable;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.longs.MappedLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.iterator.longs.MappedLongIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -29,6 +29,7 @@ import java.util.function.LongBinaryOperator;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -84,9 +85,10 @@ public class LongSequenceTest {
 				fail("Should not get called");
 		});
 
+		LongSequence sequence = LongSequence.of(1L, 2L, 3L, 4L, 5L);
 		twice(() -> {
 			long expected = 1;
-			for (long i : LongSequence.of(1L, 2L, 3L, 4L, 5L))
+			for (long i : sequence)
 				assertThat(i, is(expected++));
 
 			assertThat(expected, is(6L));
@@ -230,6 +232,24 @@ public class LongSequenceTest {
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
 		LongSequence skipFour = _123.skip(4L);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
+	public void skipTail() {
+		LongSequence skipNone = _123.skipTail(0);
+		twice(() -> assertThat(skipNone, containsLongs(1, 2, 3)));
+
+		LongSequence skipOne = _123.skipTail(1);
+		twice(() -> assertThat(skipOne, containsLongs(1, 2)));
+
+		LongSequence skipTwo = _123.skipTail(2);
+		twice(() -> assertThat(skipTwo, containsLongs(1)));
+
+		LongSequence skipThree = _123.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		LongSequence skipFour = _123.skipTail(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
@@ -716,12 +736,12 @@ public class LongSequenceTest {
 		twice(() -> assertThat(range2to_2, containsLongs(2L, 1L, 0L, -1L, -2L)));
 
 		LongSequence maxValue = LongSequence.range(Long.MAX_VALUE - 3, Long.MAX_VALUE);
-		twice(() -> assertThat(maxValue,
-		                       containsLongs(Long.MAX_VALUE - 3, Long.MAX_VALUE - 2, Long.MAX_VALUE - 1, Long.MAX_VALUE)));
+		twice(() -> assertThat(maxValue, containsLongs(Long.MAX_VALUE - 3, Long.MAX_VALUE - 2, Long.MAX_VALUE - 1,
+		                                               Long.MAX_VALUE)));
 
 		LongSequence minValue = LongSequence.range(Long.MIN_VALUE + 3, Long.MIN_VALUE);
-		twice(() -> assertThat(minValue,
-		                       containsLongs(Long.MIN_VALUE + 3, Long.MIN_VALUE + 2, Long.MIN_VALUE + 1, Long.MIN_VALUE)));
+		twice(() -> assertThat(minValue, containsLongs(Long.MIN_VALUE + 3, Long.MIN_VALUE + 2, Long.MIN_VALUE + 1,
+		                                               Long.MIN_VALUE)));
 	}
 
 	@Test
@@ -754,7 +774,7 @@ public class LongSequenceTest {
 	@Test
 	public void toChars() {
 		CharSeq charSeq = LongSequence.increasingFrom('a').limit(5).toChars();
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
@@ -772,7 +792,7 @@ public class LongSequenceTest {
 	@Test
 	public void toCharsMapped() {
 		CharSeq charSeq = _12345.toChars(l -> (char) (0x60 + l));
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
@@ -917,8 +937,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_12.window(3), contains(containsLongs(1L, 2L))));
 		twice(() -> assertThat(_123.window(3), contains(containsLongs(1L, 2L, 3L))));
 		twice(() -> assertThat(_1234.window(3), contains(containsLongs(1L, 2L, 3L), containsLongs(2L, 3L, 4L))));
-		twice(() -> assertThat(_12345.window(3),
-		                       contains(containsLongs(1L, 2L, 3L), containsLongs(2L, 3L, 4L), containsLongs(3L, 4L, 5L))));
+		twice(() -> assertThat(_12345.window(3), contains(containsLongs(1L, 2L, 3L), containsLongs(2L, 3L, 4L),
+		                                                  containsLongs(3L, 4L, 5L))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -931,7 +951,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_1234.window(3, 2), contains(containsLongs(1L, 2L, 3L), containsLongs(3L, 4L))));
 		twice(() -> assertThat(_12345.window(3, 2), contains(containsLongs(1L, 2L, 3L), containsLongs(3L, 4L, 5L))));
 		twice(() -> assertThat(_123456789.window(3, 2),
-		                       contains(containsLongs(1L, 2L, 3L), containsLongs(3L, 4L, 5L), containsLongs(5L, 6L, 7L),
+		                       contains(containsLongs(1L, 2L, 3L), containsLongs(3L, 4L, 5L), containsLongs(5L, 6L,
+		                                                                                                    7L),
 		                                containsLongs(7L, 8L, 9L))));
 
 		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
@@ -953,8 +974,8 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_123.batch(3), contains(containsLongs(1L, 2L, 3L))));
 		twice(() -> assertThat(_1234.batch(3), contains(containsLongs(1L, 2L, 3L), containsLongs(4L))));
 		twice(() -> assertThat(_12345.batch(3), contains(containsLongs(1L, 2L, 3L), containsLongs(4L, 5L))));
-		twice(() -> assertThat(_123456789.batch(3),
-		                       contains(containsLongs(1L, 2L, 3L), containsLongs(4L, 5L, 6L), containsLongs(7L, 8L, 9L))));
+		twice(() -> assertThat(_123456789.batch(3), contains(containsLongs(1L, 2L, 3L), containsLongs(4L, 5L, 6L),
+		                                                     containsLongs(7L, 8L, 9L))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -977,8 +998,8 @@ public class LongSequenceTest {
 
 		Sequence<LongSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomPartitioned,
-		                       contains(containsLongs(6L, 6L), containsLongs(1L), containsLongs(-7L, 1L, 2L, 17L), containsLongs(5L),
-		                                containsLongs(4L))));
+		                       contains(containsLongs(6L, 6L), containsLongs(1L), containsLongs(-7L, 1L, 2L, 17L),
+		                                containsLongs(5L), containsLongs(4L))));
 	}
 
 	@Test
