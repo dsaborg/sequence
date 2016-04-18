@@ -24,7 +24,7 @@ late-evaluating as possible, with minimal overhead.
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables`
 instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
-for programmers wanting to perform common data processing tasks on moderately small collections. If you need parallel
+for programmers wanting to perform common data processing tasks on moderately sized collections. If you need parallel
 iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
 ```Java
