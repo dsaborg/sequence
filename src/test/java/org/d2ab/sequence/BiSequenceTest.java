@@ -771,6 +771,56 @@ public class BiSequenceTest {
 		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<BiSequence<String, Integer>> emptySplit = empty.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<BiSequence<String, Integer>> oneSplit = _1.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<BiSequence<String, Integer>> twoSplit = _12.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threeSplit = _123.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> fiveSplit = _12345.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)),
+		                                           contains(Pair.of("4", 4), Pair.of("5", 5)))));
+
+		Sequence<BiSequence<String, Integer>> nineSplit = _123456789.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)),
+		                                           contains(Pair.of("4", 4), Pair.of("5", 5)),
+		                                           contains(Pair.of("7", 7), Pair.of("8", 8)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitLeftRight() {
+		Sequence<BiSequence<String, Integer>> emptySplit = empty.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<BiSequence<String, Integer>> oneSplit = _1.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<BiSequence<String, Integer>> twoSplit = _12.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threeSplit = _123.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> fiveSplit = _12345.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)),
+		                                           contains(Pair.of("4", 4), Pair.of("5", 5)))));
+
+		Sequence<BiSequence<String, Integer>> nineSplit = _123456789.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)),
+		                                           contains(Pair.of("4", 4), Pair.of("5", 5)),
+		                                           contains(Pair.of("7", 7), Pair.of("8", 8)))));
+	}
+
 	@Test
 	public void step() {
 		twice(() -> assertThat(_123456789.step(3), contains(Pair.of("1", 1), Pair.of("4", 4), Pair.of("7", 7))));

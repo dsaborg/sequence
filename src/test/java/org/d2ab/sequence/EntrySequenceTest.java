@@ -19,7 +19,6 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.*;
@@ -90,8 +89,8 @@ public class EntrySequenceTest {
 				EntrySequence.of(Maps.entry("1", 1), Maps.entry(null, 2), null, Maps.entry("4", null),
 				                 Maps.entry(null, null));
 
-		twice(() -> assertThat(sequence, contains(Maps.entry("1", 1), Maps.entry(null, 2), null,
-		                                          Maps.entry("4", null), Maps.entry(null, null))));
+		twice(() -> assertThat(sequence, contains(Maps.entry("1", 1), Maps.entry(null, 2), null, Maps.entry("4", null),
+		                                          Maps.entry(null, null))));
 	}
 
 	@Test
@@ -803,6 +802,56 @@ public class EntrySequenceTest {
 		                                                       contains(Maps.entry("5", 5), Maps.entry("67", 67)))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<EntrySequence<String, Integer>> oneSplit = _1.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
+
+		Sequence<EntrySequence<String, Integer>> twoSplit = _12.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> threeSplit = _123.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> fiveSplit = _12345.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)),
+		                                           contains(Maps.entry("4", 4), Maps.entry("5", 5)))));
+
+		Sequence<EntrySequence<String, Integer>> nineSplit = _123456789.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)),
+		                                           contains(Maps.entry("4", 4), Maps.entry("5", 5)),
+		                                           contains(Maps.entry("7", 7), Maps.entry("8", 8)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitKeyValue() {
+		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<EntrySequence<String, Integer>> oneSplit = _1.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
+
+		Sequence<EntrySequence<String, Integer>> twoSplit = _12.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> threeSplit = _123.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> fiveSplit = _12345.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)),
+		                                           contains(Maps.entry("4", 4), Maps.entry("5", 5)))));
+
+		Sequence<EntrySequence<String, Integer>> nineSplit = _123456789.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)),
+		                                           contains(Maps.entry("4", 4), Maps.entry("5", 5)),
+		                                           contains(Maps.entry("7", 7), Maps.entry("8", 8)))));
+	}
+
 	@Test
 	public void step() {
 		twice(() -> assertThat(_123456789.step(3),
@@ -1071,8 +1120,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flattenBiFunction() {
-		EntrySequence<String, Integer> flattened = _123.flatten((k, v) -> List.of(Maps.entry(k, v), Maps.entry("0",
-		                                                                                                      0)));
+		EntrySequence<String, Integer> flattened =
+				_123.flatten((k, v) -> List.of(Maps.entry(k, v), Maps.entry("0", 0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
 		                                Maps.entry("3", 3), Maps.entry("0", 0))));

@@ -825,6 +825,29 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
+	 * Split the elements of this {@code EntrySequence} into a sequence of {@code EntrySequence}s of distinct elements,
+	 * where the given predicate determines which elements to split the partitioned elements around. The elements
+	 * matching the predicate are not included in the result.
+	 */
+	default Sequence<EntrySequence<K, V>> split(Predicate<? super Entry<K, V>> predicate) {
+		return () -> new SplittingIterator<Entry<K, V>, EntrySequence<K, V>>(iterator(), predicate) {
+			@Override
+			protected EntrySequence<K, V> toSequence(List<Entry<K, V>> list) {
+				return EntrySequence.from(list);
+			}
+		};
+	}
+
+	/**
+	 * Split the elements of this {@code EntrySequence} into a sequence of {@code EntrySequence}s of distinct elements,
+	 * where the given predicate determines which elements to split the partitioned elements around. The elements
+	 * matching the predicate are not included in the result.
+	 */
+	default Sequence<EntrySequence<K, V>> split(BiPredicate<? super K, ? super V> predicate) {
+		return split(Maps.asPredicate(predicate));
+	}
+
+	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> step(int step) {
