@@ -18,7 +18,7 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public class SortingIterator<T> extends UnaryReferenceIterator<T> {
+public class SortingIterator<T> extends ReferenceIterator<T> {
 	private final Comparator<? super T> comparator;
 
 	private Iterator<T> sortedIterator;

@@ -16,13 +16,13 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 import org.d2ab.sequence.CharSeq;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public class WindowingCharIterator extends DelegatingIterator<Character, CharIterator, CharSeq> {
+public class WindowingCharIterator extends MappedIterator<Character, CharIterator, CharSeq> {
 	private final int window;
 	private final int step;
 

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.chars;
+package org.d2ab.iterator.ints;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 
 import java.util.Iterator;
 
 /**
- * A superclass for delegating {@link CharIterator}s.
+ * A superclass for delegating {@link IntIterator}s.
  */
-public abstract class DelegatingCharIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Character>
-		implements CharIterator {
-	public DelegatingCharIterator(I iterator) {
+public abstract class MappedIntIterator<T, I extends Iterator<T>> extends MappedIterator<T, I, Integer>
+		implements IntIterator {
+	public MappedIntIterator(I iterator) {
 		super(iterator);
 	}
 }

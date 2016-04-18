@@ -19,7 +19,7 @@ package org.d2ab.iterator.doubles;
 /**
  * A {@link DoubleIterator} that converts doubles to other doubles.
  */
-public abstract class UnaryDoubleIterator extends DelegatingDoubleIterator<Double, DoubleIterator> {
+public abstract class UnaryDoubleIterator extends MappedDoubleIterator<Double, DoubleIterator> {
 	protected UnaryDoubleIterator(DoubleIterator iterator) {
 		super(iterator);
 	}

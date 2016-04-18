@@ -20,7 +20,7 @@ import org.d2ab.function.longs.LongBiPredicate;
 
 import java.util.NoSuchElementException;
 
-public class ForwardPeekingFilteringLongIterator extends DelegatingLongIterator<Long, LongIterator> {
+public class ForwardPeekingFilteringLongIterator extends MappedLongIterator<Long, LongIterator> {
 	private long lastNext;
 	private final LongBiPredicate predicate;
 

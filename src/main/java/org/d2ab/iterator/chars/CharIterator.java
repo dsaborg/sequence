@@ -81,7 +81,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(Iterator<Character> iterator) {
-		return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
+		return new MappedCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override
 			public char nextChar() {
 				return iterator.next();
@@ -90,7 +90,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfInt iterator) {
-		return new DelegatingCharIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+		return new MappedCharIterator<Integer, OfInt>(iterator) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextInt();
@@ -99,7 +99,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfInt iterator, IntToCharFunction mapper) {
-		return new DelegatingCharIterator<Integer, PrimitiveIterator.OfInt>(iterator) {
+		return new MappedCharIterator<Integer, OfInt>(iterator) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextInt());
@@ -108,7 +108,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfLong iterator) {
-		return new DelegatingCharIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+		return new MappedCharIterator<Long, OfLong>(iterator) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextLong();
@@ -117,7 +117,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfLong iterator, LongToCharFunction mapper) {
-		return new DelegatingCharIterator<Long, PrimitiveIterator.OfLong>(iterator) {
+		return new MappedCharIterator<Long, OfLong>(iterator) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextLong());

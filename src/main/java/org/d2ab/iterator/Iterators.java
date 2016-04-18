@@ -51,7 +51,7 @@ public class Iterators {
 	}
 
 	public static <T> Iterator<T> from(CharIterator iterator, CharFunction<T> mapper) {
-		return new DelegatingIterator<Character, CharIterator, T>(iterator) {
+		return new MappedIterator<Character, CharIterator, T>(iterator) {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextChar());
@@ -60,7 +60,7 @@ public class Iterators {
 	}
 
 	public static <T> Iterator<T> from(PrimitiveIterator.OfInt iterator, IntFunction<T> mapper) {
-		return new DelegatingIterator<Integer, PrimitiveIterator.OfInt, T>(iterator) {
+		return new MappedIterator<Integer, PrimitiveIterator.OfInt, T>(iterator) {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextInt());
@@ -69,7 +69,7 @@ public class Iterators {
 	}
 
 	public static <T> Iterator<T> from(PrimitiveIterator.OfDouble iterator, DoubleFunction<T> mapper) {
-		return new DelegatingIterator<Double, PrimitiveIterator.OfDouble, T>(iterator) {
+		return new MappedIterator<Double, PrimitiveIterator.OfDouble, T>(iterator) {
 			@Override
 			public T next() {
 				return mapper.apply(iterator.nextDouble());

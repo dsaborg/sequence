@@ -19,7 +19,7 @@ package org.d2ab.iterator.chars;
 /**
  * A {@link CharIterator} that converts chars to other chars.
  */
-public abstract class UnaryCharIterator extends DelegatingCharIterator<Character, CharIterator> {
+public abstract class UnaryCharIterator extends MappedCharIterator<Character, CharIterator> {
 	protected UnaryCharIterator(CharIterator iterator) {
 		super(iterator);
 	}

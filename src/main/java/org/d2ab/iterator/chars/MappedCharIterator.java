@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.chars;
+
+import org.d2ab.iterator.MappedIterator;
 
 import java.util.Iterator;
 
 /**
- * Base class for reference {@link Iterator}s that delegate to another {@link Iterator} of the same type of values.
+ * A superclass for delegating {@link CharIterator}s.
  */
-public abstract class UnaryReferenceIterator<T> extends DelegatingReferenceIterator<T, T> {
-	protected UnaryReferenceIterator(Iterator<T> iterator) {
+public abstract class MappedCharIterator<T, I extends Iterator<T>> extends MappedIterator<T, I, Character>
+		implements CharIterator {
+	public MappedCharIterator(I iterator) {
 		super(iterator);
 	}
 }

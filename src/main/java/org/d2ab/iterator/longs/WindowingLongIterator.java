@@ -16,13 +16,13 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 import org.d2ab.sequence.LongSequence;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public class WindowingLongIterator extends DelegatingIterator<Long, LongIterator, LongSequence> {
+public class WindowingLongIterator extends MappedIterator<Long, LongIterator, LongSequence> {
 	private final int window;
 	private final int step;
 

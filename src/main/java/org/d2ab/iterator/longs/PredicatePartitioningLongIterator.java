@@ -17,7 +17,7 @@
 package org.d2ab.iterator.longs;
 
 import org.d2ab.function.longs.LongBiPredicate;
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.LongSequence;
 
@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningLongIterator<T> extends DelegatingIterator<Long, LongIterator, LongSequence> {
+public class PredicatePartitioningLongIterator<T> extends MappedIterator<Long, LongIterator, LongSequence> {
 	private final LongBiPredicate predicate;
 	private long next;
 	private boolean hasNext;

@@ -16,13 +16,13 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 import org.d2ab.sequence.DoubleSequence;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public class WindowingDoubleIterator extends DelegatingIterator<Double, DoubleIterator, DoubleSequence> {
+public class WindowingDoubleIterator extends MappedIterator<Double, DoubleIterator, DoubleSequence> {
 	private final int window;
 	private final int step;
 

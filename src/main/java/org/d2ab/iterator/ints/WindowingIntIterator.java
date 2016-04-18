@@ -16,13 +16,13 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 import org.d2ab.sequence.IntSequence;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public class WindowingIntIterator extends DelegatingIterator<Integer, IntIterator, IntSequence> {
+public class WindowingIntIterator extends MappedIterator<Integer, IntIterator, IntSequence> {
 	private final int window;
 	private final int step;
 

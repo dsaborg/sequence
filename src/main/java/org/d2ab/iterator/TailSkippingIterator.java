@@ -16,22 +16,36 @@
 
 package org.d2ab.iterator;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * An {@link Iterator} that iterates over the elements of another {@link Iterator} in reverse order, by creating a
- * buffer over the elements in the {@link Iterator} and reversing the order of iteration.
+ * An iterator that skips a set number of steps at the end of another iterator.
  */
-public class ReverseIterator<T> extends ReferenceIterator<T> {
-	private ListIterator<? extends T> listIterator;
+public class TailSkippingIterator<T> extends ReferenceIterator<T> {
+	private final int skip;
 
-	public ReverseIterator(Iterator<T> iterator) {
+	private boolean started;
+	private Object[] buffer;
+	private int position;
+
+	public TailSkippingIterator(Iterator<T> iterator, int skip) {
 		super(iterator);
+		this.skip = skip;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();
+		if (!started) {
+			buffer = new Object[skip];
+			position = 0;
+			while (position < skip && iterator.hasNext())
+				buffer[position++] = iterator.next();
+			position = 0;
+
+			started = true;
+		}
+		return super.hasNext();
 	}
 
 	@Override
@@ -39,17 +53,10 @@ public class ReverseIterator<T> extends ReferenceIterator<T> {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		if (listIterator == null) {
-			List<T> list = new ArrayList<>();
-			iterator.forEachRemaining(list::add);
-			listIterator = list.listIterator(list.size());
-		}
-
-		return listIterator.previous();
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		@SuppressWarnings("unchecked")
+		T next = (T) buffer[position];
+		buffer[position++] = iterator.next();
+		position = position % skip;
+		return next;
 	}
 }

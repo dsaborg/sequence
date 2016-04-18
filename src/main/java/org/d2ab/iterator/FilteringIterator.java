@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public class FilteringIterator<T> extends UnaryReferenceIterator<T> {
+public class FilteringIterator<T> extends ReferenceIterator<T> {
 	private final Predicate<? super T> predicate;
 
 	private T next;

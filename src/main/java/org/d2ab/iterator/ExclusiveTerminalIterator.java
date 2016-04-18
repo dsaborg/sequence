@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class ExclusiveTerminalIterator<T> extends UnaryReferenceIterator<T> {
+public class ExclusiveTerminalIterator<T> extends ReferenceIterator<T> {
 	private final Predicate<? super T> terminalPredicate;
 
 	private T next;

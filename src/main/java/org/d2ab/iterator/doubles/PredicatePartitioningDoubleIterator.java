@@ -17,7 +17,7 @@
 package org.d2ab.iterator.doubles;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.DoubleSequence;
 
@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningDoubleIterator<T> extends DelegatingIterator<Double, DoubleIterator, DoubleSequence> {
+public class PredicatePartitioningDoubleIterator<T> extends MappedIterator<Double, DoubleIterator, DoubleSequence> {
 	private final DoubleBiPredicate predicate;
 	private double next;
 	private boolean hasNext;

@@ -242,6 +242,24 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void skipTail() {
+		Sequence<Integer> skipNone = _123.skipTail(0);
+		twice(() -> assertThat(skipNone, contains(1, 2, 3)));
+
+		Sequence<Integer> skipOne = _123.skipTail(1);
+		twice(() -> assertThat(skipOne, contains(1, 2)));
+
+		Sequence<Integer> skipTwo = _123.skipTail(2);
+		twice(() -> assertThat(skipTwo, contains(1)));
+
+		Sequence<Integer> skipThree = _123.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		Sequence<Integer> skipFour = _123.skipTail(4);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
 	public void limit() {
 		Sequence<Integer> limitNone = _123.limit(0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));

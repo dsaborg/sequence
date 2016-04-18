@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 
-public class ForwardPeekingFilteringIterator<T> extends UnaryReferenceIterator<T> {
+public class ForwardPeekingFilteringIterator<T> extends ReferenceIterator<T> {
 	private final T replacement;
 	private final BiPredicate<? super T, ? super T> predicate;
 

@@ -23,7 +23,7 @@ import java.util.function.BiPredicate;
 /**
  * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public class BackPeekingFilteringIterator<T> extends UnaryReferenceIterator<T> {
+public class BackPeekingFilteringIterator<T> extends ReferenceIterator<T> {
 	private final BiPredicate<? super T, ? super T> predicate;
 
 	private T next;

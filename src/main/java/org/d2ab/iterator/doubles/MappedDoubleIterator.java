@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.longs;
+package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.MappedIterator;
 
 import java.util.Iterator;
 
 /**
- * A superclass for delegating {@link LongIterator}s.
+ * A superclass for delegating {@link DoubleIterator}s.
  */
-public abstract class DelegatingLongIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Long>
-		implements LongIterator {
-	protected DelegatingLongIterator(I iterator) {
+public abstract class MappedDoubleIterator<T, I extends Iterator<T>> extends MappedIterator<T, I, Double>
+		implements DoubleIterator {
+	public MappedDoubleIterator(I iterator) {
 		super(iterator);
 	}
 }

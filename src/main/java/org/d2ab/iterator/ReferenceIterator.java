@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.doubles;
-
-import org.d2ab.iterator.DelegatingIterator;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
 
 /**
- * A superclass for delegating {@link DoubleIterator}s.
+ * Base class for reference {@link Iterator}s that delegate to another {@link Iterator} of the same type of values.
  */
-public abstract class DelegatingDoubleIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Double>
-		implements DoubleIterator {
-	public DelegatingDoubleIterator(I iterator) {
+public abstract class ReferenceIterator<T> extends MappedReferenceIterator<T, T> {
+	protected ReferenceIterator(Iterator<T> iterator) {
 		super(iterator);
 	}
 }

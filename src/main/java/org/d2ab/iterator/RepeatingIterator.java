@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  * {@link Iterator} to terminate by providing an empty {@link Iterator}. If the {@link Iterable} never returns an
  * empty {@link Iterator}, this {@link Iterator} will never terminate.
  */
-public class RepeatingIterator<T> extends UnaryReferenceIterator<T> {
+public class RepeatingIterator<T> extends ReferenceIterator<T> {
 	private final Iterable<? extends T> iterable;
 	private long times;
 

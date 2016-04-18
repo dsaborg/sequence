@@ -18,7 +18,7 @@ package org.d2ab.iterator;
 
 import java.util.*;
 
-public abstract class WindowingIterator<T, S> extends DelegatingReferenceIterator<T, S> {
+public abstract class WindowingIterator<T, S> extends MappedReferenceIterator<T, S> {
 	private final int window;
 	private final int step;
 
