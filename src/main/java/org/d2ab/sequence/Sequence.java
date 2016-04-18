@@ -1067,6 +1067,20 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Split the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, where the
+	 * given predicate determines which elements to split the partitioned elements around. The elements matching the
+	 * predicate are not included in the result.
+	 */
+	default Sequence<Sequence<T>> split(Predicate<? super T> predicate) {
+		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), predicate) {
+			@Override
+			protected Sequence<T> toSequence(List<T> list) {
+				return ListSequence.from(list);
+			}
+		};
+	}
+
+	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
 	default Sequence<T> step(long step) {

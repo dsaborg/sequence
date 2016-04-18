@@ -1089,6 +1089,28 @@ public class SequenceTest {
 		                       contains(contains(67), contains(5, 43), contains(3, 5, 7, 24), contains(5, 67))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void split() {
+		Sequence<Sequence<Integer>> emptySplit = empty.split(x -> x % 3 == 0);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<Sequence<Integer>> oneSplit = _1.split(x -> x % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(1))));
+
+		Sequence<Sequence<Integer>> twoSplit = _12.split(x -> x % 3 == 0);
+		twice(() -> assertThat(twoSplit, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> threeSplit = _123.split(x -> x % 3 == 0);
+		twice(() -> assertThat(threeSplit, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> fiveSplit = _12345.split(x -> x % 3 == 0);
+		twice(() -> assertThat(fiveSplit, contains(contains(1, 2), contains(4, 5))));
+
+		Sequence<Sequence<Integer>> nineSplit = _123456789.split(x -> x % 3 == 0);
+		twice(() -> assertThat(nineSplit, contains(contains(1, 2), contains(4, 5), contains(7, 8))));
+	}
+
 	@Test
 	public void step() {
 		twice(() -> assertThat(_123456789.step(3), contains(1, 4, 7)));
