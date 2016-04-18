@@ -248,6 +248,24 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void skipTail() {
+		BiSequence<String, Integer> skipNone = _123.skipTail(0);
+		twice(() -> assertThat(skipNone, contains(entries123)));
+
+		BiSequence<String, Integer> skipOne = _123.skipTail(1);
+		twice(() -> assertThat(skipOne, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> skipTwo = _123.skipTail(2);
+		twice(() -> assertThat(skipTwo, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> skipThree = _123.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		BiSequence<String, Integer> skipFour = _123.skipTail(4);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
 	public void limit() {
 		BiSequence<String, Integer> limitZero = _123.limit(0);
 		twice(() -> assertThat(limitZero, is(emptyIterable())));

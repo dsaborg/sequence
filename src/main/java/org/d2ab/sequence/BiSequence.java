@@ -320,6 +320,16 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
+	 * Skip a set number of steps at the end of this {@code BiSequence}.
+	 */
+	default BiSequence<L, R> skipTail(long skip) {
+		if (skip == 0)
+			return this;
+
+		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
+	}
+
+	/**
 	 * Limit the maximum number of results returned by this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> limit(int limit) {

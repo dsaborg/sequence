@@ -559,7 +559,7 @@ public interface Sequence<T> extends Iterable<T> {
 	default Sequence<T> skipTail(long skip) {
 		if (skip == 0)
 			return this;
-		
+
 		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
 	}
 

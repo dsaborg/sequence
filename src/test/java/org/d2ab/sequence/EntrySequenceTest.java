@@ -19,6 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterator.Iterators;
+import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.*;
@@ -264,6 +265,24 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
 		EntrySequence<String, Integer> skipFour = _123.skip(4);
+		twice(() -> assertThat(skipFour, is(emptyIterable())));
+	}
+
+	@Test
+	public void skipTail() {
+		EntrySequence<String, Integer> skipNone = _123.skipTail(0);
+		twice(() -> assertThat(skipNone, contains(entries123)));
+
+		EntrySequence<String, Integer> skipOne = _123.skipTail(1);
+		twice(() -> assertThat(skipOne, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> skipTwo = _123.skipTail(2);
+		twice(() -> assertThat(skipTwo, contains(Maps.entry("1", 1))));
+
+		EntrySequence<String, Integer> skipThree = _123.skipTail(3);
+		twice(() -> assertThat(skipThree, is(emptyIterable())));
+
+		EntrySequence<String, Integer> skipFour = _123.skipTail(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 

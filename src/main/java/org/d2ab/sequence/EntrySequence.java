@@ -325,6 +325,16 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
+	 * Skip a set number of steps at the end of this {@code EntrySequence}.
+	 */
+	default EntrySequence<K, V> skipTail(long skip) {
+		if (skip == 0)
+			return this;
+
+		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
+	}
+
+	/**
 	 * Limit the maximum number of results returned by this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> limit(int limit) {
