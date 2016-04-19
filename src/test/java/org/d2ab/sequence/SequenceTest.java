@@ -1490,44 +1490,44 @@ public class SequenceTest {
 
 	@Test
 	public void intsStartingAt() {
-		Sequence<Integer> startingAtMinus17 = Sequence.ints(-17);
+		Sequence<Integer> startingAtMinus17 = Sequence.intsFrom(-17);
 		twice(() -> assertThat(startingAtMinus17, beginsWith(-17, -16, -15, -14, -13)));
 
-		Sequence<Integer> startingAt17 = Sequence.ints(17);
+		Sequence<Integer> startingAt17 = Sequence.intsFrom(17);
 		twice(() -> assertThat(startingAt17, beginsWith(17, 18, 19, 20, 21)));
 
-		Sequence<Integer> startingAt777 = Sequence.ints(777);
+		Sequence<Integer> startingAt777 = Sequence.intsFrom(777);
 		twice(() -> assertThat(startingAt777.limit(7000).last(), is(Optional.of(7776))));
 
-		Sequence<Integer> startingAtMaxValue = Sequence.ints(Integer.MAX_VALUE - 2);
+		Sequence<Integer> startingAtMaxValue = Sequence.intsFrom(Integer.MAX_VALUE - 2);
 		twice(() -> assertThat(startingAtMaxValue,
 		                       contains(Integer.MAX_VALUE - 2, Integer.MAX_VALUE - 1, Integer.MAX_VALUE)));
 	}
 
 	@Test
 	public void longsStartingAt() {
-		Sequence<Long> startingAtMinus17 = Sequence.longs(-17);
+		Sequence<Long> startingAtMinus17 = Sequence.longsFrom(-17);
 		twice(() -> assertThat(startingAtMinus17, beginsWith(-17L, -16L, -15L, -14L, -13L)));
 
-		Sequence<Long> startingAt17 = Sequence.longs(17);
+		Sequence<Long> startingAt17 = Sequence.longsFrom(17);
 		twice(() -> assertThat(startingAt17, beginsWith(17L, 18L, 19L, 20L, 21L)));
 
-		Sequence<Long> startingAt777 = Sequence.longs(777);
+		Sequence<Long> startingAt777 = Sequence.longsFrom(777);
 		twice(() -> assertThat(startingAt777.limit(7000).last(), is(Optional.of(7776L))));
 
-		Sequence<Long> startingAtMaxValue = Sequence.longs(Long.MAX_VALUE - 2);
+		Sequence<Long> startingAtMaxValue = Sequence.longsFrom(Long.MAX_VALUE - 2);
 		twice(() -> assertThat(startingAtMaxValue, contains(Long.MAX_VALUE - 2, Long.MAX_VALUE - 1, Long.MAX_VALUE)));
 	}
 
 	@Test
 	public void charsStartingAt() {
-		Sequence<Character> startingAtA = Sequence.chars('A');
+		Sequence<Character> startingAtA = Sequence.charsFrom('A');
 		twice(() -> assertThat(startingAtA, beginsWith('A', 'B', 'C', 'D', 'E')));
 
-		Sequence<Character> startingAt1400 = Sequence.chars('\u1400');
+		Sequence<Character> startingAt1400 = Sequence.charsFrom('\u1400');
 		twice(() -> assertThat(startingAt1400.limit(256).last(), is(Optional.of('\u14FF'))));
 
-		Sequence<Character> startingAtMaxValue = Sequence.chars((char) (Character.MAX_VALUE - 2));
+		Sequence<Character> startingAtMaxValue = Sequence.charsFrom((char) (Character.MAX_VALUE - 2));
 		twice(() -> assertThat(startingAtMaxValue,
 		                       contains((char) (Character.MAX_VALUE - 2), (char) (Character.MAX_VALUE - 1),
 		                                Character.MAX_VALUE)));

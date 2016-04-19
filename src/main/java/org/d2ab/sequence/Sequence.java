@@ -188,7 +188,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Integer#MAX_VALUE} inclusive.
 	 *
 	 * @see #intsFromZero()
-	 * @see #ints(int)
+	 * @see #intsFrom(int)
 	 * @see #range(int, int)
 	 */
 	static Sequence<Integer> ints() {
@@ -200,7 +200,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Integer#MAX_VALUE} inclusive.
 	 *
 	 * @see #ints()
-	 * @see #ints(int)
+	 * @see #intsFrom(int)
 	 * @see #range(int, int)
 	 */
 	static Sequence<Integer> intsFromZero() {
@@ -216,8 +216,25 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #ints()
 	 * @see #range(int, int)
+	 *
+	 * @deprecated Use {@link #intsFrom(int)} instead.
 	 */
+	@Deprecated
 	static Sequence<Integer> ints(int start) {
+		return intsFrom(start);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Integer} numbers starting at the given start and ending at {@link
+	 * Integer#MAX_VALUE} inclusive.
+	 * <p>
+	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
+	 * eventually {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #ints()
+	 * @see #range(int, int)
+	 */
+	static Sequence<Integer> intsFrom(int start) {
 		return range(start, Integer.MAX_VALUE);
 	}
 
@@ -228,7 +245,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #ints()
 	 * @see #intsFromZero()
-	 * @see #ints(int)
+	 * @see #intsFrom(int)
 	 */
 	static Sequence<Integer> range(int start, int end) {
 		UnaryOperator<Integer> next = (end > start) ? i -> ++i : i -> --i;
@@ -240,7 +257,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Long#MAX_VALUE} inclusive.
 	 *
 	 * @see #longsFromZero()
-	 * @see #longs(long)
+	 * @see #longsFrom(long)
 	 * @see #range(long, long)
 	 */
 	static Sequence<Long> longs() {
@@ -252,7 +269,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Long#MAX_VALUE} inclusive.
 	 *
 	 * @see #longs()
-	 * @see #longs(long)
+	 * @see #longsFrom(long)
 	 * @see #range(long, long)
 	 */
 	static Sequence<Long> longsFromZero() {
@@ -269,8 +286,26 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #longs()
 	 * @see #longsFromZero()
 	 * @see #range(long, long)
+	 *
+	 * @deprecated Use {@link #longsFrom(long)} instead
 	 */
+	@Deprecated
 	static Sequence<Long> longs(long start) {
+		return longsFrom(start);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Long} numbers starting at the given value and ending at {@link
+	 * Long#MAX_VALUE} inclusive.
+	 * <p>
+	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
+	 * eventually {@link Long#MAX_VALUE}.
+	 *
+	 * @see #longs()
+	 * @see #longsFromZero()
+	 * @see #range(long, long)
+	 */
+	static Sequence<Long> longsFrom(long start) {
 		return range(start, Long.MAX_VALUE);
 	}
 
@@ -281,7 +316,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #longs()
 	 * @see #longsFromZero()
-	 * @see #longs(long)
+	 * @see #longsFrom(long)
 	 */
 	static Sequence<Long> range(long start, long end) {
 		UnaryOperator<Long> next = (end > start) ? i -> ++i : i -> --i;
@@ -292,7 +327,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * A {@code Sequence} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
 	 * {@link Character#MAX_VALUE} inclusive.
 	 *
-	 * @see #chars(char)
+	 * @see #charsFrom(char)
 	 * @see #range(char, char)
 	 */
 	static Sequence<Character> chars() {
@@ -305,8 +340,22 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #chars()
 	 * @see #range(char, char)
+	 *
+	 * @deprecated Use {@link #charsFrom(char) instead.
 	 */
+	@Deprecated
 	static Sequence<Character> chars(char start) {
+		return charsFrom(start);
+	}
+
+	/**
+	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
+	 * Character#MAX_VALUE} inclusive.
+	 *
+	 * @see #chars()
+	 * @see #range(char, char)
+	 */
+	static Sequence<Character> charsFrom(char start) {
 		return range(start, Character.MAX_VALUE);
 	}
 
@@ -316,7 +365,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * start to the end.
 	 *
 	 * @see #chars()
-	 * @see #chars(char)
+	 * @see #charsFrom(char)
 	 */
 	static Sequence<Character> range(char start, char end) {
 		UnaryOperator<Character> next = (end > start) ? c -> (char) (c + 1) : c -> (char) (c - 1);

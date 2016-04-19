@@ -1108,23 +1108,23 @@ public class ChainedListSequenceTest {
 
 	@Test
 	public void intsStartingAt() {
-		assertThat(Sequence.ints(17).limit(3), contains(17, 18, 19));
-		assertThat(Sequence.ints(777).limit(7000).last(), is(Optional.of(7776)));
-		assertThat(Sequence.ints(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
+		assertThat(Sequence.intsFrom(17).limit(3), contains(17, 18, 19));
+		assertThat(Sequence.intsFrom(777).limit(7000).last(), is(Optional.of(7776)));
+		assertThat(Sequence.intsFrom(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
 	}
 
 	@Test
 	public void longsStartingAt() {
-		assertThat(Sequence.longs(17).limit(3), contains(17L, 18L, 19L));
-		assertThat(Sequence.longs(777).limit(7000).last(), is(Optional.of(7776L)));
-		assertThat(Sequence.longs(Long.MAX_VALUE), contains(Long.MAX_VALUE));
+		assertThat(Sequence.longsFrom(17).limit(3), contains(17L, 18L, 19L));
+		assertThat(Sequence.longsFrom(777).limit(7000).last(), is(Optional.of(7776L)));
+		assertThat(Sequence.longsFrom(Long.MAX_VALUE), contains(Long.MAX_VALUE));
 	}
 
 	@Test
 	public void charsStartingAt() {
-		assertThat(Sequence.chars('A').limit(3), contains('A', 'B', 'C'));
-		assertThat(Sequence.chars('\u1400').limit(3).last(), is(Optional.of('\u1402')));
-		assertThat(Sequence.chars(Character.MAX_VALUE), contains(Character.MAX_VALUE));
+		assertThat(Sequence.charsFrom('A').limit(3), contains('A', 'B', 'C'));
+		assertThat(Sequence.charsFrom('\u1400').limit(3).last(), is(Optional.of('\u1402')));
+		assertThat(Sequence.charsFrom(Character.MAX_VALUE), contains(Character.MAX_VALUE));
 	}
 
 	@Test
@@ -1150,7 +1150,7 @@ public class ChainedListSequenceTest {
 		CharSeq empty = Sequence.<Integer>empty().toChars(x -> (char) x.intValue());
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		CharSeq charSeq = Sequence.ints('a').limit(5).toChars(x -> (char) x.intValue());
+		CharSeq charSeq = Sequence.intsFrom('a').limit(5).toChars(x -> (char) x.intValue());
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
