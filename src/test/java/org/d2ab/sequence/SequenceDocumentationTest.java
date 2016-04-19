@@ -21,6 +21,7 @@ import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,7 +83,9 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void caching() {
-		Sequence<Integer> sequence = Sequence.cache(List.of(1, 2, 3, 4, 5).iterator());
+		Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+
+		Sequence<Integer> sequence = Sequence.cache(iterator);
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 2, 3, 4, 5));

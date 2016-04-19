@@ -122,7 +122,9 @@ If you have an `Iterator` or `Stream` and wish to convert it to a full-fledged m
 caching methods on `Sequence`.
 
 ```
-Sequence<Integer> sequence = Sequence.cache(List.of(1, 2, 3, 4, 5).iterator());
+Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+
+Sequence<Integer> sequence = Sequence.cache(iterator);
 
 assertThat(sequence, contains(1, 2, 3, 4, 5));
 assertThat(sequence, contains(1, 2, 3, 4, 5));
