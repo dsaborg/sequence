@@ -32,6 +32,9 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
+import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -409,8 +412,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.from(new ArrayDeque<>(
-				List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+		Sequence<Iterator<Integer>> sequence =
+				Sequence.from(new ArrayDeque<>(List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
 
@@ -455,8 +458,8 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence = Sequence.from(new ArrayDeque<>(
-				List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+		Sequence<Iterator<Integer>> sequence =
+				Sequence.from(new ArrayDeque<>(List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -604,49 +607,133 @@ public class SequenceTest {
 	@Test
 	public void recurse() {
 		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1);
-		twice(() -> assertThat(sequence.limit(5), contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(sequence, beginsWith(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void recurseTwins() {
 		Sequence<String> sequence = Sequence.recurse(1, Object::toString, s -> parseInt(s) + 1);
-		twice(() -> assertThat(sequence.limit(5), contains("1", "2", "3", "4", "5")));
+		twice(() -> assertThat(sequence, beginsWith("1", "2", "3", "4", "5")));
 	}
 
 	@Test
 	public void untilTerminal() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(5);
+		Sequence<Integer> untilEmpty = empty.until(5);
+		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.until(5);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
+
+		Sequence<Integer> noEnd = _12345.until(10);
+		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 5) ? (i + 1) : null).untilNull();
+		Sequence<Integer> untilEmpty = empty.untilNull();
+		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).untilNull();
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> noEnd = _12345.untilNull();
+		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilPredicate() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).until(i -> i == 5);
+		Sequence<Integer> untilEmpty = empty.endingAt(5);
+		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.until(i -> i == 5);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
+
+		Sequence<Integer> noEnd = _12345.until(i -> i == 10);
+		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtTerminal() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> i + 1).endingAt(5);
+		Sequence<Integer> endingEmpty = empty.endingAt(5);
+		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.endingAt(5);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> noEnd = _12345.endingAt(10);
+		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtNull() {
-		Sequence<Integer> sequence = Sequence.recurse(1, i -> (i < 5) ? (i + 1) : null).endingAtNull();
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, null)));
+		Sequence<Integer> endingEmpty = empty.endingAtNull();
+		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> endingAtNull = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).endingAtNull();
+		twice(() -> assertThat(endingAtNull, contains(1, 2, 3, 4, 5, null)));
+
+		Sequence<Integer> noNullEnd = _12345.endingAtNull();
+		twice(() -> assertThat(noNullEnd, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		Sequence<Integer> sequence = _12345.endingAt(i -> i == 7);
+		Sequence<Integer> endingEmpty = empty.endingAt(i -> i == 5);
+		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.endingAt(i -> i == 5);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> noEnd = _12345.endingAt(i -> i == 10);
+		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void startingAfter() {
+		Sequence<Integer> startingEmpty = empty.startingAfter(5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.startingAfter(5);
+		twice(() -> assertThat(sequence, contains(6, 7, 8, 9)));
+
+		Sequence<Integer> noStart = _12345.startingAfter(10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAfterPredicate() {
+		Sequence<Integer> startingEmpty = empty.startingAfter(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.startingAfter(i -> i == 5);
+		twice(() -> assertThat(sequence, contains(6, 7, 8, 9)));
+
+		Sequence<Integer> noStart = _12345.startingAfter(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAt() {
+		Sequence<Integer> startingEmpty = empty.startingAt(5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.startingAt(5);
+		twice(() -> assertThat(sequence, contains(5, 6, 7, 8, 9)));
+
+		Sequence<Integer> noStart = _12345.startingAt(10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAtPredicate() {
+		Sequence<Integer> startingEmpty = empty.startingAt(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		Sequence<Integer> sequence = _123456789.startingAt(i -> i == 5);
+		twice(() -> assertThat(sequence, contains(5, 6, 7, 8, 9)));
+
+		Sequence<Integer> noStart = _12345.startingAt(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
 	@Test
@@ -1367,79 +1454,83 @@ public class SequenceTest {
 	@Test
 	public void ints() {
 		Sequence<Integer> ints = Sequence.ints();
-		twice(() -> assertThat(ints.limit(3), contains(1, 2, 3)));
+		twice(() -> assertThat(ints, beginsWith(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(ints.limit(7777).last(), is(Optional.of(7777))));
 	}
 
 	@Test
 	public void intsFromZero() {
 		Sequence<Integer> intsFromZero = Sequence.intsFromZero();
-		twice(() -> assertThat(intsFromZero.limit(3), contains(0, 1, 2)));
+		twice(() -> assertThat(intsFromZero, beginsWith(0, 1, 2, 3, 4)));
 		twice(() -> assertThat(intsFromZero.limit(7777).last(), is(Optional.of(7776))));
 	}
 
 	@Test
 	public void longs() {
 		Sequence<Long> longs = Sequence.longs();
-		twice(() -> assertThat(longs.limit(3), contains(1L, 2L, 3L)));
+		twice(() -> assertThat(longs, beginsWith(1L, 2L, 3L, 4L, 5L)));
 		twice(() -> assertThat(longs.limit(7777).last(), is(Optional.of(7777L))));
 	}
 
 	@Test
 	public void longsFromZero() {
 		Sequence<Long> longsFromZero = Sequence.longsFromZero();
-		twice(() -> assertThat(longsFromZero.limit(3), contains(0L, 1L, 2L)));
+		twice(() -> assertThat(longsFromZero, beginsWith(0L, 1L, 2L, 3L, 4L)));
 		twice(() -> assertThat(longsFromZero.limit(7777).last(), is(Optional.of(7776L))));
 	}
 
 	@Test
 	public void chars() {
 		Sequence<Character> chars = Sequence.chars();
-		twice(() -> assertThat(chars.limit(3), contains('\u0000', '\u0001', '\u0002')));
-		twice(() -> assertThat(chars.limit(0xC0).last(), is(Optional.of('¿'))));
+		twice(() -> assertThat(chars, beginsWith((char) 0, (char) 1, (char) 2, (char) 3, (char) 4)));
+		twice(() -> assertThat(chars.limit(0x1400).last(), is(Optional.of('\u13FF'))));
 		twice(() -> assertThat(chars.count(), is(65536L)));
+		twice(() -> assertThat(chars.last(), is(Optional.of('\uFFFF'))));
 	}
 
 	@Test
 	public void intsStartingAt() {
 		Sequence<Integer> startingAtMinus17 = Sequence.ints(-17);
-		twice(() -> assertThat(startingAtMinus17.limit(3), contains(-17, -16, -15)));
+		twice(() -> assertThat(startingAtMinus17, beginsWith(-17, -16, -15, -14, -13)));
 
 		Sequence<Integer> startingAt17 = Sequence.ints(17);
-		twice(() -> assertThat(startingAt17.limit(3), contains(17, 18, 19)));
+		twice(() -> assertThat(startingAt17, beginsWith(17, 18, 19, 20, 21)));
 
 		Sequence<Integer> startingAt777 = Sequence.ints(777);
 		twice(() -> assertThat(startingAt777.limit(7000).last(), is(Optional.of(7776))));
 
-		Sequence<Integer> startingAtMaxValue = Sequence.ints(Integer.MAX_VALUE);
-		twice(() -> assertThat(startingAtMaxValue, contains(Integer.MAX_VALUE)));
+		Sequence<Integer> startingAtMaxValue = Sequence.ints(Integer.MAX_VALUE - 2);
+		twice(() -> assertThat(startingAtMaxValue,
+		                       contains(Integer.MAX_VALUE - 2, Integer.MAX_VALUE - 1, Integer.MAX_VALUE)));
 	}
 
 	@Test
 	public void longsStartingAt() {
 		Sequence<Long> startingAtMinus17 = Sequence.longs(-17);
-		twice(() -> assertThat(startingAtMinus17.limit(3), contains(-17L, -16L, -15L)));
+		twice(() -> assertThat(startingAtMinus17, beginsWith(-17L, -16L, -15L, -14L, -13L)));
 
 		Sequence<Long> startingAt17 = Sequence.longs(17);
-		twice(() -> assertThat(startingAt17.limit(3), contains(17L, 18L, 19L)));
+		twice(() -> assertThat(startingAt17, beginsWith(17L, 18L, 19L, 20L, 21L)));
 
 		Sequence<Long> startingAt777 = Sequence.longs(777);
 		twice(() -> assertThat(startingAt777.limit(7000).last(), is(Optional.of(7776L))));
 
-		Sequence<Long> startingAtMaxValue = Sequence.longs(Long.MAX_VALUE);
-		twice(() -> assertThat(startingAtMaxValue, contains(Long.MAX_VALUE)));
+		Sequence<Long> startingAtMaxValue = Sequence.longs(Long.MAX_VALUE - 2);
+		twice(() -> assertThat(startingAtMaxValue, contains(Long.MAX_VALUE - 2, Long.MAX_VALUE - 1, Long.MAX_VALUE)));
 	}
 
 	@Test
 	public void charsStartingAt() {
 		Sequence<Character> startingAtA = Sequence.chars('A');
-		twice(() -> assertThat(startingAtA.limit(3), contains('A', 'B', 'C')));
+		twice(() -> assertThat(startingAtA, beginsWith('A', 'B', 'C', 'D', 'E')));
 
 		Sequence<Character> startingAt1400 = Sequence.chars('\u1400');
-		twice(() -> assertThat(startingAt1400.limit(3).last(), is(Optional.of('\u1402'))));
+		twice(() -> assertThat(startingAt1400.limit(256).last(), is(Optional.of('\u14FF'))));
 
-		Sequence<Character> startingAtMaxValue = Sequence.chars(Character.MAX_VALUE);
-		twice(() -> assertThat(startingAtMaxValue, contains(Character.MAX_VALUE)));
+		Sequence<Character> startingAtMaxValue = Sequence.chars((char) (Character.MAX_VALUE - 2));
+		twice(() -> assertThat(startingAtMaxValue,
+		                       contains((char) (Character.MAX_VALUE - 2), (char) (Character.MAX_VALUE - 1),
+		                                Character.MAX_VALUE)));
 	}
 
 	@Test
@@ -1471,38 +1562,38 @@ public class SequenceTest {
 
 	@Test
 	public void mapToChar() {
-		CharSeq empty = Sequence.<Integer>empty().toChars(x -> (char) x.intValue());
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
+		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 
-		CharSeq charSeq = Sequence.ints('a').limit(5).toChars(x -> (char) x.intValue());
+		CharSeq charSeq = _12345.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void mapToInt() {
-		IntSequence empty = Sequence.<Integer>empty().toInts(Integer::intValue);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		IntSequence emptyInts = empty.toInts(x -> x + 1);
+		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 
-		IntSequence intSequence = Sequence.ints().limit(5).toInts(Integer::intValue);
-		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
+		IntSequence intSequence = _12345.toInts(x -> x + 1);
+		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapToLong() {
-		LongSequence empty = Sequence.<Long>empty().toLongs(Long::longValue);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		LongSequence emptyLongs = empty.toLongs(x -> x + 1);
+		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
 
-		LongSequence longSequence = Sequence.ints().limit(5).toLongs(i -> (long) i);
-		twice(() -> assertThat(longSequence, contains(1L, 2L, 3L, 4L, 5L)));
+		LongSequence longSequence = _12345.toLongs(x -> x + 1);
+		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
 	}
 
 	@Test
 	public void mapToDouble() {
-		DoubleSequence empty = Sequence.<Double>empty().toDoubles(Double::doubleValue);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		DoubleSequence emptyDoubles = empty.toDoubles(x -> x + 1);
+		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 
-		DoubleSequence doubleSequence = Sequence.ints().limit(5).toDoubles(i -> (double) i);
-		twice(() -> assertThat(doubleSequence, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+		DoubleSequence doubleSequence = _12345.toDoubles(x -> x + 1);
+		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
 	}
 
 	@Test
@@ -1511,13 +1602,13 @@ public class SequenceTest {
 		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
 
 		Sequence<Integer> repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne.limit(3), contains(1, 1, 1)));
+		twice(() -> assertThat(repeatOne, beginsWith(1, 1, 1)));
 
 		Sequence<Integer> repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo.limit(5), contains(1, 2, 1, 2, 1)));
+		twice(() -> assertThat(repeatTwo, beginsWith(1, 2, 1, 2, 1)));
 
 		Sequence<Integer> repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree.limit(8), contains(1, 2, 3, 1, 2, 3, 1, 2)));
+		twice(() -> assertThat(repeatThree, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
 			private List<Integer> list = List.of(1, 2, 3);
@@ -1579,10 +1670,10 @@ public class SequenceTest {
 	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(List.of(1, 2, 3, 4, 5));
-		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();
+		Sequence<Integer> sequence = Sequence.generate(queue::poll);
 
-		assertThat(sequence, contains(1, 2, 3, 4, 5));
-		assertThat(sequence, is(emptyIterable()));
+		assertThat(sequence, beginsWith(1, 2, 3, 4, 5, null));
+		assertThat(sequence, beginsWith((Integer) null));
 	}
 
 	@Test

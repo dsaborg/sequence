@@ -470,6 +470,50 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Begin this {@code Sequence} just after the given element is encountered, not including the element in the
+	 * {@code Sequence}.
+	 *
+	 * @see #startingAfter(Predicate)
+	 * @see #startingAt(Object)
+	 */
+	default Sequence<T> startingAfter(T element) {
+		return () -> new ExclusiveStartingIterator<>(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code Sequence} when the given element is encountered, including the element as the first element
+	 * in the {@code Sequence}.
+	 *
+	 * @see #startingAt(Predicate)
+	 * @see #startingAfter(Object)
+	 */
+	default Sequence<T> startingAt(T element) {
+		return () -> new InclusiveStartingIterator<>(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code Sequence} just after the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code Sequence}.
+	 *
+	 * @see #startingAfter(Object)
+	 * @see #startingAt(Predicate)
+	 */
+	default Sequence<T> startingAfter(Predicate<T> predicate) {
+		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code Sequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the first element in the {@code Sequence}.
+	 *
+	 * @see #startingAt(Object)
+	 * @see #startingAfter(Predicate)
+	 */
+	default Sequence<T> startingAt(Predicate<T> predicate) {
+		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
+	}
+
+	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 *
 	 * @see #flatten()
