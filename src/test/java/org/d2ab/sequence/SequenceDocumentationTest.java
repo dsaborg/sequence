@@ -81,6 +81,14 @@ public class SequenceDocumentationTest {
 	}
 
 	@Test
+	public void caching() {
+		Sequence<Integer> sequence = Sequence.cache(List.of(1, 2, 3, 4, 5).iterator());
+
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
 	public void removeAll() {
 		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
 

@@ -118,6 +118,16 @@ Sequence<String> transformed = sequence.map(Object::toString);
 assertThat(transformed.limit(3), contains("1", "2", "3"));
 ```
 
+If you have an `Iterator` or `Stream` and wish to convert it to a full-fledged multi-iterable `Sequence`, use the
+caching methods on `Sequence`.
+
+```
+Sequence<Integer> sequence = Sequence.cache(List.of(1, 2, 3, 4, 5).iterator());
+
+assertThat(sequence, contains(1, 2, 3, 4, 5));
+assertThat(sequence, contains(1, 2, 3, 4, 5));
+```
+
 #### Updating
 
 `Sequences` have full support for updating the underlying collection where possible, both through `Iterator#remove()`
