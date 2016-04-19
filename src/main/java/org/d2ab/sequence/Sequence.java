@@ -1123,6 +1123,18 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Partition the elements of this {@code Sequence} into a sequence of {@code Sequence}s of elements, each with the
+	 * size of the given window. The first item in each sequence is the second item in the previous sequence. The final
+	 * sequence may be shorter than the window. This method is equivalent to {@code window(window)}.
+	 *
+	 * @deprecated Use {@link #window(int)} instead.
+	 */
+	@Deprecated
+	default Sequence<Sequence<T>> partition(int window) {
+		return window(window);
+	}
+
+	/**
 	 * Window the elements of this {@code Sequence} into a sequence of {@code Sequence}s of elements, each with the
 	 * size of the given window, stepping {@code step} elements between each window. If the given step is less than the
 	 * window size, the windows will overlap each other. If the step is larger than the window size, elements will be
