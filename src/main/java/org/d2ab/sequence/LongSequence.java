@@ -465,6 +465,50 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Begin this {@code LongSequence} just after the given element is encountered, not including the element in the
+	 * {@code LongSequence}.
+	 *
+	 * @see #startingAfter(LongPredicate)
+	 * @see #startingFrom(long)
+	 */
+	default LongSequence startingAfter(long element) {
+		return () -> new ExclusiveStartingLongIterator(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code LongSequence} when the given element is encountered, including the element as the first element
+	 * in the {@code LongSequence}.
+	 *
+	 * @see #startingFrom(LongPredicate)
+	 * @see #startingAfter(long)
+	 */
+	default LongSequence startingFrom(long element) {
+		return () -> new InclusiveStartingLongIterator(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code LongSequence} just after the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code LongSequence}.
+	 *
+	 * @see #startingAfter(long)
+	 * @see #startingFrom(LongPredicate)
+	 */
+	default LongSequence startingAfter(LongPredicate predicate) {
+		return () -> new ExclusiveStartingLongIterator(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code LongSequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the first element in the {@code LongSequence}.
+	 *
+	 * @see #startingFrom(long)
+	 * @see #startingAfter(LongPredicate)
+	 */
+	default LongSequence startingFrom(LongPredicate predicate) {
+		return () -> new InclusiveStartingLongIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Map the {@code longs} in this {@code LongSequence} to another set of {@code longs} specified by the given
 	 * {@code mapper} function.
 	 */

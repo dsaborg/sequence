@@ -409,6 +409,54 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void startingAfter() {
+		LongSequence startingEmpty = empty.startingAfter(5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		LongSequence sequence = _123456789.startingAfter(5);
+		twice(() -> assertThat(sequence, containsLongs(6, 7, 8, 9)));
+
+		LongSequence noStart = _12345.startingAfter(10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAfterPredicate() {
+		LongSequence startingEmpty = empty.startingAfter(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		LongSequence sequence = _123456789.startingAfter(i -> i == 5);
+		twice(() -> assertThat(sequence, containsLongs(6, 7, 8, 9)));
+
+		LongSequence noStart = _12345.startingAfter(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFrom() {
+		LongSequence startingEmpty = empty.startingFrom(5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		LongSequence sequence = _123456789.startingFrom(5);
+		twice(() -> assertThat(sequence, containsLongs(5, 6, 7, 8, 9)));
+
+		LongSequence noStart = _12345.startingFrom(10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromPredicate() {
+		LongSequence startingEmpty = empty.startingFrom(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		LongSequence sequence = _123456789.startingFrom(i -> i == 5);
+		twice(() -> assertThat(sequence, containsLongs(5, 6, 7, 8, 9)));
+
+		LongSequence noStart = _12345.startingFrom(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);

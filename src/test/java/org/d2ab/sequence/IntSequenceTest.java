@@ -443,6 +443,54 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void startingAfter() {
+		IntSequence startingEmpty = empty.startingAfter(5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		IntSequence sequence = _123456789.startingAfter(5);
+		twice(() -> assertThat(sequence, containsInts(6, 7, 8, 9)));
+
+		IntSequence noStart = _12345.startingAfter(10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAfterPredicate() {
+		IntSequence startingEmpty = empty.startingAfter(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		IntSequence sequence = _123456789.startingAfter(i -> i == 5);
+		twice(() -> assertThat(sequence, containsInts(6, 7, 8, 9)));
+
+		IntSequence noStart = _12345.startingAfter(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFrom() {
+		IntSequence startingEmpty = empty.startingFrom(5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		IntSequence sequence = _123456789.startingFrom(5);
+		twice(() -> assertThat(sequence, containsInts(5, 6, 7, 8, 9)));
+
+		IntSequence noStart = _12345.startingFrom(10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromPredicate() {
+		IntSequence startingEmpty = empty.startingFrom(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		IntSequence sequence = _123456789.startingFrom(i -> i == 5);
+		twice(() -> assertThat(sequence, containsInts(5, 6, 7, 8, 9)));
+
+		IntSequence noStart = _12345.startingFrom(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);

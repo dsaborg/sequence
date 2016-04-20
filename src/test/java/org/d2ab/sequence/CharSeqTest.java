@@ -452,6 +452,54 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void startingAfter() {
+		CharSeq startingEmpty = empty.startingAfter('e');
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		CharSeq sequence = abcdefghi.startingAfter('e');
+		twice(() -> assertThat(sequence, containsChars('f', 'g', 'h', 'i')));
+
+		CharSeq noStart = abcde.startingAfter('j');
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAfterPredicate() {
+		CharSeq startingEmpty = empty.startingAfter(c -> c == 'e');
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		CharSeq sequence = abcdefghi.startingAfter(c -> c == 'e');
+		twice(() -> assertThat(sequence, containsChars('f', 'g', 'h', 'i')));
+
+		CharSeq noStart = abcde.startingAfter(c -> c == 'j');
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFrom() {
+		CharSeq startingEmpty = empty.startingFrom('e');
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		CharSeq sequence = abcdefghi.startingFrom('e');
+		twice(() -> assertThat(sequence, containsChars('e', 'f', 'g', 'h', 'i')));
+
+		CharSeq noStart = abcde.startingFrom('j');
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromPredicate() {
+		CharSeq startingEmpty = empty.startingFrom(c -> c == 'e');
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		CharSeq sequence = abcdefghi.startingFrom(c -> c == 'e');
+		twice(() -> assertThat(sequence, containsChars('e', 'f', 'g', 'h', 'i')));
+
+		CharSeq noStart = abcde.startingFrom(c -> c == 'j');
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = abc.collect(StringBuilder::new, StringBuilder::append);

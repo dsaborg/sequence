@@ -495,6 +495,50 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * Begin this {@code IntSequence} just after the given element is encountered, not including the element in the
+	 * {@code IntSequence}.
+	 *
+	 * @see #startingAfter(IntPredicate)
+	 * @see #startingFrom(int)
+	 */
+	default IntSequence startingAfter(int element) {
+		return () -> new ExclusiveStartingIntIterator(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code IntSequence} when the given element is encountered, including the element as the first element
+	 * in the {@code IntSequence}.
+	 *
+	 * @see #startingFrom(IntPredicate)
+	 * @see #startingAfter(int)
+	 */
+	default IntSequence startingFrom(int element) {
+		return () -> new InclusiveStartingIntIterator(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code IntSequence} just after the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code IntSequence}.
+	 *
+	 * @see #startingAfter(int)
+	 * @see #startingFrom(IntPredicate)
+	 */
+	default IntSequence startingAfter(IntPredicate predicate) {
+		return () -> new ExclusiveStartingIntIterator(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code IntSequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the first element in the {@code IntSequence}.
+	 *
+	 * @see #startingFrom(int)
+	 * @see #startingAfter(IntPredicate)
+	 */
+	default IntSequence startingFrom(IntPredicate predicate) {
+		return () -> new InclusiveStartingIntIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code
 	 * mapper}
 	 * function.

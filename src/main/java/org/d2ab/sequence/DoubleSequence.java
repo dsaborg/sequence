@@ -319,6 +319,50 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * Begin this {@code DoubleSequence} just after the given element is encountered, not including the element in the
+	 * {@code DoubleSequence}.
+	 *
+	 * @see #startingAfter(DoublePredicate)
+	 * @see #startingFrom(double, double)
+	 */
+	default DoubleSequence startingAfter(double element, double accuracy) {
+		return () -> new ExclusiveStartingDoubleIterator(iterator(), element, accuracy);
+	}
+
+	/**
+	 * Begin this {@code DoubleSequence} when the given element is encountered, including the element as the first element
+	 * in the {@code DoubleSequence}.
+	 *
+	 * @see #startingFrom(DoublePredicate)
+	 * @see #startingAfter(double, double)
+	 */
+	default DoubleSequence startingFrom(double element, double accuracy) {
+		return () -> new InclusiveStartingDoubleIterator(iterator(), element, accuracy);
+	}
+
+	/**
+	 * Begin this {@code DoubleSequence} just after the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code DoubleSequence}.
+	 *
+	 * @see #startingAfter(double, double)
+	 * @see #startingFrom(DoublePredicate)
+	 */
+	default DoubleSequence startingAfter(DoublePredicate predicate) {
+		return () -> new ExclusiveStartingDoubleIterator(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code DoubleSequence} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the first element in the {@code DoubleSequence}.
+	 *
+	 * @see #startingFrom(double, double)
+	 * @see #startingAfter(DoublePredicate)
+	 */
+	default DoubleSequence startingFrom(DoublePredicate predicate) {
+		return () -> new InclusiveStartingDoubleIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Map the {@code doubles} in this {@code DoubleSequence} to another set of {@code doubles} specified by the given
 	 * {@code mapper} function.
 	 */

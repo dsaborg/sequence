@@ -286,7 +286,7 @@ public interface CharSeq extends CharIterable {
 	 * A {@code CharSeq} of all the {@link Character} values starting at {@link Character#MIN_VALUE} and ending at
 	 * {@link Character#MAX_VALUE}.
 	 *
-	 * @see #startingAt(char)
+	 * @see #startingFrom(char)
 	 * @see #range(char, char)
 	 * @see #until(char)
 	 * @see #endingAt(char)
@@ -312,7 +312,7 @@ public interface CharSeq extends CharIterable {
 	 * A {@code CharSeq} of all the {@link Character} values between the given start and end positions, inclusive.
 	 *
 	 * @see #all()
-	 * @see #startingAt(char)
+	 * @see #startingFrom(char)
 	 * @see #until(char)
 	 * @see #endingAt(char)
 	 */
@@ -407,6 +407,50 @@ public interface CharSeq extends CharIterable {
 	 */
 	default CharSeq endingAt(CharPredicate terminal) {
 		return () -> new InclusiveTerminalCharIterator(iterator(), terminal);
+	}
+
+	/**
+	 * Begin this {@code CharSeq} just after the given element is encountered, not including the element in the
+	 * {@code CharSeq}.
+	 *
+	 * @see #startingAfter(CharPredicate)
+	 * @see #startingFrom(char)
+	 */
+	default CharSeq startingAfter(char element) {
+		return () -> new ExclusiveStartingCharIterator(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code CharSeq} when the given element is encountered, including the element as the first element
+	 * in the {@code CharSeq}.
+	 *
+	 * @see #startingFrom(CharPredicate)
+	 * @see #startingAfter(char)
+	 */
+	default CharSeq startingFrom(char element) {
+		return () -> new InclusiveStartingCharIterator(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code CharSeq} just after the given predicate is satisfied, not including the element that
+	 * satisfies the predicate in the {@code CharSeq}.
+	 *
+	 * @see #startingAfter(char)
+	 * @see #startingFrom(CharPredicate)
+	 */
+	default CharSeq startingAfter(CharPredicate predicate) {
+		return () -> new ExclusiveStartingCharIterator(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code CharSeq} when the given predicate is satisfied, including the element that satisfies
+	 * the predicate as the first element in the {@code CharSeq}.
+	 *
+	 * @see #startingFrom(char)
+	 * @see #startingAfter(CharPredicate)
+	 */
+	default CharSeq startingFrom(CharPredicate predicate) {
+		return () -> new InclusiveStartingCharIterator(iterator(), predicate);
 	}
 
 	/**

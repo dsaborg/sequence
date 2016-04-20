@@ -428,6 +428,54 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void startingAfter() {
+		DoubleSequence startingEmpty = empty.startingAfter(5, 0.1);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		DoubleSequence sequence = _123456789.startingAfter(5, 0.1);
+		twice(() -> assertThat(sequence, containsDoubles(6, 7, 8, 9)));
+
+		DoubleSequence noStart = _12345.startingAfter(10, 0.1);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingAfterPredicate() {
+		DoubleSequence startingEmpty = empty.startingAfter(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		DoubleSequence sequence = _123456789.startingAfter(i -> i == 5);
+		twice(() -> assertThat(sequence, containsDoubles(6, 7, 8, 9)));
+
+		DoubleSequence noStart = _12345.startingAfter(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFrom() {
+		DoubleSequence startingEmpty = empty.startingFrom(5, 0.1);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		DoubleSequence sequence = _123456789.startingFrom(5, 0.1);
+		twice(() -> assertThat(sequence, containsDoubles(5, 6, 7, 8, 9)));
+
+		DoubleSequence noStart = _12345.startingFrom(10, 0.1);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromPredicate() {
+		DoubleSequence startingEmpty = empty.startingFrom(i -> i == 5);
+		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+
+		DoubleSequence sequence = _123456789.startingFrom(i -> i == 5);
+		twice(() -> assertThat(sequence, containsDoubles(5, 6, 7, 8, 9)));
+
+		DoubleSequence noStart = _12345.startingFrom(i -> i == 10);
+		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
