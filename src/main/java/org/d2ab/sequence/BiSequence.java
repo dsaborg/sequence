@@ -537,6 +537,78 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
+	 * Begin this {@code BiSequence} just after the given pair is encountered, not including the pair in the
+	 * {@code BiSequence}.
+	 *
+	 * @see #startingAfter(Predicate)
+	 * @see #startingAfter(BiPredicate)
+	 * @see #startingAt(Pair)
+	 */
+	default BiSequence<L, R> startingAfter(Pair<L, R>  element) {
+		return () -> new ExclusiveStartingIterator<>(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code BiSequence} when the given pair is encountered, including the pair as the first element
+	 * in the {@code BiSequence}.
+	 *
+	 * @see #startingAt(Predicate)
+	 * @see #startingAt(BiPredicate)
+	 * @see #startingAfter(Pair)
+	 */
+	default BiSequence<L, R> startingAt(Pair<L, R> element) {
+		return () -> new InclusiveStartingIterator<>(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code BiSequence} just after the given predicate is satisfied, not including the pair that
+	 * satisfies the predicate in the {@code BiSequence}.
+	 *
+	 * @see #startingAfter(BiPredicate)
+	 * @see #startingAfter(Pair)
+	 * @see #startingAt(Predicate)
+	 */
+	default BiSequence<L, R> startingAfter(Predicate<? super Pair<L, R>> predicate) {
+		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code BiSequence} when the given predicate is satisfied, including the pair that satisfies
+	 * the predicate as the first element in the {@code BiSequence}.
+	 *
+	 * @see #startingAt(BiPredicate)
+	 * @see #startingAt(Pair)
+	 * @see #startingAfter(Predicate)
+	 */
+	default BiSequence<L, R> startingAt(Predicate<? super Pair<L, R>> predicate) {
+		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code BiSequence} just after the given predicate is satisfied, not including the pair that
+	 * satisfies the predicate in the {@code BiSequence}.
+	 *
+	 * @see #startingAfter(Predicate)
+	 * @see #startingAfter(Pair)
+	 * @see #startingAt(Predicate)
+	 */
+	default BiSequence<L, R> startingAfter(BiPredicate<? super L, ? super R> predicate) {
+		return startingAfter(Pair.asPredicate(predicate));
+	}
+
+	/**
+	 * Begin this {@code BiSequence} when the given predicate is satisfied, including the pair that satisfies
+	 * the predicate as the first element in the {@code BiSequence}.
+	 *
+	 * @see #startingAt(Predicate)
+	 * @see #startingAt(Pair)
+	 * @see #startingAfter(Predicate)
+	 */
+	default BiSequence<L, R> startingAt(BiPredicate<? super L, ? super R> predicate) {
+		return startingAt(Pair.asPredicate(predicate));
+	}
+
+	/**
 	 * Collect the pairs in this {@code BiSequence} into an array.
 	 */
 	default Pair<L, R>[] toArray() {

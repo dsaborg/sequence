@@ -547,7 +547,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #startingAfter(Object)
 	 * @see #startingAt(Predicate)
 	 */
-	default Sequence<T> startingAfter(Predicate<T> predicate) {
+	default Sequence<T> startingAfter(Predicate<? super T> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
 	}
 
@@ -558,7 +558,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #startingAt(Object)
 	 * @see #startingAfter(Predicate)
 	 */
-	default Sequence<T> startingAt(Predicate<T> predicate) {
+	default Sequence<T> startingAt(Predicate<? super T> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
 	}
 
