@@ -1083,6 +1083,14 @@ public class LongSequenceTest {
 		assertThat(original, contains(2L, 4L));
 	}
 
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
+
 	@FunctionalInterface
 	private interface StrictLongIterable extends LongIterable {
 		static LongIterable from(LongIterable iterable) {

@@ -1192,4 +1192,12 @@ public class BiSequenceTest {
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		twice(() -> assertThat(original, contains(Pair.of("2", 2), Pair.of("4", 4))));
 	}
+
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
 }

@@ -1238,4 +1238,12 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		twice(() -> assertThat(original.entrySet(), contains(Maps.entry("2", 2), Maps.entry("4", 4))));
 	}
+
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
 }

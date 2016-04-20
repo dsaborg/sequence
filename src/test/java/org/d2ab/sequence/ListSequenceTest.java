@@ -1300,4 +1300,12 @@ public class ListSequenceTest {
 		twice(() -> assertThat(mappedFiltered, contains(2, 7)));
 		twice(() -> assertThat(_12345, contains(2, 5)));
 	}
+
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
 }

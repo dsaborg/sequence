@@ -1090,4 +1090,11 @@ public interface IntSequence extends IntIterable {
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}
+
+	/**
+	 * @return true if this {@code IntSequence} is empty, false otherwise.
+	 */
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
 }

@@ -1719,4 +1719,12 @@ public class SequenceTest {
 		twice(() -> assertThat(appended, is(emptyIterable())));
 		twice(() -> assertThat(_1, is(emptyIterable())));
 	}
+
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
 }

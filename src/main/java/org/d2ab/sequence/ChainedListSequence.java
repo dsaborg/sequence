@@ -106,4 +106,18 @@ public class ChainedListSequence<T> implements Sequence<T> {
 		newSequence.lists.add(asList(items));
 		return newSequence;
 	}
+
+	@Override
+	public void removeAll() {
+		for (List<T> list : lists)
+			list.clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		for (List<T> list : lists)
+			if (!list.isEmpty())
+				return false;
+		return true;
+	}
 }

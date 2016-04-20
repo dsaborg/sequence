@@ -1039,6 +1039,14 @@ public class CharSeqTest {
 		assertThat(original, contains('a', 'c', 'd'));
 	}
 
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(a.isEmpty(), is(false)));
+		twice(() -> assertThat(ab.isEmpty(), is(false)));
+		twice(() -> assertThat(abcde.isEmpty(), is(false)));
+	}
+
 	@FunctionalInterface
 	private interface StrictCharIterable extends CharIterable {
 		static CharIterable from(CharIterable iterable) {

@@ -1051,6 +1051,14 @@ public class DoubleSequenceTest {
 		assertThat(original, contains(2.0, 4.0));
 	}
 
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
+
 	@FunctionalInterface
 	private interface StrictDoubleIterable extends DoubleIterable {
 		static DoubleIterable from(DoubleIterable iterable) {

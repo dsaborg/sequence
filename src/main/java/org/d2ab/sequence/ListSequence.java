@@ -192,4 +192,14 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	public Stream<T> stream() {
 		return toList().stream();
 	}
+
+	@Override
+	public void removeAll() {
+		toList().clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return toList().isEmpty();
+	}
 }

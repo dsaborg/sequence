@@ -916,4 +916,11 @@ public interface DoubleSequence extends DoubleIterable {
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} is empty, false otherwise.
+	 */
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
 }

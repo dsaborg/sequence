@@ -1116,4 +1116,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}
+
+	/**
+	 * @return true if this {@code BiSequence} is empty, false otherwise.
+	 */
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
 }

@@ -1120,6 +1120,14 @@ public class IntSequenceTest {
 		assertThat(original, contains(2, 4));
 	}
 
+	@Test
+	public void isEmpty() {
+		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(_1.isEmpty(), is(false)));
+		twice(() -> assertThat(_12.isEmpty(), is(false)));
+		twice(() -> assertThat(_12345.isEmpty(), is(false)));
+	}
+
 	@FunctionalInterface
 	private interface StrictIntIterable extends IntIterable {
 		static IntIterable from(IntIterable iterable) {

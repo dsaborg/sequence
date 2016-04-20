@@ -1123,4 +1123,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}
+
+	/**
+	 * @return true if this {@code EntrySequence} is empty, false otherwise.
+	 */
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
 }

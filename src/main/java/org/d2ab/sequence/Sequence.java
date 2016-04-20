@@ -1529,4 +1529,11 @@ public interface Sequence<T> extends Iterable<T> {
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}
+
+	/**
+	 * @return true if this {@code Sequence} is empty, false otherwise.
+	 */
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
 }
