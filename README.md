@@ -158,9 +158,9 @@ assertThat(list, contains(2, 4));
 List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
 
 Sequence<Integer> sequence = Sequence.from(list);
+assertThat(sequence, contains(1, 2, 3, 4, 5));
 
 list.add(6);
-
 assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 ```
 
