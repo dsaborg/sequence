@@ -101,7 +101,7 @@ Sequence<Integer> odds = singulars.step(2);
 assertThat(odds, contains(1, 3, 5, 7, 9));
 
 // re-using the same sequence again to get squares of numbers between 4 and 8
-Sequence<Integer> squares = singulars.startingAt(4).endingAt(8).map(i -> i * i);
+Sequence<Integer> squares = singulars.startingFrom(4).endingAt(8).map(i -> i * i);
 assertThat(squares, contains(16, 25, 36, 49, 64));
 ```
 
