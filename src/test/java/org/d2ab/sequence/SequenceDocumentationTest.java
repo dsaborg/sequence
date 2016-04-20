@@ -36,10 +36,8 @@ import static org.junit.Assert.assertThat;
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
-		                             .filter(x -> x % 2 == 0)
-		                             .map(Object::toString)
-		                             .toList();
+		List<String> evens =
+				Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> x % 2 == 0).map(Object::toString).toList();
 
 		assertThat(evens, contains("2", "4", "6", "8"));
 	}
@@ -252,11 +250,12 @@ public class SequenceDocumentationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void partitionConsonantsVowels() {
-		CharSeq word = CharSeq.from("terrain");
 		String vowels = "aeoiuy";
 
-		Sequence<String> consonantsVowels =
-				word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1)).map(CharSeq::asString);
+		Sequence<String> consonantsVowels = CharSeq.from("terrain")
+		                                           .batch((a, b) -> (vowels.indexOf(a) == -1) !=
+		                                                            (vowels.indexOf(b) == -1))
+		                                           .map(CharSeq::asString);
 
 		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 	}

@@ -316,11 +316,12 @@ assertThat(batched, contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8
 ```
 
 ```Java
-CharSeq word = CharSeq.from("terrain");
 String vowels = "aeoiuy";
 
-Sequence<String> consonantsVowels = word.batch((a, b) -> (vowels.indexOf(a) == -1) != (vowels.indexOf(b) == -1))
-                                        .map(CharSeq::asString);
+Sequence<String> consonantsVowels = CharSeq.from("terrain")
+                                           .batch((a, b) -> (vowels.indexOf(a) == -1) !=
+                                                            (vowels.indexOf(b) == -1))
+                                           .map(CharSeq::asString);
 
 assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 ```
