@@ -523,7 +523,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@code Sequence}.
 	 *
 	 * @see #startingAfter(Predicate)
-	 * @see #startingAt(Object)
+	 * @see #startingFrom(Object)
 	 */
 	default Sequence<T> startingAfter(T element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
@@ -533,10 +533,10 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Begin this {@code Sequence} when the given element is encountered, including the element as the first element
 	 * in the {@code Sequence}.
 	 *
-	 * @see #startingAt(Predicate)
+	 * @see #startingFrom(Predicate)
 	 * @see #startingAfter(Object)
 	 */
-	default Sequence<T> startingAt(T element) {
+	default Sequence<T> startingFrom(T element) {
 		return () -> new InclusiveStartingIterator<>(iterator(), element);
 	}
 
@@ -545,7 +545,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * satisfies the predicate in the {@code Sequence}.
 	 *
 	 * @see #startingAfter(Object)
-	 * @see #startingAt(Predicate)
+	 * @see #startingFrom(Predicate)
 	 */
 	default Sequence<T> startingAfter(Predicate<? super T> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
@@ -555,10 +555,10 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Begin this {@code Sequence} when the given predicate is satisfied, including the element that satisfies
 	 * the predicate as the first element in the {@code Sequence}.
 	 *
-	 * @see #startingAt(Object)
+	 * @see #startingFrom(Object)
 	 * @see #startingAfter(Predicate)
 	 */
-	default Sequence<T> startingAt(Predicate<? super T> predicate) {
+	default Sequence<T> startingFrom(Predicate<? super T> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
 	}
 

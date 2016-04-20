@@ -713,26 +713,26 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void startingAt() {
-		Sequence<Integer> startingEmpty = empty.startingAt(5);
+	public void startingFrom() {
+		Sequence<Integer> startingEmpty = empty.startingFrom(5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		Sequence<Integer> sequence = _123456789.startingAt(5);
+		Sequence<Integer> sequence = _123456789.startingFrom(5);
 		twice(() -> assertThat(sequence, contains(5, 6, 7, 8, 9)));
 
-		Sequence<Integer> noStart = _12345.startingAt(10);
+		Sequence<Integer> noStart = _12345.startingFrom(10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
 	@Test
-	public void startingAtPredicate() {
-		Sequence<Integer> startingEmpty = empty.startingAt(i -> i == 5);
+	public void startingFromPredicate() {
+		Sequence<Integer> startingEmpty = empty.startingFrom(i -> i == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		Sequence<Integer> sequence = _123456789.startingAt(i -> i == 5);
+		Sequence<Integer> sequence = _123456789.startingFrom(i -> i == 5);
 		twice(() -> assertThat(sequence, contains(5, 6, 7, 8, 9)));
 
-		Sequence<Integer> noStart = _12345.startingAt(i -> i == 10);
+		Sequence<Integer> noStart = _12345.startingFrom(i -> i == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 

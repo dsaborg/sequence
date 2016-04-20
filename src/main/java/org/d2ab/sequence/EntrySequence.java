@@ -548,7 +548,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(BiPredicate)
-	 * @see #startingAt(Entry)
+	 * @see #startingFrom(Entry)
 	 */
 	default EntrySequence<K, V> startingAfter(Entry<K, V>  element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
@@ -558,11 +558,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * Begin this {@code EntrySequence} when the given Entry is encountered, including the entry as the first element
 	 * in the {@code EntrySequence}.
 	 *
-	 * @see #startingAt(Predicate)
-	 * @see #startingAt(BiPredicate)
+	 * @see #startingFrom(Predicate)
+	 * @see #startingFrom(BiPredicate)
 	 * @see #startingAfter(Entry)
 	 */
-	default EntrySequence<K, V> startingAt(Entry<K, V> element) {
+	default EntrySequence<K, V> startingFrom(Entry<K, V> element) {
 		return () -> new InclusiveStartingIterator<>(iterator(), element);
 	}
 
@@ -572,7 +572,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingAfter(Entry)
-	 * @see #startingAt(Predicate)
+	 * @see #startingFrom(Predicate)
 	 */
 	default EntrySequence<K, V> startingAfter(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
@@ -582,11 +582,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * Begin this {@code EntrySequence} when the given predicate is satisfied, including the entry that satisfies
 	 * the predicate as the first element in the {@code EntrySequence}.
 	 *
-	 * @see #startingAt(BiPredicate)
-	 * @see #startingAt(Entry)
+	 * @see #startingFrom(BiPredicate)
+	 * @see #startingFrom(Entry)
 	 * @see #startingAfter(Predicate)
 	 */
-	default EntrySequence<K, V> startingAt(Predicate<? super Entry<K, V>> predicate) {
+	default EntrySequence<K, V> startingFrom(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
 	}
 
@@ -596,7 +596,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(Entry)
-	 * @see #startingAt(Predicate)
+	 * @see #startingFrom(Predicate)
 	 */
 	default EntrySequence<K, V> startingAfter(BiPredicate<? super K, ? super V> predicate) {
 		return startingAfter(Maps.asPredicate(predicate));
@@ -606,12 +606,12 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * Begin this {@code EntrySequence} when the given predicate is satisfied, including the entry that satisfies
 	 * the predicate as the first element in the {@code EntrySequence}.
 	 *
-	 * @see #startingAt(Predicate)
-	 * @see #startingAt(Entry)
+	 * @see #startingFrom(Predicate)
+	 * @see #startingFrom(Entry)
 	 * @see #startingAfter(Predicate)
 	 */
-	default EntrySequence<K, V> startingAt(BiPredicate<? super K, ? super V> predicate) {
-		return startingAt(Maps.asPredicate(predicate));
+	default EntrySequence<K, V> startingFrom(BiPredicate<? super K, ? super V> predicate) {
+		return startingFrom(Maps.asPredicate(predicate));
 	}
 
 	/**

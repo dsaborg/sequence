@@ -542,7 +542,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(BiPredicate)
-	 * @see #startingAt(Pair)
+	 * @see #startingFrom(Pair)
 	 */
 	default BiSequence<L, R> startingAfter(Pair<L, R>  element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
@@ -552,11 +552,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * Begin this {@code BiSequence} when the given pair is encountered, including the pair as the first element
 	 * in the {@code BiSequence}.
 	 *
-	 * @see #startingAt(Predicate)
-	 * @see #startingAt(BiPredicate)
+	 * @see #startingFrom(Predicate)
+	 * @see #startingFrom(BiPredicate)
 	 * @see #startingAfter(Pair)
 	 */
-	default BiSequence<L, R> startingAt(Pair<L, R> element) {
+	default BiSequence<L, R> startingFrom(Pair<L, R> element) {
 		return () -> new InclusiveStartingIterator<>(iterator(), element);
 	}
 
@@ -566,7 +566,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingAfter(Pair)
-	 * @see #startingAt(Predicate)
+	 * @see #startingFrom(Predicate)
 	 */
 	default BiSequence<L, R> startingAfter(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
@@ -576,11 +576,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * Begin this {@code BiSequence} when the given predicate is satisfied, including the pair that satisfies
 	 * the predicate as the first element in the {@code BiSequence}.
 	 *
-	 * @see #startingAt(BiPredicate)
-	 * @see #startingAt(Pair)
+	 * @see #startingFrom(BiPredicate)
+	 * @see #startingFrom(Pair)
 	 * @see #startingAfter(Predicate)
 	 */
-	default BiSequence<L, R> startingAt(Predicate<? super Pair<L, R>> predicate) {
+	default BiSequence<L, R> startingFrom(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
 	}
 
@@ -590,7 +590,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(Pair)
-	 * @see #startingAt(Predicate)
+	 * @see #startingFrom(Predicate)
 	 */
 	default BiSequence<L, R> startingAfter(BiPredicate<? super L, ? super R> predicate) {
 		return startingAfter(Pair.asPredicate(predicate));
@@ -600,12 +600,12 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * Begin this {@code BiSequence} when the given predicate is satisfied, including the pair that satisfies
 	 * the predicate as the first element in the {@code BiSequence}.
 	 *
-	 * @see #startingAt(Predicate)
-	 * @see #startingAt(Pair)
+	 * @see #startingFrom(Predicate)
+	 * @see #startingFrom(Pair)
 	 * @see #startingAfter(Predicate)
 	 */
-	default BiSequence<L, R> startingAt(BiPredicate<? super L, ? super R> predicate) {
-		return startingAt(Pair.asPredicate(predicate));
+	default BiSequence<L, R> startingFrom(BiPredicate<? super L, ? super R> predicate) {
+		return startingFrom(Pair.asPredicate(predicate));
 	}
 
 	/**

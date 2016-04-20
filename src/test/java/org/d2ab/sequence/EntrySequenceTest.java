@@ -516,44 +516,44 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void startingAt() {
-		EntrySequence<String, Integer> startingEmpty = empty.startingAt(Maps.entry("5", 5));
+	public void startingFrom() {
+		EntrySequence<String, Integer> startingEmpty = empty.startingFrom(Maps.entry("5", 5));
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		EntrySequence<String, Integer> sequence = _123456789.startingAt(Maps.entry("5", 5));
+		EntrySequence<String, Integer> sequence = _123456789.startingFrom(Maps.entry("5", 5));
 		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
 
-		EntrySequence<String, Integer> noStart = _12345.startingAt(Maps.entry("10", 10));
+		EntrySequence<String, Integer> noStart = _12345.startingFrom(Maps.entry("10", 10));
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
 	@Test
-	public void startingAtPredicate() {
-		EntrySequence<String, Integer> startingEmpty = empty.startingAt(e -> e.getValue() == 5);
+	public void startingFromPredicate() {
+		EntrySequence<String, Integer> startingEmpty = empty.startingFrom(e -> e.getValue() == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		EntrySequence<String, Integer> sequence = _123456789.startingAt(e -> e.getValue() == 5);
+		EntrySequence<String, Integer> sequence = _123456789.startingFrom(e -> e.getValue() == 5);
 		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
 
-		EntrySequence<String, Integer> noStart = _12345.startingAt(e -> e.getValue() == 10);
+		EntrySequence<String, Integer> noStart = _12345.startingFrom(e -> e.getValue() == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
 	@Test
-	public void startingAtBiPredicate() {
-		EntrySequence<String, Integer> startingEmpty = empty.startingAt((l, r) -> r == 5);
+	public void startingFromBiPredicate() {
+		EntrySequence<String, Integer> startingEmpty = empty.startingFrom((l, r) -> r == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		EntrySequence<String, Integer> sequence = _123456789.startingAt((l, r) -> r == 5);
+		EntrySequence<String, Integer> sequence = _123456789.startingFrom((l, r) -> r == 5);
 		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
 
-		EntrySequence<String, Integer> noStart = _12345.startingAt((l, r) -> r == 10);
+		EntrySequence<String, Integer> noStart = _12345.startingFrom((l, r) -> r == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 

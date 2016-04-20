@@ -487,41 +487,41 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void startingAt() {
-		BiSequence<String, Integer> startingEmpty = empty.startingAt(Pair.of("5", 5));
+	public void startingFrom() {
+		BiSequence<String, Integer> startingEmpty = empty.startingFrom(Pair.of("5", 5));
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		BiSequence<String, Integer> sequence = _123456789.startingAt(Pair.of("5", 5));
+		BiSequence<String, Integer> sequence = _123456789.startingFrom(Pair.of("5", 5));
 		twice(() -> assertThat(sequence, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                          Pair.of("9", 9))));
 
-		BiSequence<String, Integer> noStart = _12345.startingAt(Pair.of("10", 10));
+		BiSequence<String, Integer> noStart = _12345.startingFrom(Pair.of("10", 10));
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
 	@Test
-	public void startingAtPredicate() {
-		BiSequence<String, Integer> startingEmpty = empty.startingAt(p -> p.getRight() == 5);
+	public void startingFromPredicate() {
+		BiSequence<String, Integer> startingEmpty = empty.startingFrom(p -> p.getRight() == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		BiSequence<String, Integer> sequence = _123456789.startingAt(p -> p.getRight() == 5);
+		BiSequence<String, Integer> sequence = _123456789.startingFrom(p -> p.getRight() == 5);
 		twice(() -> assertThat(sequence, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                          Pair.of("9", 9))));
 
-		BiSequence<String, Integer> noStart = _12345.startingAt(p -> p.getRight() == 10);
+		BiSequence<String, Integer> noStart = _12345.startingFrom(p -> p.getRight() == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
 	@Test
-	public void startingAtBiPredicate() {
-		BiSequence<String, Integer> startingEmpty = empty.startingAt((l, r) -> r == 5);
+	public void startingFromBiPredicate() {
+		BiSequence<String, Integer> startingEmpty = empty.startingFrom((l, r) -> r == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
 
-		BiSequence<String, Integer> sequence = _123456789.startingAt((l, r) -> r == 5);
+		BiSequence<String, Integer> sequence = _123456789.startingFrom((l, r) -> r == 5);
 		twice(() -> assertThat(sequence, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                          Pair.of("9", 9))));
 
-		BiSequence<String, Integer> noStart = _12345.startingAt((l, r) -> r == 10);
+		BiSequence<String, Integer> noStart = _12345.startingFrom((l, r) -> r == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
 
