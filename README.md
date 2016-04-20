@@ -118,6 +118,17 @@ Sequence<String> transformed = sequence.map(Object::toString);
 assertThat(transformed.limit(3), contains("1", "2", "3"));
 ```
 
+Sequences can be created from `Iterators` or `Streams` but can then only be passed over once.
+
+```
+Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+
+Sequence<Integer> sequence = Sequence.from(iterator);
+
+assertThat(sequence, contains(1, 2, 3, 4, 5));
+assertThat(sequence, is(emptyIterable()));
+```
+
 If you have an `Iterator` or `Stream` and wish to convert it to a full-fledged multi-iterable `Sequence`, use the
 caching methods on `Sequence`.
 

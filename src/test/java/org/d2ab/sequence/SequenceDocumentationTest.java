@@ -82,6 +82,16 @@ public class SequenceDocumentationTest {
 	}
 
 	@Test
+	public void fromIterator() {
+		Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+
+		Sequence<Integer> sequence = Sequence.from(iterator);
+
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
 	public void caching() {
 		Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
 
