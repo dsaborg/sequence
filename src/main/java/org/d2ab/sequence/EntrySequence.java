@@ -36,8 +36,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 
 /**
- * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and
- * collating the list of elements.
+ * An {@link Iterable} sequence of {@link Entry} elements with {@link Stream}-like operations for refining,
+ * transforming and collating the list of {@link Entry} elements.
  */
 @FunctionalInterface
 public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
@@ -540,6 +540,78 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	default EntrySequence<K, V> endingAt(Predicate<? super Entry<K, V>> terminal) {
 		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
+	}
+
+	/**
+	 * Begin this {@code EntrySequence} just after the given Entry is encountered, not including the entry in the
+	 * {@code EntrySequence}.
+	 *
+	 * @see #startingAfter(Predicate)
+	 * @see #startingAfter(BiPredicate)
+	 * @see #startingAt(Entry)
+	 */
+	default EntrySequence<K, V> startingAfter(Entry<K, V>  element) {
+		return () -> new ExclusiveStartingIterator<>(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code EntrySequence} when the given Entry is encountered, including the entry as the first element
+	 * in the {@code EntrySequence}.
+	 *
+	 * @see #startingAt(Predicate)
+	 * @see #startingAt(BiPredicate)
+	 * @see #startingAfter(Entry)
+	 */
+	default EntrySequence<K, V> startingAt(Entry<K, V> element) {
+		return () -> new InclusiveStartingIterator<>(iterator(), element);
+	}
+
+	/**
+	 * Begin this {@code EntrySequence} just after the given predicate is satisfied, not including the entry that
+	 * satisfies the predicate in the {@code EntrySequence}.
+	 *
+	 * @see #startingAfter(BiPredicate)
+	 * @see #startingAfter(Entry)
+	 * @see #startingAt(Predicate)
+	 */
+	default EntrySequence<K, V> startingAfter(Predicate<? super Entry<K, V>> predicate) {
+		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code EntrySequence} when the given predicate is satisfied, including the entry that satisfies
+	 * the predicate as the first element in the {@code EntrySequence}.
+	 *
+	 * @see #startingAt(BiPredicate)
+	 * @see #startingAt(Entry)
+	 * @see #startingAfter(Predicate)
+	 */
+	default EntrySequence<K, V> startingAt(Predicate<? super Entry<K, V>> predicate) {
+		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Begin this {@code EntrySequence} just after the given predicate is satisfied, not including the entry that
+	 * satisfies the predicate in the {@code EntrySequence}.
+	 *
+	 * @see #startingAfter(Predicate)
+	 * @see #startingAfter(Entry)
+	 * @see #startingAt(Predicate)
+	 */
+	default EntrySequence<K, V> startingAfter(BiPredicate<? super K, ? super V> predicate) {
+		return startingAfter(Maps.asPredicate(predicate));
+	}
+
+	/**
+	 * Begin this {@code EntrySequence} when the given predicate is satisfied, including the entry that satisfies
+	 * the predicate as the first element in the {@code EntrySequence}.
+	 *
+	 * @see #startingAt(Predicate)
+	 * @see #startingAt(Entry)
+	 * @see #startingAfter(Predicate)
+	 */
+	default EntrySequence<K, V> startingAt(BiPredicate<? super K, ? super V> predicate) {
+		return startingAt(Maps.asPredicate(predicate));
 	}
 
 	/**
