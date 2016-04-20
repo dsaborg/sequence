@@ -34,8 +34,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 
 /**
- * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and
- * collating the list of elements.
+ * An {@link Iterable} sequence of {@link Pair}s with {@link Stream}-like operations for refining, transforming and
+ * collating the list of {@link Pair}s.
  */
 @FunctionalInterface
 public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
