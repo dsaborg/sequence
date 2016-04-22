@@ -43,10 +43,6 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		return new ArrayLongIterator(longs);
 	}
 
-	static LongIterator from(Iterable<Long> iterable) {
-		return from(iterable.iterator());
-	}
-
 	static LongIterator from(PrimitiveIterator.OfLong iterator) {
 		if (iterator instanceof LongIterator)
 			return (LongIterator) iterator;

@@ -46,10 +46,6 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return new ArrayIntIterator(ints);
 	}
 
-	static IntIterator from(Iterable<Integer> iterable) {
-		return from(iterable.iterator());
-	}
-
 	static IntIterator from(Iterator<Integer> iterator) {
 		if (iterator instanceof PrimitiveIterator.OfInt)
 			return from((PrimitiveIterator.OfInt) iterator);

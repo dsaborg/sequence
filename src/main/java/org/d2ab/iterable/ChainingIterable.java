@@ -72,11 +72,11 @@ public class ChainingIterable<T> implements Iterable<T> {
 	}
 
 	public Iterable<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(iterator));
+		return append(Iterables.once(iterator));
 	}
 
 	public Iterable<T> append(Stream<T> stream) {
-		return append(Iterables.from(stream));
+		return append(stream.iterator());
 	}
 
 	@Override

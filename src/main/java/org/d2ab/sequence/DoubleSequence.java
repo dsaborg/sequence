@@ -58,28 +58,6 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Create a {@code DoubleSequence} from a {@link PrimitiveIterator.OfDouble} of double values. Note that {@code
-	 * DoubleSequence}s created from {@link PrimitiveIterator.OfDouble}s cannot be passed over more than once. Further
-	 * attempts will register the {@code DoubleSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfDouble)
-	 */
-	static DoubleSequence from(PrimitiveIterator.OfDouble iterator) {
-		return () -> DoubleIterator.from(iterator);
-	}
-
-	/**
-	 * Create a {@code DoubleSequence} from an {@link Iterator} of {@code Double} values. Note that
-	 * {@code DoubleSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts
-	 * will register the {@code DoubleSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 */
-	static DoubleSequence from(Iterator<Double> iterator) {
-		return from(DoubleIterator.from(iterator));
-	}
-
-	/**
 	 * Create a {@code DoubleSequence} from a {@link DoubleIterable}.
 	 *
 	 * @see #cache(DoubleIterable)
@@ -95,6 +73,28 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	static DoubleSequence from(Iterable<Double> iterable) {
 		return from(DoubleIterable.from(iterable));
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from a {@link PrimitiveIterator.OfDouble} of double values. Note that {@code
+	 * DoubleSequence}s created from {@link PrimitiveIterator.OfDouble}s cannot be passed over more than once. Further
+	 * attempts will register the {@code DoubleSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfDouble)
+	 */
+	static DoubleSequence from(PrimitiveIterator.OfDouble iterator) {
+		return from(DoubleIterable.once(iterator));
+	}
+
+	/**
+	 * Create a {@code DoubleSequence} from an {@link Iterator} of {@code Double} values. Note that
+	 * {@code DoubleSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts
+	 * will register the {@code DoubleSequence} as empty.
+	 *
+	 * @see #cache(Iterator)
+	 */
+	static DoubleSequence from(Iterator<Double> iterator) {
+		return from(DoubleIterator.from(iterator));
 	}
 
 	/**
@@ -442,7 +442,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * DoubleSequence}.
 	 */
 	default DoubleSequence append(PrimitiveIterator.OfDouble iterator) {
-		return append(DoubleIterable.from(iterator));
+		return append(DoubleIterable.once(iterator));
 	}
 
 	/**
@@ -452,7 +452,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(Iterator<Double> iterator) {
-		return append(DoubleIterable.from(iterator));
+		return append(DoubleIterator.from(iterator));
 	}
 
 	/**
@@ -462,7 +462,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(DoubleStream stream) {
-		return append(DoubleIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**
@@ -472,7 +472,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(Stream<Double> stream) {
-		return append(DoubleIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

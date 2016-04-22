@@ -148,7 +148,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterator)
 	 */
 	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
-		return () -> iterator;
+		return from(Iterables.once(iterator));
 	}
 
 	/**
@@ -175,7 +175,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> EntrySequence<K, V> from(Map<K, V> map) {
-		return map.entrySet()::iterator;
+		return from(map.entrySet());
 	}
 
 	/**
@@ -1014,7 +1014,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
 	 */
 	default EntrySequence<K, V> append(Iterator<? extends Entry<K, V>> iterator) {
-		return append(Iterables.from(iterator));
+		return append(Iterables.once(iterator));
 	}
 
 	/**
@@ -1048,7 +1048,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * The appended elements will only be available on the first traversal of the resulting {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> append(Stream<Entry<K, V>> stream) {
-		return append(Iterables.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

@@ -20,12 +20,9 @@ import org.d2ab.iterator.longs.ArrayLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
@@ -61,22 +58,14 @@ public interface LongIterable extends Iterable<Long> {
 		if (iterable instanceof LongIterable)
 			return (LongIterable) iterable;
 
-		return () -> LongIterator.from(iterable);
+		return () -> LongIterator.from(iterable.iterator());
 	}
 
-	static LongIterable from(PrimitiveIterator.OfLong iterator) {
-		return () -> LongIterator.from(iterator);
+	static LongIterable once(LongIterator iterator) {
+		return () -> iterator;
 	}
 
-	static LongIterable from(Iterator<Long> iterator) {
-		return () -> LongIterator.from(iterator);
-	}
-
-	static LongIterable from(LongStream stream) {
-		return from(stream.iterator());
-	}
-
-	static LongIterable from(Stream<Long> stream) {
-		return from(stream.iterator());
+	static LongIterable once(PrimitiveIterator.OfLong iterator) {
+		return once(LongIterator.from(iterator));
 	}
 }

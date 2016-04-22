@@ -67,6 +67,24 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Create a {@code CharSeq} from a {@link CharIterable}.
+	 *
+	 * @see #cache(CharIterable)
+	 */
+	static CharSeq from(CharIterable iterable) {
+		return iterable::iterator;
+	}
+
+	/**
+	 * Create a {@code CharSeq} from an {@link Iterable} of {@code Character} values.
+	 *
+	 * @see #cache(Iterable)
+	 */
+	static CharSeq from(Iterable<Character> iterable) {
+		return from(CharIterable.from(iterable));
+	}
+
+	/**
 	 * Create a {@code CharSeq} from a {@link CharIterator} of character values. Note that {@code
 	 * CharSeq}s created from {@link CharIterator}s cannot be passed over more than once. Further attempts
 	 * will register the {@code CharSeq} as empty.
@@ -74,7 +92,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterator)
 	 */
 	static CharSeq from(CharIterator iterator) {
-		return () -> iterator;
+		return from(CharIterable.once(iterator));
 	}
 
 	/**
@@ -97,24 +115,6 @@ public interface CharSeq extends CharIterable {
 	 */
 	static CharSeq from(Iterator<Character> iterator) {
 		return from(CharIterator.from(iterator));
-	}
-
-	/**
-	 * Create a {@code CharSeq} from a {@link CharIterable}.
-	 *
-	 * @see #cache(CharIterable)
-	 */
-	static CharSeq from(CharIterable iterable) {
-		return iterable::iterator;
-	}
-
-	/**
-	 * Create a {@code CharSeq} from an {@link Iterable} of {@code Character} values.
-	 *
-	 * @see #cache(Iterable)
-	 */
-	static CharSeq from(Iterable<Character> iterable) {
-		return () -> CharIterator.from(iterable);
 	}
 
 	/**
@@ -531,7 +531,7 @@ public interface CharSeq extends CharIterable {
 	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
 	 */
 	default CharSeq append(CharIterator iterator) {
-		return append(CharIterable.from(iterator));
+		return append(CharIterable.once(iterator));
 	}
 
 	/**
@@ -560,7 +560,7 @@ public interface CharSeq extends CharIterable {
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	default CharSeq append(Stream<Character> stream) {
-		return append(CharIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**
@@ -572,7 +572,7 @@ public interface CharSeq extends CharIterable {
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	default CharSeq append(IntStream stream) {
-		return append(CharIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

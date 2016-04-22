@@ -145,7 +145,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #cache(Iterator)
 	 */
 	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
-		return () -> iterator;
+		return from(Iterables.once(iterator));
 	}
 
 	/**
@@ -172,7 +172,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> BiSequence<K, V> from(Map<K, V> map) {
-		return Sequence.from(map.entrySet()).map(Pair::from)::iterator;
+		return from(Sequence.from(map.entrySet()).map(Pair::from));
 	}
 
 	/**
@@ -1006,7 +1006,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
 	 */
 	default BiSequence<L, R> append(Iterator<? extends Pair<L, R>> iterator) {
-		return append(Iterables.from(iterator));
+		return append(Iterables.once(iterator));
 	}
 
 	/**
@@ -1040,7 +1040,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * The appended elements will only be available on the first traversal of the resulting {@code BiSequence}.
 	 */
 	default BiSequence<L, R> append(Stream<Pair<L, R>> stream) {
-		return append(Iterables.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

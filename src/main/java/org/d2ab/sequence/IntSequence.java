@@ -62,28 +62,6 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Create a {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s created from
-	 * {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will register the {@code
-	 * IntSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfInt)
-	 */
-	static IntSequence from(PrimitiveIterator.OfInt iterator) {
-		return () -> IntIterator.from(iterator);
-	}
-
-	/**
-	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
-	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
-	 * IntSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 */
-	static IntSequence from(Iterator<Integer> iterator) {
-		return from(IntIterator.from(iterator));
-	}
-
-	/**
 	 * Create a {@code IntSequence} from a {@link IntIterable}.
 	 *
 	 * @see #cache(IntIterable)
@@ -99,6 +77,28 @@ public interface IntSequence extends IntIterable {
 	 */
 	static IntSequence from(Iterable<Integer> iterable) {
 		return from(IntIterable.from(iterable));
+	}
+
+	/**
+	 * Create a {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s created from
+	 * {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will register the {@code
+	 * IntSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 */
+	static IntSequence from(PrimitiveIterator.OfInt iterator) {
+		return from(IntIterable.once(iterator));
+	}
+
+	/**
+	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
+	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
+	 * IntSequence} as empty.
+	 *
+	 * @see #cache(Iterator)
+	 */
+	static IntSequence from(Iterator<Integer> iterator) {
+		return from(IntIterator.from(iterator));
 	}
 
 	/**
@@ -619,7 +619,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 */
 	default IntSequence append(PrimitiveIterator.OfInt iterator) {
-		return append(IntIterable.from(iterator));
+		return append(IntIterable.once(iterator));
 	}
 
 	/**
@@ -631,7 +631,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Iterator)
 	 */
 	default IntSequence append(Iterator<Integer> iterator) {
-		return append(IntIterable.from(iterator));
+		return append(IntIterator.from(iterator));
 	}
 
 	/**
@@ -642,7 +642,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(IntStream)
 	 */
 	default IntSequence append(IntStream stream) {
-		return append(IntIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**
@@ -654,7 +654,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Stream)
 	 */
 	default IntSequence append(Stream<Integer> stream) {
-		return append(IntIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

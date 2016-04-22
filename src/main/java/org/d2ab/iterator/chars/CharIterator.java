@@ -76,10 +76,6 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		return new ArrayCharIterator(chars);
 	}
 
-	static CharIterator from(Iterable<Character> iterable) {
-		return from(iterable.iterator());
-	}
-
 	static CharIterator from(Iterator<Character> iterator) {
 		return new MappedCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override

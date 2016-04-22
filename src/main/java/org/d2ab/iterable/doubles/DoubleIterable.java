@@ -20,12 +20,9 @@ import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
@@ -61,22 +58,14 @@ public interface DoubleIterable extends Iterable<Double> {
 		if (iterable instanceof DoubleIterable)
 			return (DoubleIterable) iterable;
 
-		return () -> DoubleIterator.from(iterable);
+		return () -> DoubleIterator.from(iterable.iterator());
 	}
 
-	static DoubleIterable from(PrimitiveIterator.OfDouble iterator) {
-		return () -> DoubleIterator.from(iterator);
+	static DoubleIterable once(DoubleIterator iterator) {
+		return () -> iterator;
 	}
 
-	static DoubleIterable from(Iterator<Double> iterator) {
-		return () -> DoubleIterator.from(iterator);
-	}
-
-	static DoubleIterable from(DoubleStream doubleStream) {
-		return from(doubleStream.iterator());
-	}
-
-	static DoubleIterable from(Stream<Double> stream) {
-		return from(stream.iterator());
+	static DoubleIterable once(PrimitiveIterator.OfDouble iterator) {
+		return once(DoubleIterator.from(iterator));
 	}
 }

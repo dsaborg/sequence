@@ -121,7 +121,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #cache(Iterator)
 	 */
 	static <T> Sequence<T> from(Iterator<T> iterator) {
-		return () -> iterator;
+		return from(Iterables.once(iterator));
 	}
 
 	/**
@@ -688,7 +688,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #cache(Iterator)
 	 */
 	default Sequence<T> append(Iterator<T> iterator) {
-		return append(Iterables.from(iterator));
+		return append(Iterables.once(iterator));
 	}
 
 	/**
@@ -699,7 +699,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #cache(Stream)
 	 */
 	default Sequence<T> append(Stream<T> stream) {
-		return append(Iterables.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

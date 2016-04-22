@@ -33,12 +33,11 @@ public class Iterables {
 		return () -> new ArrayIterator<>(objects);
 	}
 
-	public static <T> Iterable<T> from(Iterator<T> iterator) {
+	/**
+	 * @return a once-only {@link Iterable} over the given {@link Iterator}, after which the iterable will be empty.
+	 */
+	public static <T> Iterable<T> once(Iterator<T> iterator) {
 		return () -> iterator;
-	}
-
-	public static <T> Iterable<T> from(Stream<T> stream) {
-		return from(stream.iterator());
 	}
 
 	/**
@@ -57,9 +56,9 @@ public class Iterables {
 		if (container instanceof Iterable)
 			return (Iterable<T>) container;
 		else if (container instanceof Iterator)
-			return from((Iterator<T>) container);
+			return once((Iterator<T>) container);
 		else if (container instanceof Stream)
-			return from((Stream<T>) container);
+			return once(((Stream<T>) container).iterator());
 		else if (container instanceof Object[])
 			return of((T[]) container);
 		else if (container instanceof Pair)

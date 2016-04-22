@@ -20,12 +20,9 @@ import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
@@ -61,22 +58,14 @@ public interface IntIterable extends Iterable<Integer> {
 		if (iterable instanceof IntIterable)
 			return (IntIterable) iterable;
 
-		return () -> IntIterator.from(iterable);
+		return () -> IntIterator.from(iterable.iterator());
 	}
 
-	static IntIterable from(PrimitiveIterator.OfInt iterator) {
-		return () -> IntIterator.from(iterator);
+	static IntIterable once(IntIterator iterator) {
+		return () -> iterator;
 	}
 
-	static IntIterable from(Iterator<Integer> iterator) {
-		return () -> IntIterator.from(iterator);
-	}
-
-	static IntIterable from(IntStream intStream) {
-		return from(intStream.iterator());
-	}
-
-	static IntIterable from(Stream<Integer> stream) {
-		return from(stream.iterator());
+	static IntIterable once(PrimitiveIterator.OfInt iterator) {
+		return once(IntIterator.from(iterator));
 	}
 }

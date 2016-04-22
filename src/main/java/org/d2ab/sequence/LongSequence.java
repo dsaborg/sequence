@@ -59,28 +59,6 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Create a {@code LongSequence} from a {@link PrimitiveIterator.OfLong} of long values. Note that {@code
-	 * LongSequence}s created from {@link PrimitiveIterator.OfLong}s cannot be passed over more than once. Further
-	 * attempts will register the {@code LongSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfLong)
-	 */
-	static LongSequence from(PrimitiveIterator.OfLong iterator) {
-		return () -> LongIterator.from(iterator);
-	}
-
-	/**
-	 * Create an {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that {@code LongSequence}
-	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
-	 * LongSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 */
-	static LongSequence from(Iterator<Long> iterator) {
-		return from(LongIterator.from(iterator));
-	}
-
-	/**
 	 * Create a {@code LongSequence} from a {@link LongIterable}.
 	 *
 	 * @see #cache(LongIterable)
@@ -96,6 +74,28 @@ public interface LongSequence extends LongIterable {
 	 */
 	static LongSequence from(Iterable<Long> iterable) {
 		return from(LongIterable.from(iterable));
+	}
+
+	/**
+	 * Create a {@code LongSequence} from a {@link PrimitiveIterator.OfLong} of long values. Note that {@code
+	 * LongSequence}s created from {@link PrimitiveIterator.OfLong}s cannot be passed over more than once. Further
+	 * attempts will register the {@code LongSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfLong)
+	 */
+	static LongSequence from(PrimitiveIterator.OfLong iterator) {
+		return from(LongIterable.once(iterator));
+	}
+
+	/**
+	 * Create an {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that {@code LongSequence}
+	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
+	 * LongSequence} as empty.
+	 *
+	 * @see #cache(Iterator)
+	 */
+	static LongSequence from(Iterator<Long> iterator) {
+		return from(LongIterator.from(iterator));
 	}
 
 	/**
@@ -610,12 +610,12 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Append the {@code longs} in the given {@link LongIterator} to the end of this {@code LongSequence}.
+	 * Append the {@code longs} in the given {@link PrimitiveIterator.OfLong} to the end of this {@code LongSequence}.
 	 * <p>
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
-	default LongSequence append(LongIterator iterator) {
-		return append(LongIterable.from(iterator));
+	default LongSequence append(PrimitiveIterator.OfLong iterator) {
+		return append(LongIterable.once(iterator));
 	}
 
 	/**
@@ -624,7 +624,7 @@ public interface LongSequence extends LongIterable {
 	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(Iterator<Long> iterator) {
-		return append(LongIterable.from(iterator));
+		return append(LongIterator.from(iterator));
 	}
 
 	/**
@@ -633,7 +633,7 @@ public interface LongSequence extends LongIterable {
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(LongStream stream) {
-		return append(LongIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**
@@ -642,7 +642,7 @@ public interface LongSequence extends LongIterable {
 	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(Stream<Long> stream) {
-		return append(LongIterable.from(stream));
+		return append(stream.iterator());
 	}
 
 	/**

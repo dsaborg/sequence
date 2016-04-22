@@ -20,12 +20,9 @@ import org.d2ab.function.chars.CharConsumer;
 import org.d2ab.iterator.chars.ArrayCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
@@ -54,30 +51,14 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	static CharIterable from(Character... characters) {
-		return from(Arrays.asList(characters));
+		return from(asList(characters));
 	}
 
 	static CharIterable from(Iterable<Character> iterable) {
-		return () -> CharIterator.from(iterable);
+		return () -> CharIterator.from(iterable.iterator());
 	}
 
-	static CharIterable from(CharIterator iterator) {
+	static CharIterable once(CharIterator iterator) {
 		return () -> iterator;
-	}
-
-	static CharIterable from(PrimitiveIterator.OfInt iterator) {
-		return from(CharIterator.from(iterator));
-	}
-
-	static CharIterable from(Iterator<Character> iterator) {
-		return from(CharIterator.from(iterator));
-	}
-
-	static CharIterable from(Stream<Character> stream) {
-		return from(stream.iterator());
-	}
-
-	static CharIterable from(IntStream stream) {
-		return from(stream.iterator());
 	}
 }

@@ -43,10 +43,6 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		return new ArrayDoubleIterator(doubles);
 	}
 
-	static DoubleIterator from(Iterable<Double> iterable) {
-		return from(iterable.iterator());
-	}
-
 	static DoubleIterator from(Iterator<Double> iterator) {
 		if (iterator instanceof PrimitiveIterator.OfDouble)
 			return from((PrimitiveIterator.OfDouble) iterator);
