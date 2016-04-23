@@ -135,7 +135,7 @@ assertThat(transformed.limit(3), contains("1", "2", "3"));
 
 Sequences can be created from `Iterators` or `Streams` but can then only be passed over once.
 
-```
+```Java
 Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
 
 Sequence<Integer> sequence = Sequence.once(iterator);
@@ -147,7 +147,7 @@ assertThat(sequence, is(emptyIterable()));
 If you have an `Iterator` or `Stream` and wish to convert it to a full-fledged multi-iterable `Sequence`, use the
 caching methods on `Sequence`.
 
-```
+```Java
 Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
 
 Sequence<Integer> sequence = Sequence.cache(iterator);
@@ -338,6 +338,30 @@ Sequence<String> consonantsVowels = CharSeq.from("terrain")
                                            .map(CharSeq::asString);
 
 assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
+```
+
+#### Reading
+
+Primitive sequences can be read from `Readers` or `InputStreams` into a `CharSeq` or `IntSequence` respective.
+
+```Java
+Reader reader = new StringReader("hello world\n" + "goodbye world\n");
+
+Sequence<String> titleCase = CharSeq.read(reader)
+                                    .mapBack('\n',
+                                             (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
+                                    .split('\n')
+                                    .map(CharSeq::asString);
+
+assertThat(titleCase, contains("Hello World", "Goodbye World"));
+```
+
+```Java
+InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
+
+String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join("");
+
+assertThat(hexString, is("deadbeef"));
 ```
 
 ### Conclusion

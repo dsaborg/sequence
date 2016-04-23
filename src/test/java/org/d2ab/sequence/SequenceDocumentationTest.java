@@ -20,6 +20,8 @@ import org.d2ab.collection.Maps;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -266,9 +268,21 @@ public class SequenceDocumentationTest {
 	public void readReader() {
 		Reader reader = new StringReader("hello world\n" + "goodbye world\n");
 
-		CharSeq.read(reader)
-		       .mapBack('\n', (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
-		       .split(c -> c == '\n')
-		       .map(CharSeq::asString);
+		Sequence<String> titleCase = CharSeq.read(reader)
+		                                    .mapBack('\n',
+		                                             (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
+		                                    .split('\n')
+		                                    .map(CharSeq::asString);
+
+		assertThat(titleCase, contains("Hello World", "Goodbye World"));
+	}
+
+	@Test
+	public void readInputStream() {
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
+
+		String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join("");
+
+		assertThat(hexString, is("deadbeef"));
 	}
 }
