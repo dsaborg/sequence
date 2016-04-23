@@ -1184,7 +1184,29 @@ public class SequenceTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void split() {
+	public void splitAroundElement() {
+		Sequence<Sequence<Integer>> emptySplit = empty.split(3);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<Sequence<Integer>> oneSplit = _1.split(3);
+		twice(() -> assertThat(oneSplit, contains(contains(1))));
+
+		Sequence<Sequence<Integer>> twoSplit = _12.split(3);
+		twice(() -> assertThat(twoSplit, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> threeSplit = _123.split(3);
+		twice(() -> assertThat(threeSplit, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> fiveSplit = _12345.split(3);
+		twice(() -> assertThat(fiveSplit, contains(contains(1, 2), contains(4, 5))));
+
+		Sequence<Sequence<Integer>> nineSplit = _123456789.split(3);
+		twice(() -> assertThat(nineSplit, contains(contains(1, 2), contains(4, 5, 6, 7, 8, 9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitPredicate() {
 		Sequence<Sequence<Integer>> emptySplit = empty.split(x -> x % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
 

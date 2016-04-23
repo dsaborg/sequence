@@ -867,6 +867,31 @@ public class BiSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void split() {
+		Sequence<BiSequence<String, Integer>> emptySplit = empty.split(Pair.of("3", 3));
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<BiSequence<String, Integer>> oneSplit = _1.split(Pair.of("3", 3));
+		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
+
+		Sequence<BiSequence<String, Integer>> twoSplit = _12.split(Pair.of("3", 3));
+		twice(() -> assertThat(twoSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threeSplit = _123.split(Pair.of("3", 3));
+		twice(() -> assertThat(threeSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> fiveSplit = _12345.split(Pair.of("3", 3));
+		twice(() -> assertThat(fiveSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)),
+		                                           contains(Pair.of("4", 4), Pair.of("5", 5)))));
+
+		Sequence<BiSequence<String, Integer>> nineSplit = _123456789.split(Pair.of("3", 3));
+		twice(() -> assertThat(nineSplit, contains(contains(Pair.of("1", 1), Pair.of("2", 2)),
+		                                           contains(Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6),
+		                                                    Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitPredicate() {
 		Sequence<BiSequence<String, Integer>> emptySplit = empty.split(x -> x.getRight() % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
 

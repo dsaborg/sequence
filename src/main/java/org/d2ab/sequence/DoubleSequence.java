@@ -961,6 +961,15 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * Split the {@code doubles} of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
+	 * elements, around the given {@code double}. The elements around which the sequence is split are not included in
+	 * the result.
+	 */
+	default Sequence<DoubleSequence> split(double element) {
+		return () -> new SplittingDoubleIterator(iterator(), element);
+	}
+
+	/**
+	 * Split the {@code doubles} of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
 	 * elements, where the given predicate determines which {@code doubles} to split the partitioned elements around. The
 	 * {@code doubles} matching the predicate are not included in the result.
 	 */

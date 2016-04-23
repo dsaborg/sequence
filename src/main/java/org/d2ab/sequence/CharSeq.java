@@ -1050,6 +1050,14 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Split the {@code chars} of this {@code CharSeq} into a sequence of {@code CharSeq}s of distinct elements, around
+	 * the given {@code char}. The elements around which the sequence is split are not included in the result.
+	 */
+	default Sequence<CharSeq> split(char element) {
+		return () -> new SplittingCharIterator(iterator(), element);
+	}
+
+	/**
 	 * Split the {@code chars} of this {@code CharSeq} charo a sequence of {@code CharSeq}s of distinct elements, where
 	 * the given predicate determines which {@code chars} to split the partitioned elements around. The {@code chars}
 	 * matching the predicate are not included in the result.

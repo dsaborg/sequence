@@ -31,6 +31,10 @@ import java.util.function.LongPredicate;
 public class SplittingLongIterator extends MappedIterator<Long, LongIterator, LongSequence> {
 	private final LongPredicate predicate;
 
+	public SplittingLongIterator(LongIterator iterator, long element) {
+		this(iterator, l -> l == element);
+	}
+
 	public SplittingLongIterator(LongIterator iterator, LongPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;

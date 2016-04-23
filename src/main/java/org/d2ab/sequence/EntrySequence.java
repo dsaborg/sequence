@@ -933,6 +933,19 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * Split the elements of this {@code EntrySequence} into a sequence of {@code EntrySequence}s of distinct elements,
+	 * around the given element. The elements around which the sequence is split are not included in the result.
+	 */
+	default Sequence<EntrySequence<K, V>> split(Entry<K, V> element) {
+		return () -> new SplittingIterator<Entry<K, V>, EntrySequence<K, V>>(iterator(), element) {
+			@Override
+			protected EntrySequence<K, V> toSequence(List<Entry<K, V>> list) {
+				return EntrySequence.from(list);
+			}
+		};
+	}
+
+	/**
+	 * Split the elements of this {@code EntrySequence} into a sequence of {@code EntrySequence}s of distinct elements,
 	 * where the given predicate determines which elements to split the partitioned elements around. The elements
 	 * matching the predicate are not included in the result.
 	 */

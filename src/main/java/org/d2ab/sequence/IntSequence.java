@@ -1131,6 +1131,14 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct elements,
+	 * around the given {@code int}. The elements around which the sequence is split are not included in the result.
+	 */
+	default Sequence<IntSequence> split(int element) {
+		return () -> new SplittingIntIterator(iterator(), element);
+	}
+
+	/**
 	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct
 	 * elements, where the given predicate determines which {@code ints} to split the partitioned elements around. The
 	 * {@code ints} matching the predicate are not included in the result.

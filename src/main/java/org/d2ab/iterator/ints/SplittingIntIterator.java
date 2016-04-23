@@ -31,6 +31,10 @@ import java.util.function.IntPredicate;
 public class SplittingIntIterator extends MappedIterator<Integer, IntIterator, IntSequence> {
 	private final IntPredicate predicate;
 
+	public SplittingIntIterator(IntIterator iterator, int element) {
+		this(iterator, i -> i == element);
+	}
+
 	public SplittingIntIterator(IntIterator iterator, IntPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;

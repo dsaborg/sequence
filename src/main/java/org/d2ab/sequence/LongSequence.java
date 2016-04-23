@@ -25,6 +25,7 @@ import org.d2ab.iterator.MappedIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.ints.SplittingIntIterator;
 import org.d2ab.iterator.longs.*;
 import org.d2ab.util.Arrayz;
 
@@ -1098,6 +1099,14 @@ public interface LongSequence extends LongIterable {
 	 */
 	default Sequence<LongSequence> batch(LongBiPredicate predicate) {
 		return () -> new PredicatePartitioningLongIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct elements,
+	 * around the given {@code int}. The elements around which the sequence is split are not included in the result.
+	 */
+	default Sequence<LongSequence> split(long element) {
+		return () -> new SplittingLongIterator(iterator(), element);
 	}
 
 	/**

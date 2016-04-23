@@ -902,6 +902,32 @@ public class EntrySequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void split() {
+		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split(Maps.entry("3", 3));
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<EntrySequence<String, Integer>> oneSplit = _1.split(Maps.entry("3", 3));
+		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
+
+		Sequence<EntrySequence<String, Integer>> twoSplit = _12.split(Maps.entry("3", 3));
+		twice(() -> assertThat(twoSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> threeSplit = _123.split(Maps.entry("3", 3));
+		twice(() -> assertThat(threeSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+
+		Sequence<EntrySequence<String, Integer>> fiveSplit = _12345.split(Maps.entry("3", 3));
+		twice(() -> assertThat(fiveSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)),
+		                                           contains(Maps.entry("4", 4), Maps.entry("5", 5)))));
+
+		Sequence<EntrySequence<String, Integer>> nineSplit = _123456789.split(Maps.entry("3", 3));
+		twice(() -> assertThat(nineSplit, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)),
+		                                           contains(Maps.entry("4", 4), Maps.entry("5", 5), Maps.entry("6", 6),
+		                                                    Maps.entry("7", 7), Maps.entry("8", 8),
+		                                                    Maps.entry("9", 9)))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitPredicate() {
 		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split(x -> x.getValue() % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
 

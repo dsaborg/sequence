@@ -926,6 +926,19 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * Split the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of distinct elements,
+	 * around the given element. The elements around which the sequence is split are not included in the result.
+	 */
+	default Sequence<BiSequence<L, R>> split(Pair<L, R> element) {
+		return () -> new SplittingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), element) {
+			@Override
+			protected BiSequence<L, R> toSequence(List<Pair<L, R>> list) {
+				return BiSequence.from(list);
+			}
+		};
+	}
+
+	/**
+	 * Split the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of distinct elements,
 	 * where the given predicate determines which elements to split the partitioned elements around. The elements
 	 * matching the predicate are not included in the result.
 	 */

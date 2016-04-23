@@ -1008,6 +1008,29 @@ public class CharSeqTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void split() {
+		Sequence<CharSeq> emptySplit = empty.split('c');
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<CharSeq> oneSplit = a.split('c');
+		twice(() -> assertThat(oneSplit, contains(containsChars('a'))));
+
+		Sequence<CharSeq> twoSplit = ab.split('c');
+		twice(() -> assertThat(twoSplit, contains(containsChars('a', 'b'))));
+
+		Sequence<CharSeq> threeSplit = abc.split('c');
+		twice(() -> assertThat(threeSplit, contains(containsChars('a', 'b'))));
+
+		Sequence<CharSeq> fiveSplit = abcde.split('c');
+		twice(() -> assertThat(fiveSplit, contains(containsChars('a', 'b'), containsChars('d', 'e'))));
+
+		Sequence<CharSeq> nineSplit = abcdefghi.split('c');
+		twice(() -> assertThat(nineSplit,
+		                       contains(containsChars('a', 'b'), containsChars('d', 'e', 'f', 'g', 'h', 'i'))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitCharPredicate() {
 		Sequence<CharSeq> emptySplit = empty.split(x -> (x - 0x60) % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
 

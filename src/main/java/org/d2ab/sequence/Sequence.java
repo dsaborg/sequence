@@ -1206,6 +1206,19 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Split the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, around
+	 * the given element. The elements around which the sequence is split are not included in the result.
+	 */
+	default Sequence<Sequence<T>> split(T element) {
+		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), element) {
+			@Override
+			protected Sequence<T> toSequence(List<T> list) {
+				return ListSequence.from(list);
+			}
+		};
+	}
+
+	/**
 	 * Split the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, where the
 	 * given predicate determines which elements to split the partitioned elements around. The elements matching the
 	 * predicate are not included in the result.

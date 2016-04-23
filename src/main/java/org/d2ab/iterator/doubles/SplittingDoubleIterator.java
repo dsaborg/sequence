@@ -31,6 +31,10 @@ import java.util.function.DoublePredicate;
 public class SplittingDoubleIterator extends MappedIterator<Double, DoubleIterator, DoubleSequence> {
 	private final DoublePredicate predicate;
 
+	public SplittingDoubleIterator(DoubleIterator iterator, double element) {
+		this(iterator, d -> d == element);
+	}
+
 	public SplittingDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;

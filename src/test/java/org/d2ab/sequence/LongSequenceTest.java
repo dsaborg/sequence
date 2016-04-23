@@ -1061,6 +1061,28 @@ public class LongSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void split() {
+		Sequence<LongSequence> emptySplit = empty.split(3);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<LongSequence> oneSplit = _1.split(3);
+		twice(() -> assertThat(oneSplit, contains(containsLongs(1))));
+
+		Sequence<LongSequence> twoSplit = _12.split(3);
+		twice(() -> assertThat(twoSplit, contains(containsLongs(1, 2))));
+
+		Sequence<LongSequence> threeSplit = _123.split(3);
+		twice(() -> assertThat(threeSplit, contains(containsLongs(1, 2))));
+
+		Sequence<LongSequence> fiveSplit = _12345.split(3);
+		twice(() -> assertThat(fiveSplit, contains(containsLongs(1, 2), containsLongs(4, 5))));
+
+		Sequence<LongSequence> nineSplit = _123456789.split(3);
+		twice(() -> assertThat(nineSplit, contains(containsLongs(1, 2), containsLongs(4, 5, 6, 7, 8, 9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitLongPredicate() {
 		Sequence<LongSequence> emptySplit = empty.split(x -> x % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
 

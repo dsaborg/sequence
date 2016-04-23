@@ -1020,6 +1020,29 @@ public class DoubleSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void split() {
+		Sequence<DoubleSequence> emptySplit = empty.split(3);
+		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+
+		Sequence<DoubleSequence> oneSplit = _1.split(3);
+		twice(() -> assertThat(oneSplit, contains(containsDoubles(1))));
+
+		Sequence<DoubleSequence> twoSplit = _12.split(3);
+		twice(() -> assertThat(twoSplit, contains(containsDoubles(1, 2))));
+
+		Sequence<DoubleSequence> threeSplit = _123.split(3);
+		twice(() -> assertThat(threeSplit, contains(containsDoubles(1, 2))));
+
+		Sequence<DoubleSequence> fiveSplit = _12345.split(3);
+		twice(() -> assertThat(fiveSplit, contains(containsDoubles(1, 2), containsDoubles(4, 5))));
+
+		Sequence<DoubleSequence> nineSplit = _123456789.split(3);
+		twice(() -> assertThat(nineSplit,
+		                       contains(containsDoubles(1, 2), containsDoubles(4, 5, 6, 7, 8, 9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void splitDoublePredicate() {
 		Sequence<DoubleSequence> emptySplit = empty.split(x -> x % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
 

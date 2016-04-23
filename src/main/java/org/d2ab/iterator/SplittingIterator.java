@@ -16,10 +16,7 @@
 
 package org.d2ab.iterator;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -28,6 +25,10 @@ import java.util.function.Predicate;
  */
 public abstract class SplittingIterator<T, S> extends MappedReferenceIterator<T, S> {
 	private final Predicate<? super T> predicate;
+
+	public SplittingIterator(Iterator<T> iterator, T element) {
+		this(iterator, e -> Objects.equals(e, element));
+	}
 
 	public SplittingIterator(Iterator<T> iterator, Predicate<? super T> predicate) {
 		super(iterator);

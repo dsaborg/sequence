@@ -31,6 +31,10 @@ import java.util.NoSuchElementException;
 public class SplittingCharIterator extends MappedIterator<Character, CharIterator, CharSeq> {
 	private final CharPredicate predicate;
 
+	public SplittingCharIterator(CharIterator iterator, char element) {
+		this(iterator, c -> c == element);
+	}
+
 	public SplittingCharIterator(CharIterator iterator, CharPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;

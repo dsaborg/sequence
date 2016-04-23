@@ -20,6 +20,8 @@ import org.d2ab.collection.Maps;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -258,5 +260,15 @@ public class SequenceDocumentationTest {
 		                                           .map(CharSeq::asString);
 
 		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
+	}
+
+	@Test
+	public void readReader() {
+		Reader reader = new StringReader("hello world\n" + "goodbye world\n");
+
+		CharSeq.read(reader)
+		       .mapBack('\n', (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
+		       .split(c -> c == '\n')
+		       .map(CharSeq::asString);
 	}
 }
