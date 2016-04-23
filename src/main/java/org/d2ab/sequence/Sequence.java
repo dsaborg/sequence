@@ -117,6 +117,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Iterator<T> iterator) {
 		return from(Iterables.once(iterator));
@@ -132,6 +134,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Stream<T> stream) {
 		return once(stream.iterator());
@@ -178,6 +182,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #cache(Iterator)
 	 * @see #cache(Stream)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterable<T> iterable) {
 		return from(Iterables.toList(iterable));
@@ -189,6 +195,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterator<T> iterator) {
 		return from(Iterators.toList(iterator));
@@ -200,6 +208,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Stream<T> stream) {
 		return from(stream.collect(Collectors.toList()));
@@ -267,6 +277,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #ints()
 	 * @see #range(int, int)
+	 *
+	 * @since 1.1
 	 */
 	static Sequence<Integer> intsFrom(int start) {
 		return range(start, Integer.MAX_VALUE);
@@ -338,6 +350,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #longs()
 	 * @see #longsFromZero()
 	 * @see #range(long, long)
+	 *
+	 * @since 1.1
 	 */
 	static Sequence<Long> longsFrom(long start) {
 		return range(start, Long.MAX_VALUE);
@@ -388,6 +402,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #chars()
 	 * @see #range(char, char)
+	 *
+	 * @since 1.1
 	 */
 	static Sequence<Character> charsFrom(char start) {
 		return range(start, Character.MAX_VALUE);
@@ -558,6 +574,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingFrom(Object)
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<T> startingAfter(T element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
@@ -569,6 +587,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #startingFrom(Predicate)
 	 * @see #startingAfter(Object)
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<T> startingFrom(T element) {
 		return () -> new InclusiveStartingIterator<>(iterator(), element);
@@ -580,6 +600,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #startingAfter(Object)
 	 * @see #startingFrom(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<T> startingAfter(Predicate<? super T> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
@@ -591,6 +613,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #startingFrom(Object)
 	 * @see #startingAfter(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<T> startingFrom(Predicate<? super T> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
@@ -682,6 +706,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Skip a set number of steps at the end of this {@code Sequence}.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<T> skipTail(long skip) {
 		if (skip == 0)
@@ -1208,6 +1234,8 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Split the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, around
 	 * the given element. The elements around which the sequence is split are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<Sequence<T>> split(T element) {
 		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), element) {
@@ -1222,6 +1250,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Split the elements of this {@code Sequence} into a sequence of {@code Sequence}s of distinct elements, where the
 	 * given predicate determines which elements to split the partitioned elements around. The elements matching the
 	 * predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<Sequence<T>> split(Predicate<? super T> predicate) {
 		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), predicate) {
@@ -1579,6 +1609,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return true if this {@code Sequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();

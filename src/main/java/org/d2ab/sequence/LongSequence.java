@@ -25,7 +25,6 @@ import org.d2ab.iterator.MappedIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.ints.SplittingIntIterator;
 import org.d2ab.iterator.longs.*;
 import org.d2ab.util.Arrayz;
 
@@ -83,6 +82,8 @@ public interface LongSequence extends LongIterable {
 	 * attempts will register the {@code LongSequence} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfLong)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence once(PrimitiveIterator.OfLong iterator) {
 		return from(LongIterable.once(iterator));
@@ -94,6 +95,8 @@ public interface LongSequence extends LongIterable {
 	 * register the {@code LongSequence} as empty.
 	 *
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence once(Iterator<Long> iterator) {
 		return once(LongIterator.from(iterator));
@@ -106,6 +109,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(LongStream)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence once(LongStream stream) {
 		return once(stream.iterator());
@@ -118,6 +123,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence once(Stream<Long> stream) {
 		return once(stream.iterator());
@@ -190,6 +197,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(PrimitiveIterator.OfLong)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
 		long[] cache = new long[10];
@@ -214,6 +223,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence cache(Iterator<Long> iterator) {
 		return cache(LongIterator.from(iterator));
@@ -228,6 +239,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #once(LongStream)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence cache(LongStream stream) {
 		return cache(stream.iterator());
@@ -242,6 +255,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence cache(Stream<Long> stream) {
 		return cache(stream.iterator());
@@ -256,6 +271,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #from(LongIterable)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence cache(LongIterable iterable) {
 		return cache(iterable.iterator());
@@ -270,6 +287,8 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static LongSequence cache(Iterable<Long> iterable) {
 		return cache(iterable.iterator());
@@ -530,6 +549,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingAfter(LongPredicate)
 	 * @see #startingFrom(long)
+	 *
+	 * @since 1.1
 	 */
 	default LongSequence startingAfter(long element) {
 		return () -> new ExclusiveStartingLongIterator(iterator(), element);
@@ -541,6 +562,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingFrom(LongPredicate)
 	 * @see #startingAfter(long)
+	 *
+	 * @since 1.1
 	 */
 	default LongSequence startingFrom(long element) {
 		return () -> new InclusiveStartingLongIterator(iterator(), element);
@@ -552,6 +575,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingAfter(long)
 	 * @see #startingFrom(LongPredicate)
+	 *
+	 * @since 1.1
 	 */
 	default LongSequence startingAfter(LongPredicate predicate) {
 		return () -> new ExclusiveStartingLongIterator(iterator(), predicate);
@@ -563,6 +588,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingFrom(long)
 	 * @see #startingAfter(LongPredicate)
+	 *
+	 * @since 1.1
 	 */
 	default LongSequence startingFrom(LongPredicate predicate) {
 		return () -> new InclusiveStartingLongIterator(iterator(), predicate);
@@ -633,6 +660,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * Skip a set number of {@code longs} at the end of this {@code LongSequence}.
+	 *
+	 * @since 1.1
 	 */
 	default LongSequence skipTail(int skip) {
 		if (skip == 0)
@@ -1104,6 +1133,8 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct elements,
 	 * around the given {@code int}. The elements around which the sequence is split are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<LongSequence> split(long element) {
 		return () -> new SplittingLongIterator(iterator(), element);
@@ -1113,6 +1144,8 @@ public interface LongSequence extends LongIterable {
 	 * Split the {@code longs} of this {@code LongSequence} into a sequence of {@code LongSequence}s of distinct
 	 * elements, where the given predicate determines which {@code longs} to split the partitioned elements around. The
 	 * {@code longs} matching the predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<LongSequence> split(LongPredicate predicate) {
 		return () -> new SplittingLongIterator(iterator(), predicate);
@@ -1127,6 +1160,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return true if this {@code LongSequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();

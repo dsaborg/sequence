@@ -90,6 +90,8 @@ public interface CharSeq extends CharIterable {
 	 * will register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(CharIterator)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq once(CharIterator iterator) {
 		return from(CharIterable.once(iterator));
@@ -101,6 +103,8 @@ public interface CharSeq extends CharIterable {
 	 * will register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfInt)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq once(PrimitiveIterator.OfInt iterator) {
 		return once(CharIterator.from(iterator));
@@ -112,6 +116,8 @@ public interface CharSeq extends CharIterable {
 	 * register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq once(Iterator<Character> iterator) {
 		return once(CharIterator.from(iterator));
@@ -123,6 +129,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq once(Stream<Character> stream) {
 		return once(stream.iterator());
@@ -135,6 +143,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
 	 * @see #cache(IntStream)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq once(IntStream stream) {
 		return once(CharIterator.from(stream.iterator()));
@@ -217,6 +227,8 @@ public interface CharSeq extends CharIterable {
 	 * over once. The {@link Reader} will be reset in between iterations, if possible. If an {@link IOException}
 	 * occurs during iteration, an {@link IterationException} will be thrown. The {@link Reader} will not be closed
 	 * by the {@code CharSeq} when iteration finishes, it must be closed externally when iteration is finished.
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq read(Reader reader) {
 		return new CharSeq() {
@@ -248,6 +260,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(CharIterator)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterator iterator) {
 		char[] cache = new char[10];
@@ -273,6 +287,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(PrimitiveIterator.OfInt iterator) {
 		return cache(CharIterator.from(iterator));
@@ -288,6 +304,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(Iterator<Character> iterator) {
 		return cache(CharIterator.from(iterator));
@@ -303,6 +321,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #once(IntStream)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(IntStream stream) {
 		return cache(CharIterator.from(stream.iterator()));
@@ -318,6 +338,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(Stream<Character> stream) {
 		return cache(stream.iterator());
@@ -333,6 +355,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #from(CharIterable)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterable iterable) {
 		return cache(iterable.iterator());
@@ -348,6 +372,8 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static CharSeq cache(Iterable<Character> iterable) {
 		return cache(iterable.iterator());
@@ -486,6 +512,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingAfter(CharPredicate)
 	 * @see #startingFrom(char)
+	 *
+	 * @since 1.1
 	 */
 	default CharSeq startingAfter(char element) {
 		return () -> new ExclusiveStartingCharIterator(iterator(), element);
@@ -497,6 +525,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingFrom(CharPredicate)
 	 * @see #startingAfter(char)
+	 *
+	 * @since 1.1
 	 */
 	default CharSeq startingFrom(char element) {
 		return () -> new InclusiveStartingCharIterator(iterator(), element);
@@ -508,6 +538,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingAfter(char)
 	 * @see #startingFrom(CharPredicate)
+	 *
+	 * @since 1.1
 	 */
 	default CharSeq startingAfter(CharPredicate predicate) {
 		return () -> new ExclusiveStartingCharIterator(iterator(), predicate);
@@ -519,6 +551,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingFrom(char)
 	 * @see #startingAfter(CharPredicate)
+	 *
+	 * @since 1.1
 	 */
 	default CharSeq startingFrom(CharPredicate predicate) {
 		return () -> new InclusiveStartingCharIterator(iterator(), predicate);
@@ -560,6 +594,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Skip a set number of {@code chars} at the end of this {@code CharSequence}.
+	 *
+	 * @since 1.1
 	 */
 	default CharSeq skipTail(int skip) {
 		if (skip == 0)
@@ -1052,6 +1088,8 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Split the {@code chars} of this {@code CharSeq} into a sequence of {@code CharSeq}s of distinct elements, around
 	 * the given {@code char}. The elements around which the sequence is split are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<CharSeq> split(char element) {
 		return () -> new SplittingCharIterator(iterator(), element);
@@ -1061,6 +1099,8 @@ public interface CharSeq extends CharIterable {
 	 * Split the {@code chars} of this {@code CharSeq} charo a sequence of {@code CharSeq}s of distinct elements, where
 	 * the given predicate determines which {@code chars} to split the partitioned elements around. The {@code chars}
 	 * matching the predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<CharSeq> split(CharPredicate predicate) {
 		return () -> new SplittingCharIterator(iterator(), predicate);
@@ -1075,6 +1115,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return true if this {@code CharSeq} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();

@@ -81,6 +81,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Further attempts will register the {@code DoubleSequence} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfDouble)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence once(PrimitiveIterator.OfDouble iterator) {
 		return from(DoubleIterable.once(iterator));
@@ -92,6 +94,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * will register the {@code DoubleSequence} as empty.
 	 *
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence once(Iterator<Double> iterator) {
 		return once(DoubleIterator.from(iterator));
@@ -104,6 +108,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @throws IllegalStateException if the {@link DoubleStream} is exhausted.
 	 * @see #cache(DoubleStream)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence once(DoubleStream stream) {
 		return once(stream.iterator());
@@ -116,6 +122,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence once(Stream<Double> stream) {
 		return once(stream.iterator());
@@ -188,6 +196,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(DoubleIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(PrimitiveIterator.OfDouble)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence cache(PrimitiveIterator.OfDouble iterator) {
 		double[] cache = new double[10];
@@ -212,6 +222,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(DoubleIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence cache(Iterator<Double> iterator) {
 		return cache(DoubleIterator.from(iterator));
@@ -226,6 +238,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(PrimitiveIterator.OfDouble)
 	 * @see #cache(Iterator)
 	 * @see #once(DoubleStream)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence cache(DoubleStream stream) {
 		return cache(stream.iterator());
@@ -240,6 +254,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(PrimitiveIterator.OfDouble)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence cache(Stream<Double> stream) {
 		return cache(stream.iterator());
@@ -254,6 +270,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(PrimitiveIterator.OfDouble)
 	 * @see #cache(Iterator)
 	 * @see #from(DoubleIterable)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence cache(DoubleIterable iterable) {
 		return cache(iterable.iterator());
@@ -268,6 +286,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #cache(PrimitiveIterator.OfDouble)
 	 * @see #cache(Iterator)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static DoubleSequence cache(Iterable<Double> iterable) {
 		return cache(iterable.iterator());
@@ -382,6 +402,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @see #startingAfter(DoublePredicate)
 	 * @see #startingFrom(double, double)
+	 *
+	 * @since 1.1
 	 */
 	default DoubleSequence startingAfter(double element, double accuracy) {
 		return () -> new ExclusiveStartingDoubleIterator(iterator(), element, accuracy);
@@ -393,6 +415,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @see #startingFrom(DoublePredicate)
 	 * @see #startingAfter(double, double)
+	 *
+	 * @since 1.1
 	 */
 	default DoubleSequence startingFrom(double element, double accuracy) {
 		return () -> new InclusiveStartingDoubleIterator(iterator(), element, accuracy);
@@ -404,6 +428,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @see #startingAfter(double, double)
 	 * @see #startingFrom(DoublePredicate)
+	 *
+	 * @since 1.1
 	 */
 	default DoubleSequence startingAfter(DoublePredicate predicate) {
 		return () -> new ExclusiveStartingDoubleIterator(iterator(), predicate);
@@ -415,6 +441,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @see #startingFrom(double, double)
 	 * @see #startingAfter(DoublePredicate)
+	 *
+	 * @since 1.1
 	 */
 	default DoubleSequence startingFrom(DoublePredicate predicate) {
 		return () -> new InclusiveStartingDoubleIterator(iterator(), predicate);
@@ -456,6 +484,8 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * Skip a set number of {@code doubles} at the end of this {@code DoubleSequence}.
+	 *
+	 * @since 1.1
 	 */
 	default DoubleSequence skipTail(int skip) {
 		if (skip == 0)
@@ -963,6 +993,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Split the {@code doubles} of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
 	 * elements, around the given {@code double}. The elements around which the sequence is split are not included in
 	 * the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<DoubleSequence> split(double element) {
 		return () -> new SplittingDoubleIterator(iterator(), element);
@@ -972,6 +1004,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 * Split the {@code doubles} of this {@code DoubleSequence} into a sequence of {@code DoubleSequence}s of distinct
 	 * elements, where the given predicate determines which {@code doubles} to split the partitioned elements around. The
 	 * {@code doubles} matching the predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<DoubleSequence> split(DoublePredicate predicate) {
 		return () -> new SplittingDoubleIterator(iterator(), predicate);
@@ -986,6 +1020,8 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return true if this {@code DoubleSequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();

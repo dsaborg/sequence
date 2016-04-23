@@ -146,6 +146,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> once(Iterator<Entry<K, V>> iterator) {
 		return from(Iterables.once(iterator));
@@ -161,6 +163,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> once(Stream<Entry<K, V>> stream) {
 		return once(stream.iterator());
@@ -219,6 +223,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterator)
 	 * @see #cache(Stream)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> cache(Iterable<Entry<K, V>> iterable) {
 		return from(Iterables.toList(iterable));
@@ -230,6 +236,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> cache(Iterator<Entry<K, V>> iterator) {
 		return from(Iterators.toList(iterator));
@@ -241,6 +249,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> cache(Stream<Entry<K, V>> stream) {
 		return from(stream.collect(Collectors.toList()));
@@ -364,6 +374,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * Skip a set number of steps at the end of this {@code EntrySequence}.
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> skipTail(long skip) {
 		if (skip == 0)
@@ -584,6 +596,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingFrom(Entry)
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingAfter(Entry<K, V>  element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
@@ -596,6 +610,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingFrom(Predicate)
 	 * @see #startingFrom(BiPredicate)
 	 * @see #startingAfter(Entry)
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(Entry<K, V> element) {
 		return () -> new InclusiveStartingIterator<>(iterator(), element);
@@ -608,6 +624,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingAfter(Entry)
 	 * @see #startingFrom(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingAfter(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
@@ -620,6 +638,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingFrom(BiPredicate)
 	 * @see #startingFrom(Entry)
 	 * @see #startingAfter(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
@@ -632,6 +652,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(Entry)
 	 * @see #startingFrom(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingAfter(BiPredicate<? super K, ? super V> predicate) {
 		return startingAfter(Maps.asPredicate(predicate));
@@ -644,6 +666,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingFrom(Predicate)
 	 * @see #startingFrom(Entry)
 	 * @see #startingAfter(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(BiPredicate<? super K, ? super V> predicate) {
 		return startingFrom(Maps.asPredicate(predicate));
@@ -1174,6 +1198,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();

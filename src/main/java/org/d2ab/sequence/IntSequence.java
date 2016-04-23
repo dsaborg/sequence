@@ -85,6 +85,8 @@ public interface IntSequence extends IntIterable {
 	 * register the {@code IntSequence} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfInt)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence once(PrimitiveIterator.OfInt iterator) {
 		return from(IntIterable.once(iterator));
@@ -96,6 +98,8 @@ public interface IntSequence extends IntIterable {
 	 * register the {@code IntSequence} as empty.
 	 *
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence once(Iterator<Integer> iterator) {
 		return once(IntIterator.from(iterator));
@@ -108,6 +112,8 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
 	 * @see #cache(IntStream)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence once(IntStream stream) {
 		return once(stream.iterator());
@@ -120,6 +126,8 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence once(Stream<Integer> stream) {
 		return once(stream.iterator());
@@ -186,6 +194,8 @@ public interface IntSequence extends IntIterable {
 	 * if possible. If an {@link IOException} occurs during iteration, an {@link IterationException} will be thrown.
 	 * The {@link InputStream} will not be closed by the {@code IntSequence} when iteration finishes, it must be closed
 	 * externally when iteration is finished.
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence read(InputStream inputStream) {
 		return new IntSequence() {
@@ -216,6 +226,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(IntIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(PrimitiveIterator.OfInt)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
 		int[] cache = new int[10];
@@ -240,6 +252,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(IntIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence cache(Iterator<Integer> iterator) {
 		return cache(IntIterator.from(iterator));
@@ -254,6 +268,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #once(IntStream)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence cache(IntStream stream) {
 		return cache(stream.iterator());
@@ -268,6 +284,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence cache(Stream<Integer> stream) {
 		return cache(stream.iterator());
@@ -282,6 +300,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #from(IntIterable)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence cache(IntIterable iterable) {
 		return cache(iterable.iterator());
@@ -296,6 +316,8 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static IntSequence cache(Iterable<Integer> iterable) {
 		return cache(iterable.iterator());
@@ -555,6 +577,8 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @see #startingAfter(IntPredicate)
 	 * @see #startingFrom(int)
+	 *
+	 * @since 1.1
 	 */
 	default IntSequence startingAfter(int element) {
 		return () -> new ExclusiveStartingIntIterator(iterator(), element);
@@ -566,6 +590,8 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @see #startingFrom(IntPredicate)
 	 * @see #startingAfter(int)
+	 *
+	 * @since 1.1
 	 */
 	default IntSequence startingFrom(int element) {
 		return () -> new InclusiveStartingIntIterator(iterator(), element);
@@ -577,6 +603,8 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @see #startingAfter(int)
 	 * @see #startingFrom(IntPredicate)
+	 *
+	 * @since 1.1
 	 */
 	default IntSequence startingAfter(IntPredicate predicate) {
 		return () -> new ExclusiveStartingIntIterator(iterator(), predicate);
@@ -588,6 +616,8 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @see #startingFrom(int)
 	 * @see #startingAfter(IntPredicate)
+	 *
+	 * @since 1.1
 	 */
 	default IntSequence startingFrom(IntPredicate predicate) {
 		return () -> new InclusiveStartingIntIterator(iterator(), predicate);
@@ -630,6 +660,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * Skip a set number of {@code ints} at the end of this {@code IntSequence}.
+	 *
+	 * @since 1.1
 	 */
 	default IntSequence skipTail(int skip) {
 		if (skip == 0)
@@ -1133,6 +1165,8 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct elements,
 	 * around the given {@code int}. The elements around which the sequence is split are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<IntSequence> split(int element) {
 		return () -> new SplittingIntIterator(iterator(), element);
@@ -1142,6 +1176,8 @@ public interface IntSequence extends IntIterable {
 	 * Split the {@code ints} of this {@code IntSequence} into a sequence of {@code IntSequence}s of distinct
 	 * elements, where the given predicate determines which {@code ints} to split the partitioned elements around. The
 	 * {@code ints} matching the predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<IntSequence> split(IntPredicate predicate) {
 		return () -> new SplittingIntIterator(iterator(), predicate);
@@ -1156,6 +1192,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return true if this {@code IntSequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();

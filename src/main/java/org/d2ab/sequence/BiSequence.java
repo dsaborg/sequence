@@ -144,6 +144,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #of(Pair...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> once(Iterator<Pair<L, R>> iterator) {
 		return from(Iterables.once(iterator));
@@ -159,6 +161,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> once(Stream<Pair<L, R>> stream) {
 		return once(stream.iterator());
@@ -217,6 +221,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #cache(Iterator)
 	 * @see #cache(Stream)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> cache(Iterable<Pair<L, R>> iterable) {
 		return from(Iterables.toList(iterable));
@@ -228,6 +234,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
 	 * @see #once(Iterator)
+	 *
+	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> cache(Iterator<Pair<L, R>> iterator) {
 		return from(Iterators.toList(iterator));
@@ -239,6 +247,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
+	 *
+	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> cache(Stream<Pair<L, R>> stream) {
 		return from(stream.collect(Collectors.toList()));
@@ -360,6 +370,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * Skip a set number of steps at the end of this {@code BiSequence}.
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> skipTail(long skip) {
 		if (skip == 0)
@@ -579,6 +591,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingFrom(Pair)
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingAfter(Pair<L, R>  element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
@@ -591,6 +605,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #startingFrom(Predicate)
 	 * @see #startingFrom(BiPredicate)
 	 * @see #startingAfter(Pair)
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingFrom(Pair<L, R> element) {
 		return () -> new InclusiveStartingIterator<>(iterator(), element);
@@ -603,6 +619,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingAfter(Pair)
 	 * @see #startingFrom(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingAfter(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
@@ -615,6 +633,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #startingFrom(BiPredicate)
 	 * @see #startingFrom(Pair)
 	 * @see #startingAfter(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingFrom(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
@@ -627,6 +647,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(Pair)
 	 * @see #startingFrom(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingAfter(BiPredicate<? super L, ? super R> predicate) {
 		return startingAfter(Pair.asPredicate(predicate));
@@ -639,6 +661,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #startingFrom(Predicate)
 	 * @see #startingFrom(Pair)
 	 * @see #startingAfter(Predicate)
+	 *
+	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingFrom(BiPredicate<? super L, ? super R> predicate) {
 		return startingFrom(Pair.asPredicate(predicate));
@@ -927,6 +951,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * Split the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of distinct elements,
 	 * around the given element. The elements around which the sequence is split are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<BiSequence<L, R>> split(Pair<L, R> element) {
 		return () -> new SplittingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), element) {
@@ -941,6 +967,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * Split the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of distinct elements,
 	 * where the given predicate determines which elements to split the partitioned elements around. The elements
 	 * matching the predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<BiSequence<L, R>> split(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new SplittingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), predicate) {
@@ -955,6 +983,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * Split the elements of this {@code BiSequence} into a sequence of {@code BiSequence}s of distinct elements,
 	 * where the given predicate determines which elements to split the partitioned elements around. The elements
 	 * matching the predicate are not included in the result.
+	 *
+	 * @since 1.1
 	 */
 	default Sequence<BiSequence<L, R>> split(BiPredicate<? super L, ? super R> predicate) {
 		return split(Pair.asPredicate(predicate));
@@ -1168,6 +1198,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();
