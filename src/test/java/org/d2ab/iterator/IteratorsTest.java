@@ -18,14 +18,12 @@ package org.d2ab.iterator;
 
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class IteratorsTest {
 	@Test
 	public void toList() {
-		assertThat(Iterators.toList(List.of(1, 2, 3, 4, 5).iterator()), contains(1, 2, 3, 4, 5));
+		assertThat(Iterators.toList(Iterators.of(1, 2, 3, 4, 5)), contains(1, 2, 3, 4, 5));
 	}
 }

@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
@@ -247,8 +248,8 @@ public class ChainedListSequenceTest {
 	public void flatMapIterators() {
 		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
-				ChainedListSequence.of(List.of(1, 2).iterator(), List.of(3, 4).iterator(), List.of(5, 6).iterator());
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
+				ChainedListSequence.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
+		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
 
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -267,7 +268,8 @@ public class ChainedListSequenceTest {
 	@Test
 	public void flattenIterables() {
 		@SuppressWarnings("unchecked")
-		Sequence<Integer> flattened = ChainedListSequence.of(List.of(1, 2), List.of(3, 4), List.of(5, 6)).flatten();
+		Sequence<Integer> flattened =
+				ChainedListSequence.of(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6)).flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
@@ -292,7 +294,7 @@ public class ChainedListSequenceTest {
 	public void flattenIterators() {
 		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
-				ChainedListSequence.of(List.of(1, 2).iterator(), List.of(3, 4).iterator(), List.of(5, 6).iterator());
+				ChainedListSequence.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));

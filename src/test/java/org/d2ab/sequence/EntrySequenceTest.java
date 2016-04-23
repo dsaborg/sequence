@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyList;
@@ -173,18 +175,16 @@ public class EntrySequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Entry<String, Integer>> iterable = List.of(entries12345)::iterator;
-
-		EntrySequence<String, Integer> sequence = EntrySequence.from(iterable);
+		EntrySequence<String, Integer> sequence = EntrySequence.from(Iterables.of(entries12345));
 
 		twice(() -> assertThat(sequence, contains(entries12345)));
 	}
 
 	@Test
 	public void fromIterables() {
-		Iterable<Entry<String, Integer>> first = List.of(entries123)::iterator;
-		Iterable<Entry<String, Integer>> second = List.of(entries456)::iterator;
-		Iterable<Entry<String, Integer>> third = List.of(entries789)::iterator;
+		Iterable<Entry<String, Integer>> first = Iterables.of(entries123);
+		Iterable<Entry<String, Integer>> second = Iterables.of(entries456);
+		Iterable<Entry<String, Integer>> third = Iterables.of(entries789);
 
 		EntrySequence<String, Integer> sequence = EntrySequence.from(first, second, third);
 
@@ -199,6 +199,22 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> sequence = EntrySequence.from(new Iterable[0]);
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void onceIterator() {
+		EntrySequence<String, Integer> sequence = EntrySequence.once(Iterators.of(entries12345));
+
+		assertThat(sequence, contains(entries12345));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceStream() {
+		EntrySequence<String, Integer> sequence = EntrySequence.once(Stream.of(entries12345));
+
+		assertThat(sequence, contains(entries12345));
+		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
@@ -326,7 +342,7 @@ public class EntrySequenceTest {
 		Iterator<Entry<String, Integer>> first = Iterators.of(entries123);
 		Iterator<Entry<String, Integer>> second = Iterators.of(entries456);
 
-		EntrySequence<String, Integer> appended = EntrySequence.from(first).append(() -> second);
+		EntrySequence<String, Integer> appended = EntrySequence.once(first).append(() -> second);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -342,7 +358,7 @@ public class EntrySequenceTest {
 		Iterator<Entry<String, Integer>> first = Iterators.of(Maps.entry("1", 1));
 		Iterator<Entry<String, Integer>> second = Iterators.of(Maps.entry("2", 2));
 
-		EntrySequence<String, Integer> sequence = EntrySequence.from(first).append(EntrySequence.from(second));
+		EntrySequence<String, Integer> sequence = EntrySequence.once(first).append(EntrySequence.once(second));
 
 		// check delayed iteration
 		Iterator<Entry<String, Integer>> iterator = sequence.iterator();
@@ -1193,7 +1209,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flatten() {
-		EntrySequence<String, Integer> flattened = _123.flatten(entry -> List.of(entry, Maps.entry("0", 0)));
+		EntrySequence<String, Integer> flattened = _123.flatten(entry -> Iterables.of(entry, Maps.entry("0", 0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
 		                                Maps.entry("3", 3), Maps.entry("0", 0))));
@@ -1202,7 +1218,7 @@ public class EntrySequenceTest {
 	@Test
 	public void flattenBiFunction() {
 		EntrySequence<String, Integer> flattened =
-				_123.flatten((k, v) -> List.of(Maps.entry(k, v), Maps.entry("0", 0)));
+				_123.flatten((k, v) -> Iterables.of(Maps.entry(k, v), Maps.entry("0", 0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
 		                                Maps.entry("3", 3), Maps.entry("0", 0))));
@@ -1211,8 +1227,9 @@ public class EntrySequenceTest {
 	@Test
 	public void flattenKeys() {
 		EntrySequence<String, Integer> flattened =
-				EntrySequence.<List<String>, Integer>ofEntries(List.of("1", "2", "3"), 1, emptyList(), "4",
-				                                               List.of("5", "6", "7"), 3).flattenKeys(Entry::getKey);
+				EntrySequence.<List<String>, Integer>ofEntries(Iterables.of("1", "2", "3"), 1, emptyList(), "4",
+				                                               Iterables.of("5", "6", "7"), 3).flattenKeys(
+						Entry::getKey);
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 1), Maps.entry("3", 1), Maps.entry("5", 3),
 		                                Maps.entry("6", 3), Maps.entry("7", 3))));
@@ -1221,8 +1238,8 @@ public class EntrySequenceTest {
 	@Test
 	public void flattenValues() {
 		EntrySequence<String, Integer> flattened =
-				EntrySequence.<String, List<Integer>>ofEntries("1", List.of(1, 2, 3), "2", emptyList(), "3",
-				                                               List.of(2, 3, 4)).flattenValues(Entry::getValue);
+				EntrySequence.<String, List<Integer>>ofEntries("1", Iterables.of(1, 2, 3), "2", emptyList(), "3",
+				                                               Iterables.of(2, 3, 4)).flattenValues(Entry::getValue);
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("1", 2), Maps.entry("1", 3), Maps.entry("3", 2),
 		                                Maps.entry("3", 3), Maps.entry("3", 4))));

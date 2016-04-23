@@ -225,8 +225,8 @@ public class ListSequenceTest {
 	public void flatMapIterators() {
 		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
-				ListSequence.of(List.of(1, 2).iterator(), List.of(3, 4).iterator(), List.of(5, 6).iterator());
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
+				ListSequence.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
+		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
 
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -269,7 +269,7 @@ public class ListSequenceTest {
 	public void flattenIterators() {
 		@SuppressWarnings("unchecked")
 		Sequence<Iterator<Integer>> sequence =
-				ListSequence.of(List.of(1, 2).iterator(), List.of(3, 4).iterator(), List.of(5, 6).iterator());
+				ListSequence.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));

@@ -83,7 +83,7 @@ public class SequenceDocumentationTest {
 	public void fromIterator() {
 		Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
 
-		Sequence<Integer> sequence = Sequence.from(iterator);
+		Sequence<Integer> sequence = Sequence.once(iterator);
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
@@ -122,8 +122,8 @@ public class SequenceDocumentationTest {
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
-		Stream<String> abcd = List.of("a", "b", "c", "d").stream();
-		Stream<String> abbccd = Sequence.from(abcd).pairs().<String>flatten().stream();
+		Stream<String> abcd = Stream.of("a", "b", "c", "d");
+		Stream<String> abbccd = Sequence.once(abcd).pairs().<String>flatten().stream();
 
 		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 	}

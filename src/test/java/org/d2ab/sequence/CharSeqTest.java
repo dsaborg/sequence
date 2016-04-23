@@ -147,58 +147,58 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void fromIterator() {
-		CharSeq seq = CharSeq.from(Iterators.of('a', 'b', 'c', 'd', 'e'));
-
-		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
-		assertThat(seq, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromCharIterator() {
-		CharSeq seq = CharSeq.from(CharIterator.of('a', 'b', 'c', 'd', 'e'));
-
-		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
-		assertThat(seq, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromPrimitiveIteratorOfInt() {
-		CharSeq seq = CharSeq.from(IntIterator.of('a', 'b', 'c', 'd', 'e'));
-
-		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
-		assertThat(seq, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromStream() {
-		CharSeq seq = CharSeq.from(Stream.of('a', 'b', 'c', 'd', 'e'));
-
-		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
-		assertThat(seq, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromIntStream() {
-		CharSeq seq = CharSeq.from(IntStream.of('a', 'b', 'c', 'd', 'e'));
-
-		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
-		assertThat(seq, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromEmptyStream() {
-		CharSeq seq = CharSeq.from(Stream.of());
-
-		twice(() -> assertThat(seq, is(emptyIterable())));
-	}
-
-	@Test
 	public void fromReader() throws IOException {
 		Reader reader = new StringReader("abcde");
 
 		CharSeq seq = CharSeq.from(reader);
 		twice(() -> assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void onceIterator() {
+		CharSeq seq = CharSeq.once(Iterators.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceCharIterator() {
+		CharSeq seq = CharSeq.once(CharIterator.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void oncePrimitiveIteratorOfInt() {
+		CharSeq seq = CharSeq.once(IntIterator.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceStream() {
+		CharSeq seq = CharSeq.once(Stream.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceIntStream() {
+		CharSeq seq = CharSeq.once(IntStream.of('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(seq, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceEmptyStream() {
+		CharSeq seq = CharSeq.once(Stream.of());
+
+		twice(() -> assertThat(seq, is(emptyIterable())));
 	}
 
 	@Test
@@ -365,7 +365,7 @@ public class CharSeqTest {
 		CharIterator second = CharIterator.of('d', 'e', 'f');
 		CharIterator third = CharIterator.of('g', 'h');
 
-		CharSeq.from(first).append(second).append(third);
+		CharSeq.once(first).append(second).append(third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -378,7 +378,7 @@ public class CharSeqTest {
 		CharIterator first = CharIterator.of('a');
 		CharIterator second = CharIterator.of('b');
 
-		CharSeq sequence = CharSeq.from(first).append(second);
+		CharSeq sequence = CharSeq.once(first).append(second);
 
 		// check delayed iteration
 		CharIterator iterator = sequence.iterator();

@@ -49,7 +49,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	static <L, R> BiSequence<L, R> empty() {
-		return from(emptyIterator());
+		return once(emptyIterator());
 	}
 
 	/**
@@ -136,31 +136,67 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
-	 * Create a {@code BiSequence} from an {@link Iterator} of pairs. Note that {@code BiSequence}s created from {@link
-	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code BiSequence} as empty.
+	 * Create a once-only {@code BiSequence} from an {@link Iterator} of pairs. Note that {@code BiSequence}s created
+	 * from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
+	 * {@code BiSequence} as empty.
 	 *
 	 * @see #of(Pair)
 	 * @see #of(Pair...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
 	 */
-	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
+	static <L, R> BiSequence<L, R> once(Iterator<Pair<L, R>> iterator) {
 		return from(Iterables.once(iterator));
 	}
 
 	/**
-	 * Create a {@code BiSequence} from a {@link Stream} of pairs. Note that {@code BiSequence}s created from
+	 * Create a once-only {@code BiSequence} from a {@link Stream} of pairs. Note that {@code BiSequence}s created from
 	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code BiSequence} as
 	 * empty.
 	 *
 	 * @see #of(Pair)
 	 * @see #of(Pair...)
 	 * @see #from(Iterable)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 * @see #cache(Stream)
 	 */
+	static <L, R> BiSequence<L, R> once(Stream<Pair<L, R>> stream) {
+		return once(stream.iterator());
+	}
+
+	/**
+	 * Create a once-only {@code BiSequence} from an {@link Iterator} of pairs. Note that {@code BiSequence}s created
+	 * from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
+	 * {@code BiSequence} as empty.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 * @see #cache(Iterator)
+	 *
+	 * @deprecated Use {@link #once(Iterator)} instead.
+	 */
+	@Deprecated
+	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
+		return once(iterator);
+	}
+
+	/**
+	 * Create a once-only {@code BiSequence} from a {@link Stream} of pairs. Note that {@code BiSequence}s created from
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code BiSequence} as
+	 * empty.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 * @see #once(Iterator)
+	 * @see #cache(Stream)
+	 *
+	 * @deprecated Use {@link #once(Stream)} instead.
+	 */
+	@Deprecated
 	static <L, R> BiSequence<L, R> from(Stream<Pair<L, R>> stream) {
-		return from(stream.iterator());
+		return once(stream);
 	}
 
 	/**
@@ -191,7 +227,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 */
 	static <L, R> BiSequence<L, R> cache(Iterator<Pair<L, R>> iterator) {
 		return from(Iterators.toList(iterator));
@@ -202,7 +238,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
-	 * @see #from(Stream)
+	 * @see #once(Stream)
 	 */
 	static <L, R> BiSequence<L, R> cache(Stream<Pair<L, R>> stream) {
 		return from(stream.collect(Collectors.toList()));

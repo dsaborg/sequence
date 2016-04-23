@@ -132,22 +132,6 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void fromIntIterator() {
-		IntSequence sequence = IntSequence.from(StrictIntIterator.of(1, 2, 3, 4, 5));
-
-		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
-		assertThat(sequence, is(emptyIterable()));
-	}
-
-	@Test
-	public void fromIterator() {
-		IntSequence sequence = IntSequence.from(List.of(1, 2, 3, 4, 5).iterator());
-
-		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
-		assertThat(sequence, is(emptyIterable()));
-	}
-
-	@Test
 	public void fromIntIterable() {
 		IntSequence sequence = IntSequence.from(StrictIntIterable.of(1, 2, 3, 4, 5));
 
@@ -156,22 +140,38 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		IntSequence sequence = IntSequence.from(List.of(1, 2, 3, 4, 5)::iterator);
+		IntSequence sequence = IntSequence.from(Iterables.of(1, 2, 3, 4, 5));
 
 		twice(() -> assertThat(sequence, containsInts(1, 2, 3, 4, 5)));
 	}
 
 	@Test
-	public void fromIntStream() {
-		IntSequence sequence = IntSequence.from(IntStream.of(1, 2, 3, 4, 5));
+	public void oncePrimitiveIteratorOfInt() {
+		IntSequence sequence = IntSequence.once(StrictIntIterator.of(1, 2, 3, 4, 5));
 
 		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromStream() {
-		IntSequence sequence = IntSequence.from(Stream.of(1, 2, 3, 4, 5));
+	public void onceIterator() {
+		IntSequence sequence = IntSequence.once(Iterators.of(1, 2, 3, 4, 5));
+
+		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceIntStream() {
+		IntSequence sequence = IntSequence.once(IntStream.of(1, 2, 3, 4, 5));
+
+		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceStream() {
+		IntSequence sequence = IntSequence.once(Stream.of(1, 2, 3, 4, 5));
 
 		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
@@ -179,7 +179,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromEmptyStream() {
-		IntSequence sequence = IntSequence.from(Stream.of());
+		IntSequence sequence = IntSequence.once(Stream.of());
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -357,7 +357,7 @@ public class IntSequenceTest {
 		IntIterator second = IntIterator.of(4, 5, 6);
 		IntIterator third = IntIterator.of(7, 8);
 
-		IntSequence.from(first).append(second).append(third);
+		IntSequence.once(first).append(second).append(third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -370,7 +370,7 @@ public class IntSequenceTest {
 		IntIterator first = IntIterator.of(1);
 		IntIterator second = IntIterator.of(2);
 
-		IntSequence sequence = IntSequence.from(first).append(second);
+		IntSequence sequence = IntSequence.once(first).append(second);
 
 		// check delayed iteration
 		IntIterator iterator = sequence.iterator();

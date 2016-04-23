@@ -81,7 +81,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 */
 	static <T> Sequence<T> from(Iterable<T> iterable) {
 		if (iterable instanceof List)
@@ -102,40 +102,74 @@ public interface Sequence<T> extends Iterable<T> {
 	@SafeVarargs
 	static <T> Sequence<T> from(Iterable<T>... iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.of(iterables);
-		if (iterableSequence.all(iterable -> iterable instanceof List)) {
-			List<List<T>> lists = new ArrayList<>(iterables.length);
-			iterableSequence.map(iterable -> (List<T>) iterable).forEach(lists::add);
-			return ChainedListSequence.from(lists);
-		}
+		if (iterableSequence.all(iterable -> iterable instanceof List))
+			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
 
 		return new ChainingIterable<>(iterables)::iterator;
 	}
 
 	/**
-	 * Create a {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from {@link
-	 * Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
+	 * Create a once-only {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
+	 * empty.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
 	 */
-	static <T> Sequence<T> from(Iterator<T> iterator) {
+	static <T> Sequence<T> once(Iterator<T> iterator) {
 		return from(Iterables.once(iterator));
 	}
 
 	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as empty.
+	 * Create a once-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
+	 * empty.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 * @see #cache(Stream)
 	 */
+	static <T> Sequence<T> once(Stream<T> stream) {
+		return once(stream.iterator());
+	}
+
+	/**
+	 * Create a once-only {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from
+	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
+	 * empty.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 * @see #cache(Iterator)
+	 *
+	 * @deprecated Use {@link Sequence#once(Iterator)} instead.
+	 */
+	@Deprecated
+	static <T> Sequence<T> from(Iterator<T> iterator) {
+		return once(iterator);
+	}
+
+	/**
+	 * Create a once-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from
+	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
+	 * empty.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 * @see #once(Iterator)
+	 * @see #cache(Stream)
+	 *
+	 * @deprecated Use {@link Sequence#once(Stream)} instead.
+	 */
+	@Deprecated
 	static <T> Sequence<T> from(Stream<T> stream) {
-		return from(stream.iterator());
+		return once(stream);
 	}
 
 	/**
@@ -154,7 +188,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 */
 	static <T> Sequence<T> cache(Iterator<T> iterator) {
 		return from(Iterators.toList(iterator));
@@ -165,7 +199,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
-	 * @see #from(Stream)
+	 * @see #once(Stream)
 	 */
 	static <T> Sequence<T> cache(Stream<T> stream) {
 		return from(stream.collect(Collectors.toList()));

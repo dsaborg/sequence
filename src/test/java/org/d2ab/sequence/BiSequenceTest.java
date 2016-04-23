@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
+import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyList;
@@ -165,18 +167,16 @@ public class BiSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Pair<String, Integer>> iterable = List.of(entries12345)::iterator;
-
-		BiSequence<String, Integer> sequence = BiSequence.from(iterable);
+		BiSequence<String, Integer> sequence = BiSequence.from(Iterables.of(entries12345));
 
 		twice(() -> assertThat(sequence, contains(entries12345)));
 	}
 
 	@Test
 	public void fromIterables() {
-		Iterable<Pair<String, Integer>> first = List.of(entries123)::iterator;
-		Iterable<Pair<String, Integer>> second = List.of(entries456)::iterator;
-		Iterable<Pair<String, Integer>> third = List.of(entries789)::iterator;
+		Iterable<Pair<String, Integer>> first = Iterables.of(entries123);
+		Iterable<Pair<String, Integer>> second = Iterables.of(entries456);
+		Iterable<Pair<String, Integer>> third = Iterables.of(entries789);
 
 		BiSequence<String, Integer> sequence = BiSequence.from(first, second, third);
 
@@ -190,6 +190,22 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> sequence = BiSequence.from(new Iterable[0]);
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void onceIterator() {
+		BiSequence<String, Integer> sequence = BiSequence.once(Iterators.of(entries12345));
+
+		assertThat(sequence, contains(entries12345));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceStream() {
+		BiSequence<String, Integer> sequence = BiSequence.once(Stream.of(entries12345));
+
+		assertThat(sequence, contains(entries12345));
+		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
@@ -304,7 +320,7 @@ public class BiSequenceTest {
 		Iterator<Pair<String, Integer>> first = Iterators.of(entries123);
 		Iterator<Pair<String, Integer>> second = Iterators.of(entries456);
 
-		BiSequence<String, Integer> then = BiSequence.from(first).append(() -> second);
+		BiSequence<String, Integer> then = BiSequence.once(first).append(() -> second);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -320,7 +336,7 @@ public class BiSequenceTest {
 		Iterator<Pair<String, Integer>> first = Iterators.of(Pair.of("1", 1));
 		Iterator<Pair<String, Integer>> second = Iterators.of(Pair.of("2", 2));
 
-		BiSequence<String, Integer> sequence = BiSequence.from(first).append(BiSequence.from(second));
+		BiSequence<String, Integer> sequence = BiSequence.once(first).append(BiSequence.once(second));
 
 		// check delayed iteration
 		Iterator<Pair<String, Integer>> iterator = sequence.iterator();
@@ -1151,14 +1167,14 @@ public class BiSequenceTest {
 
 	@Test
 	public void flatten() {
-		BiSequence<String, Integer> flattened = _123.flatten(pair -> List.of(pair, Pair.of("0", 0)));
+		BiSequence<String, Integer> flattened = _123.flatten(pair -> Iterables.of(pair, Pair.of("0", 0)));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
 		                                           Pair.of("3", 3), Pair.of("0", 0))));
 	}
 
 	@Test
 	public void flattenBiFunction() {
-		BiSequence<String, Integer> flattened = _123.flatten((l, r) -> List.of(Pair.of(l, r), Pair.of("0", 0)));
+		BiSequence<String, Integer> flattened = _123.flatten((l, r) -> Iterables.of(Pair.of(l, r), Pair.of("0", 0)));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
 		                                           Pair.of("3", 3), Pair.of("0", 0))));
 	}
@@ -1166,8 +1182,8 @@ public class BiSequenceTest {
 	@Test
 	public void flattenLeft() {
 		BiSequence<String, Integer> flattened =
-				BiSequence.<List<String>, Integer>ofPairs(List.of("1", "2", "3"), 1, emptyList(), "4",
-				                                          List.of("5", "6", "7"), 3).flattenLeft(Pair::getLeft);
+				BiSequence.<List<String>, Integer>ofPairs(Iterables.of("1", "2", "3"), 1, emptyList(), "4",
+				                                          Iterables.of("5", "6", "7"), 3).flattenLeft(Pair::getLeft);
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("2", 1), Pair.of("3", 1), Pair.of("5", 3),
 		                                           Pair.of("6", 3), Pair.of("7", 3))));
 	}
@@ -1175,8 +1191,8 @@ public class BiSequenceTest {
 	@Test
 	public void flattenRight() {
 		BiSequence<String, Integer> flattened =
-				BiSequence.<String, List<Integer>>ofPairs("1", List.of(1, 2, 3), "2", emptyList(), "3",
-				                                          List.of(2, 3, 4)).flattenRight(Pair::getRight);
+				BiSequence.<String, List<Integer>>ofPairs("1", Iterables.of(1, 2, 3), "2", emptyList(), "3",
+				                                          Iterables.of(2, 3, 4)).flattenRight(Pair::getRight);
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("1", 2), Pair.of("1", 3), Pair.of("3", 2),
 		                                           Pair.of("3", 3), Pair.of("3", 4))));
 	}

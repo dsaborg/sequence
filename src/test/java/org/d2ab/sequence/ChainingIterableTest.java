@@ -17,11 +17,14 @@
 package org.d2ab.sequence;
 
 import org.d2ab.iterable.ChainingIterable;
+import org.d2ab.iterable.Iterables;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -37,7 +40,8 @@ public class ChainingIterableTest {
 			new ChainingIterable<>(List.of("a", "b", "c"), List.of("d", "e", "f"));
 	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc_def_ghi =
-			new ChainingIterable<>(List.of("a", "b", "c"), List.of("d", "e", "f"), List.of("g", "h", "i"));
+			new ChainingIterable<>(List.of("a", "b", "c"), List.of("d", "e", "f"),
+			                       List.of("g", "h", "i"));
 
 	@Test
 	public void empty() {
@@ -62,7 +66,7 @@ public class ChainingIterableTest {
 	@Test
 	public void lazy() {
 		@SuppressWarnings("unchecked")
-		ChainingIterable<String> chainingIterable = new ChainingIterable<>(List.of("a", "b", "c"), () -> {
+		ChainingIterable<String> chainingIterable = new ChainingIterable<>(Iterables.of("a", "b", "c"), () -> {
 			throw new IllegalStateException(); // Not thrown yet, until below when iterator is requested
 		});
 
@@ -71,21 +75,21 @@ public class ChainingIterableTest {
 		assertThat(iterator.next(), is("b"));
 		assertThat(iterator.next(), is("c"));
 
-		expecting(IllegalStateException.class, iterator::hasNext); // Exception not thrown until iterator is
-		// encountered
+		// Exception not thrown until iterator is encountered
+		expecting(IllegalStateException.class, iterator::hasNext);
 	}
 
 	@Test
 	public void appendIterable() {
-		abc.append(List.of("d", "e", "f"));
+		abc.append(Iterables.of("d", "e", "f"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f"));
 	}
 
 	@Test
 	public void appendIterator() {
-		abc.append(List.of("d", "e", "f").iterator());
-		abc.append(List.of("g", "h", "i"));
+		abc.append(Iterators.of("d", "e", "f"));
+		abc.append(Iterables.of("g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "g", "h", "i"));
 	}
@@ -99,47 +103,48 @@ public class ChainingIterableTest {
 
 	@Test
 	public void appendStream() {
-		abc.append(List.of("d", "e", "f").stream());
-		abc.append(List.of("g", "h", "i"));
+		abc.append(Stream.of("d", "e", "f"));
+		abc.append(Iterables.of("g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendIterables() {
-		abc.flatAppend(List.of(List.of("d", "e", "f"), List.of("g", "h", "i")));
+		abc.flatAppend(Iterables.of(Iterables.of("d", "e", "f"), Iterables.of("g", "h", "i")));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendIterators() {
-		abc.flatAppend(List.of(List.of("d", "e", "f").iterator(), List.of("g", "h", "i").iterator()));
+		abc.flatAppend(Iterables.of(Iterators.of("d", "e", "f"), Iterators.of("g", "h", "i")));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c"));
 	}
 
 	@Test
 	public void flatAppendArrays() {
-		abc.flatAppend(List.of(new String[]{"d", "e", "f"}, new String[]{"g", "h", "i"}));
+		abc.flatAppend(Iterables.of(new String[]{"d", "e", "f"}, new String[]{"g", "h", "i"}));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendStreams() {
-		abc.flatAppend(List.of(List.of("d", "e", "f").stream(), List.of("g", "h", "i").stream()));
+		abc.flatAppend(Iterables.of(Stream.of("d", "e", "f"), Stream.of("g", "h", "i")));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendPairs() {
-		abc.flatAppend(List.of(Pair.of("d", "e"), Pair.of("f", "g"), Pair.of("h", "i")));
+		abc.flatAppend(Iterables.of(Pair.of("d", "e"), Pair.of("f", "g"), Pair.of("h", "i")));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i"));
 	}
 
 	@Test
 	public void flatAppendMixed() {
-		abc.flatAppend(List.of(List.of("d", "e", "f"), List.of("g", "h", "i").iterator(), new String[]{"j", "k", "l"}));
+		abc.flatAppend(
+				Iterables.of(Iterables.of("d", "e", "f"), Iterators.of("g", "h", "i"), new String[]{"j", "k", "l"}));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
 		assertThat(abc, contains("a", "b", "c", "d", "e", "f", "j", "k", "l"));
 	}

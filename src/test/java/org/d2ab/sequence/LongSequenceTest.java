@@ -145,32 +145,40 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void fromLongIterator() {
-		LongSequence sequence = LongSequence.from(LongIterator.of(1, 2, 3, 4, 5));
+	public void oncePrimitiveIteratorOfLong() {
+		LongSequence sequence = LongSequence.once(LongIterator.of(1, 2, 3, 4, 5));
 
 		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromIterator() {
-		LongSequence sequence = LongSequence.from(Iterators.of(1L, 2L, 3L, 4L, 5L));
+	public void onceIterator() {
+		LongSequence sequence = LongSequence.once(Iterators.of(1L, 2L, 3L, 4L, 5L));
 
 		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromStream() {
-		LongSequence sequence = LongSequence.from(Stream.of(1L, 2L, 3L, 4L, 5L));
+	public void onceLongStream() {
+		LongSequence sequence = LongSequence.once(LongStream.of(1L, 2L, 3L, 4L, 5L));
 
 		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromEmptyStream() {
-		LongSequence sequence = LongSequence.from(Stream.of());
+	public void onceStream() {
+		LongSequence sequence = LongSequence.once(Stream.of(1L, 2L, 3L, 4L, 5L));
+
+		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceEmptyStream() {
+		LongSequence sequence = LongSequence.once(Stream.of());
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -322,7 +330,7 @@ public class LongSequenceTest {
 		LongIterator second = LongIterator.of(4, 5, 6);
 		LongIterator third = LongIterator.of(7, 8);
 
-		LongSequence.from(first).append(second).append(third);
+		LongSequence.once(first).append(second).append(third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -335,7 +343,7 @@ public class LongSequenceTest {
 		LongIterator first = LongIterator.of(1);
 		LongIterator second = LongIterator.of(2);
 
-		LongSequence sequence = LongSequence.from(first).append(second);
+		LongSequence sequence = LongSequence.once(first).append(second);
 
 		// check delayed iteration
 		LongIterator iterator = sequence.iterator();

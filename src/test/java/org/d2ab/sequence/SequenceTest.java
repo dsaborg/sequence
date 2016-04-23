@@ -138,24 +138,30 @@ public class SequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Integer> iterable = () -> List.of(1, 2, 3).iterator();
-
-		Sequence<Integer> sequenceFromIterable = Sequence.from(iterable);
+		Sequence<Integer> sequenceFromIterable = Sequence.from(Iterables.of(1, 2, 3));
 
 		twice(() -> assertThat(sequenceFromIterable, contains(1, 2, 3)));
 	}
 
 	@Test
-	public void fromStream() {
-		Sequence<Integer> sequenceFromStream = Sequence.from(List.of(1, 2, 3).stream());
+	public void onceIterator() {
+		Sequence<Integer> sequenceFromStream = Sequence.once(Iterators.of(1, 2, 3));
 
 		assertThat(sequenceFromStream, contains(1, 2, 3));
 		assertThat(sequenceFromStream, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromEmptyStream() {
-		Sequence<Integer> sequenceFromStream = Sequence.from(Stream.of());
+	public void onceStream() {
+		Sequence<Integer> sequenceFromStream = Sequence.once(Stream.of(1, 2, 3));
+
+		assertThat(sequenceFromStream, contains(1, 2, 3));
+		assertThat(sequenceFromStream, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceEmptyStream() {
+		Sequence<Integer> sequenceFromStream = Sequence.once(Stream.of());
 
 		twice(() -> assertThat(sequenceFromStream, is(emptyIterable())));
 	}
@@ -317,7 +323,7 @@ public class SequenceTest {
 		Iterator<Integer> second = Iterators.of(4, 5, 6);
 		Iterator<Integer> third = Iterators.of(7, 8);
 
-		Sequence.from(first).append(() -> second).append(() -> third);
+		Sequence.once(first).append(() -> second).append(() -> third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -330,7 +336,7 @@ public class SequenceTest {
 		Iterator<Integer> first = Iterators.of(1);
 		Iterator<Integer> second = Iterators.of(2);
 
-		Sequence<Integer> sequence = Sequence.from(first).append(() -> second);
+		Sequence<Integer> sequence = Sequence.once(first).append(() -> second);
 
 		// check delayed iteration
 		Iterator<Integer> iterator = sequence.iterator();
@@ -415,7 +421,7 @@ public class SequenceTest {
 		Sequence<Iterator<Integer>> sequence =
 				Sequence.from(new ArrayDeque<>(List.of(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::from);
+		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
 
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -434,9 +440,9 @@ public class SequenceTest {
 
 	@Test
 	public void flattenIterables() {
-		Sequence<Integer> flattened = Sequence.from(new ArrayDeque<>(
-				List.of((Iterable<Integer>) () -> List.of(1, 2).iterator(), () -> List.of(3, 4).iterator(),
-				        () -> List.of(5, 6).iterator()))).flatten();
+		Sequence<Integer> flattened =
+				Sequence.from(new ArrayDeque<>(List.of(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))))
+				        .flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}

@@ -51,7 +51,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> EntrySequence<K, V> empty() {
-		return from(emptyIterator());
+		return once(emptyIterator());
 	}
 
 	/**
@@ -138,8 +138,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
-	 * Create an {@code EntrySequence} from an {@link Iterator} of entries. Note that {@code EntrySequence}s created
-	 * from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
+	 * Create a once-only {@code EntrySequence} from an {@link Iterator} of entries. Note that {@code EntrySequence}s
+	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
 	 * {@code EntrySequence} as empty.
 	 *
 	 * @see #of(Entry)
@@ -147,23 +147,58 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
 	 */
-	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
+	static <K, V> EntrySequence<K, V> once(Iterator<Entry<K, V>> iterator) {
 		return from(Iterables.once(iterator));
 	}
 
 	/**
-	 * Create an {@code EntrySequence} from a {@link Stream} of entries. Note that {@code EntrySequence}s created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the
+	 * Create a once-only {@code EntrySequence} from a {@link Stream} of entries. Note that {@code EntrySequence}s
+	 * created from {@link Stream}s cannot be passed over more than once. Further attempts will register the
 	 * {@code EntrySequence} as empty.
 	 *
 	 * @see #of(Entry)
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 * @see #cache(Stream)
 	 */
+	static <K, V> EntrySequence<K, V> once(Stream<Entry<K, V>> stream) {
+		return once(stream.iterator());
+	}
+
+	/**
+	 * Create a once-only {@code EntrySequence} from an {@link Iterator} of entries. Note that {@code EntrySequence}s
+	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
+	 * {@code EntrySequence} as empty.
+	 *
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #from(Iterable)
+	 * @see #cache(Iterator)
+	 *
+	 * @deprecated Use {@link #once(Iterator)} instead.
+	 */
+	@Deprecated
+	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
+		return once(iterator);
+	}
+
+	/**
+	 * Create a once-only {@code EntrySequence} from a {@link Stream} of entries. Note that {@code EntrySequence}s
+	 * created from {@link Stream}s cannot be passed over more than once. Further attempts will register the
+	 * {@code EntrySequence} as empty.
+	 *
+	 * @see #of(Entry)
+	 * @see #of(Entry...)
+	 * @see #from(Iterable)
+	 * @see #once(Iterator)
+	 * @see #cache(Stream)
+	 *
+	 * @deprecated Use {@link #once(Stream)} instead.
+	 */
+	@Deprecated
 	static <K, V> EntrySequence<K, V> from(Stream<Entry<K, V>> stream) {
-		return from(stream.iterator());
+		return once(stream);
 	}
 
 	/**
@@ -194,7 +229,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 */
 	static <K, V> EntrySequence<K, V> cache(Iterator<Entry<K, V>> iterator) {
 		return from(Iterators.toList(iterator));
@@ -205,7 +240,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
-	 * @see #from(Stream)
+	 * @see #once(Stream)
 	 */
 	static <K, V> EntrySequence<K, V> cache(Stream<Entry<K, V>> stream) {
 		return from(stream.collect(Collectors.toList()));

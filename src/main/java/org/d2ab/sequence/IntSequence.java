@@ -51,7 +51,7 @@ public interface IntSequence extends IntIterable {
 	 * Create empty {@code IntSequence} with no contents.
 	 */
 	static IntSequence empty() {
-		return from(emptyIterator());
+		return once(emptyIterator());
 	}
 
 	/**
@@ -80,48 +80,103 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Create a {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s created from
-	 * {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will register the {@code
-	 * IntSequence} as empty.
+	 * Create a once-only {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s
+	 * created from {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will
+	 * register the {@code IntSequence} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 */
-	static IntSequence from(PrimitiveIterator.OfInt iterator) {
+	static IntSequence once(PrimitiveIterator.OfInt iterator) {
 		return from(IntIterable.once(iterator));
 	}
 
 	/**
-	 * Create an {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that {@code IntSequence}
-	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code
-	 * IntSequence} as empty.
+	 * Create a once-only {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that
+	 * {@code IntSequence} created from {@link Iterator}s cannot be passed over more than once. Further attempts will
+	 * register the {@code IntSequence} as empty.
 	 *
 	 * @see #cache(Iterator)
 	 */
-	static IntSequence from(Iterator<Integer> iterator) {
-		return from(IntIterator.from(iterator));
+	static IntSequence once(Iterator<Integer> iterator) {
+		return once(IntIterator.from(iterator));
 	}
 
 	/**
-	 * Create an {@code IntSequence} from an {@link IntStream} of items. Note that {@code IntSequences} created from {@link
-	 * IntStream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence} as
-	 * empty.
+	 * Create a once-only {@code IntSequence} from an {@link IntStream} of items. Note that {@code IntSequences}
+	 * created from {@link IntStream}s cannot be passed over more than once. Further attempts will register the
+	 * {@code IntSequence} as empty.
 	 *
 	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
 	 * @see #cache(IntStream)
 	 */
-	static IntSequence from(IntStream stream) {
-		return from(stream.iterator());
+	static IntSequence once(IntStream stream) {
+		return once(stream.iterator());
 	}
 
 	/**
-	 * Create a {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from{@link
-	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence} as empty.
+	 * Create a only-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created
+	 * from{@link Stream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence}
+	 * as empty.
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
 	 */
+	static IntSequence once(Stream<Integer> stream) {
+		return once(stream.iterator());
+	}
+
+	/**
+	 * Create a once-only {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s
+	 * created from {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will
+	 * register the {@code IntSequence} as empty.
+	 *
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @deprecated Use {@link #once(PrimitiveIterator.OfInt)} instead.
+	 */
+	@Deprecated
+	static IntSequence from(PrimitiveIterator.OfInt iterator) {
+		return once(iterator);
+	}
+
+	/**
+	 * Create a once-only {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that
+	 * {@code IntSequence} created from {@link Iterator}s cannot be passed over more than once. Further attempts will
+	 * register the {@code IntSequence} as empty.
+	 *
+	 * @see #cache(Iterator)
+	 * @deprecated Use {@link #once(Iterator)} instead.
+	 */
+	@Deprecated
+	static IntSequence from(Iterator<Integer> iterator) {
+		return once(iterator);
+	}
+
+	/**
+	 * Create a once-only {@code IntSequence} from an {@link IntStream} of items. Note that {@code IntSequences}
+	 * created from {@link IntStream}s cannot be passed over more than once. Further attempts will register the
+	 * {@code IntSequence} as empty.
+	 *
+	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
+	 * @see #cache(IntStream)
+	 * @deprecated Use {@link #once(IntStream)} instead.
+	 */
+	@Deprecated
+	static IntSequence from(IntStream stream) {
+		return once(stream);
+	}
+
+	/**
+	 * Create a only-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created
+	 * from{@link Stream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence}
+	 * as empty.
+	 *
+	 * @throws IllegalStateException if the {@link Stream} is exhausted.
+	 * @see #cache(Stream)
+	 * @deprecated Use {@link #once(Stream)} instead.
+	 */
+	@Deprecated
 	static IntSequence from(Stream<Integer> stream) {
-		return from(stream.iterator());
+		return once(stream);
 	}
 
 	/**
@@ -160,7 +215,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Stream)
 	 * @see #cache(IntIterable)
 	 * @see #cache(Iterable)
-	 * @see #from(PrimitiveIterator.OfInt)
+	 * @see #once(PrimitiveIterator.OfInt)
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
 		int[] cache = new int[10];
@@ -184,7 +239,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Stream)
 	 * @see #cache(IntIterable)
 	 * @see #cache(Iterable)
-	 * @see #from(Iterator)
+	 * @see #once(Iterator)
 	 */
 	static IntSequence cache(Iterator<Integer> iterator) {
 		return cache(IntIterator.from(iterator));
@@ -198,7 +253,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
-	 * @see #from(IntStream)
+	 * @see #once(IntStream)
 	 */
 	static IntSequence cache(IntStream stream) {
 		return cache(stream.iterator());
@@ -212,7 +267,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
-	 * @see #from(Stream)
+	 * @see #once(Stream)
 	 */
 	static IntSequence cache(Stream<Integer> stream) {
 		return cache(stream.iterator());

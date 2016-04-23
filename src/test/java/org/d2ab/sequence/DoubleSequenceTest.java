@@ -131,7 +131,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Iterable<Double> iterable = List.of(1.0, 2.0, 3.0, 4.0, 5.0)::iterator;
+		Iterable<Double> iterable = Iterables.of(1.0, 2.0, 3.0, 4.0, 5.0);
 
 		DoubleSequence sequence = DoubleSequence.from(iterable);
 
@@ -146,40 +146,40 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void fromPrimitiveIteratorOfDouble() {
-		DoubleSequence sequence = DoubleSequence.from(DoubleIterator.of(1.0, 2.0, 3.0, 4.0, 5.0));
+	public void oncePrimitiveIteratorOfDouble() {
+		DoubleSequence sequence = DoubleSequence.once(DoubleIterator.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		assertThat(sequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromIterator() {
-		DoubleSequence sequence = DoubleSequence.from(Iterators.of(1.0, 2.0, 3.0, 4.0, 5.0));
+	public void onceIterator() {
+		DoubleSequence sequence = DoubleSequence.once(Iterators.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		assertThat(sequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromDoubleStream() {
-		DoubleSequence sequence = DoubleSequence.from(DoubleStream.of(1.0, 2.0, 3.0, 4.0, 5.0));
+	public void onceDoubleStream() {
+		DoubleSequence sequence = DoubleSequence.once(DoubleStream.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		assertThat(sequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromStream() {
-		DoubleSequence sequence = DoubleSequence.from(Stream.of(1.0, 2.0, 3.0, 4.0, 5.0));
+	public void onceStream() {
+		DoubleSequence sequence = DoubleSequence.once(Stream.of(1.0, 2.0, 3.0, 4.0, 5.0));
 
 		assertThat(sequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
-	public void fromEmptyStream() {
-		DoubleSequence sequence = DoubleSequence.from(Stream.of());
+	public void onceEmptyStream() {
+		DoubleSequence sequence = DoubleSequence.once(Stream.of());
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -340,7 +340,7 @@ public class DoubleSequenceTest {
 		DoubleIterator second = DoubleIterator.of(4.0, 5.0, 6.0);
 		DoubleIterator third = DoubleIterator.of(7.0, 8.0);
 
-		DoubleSequence.from(first).append(second).append(third);
+		DoubleSequence.once(first).append(second).append(third);
 
 		// check delayed iteration
 		assertThat(first.hasNext(), is(true));
@@ -353,7 +353,7 @@ public class DoubleSequenceTest {
 		DoubleIterator first = DoubleIterator.of(1.0);
 		DoubleIterator second = DoubleIterator.of(2.0);
 
-		DoubleSequence sequence = DoubleSequence.from(first).append(() -> second);
+		DoubleSequence sequence = DoubleSequence.once(first).append(() -> second);
 
 		// check delayed iteration
 		DoubleIterator iterator = sequence.iterator();
