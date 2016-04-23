@@ -218,7 +218,7 @@ public interface CharSeq extends CharIterable {
 	 * occurs during iteration, an {@link IterationException} will be thrown. The {@link Reader} will not be closed
 	 * by the {@code CharSeq} when iteration finishes, it must be closed externally when iteration is finished.
 	 */
-	static CharSeq from(Reader reader) {
+	static CharSeq read(Reader reader) {
 		return new CharSeq() {
 			boolean started;
 

@@ -187,7 +187,7 @@ public interface IntSequence extends IntIterable {
 	 * The {@link InputStream} will not be closed by the {@code IntSequence} when iteration finishes, it must be closed
 	 * externally when iteration is finished.
 	 */
-	static IntSequence from(InputStream inputStream) {
+	static IntSequence read(InputStream inputStream) {
 		return new IntSequence() {
 			boolean started;
 

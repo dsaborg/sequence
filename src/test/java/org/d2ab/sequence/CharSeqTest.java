@@ -147,14 +147,6 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void fromReader() throws IOException {
-		Reader reader = new StringReader("abcde");
-
-		CharSeq seq = CharSeq.from(reader);
-		twice(() -> assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e')));
-	}
-
-	@Test
 	public void onceIterator() {
 		CharSeq seq = CharSeq.once(Iterators.of('a', 'b', 'c', 'd', 'e'));
 
@@ -202,11 +194,19 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void fromReaderAlreadyBegun() throws IOException {
+	public void read() throws IOException {
+		Reader reader = new StringReader("abcde");
+
+		CharSeq seq = CharSeq.read(reader);
+		twice(() -> assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void readAlreadyBegun() throws IOException {
 		Reader reader = new StringReader("abcde");
 		assertThat((char) reader.read(), is('a'));
 
-		CharSeq seq = CharSeq.from(reader);
+		CharSeq seq = CharSeq.read(reader);
 		assertThat(seq, containsChars('b', 'c', 'd', 'e'));
 		assertThat(seq, containsChars('a', 'b', 'c', 'd', 'e'));
 	}

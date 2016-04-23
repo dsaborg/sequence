@@ -185,19 +185,19 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void fromInputStream() {
+	public void read() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 
-		IntSequence seq = IntSequence.from(inputStream);
+		IntSequence seq = IntSequence.read(inputStream);
 		twice(() -> assertThat(seq, containsInts(1, 2, 3, 4, 5)));
 	}
 
 	@Test
-	public void fromInputStreamWhenBegun() throws IOException {
+	public void readAlreadyBegun() throws IOException {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 		assertThat(inputStream.read(), is(1));
 
-		IntSequence seq = IntSequence.from(inputStream);
+		IntSequence seq = IntSequence.read(inputStream);
 		assertThat(seq, containsInts(2, 3, 4, 5));
 		assertThat(seq, containsInts(1, 2, 3, 4, 5));
 	}
