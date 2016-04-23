@@ -345,7 +345,8 @@ assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 Primitive sequences can be read from `Readers` or `InputStreams` into a `CharSeq` or `IntSequence` respective.
 
 ```Java
-Reader reader = new StringReader("hello world\n" + "goodbye world\n");
+Reader reader = new StringReader("hello world\n" +
+                                 "goodbye world\n");
 
 Sequence<String> titleCase = CharSeq.read(reader)
                                     .mapBack('\n',
@@ -354,6 +355,8 @@ Sequence<String> titleCase = CharSeq.read(reader)
                                     .map(CharSeq::asString);
 
 assertThat(titleCase, contains("Hello World", "Goodbye World"));
+
+reader.close();
 ```
 
 ```Java
@@ -362,6 +365,8 @@ InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD
 String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join("");
 
 assertThat(hexString, is("deadbeef"));
+
+inputStream.close();
 ```
 
 ### Conclusion
