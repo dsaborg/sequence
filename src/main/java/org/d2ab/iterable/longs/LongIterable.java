@@ -19,10 +19,11 @@ package org.d2ab.iterable.longs;
 import org.d2ab.iterator.longs.ArrayLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
-import java.util.Arrays;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
+
+import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
@@ -51,7 +52,7 @@ public interface LongIterable extends Iterable<Long> {
 	}
 
 	static LongIterable from(Long... longs) {
-		return from(Arrays.asList(longs));
+		return from(asList(longs));
 	}
 
 	static LongIterable from(Iterable<Long> iterable) {

@@ -23,9 +23,9 @@ import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -34,14 +34,14 @@ import static org.junit.Assert.assertThat;
 public class ChainingIterableTest {
 	private final ChainingIterable<String> empty = new ChainingIterable<>();
 	@SuppressWarnings("unchecked")
-	private final ChainingIterable<String> abc = new ChainingIterable<>(List.of("a", "b", "c"));
+	private final ChainingIterable<String> abc = new ChainingIterable<>(asList("a", "b", "c"));
 	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc_def =
-			new ChainingIterable<>(List.of("a", "b", "c"), List.of("d", "e", "f"));
+			new ChainingIterable<>(asList("a", "b", "c"), asList("d", "e", "f"));
 	@SuppressWarnings("unchecked")
 	private final ChainingIterable<String> abc_def_ghi =
-			new ChainingIterable<>(List.of("a", "b", "c"), List.of("d", "e", "f"),
-			                       List.of("g", "h", "i"));
+			new ChainingIterable<>(asList("a", "b", "c"), asList("d", "e", "f"),
+			                       asList("g", "h", "i"));
 
 	@Test
 	public void empty() {
@@ -157,7 +157,7 @@ public class ChainingIterableTest {
 	@Test
 	public void testEquals() {
 		assertThat(abc.equals(abc), is(true));
-		assertThat(abc.equals(new ChainingIterable<>(List.of("a", "b", "c"))), is(true));
+		assertThat(abc.equals(new ChainingIterable<>(asList("a", "b", "c"))), is(true));
 		assertThat(abc.equals(empty), is(false));
 		assertThat(abc.equals(abc_def), is(false));
 		assertThat(abc.equals(abc_def_ghi), is(false));
@@ -166,7 +166,7 @@ public class ChainingIterableTest {
 	@Test
 	public void testHashCode() {
 		assertThat(abc.hashCode(), is(abc.hashCode()));
-		assertThat(abc.hashCode(), is(new ChainingIterable<>(List.of("a", "b", "c")).hashCode()));
+		assertThat(abc.hashCode(), is(new ChainingIterable<>(asList("a", "b", "c")).hashCode()));
 		assertThat(abc.hashCode(), is(not(empty.hashCode())));
 		assertThat(abc.hashCode(), is(not(abc_def.hashCode())));
 		assertThat(abc.hashCode(), is(not(abc_def_ghi.hashCode())));

@@ -102,11 +102,10 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 
     /**
      * Creates a matcher for {@link Iterable}s that matches when a single pass over the
-     * examined {@link Iterable} yields a series of items, each logically equal to the
-     * corresponding item in the specified items.  For a positive match, the examined iterable
-     * must be of the same length as the number of specified items.
+     * beginning of the examined {@link Iterable} yields a series of items, each logically equal to the
+     * corresponding item in the specified items.
      * For example:
-     * <pre>assertThat(Arrays.asList("foo", "bar"), contains("foo", "bar"))</pre>
+     * <pre>assertThat(Arrays.asList("foo", "bar", "xyzzy"), beginsWith("foo", "bar"))</pre>
      * 
      * @param items
      *     the items that must equal the items provided by an examined {@link Iterable}
@@ -122,13 +121,13 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 
     /**
      * Creates a matcher for {@link Iterable}s that matches when a single pass over the
-     * examined {@link Iterable} yields a single item that satisfies the specified matcher.
-     * For a positive match, the examined iterable must only yield one item.
+     * beginning of the examined {@link Iterable} yields a first item that satisfies the
+     * specified matcher.
      * For example:
-     * <pre>assertThat(Arrays.asList("foo"), contains(equalTo("foo")))</pre>
+     * <pre>assertThat(Arrays.asList("foo", "bar"), beginsWith(equalTo("foo")))</pre>
      * 
      * @param itemMatcher
-     *     the matcher that must be satisfied by the single item provided by an
+     *     the matcher that must be satisfied by the first item provided by an
      *     examined {@link Iterable}
      */
     @SuppressWarnings("unchecked")
@@ -138,11 +137,10 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 
     /**
      * Creates a matcher for {@link Iterable}s that matches when a single pass over the
-     * examined {@link Iterable} yields a series of items, each satisfying the corresponding
-     * matcher in the specified matchers.  For a positive match, the examined iterable
-     * must be of the same length as the number of specified matchers.
+     * beginning of the examined {@link Iterable} yields a series of items, each
+     * satisfying the corresponding matcher in the specified matchers.
      * For example:
-     * <pre>assertThat(Arrays.asList("foo", "bar"), contains(equalTo("foo"), equalTo("bar")))</pre>
+     * <pre>assertThat(Arrays.asList("foo", "bar", "xyzzt"), beginsWith(equalTo("foo"), equalTo("bar")))</pre>
      * 
      * @param itemMatchers
      *     the matchers that must be satisfied by the items provided by an examined {@link Iterable}
@@ -156,11 +154,10 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 
     /**
      * Creates a matcher for {@link Iterable}s that matches when a single pass over the
-     * examined {@link Iterable} yields a series of items, each satisfying the corresponding
-     * matcher in the specified list of matchers.  For a positive match, the examined iterable
-     * must be of the same length as the specified list of matchers.
+     * beginning of the examined {@link Iterable} yields a series of items, each satisfying
+     * the corresponding matcher in the specified list of matchers.
      * For example:
-     * <pre>assertThat(Arrays.asList("foo", "bar"), contains(Arrays.asList(equalTo("foo"), equalTo("bar"))))</pre>
+     * <pre>assertThat(Arrays.asList("foo", "bar", "xyzzt"), beginsWith(Arrays.asList(equalTo("foo"), equalTo("bar"))))</pre>
      * 
      * @param itemMatchers
      *     a list of matchers, each of which must be satisfied by the corresponding item provided by

@@ -25,7 +25,7 @@ import static java.util.Comparator.nullsFirst;
  * Utilities for comparators.
  */
 public class Comparators {
-	public static final Comparator<?> NATURAL_ORDER_NULLS_FIRST = nullsFirst((Comparator<?>) naturalOrder());
+	public static final Comparator NATURAL_ORDER_NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
 
 	@SuppressWarnings("unchecked")
 	public static <T> Comparator<T> naturalOrderNullsFirst() {

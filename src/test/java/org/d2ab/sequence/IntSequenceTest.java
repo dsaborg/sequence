@@ -32,6 +32,7 @@ import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -616,7 +617,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Integer> backing = new ArrayList<>(List.of(2, 3, 1));
+		List<Integer> backing = new ArrayList<>(asList(2, 3, 1));
 		IntSequence sorted = IntSequence.from(backing).sorted();
 
 		backing.add(4);
@@ -733,7 +734,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Integer> backing = new ArrayList<>(List.of(1, 2, 3));
+		List<Integer> backing = new ArrayList<>(asList(1, 2, 3));
 		IntSequence reversed = IntSequence.from(backing).reverse();
 
 		backing.add(4);
@@ -927,7 +928,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), containsInts(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		IntSequence repeatVarying = IntSequence.from(new IntIterable() {
-			private List<Integer> list = List.of(1, 2, 3);
+			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -961,7 +962,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(repeatThree, containsInts(1, 2, 3, 1, 2, 3)));
 
 		IntSequence repeatVarying = IntSequence.from(new IntIterable() {
-			private List<Integer> list = List.of(1, 2, 3);
+			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -997,7 +998,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(List.of(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 		IntSequence sequence = IntSequence.generate(queue::poll).endingAt(5);
 
 		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
@@ -1133,7 +1134,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Integer> original = new ArrayList<>(List.of(1, 2, 3, 4));
+		List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4));
 
 		IntSequence filtered = IntSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.removeAll();

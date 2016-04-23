@@ -19,10 +19,11 @@ package org.d2ab.iterable.ints;
 import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
-import java.util.Arrays;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+
+import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
@@ -51,7 +52,7 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	static IntIterable from(Integer... integers) {
-		return from(Arrays.asList(integers));
+		return from(asList(integers));
 	}
 
 	static IntIterable from(Iterable<Integer> iterable) {

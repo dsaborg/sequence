@@ -19,10 +19,11 @@ package org.d2ab.iterable.doubles;
 import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
-import java.util.Arrays;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
+
+import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
@@ -51,7 +52,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	static DoubleIterable from(Double... doubles) {
-		return from(Arrays.asList(doubles));
+		return from(asList(doubles));
 	}
 
 	static DoubleIterable from(Iterable<Double> iterable) {

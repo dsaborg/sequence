@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -219,7 +220,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheCollection() {
-		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list);
 		list.set(0, Maps.entry("17", 17));
 
@@ -231,7 +232,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list::iterator);
 		list.set(0, Maps.entry("17", 17));
 
@@ -243,7 +244,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list.iterator());
 		list.set(0, Maps.entry("17", 17));
 
@@ -255,7 +256,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Entry<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list.stream());
 		list.set(0, Maps.entry("17", 17));
 
@@ -1122,7 +1123,7 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
 			private List<Entry<String, Integer>> list =
-					List.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+					asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
 			int end = list.size();
 
 			@Override
@@ -1156,7 +1157,7 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
 			private List<Entry<String, Integer>> list =
-					List.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+					asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
 			int end = list.size();
 
 			@Override

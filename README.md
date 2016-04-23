@@ -124,7 +124,7 @@ it's very easy to create your own full-fledged `Sequence` instances that can be 
 through the default methods on the interface that carry the bulk of the burden.
 
 ```Java
-List<Integer> list = List.of(1, 2, 3, 4, 5);
+List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
 
 // Sequence as @FunctionalInterface of list's Iterator
 Sequence<Integer> sequence = list::iterator;
@@ -138,7 +138,7 @@ assertThat(transformed.limit(3), contains("1", "2", "3"));
 Sequences can be created from `Iterators` or `Streams` but can then only be passed over once.
 
 ```Java
-Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
 Sequence<Integer> sequence = Sequence.once(iterator);
 
@@ -150,7 +150,7 @@ If you have an `Iterator` or `Stream` and wish to convert it to a full-fledged m
 caching methods on `Sequence`.
 
 ```Java
-Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
 Sequence<Integer> sequence = Sequence.cache(iterator);
 
@@ -164,7 +164,7 @@ assertThat(sequence, contains(1, 2, 3, 4, 5));
 and by modifying the underlying collection directly in between iterations.
 
 ```Java
-List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
 Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
 
@@ -172,7 +172,7 @@ assertThat(list, contains(2, 4));
 ```
 
 ```Java
-List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
 Sequence<Integer> sequence = Sequence.from(list);
 assertThat(sequence, contains(1, 2, 3, 4, 5));

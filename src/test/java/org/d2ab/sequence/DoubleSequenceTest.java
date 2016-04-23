@@ -29,6 +29,7 @@ import java.util.function.DoubleBinaryOperator;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -586,7 +587,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Double> backing = new ArrayList<>(List.of(2.0, 3.0, 1.0));
+		List<Double> backing = new ArrayList<>(asList(2.0, 3.0, 1.0));
 		DoubleSequence sorted = DoubleSequence.from(backing).sorted();
 
 		backing.add(4.0);
@@ -703,7 +704,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Double> backing = new ArrayList<>(List.of(1.0, 2.0, 3.0));
+		List<Double> backing = new ArrayList<>(asList(1.0, 2.0, 3.0));
 		DoubleSequence reversed = DoubleSequence.from(backing).reverse();
 
 		backing.add(4.0);
@@ -851,7 +852,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), containsDoubles(1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0)));
 
 		DoubleSequence repeatVarying = DoubleSequence.from(new DoubleIterable() {
-			private List<Double> list = List.of(1.0, 2.0, 3.0);
+			private List<Double> list = asList(1.0, 2.0, 3.0);
 			int end = list.size();
 
 			@Override
@@ -885,7 +886,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(repeatThree, containsDoubles(1.0, 2.0, 3.0, 1.0, 2.0, 3.0)));
 
 		DoubleSequence repeatVarying = DoubleSequence.from(new DoubleIterable() {
-			private List<Double> list = List.of(1.0, 2.0, 3.0);
+			private List<Double> list = asList(1.0, 2.0, 3.0);
 			int end = list.size();
 
 			@Override
@@ -921,7 +922,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Double> queue = new ArrayDeque<>(List.of(1.0, 2.0, 3.0, 4.0, 5.0));
+		Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
 		DoubleSequence sequence = DoubleSequence.generate(queue::poll).endingAt(5.0, 0.1);
 
 		assertThat(sequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
@@ -1065,7 +1066,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Double> original = new ArrayList<>(List.of(1.0, 2.0, 3.0, 4.0));
+		List<Double> original = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0));
 
 		DoubleSequence filtered = DoubleSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.removeAll();

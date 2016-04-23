@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -38,16 +39,16 @@ import static org.junit.Assert.fail;
 
 public class ListSequenceTest {
 	private final Sequence<Integer> empty = ListSequence.empty();
-	private final Sequence<Integer> _1 = ListSequence.from(new ArrayList<>(singletonList(1)));
-	private final Sequence<Integer> _12 = ListSequence.from(new ArrayList<>(List.of(1, 2)));
-	private final Sequence<Integer> _123 = ListSequence.from(new ArrayList<>(List.of(1, 2, 3)));
-	private final Sequence<Integer> _1234 = ListSequence.from(new ArrayList<>(List.of(1, 2, 3, 4)));
-	private final Sequence<Integer> _12345 = ListSequence.from(new ArrayList<>(List.of(1, 2, 3, 4, 5)));
-	private final Sequence<Integer> _123456789 = ListSequence.from(new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-	private final Sequence<Integer> oneRandom = ListSequence.from(new ArrayList<>(singletonList(17)));
-	private final Sequence<Integer> twoRandom = ListSequence.from(new ArrayList<>(List.of(17, 32)));
-	private final Sequence<Integer> threeRandom = ListSequence.from(new ArrayList<>(List.of(2, 3, 1)));
-	private final Sequence<Integer> nineRandom = ListSequence.from(new ArrayList<>(List.of(67, 5, 43, 3, 5, 7, 24, 5, 67)));
+	private final Sequence<Integer> _1 = ListSequence.from(new ArrayList<>(asList(1)));
+	private final Sequence<Integer> _12 = ListSequence.from(new ArrayList<>(asList(1, 2)));
+	private final Sequence<Integer> _123 = ListSequence.from(new ArrayList<>(asList(1, 2, 3)));
+	private final Sequence<Integer> _1234 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4)));
+	private final Sequence<Integer> _12345 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5)));
+	private final Sequence<Integer> _123456789 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	private final Sequence<Integer> oneRandom = ListSequence.from(new ArrayList<>(asList(17)));
+	private final Sequence<Integer> twoRandom = ListSequence.from(new ArrayList<>(asList(17, 32)));
+	private final Sequence<Integer> threeRandom = ListSequence.from(new ArrayList<>(asList(2, 3, 1)));
+	private final Sequence<Integer> nineRandom = ListSequence.from(new ArrayList<>(asList(67, 5, 43, 3, 5, 7, 24, 5, 67)));
 
 	@Test
 	public void ofOne() {
@@ -78,8 +79,8 @@ public class ListSequenceTest {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
 			_1.forEach(i -> assertThat(i, is(in(singletonList(1)))));
-			_12.forEach(i -> assertThat(i, is(in(List.of(1, 2)))));
-			_123.forEach(i -> assertThat(i, is(in(List.of(1, 2, 3)))));
+			_12.forEach(i -> assertThat(i, is(in(asList(1, 2)))));
+			_123.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
 		});
 	}
 
@@ -197,7 +198,7 @@ public class ListSequenceTest {
 	@Test
 	public void flatMapIterables() {
 		@SuppressWarnings("unchecked")
-		Sequence<List<Integer>> sequence = ListSequence.of(List.of(1, 2), List.of(3, 4), List.of(5, 6));
+		Sequence<List<Integer>> sequence = ListSequence.of(asList(1, 2), asList(3, 4), asList(5, 6));
 
 		Function<List<Integer>, List<Integer>> identity = Function.identity();
 		Sequence<Integer> flatMap = sequence.flatten(identity);
@@ -209,7 +210,7 @@ public class ListSequenceTest {
 	public void flatMapLazy() {
 		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
 		@SuppressWarnings("unchecked")
-		Sequence<Integer> flatMap = ListSequence.of(List.of(1, 2), (Iterable<Integer>) () -> {
+		Sequence<Integer> flatMap = ListSequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}).flatten(identity);
 
@@ -244,7 +245,7 @@ public class ListSequenceTest {
 	@Test
 	public void flattenIterables() {
 		@SuppressWarnings("unchecked")
-		Sequence<Integer> flattened = ListSequence.of(List.of(1, 2), List.of(3, 4), List.of(5, 6)).flatten();
+		Sequence<Integer> flattened = ListSequence.of(asList(1, 2), asList(3, 4), asList(5, 6)).flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
@@ -252,7 +253,7 @@ public class ListSequenceTest {
 	@Test
 	public void flattenLazy() {
 		@SuppressWarnings("unchecked")
-		Sequence<Integer> flattened = ListSequence.of(List.of(1, 2), (Iterable<Integer>) () -> {
+		Sequence<Integer> flattened = ListSequence.of(asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}).flatten();
 
@@ -366,7 +367,7 @@ public class ListSequenceTest {
 
 	@Test
 	public void toList() {
-		List<Integer> original = List.of(1, 2, 3, 4, 5, 6, 7);
+		List<Integer> original = asList(1, 2, 3, 4, 5, 6, 7);
 		Sequence<Integer> sequence = ListSequence.from(original);
 
 		twice(() -> {
@@ -1182,7 +1183,7 @@ public class ListSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), contains(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = List.of(1, 2, 3);
+			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -1210,7 +1211,7 @@ public class ListSequenceTest {
 		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = List.of(1, 2, 3);
+			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -1240,7 +1241,7 @@ public class ListSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(List.of(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();
 
 		assertThat(sequence, contains(1, 2, 3, 4, 5));

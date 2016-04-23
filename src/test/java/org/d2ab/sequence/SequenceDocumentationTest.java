@@ -21,10 +21,7 @@ import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,7 +66,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void functionalInterface() {
-		List<Integer> list = List.of(1, 2, 3, 4, 5);
+		List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
 
 		// Sequence as @FunctionalInterface of list's Iterator
 		Sequence<Integer> sequence = list::iterator;
@@ -82,7 +79,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void fromIterator() {
-		Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
 		Sequence<Integer> sequence = Sequence.once(iterator);
 
@@ -92,7 +89,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void caching() {
-		Iterator<Integer> iterator = List.of(1, 2, 3, 4, 5).iterator();
+		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
 		Sequence<Integer> sequence = Sequence.cache(iterator);
 
@@ -102,7 +99,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void removeAll() {
-		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
 		Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
 
@@ -111,7 +108,7 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void updatingCollection() {
-		List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
 		Sequence<Integer> sequence = Sequence.from(list);
 		assertThat(sequence, contains(1, 2, 3, 4, 5));

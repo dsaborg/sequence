@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.twice;
@@ -637,7 +638,7 @@ public class CharSeqTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Character> backing = new ArrayList<>(List.of('b', 'c', 'a'));
+		List<Character> backing = new ArrayList<>(asList('b', 'c', 'a'));
 		CharSeq sorted = CharSeq.from(backing).sorted();
 
 		backing.add('d');
@@ -754,7 +755,7 @@ public class CharSeqTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Character> backing = new ArrayList<>(List.of('a', 'b', 'c'));
+		List<Character> backing = new ArrayList<>(asList('a', 'b', 'c'));
 		CharSeq reversed = CharSeq.from(backing).reverse();
 
 		backing.add('d');
@@ -843,7 +844,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(repeatThree.limit(8), containsChars('a', 'b', 'c', 'a', 'b', 'c', 'a', 'b')));
 
 		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
-			private List<Character> list = List.of('a', 'b', 'c');
+			private List<Character> list = asList('a', 'b', 'c');
 			int end = list.size();
 
 			@Override
@@ -877,7 +878,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(repeatThree, containsChars('a', 'b', 'c', 'a', 'b', 'c')));
 
 		CharSeq repeatVarying = CharSeq.from(new CharIterable() {
-			private List<Character> list = List.of('a', 'b', 'c');
+			private List<Character> list = asList('a', 'b', 'c');
 			int end = list.size();
 
 			@Override
@@ -913,7 +914,7 @@ public class CharSeqTest {
 
 	@Test
 	public void generate() {
-		Queue<Character> queue = new ArrayDeque<>(List.of('a', 'b', 'c', 'd', 'e'));
+		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
 		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
 
 		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e'));
@@ -1053,7 +1054,7 @@ public class CharSeqTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Character> original = new ArrayList<>(List.of('a', 'b', 'c', 'd'));
+		List<Character> original = new ArrayList<>(asList('a', 'b', 'c', 'd'));
 
 		CharSeq filtered = CharSeq.from(original).filter(x -> x == 'b');
 		filtered.removeAll();

@@ -29,6 +29,7 @@ import java.util.function.LongBinaryOperator;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -590,7 +591,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Long> backing = new ArrayList<>(List.of(2L, 3L, 1L));
+		List<Long> backing = new ArrayList<>(asList(2L, 3L, 1L));
 		LongSequence sorted = LongSequence.from(backing).sorted();
 
 		backing.add(4L);
@@ -707,7 +708,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Long> backing = new ArrayList<>(List.of(1L, 2L, 3L));
+		List<Long> backing = new ArrayList<>(asList(1L, 2L, 3L));
 		LongSequence reversed = LongSequence.from(backing).reverse();
 
 		backing.add(4L);
@@ -897,7 +898,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(repeatThree.limit(8), containsLongs(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L)));
 
 		LongSequence repeatVarying = LongSequence.from(new LongIterable() {
-			private List<Long> list = List.of(1L, 2L, 3L);
+			private List<Long> list = asList(1L, 2L, 3L);
 			int end = list.size();
 
 			@Override
@@ -931,7 +932,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(repeatThree, containsLongs(1L, 2L, 3L, 1L, 2L, 3L)));
 
 		LongSequence repeatVarying = LongSequence.from(new LongIterable() {
-			private List<Long> list = List.of(1L, 2L, 3L);
+			private List<Long> list = asList(1L, 2L, 3L);
 			int end = list.size();
 
 			@Override
@@ -967,7 +968,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Long> queue = new ArrayDeque<>(List.of(1L, 2L, 3L, 4L, 5L));
+		Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
 		LongSequence sequence = LongSequence.generate(queue::poll).endingAt(5L);
 
 		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
@@ -1104,7 +1105,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void removeAllAfterFilter() {
-		List<Long> original = new ArrayList<>(List.of(1L, 2L, 3L, 4L));
+		List<Long> original = new ArrayList<>(asList(1L, 2L, 3L, 4L));
 
 		LongSequence filtered = LongSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.removeAll();

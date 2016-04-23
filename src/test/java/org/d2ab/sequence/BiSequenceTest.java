@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -210,7 +211,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Pair<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		BiSequence<String, Integer> cached = BiSequence.cache(list::iterator);
 		list.set(0, Pair.of("17", 17));
 
@@ -222,7 +223,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Pair<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		BiSequence<String, Integer> cached = BiSequence.cache(list.iterator());
 		list.set(0, Pair.of("17", 17));
 
@@ -234,7 +235,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Pair<String, Integer>> list = new ArrayList<>(List.of(entries12345));
+		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
 		BiSequence<String, Integer> cached = BiSequence.cache(list.stream());
 		list.set(0, Pair.of("17", 17));
 
@@ -1083,7 +1084,7 @@ public class BiSequenceTest {
 		                                Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2))));
 
 		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
-			private List<Pair<String, Integer>> list = List.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
+			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 			int end = list.size();
 
 			@Override
@@ -1115,7 +1116,7 @@ public class BiSequenceTest {
 		                                                                                                        1),
 		                                             Pair.of("2", 2), Pair.of("3", 3))));
 		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
-			private List<Pair<String, Integer>> list = List.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
+			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 			int end = list.size();
 
 			@Override
@@ -1225,7 +1226,7 @@ public class BiSequenceTest {
 	@Test
 	public void removeAll() {
 		List<Pair<String, Integer>> original =
-				new ArrayList<>(List.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+				new ArrayList<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
 
 		BiSequence<String, Integer> filtered = BiSequence.from(original).filter((l, r) -> r % 2 != 0);
 		filtered.removeAll();
