@@ -120,10 +120,9 @@ public class SequenceDocumentationTest {
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
-		Stream<String> abcd = Stream.of("a", "b", "c", "d");
-		Stream<String> abbccd = Sequence.once(abcd).pairs().<String>flatten().stream();
+		Sequence<String> paired = Sequence.once(Stream.of("a", "b", "c", "d")).pairs().flatten();
 
-		assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
+		assertThat(paired.stream().collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 	}
 
 	@Test
@@ -150,6 +149,7 @@ public class SequenceDocumentationTest {
 	@Test
 	public void factorial() {
 		Sequence<Long> thirteen = Sequence.longs().limit(13);
+
 		long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 		assertThat(factorial, is(6227020800L));

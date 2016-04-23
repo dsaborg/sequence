@@ -186,10 +186,9 @@ assertThat(sequence, contains(2, 4, 6));
 `Sequences` interoperate beautifully with `Stream`, through the `once(Stream)` and `.stream()` methods.
 
 ```Java
-Stream<String> abcd = Stream.of("a", "b", "c", "d");
-Stream<String> abbccd = Sequence.once(abcd).pairs().<String>flatten().stream();
+Sequence<String> paired = Sequence.once(Stream.of("a", "b", "c", "d")).pairs().flatten();
 
-assertThat(abbccd.collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
+assertThat(paired.stream().collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```
 
 #### Recursion
@@ -220,6 +219,7 @@ The standard reduction operations are available as per `Stream`:
 
 ```Java
 Sequence<Long> thirteen = Sequence.longs().limit(13);
+
 long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 assertThat(factorial, is(6227020800L));
