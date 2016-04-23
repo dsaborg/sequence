@@ -375,7 +375,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #chars()
 	 * @see #range(char, char)
 	 *
-	 * @deprecated Use {@link #charsFrom(char) instead.
+	 * @deprecated Use {@link #charsFrom(char)} instead.
 	 */
 	@Deprecated
 	static Sequence<Character> chars(char start) {
