@@ -110,11 +110,11 @@ public class SequenceDocumentationTest {
 	public void updatingCollection() {
 		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-		Sequence<Integer> sequence = Sequence.from(list);
-		assertThat(sequence, contains(1, 2, 3, 4, 5));
+		Sequence<Integer> sequence = Sequence.from(list).filter(x -> x % 2 == 0);
+		assertThat(sequence, contains(2, 4));
 
 		list.add(6);
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+		assertThat(sequence, contains(2, 4, 6));
 	}
 
 	@SuppressWarnings("SpellCheckingInspection")
