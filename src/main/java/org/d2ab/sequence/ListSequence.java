@@ -115,15 +115,16 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public <S extends Comparable<? super S>> Sequence<S> sorted() {
-		return new ListSequence<S>() {
+	@SuppressWarnings("unchecked")
+	public Sequence<T> sorted() {
+		return new ListSequence<T>() {
 			@Override
-			public List<S> toList() {
+			public List<T> toList() {
 				@SuppressWarnings("unchecked")
-				List<S> list = (List<S>) ListSequence.this.toList();
-				List<S> sorted = new ArrayList<>(list);
+				List list = ListSequence.this.toList();
+				List sorted = new ArrayList<>(list);
 				Collections.sort(sorted);
-				return unmodifiableList(sorted);
+				return (List<T>) unmodifiableList(sorted);
 			}
 		};
 	}

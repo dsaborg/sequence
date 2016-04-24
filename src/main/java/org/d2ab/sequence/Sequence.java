@@ -1319,8 +1319,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link Comparable} or a {@link ClassCastException} is thrown during traversal.
 	 */
 	@SuppressWarnings("unchecked")
-	default <S extends Comparable<? super S>> Sequence<S> sorted() {
-		return () -> new SortingIterator<>((Iterator<S>) iterator());
+	default Sequence<T> sorted() {
+		return () -> new SortingIterator<>(iterator());
 	}
 
 	/**
@@ -1483,11 +1483,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Interleave the elements in this {@code Sequence} with those of the given {@code Sequence}, stopping when either
-	 * sequence finishes. The result is a {@code Sequence} of pairs of items, the first of which come from this
-	 * sequence and the second from the given sequence.
+	 * Interleave the elements in this {@code Sequence} with those of the given {@link Iterable}, stopping when either
+	 * sequence finishes. The result is a {@code Sequence} of pairs of items, the left entry coming from this
+	 * sequence and the right entry from the given iterable.
 	 */
-	default <U> Sequence<Pair<T, U>> interleave(Sequence<U> that) {
+	default <U> Sequence<Pair<T, U>> interleave(Iterable<U> that) {
 		return () -> new InterleavingPairingIterator<>(iterator(), that.iterator());
 	}
 

@@ -165,6 +165,8 @@
     assertThat(sequence, contains(2, 4, 6));
 }</pre>
 
+<p>See also: {@link org.d2ab.sequence.Sequence#removeAll()}</p>
+
 <h2>Streams</h2>
 
 <p>Sequences interoperate beautifully with Stream, through the once(Stream) and .stream() methods.</p>
@@ -175,6 +177,9 @@
     assertThat(paired.stream().collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 }</pre>
 
+<p>See also: {@link org.d2ab.sequence.Sequence#once(Stream)}, {@link org.d2ab.sequence.Sequence#cache(Stream)}, {@link
+    org.d2ab.sequence.Sequence#stream()}</p>
+
 <h2>Recursion</h2>
 
 <p>There is full support for infinite recursive Sequences, including termination at a known value.</p>
@@ -183,9 +188,9 @@
     Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j))
                                             .toSequence((i, j) -> i)
                                             .endingAt(34);
-}</pre>
 
-assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+    assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+}</pre>
 
 <pre>{@code
     Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
@@ -196,6 +201,20 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
                contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
                         instanceOf(NullPointerException.class)));
 }</pre>
+
+<p>See also:</p>
+
+<ul>
+    <li>{@link org.d2ab.sequence.Sequence#recurse(Object, UnaryOperator)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#recurse(Object, Function, Function)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#generate(Supplier)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#until(Object)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#until(Predicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#untilNull()}</li>
+    <li>{@link org.d2ab.sequence.Sequence#endingAt(Object)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#endingAt(Predicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#endingAtNull()}</li>
+</ul>
 
 <h2>Reduction</h2>
 
@@ -208,6 +227,9 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 
     assertThat(factorial, is(6227020800L));
 }</pre>
+
+<p>See also: {@link org.d2ab.sequence.Sequence#reduce(BinaryOperator)}, {@link org.d2ab.sequence.Sequence#reduce(Object,
+    BinaryOperator)}</p>
 
 <h2>Maps</h2>
 
@@ -223,6 +245,19 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
     assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 }</pre>
 
+<p>See also:</p>
+
+<ul>
+    <li>{@link org.d2ab.sequence.Sequence#interleave(Iterable)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#pairs()}</li>
+    <li>{@link org.d2ab.sequence.Sequence#toMap()}</li>
+    <li>{@link org.d2ab.sequence.Sequence#toMap(Function, Function)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#toMap(Supplier)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#toMap(Supplier, Function, Function)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#toSortedMap()}</li>
+    <li>{@link org.d2ab.sequence.Sequence#toSortedMap(Function, Function)}</li>
+</ul>
+
 <p>You can also map Entry Sequences to Pairs which allows more expressive transformation and filtering.</p>
 
 <pre>{@code
@@ -236,6 +271,8 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
     assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 }</pre>
 
+<p>See also: {@link org.d2ab.util.Pair}</p>
+
 <p>You can also work directly on Entry keys and values using EntrySequence.</p>
 
 <pre>{@code
@@ -247,6 +284,8 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 
     assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 }</pre>
+
+<p>See also: {@link org.d2ab.sequence.EntrySequence}</p>
 
 <h2>Pairs</h2>
 
@@ -261,6 +300,8 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
     assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
                                       "Barack Obama (2005)"));
 }</pre>
+
+<p>See also: {@link org.d2ab.sequence.BiSequence}</p>
 
 <h2>Primitive</h2>
 
@@ -291,6 +332,9 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
     assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 }</pre>
 
+<p>See also: {@link org.d2ab.sequence.CharSeq}, {@link org.d2ab.sequence.IntSequence}, {@link
+    org.d2ab.sequence.LongSequence}, {@link org.d2ab.sequence.DoubleSequence}</p>
+
 <h2>Peeking</h2>
 
 <p>Sequences also have mapping and filtering methods that peek on the previous and next elements:</p>
@@ -302,6 +346,23 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 
     assertThat(titleCase.asString(), is("Hello Lexicon"));
 }</pre>
+
+<p>See also:</p>
+
+<ul>
+    <li>{@link org.d2ab.sequence.Sequence#peekBack(BiConsumer)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#peekBack(Object, BiConsumer)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#peekForward(BiConsumer)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#peekForward(Object, BiConsumer)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#filterBack(BiPredicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#filterBack(Object, BiPredicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#filterForward(BiPredicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#filterForward(Object, BiPredicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#mapBack(BiFunction)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#mapBack(Object, BiFunction)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#mapForward(BiFunction)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#mapForward(Object, BiFunction)}</li>
+</ul>
 
 <h2>Partitioning</h2>
 
@@ -325,6 +386,17 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 
     assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 }</pre>
+
+<p>See also:</p>
+
+<ul>
+    <li>{@link org.d2ab.sequence.Sequence#window(int)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#window(int, int)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#batch(int)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#batch(BiPredicate)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#split(Object)}</li>
+    <li>{@link org.d2ab.sequence.Sequence#split(Predicate)}</li>
+</ul>
 
 <h2>Reading</h2>
 
@@ -354,5 +426,8 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 
     inputStream.close();
 }</pre>
+
+<p>See also: {@link org.d2ab.sequence.CharSeq#read(java.io.Reader)}, {@link org.d2ab.sequence.IntSequence#read(java.io.InputStream)}</p>
+
 </body>
 </html>

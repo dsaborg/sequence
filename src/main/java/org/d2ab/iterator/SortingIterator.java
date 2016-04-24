@@ -23,19 +23,14 @@ public class SortingIterator<T> extends ReferenceIterator<T> {
 
 	private Iterator<T> sortedIterator;
 
+	@SuppressWarnings("unchecked")
 	public SortingIterator(Iterator<T> iterator) {
-		this(iterator, naturalOrder());
+		this(iterator, (Comparator<? super T>) Comparator.naturalOrder());
 	}
 
 	public SortingIterator(Iterator<T> iterator, Comparator<? super T> comparator) {
 		super(iterator);
 		this.comparator = comparator;
-	}
-
-	private static <T> Comparator<? super T> naturalOrder() {
-		@SuppressWarnings("unchecked")
-		Comparator<? super T> comparator = (Comparator<? super T>) Comparator.naturalOrder();
-		return comparator;
 	}
 
 	@Override
