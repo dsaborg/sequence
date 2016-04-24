@@ -50,6 +50,21 @@ public abstract class ListSequence<T> implements Sequence<T> {
 			public List<T> toList() {
 				return list;
 			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public Sequence<T> append(Iterable<T> iterable) {
+				if (iterable instanceof List)
+					return ChainedListSequence.from(toList(), (List<T>) iterable);
+
+				return new ChainingIterable<>(this, iterable)::iterator;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public Sequence<T> append(T... items) {
+				return append(asList(items));
+			}
 		};
 	}
 
@@ -87,21 +102,6 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	public <U extends Collection<T>> U collectInto(U collection) {
 		collection.addAll(toList());
 		return collection;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Sequence<T> append(Iterable<T> iterable) {
-		if (iterable instanceof List)
-			return ChainedListSequence.from(toList(), (List<T>) iterable);
-
-		return new ChainingIterable<>(this, iterable)::iterator;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Sequence<T> append(T... items) {
-		return append(asList(items));
 	}
 
 	@Override

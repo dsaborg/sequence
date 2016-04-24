@@ -100,12 +100,45 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	static <T> Sequence<T> from(Iterable<T>... iterables) {
+	static <T> Sequence<T> concat(Iterable<T>... iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.of(iterables);
 		if (iterableSequence.all(iterable -> iterable instanceof List))
 			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
 
 		return new ChainingIterable<>(iterables)::iterator;
+	}
+
+	/**
+	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
+	 * the stream of items in the {@code Sequence}.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 */
+	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
+		Sequence<Iterable<T>> iterableSequence = Sequence.from(iterables);
+		if (iterableSequence.all(iterable -> iterable instanceof List))
+			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
+
+		return ChainingIterable.<T>flatten(iterables)::iterator;
+	}
+
+	/**
+	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
+	 * the stream of items in the {@code Sequence}.
+	 *
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
+	 *
+	 * @deprecated Use {@link #concat(Iterable...)} instead.
+	 */
+	@Deprecated
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	static <T> Sequence<T> from(Iterable<T>... iterables) {
+		return concat(iterables);
 	}
 
 	/**

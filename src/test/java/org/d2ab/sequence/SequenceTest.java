@@ -53,8 +53,8 @@ public class SequenceTest {
 	private final Sequence<Integer> oneRandom = Sequence.from(new ArrayDeque<>(asList(17)));
 	private final Sequence<Integer> twoRandom = Sequence.from(new ArrayDeque<>(asList(17, 32)));
 	private final Sequence<Integer> threeRandom = Sequence.from(new ArrayDeque<>(asList(2, 3, 1)));
-	private final Sequence<Integer> nineRandom =
-			Sequence.from(new ArrayDeque<>(asList(67, 5, 43, 3, 5, 7, 24, 5, 67)));
+	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(asList(67, 5, 43, 3, 5, 7, 24, 5,
+	                                                                                   67)));
 
 	@Test
 	public void ofOne() {
@@ -167,19 +167,47 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromIterables() {
-		Iterable<Integer> first = asList(1, 2, 3);
-		Iterable<Integer> second = asList(4, 5, 6);
-		Iterable<Integer> third = asList(7, 8, 9);
-
-		Sequence<Integer> sequenceFromIterables = Sequence.from(first, second, third);
+	public void concatArrayOfIterables() {
+		Sequence<Integer> sequenceFromIterables = Sequence.concat(Iterables.of(1, 2, 3), Iterables.of(4, 5, 6),
+		                                                          Iterables.of(7, 8, 9));
 
 		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
-	public void fromNoIterables() {
-		Sequence<Integer> sequenceFromNoIterables = Sequence.from();
+	public void concatArrayOfLists() {
+		Sequence<Integer> sequenceFromIterables = Sequence.concat(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9));
+
+		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
+	public void concatArrayOfNoIterables() {
+		Sequence<Integer> sequenceFromNoIterables = Sequence.concat();
+
+		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
+	}
+
+	@Test
+	public void concatIterableOfIterables() {
+		Sequence<Integer> sequenceFromIterables = Sequence.concat(Iterables.of(Iterables.of(1, 2, 3),
+		                                                                       Iterables.of(4, 5, 6),
+		                                                                       Iterables.of(7, 8, 9)));
+
+		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
+	public void concatIterableOfLists() {
+		Sequence<Integer> sequenceFromIterables =
+				Sequence.concat(Iterables.of(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9)));
+
+		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
+	public void concatIterableOfNoIterables() {
+		Sequence<Integer> sequenceFromNoIterables = Sequence.concat(Iterables.of());
 
 		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
 	}
@@ -430,8 +458,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapArrays() {
 		Sequence<Integer[]> sequence =
-				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5,
-				                                                                                              6})));
+				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
 
@@ -474,8 +501,7 @@ public class SequenceTest {
 	@Test
 	public void flattenArrays() {
 		Sequence<Integer[]> sequence =
-				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5,
-				                                                                                              6})));
+				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
 
 		Sequence<Integer> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -1104,12 +1130,13 @@ public class SequenceTest {
 		twice(() -> assertThat(oneEntrySequence, contains(Maps.entry(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(asList(Maps.entry(1, "1"), Maps.entry(2, "2"))))
-				        .toEntrySequence();
+				Sequence.from(new ArrayDeque<Entry>(asList(Maps.entry(1, "1"), Maps.entry(2, "2")))).toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Maps.entry(1, "1"), Maps.entry(2, "2"))));
 
-		EntrySequence<Integer, String> threeEntrySequence = Sequence.from(
-				new ArrayDeque<Entry>(asList(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3")))).toEntrySequence();
+		EntrySequence<Integer, String> threeEntrySequence =
+				Sequence.from(new ArrayDeque<Entry>(asList(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3,
+				                                                                                              "3"))))
+				        .toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
 	}
