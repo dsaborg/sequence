@@ -24,10 +24,16 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * Utility methods for {@link Iterable} instances.
+ */
 public class Iterables {
 	private Iterables() {
 	}
 
+	/**
+	 * @return an {@link Iterable} containing the given objects.
+	 */
 	@SafeVarargs
 	public static <T> Iterable<T> of(T... objects) {
 		return () -> new ArrayIterator<>(objects);
@@ -99,6 +105,9 @@ public class Iterables {
 		return false;
 	}
 
+	/**
+	 * Remove all elements in the given {@link Iterable} using {@link Iterator#remove()}.
+	 */
 	public static <T> void removeAll(Iterable<T> iterable) {
 		for (Iterator<T> iterator = iterable.iterator(); iterator.hasNext(); ) {
 			iterator.next();
@@ -106,6 +115,9 @@ public class Iterables {
 		}
 	}
 
+	/**
+	 * @return the given {@link Iterable} collected into a {@link List}.
+	 */
 	public static <T> List<T> toList(Iterable<T> iterable) {
 		List<T> list = new ArrayList<>();
 		if (iterable instanceof Collection)

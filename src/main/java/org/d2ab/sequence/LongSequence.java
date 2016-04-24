@@ -21,7 +21,7 @@ import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.longs.ChainingLongIterable;
 import org.d2ab.iterable.longs.LongIterable;
-import org.d2ab.iterator.MappedIterator;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
@@ -643,12 +643,7 @@ public interface LongSequence extends LongIterable {
 	 * Map the {@code longs} in this {@code LongSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(LongFunction<T> mapper) {
-		return () -> new MappedIterator<Long, LongIterator, T>(iterator()) {
-			@Override
-			public T next() {
-				return mapper.apply(iterator.nextLong());
-			}
-		};
+		return () -> Iterators.from(iterator(), mapper);
 	}
 
 	/**

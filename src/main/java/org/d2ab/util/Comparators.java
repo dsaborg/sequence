@@ -27,6 +27,9 @@ import static java.util.Comparator.nullsFirst;
 public class Comparators {
 	public static final Comparator NATURAL_ORDER_NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
 
+	/**
+	 * @return a {@link Comparator} comparing objects using their natural order, and sorting {@code nulls} first.
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Comparator<T> naturalOrderNullsFirst() {
 		return (Comparator<T>) NATURAL_ORDER_NULLS_FIRST;

@@ -29,7 +29,17 @@ import java.util.function.*;
 import static java.util.Comparator.comparing;
 import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
 
+/**
+ * A general purpose pair of two objects, "{@code left}" and "{@code right}". Pairs implement {@link Map.Entry} where
+ * the key is the "left" side and the value is the "right" side.
+ *
+ * @param <L> the type of the "left" side of the pair.
+ * @param <R> the type of the "right" side of the pair.
+ */
 public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
+	/**
+	 * @return a {@code Pair} of the two objects given.
+	 */
 	static <T, U> Pair<T, U> of(T left, U right) {
 		return new Base<T, U>() {
 			@Override
@@ -44,6 +54,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} that delegates to the given {@link Map.Entry}, key being left and value being right.
+	 */
 	static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
 		return new Base<K, V>() {
 			@Override
@@ -58,6 +71,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a unary {@code Pair} where both objects are the same.
+	 */
 	static <T> Pair<T, T> unary(T item) {
 		return new Base<T, T>() {
 			@Override
@@ -103,25 +119,43 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		return entry -> action.accept(entry.getLeft(), entry.getRight());
 	}
 
+	/**
+	 * @return the "left" component of the {@code Pair}.
+	 */
 	L getLeft();
 
+	/**
+	 * @return the "right" component of the {@code Pair}.
+	 */
 	R getRight();
 
+	/**
+	 * @return the "left" component of the {@code Pair}.
+	 */
 	@Override
 	default L getKey() {
 		return getLeft();
 	}
 
+	/**
+	 * @return the "right" component of the {@code Pair}.
+	 */
 	@Override
 	default R getValue() {
 		return getRight();
 	}
 
+	/**
+	 * This operation is not supported and throws {@link UnsupportedOperationException}.
+	 */
 	@Override
 	default R setValue(R value) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @return a {@code Pair} with the "left" and "right" components of this {@code Pair} swapped.
+	 */
 	default Pair<R, L> swap() {
 		return new Base<R, L>() {
 			@Override
@@ -136,6 +170,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} where the "left" component is replaced with the given value.
+	 */
 	default <LL> Pair<LL, R> withLeft(LL left) {
 		return new Base<LL, R>() {
 			@Override
@@ -150,6 +187,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} where the "right" component is replaced with the given value.
+	 */
 	default <RR> Pair<L, RR> withRight(RR right) {
 		return new Base<L, RR>() {
 			@Override
@@ -164,6 +204,10 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} where the "left" component is shifted to the "right" component and replaced with the
+	 * given value.
+	 */
 	default <LL> Pair<LL, L> shiftRight(LL replacement) {
 		return new Base<LL, L>() {
 			@Override
@@ -178,6 +222,10 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} where the "right" component is shifted to the "left" component and replaced with the
+	 * given value.
+	 */
 	default <RR> Pair<R, RR> shiftLeft(RR replacement) {
 		return new Base<R, RR>() {
 			@Override
@@ -192,6 +240,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} mapped from this {@code Pair} using the given mappers.
+	 */
 	default <LL, RR> Pair<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
 	                                  Function<? super R, ? extends RR> rightMapper) {
 		return new Base<LL, RR>() {
@@ -207,18 +258,33 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
+	/**
+	 * @return a {@code Pair} mapped from this {@code Pair} using the given mapper.
+	 */
 	default <LL, RR> Pair<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
 		return mapper.apply(getLeft(), getRight());
 	}
 
+	/**
+	 * @return a the result of applying the given {@link BiFunction} to the "left" and "right" components of this
+	 * {@code Pair}.
+	 */
 	default <T> T apply(BiFunction<? super L, ? super R, ? extends T> function) {
 		return function.apply(getLeft(), getRight());
 	}
 
+	/**
+	 * @return the result of testing the given {@link Predicate}s on the "left" and "right" components of this
+	 * {@code Pair}.
+	 */
 	default boolean test(Predicate<? super L> leftPredicate, Predicate<? super R> rightPredicate) {
 		return leftPredicate.test(getLeft()) && rightPredicate.test(getRight());
 	}
 
+	/**
+	 * @return the result of testing the given {@link BiPredicate}s on the "left" and "right" components of this
+	 * {@code Pair}.
+	 */
 	default boolean test(BiPredicate<? super L, ? super R> predicate) {
 		return predicate.test(getLeft(), getRight());
 	}
@@ -228,6 +294,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		return map;
 	}
 
+	/**
+	 * @return an iterator over the components of this {@code Pair}, containing exactly two elements.
+	 */
 	default <T> Iterator<T> iterator() {
 		@SuppressWarnings("unchecked")
 		PairIterator<?, ?, T> pairIterator = new PairIterator(this);

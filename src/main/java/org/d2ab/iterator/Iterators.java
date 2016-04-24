@@ -23,7 +23,11 @@ import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
+import java.util.function.LongFunction;
 
+/**
+ * Utility methods for {@link Iterator} instances.
+ */
 public class Iterators {
 	private static final Iterator EMPTY = new Iterator() {
 		@Override
@@ -40,16 +44,26 @@ public class Iterators {
 	private Iterators() {
 	}
 
+	/**
+	 * @return an empty {@link Iterator}.
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Iterator<T> empty() {
 		return EMPTY;
 	}
 
+	/**
+	 * @return an {@link Iterator} containing the given items.
+	 */
 	@SafeVarargs
 	public static <T> Iterator<T> of(T... items) {
 		return new ArrayIterator<>(items);
 	}
 
+	/**
+	 * @return an {@link Iterator} over the items in the given {@link CharIterator}, mapped to objects using the given
+	 * {@link CharFunction}.
+	 */
 	public static <T> Iterator<T> from(CharIterator iterator, CharFunction<T> mapper) {
 		return new MappedIterator<Character, CharIterator, T>(iterator) {
 			@Override
@@ -59,6 +73,10 @@ public class Iterators {
 		};
 	}
 
+	/**
+	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfInt}, mapped to objects using
+	 * the given {@link IntFunction}.
+	 */
 	public static <T> Iterator<T> from(PrimitiveIterator.OfInt iterator, IntFunction<T> mapper) {
 		return new MappedIterator<Integer, PrimitiveIterator.OfInt, T>(iterator) {
 			@Override
@@ -68,6 +86,10 @@ public class Iterators {
 		};
 	}
 
+	/**
+	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfDouble}, mapped to objects
+	 * using the given {@link DoubleFunction}.
+	 */
 	public static <T> Iterator<T> from(PrimitiveIterator.OfDouble iterator, DoubleFunction<T> mapper) {
 		return new MappedIterator<Double, PrimitiveIterator.OfDouble, T>(iterator) {
 			@Override
@@ -77,11 +99,30 @@ public class Iterators {
 		};
 	}
 
+	/**
+	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfLong}, mapped to objects
+	 * using the given {@link LongFunction}.
+	 */
+	public static <T> Iterator<T> from(final PrimitiveIterator.OfLong iterator, final LongFunction<T> mapper) {
+		return new MappedIterator<Long, PrimitiveIterator.OfLong, T>(iterator) {
+			@Override
+			public T next() {
+				return mapper.apply(iterator.nextLong());
+			}
+		};
+	}
+
+	/**
+	 * Skip one step in the given {@link Iterator}.
+	 */
 	public static void skip(Iterator<?> iterator) {
 		if (iterator.hasNext())
 			iterator.next();
 	}
 
+	/**
+	 * Skip the given number of steps in the given {@link Iterator}.
+	 */
 	public static void skip(Iterator<?> iterator, long steps) {
 		while (steps-- > 0 && iterator.hasNext())
 			iterator.next();
@@ -127,6 +168,9 @@ public class Iterators {
 		return Optional.of(iterator.next());
 	}
 
+	/**
+	 * Collect the given {@link Iterator} into a {@link List}.
+	 */
 	public static <T> List<T> toList(Iterator<T> iterator) {
 		List<T> list = new ArrayList<>();
 		iterator.forEachRemaining(list::add);
