@@ -81,11 +81,11 @@ Javadoc for the entire project is available at the [Sequence javadoc.io Page](ht
 
 There are seven kinds of Sequences, each dealing with a different type of entry. The first is the regular
 [Sequence](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/Sequence.html)
-which is the general purpose stream of items. Then there is
+which is the general purpose stream of items.
 [EntrySequence](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/EntrySequence.html)
 and
 [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/BiSequence.html)
-which work directly on the constituent components of `Map.Entry` and
+work directly on the constituent components of `Map.Entry` and
 [Pair](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/util/Pair.html)
 objects. The last four are primitive sequences dealing with `char`, `int`, `long` and `double` primitives;
 [CharSeq](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/CharSeq.html),
