@@ -29,6 +29,10 @@ repositories {
     jcenter()
 }
 
+javadoc {
+    options.overview = "doc/java/overview.html"
+}
+
 task javadocJar(type: Jar) {
     classifier 'javadoc'
     from javadoc

@@ -1,0 +1,358 @@
+<!--
+  ~ Copyright 2016 Daniel Skogquist Åborg
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html>
+<body>
+<h1>A lightweight alternative to Java 8 sequential Stream</h1>
+
+<p>The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter
+    step, and with better integration with the rest of Java.</p>
+
+<p>It aims to be roughly feature complete with sequential Streams, with additional convenience methods for advanced
+    traversal and transformation. In particular it allows easier collecting into common Collections without Collectors,
+    better handling of Maps with Pair and Map.Entry as first-class citizens, tighter integration with the rest of Java
+    by being implemented in terms of Iterable, and advanced partitioning, mapping and filtering methods, for example
+    allowing you to peek at previous or next elements to make decisions during traversal. Sequences go to great lengths
+    to be as lazy and late-evaluating as possible, with minimal overhead.</p>
+
+<p>Sequences use Java 8 lambdas in much the same way as Streams do, but is based on readily available Iterables instead
+    of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's for programmers
+    wanting to perform common data processing tasks on moderately sized collections. If you need parallel iteration or
+    are processing over 1 million or so entries, you might benefit from using a parallel Stream instead.</p>
+
+<pre>{@code
+    List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
+                                 .filter(x -> x % 2 == 0)
+                                 .map(Object::toString)
+                                 .toList();
+
+    assertThat(evens, contains("2", "4", "6", "8"));
+}</pre>
+
+<p>See also: {@link org.d2ab.sequence.Sequence#of(Object...)}, {@link org.d2ab.sequence.Sequence#from(Iterable)}</p>
+
+<h2>Overview</h2>
+
+<p>There are seven kinds of Sequences, each dealing with a different type of entry. The first is the regular {@link
+    org.d2ab.sequence.Sequence} which is the general purpose stream of items. {@link org.d2ab.sequence.EntrySequence}
+    and {@link org.d2ab.sequence.BiSequence} work directly on the constituent components of <a
+            href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.Entry.html">{@link java.util.Map.Entry}</a>
+    and {@link org.d2ab.util.Pair} objects. The last four are primitive sequences dealing with {@code char}, {@code
+    int}, {@code long} and {@code double} primitives; {@link org.d2ab.sequence.CharSeq}, {@link
+    org.d2ab.sequence.IntSequence}, {@link org.d2ab.sequence.LongSequence}, and {@link
+    org.d2ab.sequence.DoubleSequence}. These work much the same as the regular {@link org.d2ab.sequence.Sequence} except
+    they're adapted to work directly on primitives.</p>
+
+<h2>Iterable</h2>
+
+<p>Because each {@link org.d2ab.sequence.Sequence} is an
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html">{@link Iterable}</a> you can re-use
+    them safely after you have already traversed them, as long as they're backed by an
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html">{@link Iterable}</a>,
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">{@link java.util.Collection}</a>,
+    array or generated sequence, not an
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html">{@link java.util.Iterator}</a> or
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html">{@link java.util.stream.Stream}</a>
+    which can only be traversed once.</p>
+
+<pre>{@code
+    Sequence<Integer> singulars = Sequence.range(1, 9); // Digits 1..9
+
+    // using sequence of ints 1..9 first time to get odd numbers between 1 and 9
+    Sequence<Integer> odds = singulars.step(2);
+    assertThat(odds, contains(1, 3, 5, 7, 9));
+
+    // re-using the same sequence again to get squares of numbers between 4 and 8
+    Sequence<Integer> squares = singulars.startingFrom(4).endingAt(8).map(i -> i * i);
+    assertThat(squares, contains(16, 25, 36, 49, 64));
+}</pre>
+
+<p>Also because each {@link org.d2ab.sequence.Sequence} is an {@link Iterable} they work beautifully in foreach
+    loops:</p>
+
+<pre>{@code
+    Sequence<Integer> sequence = Sequence.ints().limit(5);
+
+    int x = 1;
+    for (int i : sequence)
+        assertThat(i, is(x++));
+
+    assertThat(x, is(6));
+}</pre>
+
+<p>Because Sequence is a
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html">{@link
+        FunctionalInterface}</a> requiring only the
+    <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html#iterator--">{@link
+        Iterable#iterator()}</a>
+    method to be implemented, it's very easy to create your own full-fledged {@link org.d2ab.sequence.Sequence}
+    instances that can be operated on like any other {@link org.d2ab.sequence.Sequence} through the default methods on
+    the interface that carry the bulk of the burden.</p>
+
+<pre>{@code
+    List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
+
+    // Sequence as @FunctionalInterface of list's Iterator
+    Sequence<Integer> sequence = list::iterator;
+
+    // Operate on sequence as any other sequence using default methods
+    Sequence<String> transformed = sequence.map(Object::toString);
+
+    assertThat(transformed.limit(3), contains("1", "2", "3"));
+}</pre>
+
+<p>Sequences can be created from Iterators or Streams but can then only be passed over once.</p>
+
+<pre>{@code
+    Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
+
+    Sequence<Integer> sequence = Sequence.once(iterator);
+
+    assertThat(sequence, contains(1, 2, 3, 4, 5));
+    assertThat(sequence, is(emptyIterable()));
+}</pre>
+
+<p>See also: {@link org.d2ab.sequence.Sequence#once(Iterator)}, {@link org.d2ab.sequence.Sequence#once(Stream)}</p>
+
+<p>If you have an Iterator or Stream and wish to convert it to a full-fledged multi-iterable Sequence, use the caching
+    methods on Sequence.</p>
+
+<pre>{@code
+    Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
+
+    Sequence<Integer> sequence = Sequence.cache(iterator);
+
+    assertThat(sequence, contains(1, 2, 3, 4, 5));
+    assertThat(sequence, contains(1, 2, 3, 4, 5));
+}</pre>
+
+<p>See also: {@link org.d2ab.sequence.Sequence#cache(Iterable)}, {@link org.d2ab.sequence.Sequence#cache(Iterator)},
+    {@link org.d2ab.sequence.Sequence#cache(Stream)}</p>
+
+<h2>Updating</h2>
+
+<p>Sequences have full support for updating the underlying collection where possible, both through Iterator#remove() and
+    by modifying the underlying collection directly in between iterations.</p>
+
+<pre>{@code
+    List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+
+    Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
+
+    assertThat(list, contains(2, 4));
+}</pre>
+
+<pre>{@code
+    List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+
+    Sequence<Integer> sequence = Sequence.from(list).filter(x -> x % 2 == 0);
+    assertThat(sequence, contains(2, 4));
+
+    list.add(6);
+    assertThat(sequence, contains(2, 4, 6));
+}</pre>
+
+<h2>Streams</h2>
+
+<p>Sequences interoperate beautifully with Stream, through the once(Stream) and .stream() methods.</p>
+
+<pre>{@code
+    Sequence<String> paired = Sequence.once(Stream.of("a", "b", "c", "d")).pairs().flatten();
+
+    assertThat(paired.stream().collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
+}</pre>
+
+<h2>Recursion</h2>
+
+<p>There is full support for infinite recursive Sequences, including termination at a known value.</p>
+
+<pre>{@code
+    Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j))
+                                            .toSequence((i, j) -> i)
+                                            .endingAt(34);
+}</pre>
+
+assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+
+<pre>{@code
+    Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
+
+    Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).untilNull();
+
+    assertThat(sequence,
+               contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
+                        instanceOf(NullPointerException.class)));
+}</pre>
+
+<h2>Reduction</h2>
+
+<p>The standard reduction operations are available as per Stream:</p>
+
+<pre>{@code
+    Sequence<Long> thirteen = Sequence.longs().limit(13);
+
+    long factorial = thirteen.reduce(1L, (r, i) -> r * i);
+
+    assertThat(factorial, is(6227020800L));
+}</pre>
+
+<h2>Maps</h2>
+
+<p>Maps are handled as Sequences of Entry, with special transformation methods that convert to/from Maps.</p>
+
+<pre>{@code
+    Sequence<Integer> keys = Sequence.of(1, 2, 3);
+    Sequence<String> values = Sequence.of("1", "2", "3");
+
+    Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
+    Map<Integer, String> map = keyValueSequence.toMap();
+
+    assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
+}</pre>
+
+<p>You can also map Entry Sequences to Pairs which allows more expressive transformation and filtering.</p>
+
+<pre>{@code
+    Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+    Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
+                                                       .map(Pair::from)
+                                                       .filter(p -> p.test((s, i) -> i != 2))
+                                                       .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+
+    assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
+}</pre>
+
+<p>You can also work directly on Entry keys and values using EntrySequence.</p>
+
+<pre>{@code
+    Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+
+    EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
+                                                               .filter((k, v) -> v % 2 != 0)
+                                                               .map((k, v) -> Maps.entry(v, k));
+
+    assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
+}</pre>
+
+<h2>Pairs</h2>
+
+<p>When iterating over sequences of Pairs of item, BiSequence provides native operators and transformations:</p>
+
+<pre>{@code
+    BiSequence<String, Integer> presidents = BiSequence.ofPairs("Abraham Lincoln", 1861, "Richard Nixon", 1969,
+                                                                "George Bush", 2001, "Barack Obama", 2005);
+
+    Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + ")");
+
+    assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
+                                      "Barack Obama (2005)"));
+}</pre>
+
+<h2>Primitive</h2>
+
+<p>There are also primitive versions of Sequence for char, int, long and double processing: CharSeq, IntSequence,
+    LongSequence and DoubleSequence.</p>
+
+<pre>{@code
+    CharSeq snakeCase = CharSeq.from("Hello Lexicon").map(c -> (c == ' ') ? '_' : c).map(Character::toLowerCase);
+
+    assertThat(snakeCase.asString(), is("hello_lexicon"));
+}</pre>
+
+<pre>{@code
+    IntSequence squares = IntSequence.positive().map(i -> i * i);
+
+    assertThat(squares.limit(5), contains(1, 4, 9, 16, 25));
+}</pre>
+
+<pre>{@code
+    LongSequence negativeOdds = LongSequence.negative().step(2);
+
+    assertThat(negativeOdds.limit(5), contains(-1L, -3L, -5L, -7L, -9L));
+}</pre>
+
+<pre>{@code
+    DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
+
+    assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
+}</pre>
+
+<h2>Peeking</h2>
+
+<p>Sequences also have mapping and filtering methods that peek on the previous and next elements:</p>
+
+<pre>{@code
+    CharSeq titleCase = CharSeq.from("hello_lexicon")
+                               .mapBack('_', (p, c) -> p == '_' ? toUpperCase(c) : c)
+                               .map(c -> (c == '_') ? ' ' : c);
+
+    assertThat(titleCase.asString(), is("Hello Lexicon"));
+}</pre>
+
+<h2>Partitioning</h2>
+
+<p>Both regular and primitive Sequences have advanced windowing and partitioning methods, allowing you to divide up
+    Sequences in various ways, including a partitioning method that uses a BiPredicate to determine which two elements
+    to create a batch between.</p>
+
+<pre>{@code
+    Sequence<Sequence<Integer>> batched = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).batch(3);
+
+    assertThat(batched, contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)));
+}</pre>
+
+<pre>{@code
+    String vowels = "aeoiuy";
+
+    Sequence<String> consonantsVowels = CharSeq.from("terrain")
+                                               .batch((a, b) -> (vowels.indexOf(a) == -1) !=
+                                                                (vowels.indexOf(b) == -1))
+                                               .map(CharSeq::asString);
+
+    assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
+}</pre>
+
+<h2>Reading</h2>
+
+<p>Primitive sequences can be read from Readers or InputStreams into a CharSeq or IntSequence respective.</p>
+
+<pre>{@code
+    Reader reader = new StringReader("hello world\n" +
+                                     "goodbye world\n");
+
+    Sequence<String> titleCase = CharSeq.read(reader)
+                                        .mapBack('\n',
+                                                 (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
+                                        .split('\n')
+                                        .map(CharSeq::asString);
+
+    assertThat(titleCase, contains("Hello World", "Goodbye World"));
+
+    reader.close();
+}</pre>
+
+<pre>{@code
+    InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
+
+    String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join("");
+
+    assertThat(hexString, is("deadbeef"));
+
+    inputStream.close();
+}</pre>
+</body>
+</html>
