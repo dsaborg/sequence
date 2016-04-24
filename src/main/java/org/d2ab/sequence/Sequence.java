@@ -97,6 +97,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1.1
 	 */
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
@@ -115,6 +117,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
+	 *
+	 * @since 1.1.1
 	 */
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.from(iterables);
