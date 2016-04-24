@@ -127,9 +127,9 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = Sequence.recurse(Pair.of(0, 1), p -> p.shiftLeft(p.apply(Integer::sum)))
-		                                      .map(Pair::getLeft)
-		                                      .endingAt(34);
+		Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j))
+		                                        .toSequence((i, j) -> i)
+		                                        .endingAt(34);
 
 		assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 	}
