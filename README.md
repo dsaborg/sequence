@@ -79,6 +79,23 @@ dependencies {
 
 Javadoc for the entire project is available at the [Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
 
+There are seven kinds of Sequences, each dealing with a different type of entry. The first is the regular
+[Sequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/Sequence.html)
+which is the general purpose stream of items. Then there is
+[EntrySequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/EntrySequence.html)
+and
+[BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/BiSequence.html)
+which work directly on the constituent components of `Map.Entry` and
+[Pair](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/util/Pair.html)
+objects. The last four are primitive sequences dealing with `char`, `int`, `long` and `double` primitives;
+[CharSeq](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/CharSeq.html),
+[IntSequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/IntSequence.html),
+[LongSequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/LongSequence.html), and
+[DoubleSequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/DoubleSequence.html).
+These work much the same as the regular
+[Sequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/Sequence.html)
+except they're adapted to work directly on primitives.
+
 * [Sequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/Sequence.html)
 * [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/BiSequence.html)
 * [EntrySequence](http://static.javadoc.io/org.d2ab/sequence/1.0.1/index.html?org/d2ab/sequence/EntrySequence.html)
