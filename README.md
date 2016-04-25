@@ -419,6 +419,10 @@ See also:
 [IntSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/IntSequence.html),
 [LongSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/LongSequence.html),
 [DoubleSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/DoubleSequence.html)
+[Sequence#toChars(ToCharFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toChars-org.d2ab.function.chars.ToCharFunction-)
+[Sequence#toInts(ToIntFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toInts-java.util.function.ToIntFunction-)
+[Sequence#toLongs(ToLongFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toLongs-java.util.function.ToLongFunction-)
+[Sequence#toDoubles(ToDoubleFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toDoubles-java.util.function.ToDoubleFunction-)
 
 #### Peeking
 
