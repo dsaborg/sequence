@@ -1137,7 +1137,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Pair the elements of this {@code Sequence} into a sequence of overlapping {@link Entry} elements. Each entry
 	 * overlaps the value item with the key item of the next entry. If there is only one item in the sequence, the
-	 * first pair returned has that item as a key and null as the value.
+	 * first entry returned has that item as a key and null as the value.
 	 */
 	default Sequence<Entry<T, T>> entries() {
 		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
@@ -1177,9 +1177,9 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Pair the elements of this {@code Sequence} into a sequence of {@link Pair} elements. Each pair overlaps the
-	 * second item with the first item of the next pair. If there is only one item in the list, the first pair returned
-	 * has a null as the second item.
+	 * Pair the elements of this {@code Sequence} into a sequence of {@link Pair} elements. Each pair is adjacent to
+	 * the next pair. If there is an uneven amount of items in the list, the final pair returned has a null as the
+	 * second item.
 	 */
 	default Sequence<Pair<T, T>> adjacentPairs() {
 		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 2) {

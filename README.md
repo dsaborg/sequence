@@ -124,6 +124,21 @@ Sequence<Integer> squares = singulars.startingFrom(4).endingAt(8).map(i -> i * i
 assertThat(squares, contains(16, 25, 36, 49, 64));
 ```
 
+See also:
+
+* [Sequence#of(T...)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#of-T...-)
+* [Sequence#from(Iterable)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#from-java.lang.Iterable-)
+* [Sequence#filter(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#filter-java.util.function.Predicate-)
+* [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-)
+* [Sequence#range(int, int)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#range-int-int-)
+* [Sequence#ints()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#ints--)
+* [Sequence#intsFromZero()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#intsFromZero--)
+* [Sequence#step(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#step-long-)
+* [Sequence#limit(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#limit-long-)
+* [Sequence#skip(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#skip-long-)
+* [Sequence#startingFrom(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#startingFrom-T-)
+* [Sequence#endingAt(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#endingAt-T-)
+
 Also because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
 
 ```Java
@@ -163,6 +178,11 @@ assertThat(sequence, contains(1, 2, 3, 4, 5));
 assertThat(sequence, is(emptyIterable()));
 ```
 
+See also:
+
+* [Sequence#once(Iterator)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#once-java.util.Iterator-)
+* [Sequence#once(Stream)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#once-java.util.stream.Stream-)
+
 If you have an `Iterator` or `Stream` and wish to convert it to a full-fledged multi-iterable `Sequence`, use the
 caching methods on `Sequence`.
 
@@ -174,6 +194,12 @@ Sequence<Integer> sequence = Sequence.cache(iterator);
 assertThat(sequence, contains(1, 2, 3, 4, 5));
 assertThat(sequence, contains(1, 2, 3, 4, 5));
 ```
+
+See also:
+
+* [Sequence#cache(Iterable)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#cache-java.lang.Iterable-)
+* [Sequence#cache(Iterator)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#cache-java.util.Iterator-)
+* [Sequence#cache(Stream)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#cache-java.util.stream.Stream-)
 
 #### Updating
 
@@ -198,6 +224,10 @@ list.add(6);
 assertThat(sequence, contains(2, 4, 6));
 ```
 
+See also:
+
+* [Sequence#removeAll()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#removeAll--)
+
 #### Streams
 
 `Sequences` interoperate beautifully with `Stream`, through the `once(Stream)` and `.stream()` methods.
@@ -207,6 +237,12 @@ Sequence<String> paired = Sequence.once(Stream.of("a", "b", "c", "d")).pairs().f
 
 assertThat(paired.stream().collect(Collectors.toList()), contains("a", "b", "b", "c", "c", "d"));
 ```
+
+See also:
+
+* [Sequence#once(Stream)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#once-java.util.stream.Stream-)
+* [Sequence#cache(Stream)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#cache-java.util.stream.Stream-)
+* [Sequence#stream()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#stream--)
 
 #### Recursion
 
@@ -230,6 +266,23 @@ assertThat(sequence,
                     instanceOf(NullPointerException.class)));
 ```
 
+See also:
+
+* [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html)
+* [BiSequence#recurse(L, R, BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html#recurse-L-R-java.util.function.BiFunction-)
+* [BiSequence#toSequence(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html#toSequence-java.util.function.BiFunction-)
+* [Pair](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html)
+* [Pair#of(T, U)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#of-T-U-)
+* [Sequence#recurse(T, UnaryOperator)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#recurse-T-java.util.function.UnaryOperator-)
+* [Sequence#generate(Supplier)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#generate-java.util.function.Supplier-)
+* [Sequence#repeat()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#repeat--)
+* [Sequence#repeat(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#repeat-long-)
+* [Sequence#until(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#until-T-)
+* [Sequence#endingAt(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#endingAt-T-)
+* [Sequence#untilNull(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#untilNull--)
+* [Sequence#until(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#until-java.util.function.Predicate-)
+* [Sequence#endingAt(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#endingAt-java.util.function.Predicate-)
+
 #### Reduction
 
 The standard reduction operations are available as per `Stream`:
@@ -241,6 +294,11 @@ long factorial = thirteen.reduce(1L, (r, i) -> r * i);
 
 assertThat(factorial, is(6227020800L));
 ```
+
+See also:
+
+* [Sequence#reduce(BinaryOperator)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#reduce-java.util.function.BinaryOperator-)
+* [Sequence#reduce(T, BinaryOperator)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#reduce-T-java.util.function.BinaryOperator-)
 
 #### Maps
 
@@ -256,6 +314,17 @@ Map<Integer, String> map = keyValueSequence.toMap();
 assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 ```
 
+See also:
+
+* [Sequence#interleave(Sequence)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#interleave-org.d2ab.sequence.Sequence-)
+* [Sequence#pairs()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#pairs--)
+* [Sequence#adjacentPairs()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#adjacentPairs--)
+* [Pair](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html)
+* [Sequence#toMap()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toMap--)
+* [Sequence#toMap(Function, Function)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toMap-java.util.function.Function-java.util.function.Function-)
+* [Sequence#toSortedMap()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toSortedMap--)
+* [Sequence#toSortedMap(Function, Function)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toSortedMap-java.util.function.Function-java.util.function.Function-)
+
 You can also map `Entry` `Sequences` to `Pairs` which allows more expressive transformation and filtering.
 
 ```Java
@@ -269,6 +338,12 @@ Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
 assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 ```
 
+See also:
+
+* [Pair](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html)
+* [Pair#of(T, U)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#of-T-U-)
+* [Pair#from(Entry)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#from-java.util.Map.Entry-)
+
 You can also work directly on `Entry` keys and values using `EntrySequence`.
 
 ```Java
@@ -280,6 +355,10 @@ EntrySequence<Integer, String> oddsInverted = EntrySequence.from(original)
 
 assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").build())));
 ```
+
+See also:
+
+* [EntrySequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/EntrySequence.html)
 
 #### Pairs
 
@@ -294,6 +373,10 @@ Sequence<String> joinedOffice = presidents.toSequence((n, y) -> n + " (" + y + "
 assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969)", "George Bush (2001)",
                                   "Barack Obama (2005)"));
 ```
+
+See also:
+
+* [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html)
 
 #### Primitive
 
@@ -324,6 +407,13 @@ DoubleSequence squareRoots = IntSequence.positive().toDoubles().map(Math::sqrt);
 assertThat(squareRoots.limit(3), contains(sqrt(1), sqrt(2), sqrt(3)));
 ```
 
+See also:
+
+* [CharSeq](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/CharSeq.html)
+* [IntSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/IntSequence.html)
+* [LongSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/LongSequence.html)
+* [DoubleSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/DoubleSequence.html)
+
 #### Peeking
 
 `Sequences` also have mapping and filtering methods that peek on the previous and next elements:
@@ -335,6 +425,15 @@ CharSeq titleCase = CharSeq.from("hello_lexicon")
 
 assertThat(titleCase.asString(), is("Hello Lexicon"));
 ```
+
+See also:
+
+* [Sequence#peekBack(BiConsumer)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#peekBack-java.util.function.BiConsumer-)
+* [Sequence#peekForward(BiConsumer)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#peekForward-java.util.function.BiConsumer-)
+* [Sequence#filterBack(BiPredicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#filterBack-java.util.function.BiPredicate-)
+* [Sequence#filterForward(BiPredicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#filterForward-java.util.function.BiPredicate-)
+* [Sequence#mapBack(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#mapBack-java.util.function.BiFunction-)
+* [Sequence#mapForward(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#mapForward-java.util.function.BiFunction-)
 
 #### Partitioning
 
@@ -358,6 +457,15 @@ Sequence<String> consonantsVowels = CharSeq.from("terrain")
 
 assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
 ```
+
+See also:
+
+* [Sequence#window(int)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#window-int-)
+* [Sequence#window(int, int)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#window-int-int-)
+* [Sequence#batch(int)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#batch-int-)
+* [Sequence#batch(BiPredicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#batch-java.util.function.BiPredicate-)
+* [Sequence#split(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#split-T-)
+* [Sequence#split(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#split-java.util.function.Predicate-)
 
 #### Reading
 
@@ -387,6 +495,11 @@ assertThat(hexString, is("deadbeef"));
 
 inputStream.close();
 ```
+
+See also:
+
+* [CharSeq#read(Reader)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/CharSeq.html#read-java.io.Reader-)
+* [IntSequence#read(InputStream)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/IntSequence.html#read-java.io.InputStream-)
 
 ### Conclusion
 
