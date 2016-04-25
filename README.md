@@ -31,7 +31,7 @@ and with better integration with the rest of Java.
 
 It aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for advanced
 traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
-better handling of `Maps` with `Pair` and `Map.Entry` as first-class citizens, tighter integration with the rest of
+better handling of `Maps` with `Pairs` and `Map.Entry` as first-class citizens, tighter integration with the rest of
 Java by being implemented in terms of `Iterable`, and advanced partitioning, mapping and filtering methods, for example
 allowing you to peek at previous or next elements to make decisions during traversal. `Sequences` go to great lengths
 to be as lazy and late-evaluating as possible, with minimal overhead.
@@ -103,7 +103,8 @@ which is the general purpose stream of items.
 [EntrySequence](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/EntrySequence.html)
 and
 [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/BiSequence.html)
-work directly on the constituent components of `Map.Entry` and
+work directly on the constituent components of
+[Map.Entry](https://docs.oracle.com/javase/8/docs/api/java/util/Map.Entry.html) and
 [Pair](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/util/Pair.html)
 objects. The last four are primitive sequences dealing with `char`, `int`, `long` and `double` primitives;
 [CharSeq](http://static.javadoc.io/org.d2ab/sequence/1.1/index.html?org/d2ab/sequence/CharSeq.html),
