@@ -157,7 +157,8 @@ assertThat(x, is(6));
 
 Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` method of `Iterable` to be implemented,
 it's very easy to create your own full-fledged `Sequence` instances that can be operated on like any other `Sequence`
-through the default methods on the interface that carry the bulk of the burden.
+through the default methods on the interface that carry the bulk of the burden. In fact, this is how `Sequence's` own
+factory methods work.
 
 ```Java
 List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
