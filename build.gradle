@@ -30,7 +30,7 @@ repositories {
 }
 
 javadoc {
-    options.overview = "doc/java/overview.html"
+    options.overview = "src/main/java/overview.html"
 }
 
 task javadocJar(type: Jar) {
