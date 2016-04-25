@@ -41,6 +41,14 @@ List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
 assertThat(evens, contains("2", "4", "6", "8"));
 ```
 
+See also:
+
+* [Sequence#of(T...)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#of-T...-)
+* [Sequence#from(Iterable)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#from-java.lang.Iterable-)
+* [Sequence#filter(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#filter-java.util.function.Predicate-)
+* [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-)
+* [Sequence#toList()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#toList--)
+
 ### Install
 
 The Sequence library is available for manual install or as a maven central dependency for maven and gradle.
@@ -126,13 +134,11 @@ assertThat(squares, contains(16, 25, 36, 49, 64));
 
 See also:
 
-* [Sequence#of(T...)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#of-T...-)
-* [Sequence#from(Iterable)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#from-java.lang.Iterable-)
-* [Sequence#filter(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#filter-java.util.function.Predicate-)
-* [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-)
 * [Sequence#range(int, int)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#range-int-int-)
 * [Sequence#ints()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#ints--)
 * [Sequence#intsFromZero()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#intsFromZero--)
+* [Sequence#filter(Predicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#filter-java.util.function.Predicate-)
+* [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-)
 * [Sequence#step(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#step-long-)
 * [Sequence#limit(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#limit-long-)
 * [Sequence#skip(long)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#skip-long-)
