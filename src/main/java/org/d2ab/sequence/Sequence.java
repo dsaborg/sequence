@@ -21,10 +21,10 @@ import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
-import org.d2ab.iterator.chars.MappedCharIterator;
-import org.d2ab.iterator.doubles.MappedDoubleIterator;
-import org.d2ab.iterator.ints.MappedIntIterator;
-import org.d2ab.iterator.longs.MappedLongIterator;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -1533,12 +1533,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default CharSeq toChars(ToCharFunction<? super T> mapper) {
-		return () -> new MappedCharIterator<T, Iterator<T>>(iterator()) {
-			@Override
-			public char nextChar() {
-				return mapper.applyAsChar(iterator.next());
-			}
-		};
+		return () -> CharIterator.from(iterator(), mapper);
 	}
 
 	/**
@@ -1553,12 +1548,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default IntSequence toInts(ToIntFunction<? super T> mapper) {
-		return () -> new MappedIntIterator<T, Iterator<T>>(iterator()) {
-			@Override
-			public int nextInt() {
-				return mapper.applyAsInt(iterator.next());
-			}
-		};
+		return () -> IntIterator.from(iterator(), mapper);
 	}
 
 	/**
@@ -1573,12 +1563,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default LongSequence toLongs(ToLongFunction<? super T> mapper) {
-		return () -> new MappedLongIterator<T, Iterator<T>>(iterator()) {
-			@Override
-			public long nextLong() {
-				return mapper.applyAsLong(iterator.next());
-			}
-		};
+		return () -> LongIterator.from(iterator(), mapper);
 	}
 
 	/**
@@ -1593,12 +1578,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #flatten()
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super T> mapper) {
-		return () -> new MappedDoubleIterator<T, Iterator<T>>(iterator()) {
-			@Override
-			public double nextDouble() {
-				return mapper.applyAsDouble(iterator.next());
-			}
-		};
+		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
 	/**

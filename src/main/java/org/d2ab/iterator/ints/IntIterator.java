@@ -25,6 +25,7 @@ import java.util.PrimitiveIterator;
 import java.util.function.DoubleToIntFunction;
 import java.util.function.IntBinaryOperator;
 import java.util.function.LongToIntFunction;
+import java.util.function.ToIntFunction;
 
 /**
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
@@ -120,6 +121,15 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextLong());
+			}
+		};
+	}
+
+	static <T> IntIterator from(final Iterator<T> iterator, final ToIntFunction<? super T> mapper) {
+		return new MappedIntIterator<T, Iterator<T>>(iterator) {
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.next());
 			}
 		};
 	}

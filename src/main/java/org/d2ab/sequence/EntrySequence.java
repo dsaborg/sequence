@@ -19,9 +19,15 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.function.QuaternaryPredicate;
+import org.d2ab.function.chars.ToCharBiFunction;
+import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -1142,6 +1148,134 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	default <T> Sequence<T> toSequence(Function<? super Entry<K, V>, ? extends T> mapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to a {@link CharSeq} using the given mapper function to map each entry to a
+	 * {@code char}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default CharSeq toChars(ToCharBiFunction<? super K, ? super V> mapper) {
+		return toChars(e -> mapper.applyAsChar(e.getKey(), e.getValue()));
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to an {@link IntSequence} using the given mapper function to map each entry
+	 * to an {@code int}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default IntSequence toInts(ToIntBiFunction<? super K, ? super V> mapper) {
+		return toInts(e -> mapper.applyAsInt(e.getKey(), e.getValue()));
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to a {@link LongSequence} using the given mapper function to map each entry
+	 * to a {@code long}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default LongSequence toLongs(ToLongBiFunction<? super K, ? super V> mapper) {
+		return toLongs(e -> mapper.applyAsLong(e.getKey(), e.getValue()));
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to a {@link DoubleSequence} using the given mapper function to map each entry
+	 * to a {@code double}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default DoubleSequence toDoubles(ToDoubleBiFunction<? super K, ? super V> mapper) {
+		return toDoubles(e -> mapper.applyAsDouble(e.getKey(), e.getValue()));
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to a {@link CharSeq} using the given mapper function to map each entry to a
+	 * {@code char}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default CharSeq toChars(ToCharFunction<? super Entry<K, V>> mapper) {
+		return () -> CharIterator.from(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to an {@link IntSequence} using the given mapper function to map each entry
+	 * to an {@code int}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default IntSequence toInts(ToIntFunction<? super Entry<K, V>> mapper) {
+		return () -> IntIterator.from(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to a {@link LongSequence} using the given mapper function to map each entry
+	 * to a {@code long}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default LongSequence toLongs(ToLongFunction<? super Entry<K, V>> mapper) {
+		return () -> LongIterator.from(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code EntrySequence} to a {@link DoubleSequence} using the given mapper function to map each entry
+	 * to a {@code double}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default DoubleSequence toDoubles(ToDoubleFunction<? super Entry<K, V>> mapper) {
+		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
 	/**

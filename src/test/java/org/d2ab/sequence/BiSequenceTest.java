@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -1063,6 +1065,78 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> peek = _123.peek((s, x) -> assertThat(x, is(both(greaterThanOrEqualTo(1)).and(
 				lessThanOrEqualTo(3)).and(equalTo(parseInt(s))))));
 		twice(() -> assertThat(peek, contains(entries123)));
+	}
+
+	@Test
+	public void mapToChar() {
+		CharSeq emptyChars = empty.toChars((l, r) -> (char) (r + 'a' - 1));
+		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+
+		CharSeq charSeq = _12345.toChars((l, r) -> (char) (r + 'a' - 1));
+		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void mapToInt() {
+		IntSequence emptyInts = empty.toInts((l, r) -> r + 1);
+		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+
+		IntSequence intSequence = _12345.toInts((l, r) -> r + 1);
+		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void mapToLong() {
+		LongSequence emptyLongs = empty.toLongs((l, r) -> r + 1);
+		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+
+		LongSequence longSequence = _12345.toLongs((l, r) -> r + 1);
+		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
+	}
+
+	@Test
+	public void mapToDouble() {
+		DoubleSequence emptyDoubles = empty.toDoubles((l, r) -> r + 1);
+		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+
+		DoubleSequence doubleSequence = _12345.toDoubles((l, r) -> r + 1);
+		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
+	}
+
+	@Test
+	public void mapToCharFunction() {
+		CharSeq emptyChars = empty.toChars(p -> (char) (p.getRight() + 'a' - 1));
+		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+
+		CharSeq charSeq = _12345.toChars(p -> (char) (p.getRight() + 'a' - 1));
+		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void mapToIntFunction() {
+		IntSequence emptyInts = empty.toInts(p -> p.getRight() + 1);
+		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+
+		IntSequence intSequence = _12345.toInts(p -> p.getRight() + 1);
+		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void mapToLongFunction() {
+		LongSequence emptyLongs = empty.toLongs(p -> p.getRight() + 1);
+		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+
+		LongSequence longSequence = _12345.toLongs(p -> p.getRight() + 1);
+		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
+	}
+
+	@Test
+	public void mapToDoubleFunction() {
+		DoubleSequence emptyDoubles = empty.toDoubles(p -> p.getRight() + 1);
+		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+
+		DoubleSequence doubleSequence = _12345.toDoubles(p -> p.getRight() + 1);
+		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
 	}
 
 	@Test

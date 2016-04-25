@@ -22,6 +22,7 @@ import java.util.PrimitiveIterator;
 import java.util.function.DoubleToLongFunction;
 import java.util.function.IntToLongFunction;
 import java.util.function.LongBinaryOperator;
+import java.util.function.ToLongFunction;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -99,6 +100,15 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextInt());
+			}
+		};
+	}
+
+	static <T> LongIterator from(final Iterator<T> iterator, final ToLongFunction<? super T> mapper) {
+		return new MappedLongIterator<T, Iterator<T>>(iterator) {
+			@Override
+			public long nextLong() {
+				return mapper.applyAsLong(iterator.next());
 			}
 		};
 	}

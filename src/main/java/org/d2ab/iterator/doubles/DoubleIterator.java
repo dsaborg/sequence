@@ -22,6 +22,7 @@ import java.util.PrimitiveIterator;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.IntToDoubleFunction;
 import java.util.function.LongToDoubleFunction;
+import java.util.function.ToDoubleFunction;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -99,6 +100,16 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextInt());
+			}
+		};
+	}
+
+	static <T> DoubleIterator from(final Iterator<T> iterator,
+	                               final ToDoubleFunction<? super T> mapper) {
+		return new MappedDoubleIterator<T, Iterator<T>>(iterator) {
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.next());
 			}
 		};
 	}

@@ -16,10 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharBinaryOperator;
-import org.d2ab.function.chars.CharConsumer;
-import org.d2ab.function.chars.IntToCharFunction;
-import org.d2ab.function.chars.LongToCharFunction;
+import org.d2ab.function.chars.*;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -81,6 +78,15 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 			@Override
 			public char nextChar() {
 				return iterator.next();
+			}
+		};
+	}
+
+	static <T> CharIterator from(final Iterator<T> iterator, final ToCharFunction<? super T> mapper) {
+		return new MappedCharIterator<T, Iterator<T>>(iterator) {
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.next());
 			}
 		};
 	}

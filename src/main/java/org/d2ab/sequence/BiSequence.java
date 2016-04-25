@@ -18,9 +18,15 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.function.QuaternaryPredicate;
+import org.d2ab.function.chars.ToCharBiFunction;
+import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -1142,6 +1148,134 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	default <T> Sequence<T> toSequence(Function<? super Pair<L, R>, ? extends T> mapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to a {@link CharSeq} using the given mapper function to map each pair to a
+	 * {@code char}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default CharSeq toChars(ToCharBiFunction<? super L, ? super R> mapper) {
+		return toChars(p -> mapper.applyAsChar(p.getLeft(), p.getRight()));
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to an {@link IntSequence} using the given mapper function to map each pair
+	 * to an {@code int}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default IntSequence toInts(ToIntBiFunction<? super L, ? super R> mapper) {
+		return toInts(p -> mapper.applyAsInt(p.getLeft(), p.getRight()));
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to a {@link LongSequence} using the given mapper function to map each pair to a
+	 * {@code long}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default LongSequence toLongs(ToLongBiFunction<? super L, ? super R> mapper) {
+		return toLongs(p -> mapper.applyAsLong(p.getLeft(), p.getRight()));
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to a {@link DoubleSequence} using the given mapper function to map each pair
+	 * to a {@code double}.
+	 *
+	 * @see #toSequence(BiFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #map(BiFunction)
+	 * @see #flatten(BiFunction)
+	 */
+	default DoubleSequence toDoubles(ToDoubleBiFunction<? super L, ? super R> mapper) {
+		return toDoubles(p -> mapper.applyAsDouble(p.getLeft(), p.getRight()));
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to a {@link CharSeq} using the given mapper function to map each pair to a
+	 * {@code char}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toChars(ToCharBiFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default CharSeq toChars(ToCharFunction<? super Pair<L, R>> mapper) {
+		return () -> CharIterator.from(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to an {@link IntSequence} using the given mapper function to map each pair
+	 * to an {@code int}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toInts(ToIntBiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default IntSequence toInts(ToIntFunction<? super Pair<L, R>> mapper) {
+		return () -> IntIterator.from(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to a {@link LongSequence} using the given mapper function to map each pair to a
+	 * {@code long}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toLongs(ToLongBiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default LongSequence toLongs(ToLongFunction<? super Pair<L, R>> mapper) {
+		return () -> LongIterator.from(iterator(), mapper);
+	}
+
+	/**
+	 * Convert this {@code BiSequence} to a {@link DoubleSequence} using the given mapper function to map each pair
+	 * to a {@code double}.
+	 *
+	 * @see #toSequence(Function)
+	 * @see #toDoubles(ToDoubleBiFunction)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default DoubleSequence toDoubles(ToDoubleFunction<? super Pair<L, R>> mapper) {
+		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
 	/**
