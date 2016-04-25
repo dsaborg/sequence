@@ -154,6 +154,8 @@ See also:
 [Sequence#startingFrom(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#startingFrom-T-),
 [Sequence#endingAt(T)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#endingAt-T-)
 
+#### Foreach
+
 Also because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
 
 ```Java
@@ -165,6 +167,8 @@ for (int i : sequence)
 
 assertThat(x, is(6));
 ```
+
+#### FunctionalInterface
 
 Because `Sequence` is a `@FunctionalInterface` requiring only the `iterator()` method of `Iterable` to be implemented,
 it's very easy to create your own full-fledged `Sequence` instances that can be operated on like any other `Sequence`
@@ -182,6 +186,8 @@ Sequence<String> transformed = sequence.map(Object::toString);
 
 assertThat(transformed.limit(3), contains("1", "2", "3"));
 ```
+
+#### Caching
 
 Sequences can be created from `Iterators` or `Streams` but can then only be passed over once.
 
