@@ -40,15 +40,15 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a {@code Pair} of the two objects given.
 	 */
-	static <T, U> Pair<T, U> of(T left, U right) {
-		return new Base<T, U>() {
+	static <L, R> Pair<L, R> of(L left, R right) {
+		return new Base<L, R>() {
 			@Override
-			public T getLeft() {
+			public L getLeft() {
 				return left;
 			}
 
 			@Override
-			public U getRight() {
+			public R getRight() {
 				return right;
 			}
 		};
