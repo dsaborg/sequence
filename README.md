@@ -3,15 +3,26 @@
 
 ##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
 
-Follow me on Twitter ([daniel2aborg](http://twitter.com/daniel2aborg)) to receive updates about Sequence.
+Follow me on Twitter ([@daniel2aborg](http://twitter.com/daniel2aborg)) to receive updates about Sequence.
 For feature requests and bug reports, use the [GitHub Issues Page](https://github.com/d2ab/sequence/issues).
 Javadoc for the entire project is available at the [Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
 
+* [News](#news)
 * [Overview](#overview)
 * [Install](#install)
 * [Javadoc](#javadoc)
 * [Usage](#usage)
 * [Conclusion](#conclusion)
+
+### News
+
+**2016-04-23:** Sequence v1.1 is released, with
+[caching](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#cache-java.util.Iterator-),
+[splitting](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#split-T-),
+[skipping at tail](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#skipTail-long-),
+[starting in middle](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#startingFrom-T-),
+[and emptiness check](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#isEmpty--).
+The Sequence test suite is now at over 1000 tests!
 
 ### Overview
 
