@@ -349,6 +349,8 @@ See also:
 * [Pair](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html)
 * [Pair#of(T, U)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#of-T-U-)
 * [Pair#from(Entry)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#from-java.util.Map.Entry-)
+* [Pair#test(BiPredicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#test-java.util.function.BiPredicate-)
+* [Pair#map(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/util/Pair.html#map-java.util.function.BiFunction-)
 
 You can also work directly on `Entry` keys and values using `EntrySequence`.
 
@@ -365,6 +367,11 @@ assertThat(oddsInverted.toMap(), is(equalTo(Maps.builder(1, "1").put(3, "3").bui
 See also:
 
 * [EntrySequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/EntrySequence.html)
+* [EntrySequence#filter(BiPredicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/EntrySequence.html#filter-java.util.function.BiPredicate-)
+* [EntrySequence#map(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/EntrySequence.html#map-java.util.function.BiFunction-)
+* [EntrySequence#toSequence(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/EntrySequence.html#toSequence-java.util.function.BiFunction-)
+* [Maps#entry(K, V)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/collection/Maps.html#entry-K-V-)
+* [EntrySequence#toMap()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/EntrySequence.html#toMap--)
 
 #### Pairs
 
@@ -383,6 +390,10 @@ assertThat(joinedOffice, contains("Abraham Lincoln (1861)", "Richard Nixon (1969
 See also:
 
 * [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html)
+* [BiSequence#filter(BiPredicate)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html#filter-java.util.function.BiPredicate-)
+* [BiSequence#map(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html#map-java.util.function.BiFunction-)
+* [BiSequence#toSequence(BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html#toSequence-java.util.function.BiFunction-)
+* [BiSequence#toMap()](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/BiSequence.html#toMap--)
 
 #### Primitive
 
