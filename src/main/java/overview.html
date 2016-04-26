@@ -80,6 +80,8 @@
     assertThat(squares, contains(16, 25, 36, 49, 64));
 }</pre>
 
+<h2>Foreach</h2>
+
 <p>Also because each {@link org.d2ab.sequence.Sequence} is an {@link Iterable} they work beautifully in foreach
     loops:</p>
 
@@ -93,6 +95,8 @@
     assertThat(x, is(6));
 }</pre>
 
+<h2>FunctionalInterface</h2>
+
 <p>Because Sequence is a
     <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html">{@link
         FunctionalInterface}</a> requiring only the
@@ -100,7 +104,8 @@
         Iterable#iterator()}</a>
     method to be implemented, it's very easy to create your own full-fledged {@link org.d2ab.sequence.Sequence}
     instances that can be operated on like any other {@link org.d2ab.sequence.Sequence} through the default methods on
-    the interface that carry the bulk of the burden.</p>
+    the interface that carry the bulk of the burden. In fact, this is how `Sequence's` own factory methods work. You
+    could consider all of `Sequence` to be a smarter version of `Iterable`.</p>
 
 <pre>{@code
     List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
@@ -113,6 +118,8 @@
 
     assertThat(transformed.limit(3), contains("1", "2", "3"));
 }</pre>
+
+<h2>Caching</h2>
 
 <p>Sequences can be created from Iterators or Streams but can then only be passed over once.</p>
 
@@ -427,7 +434,8 @@
     inputStream.close();
 }</pre>
 
-<p>See also: {@link org.d2ab.sequence.CharSeq#read(java.io.Reader)}, {@link org.d2ab.sequence.IntSequence#read(java.io.InputStream)}</p>
+<p>See also: {@link org.d2ab.sequence.CharSeq#read(java.io.Reader)}, {@link
+    org.d2ab.sequence.IntSequence#read(java.io.InputStream)}</p>
 
 </body>
 </html>
