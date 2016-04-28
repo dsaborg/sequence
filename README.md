@@ -137,8 +137,7 @@ except they're adapted to work directly on primitives.
 #### Iterable
 
 Because each `Sequence` is an `Iterable` you can re-use them safely after you have already traversed them, as long as
-they're backed by an `Iterable`, `Collection`, array or generated sequence, not an `Iterator` or `Stream` which can
-only be traversed once.
+they're not backed by an `Iterator` or `Stream` which can only be traversed once.
 
 ```Java
 Sequence<Integer> singulars = Sequence.range(1, 9); // Digits 1..9
