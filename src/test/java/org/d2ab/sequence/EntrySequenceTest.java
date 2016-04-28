@@ -1414,4 +1414,44 @@ public class EntrySequenceTest {
 		                              Maps.entry("5", 5), Maps.entry("17", 17)), is(true));
 		assertThat(_12345.containsAny(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19)), is(false));
 	}
+
+	@Test
+	public void containsAllIterable() {
+		assertThat(empty.containsAll(Iterables.of()), is(true));
+		assertThat(empty.containsAll(Iterables.of(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19))),
+		           is(false));
+
+		assertThat(_12345.containsAll(Iterables.of()), is(true));
+		assertThat(_12345.containsAll(Iterables.of(Maps.entry("1", 1))), is(true));
+		assertThat(_12345.containsAll(Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5))),
+		           is(true));
+		assertThat(_12345.containsAll(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5))), is(true));
+		assertThat(_12345.containsAll(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5), Maps.entry("17", 17))), is(false));
+		assertThat(_12345.containsAll(Iterables.of(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19))),
+		           is(false));
+	}
+
+	@Test
+	public void containsAnyIterable() {
+		assertThat(empty.containsAny(Iterables.of()), is(false));
+		assertThat(empty.containsAny(Iterables.of(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19))),
+		           is(false));
+
+		assertThat(_12345.containsAny(Iterables.of()), is(false));
+		assertThat(_12345.containsAny(Iterables.of(Maps.entry("1", 1))), is(true));
+		assertThat(_12345.containsAny(Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5))),
+		           is(true));
+		assertThat(_12345.containsAny(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5))), is(true));
+		assertThat(_12345.containsAny(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5), Maps.entry("17", 17))), is(true));
+		assertThat(_12345.containsAny(Iterables.of(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19))),
+		           is(false));
+	}
 }

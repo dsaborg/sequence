@@ -1368,4 +1368,20 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	default boolean containsAny(Pair<L, R>... pairs) {
 		return Iterables.containsAny(this, pairs);
 	}
+
+	/**
+	 * @return true if this {@code BiSequence} contains all of the given pairs, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAll(Iterable<? extends Pair<L, R>> pairs) {
+		return Iterables.containsAll(this, pairs);
+	}
+
+	/**
+	 * @return true if this {@code BiSequence} contains any of the given pairs, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAny(Iterable<? extends Pair<L, R>> pairs) {
+		return Iterables.containsAny(this, pairs);
+	}
 }

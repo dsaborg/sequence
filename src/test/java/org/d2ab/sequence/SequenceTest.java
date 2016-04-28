@@ -1807,6 +1807,19 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void containsAllIterable() {
+		assertThat(empty.containsAll(Iterables.of()), is(true));
+		assertThat(empty.containsAll(Iterables.of(17, 18, 19)), is(false));
+
+		assertThat(_12345.containsAll(Iterables.of()), is(true));
+		assertThat(_12345.containsAll(Iterables.of(1)), is(true));
+		assertThat(_12345.containsAll(Iterables.of(1, 3, 5)), is(true));
+		assertThat(_12345.containsAll(Iterables.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(_12345.containsAll(Iterables.of(1, 2, 3, 4, 5, 17)), is(false));
+		assertThat(_12345.containsAll(Iterables.of(17, 18, 19)), is(false));
+	}
+
+	@Test
 	public void containsAny() {
 		assertThat(empty.containsAny(), is(false));
 		assertThat(empty.containsAny(17, 18, 19), is(false));
@@ -1817,5 +1830,18 @@ public class SequenceTest {
 		assertThat(_12345.containsAny(1, 2, 3, 4, 5), is(true));
 		assertThat(_12345.containsAny(1, 2, 3, 4, 5, 17), is(true));
 		assertThat(_12345.containsAny(17, 18, 19), is(false));
+	}
+
+	@Test
+	public void containsAnyIterable() {
+		assertThat(empty.containsAny(Iterables.of()), is(false));
+		assertThat(empty.containsAny(Iterables.of(17, 18, 19)), is(false));
+
+		assertThat(_12345.containsAny(Iterables.of()), is(false));
+		assertThat(_12345.containsAny(Iterables.of(1)), is(true));
+		assertThat(_12345.containsAny(Iterables.of(1, 3, 5)), is(true));
+		assertThat(_12345.containsAny(Iterables.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(_12345.containsAny(Iterables.of(1, 2, 3, 4, 5, 17)), is(true));
+		assertThat(_12345.containsAny(Iterables.of(17, 18, 19)), is(false));
 	}
 }
