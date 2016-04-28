@@ -1161,4 +1161,11 @@ public interface LongSequence extends LongIterable {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
+	 */
+	default boolean contains(long l) {
+		return iterator().contains(l);
+	}
 }

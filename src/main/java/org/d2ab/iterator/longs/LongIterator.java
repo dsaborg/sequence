@@ -129,4 +129,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			result = operator.applyAsLong(result, nextLong());
 		return result;
 	}
+
+	/**
+	 * @return true if this {@code LongIterator} contains the given {@code long}, false otherwise.
+	 */
+	default boolean contains(long l) {
+		while (hasNext())
+			if (nextLong() == l)
+				return true;
+		return false;
+	}
 }

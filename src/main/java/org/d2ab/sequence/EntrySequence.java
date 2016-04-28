@@ -1338,4 +1338,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code EntrySequence} contains the given entry, false otherwise.
+	 */
+	default boolean contains(Entry<K, V> entry) {
+		return Iterables.contains(this, entry);
+	}
 }

@@ -1632,4 +1632,11 @@ public interface Sequence<T> extends Iterable<T> {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code Sequence} contains the given object, false otherwise.
+	 */
+	default boolean contains(T object) {
+		return Iterables.contains(this, object);
+	}
 }

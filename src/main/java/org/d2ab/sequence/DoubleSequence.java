@@ -1026,4 +1026,11 @@ public interface DoubleSequence extends DoubleIterable {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
+	 */
+	default boolean contains(double d, double precision) {
+		return iterator().contains(d, precision);
+	}
 }

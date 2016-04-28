@@ -1316,4 +1316,14 @@ public class BiSequenceTest {
 		twice(() -> assertThat(_12.isEmpty(), is(false)));
 		twice(() -> assertThat(_12345.isEmpty(), is(false)));
 	}
+
+	@Test
+	public void containsPair() {
+		assertThat(empty.contains(Pair.of("17", 17)), is(false));
+
+		assertThat(_12345.contains(Pair.of("1", 1)), is(true));
+		assertThat(_12345.contains(Pair.of("3", 3)), is(true));
+		assertThat(_12345.contains(Pair.of("5", 5)), is(true));
+		assertThat(_12345.contains(Pair.of("17", 17)), is(false));
+	}
 }

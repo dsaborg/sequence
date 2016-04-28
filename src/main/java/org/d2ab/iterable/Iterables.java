@@ -126,4 +126,14 @@ public class Iterables {
 			iterable.forEach(list::add);
 		return list;
 	}
+
+	/**
+	 * @return true if any object in the given {@link Iterable} is equal to the given object, false otherwise.
+	 */
+	public static <T> boolean contains(Iterable<? extends T> iterable, T object) {
+		for (T each : iterable)
+			if (Objects.equals(each, object))
+				return true;
+		return false;
+	}
 }

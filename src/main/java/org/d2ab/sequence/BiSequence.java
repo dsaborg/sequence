@@ -1338,4 +1338,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code BiSequence} contains the given pair, false otherwise.
+	 */
+	default boolean contains(Pair<L, R> pair) {
+		return Iterables.contains(this, pair);
+	}
 }

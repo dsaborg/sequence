@@ -1198,4 +1198,11 @@ public interface IntSequence extends IntIterable {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains the given {@code int}, false otherwise.
+	 */
+	default boolean contains(int i) {
+		return iterator().contains(i);
+	}
 }

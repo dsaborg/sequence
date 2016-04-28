@@ -1186,4 +1186,14 @@ public class IntSequenceTest {
 			return from(IntIterator.of(values));
 		}
 	}
+
+	@Test
+	public void containsInt() {
+		assertThat(empty.contains(17), is(false));
+
+		assertThat(_12345.contains(1), is(true));
+		assertThat(_12345.contains(3), is(true));
+		assertThat(_12345.contains(5), is(true));
+		assertThat(_12345.contains(17), is(false));
+	}
 }

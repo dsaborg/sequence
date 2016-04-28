@@ -151,4 +151,14 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 			result = operator.applyAsInt(result, nextInt());
 		return result;
 	}
+
+	/**
+	 * @return true if this {@code IntIterator} contains the given {@code int}, false otherwise.
+	 */
+	default boolean contains(int i) {
+		while (hasNext())
+			if (nextInt() == i)
+				return true;
+		return false;
+	}
 }

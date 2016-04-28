@@ -1782,4 +1782,14 @@ public class SequenceTest {
 		twice(() -> assertThat(_12.isEmpty(), is(false)));
 		twice(() -> assertThat(_12345.isEmpty(), is(false)));
 	}
+
+	@Test
+	public void containsObject() {
+		assertThat(empty.contains(17), is(false));
+
+		assertThat(_12345.contains(1), is(true));
+		assertThat(_12345.contains(3), is(true));
+		assertThat(_12345.contains(5), is(true));
+		assertThat(_12345.contains(17), is(false));
+	}
 }

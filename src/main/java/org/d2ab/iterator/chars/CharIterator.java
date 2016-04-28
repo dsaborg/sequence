@@ -154,4 +154,14 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 			result = operator.applyAsChar(result, nextChar());
 		return result;
 	}
+
+	/**
+	 * @return true if this {@code CharIterator} contains the given {@code char}, false otherwise.
+	 */
+	default boolean contains(char c) {
+		while (hasNext())
+			if (nextChar() == c)
+				return true;
+		return false;
+	}
 }

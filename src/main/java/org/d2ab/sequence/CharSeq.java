@@ -1121,4 +1121,11 @@ public interface CharSeq extends CharIterable {
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
+
+	/**
+	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
+	 */
+	default boolean contains(char l) {
+		return iterator().contains(l);
+	}
 }

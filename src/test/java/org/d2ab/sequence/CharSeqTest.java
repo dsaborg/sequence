@@ -1106,4 +1106,14 @@ public class CharSeqTest {
 			return from(CharIterator.of(values));
 		}
 	}
+
+	@Test
+	public void containsChar() {
+		assertThat(empty.contains('q'), is(false));
+
+		assertThat(abcde.contains('a'), is(true));
+		assertThat(abcde.contains('c'), is(true));
+		assertThat(abcde.contains('e'), is(true));
+		assertThat(abcde.contains('q'), is(false));
+	}
 }

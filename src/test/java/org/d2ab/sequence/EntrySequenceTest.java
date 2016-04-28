@@ -1364,4 +1364,14 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(_12.isEmpty(), is(false)));
 		twice(() -> assertThat(_12345.isEmpty(), is(false)));
 	}
+
+	@Test
+	public void containsEntry() {
+		assertThat(empty.contains(Maps.entry("17", 17)), is(false));
+
+		assertThat(_12345.contains(Maps.entry("1", 1)), is(true));
+		assertThat(_12345.contains(Maps.entry("3", 3)), is(true));
+		assertThat(_12345.contains(Maps.entry("5", 5)), is(true));
+		assertThat(_12345.contains(Maps.entry("17", 17)), is(false));
+	}
 }

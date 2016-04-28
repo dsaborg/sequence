@@ -1118,4 +1118,14 @@ public class DoubleSequenceTest {
 			return from(DoubleIterator.of(values));
 		}
 	}
+
+	@Test
+	public void containsDouble() {
+		assertThat(empty.contains(17, 0.1), is(false));
+
+		assertThat(_12345.contains(1, 0.1), is(true));
+		assertThat(_12345.contains(3, 0.1), is(true));
+		assertThat(_12345.contains(5, 0.1), is(true));
+		assertThat(_12345.contains(17, 0.1), is(false));
+	}
 }

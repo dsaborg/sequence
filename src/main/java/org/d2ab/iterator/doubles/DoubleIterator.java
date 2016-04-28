@@ -16,6 +16,8 @@
 
 package org.d2ab.iterator.doubles;
 
+import org.d2ab.util.primitive.Doubles;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -130,5 +132,15 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		while (hasNext())
 			result = operator.applyAsDouble(result, nextDouble());
 		return result;
+	}
+
+	/**
+	 * @return true if this {@code DoubleIterator} contains the given {@code double}, false otherwise.
+	 */
+	default boolean contains(double d, double precision) {
+		while (hasNext())
+			if (Doubles.equal(nextDouble(), d, precision))
+				return true;
+		return false;
 	}
 }
