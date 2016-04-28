@@ -103,6 +103,9 @@ dependencies {
 
 Javadoc for the entire project is available at the [Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
 
+The main Sequence package is
+[org.d2ab.sequence](http://static.javadoc.io/org.d2ab/sequence/1.1.1/index.html?org/d2ab/sequence/package-summary.html)
+where all the sequences reside.
 There are seven kinds of Sequences, each dealing with a different type of entry. The first is the regular
 [Sequence](http://static.javadoc.io/org.d2ab/sequence/1.1.1/index.html?org/d2ab/sequence/Sequence.html)
 which is the general purpose stream of items.

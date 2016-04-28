@@ -46,13 +46,14 @@
 
 <h2>Overview</h2>
 
-<p>There are seven kinds of Sequences, each dealing with a different type of entry. The first is the regular {@link
-    org.d2ab.sequence.Sequence} which is the general purpose stream of items. {@link org.d2ab.sequence.EntrySequence}
-    and {@link org.d2ab.sequence.BiSequence} work directly on the constituent components of <a
-            href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.Entry.html">{@link java.util.Map.Entry}</a>
-    and {@link org.d2ab.util.Pair} objects. The last four are primitive sequences dealing with {@code char}, {@code
-    int}, {@code long} and {@code double} primitives; {@link org.d2ab.sequence.CharSeq}, {@link
-    org.d2ab.sequence.IntSequence}, {@link org.d2ab.sequence.LongSequence}, and {@link
+<p>The main Sequence package is <a href="org/d2ab/sequence/package-summary.html">{@link org.d2ab.sequence}</a> where all
+    the sequences reside. There are seven kinds of Sequences, each dealing with a different type of entry. The first is
+    the regular {@link org.d2ab.sequence.Sequence} which is the general purpose stream of items. {@link
+    org.d2ab.sequence.EntrySequence} and {@link org.d2ab.sequence.BiSequence} work directly on the constituent
+    components of <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.Entry.html">{@link
+        java.util.Map.Entry}</a> and {@link org.d2ab.util.Pair} objects. The last four are primitive sequences dealing
+    with {@code char}, {@code int}, {@code long} and {@code double} primitives; {@link org.d2ab.sequence.CharSeq},
+    {@link org.d2ab.sequence.IntSequence}, {@link org.d2ab.sequence.LongSequence}, and {@link
     org.d2ab.sequence.DoubleSequence}. These work much the same as the regular {@link org.d2ab.sequence.Sequence} except
     they're adapted to work directly on primitives.</p>
 
