@@ -1634,9 +1634,25 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * @return true if this {@code Sequence} contains the given object, false otherwise.
+	 * @return true if this {@code Sequence} contains the given item, false otherwise.
 	 */
-	default boolean contains(T object) {
-		return Iterables.contains(this, object);
+	default boolean contains(T item) {
+		return Iterables.contains(this, item);
+	}
+
+	/**
+	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAll(T... items) {
+		return Iterables.containsAll(this, items);
+	}
+
+	/**
+	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAny(T... items) {
+		return Iterables.containsAny(this, items);
 	}
 }

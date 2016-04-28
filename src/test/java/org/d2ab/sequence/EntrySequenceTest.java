@@ -1374,4 +1374,44 @@ public class EntrySequenceTest {
 		assertThat(_12345.contains(Maps.entry("5", 5)), is(true));
 		assertThat(_12345.contains(Maps.entry("17", 17)), is(false));
 	}
+
+	@Test
+	public void containsPairComponents() {
+		assertThat(empty.contains("17", 17), is(false));
+
+		assertThat(_12345.contains("1", 1), is(true));
+		assertThat(_12345.contains("3", 3), is(true));
+		assertThat(_12345.contains("5", 5), is(true));
+		assertThat(_12345.contains("17", 17), is(false));
+	}
+
+	@Test
+	public void containsAll() {
+		assertThat(empty.containsAll(), is(true));
+		assertThat(empty.containsAll(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19)), is(false));
+
+		assertThat(_12345.containsAll(), is(true));
+		assertThat(_12345.containsAll(Maps.entry("1", 1)), is(true));
+		assertThat(_12345.containsAll(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5)), is(true));
+		assertThat(_12345.containsAll(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                              Maps.entry("5", 5)), is(true));
+		assertThat(_12345.containsAll(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                              Maps.entry("5", 5), Maps.entry("17", 17)), is(false));
+		assertThat(_12345.containsAll(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19)), is(false));
+	}
+
+	@Test
+	public void containsAny() {
+		assertThat(empty.containsAny(), is(false));
+		assertThat(empty.containsAny(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19)), is(false));
+
+		assertThat(_12345.containsAny(), is(false));
+		assertThat(_12345.containsAny(Maps.entry("1", 1)), is(true));
+		assertThat(_12345.containsAny(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5)), is(true));
+		assertThat(_12345.containsAny(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                              Maps.entry("5", 5)), is(true));
+		assertThat(_12345.containsAny(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                              Maps.entry("5", 5), Maps.entry("17", 17)), is(true));
+		assertThat(_12345.containsAny(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19)), is(false));
+	}
 }

@@ -1326,4 +1326,44 @@ public class BiSequenceTest {
 		assertThat(_12345.contains(Pair.of("5", 5)), is(true));
 		assertThat(_12345.contains(Pair.of("17", 17)), is(false));
 	}
+
+	@Test
+	public void containsPairComponents() {
+		assertThat(empty.contains("17", 17), is(false));
+
+		assertThat(_12345.contains("1", 1), is(true));
+		assertThat(_12345.contains("3", 3), is(true));
+		assertThat(_12345.contains("5", 5), is(true));
+		assertThat(_12345.contains("17", 17), is(false));
+	}
+
+	@Test
+	public void containsAll() {
+		assertThat(empty.containsAll(), is(true));
+		assertThat(empty.containsAll(Pair.of("17", 17), Pair.of("18", 18), Pair.of("19", 19)), is(false));
+
+		assertThat(_12345.containsAll(), is(true));
+		assertThat(_12345.containsAll(Pair.of("1", 1)), is(true));
+		assertThat(_12345.containsAll(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5)), is(true));
+		assertThat(_12345.containsAll(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                              Pair.of("5", 5)), is(true));
+		assertThat(_12345.containsAll(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                              Pair.of("5", 5), Pair.of("17", 17)), is(false));
+		assertThat(_12345.containsAll(Pair.of("17", 17), Pair.of("18", 18), Pair.of("19", 19)), is(false));
+	}
+
+	@Test
+	public void containsAny() {
+		assertThat(empty.containsAny(), is(false));
+		assertThat(empty.containsAny(Pair.of("17", 17), Pair.of("18", 18), Pair.of("19", 19)), is(false));
+
+		assertThat(_12345.containsAny(), is(false));
+		assertThat(_12345.containsAny(Pair.of("1", 1)), is(true));
+		assertThat(_12345.containsAny(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5)), is(true));
+		assertThat(_12345.containsAny(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                              Pair.of("5", 5)), is(true));
+		assertThat(_12345.containsAny(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                              Pair.of("5", 5), Pair.of("17", 17)), is(true));
+		assertThat(_12345.containsAny(Pair.of("17", 17), Pair.of("18", 18), Pair.of("19", 19)), is(false));
+	}
 }

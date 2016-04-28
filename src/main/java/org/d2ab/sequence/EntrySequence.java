@@ -1345,4 +1345,27 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	default boolean contains(Entry<K, V> entry) {
 		return Iterables.contains(this, entry);
 	}
+
+	/**
+	 * @return true if this {@code EntrySequence} contains the given pair, false otherwise.
+	 */
+	default boolean contains(K key, V value) {
+		return any((k, v) -> Objects.equals(key, k) && Objects.equals(value, v));
+	}
+
+	/**
+	 * @return true if this {@code EntrySequence} contains all of the given entries, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAll(Entry<K, V>... entries) {
+		return Iterables.containsAll(this, entries);
+	}
+
+	/**
+	 * @return true if this {@code EntrySequence} contains any of the given entries, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAny(Entry<K, V>... entries) {
+		return Iterables.containsAny(this, entries);
+	}
 }

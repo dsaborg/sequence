@@ -136,4 +136,19 @@ public class Iterables {
 				return true;
 		return false;
 	}
+
+	public static <T> boolean containsAll(Iterable<T> iterable, T... items) {
+		for (T item : items)
+			if (!contains(iterable, item))
+				return false;
+		return true;
+	}
+
+	public static <T> boolean containsAny(Iterable<T> iterable, T... items) {
+		for (T each : iterable)
+			for (T item : items)
+				if (Objects.equals(each, item))
+					return true;
+		return false;
+	}
 }
