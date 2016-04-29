@@ -40,7 +40,12 @@ public class Iterables {
 	}
 
 	/**
-	 * @return a once-only {@link Iterable} over the given {@link Iterator}, after which the iterable will be empty.
+	 * Create a one-pass-only {@code Iterable} from an {@link Iterator} of items. Note that {@code Iterables} created
+	 * from {@link Iterator}s will be exhausted when the given iterator has been passed over. Further attempts will
+	 * register the {@code Iterable} as empty. If the iterator is terminated partway through iteration, further
+	 * calls to {@link Iterable#iterator()} will pick up where the previous iterator left off. If
+	 * {@link Iterable#iterator()} calls are interleaved, calls to the given iterator will be interleaved.
+
 	 */
 	public static <T> Iterable<T> once(Iterator<T> iterator) {
 		return () -> iterator;

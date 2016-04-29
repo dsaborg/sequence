@@ -146,9 +146,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a once-only {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
-	 * empty.
+	 * Create a one-pass-only {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created
+	 * from {@link Iterator}s will be exhausted when the given iterator has been passed over. Further attempts will
+	 * register the {@code Sequence} as empty. If the sequence is terminated partway through iteration, further
+	 * calls to {@link #iterator()} will pick up where the previous iterator left off. If {@link #iterator()} calls
+	 * are interleaved, calls to the given iterator will be interleaved.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
@@ -162,9 +164,11 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a once-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
-	 * empty.
+	 * Create a one-pass-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created
+	 * from {@link Stream}s will be exhausted when the given stream has been passed over. Further attempts will
+	 * register the {@code Sequence} as empty. If the sequence is terminated partway through iteration, further
+	 * calls to {@link #iterator()} will pick up where the previous iterator left off. If {@link #iterator()} calls
+	 * are interleaved, calls to the given stream will be interleaved.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
