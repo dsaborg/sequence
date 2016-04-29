@@ -930,6 +930,11 @@ public class SequenceTest {
 
 	@Test
 	public void join() {
+		twice(() -> assertThat(_12345.join(), is("12345")));
+	}
+
+	@Test
+	public void joinWithDelimiter() {
 		twice(() -> assertThat(_12345.join(", "), is("1, 2, 3, 4, 5")));
 	}
 

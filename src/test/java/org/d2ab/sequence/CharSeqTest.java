@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.Tests.times;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -527,6 +528,11 @@ public class CharSeqTest {
 
 	@Test
 	public void join() {
+		twice(() -> assertThat(abc.join(), is("abc")));
+	}
+
+	@Test
+	public void joinWithDelimiter() {
 		twice(() -> assertThat(abc.join(", "), is("a, b, c")));
 	}
 
@@ -918,6 +924,31 @@ public class CharSeqTest {
 		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
 
 		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e'));
+	}
+
+	@Test
+	public void generateSupplied() {
+		CharSeq sequence = CharSeq.generate(() -> {
+			Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
+			return queue::poll;
+		}).endingAt('e');
+
+		twice(() -> assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void random() {
+		CharIterator random = CharSeq.random('a', 'e').iterator();
+
+		times(10, () -> assertThat(random.nextChar(), is(in(asList('a', 'b', 'c', 'd', 'e')))));
+	}
+
+	@Test
+	public void randomRanges() {
+		CharIterator random = CharSeq.random("0-9", "A-F").iterator();
+
+		times(10, () -> assertThat(Integer.parseInt(String.valueOf(random.nextChar()), 16),
+		                           is(both(greaterThanOrEqualTo(0)).and(lessThan(16)))));
 	}
 
 	@Test

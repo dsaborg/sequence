@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
+import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -90,7 +91,6 @@ public interface CharSeq extends CharIterable {
 	 * will register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(CharIterator)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq once(CharIterator iterator) {
@@ -103,7 +103,6 @@ public interface CharSeq extends CharIterable {
 	 * will register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfInt)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq once(PrimitiveIterator.OfInt iterator) {
@@ -116,7 +115,6 @@ public interface CharSeq extends CharIterable {
 	 * register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq once(Iterator<Character> iterator) {
@@ -129,7 +127,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq once(Stream<Character> stream) {
@@ -143,7 +140,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
 	 * @see #cache(IntStream)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq once(IntStream stream) {
@@ -156,7 +152,6 @@ public interface CharSeq extends CharIterable {
 	 * will register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(CharIterator)
-	 *
 	 * @deprecated Use {@link #once(CharIterator)} instead.
 	 */
 	@Deprecated
@@ -170,7 +165,6 @@ public interface CharSeq extends CharIterable {
 	 * will register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfInt)
-	 *
 	 * @deprecated Use {@link #once(PrimitiveIterator.OfInt)} instead.
 	 */
 	@Deprecated
@@ -184,7 +178,6 @@ public interface CharSeq extends CharIterable {
 	 * register the {@code CharSeq} as empty.
 	 *
 	 * @see #cache(Iterator)
-	 *
 	 * @deprecated User {@link #once(Iterator)} instead.
 	 */
 	@Deprecated
@@ -198,7 +191,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
-	 *
 	 * @deprecated Use {@link #once(Stream)} instead.
 	 */
 	@Deprecated
@@ -213,7 +205,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
 	 * @see #cache(IntStream)
-	 *
 	 * @deprecated Use {@link #once(IntStream)} instead.
 	 */
 	@Deprecated
@@ -260,7 +251,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(CharIterator)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterator iterator) {
@@ -287,7 +277,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(PrimitiveIterator.OfInt iterator) {
@@ -304,7 +293,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(CharIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(Iterator<Character> iterator) {
@@ -321,7 +309,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #once(IntStream)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(IntStream stream) {
@@ -338,7 +325,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(Stream<Character> stream) {
@@ -355,7 +341,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #from(CharIterable)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterable iterable) {
@@ -372,7 +357,6 @@ public interface CharSeq extends CharIterable {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1
 	 */
 	static CharSeq cache(Iterable<Character> iterable) {
@@ -444,7 +428,9 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code CharSeq} that is generated from the given supplier and thus never terminates.
+	 * @return a {@code CharSeq} that is generated from the given supplier and thus never terminates. Further
+	 * iterations of the sequence will reuse the same supplier and may thus mix output from the same supplier if
+	 * iterators are interleaved.
 	 *
 	 * @see #recurse(char, CharUnaryOperator)
 	 * @see #endingAt(char)
@@ -452,6 +438,62 @@ public interface CharSeq extends CharIterable {
 	 */
 	static CharSeq generate(CharSupplier supplier) {
 		return () -> (InfiniteCharIterator) supplier::getAsChar;
+	}
+
+	/**
+	 * @return a {@code CharSeq} where each iteration is generated by polling for a supplier and then using it to
+	 * generate the sequence of characters. The sequence never terminates.
+	 *
+	 * @see #recurse(char, CharUnaryOperator)
+	 * @see #endingAt(char)
+	 * @see #until(char)
+	 */
+	static CharSeq generate(Supplier<CharSupplier> supplierSupplier) {
+		return () -> (InfiniteCharIterator) supplierSupplier.get()::getAsChar;
+	}
+
+	/**
+	 * @return a {@code CharSeq} of random characters between the lower and upper bounds, inclusive, that never
+	 * terminates. Each run of this {@code CharSeq's} {@code iterator} will produce a new random sequence of
+	 * characters.
+	 */
+	static CharSeq random(char lower, char upper) {
+		return generate(() -> {
+			Random random = new Random();
+			int bound = upper - lower + 1;
+			return () -> (char) (random.nextInt(bound) + lower);
+		});
+	}
+
+	/**
+	 * Create a {@code CharSeq} of random characters as indicated by the given char ranges. Each char range is in the
+	 * format {@code "A-F"} where [@code A} is the lower bound and {@code F} is the upped bound, inclusive. Each run
+	 * of this {@code CharSeq's} {@code iterator} will produce a new random sequence of characters.
+	 */
+	static CharSeq random(String... ranges) {
+		int[] bounds = new int[ranges.length];
+		for (int i = 0; i < ranges.length; i++) {
+			String range = ranges[i];
+			bounds[i] = range.charAt(2) - range.charAt(0) + 1;
+		}
+
+		int totalBound = 0;
+		for (int bound : bounds)
+			totalBound += bound;
+		int finalTotalBound = totalBound;
+
+		return generate(() -> {
+			Random random = new Random();
+			return () -> {
+				int nextInt = random.nextInt(finalTotalBound);
+				for (int i = 0; i < bounds.length; i++) {
+					if (nextInt < bounds[i])
+						return (char) (nextInt + ranges[i].charAt(0));
+					nextInt -= bounds[i];
+				}
+				throw new IllegalStateException("Invalid state, nextInt >= totalBound");
+			};
+		});
 	}
 
 	/**
@@ -512,7 +554,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingAfter(CharPredicate)
 	 * @see #startingFrom(char)
-	 *
 	 * @since 1.1
 	 */
 	default CharSeq startingAfter(char element) {
@@ -525,7 +566,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingFrom(CharPredicate)
 	 * @see #startingAfter(char)
-	 *
 	 * @since 1.1
 	 */
 	default CharSeq startingFrom(char element) {
@@ -538,7 +578,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingAfter(char)
 	 * @see #startingFrom(CharPredicate)
-	 *
 	 * @since 1.1
 	 */
 	default CharSeq startingAfter(CharPredicate predicate) {
@@ -551,7 +590,6 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @see #startingFrom(char)
 	 * @see #startingAfter(CharPredicate)
-	 *
 	 * @since 1.1
 	 */
 	default CharSeq startingFrom(CharPredicate predicate) {
@@ -729,6 +767,13 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Join this {@code CharSeq} into a string.
+	 */
+	default String join() {
+		return join("");
+	}
+
+	/**
 	 * Join this {@code CharSeq} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
@@ -741,12 +786,13 @@ public interface CharSeq extends CharIterable {
 	default String join(String prefix, String delimiter, String suffix) {
 		StringBuilder result = new StringBuilder(prefix);
 
-		boolean started = false;
-		for (CharIterator iterator = iterator(); iterator.hasNext(); started = true) {
-			char each = iterator.nextChar();
-			if (started)
+		boolean first = true;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!first)
 				result.append(delimiter);
-			result.append(each);
+			else
+				first = false;
+			result.append(iterator.nextChar());
 		}
 
 		return result.append(suffix).toString();
@@ -970,10 +1016,10 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Interleave the elements in this {@code CharSeq} with those of the given {@code CharSeq}, stopping when either
-	 * sequence finishes.
+	 * Interleave the elements in this {@code CharSeq} with those of the given {@code CharIterable}, stopping when
+	 * either sequence finishes.
 	 */
-	default CharSeq interleave(CharSeq that) {
+	default CharSeq interleave(CharIterable that) {
 		return () -> new InterleavingCharIterator(this, that);
 	}
 

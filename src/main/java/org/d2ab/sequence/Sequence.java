@@ -1046,6 +1046,13 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Join this {@code Sequence} into a string.
+	 */
+	default String join() {
+		return join("");
+	}
+
+	/**
 	 * Join this {@code Sequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {

@@ -534,7 +534,7 @@ reader.close();
 ```Java
 InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
 
-String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join("");
+String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join();
 
 assertThat(hexString, is("deadbeef"));
 

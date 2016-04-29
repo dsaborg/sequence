@@ -333,8 +333,7 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code DoubleSequence} that is generated from the given supplier and thus never
-	 * terminates.
+	 * @return a {@code DoubleSequence} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 * @see #endingAt(double, double)
@@ -844,10 +843,10 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Interleave the elements in this {@code DoubleSequence} with those of the given {@code DoubleSequence}, stopping
+	 * Interleave the elements in this {@code DoubleSequence} with those of the given {@code DoubleIterable}, stopping
 	 * when either sequence finishes.
 	 */
-	default DoubleSequence interleave(DoubleSequence that) {
+	default DoubleSequence interleave(DoubleIterable that) {
 		return () -> new InterleavingDoubleIterator(this, that);
 	}
 

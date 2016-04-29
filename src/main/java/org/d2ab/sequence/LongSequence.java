@@ -1016,10 +1016,10 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Interleave the elements in this {@code LongSequence} with those of the given {@code LongSequence}, stopping when
+	 * Interleave the elements in this {@code LongSequence} with those of the given {@code LongIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default LongSequence interleave(LongSequence that) {
+	default LongSequence interleave(LongIterable that) {
 		return () -> new InterleavingLongIterator(this, that);
 	}
 

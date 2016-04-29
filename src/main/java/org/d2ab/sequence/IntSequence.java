@@ -507,7 +507,7 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * @return a sequence of {@code IntSequence} that is generated from the given supplier and thus never terminates.
+	 * @return an {@code IntSequence} that is generated from the given supplier and thus never terminates.
 	 *
 	 * @see #recurse(int, IntUnaryOperator)
 	 * @see #endingAt(int)
@@ -1030,10 +1030,10 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Interleave the elements in this {@code IntSequence} with those of the given {@code IntSequence}, stopping when
+	 * Interleave the elements in this {@code IntSequence} with those of the given {@code IntIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default IntSequence interleave(IntSequence that) {
+	default IntSequence interleave(IntIterable that) {
 		return () -> new InterleavingIntIterator(this, that);
 	}
 

@@ -30,6 +30,7 @@ import static java.lang.Math.sqrt;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class SequenceDocumentationTest {
 	@Test
@@ -155,6 +156,17 @@ public class SequenceDocumentationTest {
 			joined.append(delimiter.next()).append(number);
 
 		assertThat(joined.toString(), is("One, Two, Three"));
+	}
+
+	@Test
+	public void randomHash() {
+		CharSeq hexGenerator = CharSeq.random("0-9", "A-F").limit(8);
+
+		String hexNumber1 = hexGenerator.join();
+		String hexNumber2 = hexGenerator.join();
+
+		assertTrue(hexNumber1.matches("[0-9A-F]{8}"));
+		assertTrue(hexNumber2.matches("[0-9A-F]{8}"));
 	}
 
 	@Test
@@ -288,7 +300,7 @@ public class SequenceDocumentationTest {
 	public void readInputStream() throws IOException {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
 
-		String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join("");
+		String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join();
 
 		assertThat(hexString, is("deadbeef"));
 
