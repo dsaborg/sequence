@@ -1737,8 +1737,8 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void generateWithSupplier() {
-		Sequence<Integer> sequence = Sequence.generateSupplied(() -> {
+	public void fromSupplier() {
+		Sequence<Integer> sequence = Sequence.from(() -> {
 			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 			return queue::poll;
 		});
