@@ -1078,108 +1078,38 @@ public class ChainedListSequenceTest {
 	}
 
 	@Test
-	public void ints() {
-		assertThat(Sequence.ints().limit(3), contains(1, 2, 3));
-		assertThat(Sequence.ints().limit(7777).last(), is(Optional.of(7777)));
-	}
-
-	@Test
-	public void intsFromZero() {
-		assertThat(Sequence.intsFromZero().limit(3), contains(0, 1, 2));
-		assertThat(Sequence.intsFromZero().limit(7777).last(), is(Optional.of(7776)));
-	}
-
-	@Test
-	public void longs() {
-		assertThat(Sequence.longs().limit(3), contains(1L, 2L, 3L));
-		assertThat(Sequence.longs().limit(7777).last(), is(Optional.of(7777L)));
-	}
-
-	@Test
-	public void longsFromZero() {
-		assertThat(Sequence.longsFromZero().limit(3), contains(0L, 1L, 2L));
-		assertThat(Sequence.longsFromZero().limit(7777).last(), is(Optional.of(7776L)));
-	}
-
-	@Test
-	public void chars() {
-		assertThat(Sequence.chars().limit(3), contains('\u0000', '\u0001', '\u0002'));
-		assertThat(Sequence.chars().limit(0xC0).last(), is(Optional.of('¿')));
-		assertThat(Sequence.chars().count(), is(65536L));
-	}
-
-	@Test
-	public void intsStartingAt() {
-		assertThat(Sequence.intsFrom(17).limit(3), contains(17, 18, 19));
-		assertThat(Sequence.intsFrom(777).limit(7000).last(), is(Optional.of(7776)));
-		assertThat(Sequence.intsFrom(Integer.MAX_VALUE), contains(Integer.MAX_VALUE));
-	}
-
-	@Test
-	public void longsStartingAt() {
-		assertThat(Sequence.longsFrom(17).limit(3), contains(17L, 18L, 19L));
-		assertThat(Sequence.longsFrom(777).limit(7000).last(), is(Optional.of(7776L)));
-		assertThat(Sequence.longsFrom(Long.MAX_VALUE), contains(Long.MAX_VALUE));
-	}
-
-	@Test
-	public void charsStartingAt() {
-		assertThat(Sequence.charsFrom('A').limit(3), contains('A', 'B', 'C'));
-		assertThat(Sequence.charsFrom('\u1400').limit(3).last(), is(Optional.of('\u1402')));
-		assertThat(Sequence.charsFrom(Character.MAX_VALUE), contains(Character.MAX_VALUE));
-	}
-
-	@Test
-	public void intRange() {
-		assertThat(Sequence.range(17, 20), contains(17, 18, 19, 20));
-		assertThat(Sequence.range(20, 17), contains(20, 19, 18, 17));
-	}
-
-	@Test
-	public void longRange() {
-		assertThat(Sequence.range(17L, 20L), contains(17L, 18L, 19L, 20L));
-		assertThat(Sequence.range(20L, 17L), contains(20L, 19L, 18L, 17L));
-	}
-
-	@Test
-	public void charRange() {
-		assertThat(Sequence.range('A', 'F'), contains('A', 'B', 'C', 'D', 'E', 'F'));
-		assertThat(Sequence.range('F', 'A'), contains('F', 'E', 'D', 'C', 'B', 'A'));
-	}
-
-	@Test
 	public void mapToChar() {
-		CharSeq empty = Sequence.<Integer>empty().toChars(x -> (char) x.intValue());
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		CharSeq emptySeq = empty.toChars(x -> (char) (x + 'a' - 1));
+		twice(() -> assertThat(emptySeq, is(emptyIterable())));
 
-		CharSeq charSeq = Sequence.intsFrom('a').limit(5).toChars(x -> (char) x.intValue());
+		CharSeq charSeq = _12345.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void mapToInt() {
-		IntSequence empty = Sequence.<Integer>empty().toInts(Integer::intValue);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		IntSequence emptySequence = empty.toInts(Integer::intValue);
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
 
-		IntSequence intSequence = Sequence.ints().limit(5).toInts(Integer::intValue);
+		IntSequence intSequence = _12345.toInts(Integer::intValue);
 		twice(() -> assertThat(intSequence, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapToLong() {
-		LongSequence empty = Sequence.<Long>empty().toLongs(Long::longValue);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		LongSequence emptySequence = empty.toLongs(i -> (long) i);
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
 
-		LongSequence longSequence = Sequence.ints().limit(5).toLongs(i -> (long) i);
+		LongSequence longSequence = _12345.toLongs(i -> (long) i);
 		twice(() -> assertThat(longSequence, contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
 	public void mapToDouble() {
-		DoubleSequence empty = Sequence.<Double>empty().toDoubles(Double::doubleValue);
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		DoubleSequence emptySequence = empty.toDoubles(i -> (double) i);
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
 
-		DoubleSequence doubleSequence = Sequence.ints().limit(5).toDoubles(i -> (double) i);
+		DoubleSequence doubleSequence = _12345.toDoubles(i -> (double) i);
 		twice(() -> assertThat(doubleSequence, contains(1.0, 2.0, 3.0, 4.0, 5.0)));
 	}
 
@@ -1196,19 +1126,6 @@ public class ChainedListSequenceTest {
 
 		Sequence<Integer> repeatThree = _123.repeat();
 		twice(() -> assertThat(repeatThree.limit(8), contains(1, 2, 3, 1, 2, 3, 1, 2)));
-
-		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = asList(1, 2, 3);
-			int end = list.size();
-
-			@Override
-			public Iterator<Integer> iterator() {
-				List<Integer> subList = list.subList(0, end);
-				end = end > 0 ? end - 1 : 0;
-				return subList.iterator();
-			}
-		}).repeat();
-		assertThat(repeatVarying, contains(1, 2, 3, 1, 2, 1));
 	}
 
 	@Test
@@ -1224,19 +1141,6 @@ public class ChainedListSequenceTest {
 
 		Sequence<Integer> repeatThree = _123.repeat(2);
 		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
-
-		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = asList(1, 2, 3);
-			int end = list.size();
-
-			@Override
-			public Iterator<Integer> iterator() {
-				List<Integer> subList = list.subList(0, end);
-				end = end > 0 ? end - 1 : 0;
-				return subList.iterator();
-			}
-		}).repeat(2);
-		assertThat(repeatVarying, contains(1, 2, 3, 1, 2));
 	}
 
 	@Test
@@ -1252,15 +1156,6 @@ public class ChainedListSequenceTest {
 
 		Sequence<Integer> repeatThree = _123.repeat(0);
 		twice(() -> assertThat(repeatThree, is(emptyIterable())));
-	}
-
-	@Test
-	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
-		Sequence<Integer> sequence = Sequence.generate(queue::poll).untilNull();
-
-		assertThat(sequence, contains(1, 2, 3, 4, 5));
-		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test

@@ -1737,6 +1737,16 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void generateWithSupplier() {
+		Sequence<Integer> sequence = Sequence.generateSupplied(() -> {
+			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+			return queue::poll;
+		});
+
+		twice(() -> assertThat(sequence, beginsWith(1, 2, 3, 4, 5, null)));
+	}
+
+	@Test
 	public void swap() {
 		twice(() -> assertThat(_12345.swap((a, b) -> a == 2 && b == 3), contains(1, 3, 2, 4, 5)));
 		twice(() -> assertThat(_12345.swap((a, b) -> a == 2), contains(1, 3, 4, 5, 2)));
