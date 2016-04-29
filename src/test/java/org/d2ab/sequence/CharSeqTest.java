@@ -938,9 +938,15 @@ public class CharSeqTest {
 
 	@Test
 	public void random() {
-		CharIterator random = CharSeq.random('a', 'e').iterator();
+		CharSeq random = CharSeq.random('a', 'z');
 
-		times(10, () -> assertThat(random.nextChar(), is(in(asList('a', 'b', 'c', 'd', 'e')))));
+		twice(() -> {
+			CharIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextChar(),
+			                             is(both(greaterThanOrEqualTo('a')).and(lessThanOrEqualTo('z')))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
 	}
 
 	@Test
@@ -952,10 +958,15 @@ public class CharSeqTest {
 
 	@Test
 	public void randomRanges() {
-		CharIterator random = CharSeq.random("0-9", "A-F").iterator();
+		CharSeq random = CharSeq.random("0-9", "A-F");
 
-		times(10, () -> assertThat(Integer.parseInt(String.valueOf(random.nextChar()), 16),
-		                           is(both(greaterThanOrEqualTo(0)).and(lessThan(16)))));
+		twice(() -> {
+			CharIterator randomIterator = random.iterator();
+			times(1000, () -> assertThat(Integer.parseInt(String.valueOf(randomIterator.nextChar()), 16),
+			                             is(both(greaterThanOrEqualTo(0)).and(lessThan(16)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
 	}
 
 	@Test

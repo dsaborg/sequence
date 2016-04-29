@@ -37,6 +37,7 @@ import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
+import static org.d2ab.test.Tests.times;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -1002,6 +1003,66 @@ public class IntSequenceTest {
 		IntSequence sequence = IntSequence.generate(queue::poll).endingAt(5);
 
 		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void random() {
+		IntSequence random = IntSequence.random();
+
+		twice(() -> times(1000, random.iterator()::nextInt));
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomWithSupplier() {
+		IntSequence random = IntSequence.random(() -> new Random(17));
+
+		twice(() -> assertThat(random.limit(10),
+		                       containsInts(-1149713343, -876354855, -1299783908, -1761252264, 356293784, 1723477387,
+		                                    -789258487, -46827465, 190636124, -672335679)));
+	}
+
+	@Test
+	public void randomUpper() {
+		IntSequence random = IntSequence.random(1000);
+
+		twice(() -> {
+			IntIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextInt(),
+			                             is(both(greaterThanOrEqualTo(0)).and(lessThan(1000)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomUpperWithSupplier() {
+		IntSequence random = IntSequence.random(() -> new Random(17), 1000);
+
+		twice(() -> assertThat(random.limit(10),
+		                       containsInts(976, 220, 694, 516, 892, 693, 404, 915, 62, 808)));
+	}
+
+	@Test
+	public void randomLowerUpper() {
+		IntSequence random = IntSequence.random(1000, 2000);
+
+		twice(() -> {
+			IntIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextInt(),
+			                             is(both(greaterThanOrEqualTo(1000)).and(lessThan(2000)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomLowerUpperWithSupplier() {
+		IntSequence random = IntSequence.random(() -> new Random(17), 1000, 2000);
+
+		twice(() -> assertThat(random.limit(10),
+		                       containsInts(1976, 1220, 1694, 1516, 1892, 1693, 1404, 1915, 1062, 1808)));
 	}
 
 	@Test
