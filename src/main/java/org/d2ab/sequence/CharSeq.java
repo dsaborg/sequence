@@ -447,6 +447,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #recurse(char, CharUnaryOperator)
 	 * @see #endingAt(char)
 	 * @see #until(char)
+	 * @since 1.2
 	 */
 	static CharSeq generate(Supplier<CharSupplier> supplierSupplier) {
 		return () -> (InfiniteCharIterator) supplierSupplier.get()::getAsChar;
@@ -455,11 +456,26 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * @return a {@code CharSeq} of random characters between the lower and upper bounds, inclusive, that never
 	 * terminates. Each run of this {@code CharSeq's} {@code iterator} will produce a new random sequence of
-	 * characters.
+	 * characters. This method is equivalent to {@code random(Random::new, lower, upper}.
+	 *
+	 * @see #random(Supplier, char, char)
+	 * @since 1.2
 	 */
 	static CharSeq random(char lower, char upper) {
+		return random(Random::new, lower, upper);
+	}
+
+	/**
+	 * @return a {@code CharSeq} of random characters between the lower and upper bounds, inclusive, that never
+	 * terminates. The given supplier is used to produce the instance of {@link Random} that is used, one for each
+	 * new iteration.
+	 *
+	 * @see #random(char, char)
+	 * @since 1.2
+	 */
+	static CharSeq random(Supplier<? extends Random> randomSupplier, char lower, char upper) {
 		return generate(() -> {
-			Random random = new Random();
+			Random random = randomSupplier.get();
 			int bound = upper - lower + 1;
 			return () -> (char) (random.nextInt(bound) + lower);
 		});
@@ -468,9 +484,25 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Create a {@code CharSeq} of random characters as indicated by the given char ranges. Each char range is in the
 	 * format {@code "A-F"} where [@code A} is the lower bound and {@code F} is the upped bound, inclusive. Each run
-	 * of this {@code CharSeq's} {@code iterator} will produce a new random sequence of characters.
+	 * of this {@code CharSeq's} {@code iterator} will produce a new random sequence of characters. This method is
+	 * equivalent to {@code random(Random::new, ranges}.
+	 *
+	 * @see #random(Supplier, String...)
+	 * @since 1.2
 	 */
 	static CharSeq random(String... ranges) {
+		return random(Random::new, ranges);
+	}
+
+	/**
+	 * Create a {@code CharSeq} of random characters as indicated by the given char ranges. Each char range is in the
+	 * format {@code "A-F"} where [@code A} is the lower bound and {@code F} is the upped bound, inclusive. The given
+	 * supplier is used to produce the instance of {@link Random} that is used, one for each new iteration.
+	 *
+	 * @see #random(String...)
+	 * @since 1.2
+	 */
+	static CharSeq random(Supplier<? extends Random> randomSupplier, String... ranges) {
 		int[] bounds = new int[ranges.length];
 		for (int i = 0; i < ranges.length; i++) {
 			String range = ranges[i];
@@ -483,7 +515,7 @@ public interface CharSeq extends CharIterable {
 		int finalTotalBound = totalBound;
 
 		return generate(() -> {
-			Random random = new Random();
+			Random random = randomSupplier.get();
 			return () -> {
 				int nextInt = random.nextInt(finalTotalBound);
 				for (int i = 0; i < bounds.length; i++) {
@@ -768,6 +800,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Join this {@code CharSeq} into a string.
+	 *
+	 * @since 1.2
 	 */
 	default String join() {
 		return join("");

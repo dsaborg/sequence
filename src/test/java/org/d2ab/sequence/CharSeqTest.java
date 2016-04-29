@@ -944,11 +944,25 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void randomWithSupplier() {
+		CharSeq random = CharSeq.random(() -> new Random(17), 'a', 'e');
+
+		twice(() -> assertThat(random.limit(10), containsChars('b', 'a', 'e', 'b', 'c', 'd', 'e', 'a', 'c', 'd')));
+	}
+
+	@Test
 	public void randomRanges() {
 		CharIterator random = CharSeq.random("0-9", "A-F").iterator();
 
 		times(10, () -> assertThat(Integer.parseInt(String.valueOf(random.nextChar()), 16),
 		                           is(both(greaterThanOrEqualTo(0)).and(lessThan(16)))));
+	}
+
+	@Test
+	public void randomRangesWithSupplier() {
+		CharSeq random = CharSeq.random(() -> new Random(17), "0-9", "A-F");
+
+		twice(() -> assertThat(random.limit(10), containsChars('B', 'C', 'B', '9', '1', '6', 'D', 'F', '0', 'D')));
 	}
 
 	@Test

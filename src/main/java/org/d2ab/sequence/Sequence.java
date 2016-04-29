@@ -1047,6 +1047,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Join this {@code Sequence} into a string.
+	 *
+	 * @since 1.2
 	 */
 	default String join() {
 		return join("");
