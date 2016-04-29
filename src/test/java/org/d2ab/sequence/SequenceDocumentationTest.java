@@ -147,6 +147,17 @@ public class SequenceDocumentationTest {
 	}
 
 	@Test
+	public void delimiterRecursion() {
+		Iterator<String> delimiter = Sequence.of("").append(Sequence.of(", ").repeat()).iterator();
+
+		StringBuilder joined = new StringBuilder();
+		for (String number : Arrays.asList("One", "Two", "Three"))
+			joined.append(delimiter.next()).append(number);
+
+		assertThat(joined.toString(), is("One, Two, Three"));
+	}
+
+	@Test
 	public void factorial() {
 		Sequence<Long> thirteen = Sequence.longs().limit(13);
 

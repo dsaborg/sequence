@@ -207,6 +207,16 @@
                         instanceOf(NullPointerException.class)));
 }</pre>
 
+<pre>{@code
+    Iterator<String> delimiter = Sequence.of("").append(Sequence.of(", ").repeat()).iterator();
+
+    StringBuilder joined = new StringBuilder();
+    for (String number : Arrays.asList("One", "Two", "Three"))
+        joined.append(delimiter.next()).append(number);
+
+    assertThat(joined.toString(), is("One, Two, Three"));
+}</pre>
+
 <p>See also:</p>
 
 <ul>

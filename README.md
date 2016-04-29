@@ -293,6 +293,16 @@ assertThat(sequence,
                     instanceOf(NullPointerException.class)));
 ```
 
+```Java
+Iterator<String> delimiter = Sequence.of("").append(Sequence.of(", ").repeat()).iterator();
+
+StringBuilder joined = new StringBuilder();
+for (String number : Arrays.asList("One", "Two", "Three"))
+    joined.append(delimiter.next()).append(number);
+
+assertThat(joined.toString(), is("One, Two, Three"));
+```
+
 See also:
 [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/BiSequence.html),
 [BiSequence#recurse(L, R, BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/BiSequence.html#recurse-L-R-java.util.function.BiFunction-),
