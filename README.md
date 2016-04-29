@@ -4,8 +4,12 @@
 ##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
 
 Follow me on Twitter ([@daniel2aborg](http://twitter.com/daniel2aborg)) to receive updates about Sequence.
-For feature requests and bug reports, use the [GitHub Issues Page](https://github.com/d2ab/sequence/issues)
-or email me at [daniel@d2ab.org](mailto:daniel@d2ab.org).
+
+Your feedback is welcome! For comments, feature requests or bug reports,
+use the [GitHub Issues Page](https://github.com/d2ab/sequence/issues),
+email me at [daniel@d2ab.org](mailto:daniel@d2ab.org),
+or send me a message on [twitter](http://twitter.com/daniel2aborg).
+
 Javadoc for the entire project is available at the [Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
 
 * [News](#news)
