@@ -33,7 +33,7 @@ import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -923,9 +923,98 @@ public class DoubleSequenceTest {
 	@Test
 	public void generate() {
 		Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
-		DoubleSequence sequence = DoubleSequence.generate(queue::poll).endingAt(5.0, 0.1);
+		DoubleSequence sequence = DoubleSequence.generate(queue::poll);
 
-		assertThat(sequence, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
+		DoubleIterator iterator = sequence.iterator();
+		assertThat(iterator.nextDouble(), is(1.0));
+		assertThat(iterator.nextDouble(), is(2.0));
+		assertThat(iterator.nextDouble(), is(3.0));
+		assertThat(iterator.nextDouble(), is(4.0));
+		assertThat(iterator.nextDouble(), is(5.0));
+		expecting(NullPointerException.class, iterator::next);
+
+		DoubleIterator iterator2 = sequence.iterator();
+		expecting(NullPointerException.class, iterator2::next);
+	}
+
+	@Test
+	public void generateWithSupplier() {
+		DoubleSequence sequence = DoubleSequence.generate(() -> {
+			Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
+			return queue::poll;
+		});
+
+		twice(() -> {
+			DoubleIterator iterator = sequence.iterator();
+			assertThat(iterator.nextDouble(), is(1.0));
+			assertThat(iterator.nextDouble(), is(2.0));
+			assertThat(iterator.nextDouble(), is(3.0));
+			assertThat(iterator.nextDouble(), is(4.0));
+			assertThat(iterator.nextDouble(), is(5.0));
+			expecting(NullPointerException.class, iterator::next);
+		});
+	}
+
+	@Test
+	public void random() {
+		DoubleSequence random = DoubleSequence.random();
+
+		twice(() -> times(1000, random.iterator()::nextDouble));
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomWithSupplier() {
+		DoubleSequence random = DoubleSequence.random(() -> new Random(17));
+
+		twice(() -> assertThat(random.limit(5),
+		                       containsDoubles(0.7323115139597316, 0.6973704783607497, 0.08295611145017068,
+		                                       0.8162364511057306, 0.0443859375038691)));
+	}
+
+	@Test
+	public void randomUpper() {
+		DoubleSequence random = DoubleSequence.random(1000);
+
+		twice(() -> {
+			DoubleIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextDouble(),
+			                             is(both(greaterThanOrEqualTo(0.0)).and(lessThan(1000.0)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomUpperWithSupplier() {
+		DoubleSequence random = DoubleSequence.random(() -> new Random(17), 1000);
+
+		twice(() -> assertThat(random.limit(5),
+		                       containsDoubles(732.3115139597315, 697.3704783607498, 82.95611145017068,
+		                                       816.2364511057306, 44.3859375038691)));
+	}
+
+	@Test
+	public void randomLowerUpper() {
+		DoubleSequence random = DoubleSequence.random(1000, 2000);
+
+		twice(() -> {
+			DoubleIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextDouble(),
+			                             is(both(greaterThanOrEqualTo(1000.0)).and(lessThan(2000.0)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomLowerUpperWithSupplier() {
+		DoubleSequence random = DoubleSequence.random(() -> new Random(17), 1000, 2000);
+
+		twice(() -> assertThat(random.limit(5),
+		                       containsDoubles(1732.3115139597317, 1697.3704783607498, 1082.95611145017068,
+		                                       1816.2364511057306, 1044.3859375038691)));
 	}
 
 	@Test

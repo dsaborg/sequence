@@ -34,7 +34,7 @@ import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -969,9 +969,96 @@ public class LongSequenceTest {
 	@Test
 	public void generate() {
 		Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
-		LongSequence sequence = LongSequence.generate(queue::poll).endingAt(5L);
+		LongSequence sequence = LongSequence.generate(queue::poll);
 
-		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
+		LongIterator iterator = sequence.iterator();
+		assertThat(iterator.nextLong(), is(1L));
+		assertThat(iterator.nextLong(), is(2L));
+		assertThat(iterator.nextLong(), is(3L));
+		assertThat(iterator.nextLong(), is(4L));
+		assertThat(iterator.nextLong(), is(5L));
+		expecting(NullPointerException.class, iterator::next);
+
+		LongIterator iterator2 = sequence.iterator();
+		expecting(NullPointerException.class, iterator2::next);
+	}
+
+	@Test
+	public void generateWithSupplier() {
+		LongSequence sequence = LongSequence.generate(() -> {
+			Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
+			return queue::poll;
+		});
+
+		twice(() -> {
+			LongIterator iterator = sequence.iterator();
+			assertThat(iterator.nextLong(), is(1L));
+			assertThat(iterator.nextLong(), is(2L));
+			assertThat(iterator.nextLong(), is(3L));
+			assertThat(iterator.nextLong(), is(4L));
+			assertThat(iterator.nextLong(), is(5L));
+			expecting(NullPointerException.class, iterator::next);
+		});
+	}
+
+	@Test
+	public void random() {
+		LongSequence random = LongSequence.random();
+
+		twice(() -> times(1000, random.iterator()::nextLong));
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomWithSupplier() {
+		LongSequence random = LongSequence.random(() -> new Random(17));
+
+		twice(() -> assertThat(random.limit(5),
+		                       containsLongs(-4937981208836185383L, -5582529378488325032L, 1530270151771565451L,
+		                                     -3389839389802268617L, 818775917343865025L)));
+	}
+
+	@Test
+	public void randomUpper() {
+		LongSequence random = LongSequence.random(1000);
+
+		twice(() -> {
+			LongIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextLong(),
+			                             is(both(greaterThanOrEqualTo(0L)).and(lessThan(1000L)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomUpperWithSupplier() {
+		LongSequence random = LongSequence.random(() -> new Random(17), 1000);
+
+		twice(() -> assertThat(random.limit(5),
+		                       containsLongs(732L, 697L, 82L, 816L, 44L)));
+	}
+
+	@Test
+	public void randomLowerUpper() {
+		LongSequence random = LongSequence.random(1000, 2000);
+
+		twice(() -> {
+			LongIterator iterator = random.iterator();
+			times(1000, () -> assertThat(iterator.nextLong(),
+			                             is(both(greaterThanOrEqualTo(1000L)).and(lessThan(2000L)))));
+		});
+
+		assertThat(random.limit(10), not(contains(random.limit(10))));
+	}
+
+	@Test
+	public void randomLowerUpperWithSupplier() {
+		LongSequence random = LongSequence.random(() -> new Random(17), 1000, 2000);
+
+		twice(() -> assertThat(random.limit(5),
+		                       containsLongs(1732L, 1697L, 1082L, 1816L, 1044L)));
 	}
 
 	@Test

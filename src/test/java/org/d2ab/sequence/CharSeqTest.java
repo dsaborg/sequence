@@ -37,8 +37,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
-import static org.d2ab.test.Tests.times;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -921,9 +920,18 @@ public class CharSeqTest {
 	@Test
 	public void generate() {
 		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
-		CharSeq sequence = CharSeq.generate(queue::poll).endingAt('e');
+		CharSeq sequence = CharSeq.generate(queue::poll);
 
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e'));
+		CharIterator iterator = sequence.iterator();
+		assertThat(iterator.nextChar(), is('a'));
+		assertThat(iterator.nextChar(), is('b'));
+		assertThat(iterator.nextChar(), is('c'));
+		assertThat(iterator.nextChar(), is('d'));
+		assertThat(iterator.nextChar(), is('e'));
+		expecting(NullPointerException.class, iterator::next);
+
+		CharIterator iterator2 = sequence.iterator();
+		expecting(NullPointerException.class, iterator2::next);
 	}
 
 	@Test
@@ -931,9 +939,23 @@ public class CharSeqTest {
 		CharSeq sequence = CharSeq.generate(() -> {
 			Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
 			return queue::poll;
-		}).endingAt('e');
+		});
 
-		twice(() -> assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e')));
+		CharIterator iterator = sequence.iterator();
+		assertThat(iterator.nextChar(), is('a'));
+		assertThat(iterator.nextChar(), is('b'));
+		assertThat(iterator.nextChar(), is('c'));
+		assertThat(iterator.nextChar(), is('d'));
+		assertThat(iterator.nextChar(), is('e'));
+		expecting(NullPointerException.class, iterator::next);
+
+		CharIterator iterator2 = sequence.iterator();
+		assertThat(iterator2.nextChar(), is('a'));
+		assertThat(iterator2.nextChar(), is('b'));
+		assertThat(iterator2.nextChar(), is('c'));
+		assertThat(iterator2.nextChar(), is('d'));
+		assertThat(iterator2.nextChar(), is('e'));
+		expecting(NullPointerException.class, iterator2::next);
 	}
 
 	@Test

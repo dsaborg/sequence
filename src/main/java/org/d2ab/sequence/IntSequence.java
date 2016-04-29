@@ -553,6 +553,7 @@ public interface IntSequence extends IntIterable {
 	 * sequence of ints. This method is equivalent to {@code random(Random::new, upper}.
 	 *
 	 * @see #random(Supplier, int)
+	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
 	static IntSequence random(int upper) {
@@ -565,6 +566,7 @@ public interface IntSequence extends IntIterable {
 	 * for each new {@link #iterator()}.
 	 *
 	 * @see #random(int)
+	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier, int upper) {
@@ -577,6 +579,7 @@ public interface IntSequence extends IntIterable {
 	 * sequence of ints. This method is equivalent to {@code random(Random::new, lower, upper}.
 	 *
 	 * @see #random(Supplier, int, int)
+	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
 	static IntSequence random(int lower, int upper) {
@@ -589,6 +592,7 @@ public interface IntSequence extends IntIterable {
 	 * for each new {@link #iterator()}.
 	 *
 	 * @see #random(int, int)
+	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier, int lower, int upper) {

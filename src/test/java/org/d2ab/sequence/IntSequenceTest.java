@@ -37,8 +37,7 @@ import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
-import static org.d2ab.test.Tests.times;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -1000,9 +999,36 @@ public class IntSequenceTest {
 	@Test
 	public void generate() {
 		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
-		IntSequence sequence = IntSequence.generate(queue::poll).endingAt(5);
+		IntSequence sequence = IntSequence.generate(queue::poll);
 
-		assertThat(sequence, containsInts(1, 2, 3, 4, 5));
+		IntIterator iterator = sequence.iterator();
+		assertThat(iterator.nextInt(), is(1));
+		assertThat(iterator.nextInt(), is(2));
+		assertThat(iterator.nextInt(), is(3));
+		assertThat(iterator.nextInt(), is(4));
+		assertThat(iterator.nextInt(), is(5));
+		expecting(NullPointerException.class, iterator::next);
+
+		IntIterator iterator2 = sequence.iterator();
+		expecting(NullPointerException.class, iterator2::next);
+	}
+
+	@Test
+	public void generateWithSupplier() {
+		IntSequence sequence = IntSequence.generate(() -> {
+			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+			return queue::poll;
+		});
+
+		twice(() -> {
+			IntIterator iterator = sequence.iterator();
+			assertThat(iterator.nextInt(), is(1));
+			assertThat(iterator.nextInt(), is(2));
+			assertThat(iterator.nextInt(), is(3));
+			assertThat(iterator.nextInt(), is(4));
+			assertThat(iterator.nextInt(), is(5));
+			expecting(NullPointerException.class, iterator::next);
+		});
 	}
 
 	@Test
