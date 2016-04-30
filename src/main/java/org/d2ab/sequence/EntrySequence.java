@@ -28,6 +28,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Arrayz;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -427,6 +428,36 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	default EntrySequence<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * @return a {@code EntrySequence} containing only the entries found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default EntrySequence<K, V> including(Entry<K, V>... entries) {
+		return filter(e -> Arrayz.contains(entries, e));
+	}
+
+	/**
+	 * @return a {@code EntrySequence} containing only the entries found in the given target iterable.
+	 */
+	default EntrySequence<K, V> including(Iterable<? extends Entry<K, V>> entries) {
+		return filter(e -> Iterables.contains(entries, e));
+	}
+
+	/**
+	 * @return a {@code EntrySequence} containing only the entries not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default EntrySequence<K, V> excluding(Entry<K, V>... entries) {
+		return filter(e -> !Arrayz.contains(entries, e));
+	}
+
+	/**
+	 * @return a {@code EntrySequence} containing only the entries not found in the given target iterable.
+	 */
+	default EntrySequence<K, V> excluding(Iterable<? extends Entry<K, V>> entries) {
+		return filter(e -> !Iterables.contains(entries, e));
 	}
 
 	/**

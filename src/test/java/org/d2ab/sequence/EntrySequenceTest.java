@@ -432,6 +432,86 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void includingArray() {
+		EntrySequence<String, Integer> emptyIncluding = empty.including(Maps.entry("1", 1), Maps.entry("3", 3),
+		                                                                Maps.entry("5", 5), Maps.entry("17", 17));
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		EntrySequence<String, Integer> including = _12345.including(Maps.entry("1", 1), Maps.entry("3", 3),
+		                                                            Maps.entry("5", 5), Maps.entry("17", 17));
+		twice(() -> assertThat(including, contains(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5))));
+
+		EntrySequence<String, Integer> includingAll = _12345.including(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                               Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                               Maps.entry("5", 5), Maps.entry("17", 17));
+		twice(() -> assertThat(includingAll, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
+		                                              Maps.entry("4", 4), Maps.entry("5", 5))));
+
+		EntrySequence<String, Integer> includingNone = _12345.including();
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void includingIterable() {
+		EntrySequence<String, Integer> emptyIncluding = empty.including(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		EntrySequence<String, Integer> including = _12345.including(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
+		twice(() -> assertThat(including, contains(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5))));
+
+		EntrySequence<String, Integer> includingAll = _12345.including(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5), Maps.entry("17", 17)));
+		twice(() -> assertThat(includingAll, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
+		                                              Maps.entry("4", 4), Maps.entry("5", 5))));
+
+		EntrySequence<String, Integer> includingNone = _12345.including(Iterables.of());
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		EntrySequence<String, Integer> emptyExcluding = empty.excluding(Maps.entry("1", 1), Maps.entry("3", 3),
+		                                                                Maps.entry("5", 5), Maps.entry("17", 17));
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		EntrySequence<String, Integer> excluding = _12345.excluding(Maps.entry("1", 1), Maps.entry("3", 3),
+		                                                            Maps.entry("5", 5), Maps.entry("17", 17));
+		twice(() -> assertThat(excluding, contains(Maps.entry("2", 2), Maps.entry("4", 4))));
+
+		EntrySequence<String, Integer> excludingAll = _12345.excluding(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                               Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                               Maps.entry("5", 5), Maps.entry("17", 17));
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		EntrySequence<String, Integer> excludingNone = _12345.excluding();
+		twice(() -> assertThat(excludingNone, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
+		                                               Maps.entry("4", 4), Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void excludingIterable() {
+		EntrySequence<String, Integer> emptyExcluding = empty.excluding(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		EntrySequence<String, Integer> excluding = _12345.excluding(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
+		twice(() -> assertThat(excluding, contains(Maps.entry("2", 2), Maps.entry("4", 4))));
+
+		EntrySequence<String, Integer> excludingAll = _12345.excluding(
+				Iterables.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5), Maps.entry("17", 17)));
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		EntrySequence<String, Integer> excludingNone = _12345.excluding(Iterables.of());
+		twice(() -> assertThat(excludingNone, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
+		                                               Maps.entry("4", 4), Maps.entry("5", 5))));
+	}
+
+	@Test
 	public void filterAndMap() {
 		EntrySequence<Integer, String> evens =
 				_123456789.filter((s, x) -> x % 2 == 0).map(Integer::parseInt, Object::toString);

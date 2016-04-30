@@ -27,6 +27,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Arrayz;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -417,6 +418,36 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	default BiSequence<L, R> filter(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * @return a {@code BiSequence} containing only the pairs found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default BiSequence<L, R> including(Pair<L, R>... pairs) {
+		return filter(p -> Arrayz.contains(pairs, p));
+	}
+
+	/**
+	 * @return a {@code BiSequence} containing only the pairs found in the given target iterable.
+	 */
+	default BiSequence<L, R> including(Iterable<? extends Pair<L, R>> pairs) {
+		return filter(p -> Iterables.contains(pairs, p));
+	}
+
+	/**
+	 * @return a {@code BiSequence} containing only the pairs not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default BiSequence<L, R> excluding(Pair<L, R>... pairs) {
+		return filter(p -> !Arrayz.contains(pairs, p));
+	}
+
+	/**
+	 * @return a {@code BiSequence} containing only the pairs not found in the given target iterable.
+	 */
+	default BiSequence<L, R> excluding(Iterable<? extends Pair<L, R>> pairs) {
+		return filter(p -> !Iterables.contains(pairs, p));
 	}
 
 	/**

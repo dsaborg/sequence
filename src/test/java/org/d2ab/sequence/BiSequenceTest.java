@@ -409,6 +409,86 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void includingArray() {
+		BiSequence<String, Integer> emptyIncluding = empty.including(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
+		                                                             Pair.of("17", 17));
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		BiSequence<String, Integer> including = _12345.including(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
+		                                                         Pair.of("17", 17));
+		twice(() -> assertThat(including, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5))));
+
+		BiSequence<String, Integer> includingAll = _12345.including(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                            Pair.of("4", 4), Pair.of("5", 5),
+		                                                            Pair.of("17", 17));
+		twice(() -> assertThat(includingAll, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                              Pair.of("4", 4), Pair.of("5", 5))));
+
+		BiSequence<String, Integer> includingNone = _12345.including();
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void includingIterable() {
+		BiSequence<String, Integer> emptyIncluding = empty.including(
+				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		BiSequence<String, Integer> including = _12345.including(
+				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
+		twice(() -> assertThat(including, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5))));
+
+		BiSequence<String, Integer> includingAll = _12345.including(
+				Iterables.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+				             Pair.of("17", 17)));
+		twice(() -> assertThat(includingAll, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                              Pair.of("4", 4), Pair.of("5", 5))));
+
+		BiSequence<String, Integer> includingNone = _12345.including(Iterables.of());
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		BiSequence<String, Integer> emptyExcluding = empty.excluding(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
+		                                                             Pair.of("17", 17));
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		BiSequence<String, Integer> excluding = _12345.excluding(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
+		                                                         Pair.of("17", 17));
+		twice(() -> assertThat(excluding, contains(Pair.of("2", 2), Pair.of("4", 4))));
+
+		BiSequence<String, Integer> excludingAll = _12345.excluding(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                            Pair.of("4", 4), Pair.of("5", 5),
+		                                                            Pair.of("17", 17));
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		BiSequence<String, Integer> excludingNone = _12345.excluding();
+		twice(() -> assertThat(excludingNone, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                               Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void excludingIterable() {
+		BiSequence<String, Integer> emptyExcluding = empty.excluding(
+				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		BiSequence<String, Integer> excluding = _12345.excluding(
+				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
+		twice(() -> assertThat(excluding, contains(Pair.of("2", 2), Pair.of("4", 4))));
+
+		BiSequence<String, Integer> excludingAll = _12345.excluding(
+				Iterables.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+				             Pair.of("17", 17)));
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		BiSequence<String, Integer> excludingNone = _12345.excluding(Iterables.of());
+		twice(() -> assertThat(excludingNone, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                               Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
 	public void filterAndMap() {
 		BiSequence<Integer, String> evens =
 				_123456789.filter((s, x) -> x % 2 == 0).map(Integer::parseInt, Object::toString);
