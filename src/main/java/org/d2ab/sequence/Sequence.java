@@ -25,6 +25,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Arrayz;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -879,6 +880,36 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default Sequence<T> filterForward(T replacement, BiPredicate<? super T, ? super T> predicate) {
 		return () -> new ForwardPeekingFilteringIterator<>(iterator(), replacement, predicate);
+	}
+
+	/**
+	 * @return a {@code Sequence} containing only the elements found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default Sequence<T> including(T... elements) {
+		return filter(e -> Arrayz.contains(elements, e));
+	}
+
+	/**
+	 * @return a {@code Sequence} containing only the elements found in the given target iterable.
+	 */
+	default Sequence<T> including(Iterable<? extends T> elements) {
+		return filter(e -> Iterables.contains(elements, e));
+	}
+
+	/**
+	 * @return a {@code Sequence} containing only the elements not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default Sequence<T> excluding(T... elements) {
+		return filter(e -> !Arrayz.contains(elements, e));
+	}
+
+	/**
+	 * @return a {@code Sequence} containing only the elements not found in the given target iterable.
+	 */
+	default Sequence<T> excluding(Iterable<? extends T> elements) {
+		return filter(e -> !Iterables.contains(elements, e));
 	}
 
 	/**

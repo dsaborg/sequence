@@ -419,6 +419,66 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void includingArray() {
+		Sequence<Integer> emptyIncluding = empty.including(1, 3, 5, 17);
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		Sequence<Integer> including = _12345.including(1, 3, 5, 17);
+		twice(() -> assertThat(including, contains(1, 3, 5)));
+
+		Sequence<Integer> includingAll = _12345.including(1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(includingAll, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> includingNone = _12345.including();
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void includingIterable() {
+		Sequence<Integer> emptyIncluding = empty.including(Iterables.of(1, 3, 5, 17));
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		Sequence<Integer> including = _12345.including(Iterables.of(1, 3, 5, 17));
+		twice(() -> assertThat(including, contains(1, 3, 5)));
+
+		Sequence<Integer> includingAll = _12345.including(Iterables.of(1, 2, 3, 4, 5, 17));
+		twice(() -> assertThat(includingAll, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> includingNone = _12345.including(Iterables.of());
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		Sequence<Integer> emptyExcluding = empty.excluding(1, 3, 5, 17);
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		Sequence<Integer> excluding = _12345.excluding(1, 3, 5, 17);
+		twice(() -> assertThat(excluding, contains(2, 4)));
+
+		Sequence<Integer> excludingAll = _12345.excluding(1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		Sequence<Integer> excludingNone = _12345.excluding();
+		twice(() -> assertThat(excludingNone, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void excludingIterable() {
+		Sequence<Integer> emptyExcluding = empty.excluding(Iterables.of(1, 3, 5, 17));
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		Sequence<Integer> excluding = _12345.excluding(Iterables.of(1, 3, 5, 17));
+		twice(() -> assertThat(excluding, contains(2, 4)));
+
+		Sequence<Integer> excludingAll = _12345.excluding(Iterables.of(1, 2, 3, 4, 5, 17));
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		Sequence<Integer> excludingNone = _12345.excluding(Iterables.of());
+		twice(() -> assertThat(excludingNone, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void flatMapIterables() {
 		Sequence<List<Integer>> sequence = Sequence.from(asList(asList(1, 2), asList(3, 4), asList(5, 6)));
 

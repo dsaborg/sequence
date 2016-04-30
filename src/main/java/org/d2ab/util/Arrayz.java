@@ -17,6 +17,7 @@
 package org.d2ab.util;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -132,5 +133,15 @@ public class Arrayz {
 		for (int i = 0; i < array.length / 2; i++)
 			swap(array, i, array.length - 1 - i);
 		return array;
+	}
+
+	/**
+	 * @return true if the given array contains the given target object, false otherwise.
+	 */
+	public static <T> boolean contains(T[] elements, T target) {
+		for (T element : elements)
+			if (Objects.equals(element, target))
+				return true;
+		return false;
 	}
 }
