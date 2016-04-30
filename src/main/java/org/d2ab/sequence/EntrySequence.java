@@ -285,7 +285,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #endingAt(Entry)
 	 * @see #until(Entry)
 	 */
-	static <K, V> EntrySequence<K, V> from(Supplier<? extends Supplier<? extends Entry<K, V>>> supplierSupplier) {
+	static <K, V> EntrySequence<K, V> multiGenerate(Supplier<? extends Supplier<? extends Entry<K, V>>> supplierSupplier) {
 		return () -> {
 			Supplier<? extends Entry<K, V>> supplier = supplierSupplier.get();
 			return (InfiniteIterator<Entry<K, V>>) supplier::get;

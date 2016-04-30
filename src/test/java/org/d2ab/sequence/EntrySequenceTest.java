@@ -1405,8 +1405,8 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromSupplier() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(() -> {
+	public void multiGenerate() {
+		EntrySequence<String, Integer> sequence = EntrySequence.multiGenerate(() -> {
 			Queue<Entry<String, Integer>> queue = new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2),
 			                                                              Maps.entry("3", 3), Maps.entry("4", 4),
 			                                                              Maps.entry("5", 5)));

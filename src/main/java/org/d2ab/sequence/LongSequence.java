@@ -480,7 +480,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #endingAt(long)
 	 * @see #until(long)
 	 */
-	static LongSequence generate(Supplier<? extends LongSupplier> supplierSupplier) {
+	static LongSequence multiGenerate(Supplier<? extends LongSupplier> supplierSupplier) {
 		return () -> {
 			LongSupplier longSupplier = supplierSupplier.get();
 			return (InfiniteLongIterator) longSupplier::getAsLong;
@@ -509,7 +509,7 @@ public interface LongSequence extends LongIterable {
 	 * @since 1.2
 	 */
 	static LongSequence random(Supplier<? extends Random> randomSupplier) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			return random::nextLong;
 		});
@@ -564,7 +564,7 @@ public interface LongSequence extends LongIterable {
 	 * @since 1.2
 	 */
 	static LongSequence random(Supplier<? extends Random> randomSupplier, long lower, long upper) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			long bound = upper - lower;
 			return () -> (long) (random.nextDouble() * bound) + lower;

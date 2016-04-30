@@ -1797,8 +1797,8 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void fromSupplier() {
-		Sequence<Integer> sequence = Sequence.from(() -> {
+	public void multiGenerate() {
+		Sequence<Integer> sequence = Sequence.multiGenerate(() -> {
 			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 			return queue::poll;
 		});

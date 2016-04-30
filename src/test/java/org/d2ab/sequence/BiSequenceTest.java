@@ -1362,8 +1362,8 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void fromSupplier() {
-		BiSequence<String, Integer> sequence = BiSequence.from(() -> {
+	public void multiGenerate() {
+		BiSequence<String, Integer> sequence = BiSequence.multiGenerate(() -> {
 			Queue<Pair<String, Integer>> queue = new ArrayDeque<>(
 					asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
 			return queue::poll;

@@ -276,7 +276,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #endingAt(Pair)
 	 * @see #until(Pair)
 	 */
-	static <L, R> BiSequence<L, R> from(Supplier<? extends Supplier<? extends Pair<L, R>>> supplierSupplier) {
+	static <L, R> BiSequence<L, R> multiGenerate(Supplier<? extends Supplier<? extends Pair<L, R>>> supplierSupplier) {
 		return () -> {
 			Supplier<? extends Pair<L, R>> supplier = supplierSupplier.get();
 			return (InfiniteIterator<Pair<L, R>>) supplier::get;

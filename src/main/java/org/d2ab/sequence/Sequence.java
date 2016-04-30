@@ -470,7 +470,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * will pick up where the previous iterator left off in the given supplier. If iterator calls are interleaved,
 	 * calls to the supplier will be interleaved.
 	 *
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
@@ -488,7 +488,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
 	 */
-	static <T> Sequence<T> from(Supplier<? extends Supplier<? extends T>> supplierSupplier) {
+	static <T> Sequence<T> multiGenerate(Supplier<? extends Supplier<? extends T>> supplierSupplier) {
 		return () -> {
 			Supplier<? extends T> supplier = supplierSupplier.get();
 			return (InfiniteIterator<T>) supplier::get;
@@ -503,7 +503,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return a {@code Sequence} produced by recursively applying the given operation to the given seed
 	 *
 	 * @see #recurse(Object, Function, Function)
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #endingAt(Object)
 	 * @see #until(Object)
 	 */
@@ -540,7 +540,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #untilNull()
 	 * @see #until(Predicate)
 	 * @see #endingAt(Object)
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
@@ -556,7 +556,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAtNull
 	 * @see #endingAt(Predicate)
 	 * @see #until(Object)
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
@@ -572,7 +572,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #until(Object)
 	 * @see #until(Predicate)
 	 * @see #endingAtNull
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
@@ -588,7 +588,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #endingAt(Predicate)
 	 * @see #untilNull
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
@@ -604,7 +604,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #until(Object)
 	 * @see #untilNull()
 	 * @see #endingAt(Predicate)
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()
@@ -620,7 +620,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #endingAt(Object)
 	 * @see #endingAtNull()
 	 * @see #until(Predicate)
-	 * @see #from(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
 	 * @see #recurse(Object, Function, Function)
 	 * @see #repeat()

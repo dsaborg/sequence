@@ -1044,8 +1044,8 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void generateWithSupplier() {
-		IntSequence sequence = IntSequence.generate(() -> {
+	public void multiGenerate() {
+		IntSequence sequence = IntSequence.multiGenerate(() -> {
 			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 			return queue::poll;
 		});

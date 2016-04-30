@@ -1014,8 +1014,8 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void generateWithSupplier() {
-		LongSequence sequence = LongSequence.generate(() -> {
+	public void multiGenerate() {
+		LongSequence sequence = LongSequence.multiGenerate(() -> {
 			Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
 			return queue::poll;
 		});

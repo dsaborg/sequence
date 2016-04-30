@@ -335,7 +335,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #endingAt(double, double)
 	 * @see #until(double, double)
 	 */
-	static DoubleSequence generate(Supplier<? extends DoubleSupplier> supplierSupplier) {
+	static DoubleSequence multiGenerate(Supplier<? extends DoubleSupplier> supplierSupplier) {
 		return () -> {
 			DoubleSupplier doubleSupplier = supplierSupplier.get();
 			return (InfiniteDoubleIterator) doubleSupplier::getAsDouble;
@@ -365,7 +365,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @since 1.2
 	 */
 	static DoubleSequence random(Supplier<? extends Random> randomSupplier) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			return random::nextDouble;
 		});
@@ -420,7 +420,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @since 1.2
 	 */
 	static DoubleSequence random(Supplier<? extends Random> randomSupplier, double lower, double upper) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			double bound = upper - lower;
 			return () -> random.nextDouble() * bound + lower;

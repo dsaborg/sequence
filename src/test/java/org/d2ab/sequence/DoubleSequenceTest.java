@@ -968,8 +968,8 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void generateWithSupplier() {
-		DoubleSequence sequence = DoubleSequence.generate(() -> {
+	public void multiGenerate() {
+		DoubleSequence sequence = DoubleSequence.multiGenerate(() -> {
 			Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
 			return queue::poll;
 		});

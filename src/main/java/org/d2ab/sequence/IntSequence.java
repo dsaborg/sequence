@@ -512,7 +512,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #endingAt(int)
 	 * @see #until(int)
 	 */
-	static IntSequence generate(Supplier<? extends IntSupplier> supplierSupplier) {
+	static IntSequence multiGenerate(Supplier<? extends IntSupplier> supplierSupplier) {
 		return () -> {
 			IntSupplier intSupplier = supplierSupplier.get();
 			return (InfiniteIntIterator) intSupplier::getAsInt;
@@ -541,7 +541,7 @@ public interface IntSequence extends IntIterable {
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			return random::nextInt;
 		});
@@ -596,7 +596,7 @@ public interface IntSequence extends IntIterable {
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier, int lower, int upper) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			int bound = upper - lower;
 			return () -> random.nextInt(bound) + lower;

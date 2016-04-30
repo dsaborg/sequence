@@ -965,8 +965,8 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void generateSupplied() {
-		CharSeq sequence = CharSeq.generate(() -> {
+	public void multiGenerate() {
+		CharSeq sequence = CharSeq.multiGenerate(() -> {
 			Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
 			return queue::poll;
 		});

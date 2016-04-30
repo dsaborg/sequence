@@ -449,7 +449,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #until(char)
 	 * @since 1.2
 	 */
-	static CharSeq generate(Supplier<? extends CharSupplier> supplierSupplier) {
+	static CharSeq multiGenerate(Supplier<? extends CharSupplier> supplierSupplier) {
 		return () -> {
 			CharSupplier charSupplier = supplierSupplier.get();
 			return (InfiniteCharIterator) charSupplier::getAsChar;
@@ -462,7 +462,7 @@ public interface CharSeq extends CharIterable {
 	 * characters. This method is equivalent to {@code random(Random::new, lower, upper}.
 	 *
 	 * @see #random(Supplier, char, char)
-	 * @see #generate(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @since 1.2
 	 */
 	static CharSeq random(char lower, char upper) {
@@ -475,11 +475,11 @@ public interface CharSeq extends CharIterable {
 	 * new {@link #iterator()}.
 	 *
 	 * @see #random(char, char)
-	 * @see #generate(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @since 1.2
 	 */
 	static CharSeq random(Supplier<? extends Random> randomSupplier, char lower, char upper) {
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			int bound = upper - lower + 1;
 			return () -> (char) (random.nextInt(bound) + lower);
@@ -493,7 +493,7 @@ public interface CharSeq extends CharIterable {
 	 * equivalent to {@code random(Random::new, ranges}.
 	 *
 	 * @see #random(Supplier, String...)
-	 * @see #generate(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @since 1.2
 	 */
 	static CharSeq random(String... ranges) {
@@ -506,7 +506,7 @@ public interface CharSeq extends CharIterable {
 	 * supplier is used to produce the instance of {@link Random} that is used, one for each new {@link #iterator()}.
 	 *
 	 * @see #random(String...)
-	 * @see #generate(Supplier)
+	 * @see #multiGenerate(Supplier)
 	 * @since 1.2
 	 */
 	static CharSeq random(Supplier<? extends Random> randomSupplier, String... ranges) {
@@ -521,7 +521,7 @@ public interface CharSeq extends CharIterable {
 			totalBound += bound;
 		int finalTotalBound = totalBound;
 
-		return generate(() -> {
+		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			return () -> {
 				int nextInt = random.nextInt(finalTotalBound);
