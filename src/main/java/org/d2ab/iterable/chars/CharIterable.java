@@ -17,15 +17,49 @@
 package org.d2ab.iterable.chars;
 
 import org.d2ab.function.chars.CharConsumer;
+import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.chars.ArrayCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.ReaderCharIterator;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
+	/**
+	 * Create a {@code CharIterable} from a {@link Reader} which iterates over the characters provided in the reader.
+	 * The {@link Reader} must support {@link Reader#reset} or the {@code CharIterable} will only be available to
+	 * iterate over once. The {@link Reader} will be reset in between iterations, if possible. If an
+	 * {@link IOException} occurs during iteration, an {@link IterationException} will be thrown. The {@link Reader}
+	 * will not be closed by the {@code CharIterable} when iteration finishes, it must be closed externally when
+	 * iteration is finished.
+	 *
+	 * @since 1.2
+	 */
+	static CharIterable read(Reader reader) {
+		return new CharIterable() {
+			boolean started;
+
+			@Override
+			public CharIterator iterator() {
+				if (started)
+					try {
+						reader.reset();
+					} catch (IOException e) {
+						// do nothing, let reader exhaust itself
+					}
+				else
+					started = true;
+
+				return new ReaderCharIterator(reader);
+			}
+		};
+	}
+
 	@Override
 	CharIterator iterator();
 
@@ -60,5 +94,95 @@ public interface CharIterable extends Iterable<Character> {
 
 	static CharIterable once(CharIterator iterator) {
 		return () -> iterator;
+	}
+
+	/**
+	 * @return this {@code CharIterable} as a {@link Reader}. Mark and reset is supported, by re-traversing
+	 * the iterator to the mark position.
+	 *
+	 * @since 1.2
+	 */
+	default Reader asReader() {
+		return new Reader() {
+			private long position;
+			private long mark;
+
+			private CharIterator iterator = iterator();
+
+			@Override
+			public int read() throws IOException {
+				if (iterator == null)
+					throw new IOException("closed");
+
+				if (!iterator.hasNext())
+					return -1;
+
+				position++;
+
+				return iterator.nextChar();
+			}
+
+			@Override
+			public int read(char[] cbuf, int off, int len) throws IOException {
+				if (iterator == null)
+					throw new IOException("closed");
+
+				if (!iterator.hasNext())
+					return -1;
+
+				int index = 0;
+				while (index < len && iterator.hasNext())
+					cbuf[off + index++] = iterator.nextChar();
+
+				position += index;
+
+				return index;
+			}
+
+			@Override
+			public long skip(long n) throws IOException {
+				if (iterator == null)
+					throw new IOException("closed");
+
+				long skipped = iterator.skip(n);
+
+				position += skipped;
+
+				return skipped;
+			}
+
+			@Override
+			public boolean markSupported() {
+				return true;
+			}
+
+			@Override
+			public void mark(int readAheadLimit) throws IOException {
+				mark = position;
+			}
+
+			@Override
+			public boolean ready() throws IOException {
+				if (iterator == null)
+					throw new IOException("closed");
+
+				return true;
+			}
+
+			@Override
+			public void reset() throws IOException {
+				if (iterator == null)
+					throw new IOException("closed");
+
+				iterator = iterator();
+
+				position = iterator.skip(mark);
+			}
+
+			@Override
+			public void close() throws IOException {
+				iterator = null;
+			}
+		};
 	}
 }

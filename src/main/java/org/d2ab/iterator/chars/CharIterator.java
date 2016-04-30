@@ -129,19 +129,25 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 
 	/**
 	 * Skip one {@code char} in this iterator.
+	 *
+	 * @return true if there was a character left to skip, false if the end of the iterator has been hit.
 	 */
-	default void skip() {
-		skip(1);
+	default boolean skip() {
+		return skip(1) == 1;
 	}
 
 	/**
 	 * Skip the given number of {@code char}s in this iterator.
+	 *
+	 * @return the number of steps actually skipped, may be less if end of iterator was hit.
 	 */
-	default void skip(long steps) {
+	default long skip(long steps) {
 		long count = 0;
-		while ((count++ < steps) && hasNext()) {
+		while (count < steps && hasNext()) {
 			nextChar();
+			count++;
 		}
+		return count;
 	}
 
 	/**

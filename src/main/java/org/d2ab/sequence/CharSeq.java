@@ -222,23 +222,7 @@ public interface CharSeq extends CharIterable {
 	 * @since 1.1
 	 */
 	static CharSeq read(Reader reader) {
-		return new CharSeq() {
-			boolean started;
-
-			@Override
-			public CharIterator iterator() {
-				if (started)
-					try {
-						reader.reset();
-					} catch (IOException e) {
-						// do nothing, let reader exhaust itself
-					}
-				else
-					started = true;
-
-				return new ReaderCharIterator(reader);
-			}
-		};
+		return CharIterable.read(reader)::iterator;
 	}
 
 	/**

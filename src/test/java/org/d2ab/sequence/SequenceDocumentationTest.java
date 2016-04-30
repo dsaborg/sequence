@@ -285,11 +285,11 @@ public class SequenceDocumentationTest {
 
 	@Test
 	public void readReader() throws IOException {
-		Reader reader = new StringReader("hello world\n" + "goodbye world\n");
+		Reader reader = new StringReader("hello world\ngoodbye world\n");
 
 		Sequence<String> titleCase = CharSeq.read(reader)
-		                                    .mapBack('\n',
-		                                             (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
+		                                    .mapBack('\n', (p, n) -> p == '\n' || p == ' ' ?
+		                                                             Character.toUpperCase(n) : n)
 		                                    .split('\n')
 		                                    .map(phrase -> phrase.append('!'))
 		                                    .map(CharSeq::asString);
@@ -297,6 +297,19 @@ public class SequenceDocumentationTest {
 		assertThat(titleCase, contains("Hello World!", "Goodbye World!"));
 
 		reader.close();
+	}
+
+	@Test
+	public void filterReader() throws IOException {
+		Reader original = new StringReader("hello world\ngoodbye world\n");
+
+		BufferedReader transformed = new BufferedReader(CharSeq.read(original).map(Character::toUpperCase).asReader());
+
+		assertThat(transformed.readLine(), is("HELLO WORLD"));
+		assertThat(transformed.readLine(), is("GOODBYE WORLD"));
+
+		transformed.close();
+		original.close();
 	}
 
 	@Test

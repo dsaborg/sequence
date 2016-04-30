@@ -517,15 +517,17 @@ See also:
 
 #### Reading
 
-Primitive sequences can be read from `Readers` or `InputStreams` into a `CharSeq` or `IntSequence` respective.
+Primitive sequences can be read from `Readers` or `InputStreams` into a `CharSeq` or `IntSequence` respective. These
+can also be converted back to `Readers` and `InputStreams` respectively, allowing for filtering or transformation of
+these streams.
 
 ```Java
-Reader reader = new StringReader("hello world\n" +
-                                 "goodbye world\n");
+Reader reader = new StringReader("hello world\ngoodbye world\n");
 
 Sequence<String> titleCase = CharSeq.read(reader)
                                     .mapBack('\n',
-                                             (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
+                                             (p, n) -> p == '\n' || p == ' ' ?
+                                                       Character.toUpperCase(n) : n)
                                     .split('\n')
                                     .map(phrase -> phrase.append('!'))
                                     .map(CharSeq::asString);
@@ -533,6 +535,19 @@ Sequence<String> titleCase = CharSeq.read(reader)
 assertThat(titleCase, contains("Hello World!", "Goodbye World!"));
 
 reader.close();
+```
+
+```Java
+Reader original = new StringReader("hello world\n" +
+                                   "goodbye world\n");
+
+BufferedReader transformed = new BufferedReader(CharSeq.read(original).map(Character::toUpperCase).asReader());
+
+assertThat(transformed.readLine(), is("HELLO WORLD"));
+assertThat(transformed.readLine(), is("GOODBYE WORLD"));
+
+transformed.close();
+original.close();
 ```
 
 ```Java
