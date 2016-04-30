@@ -432,6 +432,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return a {@code EntrySequence} containing only the entries found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default EntrySequence<K, V> including(Entry<K, V>... entries) {
@@ -440,6 +442,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return a {@code EntrySequence} containing only the entries found in the given target iterable.
+	 *
+	 * @since 1.2
 	 */
 	default EntrySequence<K, V> including(Iterable<? extends Entry<K, V>> entries) {
 		return filter(e -> Iterables.contains(entries, e));
@@ -447,6 +451,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return a {@code EntrySequence} containing only the entries not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default EntrySequence<K, V> excluding(Entry<K, V>... entries) {
@@ -455,6 +461,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return a {@code EntrySequence} containing only the entries not found in the given target iterable.
+	 *
+	 * @since 1.2
 	 */
 	default EntrySequence<K, V> excluding(Iterable<? extends Entry<K, V>> entries) {
 		return filter(e -> !Iterables.contains(entries, e));
@@ -1395,6 +1403,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} contains the given entry, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(Entry<K, V> entry) {
 		return Iterables.contains(this, entry);
@@ -1402,6 +1412,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} contains the given pair, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(K key, V value) {
 		return any((k, v) -> Objects.equals(key, k) && Objects.equals(value, v));
@@ -1409,6 +1421,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} contains all of the given entries, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAll(Entry<K, V>... entries) {
@@ -1417,6 +1431,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} contains any of the given entries, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAny(Entry<K, V>... entries) {
@@ -1425,6 +1441,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} contains all of the given entries, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAll(Iterable<? extends Entry<K, V>> entries) {
@@ -1433,6 +1451,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return true if this {@code EntrySequence} contains any of the given entries, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAny(Iterable<? extends Entry<K, V>> entries) {

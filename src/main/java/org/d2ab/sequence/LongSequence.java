@@ -79,7 +79,6 @@ public interface LongSequence extends LongIterable {
 	 * attempts will register the {@code LongSequence} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfLong)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence once(PrimitiveIterator.OfLong iterator) {
@@ -92,7 +91,6 @@ public interface LongSequence extends LongIterable {
 	 * register the {@code LongSequence} as empty.
 	 *
 	 * @see #cache(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence once(Iterator<Long> iterator) {
@@ -106,7 +104,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(LongStream)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence once(LongStream stream) {
@@ -120,7 +117,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence once(Stream<Long> stream) {
@@ -133,7 +129,6 @@ public interface LongSequence extends LongIterable {
 	 * attempts will register the {@code LongSequence} as empty.
 	 *
 	 * @see #cache(PrimitiveIterator.OfLong)
-	 *
 	 * @deprecated Use {@link #once(PrimitiveIterator.OfLong)} instead.
 	 */
 	@Deprecated
@@ -147,7 +142,6 @@ public interface LongSequence extends LongIterable {
 	 * register the {@code LongSequence} as empty.
 	 *
 	 * @see #cache(Iterator)
-	 *
 	 * @deprecated Use {@link #once(Iterator)} instead.
 	 */
 	@Deprecated
@@ -162,7 +156,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(LongStream)
-	 *
 	 * @deprecated Use {@link #once(LongStream)} instead.
 	 */
 	@Deprecated
@@ -177,7 +170,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 * @see #cache(Stream)
-	 *
 	 * @deprecated Use {@link #once(Stream)} instead.
 	 */
 	@Deprecated
@@ -194,7 +186,6 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(PrimitiveIterator.OfLong)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
@@ -220,7 +211,6 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence cache(Iterator<Long> iterator) {
@@ -236,7 +226,6 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #once(LongStream)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence cache(LongStream stream) {
@@ -252,7 +241,6 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence cache(Stream<Long> stream) {
@@ -268,7 +256,6 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #from(LongIterable)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence cache(LongIterable iterable) {
@@ -284,7 +271,6 @@ public interface LongSequence extends LongIterable {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1
 	 */
 	static LongSequence cache(Iterable<Long> iterable) {
@@ -645,7 +631,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingAfter(LongPredicate)
 	 * @see #startingFrom(long)
-	 *
 	 * @since 1.1
 	 */
 	default LongSequence startingAfter(long element) {
@@ -653,12 +638,12 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Begin this {@code LongSequence} when the given element is encountered, including the element as the first element
+	 * Begin this {@code LongSequence} when the given element is encountered, including the element as the first
+	 * element
 	 * in the {@code LongSequence}.
 	 *
 	 * @see #startingFrom(LongPredicate)
 	 * @see #startingAfter(long)
-	 *
 	 * @since 1.1
 	 */
 	default LongSequence startingFrom(long element) {
@@ -671,7 +656,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingAfter(long)
 	 * @see #startingFrom(LongPredicate)
-	 *
 	 * @since 1.1
 	 */
 	default LongSequence startingAfter(LongPredicate predicate) {
@@ -684,7 +668,6 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @see #startingFrom(long)
 	 * @see #startingAfter(LongPredicate)
-	 *
 	 * @since 1.1
 	 */
 	default LongSequence startingFrom(LongPredicate predicate) {
@@ -858,6 +841,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return an {@code LongSequence} containing only the {@code longs} found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default LongSequence including(long... elements) {
@@ -866,6 +851,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return an {@code LongSequence} containing only the {@code longs} not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default LongSequence excluding(long... elements) {
@@ -1276,6 +1263,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(long l) {
 		return iterator().contains(l);
@@ -1283,6 +1272,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAll(long... items) {
 		for (long item : items)
@@ -1293,6 +1284,8 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAny(long... items) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )

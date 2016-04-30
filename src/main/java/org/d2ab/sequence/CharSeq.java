@@ -792,6 +792,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return an {@code CharSeq} containing only the {@code chars} found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default CharSeq including(char... elements) {
@@ -800,6 +802,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return an {@code CharSeq} containing only the {@code chars} not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default CharSeq excluding(char... elements) {
@@ -1227,6 +1231,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(char l) {
 		return iterator().contains(l);
@@ -1234,6 +1240,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAll(char... items) {
 		for (char item : items)
@@ -1244,6 +1252,8 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAny(char... items) {
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )

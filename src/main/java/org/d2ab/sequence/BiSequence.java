@@ -422,6 +422,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return a {@code BiSequence} containing only the pairs found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> including(Pair<L, R>... pairs) {
@@ -430,6 +432,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return a {@code BiSequence} containing only the pairs found in the given target iterable.
+	 *
+	 * @since 1.2
 	 */
 	default BiSequence<L, R> including(Iterable<? extends Pair<L, R>> pairs) {
 		return filter(p -> Iterables.contains(pairs, p));
@@ -437,6 +441,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return a {@code BiSequence} containing only the pairs not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> excluding(Pair<L, R>... pairs) {
@@ -445,6 +451,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return a {@code BiSequence} containing only the pairs not found in the given target iterable.
+	 *
+	 * @since 1.2
 	 */
 	default BiSequence<L, R> excluding(Iterable<? extends Pair<L, R>> pairs) {
 		return filter(p -> !Iterables.contains(pairs, p));
@@ -1383,6 +1391,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} contains the given pair, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(Pair<L, R> pair) {
 		return Iterables.contains(this, pair);
@@ -1390,6 +1400,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} contains the given pair, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(L left, R right) {
 		return any((l, r) -> Objects.equals(left, l) && Objects.equals(right, r));
@@ -1397,6 +1409,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} contains all of the given pairs, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAll(Pair<L, R>... pairs) {
@@ -1405,6 +1419,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} contains any of the given pairs, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAny(Pair<L, R>... pairs) {
@@ -1413,6 +1429,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} contains all of the given pairs, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAll(Iterable<? extends Pair<L, R>> pairs) {
@@ -1421,6 +1439,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return true if this {@code BiSequence} contains any of the given pairs, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAny(Iterable<? extends Pair<L, R>> pairs) {

@@ -859,6 +859,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return an {@code IntSequence} containing only the {@code ints} found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default IntSequence including(int... elements) {
@@ -867,6 +869,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return an {@code IntSequence} containing only the {@code ints} not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default IntSequence excluding(int... elements) {
@@ -1299,6 +1303,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return true if this {@code IntSequence} contains the given {@code int}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(int i) {
 		return iterator().contains(i);
@@ -1306,6 +1312,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return true if this {@code IntSequence} contains all of the given {@code ints}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAll(int... items) {
 		for (int item : items)
@@ -1316,6 +1324,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return true if this {@code IntSequence} contains any of the given {@code ints}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAny(int... items) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )

@@ -884,6 +884,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return a {@code Sequence} containing only the elements found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> including(T... elements) {
@@ -892,6 +894,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return a {@code Sequence} containing only the elements found in the given target iterable.
+	 *
+	 * @since 1.2
 	 */
 	default Sequence<T> including(Iterable<? extends T> elements) {
 		return filter(e -> Iterables.contains(elements, e));
@@ -899,6 +903,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return a {@code Sequence} containing only the elements not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> excluding(T... elements) {
@@ -907,6 +913,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return a {@code Sequence} containing only the elements not found in the given target iterable.
+	 *
+	 * @since 1.2
 	 */
 	default Sequence<T> excluding(Iterable<? extends T> elements) {
 		return filter(e -> !Iterables.contains(elements, e));
@@ -1698,6 +1706,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return true if this {@code Sequence} contains the given item, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(T item) {
 		return Iterables.contains(this, item);
@@ -1705,6 +1715,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAll(T... items) {
@@ -1713,6 +1725,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAll(Iterable<? extends T> items) {
@@ -1721,6 +1735,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAny(T... items) {
@@ -1729,6 +1745,8 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default boolean containsAny(Iterable<? extends T> items) {

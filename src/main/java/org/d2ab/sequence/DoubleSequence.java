@@ -678,6 +678,8 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default DoubleSequence including(double precision, double... elements) {
@@ -686,6 +688,8 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default DoubleSequence excluding(double precision, double... elements) {
@@ -1128,6 +1132,8 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean contains(double d, double precision) {
 		return iterator().contains(d, precision);
@@ -1136,6 +1142,8 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
 	 * precision, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAll(double precision, double... items) {
 		for (double item : items)
@@ -1146,6 +1154,8 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	default boolean containsAny(double precision, double... items) {
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
