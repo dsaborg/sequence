@@ -202,9 +202,9 @@
 
     Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).untilNull();
 
-    assertThat(sequence,
-               contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
-                        instanceOf(NullPointerException.class)));
+    assertThat(sequence, contains(instanceOf(IllegalStateException.class),
+                                  instanceOf(IllegalArgumentException.class),
+                                  instanceOf(NullPointerException.class)));
 }</pre>
 
 <pre>{@code

@@ -292,9 +292,9 @@ Exception e = new IllegalStateException(new IllegalArgumentException(new NullPoi
 
 Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).untilNull();
 
-assertThat(sequence,
-           contains(instanceOf(IllegalStateException.class), instanceOf(IllegalArgumentException.class),
-                    instanceOf(NullPointerException.class)));
+assertThat(sequence, contains(instanceOf(IllegalStateException.class),
+                              instanceOf(IllegalArgumentException.class),
+                              instanceOf(NullPointerException.class)));
 ```
 
 ```Java
