@@ -35,8 +35,10 @@ import static org.junit.Assert.assertTrue;
 public class SequenceDocumentationTest {
 	@Test
 	public void filterAndMap() {
-		List<String> evens =
-				Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).filter(x -> x % 2 == 0).map(Object::toString).toList();
+		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
+		                             .filter(x -> x % 2 == 0)
+		                             .map(Object::toString)
+		                             .toList();
 
 		assertThat(evens, contains("2", "4", "6", "8"));
 	}
@@ -58,18 +60,18 @@ public class SequenceDocumentationTest {
 	public void sequenceInForeach() {
 		Sequence<Integer> sequence = Sequence.ints().limit(5);
 
-		int x = 1;
-		for (int i : sequence)
-			assertThat(i, is(x++));
+		int expected = 1;
+		for (int each : sequence)
+			assertThat(each, is(expected++));
 
-		assertThat(x, is(6));
+		assertThat(expected, is(6));
 	}
 
 	@Test
 	public void functionalInterface() {
 		List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
 
-		// Sequence as @FunctionalInterface of list's Iterator
+		// Sequence as @FunctionalInterface of list's iterator() method
 		Sequence<Integer> sequence = list::iterator;
 
 		// Operate on sequence as any other sequence using default methods
@@ -82,20 +84,20 @@ public class SequenceDocumentationTest {
 	public void fromIterator() {
 		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
-		Sequence<Integer> sequence = Sequence.once(iterator);
+		Sequence<Integer> singleRun = Sequence.once(iterator);
 
-		assertThat(sequence, contains(1, 2, 3, 4, 5));
-		assertThat(sequence, is(emptyIterable()));
+		assertThat(singleRun, contains(1, 2, 3, 4, 5));
+		assertThat(singleRun, is(emptyIterable()));
 	}
 
 	@Test
 	public void caching() {
 		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
-		Sequence<Integer> sequence = Sequence.cache(iterator);
+		Sequence<Integer> cached = Sequence.cache(iterator);
 
-		assertThat(sequence, contains(1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5));
+		assertThat(cached, contains(1, 2, 3, 4, 5));
+		assertThat(cached, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -138,13 +140,13 @@ public class SequenceDocumentationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void recurseThrowableCause() {
-		Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
+		Exception exception = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
 
-		Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).untilNull();
+		Sequence<Throwable> exceptionAndCauses = Sequence.recurse(exception, Throwable::getCause).untilNull();
 
-		assertThat(sequence, contains(instanceOf(IllegalStateException.class),
-		                              instanceOf(IllegalArgumentException.class),
-		                              instanceOf(NullPointerException.class)));
+		assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
+		                                        instanceOf(IllegalArgumentException.class),
+		                                        instanceOf(NullPointerException.class)));
 	}
 
 	@Test
@@ -162,11 +164,12 @@ public class SequenceDocumentationTest {
 	public void randomHash() {
 		CharSeq hexGenerator = CharSeq.random("0-9", "A-F").limit(8);
 
-		String hexNumber1 = hexGenerator.join();
-		String hexNumber2 = hexGenerator.join();
+		String hexNumber1 = hexGenerator.asString();
+		String hexNumber2 = hexGenerator.asString();
 
 		assertTrue(hexNumber1.matches("[0-9A-F]{8}"));
 		assertTrue(hexNumber2.matches("[0-9A-F]{8}"));
+		assertThat(hexNumber1, is(not(hexNumber2)));
 	}
 
 	@Test
@@ -183,8 +186,7 @@ public class SequenceDocumentationTest {
 		Sequence<Integer> keys = Sequence.of(1, 2, 3);
 		Sequence<String> values = Sequence.of("1", "2", "3");
 
-		Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
-		Map<Integer, String> map = keyValueSequence.toMap();
+		Map<Integer, String> map = keys.interleave(values).toMap();
 
 		assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 	}
@@ -289,9 +291,10 @@ public class SequenceDocumentationTest {
 		                                    .mapBack('\n',
 		                                             (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
 		                                    .split('\n')
+		                                    .map(phrase -> phrase.append('!'))
 		                                    .map(CharSeq::asString);
 
-		assertThat(titleCase, contains("Hello World", "Goodbye World"));
+		assertThat(titleCase, contains("Hello World!", "Goodbye World!"));
 
 		reader.close();
 	}
@@ -300,9 +303,12 @@ public class SequenceDocumentationTest {
 	public void readInputStream() throws IOException {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
 
-		String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join();
+		String hexString = IntSequence.read(inputStream)
+		                              .toSequence(Integer::toHexString)
+		                              .map(String::toUpperCase)
+		                              .join();
 
-		assertThat(hexString, is("deadbeef"));
+		assertThat(hexString, is("DEADBEEF"));
 
 		inputStream.close();
 	}

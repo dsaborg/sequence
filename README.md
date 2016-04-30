@@ -347,8 +347,7 @@ See also:
 Sequence<Integer> keys = Sequence.of(1, 2, 3);
 Sequence<String> values = Sequence.of("1", "2", "3");
 
-Sequence<Pair<Integer, String>> keyValueSequence = keys.interleave(values);
-Map<Integer, String> map = keyValueSequence.toMap();
+Map<Integer, String> map = keys.interleave(values).toMap();
 
 assertThat(map, is(equalTo(Maps.builder(1, "1").put(2, "2").put(3, "3").build())));
 ```
@@ -528,9 +527,10 @@ Sequence<String> titleCase = CharSeq.read(reader)
                                     .mapBack('\n',
                                              (p, n) -> p == '\n' || p == ' ' ? Character.toUpperCase(n) : n)
                                     .split('\n')
+                                    .map(phrase -> phrase.append('!'))
                                     .map(CharSeq::asString);
 
-assertThat(titleCase, contains("Hello World", "Goodbye World"));
+assertThat(titleCase, contains("Hello World!", "Goodbye World!"));
 
 reader.close();
 ```
@@ -538,9 +538,12 @@ reader.close();
 ```Java
 InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
 
-String hexString = IntSequence.read(inputStream).toSequence(Integer::toHexString).join();
+String hexString = IntSequence.read(inputStream)
+                              .toSequence(Integer::toHexString)
+                              .map(String::toUpperCase)
+                              .join();
 
-assertThat(hexString, is("deadbeef"));
+assertThat(hexString, is("DEADBEEF"));
 
 inputStream.close();
 ```
