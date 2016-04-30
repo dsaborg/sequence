@@ -521,8 +521,8 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return an {@code IntSequence} of random ints that never terminates. Each run of this {@code IntSequence}'s
-	 * {@link #iterator()} will produce a new random sequence of ints. This method is equivalent to {@code random
-	 * (Random::new)}.
+	 * {@link #iterator()} will produce a new random sequence of ints. This method is equivalent to
+	 * {@code random(Random::new)}.
 	 *
 	 * @see #random(Supplier)
 	 * @see Random#nextInt()
