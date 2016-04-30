@@ -20,6 +20,7 @@ import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
+import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.*;
@@ -34,6 +35,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -370,6 +372,55 @@ public class EntrySequenceTest {
 		assertThat(iterator.hasNext(), is(false));
 
 		assertThat(sequence, is(emptyIterable())); // second run is empty
+	}
+
+	@Test
+	public void toSequence() {
+		Sequence<Entry<String, Integer>> emptySequence = empty.toSequence();
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+
+		Sequence<Entry<String, Integer>> sequence = _12345.toSequence();
+		twice(() -> assertThat(sequence, contains(entries12345)));
+	}
+
+	@Test
+	public void toSequenceKeyValueMapper() {
+		Sequence<String> emptyKeySequence = empty.toSequence((k, v) -> k);
+		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+
+		Sequence<Integer> emptyValueSequence = empty.toSequence((k, v) -> v);
+		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+
+		Sequence<String> keySequence = _12345.toSequence((k, v) -> k);
+		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
+
+		Sequence<Integer> valueSequence = _12345.toSequence((k, v) -> v);
+		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toSequenceEntryMapper() {
+		Sequence<String> emptyKeySequence = empty.toSequence(Entry::getKey);
+		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+
+		Sequence<Integer> emptyValueSequence = empty.toSequence(Entry::getValue);
+		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+
+		Sequence<String> keySequence = _12345.toSequence(Entry::getKey);
+		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
+
+		Sequence<Integer> valueSequence = _12345.toSequence(Entry::getValue);
+		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toBiSequence() {
+		BiSequence<String, Integer> emptySequence = empty.toBiSequence();
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+
+		BiSequence<String, Integer> sequence = _12345.toBiSequence();
+		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                          Pair.of("5", 5))));
 	}
 
 	@Test
@@ -1259,6 +1310,31 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> repeatThree = _123.repeat(0);
 		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
+	public void generate() {
+		Queue<Entry<String, Integer>> queue = new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                              Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                              Maps.entry("5", 5)));
+		EntrySequence<String, Integer> sequence = EntrySequence.generate(queue::poll);
+
+		assertThat(sequence, beginsWith(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5), null));
+		assertThat(sequence, beginsWith((Entry<String, Integer>) null));
+	}
+
+	@Test
+	public void fromSupplier() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(() -> {
+			Queue<Entry<String, Integer>> queue = new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2),
+			                                                              Maps.entry("3", 3), Maps.entry("4", 4),
+			                                                              Maps.entry("5", 5)));
+			return queue::poll;
+		});
+
+		twice(() -> assertThat(sequence, beginsWith(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
+		                                            Maps.entry("4", 4), Maps.entry("5", 5), null)));
 	}
 
 	@Test

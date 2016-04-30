@@ -34,6 +34,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -351,11 +352,60 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void toSequence() {
+		Sequence<Pair<String, Integer>> emptySequence = empty.toSequence();
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+
+		Sequence<Pair<String, Integer>> sequence = _12345.toSequence();
+		twice(() -> assertThat(sequence, contains(entries12345)));
+	}
+
+	@Test
+	public void toSequenceKeyValueMapper() {
+		Sequence<String> emptyKeySequence = empty.toSequence((l, r) -> l);
+		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+
+		Sequence<Integer> emptyValueSequence = empty.toSequence((l, r) -> r);
+		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+
+		Sequence<String> keySequence = _12345.toSequence((l, r) -> l);
+		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
+
+		Sequence<Integer> valueSequence = _12345.toSequence((l, r) -> r);
+		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toSequenceEntryMapper() {
+		Sequence<String> emptyKeySequence = empty.toSequence(Pair::getLeft);
+		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+
+		Sequence<Integer> emptyValueSequence = empty.toSequence(Pair::getRight);
+		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+
+		Sequence<String> keySequence = _12345.toSequence(Pair::getLeft);
+		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
+
+		Sequence<Integer> valueSequence = _12345.toSequence(Pair::getRight);
+		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toBiSequence() {
+		EntrySequence<String, Integer> emptySequence = empty.toEntrySequence();
+		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+
+		EntrySequence<String, Integer> sequence = _12345.toEntrySequence();
+		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                          Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
 	public void filter() {
 		BiSequence<String, Integer> filtered = _123456789.filter((s, i) -> i % 2 == 0);
 
-		twice(() -> assertThat(filtered, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("6", 6), Pair.of("8", 8)
-		)));
+		twice(() -> assertThat(filtered, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("6", 6),
+		                                          Pair.of("8", 8))));
 	}
 
 	@Test
@@ -456,13 +506,13 @@ public class BiSequenceTest {
 
 	@Test
 	public void untilBinaryPredicate() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).until((k, v) -> k.equals("4") && v == 4);
+		BiSequence<String, Integer> sequence = BiSequence.from(_12345).until((l, r) -> l.equals("4") && r == 4);
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
 	@Test
 	public void endingAtBinaryPredicate() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).endingAt((k, v) -> k.equals("3") && v == 3);
+		BiSequence<String, Integer> sequence = BiSequence.from(_12345).endingAt((l, r) -> l.equals("3") && r == 3);
 		twice(() -> assertThat(sequence, contains(entries123)));
 	}
 
@@ -1217,6 +1267,30 @@ public class BiSequenceTest {
 
 		BiSequence<String, Integer> repeatThree = _123.repeat(0);
 		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+	}
+
+	@Test
+	public void generate() {
+		Queue<Pair<String, Integer>> queue = new ArrayDeque<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                             Pair.of("4", 4), Pair.of("5", 5)));
+		BiSequence<String, Integer> sequence = BiSequence.generate(queue::poll);
+
+		assertThat(sequence,
+		           beginsWith(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+		                      null));
+		assertThat(sequence, beginsWith((Pair<String, Integer>) null));
+	}
+
+	@Test
+	public void fromSupplier() {
+		BiSequence<String, Integer> sequence = BiSequence.from(() -> {
+			Queue<Pair<String, Integer>> queue = new ArrayDeque<>(
+					asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
+			return queue::poll;
+		});
+
+		twice(() -> assertThat(sequence, beginsWith(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                            Pair.of("5", 5), null)));
 	}
 
 	@Test
