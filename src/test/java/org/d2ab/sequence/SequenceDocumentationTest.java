@@ -84,10 +84,10 @@ public class SequenceDocumentationTest {
 	public void fromIterator() {
 		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
-		Sequence<Integer> singleRun = Sequence.once(iterator);
+		Sequence<Integer> sequence = Sequence.once(iterator);
 
-		assertThat(singleRun, contains(1, 2, 3, 4, 5));
-		assertThat(singleRun, is(emptyIterable()));
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test

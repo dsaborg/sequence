@@ -174,11 +174,11 @@ Also because each `Sequence` is an `Iterable` they work beautifully in foreach l
 ```Java
 Sequence<Integer> sequence = Sequence.ints().limit(5);
 
-int x = 1;
-for (int i : sequence)
-    assertThat(i, is(x++));
+int expected = 1;
+for (int each : sequence)
+    assertThat(each, is(expected++));
 
-assertThat(x, is(6));
+assertThat(expected, is(6));
 ```
 
 #### FunctionalInterface
@@ -223,10 +223,10 @@ caching methods on `Sequence`.
 ```Java
 Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
 
-Sequence<Integer> sequence = Sequence.cache(iterator);
+Sequence<Integer> cached = Sequence.cache(iterator);
 
-assertThat(sequence, contains(1, 2, 3, 4, 5));
-assertThat(sequence, contains(1, 2, 3, 4, 5));
+assertThat(cached, contains(1, 2, 3, 4, 5));
+assertThat(cached, contains(1, 2, 3, 4, 5));
 ```
 
 See also:
@@ -288,13 +288,13 @@ assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
 ```Java
-Exception e = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
+Exception exception = new IllegalStateException(new IllegalArgumentException(new NullPointerException()));
 
-Sequence<Throwable> sequence = Sequence.recurse(e, Throwable::getCause).untilNull();
+Sequence<Throwable> exceptionAndCauses = Sequence.recurse(exception, Throwable::getCause).untilNull();
 
-assertThat(sequence, contains(instanceOf(IllegalStateException.class),
-                              instanceOf(IllegalArgumentException.class),
-                              instanceOf(NullPointerException.class)));
+assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
+                                        instanceOf(IllegalArgumentException.class),
+                                        instanceOf(NullPointerException.class)));
 ```
 
 ```Java
