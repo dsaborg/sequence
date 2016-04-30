@@ -392,6 +392,36 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void includingArray() {
+		DoubleSequence emptyIncluding = empty.including(0.1, 1, 3, 5, 17);
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		DoubleSequence including = _12345.including(0.1, 1, 3, 5, 17);
+		twice(() -> assertThat(including, containsDoubles(1, 3, 5)));
+
+		DoubleSequence includingAll = _12345.including(0.1, 1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(includingAll, containsDoubles(1, 2, 3, 4, 5)));
+
+		DoubleSequence includingNone = _12345.including(0.1);
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		DoubleSequence emptyExcluding = empty.excluding(0.1, 1, 3, 5, 17);
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		DoubleSequence excluding = _12345.excluding(0.1, 1, 3, 5, 17);
+		twice(() -> assertThat(excluding, containsDoubles(2, 4)));
+
+		DoubleSequence excludingAll = _12345.excluding(0.1, 1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		DoubleSequence excludingNone = _12345.excluding(0.1);
+		twice(() -> assertThat(excludingNone, containsDoubles(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void map() {
 		DoubleSequence mapped = _123.map(c -> c + 1.0);
 		twice(() -> assertThat(mapped, containsDoubles(2.0, 3.0, 4.0)));

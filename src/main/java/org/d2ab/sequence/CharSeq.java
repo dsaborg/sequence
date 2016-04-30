@@ -791,6 +791,22 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * @return an {@code CharSeq} containing only the {@code chars} found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default CharSeq including(char... elements) {
+		return filter(e -> Arrayz.contains(elements, e));
+	}
+
+	/**
+	 * @return an {@code CharSeq} containing only the {@code chars} not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default CharSeq excluding(char... elements) {
+		return filter(e -> !Arrayz.contains(elements, e));
+	}
+
+	/**
 	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {

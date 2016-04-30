@@ -858,6 +858,22 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * @return an {@code IntSequence} containing only the {@code ints} found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default IntSequence including(int... elements) {
+		return filter(e -> Arrayz.contains(elements, e));
+	}
+
+	/**
+	 * @return an {@code IntSequence} containing only the {@code ints} not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default IntSequence excluding(int... elements) {
+		return filter(e -> !Arrayz.contains(elements, e));
+	}
+
+	/**
 	 * Collect this {@code IntSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {

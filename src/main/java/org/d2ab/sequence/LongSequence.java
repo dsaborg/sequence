@@ -857,6 +857,22 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * @return an {@code LongSequence} containing only the {@code longs} found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default LongSequence including(long... elements) {
+		return filter(e -> Arrayz.contains(elements, e));
+	}
+
+	/**
+	 * @return an {@code LongSequence} containing only the {@code longs} not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default LongSequence excluding(long... elements) {
+		return filter(e -> !Arrayz.contains(elements, e));
+	}
+
+	/**
 	 * Collect this {@code LongSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {

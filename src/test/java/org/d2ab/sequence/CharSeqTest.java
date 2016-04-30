@@ -417,6 +417,36 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void includingArray() {
+		CharSeq emptyIncluding = empty.including('a', 'c', 'e', 'q');
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		CharSeq including = abcde.including('a', 'c', 'e', 'q');
+		twice(() -> assertThat(including, containsChars('a', 'c', 'e')));
+
+		CharSeq includingAll = abcde.including('a', 'b', 'c', 'd', 'e', 'q');
+		twice(() -> assertThat(includingAll, containsChars('a', 'b', 'c', 'd', 'e')));
+
+		CharSeq includingNone = abcde.including();
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		CharSeq emptyExcluding = empty.excluding('a', 'c', 'e', 'q');
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		CharSeq excluding = abcde.excluding('a', 'c', 'e', 'q');
+		twice(() -> assertThat(excluding, containsChars('b', 'd')));
+
+		CharSeq excludingAll = abcde.excluding('a', 'b', 'c', 'd', 'e', 'q');
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		CharSeq excludingNone = abcde.excluding();
+		twice(() -> assertThat(excludingNone, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
 	public void map() {
 		CharSeq mapped = abc.map(c -> (char) (c + 1));
 		twice(() -> assertThat(mapped, containsChars('b', 'c', 'd')));

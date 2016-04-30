@@ -408,6 +408,36 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void includingArray() {
+		IntSequence emptyIncluding = empty.including(1, 3, 5, 17);
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		IntSequence including = _12345.including(1, 3, 5, 17);
+		twice(() -> assertThat(including, containsInts(1, 3, 5)));
+
+		IntSequence includingAll = _12345.including(1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(includingAll, containsInts(1, 2, 3, 4, 5)));
+
+		IntSequence includingNone = _12345.including();
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		IntSequence emptyExcluding = empty.excluding(1, 3, 5, 17);
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		IntSequence excluding = _12345.excluding(1, 3, 5, 17);
+		twice(() -> assertThat(excluding, containsInts(2, 4)));
+
+		IntSequence excludingAll = _12345.excluding(1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		IntSequence excludingNone = _12345.excluding();
+		twice(() -> assertThat(excludingNone, containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void map() {
 		IntSequence mapped = _123.map(c -> c + 1);
 		twice(() -> assertThat(mapped, containsInts(2, 3, 4)));

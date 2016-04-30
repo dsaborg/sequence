@@ -677,6 +677,22 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence including(double precision, double... elements) {
+		return filter(e -> Arrayz.contains(elements, e, precision));
+	}
+
+	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array.
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence excluding(double precision, double... elements) {
+		return filter(e -> !Arrayz.contains(elements, e, precision));
+	}
+
+	/**
 	 * Collect this {@code DoubleSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {

@@ -382,6 +382,36 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void includingArray() {
+		LongSequence emptyIncluding = empty.including(1, 3, 5, 17);
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		LongSequence including = _12345.including(1, 3, 5, 17);
+		twice(() -> assertThat(including, containsLongs(1, 3, 5)));
+
+		LongSequence includingAll = _12345.including(1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(includingAll, containsLongs(1, 2, 3, 4, 5)));
+
+		LongSequence includingNone = _12345.including();
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingArray() {
+		LongSequence emptyExcluding = empty.excluding(1, 3, 5, 17);
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		LongSequence excluding = _12345.excluding(1, 3, 5, 17);
+		twice(() -> assertThat(excluding, containsLongs(2, 4)));
+
+		LongSequence excludingAll = _12345.excluding(1, 2, 3, 4, 5, 17);
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		LongSequence excludingNone = _12345.excluding();
+		twice(() -> assertThat(excludingNone, containsLongs(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void map() {
 		LongSequence mapped = _123.map(c -> c + 1L);
 		twice(() -> assertThat(mapped, containsLongs(2L, 3L, 4L)));
