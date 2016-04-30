@@ -1238,6 +1238,42 @@ public class IntSequenceTest {
 		twice(() -> assertThat(_12345.isEmpty(), is(false)));
 	}
 
+	@Test
+	public void containsInt() {
+		assertThat(empty.contains(17), is(false));
+
+		assertThat(_12345.contains(1), is(true));
+		assertThat(_12345.contains(3), is(true));
+		assertThat(_12345.contains(5), is(true));
+		assertThat(_12345.contains(17), is(false));
+	}
+
+	@Test
+	public void containsAll() {
+		assertThat(empty.containsAll(), is(true));
+		assertThat(empty.containsAll(17, 18, 19), is(false));
+
+		assertThat(_12345.containsAll(), is(true));
+		assertThat(_12345.containsAll(1), is(true));
+		assertThat(_12345.containsAll(1, 3, 5), is(true));
+		assertThat(_12345.containsAll(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAll(1, 2, 3, 4, 5, 17), is(false));
+		assertThat(_12345.containsAll(17, 18, 19), is(false));
+	}
+
+	@Test
+	public void containsAny() {
+		assertThat(empty.containsAny(), is(false));
+		assertThat(empty.containsAny(17, 18, 19), is(false));
+
+		assertThat(_12345.containsAny(), is(false));
+		assertThat(_12345.containsAny(1), is(true));
+		assertThat(_12345.containsAny(1, 3, 5), is(true));
+		assertThat(_12345.containsAny(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAny(1, 2, 3, 4, 5, 17), is(true));
+		assertThat(_12345.containsAny(17, 18, 19), is(false));
+	}
+
 	@FunctionalInterface
 	private interface StrictIntIterable extends IntIterable {
 		static IntIterable from(IntIterable iterable) {
@@ -1272,15 +1308,5 @@ public class IntSequenceTest {
 		static IntIterator of(int... values) {
 			return from(IntIterator.of(values));
 		}
-	}
-
-	@Test
-	public void containsInt() {
-		assertThat(empty.contains(17), is(false));
-
-		assertThat(_12345.contains(1), is(true));
-		assertThat(_12345.contains(3), is(true));
-		assertThat(_12345.contains(5), is(true));
-		assertThat(_12345.contains(17), is(false));
 	}
 }

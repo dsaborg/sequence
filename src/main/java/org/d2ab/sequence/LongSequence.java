@@ -1264,4 +1264,24 @@ public interface LongSequence extends LongIterable {
 	default boolean contains(long l) {
 		return iterator().contains(l);
 	}
+
+	/**
+	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
+	 */
+	default boolean containsAll(long... items) {
+		for (long item : items)
+			if (!iterator().contains(item))
+				return false;
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
+	 */
+	default boolean containsAny(long... items) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextLong()))
+				return true;
+		return false;
+	}
 }

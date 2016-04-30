@@ -1116,4 +1116,25 @@ public interface DoubleSequence extends DoubleIterable {
 	default boolean contains(double d, double precision) {
 		return iterator().contains(d, precision);
 	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
+	 * precision, false otherwise.
+	 */
+	default boolean containsAll(double precision, double... items) {
+		for (double item : items)
+			if (!iterator().contains(item, precision))
+				return false;
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
+	 */
+	default boolean containsAny(double precision, double... items) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextDouble(), precision))
+				return true;
+		return false;
+	}
 }

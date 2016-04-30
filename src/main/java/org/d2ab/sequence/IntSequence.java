@@ -1287,4 +1287,24 @@ public interface IntSequence extends IntIterable {
 	default boolean contains(int i) {
 		return iterator().contains(i);
 	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains all of the given {@code ints}, false otherwise.
+	 */
+	default boolean containsAll(int... items) {
+		for (int item : items)
+			if (!iterator().contains(item))
+				return false;
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains any of the given {@code ints}, false otherwise.
+	 */
+	default boolean containsAny(int... items) {
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextInt()))
+				return true;
+		return false;
+	}
 }

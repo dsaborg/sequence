@@ -1172,6 +1172,42 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_12345.isEmpty(), is(false)));
 	}
 
+	@Test
+	public void containsDouble() {
+		assertThat(empty.contains(17, 0.1), is(false));
+
+		assertThat(_12345.contains(1, 0.1), is(true));
+		assertThat(_12345.contains(3, 0.1), is(true));
+		assertThat(_12345.contains(5, 0.1), is(true));
+		assertThat(_12345.contains(17, 0.1), is(false));
+	}
+
+	@Test
+	public void containsAll() {
+		assertThat(empty.containsAll(0.1), is(true));
+		assertThat(empty.containsAll(0.1, 17, 18, 19), is(false));
+
+		assertThat(_12345.containsAll(0.1), is(true));
+		assertThat(_12345.containsAll(0.1, 1), is(true));
+		assertThat(_12345.containsAll(0.1, 1, 3, 5), is(true));
+		assertThat(_12345.containsAll(0.1, 1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAll(0.1, 1, 2, 3, 4, 5, 17), is(false));
+		assertThat(_12345.containsAll(0.1, 17, 18, 19), is(false));
+	}
+
+	@Test
+	public void containsAny() {
+		assertThat(empty.containsAny(0.1), is(false));
+		assertThat(empty.containsAny(0.1, 17, 18, 19), is(false));
+
+		assertThat(_12345.containsAny(0.1), is(false));
+		assertThat(_12345.containsAny(0.1, 1), is(true));
+		assertThat(_12345.containsAny(0.1, 1, 3, 5), is(true));
+		assertThat(_12345.containsAny(0.1, 1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAny(0.1, 1, 2, 3, 4, 5, 17), is(true));
+		assertThat(_12345.containsAny(0.1, 17, 18, 19), is(false));
+	}
+
 	@FunctionalInterface
 	private interface StrictDoubleIterable extends DoubleIterable {
 		static DoubleIterable from(DoubleIterable iterable) {
@@ -1206,15 +1242,5 @@ public class DoubleSequenceTest {
 		static DoubleIterator of(double... values) {
 			return from(DoubleIterator.of(values));
 		}
-	}
-
-	@Test
-	public void containsDouble() {
-		assertThat(empty.contains(17, 0.1), is(false));
-
-		assertThat(_12345.contains(1, 0.1), is(true));
-		assertThat(_12345.contains(3, 0.1), is(true));
-		assertThat(_12345.contains(5, 0.1), is(true));
-		assertThat(_12345.contains(17, 0.1), is(false));
 	}
 }

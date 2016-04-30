@@ -1215,4 +1215,24 @@ public interface CharSeq extends CharIterable {
 	default boolean contains(char l) {
 		return iterator().contains(l);
 	}
+
+	/**
+	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
+	 */
+	default boolean containsAll(char... items) {
+		for (char item : items)
+			if (!iterator().contains(item))
+				return false;
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
+	 */
+	default boolean containsAny(char... items) {
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextChar()))
+				return true;
+		return false;
+	}
 }

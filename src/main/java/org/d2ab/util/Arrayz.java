@@ -16,6 +16,8 @@
 
 package org.d2ab.util;
 
+import org.d2ab.util.primitive.Doubles;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -141,6 +143,46 @@ public class Arrayz {
 	public static <T> boolean contains(T[] elements, T target) {
 		for (T element : elements)
 			if (Objects.equals(element, target))
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if the given array contains the given target {@code char}, false otherwise.
+	 */
+	public static boolean contains(char[] items, char target) {
+		for (char item : items)
+			if (item == target)
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if the given array contains the given target {@code int}, false otherwise.
+	 */
+	public static boolean contains(int[] items, int target) {
+		for (int item : items)
+			if (item == target)
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if the given array contains the given target {@code long}, false otherwise.
+	 */
+	public static boolean contains(long[] items, long target) {
+		for (long item : items)
+			if (item == target)
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if the given array contains the given target {@code double}, false otherwise.
+	 */
+	public static boolean contains(double[] items, double target, double precision) {
+		for (double item : items)
+			if (Doubles.equal(item, target, precision))
 				return true;
 		return false;
 	}

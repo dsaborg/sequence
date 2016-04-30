@@ -1149,6 +1149,42 @@ public class CharSeqTest {
 		twice(() -> assertThat(abcde.isEmpty(), is(false)));
 	}
 
+	@Test
+	public void containsChar() {
+		assertThat(empty.contains('q'), is(false));
+
+		assertThat(abcde.contains('a'), is(true));
+		assertThat(abcde.contains('c'), is(true));
+		assertThat(abcde.contains('e'), is(true));
+		assertThat(abcde.contains('q'), is(false));
+	}
+
+	@Test
+	public void containsAll() {
+		assertThat(empty.containsAll(), is(true));
+		assertThat(empty.containsAll('p', 'q', 'r'), is(false));
+
+		assertThat(abcde.containsAll(), is(true));
+		assertThat(abcde.containsAll('a'), is(true));
+		assertThat(abcde.containsAll('a', 'c', 'e'), is(true));
+		assertThat(abcde.containsAll('a', 'b', 'c', 'd', 'e'), is(true));
+		assertThat(abcde.containsAll('a', 'b', 'c', 'd', 'e', 'p'), is(false));
+		assertThat(abcde.containsAll('p', 'q', 'r'), is(false));
+	}
+
+	@Test
+	public void containsAny() {
+		assertThat(empty.containsAny(), is(false));
+		assertThat(empty.containsAny('p', 'q', 'r'), is(false));
+
+		assertThat(abcde.containsAny(), is(false));
+		assertThat(abcde.containsAny('a'), is(true));
+		assertThat(abcde.containsAny('a', 'c', 'e'), is(true));
+		assertThat(abcde.containsAny('a', 'b', 'c', 'd', 'e'), is(true));
+		assertThat(abcde.containsAny('a', 'b', 'c', 'd', 'e', 'p'), is(true));
+		assertThat(abcde.containsAny('p', 'q', 'r'), is(false));
+	}
+
 	@FunctionalInterface
 	private interface StrictCharIterable extends CharIterable {
 		static CharIterable from(CharIterable iterable) {
@@ -1183,15 +1219,5 @@ public class CharSeqTest {
 		static CharIterator of(char... values) {
 			return from(CharIterator.of(values));
 		}
-	}
-
-	@Test
-	public void containsChar() {
-		assertThat(empty.contains('q'), is(false));
-
-		assertThat(abcde.contains('a'), is(true));
-		assertThat(abcde.contains('c'), is(true));
-		assertThat(abcde.contains('e'), is(true));
-		assertThat(abcde.contains('q'), is(false));
 	}
 }
