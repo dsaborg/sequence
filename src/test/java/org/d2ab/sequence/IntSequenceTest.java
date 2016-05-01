@@ -189,7 +189,7 @@ public class IntSequenceTest {
 	public void read() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 
-		IntSequence seq = IntIterable.read(inputStream);
+		IntSequence seq = IntSequence.read(inputStream);
 		twice(() -> assertThat(seq, containsInts(1, 2, 3, 4, 5)));
 	}
 
@@ -197,7 +197,7 @@ public class IntSequenceTest {
 	public void readNegatives() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{-1, -2, -3, -4, -5});
 
-		IntSequence seq = IntIterable.read(inputStream);
+		IntSequence seq = IntSequence.read(inputStream);
 		twice(() -> assertThat(seq, containsInts(255, 254, 253, 252, 251)));
 	}
 
@@ -206,7 +206,7 @@ public class IntSequenceTest {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 		assertThat(inputStream.read(), is(1));
 
-		IntSequence seq = IntIterable.read(inputStream);
+		IntSequence seq = IntSequence.read(inputStream);
 		assertThat(seq, containsInts(2, 3, 4, 5));
 		assertThat(seq, containsInts(1, 2, 3, 4, 5));
 	}
@@ -217,7 +217,7 @@ public class IntSequenceTest {
 		assertThat(inputStream.read(), is(1));
 		inputStream.mark(0);
 
-		IntSequence seq = IntIterable.read(inputStream);
+		IntSequence seq = IntSequence.read(inputStream);
 		assertThat(seq, containsInts(2, 3, 4, 5));
 		assertThat(seq, containsInts(2, 3, 4, 5));
 	}

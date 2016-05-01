@@ -42,7 +42,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 *
 	 * @since 1.1
 	 */
-	static IntSequence read(InputStream inputStream) {
+	static IntIterable read(InputStream inputStream) {
 		return new IntSequence() {
 			boolean started;
 

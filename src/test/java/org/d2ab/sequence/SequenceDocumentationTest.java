@@ -17,7 +17,6 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
-import org.d2ab.iterable.ints.IntIterable;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -317,7 +316,7 @@ public class SequenceDocumentationTest {
 	public void readInputStream() throws IOException {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{0xD, 0xE, 0xA, 0xD, 0xB, 0xE, 0xE, 0xF});
 
-		String hexString = IntIterable.read(inputStream)
+		String hexString = IntSequence.read(inputStream)
 		                              .toSequence(Integer::toHexString)
 		                              .map(String::toUpperCase)
 		                              .join();

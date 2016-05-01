@@ -203,6 +203,17 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void readWithMark() throws IOException {
+		Reader reader = new StringReader("abcde");
+		assertThat((char) reader.read(), is('a'));
+
+		reader.mark(0);
+
+		CharSeq seq = CharSeq.read(reader);
+		twice(() -> assertThat(seq, containsChars('b', 'c', 'd', 'e')));
+	}
+
+	@Test
 	public void readAlreadyBegun() throws IOException {
 		Reader reader = new StringReader("abcde");
 		assertThat((char) reader.read(), is('a'));

@@ -16,17 +16,57 @@
 
 package org.d2ab.iterable.ints;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class IntIterableTest {
 	private final IntIterable iterable = IntIterable.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+	@Test
+	public void read() {
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
+
+		IntIterable seq = IntIterable.read(inputStream);
+		twice(() -> assertThat(seq, containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void readNegatives() {
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{-1, -2, -3, -4, -5});
+
+		IntIterable seq = IntIterable.read(inputStream);
+		twice(() -> assertThat(seq, containsInts(255, 254, 253, 252, 251)));
+	}
+
+	@Test
+	public void readAlreadyBegun() throws IOException {
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
+		assertThat(inputStream.read(), CoreMatchers.is(1));
+
+		IntIterable seq = IntIterable.read(inputStream);
+		assertThat(seq, containsInts(2, 3, 4, 5));
+		assertThat(seq, containsInts(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void readWithMark() throws IOException {
+		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
+		assertThat(inputStream.read(), CoreMatchers.is(1));
+		inputStream.mark(0);
+
+		IntIterable seq = IntIterable.read(inputStream);
+		twice(() -> assertThat(seq, containsInts(2, 3, 4, 5)));
+	}
 
 	@Test
 	public void asInputStreamReadSingleInts() throws Exception {

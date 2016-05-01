@@ -16,17 +16,50 @@
 
 package org.d2ab.iterable.chars;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class CharIterableTest {
 	private final CharIterable abcde = CharIterable.of('a', 'b', 'c', 'd', 'e');
+
+	@Test
+	public void read() throws IOException {
+		Reader reader = new StringReader("abcde");
+
+		CharIterable iterable = CharIterable.read(reader);
+		twice(() -> assertThat(iterable, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void readWithMark() throws IOException {
+		Reader reader = new StringReader("abcde");
+		assertThat((char) reader.read(), CoreMatchers.is('a'));
+
+		reader.mark(0);
+
+		CharIterable iterable = CharIterable.read(reader);
+		twice(() -> assertThat(iterable, containsChars('b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void readAlreadyBegun() throws IOException {
+		Reader reader = new StringReader("abcde");
+		assertThat((char) reader.read(), CoreMatchers.is('a'));
+
+		CharIterable iterable = CharIterable.read(reader);
+		assertThat(iterable, containsChars('b', 'c', 'd', 'e'));
+		assertThat(iterable, containsChars('a', 'b', 'c', 'd', 'e'));
+	}
 
 	@Test
 	public void asReaderReadSingleChars() throws Exception {
