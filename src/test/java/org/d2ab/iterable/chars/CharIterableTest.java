@@ -38,6 +38,7 @@ public class CharIterableTest {
 		assertThat((char) reader.read(), is('d'));
 		assertThat((char) reader.read(), is('e'));
 		assertThat(reader.read(), is(-1));
+		assertThat(reader.read(), is(-1));
 	}
 
 	@Test
@@ -109,6 +110,7 @@ public class CharIterableTest {
 		assertThat(cbuf[8], is('\0'));
 		assertThat(cbuf[9], is('\0'));
 
+		assertThat(reader.read(cbuf, 0, 0), is(0));
 		assertThat(reader.read(cbuf, 0, 2), is(-1));
 	}
 

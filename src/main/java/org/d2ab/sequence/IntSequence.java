@@ -191,23 +191,7 @@ public interface IntSequence extends IntIterable {
 	 * @since 1.1
 	 */
 	static IntSequence read(InputStream inputStream) {
-		return new IntSequence() {
-			boolean started;
-
-			@Override
-			public IntIterator iterator() {
-				if (started)
-					try {
-						inputStream.reset();
-					} catch (IOException e) {
-						// do nothing, let input stream exhaust itself
-					}
-				else
-					started = true;
-
-				return new InputStreamIntIterator(inputStream);
-			}
-		};
+		return IntIterable.read(inputStream)::iterator;
 	}
 
 	/**

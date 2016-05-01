@@ -134,15 +134,17 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		};
 	}
 
-	default void skip() {
-		skip(1);
+	default boolean skip() {
+		return skip(1) == 1;
 	}
 
-	default void skip(long steps) {
+	default long skip(long steps) {
 		long count = 0;
-		while ((count++ < steps) && hasNext()) {
+		while (count < steps && hasNext()) {
 			nextInt();
+			count++;
 		}
+		return count;
 	}
 
 	default int reduce(int identity, IntBinaryOperator operator) {

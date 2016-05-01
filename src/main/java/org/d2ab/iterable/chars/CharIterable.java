@@ -127,6 +127,9 @@ public interface CharIterable extends Iterable<Character> {
 				if (iterator == null)
 					throw new IOException("closed");
 
+				if (len == 0)
+					return 0;
+
 				if (!iterator.hasNext())
 					return -1;
 
