@@ -538,8 +538,7 @@ reader.close();
 ```
 
 ```Java
-Reader original = new StringReader("hello world\n" +
-                                   "goodbye world\n");
+Reader original = new StringReader("hello world\ngoodbye world\n");
 
 BufferedReader transformed = new BufferedReader(CharSeq.read(original).map(Character::toUpperCase).asReader());
 
