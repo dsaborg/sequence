@@ -18,6 +18,7 @@ package org.d2ab.iterable;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.iterator.ArrayIterator;
+import org.d2ab.util.Arrayz;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -135,22 +136,23 @@ public class Iterables {
 	/**
 	 * @return true if any object in the given {@link Iterable} is equal to the given object, false otherwise.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> boolean contains(Iterable<? extends T> iterable, T object) {
+		if (iterable instanceof Collection)
+			return ((Collection<? extends T>) iterable).contains(object);
+
 		for (T each : iterable)
 			if (Objects.equals(each, object))
 				return true;
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	public static <T> boolean containsAll(Iterable<? extends T> iterable, T... items) {
-		for (T item : items)
-			if (!contains(iterable, item))
-				return false;
-		return true;
-	}
+		if (iterable instanceof Collection)
+			return containsAll((Collection<? extends T>) iterable, items);
 
-	public static <T> boolean containsAll(Iterable<? extends T> iterable, Iterable<? extends T> items) {
 		for (T item : items)
 			if (!contains(iterable, item))
 				return false;
@@ -158,19 +160,70 @@ public class Iterables {
 	}
 
 	@SafeVarargs
+	private static <T> boolean containsAll(Collection<? extends T> collection, T... items) {
+		for (T item : items)
+			if (!collection.contains(item))
+				return false;
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> boolean containsAll(Iterable<? extends T> iterable, Iterable<? extends T> items) {
+		if (iterable instanceof Collection)
+			return containsAll((Collection<? extends T>) iterable, items);
+
+		for (T item : items)
+			if (!contains(iterable, item))
+				return false;
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> boolean containsAll(Collection<? extends T> collection, Iterable<? extends T> items) {
+		if (items instanceof Collection)
+			return collection.containsAll((Collection<? extends T>) items);
+
+		for (T item : items)
+			if (!collection.contains(item))
+				return false;
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
 	public static <T> boolean containsAny(Iterable<? extends T> iterable, T... items) {
+		if (iterable instanceof Collection)
+			return containsAny((Collection<? extends T>) iterable, items);
+
 		for (T each : iterable)
-			for (T item : items)
-				if (Objects.equals(each, item))
-					return true;
+			if (Arrayz.contains(items, each))
+				return true;
 		return false;
 	}
 
+	@SafeVarargs
+	private static <T> boolean containsAny(Collection<? extends T> collection, T... items) {
+		for (T item : items)
+			if (collection.contains(item))
+				return true;
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
 	public static <T> boolean containsAny(Iterable<? extends T> iterable, Iterable<? extends T> items) {
+		if (iterable instanceof Collection)
+			return containsAny((Collection<? extends T>) iterable, items);
+
 		for (T each : iterable)
-			for (T item : items)
-				if (Objects.equals(each, item))
-					return true;
+			if (contains(items, each))
+				return true;
+		return false;
+	}
+
+	private static <T> boolean containsAny(Collection<? extends T> collection, Iterable<? extends T> items) {
+		for (T item : items)
+			if (collection.contains(item))
+				return true;
 		return false;
 	}
 }

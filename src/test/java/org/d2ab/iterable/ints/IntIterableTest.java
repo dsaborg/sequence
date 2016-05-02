@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.twice;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -36,16 +37,24 @@ public class IntIterableTest {
 	public void read() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 
-		IntIterable seq = IntIterable.read(inputStream);
-		twice(() -> assertThat(seq, containsInts(1, 2, 3, 4, 5)));
+		IntIterable iterable = IntIterable.read(inputStream);
+		twice(() -> assertThat(iterable, containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void readEmpty() {
+		InputStream inputStream = new ByteArrayInputStream(new byte[0]);
+
+		IntIterable iterable = IntIterable.read(inputStream);
+		twice(() -> assertThat(iterable, is(emptyIterable())));
 	}
 
 	@Test
 	public void readNegatives() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{-1, -2, -3, -4, -5});
 
-		IntIterable seq = IntIterable.read(inputStream);
-		twice(() -> assertThat(seq, containsInts(255, 254, 253, 252, 251)));
+		IntIterable iterable = IntIterable.read(inputStream);
+		twice(() -> assertThat(iterable, containsInts(255, 254, 253, 252, 251)));
 	}
 
 	@Test
@@ -53,9 +62,9 @@ public class IntIterableTest {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 		assertThat(inputStream.read(), CoreMatchers.is(1));
 
-		IntIterable seq = IntIterable.read(inputStream);
-		assertThat(seq, containsInts(2, 3, 4, 5));
-		assertThat(seq, containsInts(1, 2, 3, 4, 5));
+		IntIterable iterable = IntIterable.read(inputStream);
+		assertThat(iterable, containsInts(2, 3, 4, 5));
+		assertThat(iterable, containsInts(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -64,8 +73,8 @@ public class IntIterableTest {
 		assertThat(inputStream.read(), CoreMatchers.is(1));
 		inputStream.mark(0);
 
-		IntIterable seq = IntIterable.read(inputStream);
-		twice(() -> assertThat(seq, containsInts(2, 3, 4, 5)));
+		IntIterable iterable = IntIterable.read(inputStream);
+		twice(() -> assertThat(iterable, containsInts(2, 3, 4, 5)));
 	}
 
 	@Test

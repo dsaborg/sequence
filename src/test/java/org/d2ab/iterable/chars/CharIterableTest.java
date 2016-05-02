@@ -25,6 +25,7 @@ import java.io.StringReader;
 
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.Tests.twice;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -38,6 +39,14 @@ public class CharIterableTest {
 
 		CharIterable iterable = CharIterable.read(reader);
 		twice(() -> assertThat(iterable, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void readEmpty() throws IOException {
+		Reader reader = new StringReader("");
+
+		CharIterable iterable = CharIterable.read(reader);
+		twice(() -> assertThat(iterable, is(emptyIterable())));
 	}
 
 	@Test
