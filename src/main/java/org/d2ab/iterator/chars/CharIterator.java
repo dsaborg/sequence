@@ -170,4 +170,14 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 				return true;
 		return false;
 	}
+
+	/**
+	 * @return the number of {@code chars} remaining in this iterator.
+	 */
+	default long count() {
+		long count = 0;
+		for (; hasNext(); nextChar())
+			count++;
+		return count;
+	}
 }

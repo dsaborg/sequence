@@ -1010,21 +1010,16 @@ public interface LongSequence extends LongIterable {
 	 * @return the number of longs in this {@code LongSequence}.
 	 */
 	default long count() {
-		long count = 0;
-		for (LongIterator iterator = iterator(); iterator.hasNext(); iterator.nextLong()) {
-			count++;
-		}
-		return count;
+		return iterator().count();
 	}
 
 	/**
 	 * @return true if all longs in this {@code LongSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(LongPredicate predicate) {
-		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextLong()))
 				return false;
-		}
 		return true;
 	}
 
@@ -1039,10 +1034,9 @@ public interface LongSequence extends LongIterable {
 	 * @return true if any long in this {@code LongSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(LongPredicate predicate) {
-		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextLong()))
 				return true;
-		}
 		return false;
 	}
 

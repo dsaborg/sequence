@@ -139,4 +139,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 				return true;
 		return false;
 	}
+
+	/**
+	 * @return the number of {@code longs} remaining in this iterator.
+	 */
+	default long count() {
+		long count = 0;
+		for (; hasNext(); nextLong())
+			count++;
+		return count;
+	}
 }

@@ -176,4 +176,16 @@ public class Iterators {
 		iterator.forEachRemaining(list::add);
 		return list;
 	}
+
+	/**
+	 * @return the count of elements remaining in the given {@link Iterator}.
+	 */
+	public static long count(Iterator<?> iterator) {
+		long count = 0;
+		while (iterator.hasNext()) {
+			iterator.next();
+			count++;
+		}
+		return count;
+	}
 }

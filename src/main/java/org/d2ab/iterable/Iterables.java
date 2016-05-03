@@ -18,6 +18,7 @@ package org.d2ab.iterable;
 
 import org.d2ab.collection.Maps;
 import org.d2ab.iterator.ArrayIterator;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Arrayz;
 import org.d2ab.util.Pair;
 
@@ -225,5 +226,15 @@ public class Iterables {
 			if (collection.contains(item))
 				return true;
 		return false;
+	}
+
+	/**
+	 * @return the number of elements in the given {@link Iterable}, by traversal.
+	 */
+	public static long count(Iterable<?> iterable) {
+		if (iterable instanceof Collection)
+			return ((Collection) iterable).size();
+
+		return Iterators.count(iterable.iterator());
 	}
 }

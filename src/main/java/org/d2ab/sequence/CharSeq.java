@@ -956,21 +956,16 @@ public interface CharSeq extends CharIterable {
 	 * @return the number of characters in this {@code CharSeq}.
 	 */
 	default long count() {
-		long count = 0;
-		for (CharIterator iterator = iterator(); iterator.hasNext(); iterator.nextChar()) {
-			count++;
-		}
-		return count;
+		return iterator().count();
 	}
 
 	/**
 	 * @return true if all characters in this {@code CharSeq} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(CharPredicate predicate) {
-		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextChar()))
 				return false;
-		}
 		return true;
 	}
 
@@ -985,10 +980,9 @@ public interface CharSeq extends CharIterable {
 	 * @return true if any character in this {@code CharSeq} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(CharPredicate predicate) {
-		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextChar()))
 				return true;
-		}
 		return false;
 	}
 

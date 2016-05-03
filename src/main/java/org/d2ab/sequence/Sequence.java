@@ -1419,10 +1419,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return the count of elements in this {@code Sequence}.
 	 */
 	default long count() {
-		long count = 0;
-		for (T ignored : this)
-			count++;
-		return count;
+		return Iterables.count(this);
 	}
 
 	/**

@@ -841,21 +841,16 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @return the number of doubles in this {@code DoubleSequence}.
 	 */
 	default long count() {
-		long count = 0;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); iterator.nextDouble()) {
-			count++;
-		}
-		return count;
+		return iterator().count();
 	}
 
 	/**
 	 * @return true if all doubles in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(DoublePredicate predicate) {
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextDouble()))
 				return false;
-		}
 		return true;
 	}
 
@@ -870,10 +865,9 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @return true if any double in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(DoublePredicate predicate) {
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextDouble()))
 				return true;
-		}
 		return false;
 	}
 

@@ -163,4 +163,14 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 				return true;
 		return false;
 	}
+
+	/**
+	 * @return the number of {@code ints} remaining in this iterator.
+	 */
+	default long count() {
+		long count = 0;
+		for (; hasNext(); nextInt())
+			count++;
+		return count;
+	}
 }

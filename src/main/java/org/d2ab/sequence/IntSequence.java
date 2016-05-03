@@ -1011,21 +1011,16 @@ public interface IntSequence extends IntIterable {
 	 * @return the number of ints in this {@code IntSequence}.
 	 */
 	default long count() {
-		long count = 0;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); iterator.nextInt()) {
-			count++;
-		}
-		return count;
+		return iterator().count();
 	}
 
 	/**
 	 * @return true if all ints in this {@code IntSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(IntPredicate predicate) {
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextInt()))
 				return false;
-		}
 		return true;
 	}
 
@@ -1040,10 +1035,9 @@ public interface IntSequence extends IntIterable {
 	 * @return true if any int in this {@code IntSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(IntPredicate predicate) {
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextInt()))
 				return true;
-		}
 		return false;
 	}
 

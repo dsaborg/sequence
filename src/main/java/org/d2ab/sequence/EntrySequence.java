@@ -1099,10 +1099,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @return the count of elements in this {@code EntrySequence}.
 	 */
 	default int count() {
-		int count = 0;
-		for (Entry<K, V> ignored : this)
-			count++;
-		return count;
+		return Iterables.count(this);
 	}
 
 	/**

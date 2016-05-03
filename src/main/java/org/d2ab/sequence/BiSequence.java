@@ -1085,11 +1085,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * @return the count of elements in this {@code BiSequence}.
 	 */
-	default int count() {
-		int count = 0;
-		for (Pair<L, R> ignored : this)
-			count++;
-		return count;
+	default long count() {
+		return Iterables.count(this);
 	}
 
 	/**

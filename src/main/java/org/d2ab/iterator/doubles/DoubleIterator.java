@@ -143,4 +143,14 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 				return true;
 		return false;
 	}
+
+	/**
+	 * @return the number of {@code doubles} remaining in this iterator.
+	 */
+	default long count() {
+		long count = 0;
+		for (; hasNext(); nextDouble())
+			count++;
+		return count;
+	}
 }
