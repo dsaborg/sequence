@@ -30,7 +30,9 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
 /**
- * A {@link Sequence} backed by a {@link List}.
+ * A {@link Sequence} backed by a {@link List}. Implements certain operations on {@link Sequence} in a more performant
+ * way due to the {@link List} backing. This class should normally not be used directly as e.g.
+ * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
 public abstract class ListSequence<T> implements Sequence<T> {
 	public static <T> Sequence<T> empty() {

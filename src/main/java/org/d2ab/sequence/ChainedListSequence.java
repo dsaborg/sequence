@@ -25,7 +25,10 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 /**
- * A {@link Sequence} of multiple {@link List}s strung together in a chain.
+ * A {@link Sequence} of multiple {@link List}s strung together in a chain. Implements certain operations on
+ * {@link Sequence} in a more performant way due to the {@link List} backing. This class should normally not be used
+ * directly as e.g. {@link Sequence#concat(Iterable...)} and other methods return this class directly where
+ * appropriate.
  */
 public class ChainedListSequence<T> implements Sequence<T> {
 	private final List<List<T>> lists = new ArrayList<>();
