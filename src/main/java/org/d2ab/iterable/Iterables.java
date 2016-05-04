@@ -136,7 +136,22 @@ public class Iterables {
 	}
 
 	/**
+	 * Create a {@link List} view of the given {@link Iterable}, where changes in the underlying {@link Iterable} are
+	 * reflected in the returned {@link List}. If a {@link List} is given it is returned unchanged. The list does not
+	 * implement {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence. The
+	 * list does not support modification except the various removal operations, through {@link Iterator#remove()} only
+	 * if implemented in the {@link Iterable}'s {@link Iterable#iterator()}.
+	 *
+	 * @since 1.2
+	 */
+	public static <T> List<T> asList(Iterable<T> iterable) {
+		return IterableList.from(iterable);
+	}
+
+	/**
 	 * @return true if any object in the given {@link Iterable} is equal to the given object, false otherwise.
+	 *
+	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> boolean contains(Iterable<? extends T> iterable, T object) {
@@ -146,9 +161,15 @@ public class Iterables {
 		for (T each : iterable)
 			if (Objects.equals(each, object))
 				return true;
+
 		return false;
 	}
 
+	/**
+	 * @return true if the given {@link Iterable} contains all of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	public static <T> boolean containsAll(Iterable<? extends T> iterable, T... items) {
@@ -158,17 +179,29 @@ public class Iterables {
 		for (T item : items)
 			if (!contains(iterable, item))
 				return false;
+
 		return true;
 	}
 
+	/**
+	 * @return true if the given {@link Collection} contains all of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SafeVarargs
 	private static <T> boolean containsAll(Collection<? extends T> collection, T... items) {
 		for (T item : items)
 			if (!collection.contains(item))
 				return false;
+
 		return true;
 	}
 
+	/**
+	 * @return true if the given {@link Iterable} contains all of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> boolean containsAll(Iterable<? extends T> iterable, Iterable<? extends T> items) {
 		if (iterable instanceof Collection)
@@ -177,9 +210,15 @@ public class Iterables {
 		for (T item : items)
 			if (!contains(iterable, item))
 				return false;
+
 		return true;
 	}
 
+	/**
+	 * @return true if the given {@link Collection} contains all of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SuppressWarnings("unchecked")
 	private static <T> boolean containsAll(Collection<? extends T> collection, Iterable<? extends T> items) {
 		if (items instanceof Collection)
@@ -188,9 +227,15 @@ public class Iterables {
 		for (T item : items)
 			if (!collection.contains(item))
 				return false;
+
 		return true;
 	}
 
+	/**
+	 * @return true if the given {@link Iterable} contains any of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	public static <T> boolean containsAny(Iterable<? extends T> iterable, T... items) {
@@ -200,17 +245,29 @@ public class Iterables {
 		for (T each : iterable)
 			if (Arrayz.contains(items, each))
 				return true;
+
 		return false;
 	}
 
+	/**
+	 * @return true if the given {@link Collection} contains any of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SafeVarargs
 	private static <T> boolean containsAny(Collection<? extends T> collection, T... items) {
 		for (T item : items)
 			if (collection.contains(item))
 				return true;
+
 		return false;
 	}
 
+	/**
+	 * @return true if the given {@link Iterable} contains any of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> boolean containsAny(Iterable<? extends T> iterable, Iterable<? extends T> items) {
 		if (iterable instanceof Collection)
@@ -219,33 +276,30 @@ public class Iterables {
 		for (T each : iterable)
 			if (contains(items, each))
 				return true;
-		return false;
-	}
 
-	private static <T> boolean containsAny(Collection<? extends T> collection, Iterable<? extends T> items) {
-		for (T item : items)
-			if (collection.contains(item))
-				return true;
 		return false;
 	}
 
 	/**
-	 * @return the number of elements in the given {@link Iterable}, by traversal.
+	 * @return true if the given {@link Collection} contains any of the given items, false otherwise.
+	 *
+	 * @since 1.2
+	 */
+	public static <T> boolean containsAny(Collection<? extends T> collection, Iterable<? extends T> items) {
+		for (T item : items)
+			if (collection.contains(item))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return the number of elements in the given {@link Iterable}, by traversing the {@link Iterable#iterator()}.
 	 */
 	public static long count(Iterable<?> iterable) {
 		if (iterable instanceof Collection)
 			return ((Collection) iterable).size();
 
 		return Iterators.count(iterable.iterator());
-	}
-
-	/**
-	 * Create a {@code List} view of the given {@link Iterable}, which is updated in real time as the
-	 * {@link Iterable} changes. If a {@link List} is given it is returned unchanged. The list does not implement
-	 * {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence. The list does
-	 * not support modification except removal, by {@link Iterator#remove()} if implemented in the {@link Iterable}.
-	 */
-	public static <T> List<T> asList(Iterable<T> iterable) {
-		return IterableList.from(iterable);
 	}
 }

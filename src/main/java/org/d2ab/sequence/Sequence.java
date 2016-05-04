@@ -1110,6 +1110,8 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * @return a {@link List} view of this {@code Sequence}, which is updated in real time as the backing store of the
 	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 1.2
 	 */
 	default List<T> asList() {
 		return Iterables.asList(this);

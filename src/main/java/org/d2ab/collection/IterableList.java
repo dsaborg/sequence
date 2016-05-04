@@ -22,6 +22,8 @@ import java.util.*;
 
 /**
  * A sequential {@link List} view of an {@link Iterable}
+ *
+ * @since 1.2
  */
 public class IterableList<T> extends AbstractSequentialList<T> {
 	private Iterable<T> iterable;

@@ -16,12 +16,19 @@
 
 package org.d2ab.iterator;
 
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 import static org.d2ab.iterator.FilteringListIterator.State.*;
 
+/**
+ * A {@link ListIterator} that provides a filtered view of another {@link ListIterator}. All operations are supported
+ * except {@link #add}.
+ *
+ * @since 1.2
+ */
 public class FilteringListIterator<T> extends MappedIterator<T, ListIterator<T>, T> implements ListIterator<T> {
 	private final Predicate<? super T> predicate;
 

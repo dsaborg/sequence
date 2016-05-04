@@ -26,7 +26,10 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 
 /**
- * A list that filters the elements of another list.
+ * A {@link List} that provides a filtered view of another {@link List}. All operations are supported except variations
+ * of {@link List#add}.
+ *
+ * @since 1.2
  */
 public class FilteredList<T> extends AbstractSequentialList<T> {
 	private final List<T> list;
