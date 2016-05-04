@@ -833,9 +833,11 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Filter the elements in this {@code Sequence}, keeping only the elements are instances of the given
 	 * {@link Class}.
+	 *
+	 * @since 1.2
 	 */
 	default Sequence<T> filter(Class<?> target) {
-		return () -> new FilteringIterator<>(iterator(), target::isInstance);
+		return filter(target::isInstance);
 	}
 
 	/**
@@ -1200,6 +1202,22 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no
+	 * elements in the {@code Sequence}.
+	 */
+	default Optional<T> last() {
+		Iterator<T> iterator = iterator();
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T last;
+		do
+			last = iterator.next(); while (iterator.hasNext());
+
+		return Optional.of(last);
+	}
+
+	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than
 	 * the index.
 	 *
@@ -1221,19 +1239,103 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no
-	 * elements in the {@code Sequence}.
+	 * @return the first element of this {@code Sequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
 	 */
-	default Optional<T> last() {
-		Iterator<T> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
+	default Optional<T> first(Predicate<? super T> predicate) {
+		return at(0, predicate);
+	}
 
-		T last;
-		do
-			last = iterator.next(); while (iterator.hasNext());
+	/**
+	 * @return the second element of this {@code Sequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> second(Predicate<? super T> predicate) {
+		return at(1, predicate);
+	}
 
-		return Optional.of(last);
+	/**
+	 * @return the third element of this {@code Sequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> third(Predicate<? super T> predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last element of this {@code Sequence} the matches the given predicate, or an empty {@link Optional}
+	 * if there are no matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> last(Predicate<? super T> predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the element at the given index out of the elements matching the given predicate, or an empty
+	 * {@link Optional} if the {@code Sequence} of matching elements is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> at(long index, Predicate<? super T> predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
+	 * @return the first element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> first(Class<?> target) {
+		return at(0, target);
+	}
+
+	/**
+	 * @return the second element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
+	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> second(Class<?> target) {
+		return at(1, target);
+	}
+
+	/**
+	 * @return the third element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
+	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> third(Class<?> target) {
+		return at(2, target);
+	}
+
+	/**
+	 * @return the last element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> last(Class<?> target) {
+		return last(target::isInstance);
+	}
+
+	/**
+	 * @return the element at the given index out of the elements that are instances of the given {@link Class}, or an
+	 * empty {@link Optional} if the {@code Sequence} of matching elements is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> at(long index, Class<?> target) {
+		return at(index, target::isInstance);
 	}
 
 	/**

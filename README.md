@@ -295,6 +295,8 @@ Sequence<Throwable> exceptionAndCauses = Sequence.recurse(exception, Throwable::
 assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
                                         instanceOf(IllegalArgumentException.class),
                                         instanceOf(NullPointerException.class)));
+
+exceptionAndCauses.last(IllegalArgumentException.class).ifPresent(Throwable::printStackTrace);
 ```
 
 ```Java

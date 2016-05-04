@@ -147,6 +147,8 @@ public class SequenceDocumentationTest {
 		assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
 		                                        instanceOf(IllegalArgumentException.class),
 		                                        instanceOf(NullPointerException.class)));
+
+		exceptionAndCauses.last(IllegalArgumentException.class).ifPresent(Throwable::printStackTrace);
 	}
 
 	@Test
