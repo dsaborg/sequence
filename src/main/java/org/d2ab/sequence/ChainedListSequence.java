@@ -49,12 +49,12 @@ public class ChainedListSequence<T> implements Sequence<T> {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Sequence<T> of(T... items) {
-		return from(asList(items));
+		return from(Arrays.asList(items));
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> Sequence<T> from(List<T>... lists) {
-		return from(asList(lists));
+		return from(Arrays.asList(lists));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -106,7 +106,7 @@ public class ChainedListSequence<T> implements Sequence<T> {
 	@Override
 	public Sequence<T> append(T... items) {
 		ChainedListSequence<T> newSequence = new ChainedListSequence<>(lists);
-		newSequence.lists.add(asList(items));
+		newSequence.lists.add(Arrays.asList(items));
 		return newSequence;
 	}
 

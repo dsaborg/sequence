@@ -16,6 +16,7 @@
 
 package org.d2ab.iterable;
 
+import org.d2ab.collection.IterableList;
 import org.d2ab.collection.Maps;
 import org.d2ab.iterator.ArrayIterator;
 import org.d2ab.iterator.Iterators;
@@ -236,5 +237,15 @@ public class Iterables {
 			return ((Collection) iterable).size();
 
 		return Iterators.count(iterable.iterator());
+	}
+
+	/**
+	 * Create a {@code List} view of the given {@link Iterable}, which is updated in real time as the
+	 * {@link Iterable} changes. If a {@link List} is given it is returned unchanged. The list does not implement
+	 * {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence. The list does
+	 * not support modification except removal, by {@link Iterator#remove()} if implemented in the {@link Iterable}.
+	 */
+	public static <T> List<T> asList(Iterable<T> iterable) {
+		return IterableList.from(iterable);
 	}
 }

@@ -56,7 +56,7 @@ public class FilteredListTest {
 		for (int i = 1; i <= 9; i += 2)
 			assertThat(filtered.contains(i), is(true));
 
-		assertThat(filtered.contains(10), is(false));
+		assertThat(filtered.contains(17), is(false));
 	}
 
 	@Test
@@ -179,10 +179,15 @@ public class FilteredListTest {
 	public void sort() {
 		filteredEmpty.sort(Comparator.naturalOrder());
 		assertThat(filteredEmpty, is(emptyIterable()));
+		assertThat(originalEmpty, is(emptyIterable()));
 
 		filtered.sort(Comparator.naturalOrder());
 		assertThat(filtered, contains(1, 3, 5, 7, 9));
 		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		filtered.sort(Comparator.reverseOrder());
+		assertThat(filtered, contains(9, 7, 5, 3, 1));
+		assertThat(original, contains(9, 2, 7, 4, 5, 6, 3, 8, 1, 10));
 	}
 
 	@Test
@@ -250,6 +255,7 @@ public class FilteredListTest {
 		assertThat(filteredEmpty.lastIndexOf(17), is(-1));
 
 		assertThat(filtered.lastIndexOf(3), is(1));
+		assertThat(filtered.lastIndexOf(17), is(-1));
 	}
 
 	@Test
@@ -308,6 +314,13 @@ public class FilteredListTest {
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
 		assertThat(listIterator.next(), is(17));
+
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+		assertThat(listIterator.next(), is(5));
 
 		assertThat(filtered, contains(1, 17, 5, 7, 9));
 		assertThat(original, contains(1, 2, 17, 4, 5, 6, 7, 8, 9, 10));

@@ -45,7 +45,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Sequence<T> of(T... items) {
-		return from(asList(items));
+		return from(Arrays.asList(items));
 	}
 
 	public static <T> Sequence<T> from(List<T> list) {
@@ -94,6 +94,17 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public <U extends Collection<T>> U collectInto(U collection) {
+		collection.addAll(toList());
+		return collection;
+	}
+
+	@Override
+	public boolean contains(T item) {
+		return toList().contains(item);
+	}
+
+	@Override
 	public Sequence<T> skip(long skip) {
 		return new ListSequence<T>() {
 			@Override
@@ -113,12 +124,6 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				return list.subList(0, Math.min(list.size(), (int) limit));
 			}
 		};
-	}
-
-	@Override
-	public <U extends Collection<T>> U collectInto(U collection) {
-		collection.addAll(toList());
-		return collection;
 	}
 
 	@Override
@@ -147,9 +152,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		return new ListSequence<T>() {
 			@Override
 			public List<T> toList() {
-				@SuppressWarnings("unchecked")
-				List list = ListSequence.this.toList();
-				List sorted = new ArrayList<>(list);
+				List sorted = new ArrayList<>(ListSequence.this.toList());
 				Collections.sort(sorted);
 				return (List<T>) unmodifiableList(sorted);
 			}
@@ -161,9 +164,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		return new ListSequence<T>() {
 			@Override
 			public List<T> toList() {
-				@SuppressWarnings("unchecked")
-				List<T> list = ListSequence.this.toList();
-				List<T> sorted = new ArrayList<>(list);
+				List<T> sorted = new ArrayList<>(ListSequence.this.toList());
 				Collections.sort(sorted, comparator);
 				return unmodifiableList(sorted);
 			}
@@ -175,9 +176,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		return new ListSequence<T>() {
 			@Override
 			public List<T> toList() {
-				@SuppressWarnings("unchecked")
-				List<T> list = ListSequence.this.toList();
-				List<T> shuffled = new ArrayList<>(list);
+				List<T> shuffled = new ArrayList<>(ListSequence.this.toList());
 				Collections.shuffle(shuffled);
 				return unmodifiableList(shuffled);
 			}
@@ -185,14 +184,12 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Sequence<T> shuffle(Random md) {
+	public Sequence<T> shuffle(Random random) {
 		return new ListSequence<T>() {
 			@Override
 			public List<T> toList() {
-				@SuppressWarnings("unchecked")
-				List<T> list = ListSequence.this.toList();
-				List<T> shuffled = new ArrayList<>(list);
-				Collections.shuffle(shuffled, md);
+				List<T> shuffled = new ArrayList<>(ListSequence.this.toList());
+				Collections.shuffle(shuffled, random);
 				return unmodifiableList(shuffled);
 			}
 		};
@@ -222,7 +219,7 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public Sequence<T> append(T... items) {
-			return append(asList(items));
+			return append(Arrays.asList(items));
 		}
 
 		@Override

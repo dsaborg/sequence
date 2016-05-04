@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -44,16 +43,16 @@ import static org.junit.Assert.fail;
 
 public class SequenceTest {
 	private final Sequence<Integer> empty = Sequence.from(new ArrayDeque<>());
-	private final Sequence<Integer> _1 = Sequence.from(new ArrayDeque<>(asList(1)));
-	private final Sequence<Integer> _12 = Sequence.from(new ArrayDeque<>(asList(1, 2)));
-	private final Sequence<Integer> _123 = Sequence.from(new ArrayDeque<>(asList(1, 2, 3)));
-	private final Sequence<Integer> _1234 = Sequence.from(new ArrayDeque<>(asList(1, 2, 3, 4)));
-	private final Sequence<Integer> _12345 = Sequence.from(new ArrayDeque<>(asList(1, 2, 3, 4, 5)));
-	private final Sequence<Integer> _123456789 = Sequence.from(new ArrayDeque<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-	private final Sequence<Integer> oneRandom = Sequence.from(new ArrayDeque<>(asList(17)));
-	private final Sequence<Integer> twoRandom = Sequence.from(new ArrayDeque<>(asList(17, 32)));
-	private final Sequence<Integer> threeRandom = Sequence.from(new ArrayDeque<>(asList(2, 3, 1)));
-	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(asList(67, 5, 43, 3, 5, 7, 24, 5,
+	private final Sequence<Integer> _1 = Sequence.from(new ArrayDeque<>(Arrays.asList(1)));
+	private final Sequence<Integer> _12 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2)));
+	private final Sequence<Integer> _123 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3)));
+	private final Sequence<Integer> _1234 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4)));
+	private final Sequence<Integer> _12345 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5)));
+	private final Sequence<Integer> _123456789 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	private final Sequence<Integer> oneRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(17)));
+	private final Sequence<Integer> twoRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(17, 32)));
+	private final Sequence<Integer> threeRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(2, 3, 1)));
+	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(67, 5, 43, 3, 5, 7, 24, 5,
 	                                                                                   67)));
 
 	@Test
@@ -176,7 +175,7 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfLists() {
-		Sequence<Integer> sequenceFromIterables = Sequence.concat(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9));
+		Sequence<Integer> sequenceFromIterables = Sequence.concat(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6), Arrays.asList(7, 8, 9));
 
 		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
@@ -200,7 +199,7 @@ public class SequenceTest {
 	@Test
 	public void concatIterableOfLists() {
 		Sequence<Integer> sequenceFromIterables =
-				Sequence.concat(Iterables.of(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9)));
+				Sequence.concat(Iterables.of(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6), Arrays.asList(7, 8, 9)));
 
 		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
@@ -214,7 +213,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheCollection() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list);
 		list.set(0, 17);
 
@@ -226,7 +225,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list::iterator);
 		list.set(0, 17);
 
@@ -238,7 +237,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list.iterator());
 		list.set(0, 17);
 
@@ -250,7 +249,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list.stream());
 		list.set(0, 17);
 
@@ -316,8 +315,8 @@ public class SequenceTest {
 
 	@Test
 	public void append() {
-		Sequence<Integer> appended = _123.append(Sequence.from(new ArrayDeque<>(asList(4, 5, 6))))
-		                                 .append(Sequence.from(new ArrayDeque<>(asList(7, 8))));
+		Sequence<Integer> appended = _123.append(Sequence.from(new ArrayDeque<>(Arrays.asList(4, 5, 6))))
+		                                 .append(Sequence.from(new ArrayDeque<>(Arrays.asList(7, 8))));
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
@@ -480,7 +479,7 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterables() {
-		Sequence<List<Integer>> sequence = Sequence.from(asList(asList(1, 2), asList(3, 4), asList(5, 6)));
+		Sequence<List<Integer>> sequence = Sequence.from(Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6)));
 
 		Function<List<Integer>, List<Integer>> identity = Function.identity();
 		Sequence<Integer> flatMap = sequence.flatten(identity);
@@ -492,7 +491,7 @@ public class SequenceTest {
 	public void flatMapLazy() {
 		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
 
-		Sequence<Integer> flatMap = Sequence.from(new ArrayDeque<>(asList(asList(1, 2), (Iterable<Integer>) () -> {
+		Sequence<Integer> flatMap = Sequence.from(new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}))).flatten(identity);
 
@@ -507,7 +506,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+				Sequence.from(new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
 
@@ -518,7 +517,7 @@ public class SequenceTest {
 	@Test
 	public void flatMapArrays() {
 		Sequence<Integer[]> sequence =
-				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
+				Sequence.from(new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
 
@@ -528,7 +527,7 @@ public class SequenceTest {
 	@Test
 	public void flattenIterables() {
 		Sequence<Integer> flattened =
-				Sequence.from(new ArrayDeque<>(asList(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))))
+				Sequence.from(new ArrayDeque<>(Arrays.asList(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))))
 				        .flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -536,7 +535,7 @@ public class SequenceTest {
 
 	@Test
 	public void flattenLazy() {
-		Sequence<Integer> flattened = Sequence.from(new ArrayDeque<>(asList(asList(1, 2), (Iterable<Integer>) () -> {
+		Sequence<Integer> flattened = Sequence.from(new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
 			throw new IllegalStateException();
 		}))).flatten();
 
@@ -552,7 +551,7 @@ public class SequenceTest {
 	@Test
 	public void flattenIterators() {
 		Sequence<Iterator<Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+				Sequence.from(new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -561,7 +560,7 @@ public class SequenceTest {
 	@Test
 	public void flattenArrays() {
 		Sequence<Integer[]> sequence =
-				Sequence.from(new ArrayDeque<>(asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
+				Sequence.from(new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
 
 		Sequence<Integer> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -570,7 +569,7 @@ public class SequenceTest {
 	@Test
 	public void flattenPairs() {
 		Sequence<Pair<String, Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+				Sequence.from(new ArrayDeque<>(Arrays.asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
 
 		Sequence<Object> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
@@ -579,7 +578,7 @@ public class SequenceTest {
 	@Test
 	public void flattenEntries() {
 		Sequence<Entry<String, Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+				Sequence.from(new ArrayDeque<>(Arrays.asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
 
 		Sequence<Object> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
@@ -593,7 +592,7 @@ public class SequenceTest {
 
 	@Test
 	public void mapIsLazy() {
-		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) () -> asList(1, null).iterator());
+		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) () -> Arrays.asList(1, null).iterator());
 
 		Sequence<String> mapped = sequence.map(Object::toString);
 
@@ -989,6 +988,26 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void asList() {
+		List<Integer> emptyList = empty.asList();
+		twice(() -> assertThat(emptyList, is(emptyIterable())));
+
+		List<Integer> singleList = _1.asList();
+		twice(() -> assertThat(singleList, contains(1)));
+
+		List<Integer> doubleList = _12.asList();
+		twice(() -> assertThat(doubleList, contains(1, 2)));
+
+		List<Integer> quintupleList = _12345.asList();
+		twice(() -> assertThat(quintupleList, contains(1, 2, 3, 4, 5)));
+
+		List<Integer> original = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> asList = Sequence.from(original).asList();
+		original.add(6);
+		twice(() -> assertThat(asList, contains(1, 2, 3, 4, 5, 6)));
+	}
+
+	@Test
 	public void join() {
 		twice(() -> assertThat(_12345.join(), is("12345")));
 	}
@@ -1171,15 +1190,15 @@ public class SequenceTest {
 		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
 
 		BiSequence<Integer, String> oneBiSequence =
-				Sequence.from(new ArrayDeque<Pair>(asList(Pair.of(1, "1")))).toBiSequence();
+				Sequence.from(new ArrayDeque<Pair>(Arrays.asList(Pair.of(1, "1")))).toBiSequence();
 		twice(() -> assertThat(oneBiSequence, contains(Pair.of(1, "1"))));
 
 		BiSequence<Integer, String> twoBiSequence =
-				Sequence.from(new ArrayDeque<Pair>(asList(Pair.of(1, "1"), Pair.of(2, "2")))).toBiSequence();
+				Sequence.from(new ArrayDeque<Pair>(Arrays.asList(Pair.of(1, "1"), Pair.of(2, "2")))).toBiSequence();
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
 		BiSequence<Integer, String> threeBiSequence =
-				Sequence.from(new ArrayDeque<Pair>(asList(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))))
+				Sequence.from(new ArrayDeque<Pair>(Arrays.asList(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))))
 				        .toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
@@ -1191,15 +1210,15 @@ public class SequenceTest {
 		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
 
 		EntrySequence<Integer, String> oneEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(asList(Maps.entry(1, "1")))).toEntrySequence();
+				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1")))).toEntrySequence();
 		twice(() -> assertThat(oneEntrySequence, contains(Maps.entry(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(asList(Maps.entry(1, "1"), Maps.entry(2, "2")))).toEntrySequence();
+				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2")))).toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Maps.entry(1, "1"), Maps.entry(2, "2"))));
 
 		EntrySequence<Integer, String> threeEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(asList(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3,
+				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3,
 				                                                                                              "3"))))
 				        .toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
@@ -1331,7 +1350,7 @@ public class SequenceTest {
 		Sequence<Integer> oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains(17)));
 
-		Sequence<Integer> twoDuplicatesDistinct = Sequence.from(new ArrayDeque<>(asList(17, 17))).distinct();
+		Sequence<Integer> twoDuplicatesDistinct = Sequence.from(new ArrayDeque<>(Arrays.asList(17, 17))).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17)));
 
 		Sequence<Integer> nineDistinct = nineRandom.distinct();
@@ -1731,7 +1750,7 @@ public class SequenceTest {
 		twice(() -> assertThat(repeatThree, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = Arrays.asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -1759,7 +1778,7 @@ public class SequenceTest {
 		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = Arrays.asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -1789,7 +1808,7 @@ public class SequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.generate(queue::poll);
 
 		assertThat(sequence, beginsWith(1, 2, 3, 4, 5, null));
@@ -1799,7 +1818,7 @@ public class SequenceTest {
 	@Test
 	public void multiGenerate() {
 		Sequence<Integer> sequence = Sequence.multiGenerate(() -> {
-			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+			Queue<Integer> queue = new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5));
 			return queue::poll;
 		});
 
@@ -1843,7 +1862,7 @@ public class SequenceTest {
 
 	@Test
 	public void removeAllAfterAppend() {
-		Sequence<Integer> appended = _1.append(new ArrayList<>(asList(2)));
+		Sequence<Integer> appended = _1.append(new ArrayList<>(Arrays.asList(2)));
 		appended.removeAll();
 
 		twice(() -> assertThat(appended, is(emptyIterable())));
