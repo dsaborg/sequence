@@ -204,6 +204,11 @@ public abstract class ListSequence<T> implements Sequence<T> {
 
 		@Override
 		public List<T> toList() {
+			return new ArrayList<>(list);
+		}
+
+		@Override
+		public List<T> asList() {
 			return list;
 		}
 
