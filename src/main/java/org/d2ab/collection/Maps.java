@@ -72,7 +72,7 @@ public class Maps {
 	public static <K, V, KK, VV> UnaryOperator<Entry<KK, VV>> asUnaryOperator(
 			BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
 			BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
-		return Functions.toUnaryOperator(asFunction(f), asFunction(g));
+		return Functions.composeAsUnaryOperator(asFunction(f), asFunction(g));
 	}
 
 	public static <K, V> BinaryOperator<Entry<K, V>> asBinaryOperator(QuaternaryFunction<? super K, ? super V, ? super

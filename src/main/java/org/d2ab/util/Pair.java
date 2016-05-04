@@ -19,11 +19,8 @@ package org.d2ab.util;
 import org.d2ab.function.Functions;
 import org.d2ab.function.QuaternaryFunction;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.function.*;
 
 import static java.util.Comparator.comparing;
@@ -36,12 +33,17 @@ import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
  * @param <L> the type of the "left" side of the pair.
  * @param <R> the type of the "right" side of the pair.
  */
-public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
+public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>> {
+	@SuppressWarnings("unchecked")
+	private static final Comparator<Pair> COMPARATOR =
+			comparing((Function<Pair, Object>) Pair::getLeft, naturalOrderNullsFirst()).thenComparing(
+					(Function<Pair, Object>) Pair::getRight, naturalOrderNullsFirst());
+
 	/**
 	 * @return a {@code Pair} of the two objects given.
 	 */
-	static <L, R> Pair<L, R> of(L left, R right) {
-		return new Base<L, R>() {
+	public static <L, R> Pair<L, R> of(L left, R right) {
+		return new Pair<L, R>() {
 			@Override
 			public L getLeft() {
 				return left;
@@ -57,8 +59,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a {@code Pair} that delegates to the given {@link Map.Entry}, key being left and value being right.
 	 */
-	static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
-		return new Base<K, V>() {
+	public static <K, V> Pair<K, V> from(Entry<? extends K, ? extends V> entry) {
+		return new Pair<K, V>() {
 			@Override
 			public K getLeft() {
 				return entry.getKey();
@@ -74,8 +76,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a unary {@code Pair} where both objects are the same.
 	 */
-	static <T> Pair<T, T> unary(T item) {
-		return new Base<T, T>() {
+	public static <T> Pair<T, T> unary(T item) {
+		return new Pair<T, T>() {
 			@Override
 			public T getLeft() {
 				return item;
@@ -88,52 +90,48 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 		};
 	}
 
-	static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends Pair<K, V>>
-			                                                        op) {
+	public static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(
+			BiFunction<? super K, ? super V, ? extends Pair<K, V>> op) {
 		return entry -> op.apply(entry.getLeft(), entry.getRight());
 	}
 
-	static <K, V, KK, VV> UnaryOperator<Pair<KK, VV>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
-			Pair<KK, VV>> f, BiFunction<? super KK, ? super VV, ? extends
-			Pair<K, V>> g) {
-
-		Function<? super Pair<K, V>, ? extends Pair<KK, VV>> f1 = asFunction(f);
-		Function<? super Pair<KK, VV>, ? extends Pair<K, V>> g1 = asFunction(g);
-		return Functions.toUnaryOperator(f1, g1);
+	public static <K, V, KK, VV> UnaryOperator<Pair<KK, VV>> asUnaryOperator(
+			BiFunction<? super K, ? super V, ? extends Pair<KK, VV>> f,
+			BiFunction<? super KK, ? super VV, ? extends Pair<K, V>> g) {
+		return Functions.composeAsUnaryOperator(asFunction(f), asFunction(g));
 	}
 
-	static <K, V> BinaryOperator<Pair<K, V>> asBinaryOperator(QuaternaryFunction<K, V, K, V, Pair<K, V>> f) {
+	public static <K, V> BinaryOperator<Pair<K, V>> asBinaryOperator(QuaternaryFunction<K, V, K, V, Pair<K, V>> f) {
 		return (e1, e2) -> f.apply(e1.getLeft(), e1.getRight(), e2.getLeft(), e2.getRight());
 	}
 
-	static <K, V, R> Function<? super Pair<K, V>, ? extends R> asFunction(BiFunction<? super K, ? super V, ? extends
-			R> mapper) {
+	public static <K, V, R> Function<Pair<K, V>, R> asFunction(BiFunction<? super K, ? super V, ? extends R> mapper) {
 		return entry -> mapper.apply(entry.getLeft(), entry.getRight());
 	}
 
-	static <K, V> Predicate<? super Pair<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
+	public static <K, V> Predicate<Pair<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
 		return entry -> predicate.test(entry.getLeft(), entry.getRight());
 	}
 
-	static <K, V> Consumer<? super Pair<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
+	public static <K, V> Consumer<Pair<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
 		return entry -> action.accept(entry.getLeft(), entry.getRight());
 	}
 
 	/**
 	 * @return the "left" component of the {@code Pair}.
 	 */
-	L getLeft();
+	public abstract L getLeft();
 
 	/**
 	 * @return the "right" component of the {@code Pair}.
 	 */
-	R getRight();
+	public abstract R getRight();
 
 	/**
 	 * @return the "left" component of the {@code Pair}.
 	 */
 	@Override
-	default L getKey() {
+	public L getKey() {
 		return getLeft();
 	}
 
@@ -141,7 +139,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * @return the "right" component of the {@code Pair}.
 	 */
 	@Override
-	default R getValue() {
+	public R getValue() {
 		return getRight();
 	}
 
@@ -149,15 +147,15 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * This operation is not supported and throws {@link UnsupportedOperationException}.
 	 */
 	@Override
-	default R setValue(R value) {
+	public R setValue(R value) {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * @return a {@code Pair} with the "left" and "right" components of this {@code Pair} swapped.
 	 */
-	default Pair<R, L> swap() {
-		return new Base<R, L>() {
+	public Pair<R, L> swap() {
+		return new Pair<R, L>() {
 			@Override
 			public R getLeft() {
 				return Pair.this.getRight();
@@ -173,8 +171,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a {@code Pair} where the "left" component is replaced with the given value.
 	 */
-	default <LL> Pair<LL, R> withLeft(LL left) {
-		return new Base<LL, R>() {
+	public <LL> Pair<LL, R> withLeft(LL left) {
+		return new Pair<LL, R>() {
 			@Override
 			public LL getLeft() {
 				return left;
@@ -190,8 +188,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a {@code Pair} where the "right" component is replaced with the given value.
 	 */
-	default <RR> Pair<L, RR> withRight(RR right) {
-		return new Base<L, RR>() {
+	public <RR> Pair<L, RR> withRight(RR right) {
+		return new Pair<L, RR>() {
 			@Override
 			public L getLeft() {
 				return Pair.this.getLeft();
@@ -208,8 +206,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * @return a {@code Pair} where the "left" component is shifted to the "right" component and replaced with the
 	 * given value.
 	 */
-	default <LL> Pair<LL, L> shiftRight(LL replacement) {
-		return new Base<LL, L>() {
+	public <LL> Pair<LL, L> shiftRight(LL replacement) {
+		return new Pair<LL, L>() {
 			@Override
 			public LL getLeft() {
 				return replacement;
@@ -226,8 +224,8 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * @return a {@code Pair} where the "right" component is shifted to the "left" component and replaced with the
 	 * given value.
 	 */
-	default <RR> Pair<R, RR> shiftLeft(RR replacement) {
-		return new Base<R, RR>() {
+	public <RR> Pair<R, RR> shiftLeft(RR replacement) {
+		return new Pair<R, RR>() {
 			@Override
 			public R getLeft() {
 				return Pair.this.getRight();
@@ -243,9 +241,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a {@code Pair} mapped from this {@code Pair} using the given mappers.
 	 */
-	default <LL, RR> Pair<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
-	                                  Function<? super R, ? extends RR> rightMapper) {
-		return new Base<LL, RR>() {
+	public <LL, RR> Pair<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
+	                                 Function<? super R, ? extends RR> rightMapper) {
+		return new Pair<LL, RR>() {
 			@Override
 			public LL getLeft() {
 				return leftMapper.apply(Pair.this.getLeft());
@@ -261,7 +259,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return a {@code Pair} mapped from this {@code Pair} using the given mapper.
 	 */
-	default <LL, RR> Pair<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
+	public <LL, RR> Pair<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
 		return mapper.apply(getLeft(), getRight());
 	}
 
@@ -269,7 +267,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * @return a the result of applying the given {@link BiFunction} to the "left" and "right" components of this
 	 * {@code Pair}.
 	 */
-	default <T> T apply(BiFunction<? super L, ? super R, ? extends T> function) {
+	public <T> T apply(BiFunction<? super L, ? super R, ? extends T> function) {
 		return function.apply(getLeft(), getRight());
 	}
 
@@ -277,7 +275,7 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * @return the result of testing the given {@link Predicate}s on the "left" and "right" components of this
 	 * {@code Pair}.
 	 */
-	default boolean test(Predicate<? super L> leftPredicate, Predicate<? super R> rightPredicate) {
+	public boolean test(Predicate<? super L> leftPredicate, Predicate<? super R> rightPredicate) {
 		return leftPredicate.test(getLeft()) && rightPredicate.test(getRight());
 	}
 
@@ -285,11 +283,11 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	 * @return the result of testing the given {@link BiPredicate}s on the "left" and "right" components of this
 	 * {@code Pair}.
 	 */
-	default boolean test(BiPredicate<? super L, ? super R> predicate) {
+	public boolean test(BiPredicate<? super L, ? super R> predicate) {
 		return predicate.test(getLeft(), getRight());
 	}
 
-	default Map<L, R> put(Map<L, R> map) {
+	public Map<L, R> put(Map<L, R> map) {
 		map.put(getLeft(), getRight());
 		return map;
 	}
@@ -297,69 +295,54 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 	/**
 	 * @return an iterator over the components of this {@code Pair}, containing exactly two elements.
 	 */
-	default <T> Iterator<T> iterator() {
-		@SuppressWarnings("unchecked")
-		PairIterator<?, ?, T> pairIterator = new PairIterator(this);
-		return pairIterator;
+	public <T> Iterator<T> iterator() {
+		return new PairIterator<>();
 	}
 
-	abstract class Base<L, R> implements Pair<L, R> {
-		@SuppressWarnings("unchecked")
-		private static final Comparator<Pair> COMPARATOR =
-				comparing((Function<Pair, Object>) Pair::getLeft, naturalOrderNullsFirst()).thenComparing(
-						(Function<Pair, Object>) Pair::getRight, naturalOrderNullsFirst());
-
-		public static String format(Object o) {
-			if (o instanceof String) {
-				return '"' + (String) o + '"';
-			}
-			return String.valueOf(o);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = (getLeft() != null) ? getLeft().hashCode() : 0;
-			result = (31 * result) + ((getRight() != null) ? getRight().hashCode() : 0);
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (!(o instanceof Pair))
-				return false;
-
-			Pair<?, ?> that = (Pair<?, ?>) o;
-
-			return ((getLeft() != null) ? getLeft().equals(that.getLeft()) : (that.getLeft() == null)) &&
-			       ((getRight() != null) ? getRight().equals(that.getRight()) : (that.getRight() == null));
-		}
-
-		@Override
-		public String toString() {
-			return "(" + format(getLeft()) + ", " + format(getRight()) + ')';
-		}
-
-		@Override
-		public int compareTo(Pair<L, R> that) {
-			return COMPARATOR.compare(this, that);
-		}
+	@Override
+	public int hashCode() {
+		int result = (getLeft() != null) ? getLeft().hashCode() : 0;
+		result = (31 * result) + ((getRight() != null) ? getRight().hashCode() : 0);
+		return result;
 	}
 
-	class PairIterator<L extends T, R extends T, T> implements Iterator<T> {
-		private final Pair<L, R> pair;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Pair))
+			return false;
+
+		Pair<?, ?> that = (Pair<?, ?>) o;
+		return Objects.equals(getLeft(), that.getLeft()) && Objects.equals(getRight(), that.getRight());
+	}
+
+	@Override
+	public String toString() {
+		return "(" + format(getLeft()) + ", " + format(getRight()) + ')';
+	}
+
+	private static String format(Object o) {
+		if (o instanceof String)
+			return '"' + (String) o + '"';
+
+		return String.valueOf(o);
+	}
+
+	@Override
+	public int compareTo(Pair<L, R> that) {
+		return COMPARATOR.compare(this, that);
+	}
+
+	private class PairIterator<T> implements Iterator<T> {
 		int index;
-
-		public PairIterator(Pair<L, R> pair) {
-			this.pair = pair;
-		}
 
 		@Override
 		public boolean hasNext() {
 			return index < 2;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public T next() {
 			if (!hasNext())
@@ -367,9 +350,9 @@ public interface Pair<L, R> extends Entry<L, R>, Comparable<Pair<L, R>> {
 
 			switch (++index) {
 				case 1:
-					return pair.getLeft();
+					return (T) getLeft();
 				case 2:
-					return pair.getRight();
+					return (T) getRight();
 				default:
 					// Can't happen due to above check
 					throw new IllegalStateException();

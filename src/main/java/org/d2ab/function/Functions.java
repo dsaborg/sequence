@@ -26,8 +26,12 @@ public class Functions {
 	private Functions() {
 	}
 
-	public static <T, U> UnaryOperator<U> toUnaryOperator(Function<? super T, ? extends U> f,
-	                                                      Function<? super U, ? extends T> g) {
-		return value -> f.apply(g.apply(value));
+	public static <T, U> UnaryOperator<U> composeAsUnaryOperator(Function<? super T, ? extends U> f,
+	                                                             Function<? super U, ? extends T> g) {
+		return asUnaryOperator(f.compose(g));
+	}
+
+	public static <U> UnaryOperator<U> asUnaryOperator(Function<? super U, ? extends U> function) {
+		return function::apply;
 	}
 }
