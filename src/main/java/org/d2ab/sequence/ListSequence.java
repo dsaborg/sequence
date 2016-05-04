@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
@@ -60,146 +59,16 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		return toList().iterator();
 	}
 
-	@Override
-	public Optional<T> get(long index) {
-		List<T> list = toList();
-		if (list.size() < index + 1)
-			return Optional.empty();
-
-		return Optional.of(list.get((int) index));
-	}
-
-	@Override
-	public Optional<T> last() {
-		List<T> list = toList();
-		if (list.size() < 1)
-			return Optional.empty();
-
-		return Optional.of(list.get(list.size() - 1));
-	}
-
-	@Override
-	public Stream<T> stream() {
-		return toList().stream();
-	}
-
-	@Override
-	public void removeAll() {
-		toList().clear();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return toList().isEmpty();
-	}
-
-	@Override
-	public <U extends Collection<T>> U collectInto(U collection) {
-		collection.addAll(toList());
-		return collection;
-	}
-
-	@Override
-	public boolean contains(T item) {
-		return toList().contains(item);
-	}
-
-	@Override
-	public Sequence<T> skip(long skip) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				List<T> list = ListSequence.this.toList();
-				return list.subList(Math.min(list.size(), (int) skip), list.size());
-			}
-		};
-	}
-
-	@Override
-	public Sequence<T> limit(long limit) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				List<T> list = ListSequence.this.toList();
-				return list.subList(0, Math.min(list.size(), (int) limit));
-			}
-		};
-	}
-
-	@Override
-	public Sequence<T> reverse() {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				return ReverseList.from(ListSequence.this.toList());
-			}
-		};
-	}
-
-	@Override
-	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				return FilteredList.from(ListSequence.this.toList(), predicate);
-			}
-		};
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public Sequence<T> sorted() {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				List sorted = new ArrayList<>(ListSequence.this.toList());
-				Collections.sort(sorted);
-				return (List<T>) unmodifiableList(sorted);
-			}
-		};
-	}
-
-	@Override
-	public Sequence<T> sorted(Comparator<? super T> comparator) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				List<T> sorted = new ArrayList<>(ListSequence.this.toList());
-				Collections.sort(sorted, comparator);
-				return unmodifiableList(sorted);
-			}
-		};
-	}
-
-	@Override
-	public Sequence<T> shuffle() {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				List<T> shuffled = new ArrayList<>(ListSequence.this.toList());
-				Collections.shuffle(shuffled);
-				return unmodifiableList(shuffled);
-			}
-		};
-	}
-
-	@Override
-	public Sequence<T> shuffle(Random random) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				List<T> shuffled = new ArrayList<>(ListSequence.this.toList());
-				Collections.shuffle(shuffled, random);
-				return unmodifiableList(shuffled);
-			}
-		};
-	}
-
 	private static class Transitive<T> extends ListSequence<T> {
 		private List<T> list;
 
 		private Transitive(List<T> list) {
 			this.list = list;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return list.iterator();
 		}
 
 		@Override
@@ -228,6 +97,48 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		}
 
 		@Override
+		public <U extends Collection<T>> U collectInto(U collection) {
+			collection.addAll(list);
+			return collection;
+		}
+
+		@Override
+		public void removeAll() {
+			list.clear();
+		}
+
+		@Override
+		public Stream<T> stream() {
+			return list.stream();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return list.isEmpty();
+		}
+
+		@Override
+		public boolean contains(T item) {
+			return list.contains(item);
+		}
+
+		@Override
+		public Optional<T> get(long index) {
+			if (list.size() < index + 1)
+				return Optional.empty();
+
+			return Optional.of(list.get((int) index));
+		}
+
+		@Override
+		public Optional<T> last() {
+			if (list.size() < 1)
+				return Optional.empty();
+
+			return Optional.of(list.get(list.size() - 1));
+		}
+
+		@Override
 		public Sequence<T> reverse() {
 			return new Transitive<>(ReverseList.from(list));
 		}
@@ -235,6 +146,55 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		@Override
 		public Sequence<T> filter(Predicate<? super T> predicate) {
 			return new Transitive<>(FilteredList.from(list, predicate));
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public Sequence<T> sorted() {
+			return new ListSequence<T>() {
+				@Override
+				public List<T> toList() {
+					List sorted = Transitive.this.toList();
+					Collections.sort(sorted);
+					return (List<T>) unmodifiableList(sorted);
+				}
+			};
+		}
+
+		@Override
+		public Sequence<T> sorted(Comparator<? super T> comparator) {
+			return new ListSequence<T>() {
+				@Override
+				public List<T> toList() {
+					List<T> sorted = Transitive.this.toList();
+					Collections.sort(sorted, comparator);
+					return unmodifiableList(sorted);
+				}
+			};
+		}
+
+		@Override
+		public Sequence<T> shuffle() {
+			return new ListSequence<T>() {
+				@Override
+				public List<T> toList() {
+					List<T> shuffled = Transitive.this.toList();
+					Collections.shuffle(shuffled);
+					return unmodifiableList(shuffled);
+				}
+			};
+		}
+
+		@Override
+		public Sequence<T> shuffle(Random random) {
+			return new ListSequence<T>() {
+				@Override
+				public List<T> toList() {
+					List<T> shuffled = Transitive.this.toList();
+					Collections.shuffle(shuffled, random);
+					return unmodifiableList(shuffled);
+				}
+			};
 		}
 	}
 }

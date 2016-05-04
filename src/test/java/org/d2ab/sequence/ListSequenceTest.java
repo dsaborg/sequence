@@ -29,7 +29,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -40,17 +39,17 @@ import static org.junit.Assert.fail;
 
 public class ListSequenceTest {
 	private final Sequence<Integer> empty = ListSequence.empty();
-	private final Sequence<Integer> _1 = ListSequence.from(new ArrayList<>(asList(1)));
-	private final Sequence<Integer> _12 = ListSequence.from(new ArrayList<>(asList(1, 2)));
-	private final Sequence<Integer> _123 = ListSequence.from(new ArrayList<>(asList(1, 2, 3)));
-	private final Sequence<Integer> _1234 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4)));
-	private final Sequence<Integer> _12345 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5)));
-	private final Sequence<Integer> _123456789 = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-	private final Sequence<Integer> oneRandom = ListSequence.from(new ArrayList<>(asList(17)));
-	private final Sequence<Integer> twoRandom = ListSequence.from(new ArrayList<>(asList(17, 32)));
-	private final Sequence<Integer> threeRandom = ListSequence.from(new ArrayList<>(asList(2, 3, 1)));
+	private final Sequence<Integer> _1 = ListSequence.from(new ArrayList<>(Arrays.asList(1)));
+	private final Sequence<Integer> _12 = ListSequence.from(new ArrayList<>(Arrays.asList(1, 2)));
+	private final Sequence<Integer> _123 = ListSequence.from(new ArrayList<>(Arrays.asList(1, 2, 3)));
+	private final Sequence<Integer> _1234 = ListSequence.from(new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
+	private final Sequence<Integer> _12345 = ListSequence.from(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)));
+	private final Sequence<Integer> _123456789 = ListSequence.from(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	private final Sequence<Integer> oneRandom = ListSequence.from(new ArrayList<>(Arrays.asList(17)));
+	private final Sequence<Integer> twoRandom = ListSequence.from(new ArrayList<>(Arrays.asList(17, 32)));
+	private final Sequence<Integer> threeRandom = ListSequence.from(new ArrayList<>(Arrays.asList(2, 3, 1)));
 	private final Sequence<Integer> nineRandom =
-			ListSequence.from(new ArrayList<>(asList(67, 5, 43, 3, 5, 7, 24, 5, 67)));
+			ListSequence.from(new ArrayList<>(Arrays.asList(67, 5, 43, 3, 5, 7, 24, 5, 67)));
 
 	@Test
 	public void ofOne() {
@@ -81,8 +80,8 @@ public class ListSequenceTest {
 		twice(() -> {
 			empty.forEach(i -> fail("Should not get called"));
 			_1.forEach(i -> assertThat(i, is(in(singletonList(1)))));
-			_12.forEach(i -> assertThat(i, is(in(asList(1, 2)))));
-			_123.forEach(i -> assertThat(i, is(in(asList(1, 2, 3)))));
+			_12.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2)))));
+			_123.forEach(i -> assertThat(i, is(in(Arrays.asList(1, 2, 3)))));
 		});
 	}
 
@@ -169,7 +168,7 @@ public class ListSequenceTest {
 
 	@Test
 	public void appendAndUpdate() {
-		ArrayList<Integer> list = new ArrayList<>(asList(1, 2, 3));
+		ArrayList<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3));
 
 		Sequence<Integer> appended = ListSequence.from(list).append(Iterables.of(4, 5, 6)).append(Iterables.of(7, 8));
 
@@ -182,7 +181,7 @@ public class ListSequenceTest {
 
 	@Test
 	public void filterAppendAndUpdate() {
-		ArrayList<Integer> list = new ArrayList<>(asList(1, 2, 3));
+		ArrayList<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3));
 
 		Sequence<Integer> appended = ListSequence.from(list)
 		                                         .filter(x -> x % 2 != 0)
@@ -400,11 +399,23 @@ public class ListSequenceTest {
 
 	@Test
 	public void toList() {
-		List<Integer> original = asList(1, 2, 3, 4, 5, 6, 7);
+		List<Integer> original = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
 		Sequence<Integer> sequence = ListSequence.from(original);
 
 		twice(() -> {
 			List<Integer> list = sequence.toList();
+			assertThat(list, not(sameInstance(original)));
+			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
+		});
+	}
+
+	@Test
+	public void asList() {
+		List<Integer> original = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
+		Sequence<Integer> sequence = ListSequence.from(original);
+
+		twice(() -> {
+			List<Integer> list = sequence.asList();
 			assertThat(list, sameInstance(original));
 			assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
 		});
