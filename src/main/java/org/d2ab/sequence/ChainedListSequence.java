@@ -82,7 +82,7 @@ public class ChainedListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> get(long index) {
+	public Optional<T> at(long index) {
 		for (List<T> list : lists) {
 			if (list.size() > index)
 				return Optional.of(list.get((int) index));

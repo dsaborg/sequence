@@ -1180,7 +1180,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@code Sequence}.
 	 */
 	default Optional<T> first() {
-		return get(0);
+		return at(0);
 	}
 
 	/**
@@ -1188,7 +1188,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * elements in the {@code Sequence}.
 	 */
 	default Optional<T> second() {
-		return get(1);
+		return at(1);
 	}
 
 	/**
@@ -1196,15 +1196,28 @@ public interface Sequence<T> extends Iterable<T> {
 	 * elements in the {@code Sequence}.
 	 */
 	default Optional<T> third() {
-		return get(2);
+		return at(2);
 	}
 
 	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than
 	 * the index.
+	 *
+	 * @since 1.2
 	 */
-	default Optional<T> get(long index) {
+	default Optional<T> at(long index) {
 		return Iterators.get(iterator(), index);
+	}
+
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than
+	 * the index.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
+	 */
+	@Deprecated
+	default Optional<T> get(long index) {
+		return at(index);
 	}
 
 	/**

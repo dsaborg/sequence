@@ -123,8 +123,8 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		}
 
 		@Override
-		public Optional<T> get(long index) {
-			if (list.size() < index + 1)
+		public Optional<T> at(long index) {
+			if (index >= list.size())
 				return Optional.empty();
 
 			return Optional.of(list.get((int) index));
