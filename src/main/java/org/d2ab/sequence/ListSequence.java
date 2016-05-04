@@ -49,32 +49,48 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	}
 
 	public static <T> Sequence<T> from(List<T> list) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				return list;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public Sequence<T> append(Iterable<T> iterable) {
-				if (iterable instanceof List)
-					return ChainedListSequence.from(toList(), (List<T>) iterable);
-
-				return new ChainingIterable<>(this, iterable)::iterator;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public Sequence<T> append(T... items) {
-				return append(asList(items));
-			}
-		};
+		return new Transitive<>(list);
 	}
+
+	@Override
+	public abstract List<T> toList();
 
 	@Override
 	public Iterator<T> iterator() {
 		return toList().iterator();
+	}
+
+	@Override
+	public Optional<T> get(long index) {
+		List<T> list = toList();
+		if (list.size() < index + 1)
+			return Optional.empty();
+
+		return Optional.of(list.get((int) index));
+	}
+
+	@Override
+	public Optional<T> last() {
+		List<T> list = toList();
+		if (list.size() < 1)
+			return Optional.empty();
+
+		return Optional.of(list.get(list.size() - 1));
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return toList().stream();
+	}
+
+	@Override
+	public void removeAll() {
+		toList().clear();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return toList().isEmpty();
 	}
 
 	@Override
@@ -100,9 +116,6 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public abstract List<T> toList();
-
-	@Override
 	public <U extends Collection<T>> U collectInto(U collection) {
 		collection.addAll(toList());
 		return collection;
@@ -114,6 +127,16 @@ public abstract class ListSequence<T> implements Sequence<T> {
 			@Override
 			public List<T> toList() {
 				return ReverseList.from(ListSequence.this.toList());
+			}
+		};
+	}
+
+	@Override
+	public Sequence<T> filter(Predicate<? super T> predicate) {
+		return new ListSequence<T>() {
+			@Override
+			public List<T> toList() {
+				return FilteredList.from(ListSequence.this.toList(), predicate);
 			}
 		};
 	}
@@ -175,46 +198,41 @@ public abstract class ListSequence<T> implements Sequence<T> {
 		};
 	}
 
-	@Override
-	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return new ListSequence<T>() {
-			@Override
-			public List<T> toList() {
-				return FilteredList.from(ListSequence.this.toList(), predicate);
-			}
-		};
-	}
+	private static class Transitive<T> extends ListSequence<T> {
+		private List<T> list;
 
-	@Override
-	public Optional<T> get(long index) {
-		List<T> list = toList();
-		if (list.size() < index + 1)
-			return Optional.empty();
+		private Transitive(List<T> list) {
+			this.list = list;
+		}
 
-		return Optional.of(list.get((int) index));
-	}
+		@Override
+		public List<T> toList() {
+			return list;
+		}
 
-	@Override
-	public Optional<T> last() {
-		List<T> list = toList();
-		if (list.size() < 1)
-			return Optional.empty();
+		@SuppressWarnings("unchecked")
+		@Override
+		public Sequence<T> append(Iterable<T> iterable) {
+			if (iterable instanceof List)
+				return ChainedListSequence.from(list, (List<T>) iterable);
 
-		return Optional.of(list.get(list.size() - 1));
-	}
+			return new ChainingIterable<>(this, iterable)::iterator;
+		}
 
-	@Override
-	public Stream<T> stream() {
-		return toList().stream();
-	}
+		@SuppressWarnings("unchecked")
+		@Override
+		public Sequence<T> append(T... items) {
+			return append(asList(items));
+		}
 
-	@Override
-	public void removeAll() {
-		toList().clear();
-	}
+		@Override
+		public Sequence<T> reverse() {
+			return new Transitive<>(ReverseList.from(list));
+		}
 
-	@Override
-	public boolean isEmpty() {
-		return toList().isEmpty();
+		@Override
+		public Sequence<T> filter(Predicate<? super T> predicate) {
+			return new Transitive<>(FilteredList.from(list, predicate));
+		}
 	}
 }
