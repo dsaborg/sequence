@@ -1098,7 +1098,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * @return the count of elements in this {@code EntrySequence}.
 	 */
-	default int count() {
+	default long count() {
 		return Iterables.count(this);
 	}
 

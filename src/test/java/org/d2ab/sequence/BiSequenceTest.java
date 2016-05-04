@@ -1163,10 +1163,10 @@ public class BiSequenceTest {
 
 	@Test
 	public void count() {
-		twice(() -> assertThat(empty.count(), is(0)));
-		twice(() -> assertThat(_1.count(), is(1)));
-		twice(() -> assertThat(_12.count(), is(2)));
-		twice(() -> assertThat(_123456789.count(), is(9)));
+		twice(() -> assertThat(empty.count(), is(0L)));
+		twice(() -> assertThat(_1.count(), is(1L)));
+		twice(() -> assertThat(_12.count(), is(2L)));
+		twice(() -> assertThat(_123456789.count(), is(9L)));
 	}
 
 	@Test

@@ -16,10 +16,12 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.FilteredList;
 import org.d2ab.collection.ReverseList;
 import org.d2ab.iterable.ChainingIterable;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -167,6 +169,16 @@ public abstract class ListSequence<T> implements Sequence<T> {
 				List<T> shuffled = new ArrayList<>(list);
 				Collections.shuffle(shuffled, md);
 				return unmodifiableList(shuffled);
+			}
+		};
+	}
+
+	@Override
+	public Sequence<T> filter(Predicate<? super T> predicate) {
+		return new ListSequence<T>() {
+			@Override
+			public List<T> toList() {
+				return FilteredList.from(ListSequence.this.toList(), predicate);
 			}
 		};
 	}

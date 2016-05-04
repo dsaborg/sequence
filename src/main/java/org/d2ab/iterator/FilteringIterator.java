@@ -33,10 +33,9 @@ public class FilteringIterator<T> extends ReferenceIterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (hasNext) {
-			// already checked
+		// already checked?
+		if (hasNext)
 			return true;
-		}
 
 		do {
 			// find next matching, bail out if EOF
@@ -52,9 +51,8 @@ public class FilteringIterator<T> extends ReferenceIterator<T> {
 
 	@Override
 	public T next() {
-		if (!hasNext()) {
+		if (!hasNext())
 			throw new NoSuchElementException();
-		}
 
 		hasNext = false;
 		return next;
