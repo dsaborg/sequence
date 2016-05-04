@@ -48,12 +48,14 @@ public class SequenceTest {
 	private final Sequence<Integer> _123 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3)));
 	private final Sequence<Integer> _1234 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4)));
 	private final Sequence<Integer> _12345 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5)));
-	private final Sequence<Integer> _123456789 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	private final Sequence<Integer> _123456789 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8,
+	                                                                                          9)));
 	private final Sequence<Integer> oneRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(17)));
 	private final Sequence<Integer> twoRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(17, 32)));
 	private final Sequence<Integer> threeRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(2, 3, 1)));
-	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(67, 5, 43, 3, 5, 7, 24, 5,
-	                                                                                   67)));
+	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(67, 5, 43, 3, 5, 7, 24,
+	                                                                                          5, 67)));
+	private final Sequence<?> mixed = Sequence.of("1", 1, 'x', 1.0, "2", 2, 'y', 2.0);
 
 	@Test
 	public void ofOne() {
@@ -175,7 +177,8 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfLists() {
-		Sequence<Integer> sequenceFromIterables = Sequence.concat(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6), Arrays.asList(7, 8, 9));
+		Sequence<Integer> sequenceFromIterables = Sequence.concat(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6),
+		                                                          Arrays.asList(7, 8, 9));
 
 		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
@@ -377,8 +380,25 @@ public class SequenceTest {
 	@Test
 	public void filter() {
 		Sequence<Integer> filtered = _123456789.filter(i -> (i % 2) == 0);
-
 		twice(() -> assertThat(filtered, contains(2, 4, 6, 8)));
+	}
+
+	@Test
+	public void filterInstanceOf() {
+		Sequence<?> strings = mixed.filter(String.class);
+		twice(() -> assertThat(strings, contains("1", "2")));
+
+		Sequence<?> numbers = mixed.filter(Number.class);
+		twice(() -> assertThat(numbers, contains(1, 1.0, 2, 2.0)));
+
+		Sequence<?> integers = mixed.filter(Integer.class);
+		twice(() -> assertThat(integers, contains(1, 2)));
+
+		Sequence<?> doubles = mixed.filter(Double.class);
+		twice(() -> assertThat(doubles, contains(1.0, 2.0)));
+
+		Sequence<?> chars = mixed.filter(Character.class);
+		twice(() -> assertThat(chars, contains('x', 'y')));
 	}
 
 	@Test
@@ -479,7 +499,8 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapIterables() {
-		Sequence<List<Integer>> sequence = Sequence.from(Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6)));
+		Sequence<List<Integer>> sequence = Sequence.from(
+				Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6)));
 
 		Function<List<Integer>, List<Integer>> identity = Function.identity();
 		Sequence<Integer> flatMap = sequence.flatten(identity);
@@ -491,9 +512,10 @@ public class SequenceTest {
 	public void flatMapLazy() {
 		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
 
-		Sequence<Integer> flatMap = Sequence.from(new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
-			throw new IllegalStateException();
-		}))).flatten(identity);
+		Sequence<Integer> flatMap = Sequence.from(
+				new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
+					throw new IllegalStateException();
+				}))).flatten(identity);
 
 		twice(() -> {
 			Iterator<Integer> iterator = flatMap.iterator(); // ISE if not lazy - expected later below
@@ -506,7 +528,8 @@ public class SequenceTest {
 	@Test
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+				Sequence.from(
+						new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
 
@@ -517,7 +540,9 @@ public class SequenceTest {
 	@Test
 	public void flatMapArrays() {
 		Sequence<Integer[]> sequence =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
+				Sequence.from(
+						new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5,
+						                                                                                       6})));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
 
@@ -527,7 +552,8 @@ public class SequenceTest {
 	@Test
 	public void flattenIterables() {
 		Sequence<Integer> flattened =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))))
+				Sequence.from(
+						new ArrayDeque<>(Arrays.asList(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))))
 				        .flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -535,9 +561,10 @@ public class SequenceTest {
 
 	@Test
 	public void flattenLazy() {
-		Sequence<Integer> flattened = Sequence.from(new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
-			throw new IllegalStateException();
-		}))).flatten();
+		Sequence<Integer> flattened = Sequence.from(
+				new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
+					throw new IllegalStateException();
+				}))).flatten();
 
 		twice(() -> {
 			// IllegalStateException if not lazy - see below
@@ -551,7 +578,8 @@ public class SequenceTest {
 	@Test
 	public void flattenIterators() {
 		Sequence<Iterator<Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+				Sequence.from(
+						new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -560,7 +588,9 @@ public class SequenceTest {
 	@Test
 	public void flattenArrays() {
 		Sequence<Integer[]> sequence =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6})));
+				Sequence.from(
+						new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5,
+						                                                                                       6})));
 
 		Sequence<Integer> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
@@ -578,7 +608,8 @@ public class SequenceTest {
 	@Test
 	public void flattenEntries() {
 		Sequence<Entry<String, Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+				Sequence.from(
+						new ArrayDeque<>(Arrays.asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
 
 		Sequence<Object> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
@@ -1214,12 +1245,13 @@ public class SequenceTest {
 		twice(() -> assertThat(oneEntrySequence, contains(Maps.entry(1, "1"))));
 
 		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2")))).toEntrySequence();
+				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2"))))
+				        .toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Maps.entry(1, "1"), Maps.entry(2, "2"))));
 
 		EntrySequence<Integer, String> threeEntrySequence =
 				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3,
-				                                                                                              "3"))))
+				                                                                                                     "3"))))
 				        .toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
@@ -1444,6 +1476,39 @@ public class SequenceTest {
 		twice(() -> assertThat(_123.none(x -> x > 0), is(false)));
 		twice(() -> assertThat(_123.none(x -> x > 2), is(false)));
 		twice(() -> assertThat(_123.none(x -> x > 4), is(true)));
+	}
+
+	@Test
+	public void anyInstanceOf() {
+		twice(() -> assertThat(mixed.any(String.class), is(true)));
+		twice(() -> assertThat(mixed.any(Number.class), is(true)));
+		twice(() -> assertThat(mixed.any(Integer.class), is(true)));
+		twice(() -> assertThat(mixed.any(Double.class), is(true)));
+		twice(() -> assertThat(mixed.any(Character.class), is(true)));
+		twice(() -> assertThat(mixed.any(Object.class), is(true)));
+		twice(() -> assertThat(mixed.any(Long.class), is(false)));
+	}
+
+	@Test
+	public void allInstanceOf() {
+		twice(() -> assertThat(mixed.all(String.class), is(false)));
+		twice(() -> assertThat(mixed.all(Number.class), is(false)));
+		twice(() -> assertThat(mixed.all(Integer.class), is(false)));
+		twice(() -> assertThat(mixed.all(Double.class), is(false)));
+		twice(() -> assertThat(mixed.all(Character.class), is(false)));
+		twice(() -> assertThat(mixed.all(Object.class), is(true)));
+		twice(() -> assertThat(mixed.all(Long.class), is(false)));
+	}
+
+	@Test
+	public void noneInstanceOf() {
+		twice(() -> assertThat(mixed.none(String.class), is(false)));
+		twice(() -> assertThat(mixed.none(Number.class), is(false)));
+		twice(() -> assertThat(mixed.none(Integer.class), is(false)));
+		twice(() -> assertThat(mixed.none(Double.class), is(false)));
+		twice(() -> assertThat(mixed.none(Character.class), is(false)));
+		twice(() -> assertThat(mixed.none(Object.class), is(false)));
+		twice(() -> assertThat(mixed.none(Long.class), is(true)));
 	}
 
 	@Test

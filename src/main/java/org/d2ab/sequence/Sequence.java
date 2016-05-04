@@ -831,6 +831,14 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Filter the elements in this {@code Sequence}, keeping only the elements are instances of the given
+	 * {@link Class}.
+	 */
+	default Sequence<T> filter(Class<?> target) {
+		return () -> new FilteringIterator<>(iterator(), target::isInstance);
+	}
+
+	/**
 	 * Filter the elements in this {@code Sequence} while peeking at the previous element in the iteration, keeping
 	 * only the elements that match the given {@link BiPredicate}.
 	 * <p>
@@ -1458,6 +1466,33 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default boolean any(Predicate<? super T> predicate) {
 		return Iterables.any(this, predicate);
+	}
+
+	/**
+	 * @return true if all elements in this {@code Sequence} are instances of the given {@link Class}, false otherwise.
+	 *
+	 * @since 1.2
+	 */
+	default boolean all(Class<?> target) {
+		return all(target::isInstance);
+	}
+
+	/**
+	 * @return true if no elements in this {@code Sequence} are instances of the given {@link Class}, false otherwise.
+	 *
+	 * @since 1.2
+	 */
+	default boolean none(Class<?> target) {
+		return !any(target);
+	}
+
+	/**
+	 * @return true if any element in this {@code Sequence} is an instance of the given {@link Class}, false otherwise.
+	 *
+	 * @since 1.2
+	 */
+	default boolean any(Class<?> target) {
+		return any(target::isInstance);
 	}
 
 	/**
