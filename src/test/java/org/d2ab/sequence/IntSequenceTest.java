@@ -661,6 +661,23 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void at() {
+		twice(() -> {
+			assertThat(empty.at(0), is(OptionalInt.empty()));
+			assertThat(empty.at(17), is(OptionalInt.empty()));
+
+			assertThat(_1.at(0), is(OptionalInt.of(1)));
+			assertThat(_1.at(1), is(OptionalInt.empty()));
+			assertThat(_1.at(17), is(OptionalInt.empty()));
+
+			assertThat(_12345.at(0), is(OptionalInt.of(1)));
+			assertThat(_12345.at(1), is(OptionalInt.of(2)));
+			assertThat(_12345.at(4), is(OptionalInt.of(5)));
+			assertThat(_12345.at(17), is(OptionalInt.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		IntSequence stepThree = _123456789.step(3);
 		twice(() -> assertThat(stepThree, containsInts(1, 4, 7)));

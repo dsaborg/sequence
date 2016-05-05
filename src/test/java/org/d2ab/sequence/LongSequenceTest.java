@@ -615,6 +615,23 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void at() {
+		twice(() -> {
+			assertThat(empty.at(0), is(OptionalLong.empty()));
+			assertThat(empty.at(17), is(OptionalLong.empty()));
+
+			assertThat(_1.at(0), is(OptionalLong.of(1)));
+			assertThat(_1.at(1), is(OptionalLong.empty()));
+			assertThat(_1.at(17), is(OptionalLong.empty()));
+
+			assertThat(_12345.at(0), is(OptionalLong.of(1)));
+			assertThat(_12345.at(1), is(OptionalLong.of(2)));
+			assertThat(_12345.at(4), is(OptionalLong.of(5)));
+			assertThat(_12345.at(17), is(OptionalLong.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		LongSequence stepThree = _123456789.step(3L);
 		twice(() -> assertThat(stepThree, containsLongs(1L, 4L, 7L)));

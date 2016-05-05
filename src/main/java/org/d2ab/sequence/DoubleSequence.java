@@ -764,11 +764,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * doubles in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble first() {
-		DoubleIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalDouble.empty();
-
-		return OptionalDouble.of(iterator.nextDouble());
+		return at(0);
 	}
 
 	/**
@@ -776,13 +772,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * than two doubles in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble second() {
-		DoubleIterator iterator = iterator();
-
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalDouble.empty();
-
-		return OptionalDouble.of(iterator.nextDouble());
+		return at(1);
 	}
 
 	/**
@@ -790,14 +780,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * than three doubles in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble third() {
-		DoubleIterator iterator = iterator();
-
-		iterator.skip();
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalDouble.empty();
-
-		return OptionalDouble.of(iterator.nextDouble());
+		return at(2);
 	}
 
 	/**
@@ -814,6 +797,22 @@ public interface DoubleSequence extends DoubleIterable {
 			last = iterator.nextDouble(); while (iterator.hasNext());
 
 		return OptionalDouble.of(last);
+	}
+
+	/**
+	 * @return the {@code double} at the given index, or an empty {@link OptionalDouble} if the {@code DoubleSequence}
+	 * is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default OptionalDouble at(long index) {
+		DoubleIterator iterator = iterator();
+		iterator.skip(index);
+
+		if (!iterator.hasNext())
+			return OptionalDouble.empty();
+
+		return OptionalDouble.of(iterator.nextDouble());
 	}
 
 	/**

@@ -926,11 +926,7 @@ public interface LongSequence extends LongIterable {
 	 * longs in the {@code LongSequence}.
 	 */
 	default OptionalLong first() {
-		LongIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
-
-		return OptionalLong.of(iterator.nextLong());
+		return at(0);
 	}
 
 	/**
@@ -938,13 +934,7 @@ public interface LongSequence extends LongIterable {
 	 * longs in the {@code LongSequence}.
 	 */
 	default OptionalLong second() {
-		LongIterator iterator = iterator();
-
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
-
-		return OptionalLong.of(iterator.nextLong());
+		return at(1);
 	}
 
 	/**
@@ -952,14 +942,7 @@ public interface LongSequence extends LongIterable {
 	 * three longs in the {@code LongSequence}.
 	 */
 	default OptionalLong third() {
-		LongIterator iterator = iterator();
-
-		iterator.skip();
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalLong.empty();
-
-		return OptionalLong.of(iterator.nextLong());
+		return at(2);
 	}
 
 	/**
@@ -976,6 +959,22 @@ public interface LongSequence extends LongIterable {
 			last = iterator.nextLong(); while (iterator.hasNext());
 
 		return OptionalLong.of(last);
+	}
+
+	/**
+	 * @return the {@code long} at the given index, or an empty {@link OptionalLong} if the {@code LongSequence} is
+	 * smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default OptionalLong at(long index) {
+		LongIterator iterator = iterator();
+		iterator.skip(index);
+
+		if (!iterator.hasNext())
+			return OptionalLong.empty();
+
+		return OptionalLong.of(iterator.nextLong());
 	}
 
 	/**

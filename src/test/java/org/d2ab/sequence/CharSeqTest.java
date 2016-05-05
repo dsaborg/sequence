@@ -679,6 +679,23 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void at() {
+		twice(() -> {
+			assertThat(empty.at(0), is(OptionalChar.empty()));
+			assertThat(empty.at(17), is(OptionalChar.empty()));
+
+			assertThat(a.at(0), is(OptionalChar.of('a')));
+			assertThat(a.at(1), is(OptionalChar.empty()));
+			assertThat(a.at(17), is(OptionalChar.empty()));
+
+			assertThat(abcde.at(0), is(OptionalChar.of('a')));
+			assertThat(abcde.at(1), is(OptionalChar.of('b')));
+			assertThat(abcde.at(4), is(OptionalChar.of('e')));
+			assertThat(abcde.at(17), is(OptionalChar.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		CharSeq stepThree = abcdefghi.step(3);
 		twice(() -> assertThat(stepThree, containsChars('a', 'd', 'g')));

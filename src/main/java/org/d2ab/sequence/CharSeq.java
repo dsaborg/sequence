@@ -871,11 +871,7 @@ public interface CharSeq extends CharIterable {
 	 * in the {@code CharSeq}.
 	 */
 	default OptionalChar first() {
-		CharIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalChar.empty();
-
-		return OptionalChar.of(iterator.nextChar());
+		return at(0);
 	}
 
 	/**
@@ -883,13 +879,7 @@ public interface CharSeq extends CharIterable {
 	 * characters in the {@code CharSeq}.
 	 */
 	default OptionalChar second() {
-		CharIterator iterator = iterator();
-
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalChar.empty();
-
-		return OptionalChar.of(iterator.nextChar());
+		return at(1);
 	}
 
 	/**
@@ -897,14 +887,7 @@ public interface CharSeq extends CharIterable {
 	 * three characters in the {@code CharSeq}.
 	 */
 	default OptionalChar third() {
-		CharIterator iterator = iterator();
-
-		iterator.skip();
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalChar.empty();
-
-		return OptionalChar.of(iterator.nextChar());
+		return at(2);
 	}
 
 	/**
@@ -921,6 +904,22 @@ public interface CharSeq extends CharIterable {
 			last = iterator.nextChar(); while (iterator.hasNext());
 
 		return OptionalChar.of(last);
+	}
+
+	/**
+	 * @return the {@code char} at the given index, or an empty {@link OptionalChar} if the {@code CharSeq} is
+	 * smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default OptionalChar at(long index) {
+		CharIterator iterator = iterator();
+		iterator.skip(index);
+
+		if (!iterator.hasNext())
+			return OptionalChar.empty();
+
+		return OptionalChar.of(iterator.nextChar());
 	}
 
 	/**

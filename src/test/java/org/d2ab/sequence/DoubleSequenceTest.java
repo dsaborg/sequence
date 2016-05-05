@@ -627,6 +627,23 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void at() {
+		twice(() -> {
+			assertThat(empty.at(0), is(OptionalDouble.empty()));
+			assertThat(empty.at(17), is(OptionalDouble.empty()));
+
+			assertThat(_1.at(0), is(OptionalDouble.of(1)));
+			assertThat(_1.at(1), is(OptionalDouble.empty()));
+			assertThat(_1.at(17), is(OptionalDouble.empty()));
+
+			assertThat(_12345.at(0), is(OptionalDouble.of(1)));
+			assertThat(_12345.at(1), is(OptionalDouble.of(2)));
+			assertThat(_12345.at(4), is(OptionalDouble.of(5)));
+			assertThat(_12345.at(17), is(OptionalDouble.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		DoubleSequence stepThree = _123456789.step(3);
 		twice(() -> assertThat(stepThree, containsDoubles(1.0, 4.0, 7.0)));

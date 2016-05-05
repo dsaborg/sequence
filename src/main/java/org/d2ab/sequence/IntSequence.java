@@ -927,11 +927,7 @@ public interface IntSequence extends IntIterable {
 	 * ints in the {@code IntSequence}.
 	 */
 	default OptionalInt first() {
-		IntIterator iterator = iterator();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
-
-		return OptionalInt.of(iterator.nextInt());
+		return at(0);
 	}
 
 	/**
@@ -939,13 +935,7 @@ public interface IntSequence extends IntIterable {
 	 * ints in the {@code IntSequence}.
 	 */
 	default OptionalInt second() {
-		IntIterator iterator = iterator();
-
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
-
-		return OptionalInt.of(iterator.nextInt());
+		return at(1);
 	}
 
 	/**
@@ -953,14 +943,7 @@ public interface IntSequence extends IntIterable {
 	 * three ints in the {@code IntSequence}.
 	 */
 	default OptionalInt third() {
-		IntIterator iterator = iterator();
-
-		iterator.skip();
-		iterator.skip();
-		if (!iterator.hasNext())
-			return OptionalInt.empty();
-
-		return OptionalInt.of(iterator.nextInt());
+		return at(2);
 	}
 
 	/**
@@ -977,6 +960,22 @@ public interface IntSequence extends IntIterable {
 			last = iterator.nextInt(); while (iterator.hasNext());
 
 		return OptionalInt.of(last);
+	}
+
+	/**
+	 * @return the {@code int} at the given index, or an empty {@link OptionalInt} if the {@code IntSequence} is
+	 * smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default OptionalInt at(long index) {
+		IntIterator iterator = iterator();
+		iterator.skip(index);
+
+		if (!iterator.hasNext())
+			return OptionalInt.empty();
+
+		return OptionalInt.of(iterator.nextInt());
 	}
 
 	/**
