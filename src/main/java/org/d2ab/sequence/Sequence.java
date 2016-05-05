@@ -530,7 +530,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #until(Object)
 	 */
 	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
-		return () -> new RecursiveIterator<>(f.apply(seed), f.compose(g)::apply);
+		return recurse(f.apply(seed), f.compose(g)::apply);
 	}
 
 	/**
@@ -1206,15 +1206,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * elements in the {@code Sequence}.
 	 */
 	default Optional<T> last() {
-		Iterator<T> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		T last;
-		do
-			last = iterator.next(); while (iterator.hasNext());
-
-		return Optional.of(last);
+		return Iterators.last(iterator());
 	}
 
 	/**

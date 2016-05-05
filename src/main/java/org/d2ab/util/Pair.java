@@ -16,7 +16,6 @@
 
 package org.d2ab.util;
 
-import org.d2ab.function.Functions;
 import org.d2ab.function.QuaternaryFunction;
 
 import java.util.*;
@@ -93,12 +92,6 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>> 
 	public static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(
 			BiFunction<? super K, ? super V, ? extends Pair<K, V>> op) {
 		return entry -> op.apply(entry.getLeft(), entry.getRight());
-	}
-
-	public static <K, V, KK, VV> UnaryOperator<Pair<KK, VV>> asUnaryOperator(
-			BiFunction<? super K, ? super V, ? extends Pair<KK, VV>> f,
-			BiFunction<? super KK, ? super VV, ? extends Pair<K, V>> g) {
-		return Functions.composeAsUnaryOperator(asFunction(f), asFunction(g));
 	}
 
 	public static <K, V> BinaryOperator<Pair<K, V>> asBinaryOperator(QuaternaryFunction<K, V, K, V, Pair<K, V>> f) {

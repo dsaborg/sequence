@@ -809,9 +809,8 @@ public interface DoubleSequence extends DoubleIterable {
 			return OptionalDouble.empty();
 
 		double last;
-		do {
-			last = iterator.nextDouble();
-		} while (iterator.hasNext());
+		do
+			last = iterator.nextDouble(); while (iterator.hasNext());
 
 		return OptionalDouble.of(last);
 	}

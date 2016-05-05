@@ -348,7 +348,9 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(K keySeed, V valueSeed,
 	                                                    BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
 	                                                    BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
-		return () -> new RecursiveIterator<>(f.apply(keySeed, valueSeed), Maps.asUnaryOperator(f, g));
+		Function<Entry<K, V>, Entry<KK, VV>> f1 = Maps.asFunction(f);
+		Function<Entry<KK, VV>, Entry<K, V>> g1 = Maps.asFunction(g);
+		return recurse(f.apply(keySeed, valueSeed), f1.compose(g1)::apply);
 	}
 
 	/**
@@ -946,16 +948,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> last() {
-		Iterator<Entry<K, V>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		Entry<K, V> last;
-		do {
-			last = iterator.next();
-		} while (iterator.hasNext());
-
-		return Optional.of(last);
+		return Iterators.last(iterator());
 	}
 
 	/**

@@ -213,7 +213,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #of
 	 * @see #from(Iterable)
-	 * @see #from(EntrySequence)
 	 */
 	static <K, V> BiSequence<K, V> from(Map<K, V> map) {
 		return from(Sequence.from(map.entrySet()).map(Pair::from));
@@ -337,7 +336,9 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	static <L, R, LL, RR> BiSequence<LL, RR> recurse(L leftSeed, R rightSeed,
 	                                                 BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> f,
 	                                                 BiFunction<? super LL, ? super RR, ? extends Pair<L, R>> g) {
-		return recurse(f.apply(leftSeed, rightSeed), Pair.asUnaryOperator(f, g));
+		Function<Pair<L, R>, Pair<LL, RR>> f1 = Pair.asFunction(f);
+		Function<Pair<LL, RR>, Pair<L, R>> g1 = Pair.asFunction(g);
+		return recurse(f.apply(leftSeed, rightSeed), f1.compose(g1)::apply);
 	}
 
 	/**
@@ -349,8 +350,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 */
 	default <LL, RR> BiSequence<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
-		Function<? super Pair<L, R>, ? extends Pair<LL, RR>> function = Pair.asFunction(mapper);
-		return map(function);
+		return map(Pair.asFunction(mapper));
 	}
 
 	/**
@@ -896,7 +896,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> first() {
-		return get(0);
+		return at(0);
 	}
 
 	/**
@@ -904,7 +904,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * in the {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> second() {
-		return get(1);
+		return at(1);
 	}
 
 	/**
@@ -912,15 +912,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * in the {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> third() {
-		return get(2);
-	}
-
-	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@code BiSequence} is smaller
-	 * than the index.
-	 */
-	default Optional<Pair<L, R>> get(long index) {
-		return Iterators.get(iterator(), index);
+		return at(2);
 	}
 
 	/**
@@ -928,16 +920,128 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@code BiSequence}.
 	 */
 	default Optional<Pair<L, R>> last() {
-		Iterator<Pair<L, R>> iterator = iterator();
-		if (!iterator.hasNext())
-			return Optional.empty();
+		return Iterators.last(iterator());
+	}
 
-		Pair<L, R> last;
-		do {
-			last = iterator.next();
-		} while (iterator.hasNext());
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code BiSequence} is smaller
+	 * than the index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> at(long index) {
+		return Iterators.get(iterator(), index);
+	}
 
-		return Optional.of(last);
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code BiSequence} is smaller
+	 * than the index.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
+	 */
+	@Deprecated
+	default Optional<Pair<L, R>> get(long index) {
+		return at(index);
+	}
+
+	/**
+	 * @return the first pair of this {@code BiSequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> first(Predicate<? super Pair<L, R>> predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the second pair of this {@code BiSequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there is one or less matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> second(Predicate<? super Pair<L, R>> predicate) {
+		return at(1, predicate);
+	}
+
+	/**
+	 * @return the third pair of this {@code BiSequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there is two or less matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> third(Predicate<? super Pair<L, R>> predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last pair of this {@code BiSequence} the matches the given predicate, or an empty {@link Optional}
+	 * if there are no matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> last(Predicate<? super Pair<L, R>> predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the pair at the given index out of the pairs matching the given predicate, or an empty
+	 * {@link Optional} if the {@code BiSequence} of matching pairs is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> at(long index, Predicate<? super Pair<L, R>> predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
+	 * @return the first pair of this {@code BiSequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> first(BiPredicate<? super L, ? super R> predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the second pair of this {@code BiSequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there is one or less matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> second(BiPredicate<? super L, ? super R> predicate) {
+		return at(1, predicate);
+	}
+
+	/**
+	 * @return the third pair of this {@code BiSequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there is two or less matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> third(BiPredicate<? super L, ? super R> predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last pair of this {@code BiSequence} the matches the given predicate, or an empty {@link Optional}
+	 * if there are no matching pairs in the {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> last(BiPredicate<? super L, ? super R> predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the pair at the given index out of the pairs matching the given predicate, or an empty
+	 * {@link Optional} if the {@code BiSequence} of matching pairs is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> at(long index, BiPredicate<? super L, ? super R> predicate) {
+		return filter(predicate).at(index);
 	}
 
 	/**

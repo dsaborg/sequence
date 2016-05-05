@@ -16,7 +16,6 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.function.Functions;
 import org.d2ab.function.QuaternaryFunction;
 
 import java.util.*;
@@ -67,12 +66,6 @@ public class Maps {
 	public static <K, V> UnaryOperator<Entry<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
 			Entry<K, V>> op) {
 		return entry -> op.apply(entry.getKey(), entry.getValue());
-	}
-
-	public static <K, V, KK, VV> UnaryOperator<Entry<KK, VV>> asUnaryOperator(
-			BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
-			BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
-		return Functions.composeAsUnaryOperator(asFunction(f), asFunction(g));
 	}
 
 	public static <K, V> BinaryOperator<Entry<K, V>> asBinaryOperator(QuaternaryFunction<? super K, ? super V, ? super

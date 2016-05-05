@@ -972,9 +972,8 @@ public interface IntSequence extends IntIterable {
 			return OptionalInt.empty();
 
 		int last;
-		do {
-			last = iterator.nextInt();
-		} while (iterator.hasNext());
+		do
+			last = iterator.nextInt(); while (iterator.hasNext());
 
 		return OptionalInt.of(last);
 	}

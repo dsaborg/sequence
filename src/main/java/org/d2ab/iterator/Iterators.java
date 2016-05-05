@@ -160,7 +160,7 @@ public class Iterators {
 	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
 	 * items than the index.
 	 */
-	public static <T> Optional<T> get(Iterator<T> iterator, long index) {
+	public static <T> Optional<T> get(Iterator<? extends T> iterator, long index) {
 		skip(iterator, index);
 		if (!iterator.hasNext())
 			return Optional.empty();
@@ -169,9 +169,24 @@ public class Iterators {
 	}
 
 	/**
+	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no
+	 * elements in the {@link Iterator}.
+	 */
+	public static <T> Optional<T> last(Iterator<? extends T> iterator) {
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T last;
+		do
+			last = iterator.next(); while (iterator.hasNext());
+
+		return Optional.of(last);
+	}
+
+	/**
 	 * Collect the given {@link Iterator} into a {@link List}.
 	 */
-	public static <T> List<T> toList(Iterator<T> iterator) {
+	public static <T> List<T> toList(Iterator<? extends T> iterator) {
 		List<T> list = new ArrayList<>();
 		iterator.forEachRemaining(list::add);
 		return list;

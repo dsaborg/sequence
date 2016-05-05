@@ -971,9 +971,8 @@ public interface LongSequence extends LongIterable {
 			return OptionalLong.empty();
 
 		long last;
-		do {
-			last = iterator.nextLong();
-		} while (iterator.hasNext());
+		do
+			last = iterator.nextLong(); while (iterator.hasNext());
 
 		return OptionalLong.of(last);
 	}

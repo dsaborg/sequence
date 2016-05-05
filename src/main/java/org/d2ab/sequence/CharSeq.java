@@ -917,9 +917,8 @@ public interface CharSeq extends CharIterable {
 			return OptionalChar.empty();
 
 		char last;
-		do {
-			last = iterator.nextChar();
-		} while (iterator.hasNext());
+		do
+			last = iterator.nextChar(); while (iterator.hasNext());
 
 		return OptionalChar.of(last);
 	}

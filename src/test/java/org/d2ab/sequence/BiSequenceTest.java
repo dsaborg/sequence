@@ -898,19 +898,6 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void get() {
-		twice(() -> assertThat(empty.get(0), is(Optional.empty())));
-		twice(() -> assertThat(empty.get(17), is(Optional.empty())));
-		twice(() -> assertThat(_1.get(0), is(Optional.of(Pair.of("1", 1)))));
-		twice(() -> assertThat(_1.get(1), is(Optional.empty())));
-		twice(() -> assertThat(_1.get(17), is(Optional.empty())));
-		twice(() -> assertThat(_12345.get(0), is(Optional.of(Pair.of("1", 1)))));
-		twice(() -> assertThat(_12345.get(1), is(Optional.of(Pair.of("2", 2)))));
-		twice(() -> assertThat(_12345.get(4), is(Optional.of(Pair.of("5", 5)))));
-		twice(() -> assertThat(_12345.get(17), is(Optional.empty())));
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -921,24 +908,172 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void at() {
+		twice(() -> {
+			assertThat(empty.at(0), is(Optional.empty()));
+			assertThat(empty.at(17), is(Optional.empty()));
+
+			assertThat(_1.at(0), is(Optional.of(Pair.of("1", 1))));
+			assertThat(_1.at(1), is(Optional.empty()));
+			assertThat(_1.at(17), is(Optional.empty()));
+
+			assertThat(_12345.at(0), is(Optional.of(Pair.of("1", 1))));
+			assertThat(_12345.at(1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_12345.at(4), is(Optional.of(Pair.of("5", 5))));
+			assertThat(_12345.at(17), is(Optional.empty()));
+		});
+	}
+
+	@Test
+	public void firstByPredicate() {
+		twice(() -> {
+			assertThat(empty.first(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_1.first(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_12.first(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_123.first(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
+		});
+	}
+
+	@Test
+	public void secondByPredicate() {
+		twice(() -> {
+			assertThat(empty.second(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_1.second(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_12.second(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_123.second(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
+			assertThat(_1234.second(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
+		});
+	}
+
+	@Test
+	public void thirdByPredicate() {
+		twice(() -> {
+			assertThat(empty.third(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_1.third(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_12.third(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_123.third(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_1234.third(p -> p.getRight() > 1), is(Optional.of(Pair.of("4", 4))));
+			assertThat(_12345.third(p -> p.getRight() > 1), is(Optional.of(Pair.of("4", 4))));
+		});
+	}
+
+	@Test
+	public void lastByPredicate() {
+		twice(() -> {
+			assertThat(empty.last(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_1.last(p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_12.last(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_123.last(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
+		});
+	}
+
+	@Test
+	public void atByPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(empty.at(17, p -> p.getRight() > 1), is(Optional.empty()));
+
+			assertThat(_1.at(0, p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_1.at(17, p -> p.getRight() > 1), is(Optional.empty()));
+
+			assertThat(_12.at(0, p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_12.at(1, p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_12.at(17, p -> p.getRight() > 1), is(Optional.empty()));
+
+			assertThat(_12345.at(0, p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_12345.at(1, p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
+			assertThat(_12345.at(3, p -> p.getRight() > 1), is(Optional.of(Pair.of("5", 5))));
+			assertThat(_12345.at(4, p -> p.getRight() > 1), is(Optional.empty()));
+			assertThat(_12345.at(17, p -> p.getRight() > 1), is(Optional.empty()));
+		});
+	}
+
+	@Test
+	public void firstByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.first((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_1.first((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_12.first((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_123.first((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
+		});
+	}
+
+	@Test
+	public void secondByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.second((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_1.second((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_12.second((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_123.second((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
+			assertThat(_1234.second((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
+		});
+	}
+
+	@Test
+	public void thirdByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.third((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_1.third((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_12.third((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_123.third((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_1234.third((l, r) -> r > 1), is(Optional.of(Pair.of("4", 4))));
+			assertThat(_12345.third((l, r) -> r > 1), is(Optional.of(Pair.of("4", 4))));
+		});
+	}
+
+	@Test
+	public void lastByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.last((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_1.last((l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_12.last((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_123.last((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
+		});
+	}
+
+	@Test
+	public void atByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, (l, r) -> r > 1), is(Optional.empty()));
+			assertThat(empty.at(17, (l, r) -> r > 1), is(Optional.empty()));
+
+			assertThat(_1.at(0, (l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_1.at(17, (l, r) -> r > 1), is(Optional.empty()));
+
+			assertThat(_12.at(0, (l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_12.at(1, (l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_12.at(17, (l, r) -> r > 1), is(Optional.empty()));
+
+			assertThat(_12345.at(0, (l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
+			assertThat(_12345.at(1, (l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
+			assertThat(_12345.at(3, (l, r) -> r > 1), is(Optional.of(Pair.of("5", 5))));
+			assertThat(_12345.at(4, (l, r) -> r > 1), is(Optional.empty()));
+			assertThat(_12345.at(17, (l, r) -> r > 1), is(Optional.empty()));
+		});
+	}
+
+	@Test
 	public void window() {
-		twice(() -> assertThat(_12345.window(3), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                  contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
-		                                                  contains(Pair.of("3", 3), Pair.of("4", 4),
-		                                                           Pair.of("5", 5)))));
+		Sequence<BiSequence<String, Integer>> windowed = _12345.window(3);
+		twice(() -> assertThat(windowed,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
+		                                contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@Test
 	public void windowWithStep() {
-		twice(() -> assertThat(_12345.window(3, 2),
+		Sequence<BiSequence<String, Integer>> windowed = _12345.window(3, 2);
+		twice(() -> assertThat(windowed,
 		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
 		                                contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@Test
 	public void batch() {
-		twice(() -> assertThat(_12345.batch(3), contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
-		                                                 contains(Pair.of("4", 4), Pair.of("5", 5)))));
+		Sequence<BiSequence<String, Integer>> batched = _12345.batch(3);
+		twice(() -> assertThat(batched, contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                         contains(Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@SuppressWarnings("unchecked")
