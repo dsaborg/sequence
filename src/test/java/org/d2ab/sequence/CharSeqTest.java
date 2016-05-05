@@ -771,11 +771,11 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void count() {
-		twice(() -> assertThat(empty.count(), is(0L)));
-		twice(() -> assertThat(a.count(), is(1L)));
-		twice(() -> assertThat(ab.count(), is(2L)));
-		twice(() -> assertThat(abcdefghi.count(), is(9L)));
+	public void size() {
+		twice(() -> assertThat(empty.size(), is(0L)));
+		twice(() -> assertThat(a.size(), is(1L)));
+		twice(() -> assertThat(ab.size(), is(2L)));
+		twice(() -> assertThat(abcdefghi.size(), is(9L)));
 	}
 
 	@Test
@@ -861,7 +861,7 @@ public class CharSeqTest {
 	public void chars() {
 		assertThat(CharSeq.all().limit(5), containsChars('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
-		assertThat(CharSeq.all().count(), is(65536L));
+		assertThat(CharSeq.all().size(), is(65536L));
 	}
 
 	@Test
@@ -869,14 +869,14 @@ public class CharSeqTest {
 		assertThat(CharSeq.startingAt('A').limit(5), containsChars('A', 'B', 'C', 'D', 'E'));
 		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
 		assertThat(CharSeq.startingAt(Character.MAX_VALUE), containsChars(Character.MAX_VALUE));
-		assertThat(CharSeq.startingAt('\u8000').count(), is(32768L));
+		assertThat(CharSeq.startingAt('\u8000').size(), is(32768L));
 	}
 
 	@Test
 	public void charRange() {
 		assertThat(CharSeq.range('A', 'F'), containsChars('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(CharSeq.range('F', 'A'), containsChars('F', 'E', 'D', 'C', 'B', 'A'));
-		assertThat(CharSeq.range('A', 'F').count(), is(6L));
+		assertThat(CharSeq.range('A', 'F').size(), is(6L));
 	}
 
 	@Test

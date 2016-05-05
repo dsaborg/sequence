@@ -149,7 +149,7 @@ public class ReverseListTest {
 	}
 
 	@Test
-	public void removeAll() {
+	public void clear() {
 		assertThat(reverseEmpty.removeAll(asList(1, 2)), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 

@@ -1224,11 +1224,11 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void count() {
-		twice(() -> assertThat(empty.count(), is(0L)));
-		twice(() -> assertThat(_1.count(), is(1L)));
-		twice(() -> assertThat(_12.count(), is(2L)));
-		twice(() -> assertThat(_123456789.count(), is(9L)));
+	public void size() {
+		twice(() -> assertThat(empty.size(), is(0L)));
+		twice(() -> assertThat(_1.size(), is(1L)));
+		twice(() -> assertThat(_12.size(), is(2L)));
+		twice(() -> assertThat(_123456789.size(), is(9L)));
 	}
 
 	@Test
@@ -1578,7 +1578,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void removeAll() {
+	public void clear() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		EntrySequence<String, Integer> filtered = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);

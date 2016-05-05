@@ -952,9 +952,21 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * @return the number of characters in this {@code CharSeq}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return iterator().count();
+	}
+
+	/**
+	 * @return the count of characters in this {@code CharSeq}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1205,7 +1217,7 @@ public interface CharSeq extends CharIterable {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**

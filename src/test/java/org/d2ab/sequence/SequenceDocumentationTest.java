@@ -101,7 +101,7 @@ public class SequenceDocumentationTest {
 	}
 
 	@Test
-	public void removeAll() {
+	public void clear() {
 		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
 		Sequence.from(list).filter(x -> x % 2 != 0).clear();

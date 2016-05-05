@@ -100,6 +100,11 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public long size() {
+		return list.size();
+	}
+
+	@Override
 	public Stream<T> stream() {
 		return list.stream();
 	}

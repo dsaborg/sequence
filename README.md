@@ -309,6 +309,17 @@ for (String number : Arrays.asList("One", "Two", "Three"))
 assertThat(joined.toString(), is("One, Two, Three"));
 ```
 
+```Java
+CharSeq hexGenerator = CharSeq.random("0-9", "A-F").limit(8);
+
+String hexNumber1 = hexGenerator.asString();
+String hexNumber2 = hexGenerator.asString();
+
+assertTrue(hexNumber1.matches("[0-9A-F]{8}"));
+assertTrue(hexNumber2.matches("[0-9A-F]{8}"));
+assertThat(hexNumber1, is(not(hexNumber2)));
+```
+
 See also:
 [BiSequence](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/BiSequence.html),
 [BiSequence#recurse(L, R, BiFunction)](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/BiSequence.html#recurse-L-R-java.util.function.BiFunction-),

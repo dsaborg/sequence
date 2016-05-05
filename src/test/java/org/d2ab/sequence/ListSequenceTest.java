@@ -926,11 +926,11 @@ public class ListSequenceTest {
 	}
 
 	@Test
-	public void count() {
-		twice(() -> assertThat(empty.count(), is(0L)));
-		twice(() -> assertThat(_1.count(), is(1L)));
-		twice(() -> assertThat(_12.count(), is(2L)));
-		twice(() -> assertThat(_123456789.count(), is(9L)));
+	public void size() {
+		twice(() -> assertThat(empty.size(), is(0L)));
+		twice(() -> assertThat(_1.size(), is(1L)));
+		twice(() -> assertThat(_12.size(), is(2L)));
+		twice(() -> assertThat(_123456789.size(), is(9L)));
 	}
 
 	@Test

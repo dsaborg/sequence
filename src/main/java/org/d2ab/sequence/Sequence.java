@@ -1543,9 +1543,21 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * @return the count of elements in this {@code Sequence}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return Iterables.count(this);
+	}
+
+	/**
+	 * @return the count of elements in this {@code Sequence}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1857,7 +1869,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**

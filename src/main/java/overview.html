@@ -170,7 +170,7 @@
     assertThat(sequence, contains(2, 4, 6));
 }</pre>
 
-<p>See also: {@link org.d2ab.sequence.Sequence#removeAll()}</p>
+<p>See also: {@link org.d2ab.sequence.Sequence#clear()}</p>
 
 <h2>Streams</h2>
 
@@ -217,6 +217,17 @@
         joined.append(delimiter.next()).append(number);
 
     assertThat(joined.toString(), is("One, Two, Three"));
+}</pre>
+
+<pre>{@code
+    CharSeq hexGenerator = CharSeq.random("0-9", "A-F").limit(8);
+
+    String hexNumber1 = hexGenerator.asString();
+    String hexNumber2 = hexGenerator.asString();
+
+    assertTrue(hexNumber1.matches("[0-9A-F]{8}"));
+    assertTrue(hexNumber2.matches("[0-9A-F]{8}"));
+    assertThat(hexNumber1, is(not(hexNumber2)));
 }</pre>
 
 <p>See also:</p>

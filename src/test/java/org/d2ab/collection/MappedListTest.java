@@ -163,7 +163,7 @@ public class MappedListTest {
 	}
 
 	@Test
-	public void removeAll() {
+	public void clear() {
 		assertThat(mappedEmpty.removeAll(asList("1", "2")), is(false));
 		assertThat(mappedEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));

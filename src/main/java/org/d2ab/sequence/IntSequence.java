@@ -1008,9 +1008,21 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * @return the number of ints in this {@code IntSequence}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return iterator().count();
+	}
+
+	/**
+	 * @return the count of ints in this {@code IntSequence}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1280,7 +1292,7 @@ public interface IntSequence extends IntIterable {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**

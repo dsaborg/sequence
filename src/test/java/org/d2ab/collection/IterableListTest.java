@@ -136,7 +136,7 @@ public class IterableListTest {
 	}
 
 	@Test
-	public void removeAll() {
+	public void clear() {
 		assertThat(listEmpty.removeAll(asList(1, 3)), is(false));
 		assertThat(listEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));

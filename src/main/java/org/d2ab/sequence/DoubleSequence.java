@@ -838,9 +838,21 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * @return the number of doubles in this {@code DoubleSequence}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return iterator().count();
+	}
+
+	/**
+	 * @return the count of doubles in this {@code DoubleSequence}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1123,7 +1135,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**

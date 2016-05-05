@@ -1091,9 +1091,21 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * @return the count of elements in this {@code EntrySequence}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return Iterables.count(this);
+	}
+
+	/**
+	 * @return the count of elements in this {@code EntrySequence}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1395,7 +1407,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**

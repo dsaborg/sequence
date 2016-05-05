@@ -74,7 +74,7 @@ public class ChainedListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public long count() {
+	public long size() {
 		long count = 0;
 		for (List<T> list : lists)
 			count += list.size();

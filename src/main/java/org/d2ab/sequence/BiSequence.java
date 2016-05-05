@@ -1189,9 +1189,21 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * @return the count of elements in this {@code BiSequence}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return Iterables.count(this);
+	}
+
+	/**
+	 * @return the count of elements in this {@code BiSequence}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1494,7 +1506,7 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**

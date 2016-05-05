@@ -1007,9 +1007,21 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * @return the number of longs in this {@code LongSequence}.
+	 *
+	 * @since 1.2
 	 */
-	default long count() {
+	default long size() {
 		return iterator().count();
+	}
+
+	/**
+	 * @return the count of longs in this {@code LongSequence}.
+	 *
+	 * @deprecated Use {@link #size()} instead.
+	 */
+	@Deprecated
+	default long count() {
+		return size();
 	}
 
 	/**
@@ -1254,7 +1266,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	@Deprecated
 	default void removeAll() {
-		Iterables.removeAll(this);
+		clear();
 	}
 
 	/**
