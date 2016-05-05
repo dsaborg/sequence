@@ -100,6 +100,31 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void forEachIndexed() {
+		twice(() -> {
+			empty.forEachIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEachIndexed((e, i) -> {
+				assertThat(e, is(value.get()));
+				assertThat(i, is((long) value.getAndIncrement() - 1));
+			});
+
+			value.set(1);
+			_12.forEachIndexed((e, i) -> {
+				assertThat(e, is(value.get()));
+				assertThat(i, is((long) value.getAndIncrement() - 1));
+			});
+
+			value.set(1);
+			_12345.forEachIndexed((e, i) -> {
+				assertThat(e, is(value.get()));
+				assertThat(i, is((long) value.getAndIncrement() - 1));
+			});
+		});
+	}
+
+	@Test
 	public void iterator() {
 		twice(() -> {
 			Iterator iterator = _123.iterator();

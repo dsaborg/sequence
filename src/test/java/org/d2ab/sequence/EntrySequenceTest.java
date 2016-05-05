@@ -153,6 +153,31 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void forEachBiConsumer() {
+		twice(() -> {
+			empty.forEach((k, v) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach((k, v) -> {
+				assertThat(k, is(String.valueOf(value.get())));
+				assertThat(v, is(value.getAndIncrement()));
+			});
+
+			value.set(1);
+			_12.forEach((k, v) -> {
+				assertThat(k, is(String.valueOf(value.get())));
+				assertThat(v, is(value.getAndIncrement()));
+			});
+
+			value.set(1);
+			_12345.forEach((k, v) -> {
+				assertThat(k, is(String.valueOf(value.get())));
+				assertThat(v, is(value.getAndIncrement()));
+			});
+		});
+	}
+
+	@Test
 	public void iterator() {
 		twice(() -> {
 			Iterator iterator = _123.iterator();

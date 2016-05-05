@@ -1020,6 +1020,7 @@ public interface IntSequence extends IntIterable {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextInt()))
 				return false;
+
 		return true;
 	}
 
@@ -1037,6 +1038,7 @@ public interface IntSequence extends IntIterable {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextInt()))
 				return true;
+
 		return false;
 	}
 
@@ -1296,6 +1298,7 @@ public interface IntSequence extends IntIterable {
 		for (int item : items)
 			if (!iterator().contains(item))
 				return false;
+
 		return true;
 	}
 
@@ -1308,6 +1311,7 @@ public interface IntSequence extends IntIterable {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.nextInt()))
 				return true;
+
 		return false;
 	}
 }

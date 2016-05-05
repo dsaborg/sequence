@@ -1901,4 +1901,16 @@ public interface Sequence<T> extends Iterable<T> {
 	default boolean containsAny(Iterable<? extends T> items) {
 		return Iterables.containsAny(this, items);
 	}
+
+	/**
+	 * Perform the given action for each element in this {@code Sequence}, with the index of each element passed as the
+	 * second parameter in the action.
+	 *
+	 * @since 1.2
+	 */
+	default void forEachIndexed(ObjLongConsumer<? super T> action) {
+		long index = 0;
+		for (T each : this)
+			action.accept(each, index++);
+	}
 }

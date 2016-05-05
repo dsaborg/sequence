@@ -1547,4 +1547,13 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	default boolean containsAny(Iterable<? extends Pair<L, R>> pairs) {
 		return Iterables.containsAny(this, pairs);
 	}
+
+	/**
+	 * Perform the given action for each element in this {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default void forEach(BiConsumer<? super L, ? super R> action) {
+		forEach(Pair.asConsumer(action));
+	}
 }

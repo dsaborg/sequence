@@ -144,6 +144,31 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void forEachBiConsumer() {
+		twice(() -> {
+			empty.forEach((l, r) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach((l, r) -> {
+				assertThat(l, is(String.valueOf(value.get())));
+				assertThat(r, is(value.getAndIncrement()));
+			});
+
+			value.set(1);
+			_12.forEach((l, r) -> {
+				assertThat(l, is(String.valueOf(value.get())));
+				assertThat(r, is(value.getAndIncrement()));
+			});
+
+			value.set(1);
+			_12345.forEach((l, r) -> {
+				assertThat(l, is(String.valueOf(value.get())));
+				assertThat(r, is(value.getAndIncrement()));
+			});
+		});
+	}
+
+	@Test
 	public void iterator() {
 		twice(() -> {
 			Iterator iterator = _123.iterator();

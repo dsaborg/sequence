@@ -1448,4 +1448,13 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	default boolean containsAny(Iterable<? extends Entry<K, V>> entries) {
 		return Iterables.containsAny(this, entries);
 	}
+
+	/**
+	 * Perform the given action for each element in this {@code EntrySequence}.
+	 *
+	 * @since 1.2
+	 */
+	default void forEach(BiConsumer<? super K, ? super V> action) {
+		forEach(Maps.asConsumer(action));
+	}
 }
