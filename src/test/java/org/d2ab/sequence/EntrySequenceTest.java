@@ -1465,28 +1465,78 @@ public class EntrySequenceTest {
 
 	@Test
 	public void shuffle() {
-		assertThat(empty.shuffle(), is(emptyIterable()));
-		assertThat(_1.shuffle(), contains(Maps.entry("1", 1)));
-		assertThat(_12.shuffle(), containsInAnyOrder(Maps.entry("1", 1), Maps.entry("2", 2)));
-		assertThat(_123.shuffle(), containsInAnyOrder(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)));
-		assertThat(_123456789.shuffle(),
-		           containsInAnyOrder(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
-		                              Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
-		                              Maps.entry("9", 9)));
+		EntrySequence<String, Integer> emptyShuffled = empty.shuffle();
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+
+		EntrySequence<String, Integer> oneShuffled = _1.shuffle();
+		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
+
+		EntrySequence<String, Integer> twoShuffled = _12.shuffle();
+		twice(() -> assertThat(twoShuffled, containsInAnyOrder(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> threeShuffled = _123.shuffle();
+		twice(() -> assertThat(threeShuffled,
+		                       containsInAnyOrder(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		EntrySequence<String, Integer> nineShuffled = _123456789.shuffle();
+		twice(() -> assertThat(nineShuffled,
+		                       containsInAnyOrder(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
+		                                          Maps.entry("4", 4), Maps.entry("5", 5), Maps.entry("6", 6),
+		                                          Maps.entry("7", 7), Maps.entry("8", 8), Maps.entry("9", 9))));
 	}
 
 	@Test
 	public void shuffleWithRandomSource() {
-		Random seed = new Random(17);
+		EntrySequence<String, Integer> emptyShuffled = empty.shuffle(new Random(17));
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
 
-		assertThat(empty.shuffle(seed), is(emptyIterable()));
-		assertThat(_1.shuffle(seed), contains(Maps.entry("1", 1)));
-		assertThat(_12.shuffle(seed), contains(Maps.entry("1", 1), Maps.entry("2", 2)));
-		assertThat(_123.shuffle(seed), contains(Maps.entry("3", 3), Maps.entry("2", 2), Maps.entry("1", 1)));
-		assertThat(_123456789.shuffle(seed),
-		           contains(Maps.entry("2", 2), Maps.entry("9", 9), Maps.entry("4", 4), Maps.entry("6", 6),
-		                    Maps.entry("8", 8), Maps.entry("7", 7), Maps.entry("5", 5), Maps.entry("1", 1),
-		                    Maps.entry("3", 3)));
+		EntrySequence<String, Integer> oneShuffled = _1.shuffle(new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
+
+		EntrySequence<String, Integer> twoShuffled = _12.shuffle(new Random(17));
+		assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2)));
+		assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2)));
+		assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2)));
+		assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2)));
+		assertThat(twoShuffled, contains(Maps.entry("2", 2), Maps.entry("1", 1)));
+		assertThat(twoShuffled, contains(Maps.entry("2", 2), Maps.entry("1", 1)));
+		assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2)));
+		assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2)));
+
+		EntrySequence<String, Integer> threeShuffled = _123.shuffle(new Random(17));
+		assertThat(threeShuffled, contains(Maps.entry("3", 3), Maps.entry("2", 2), Maps.entry("1", 1)));
+		assertThat(threeShuffled, contains(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("2", 2)));
+
+		EntrySequence<String, Integer> nineShuffled = _123456789.shuffle(new Random(17));
+		assertThat(nineShuffled,
+		           contains(Maps.entry("1", 1), Maps.entry("8", 8), Maps.entry("4", 4), Maps.entry("2", 2),
+		                    Maps.entry("6", 6), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("9", 9),
+		                    Maps.entry("7", 7)));
+		assertThat(nineShuffled,
+		           contains(Maps.entry("6", 6), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("2", 2),
+		                    Maps.entry("9", 9), Maps.entry("4", 4), Maps.entry("1", 1), Maps.entry("7", 7),
+		                    Maps.entry("8", 8)));
+	}
+
+	@Test
+	public void shuffleWithRandomSupplier() {
+		EntrySequence<String, Integer> emptyShuffled = empty.shuffle(() -> new Random(17));
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+
+		EntrySequence<String, Integer> oneShuffled = _1.shuffle(() -> new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
+
+		EntrySequence<String, Integer> twoShuffled = _12.shuffle(() -> new Random(17));
+		twice(() -> assertThat(twoShuffled, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> threeShuffled = _123.shuffle(() -> new Random(17));
+		twice(() -> assertThat(threeShuffled, contains(Maps.entry("3", 3), Maps.entry("2", 2), Maps.entry("1", 1))));
+
+		EntrySequence<String, Integer> nineShuffled = _123456789.shuffle(() -> new Random(17));
+		twice(() -> assertThat(nineShuffled,
+		                       contains(Maps.entry("1", 1), Maps.entry("8", 8), Maps.entry("4", 4), Maps.entry("2", 2),
+		                                Maps.entry("6", 6), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("9", 9),
+		                                Maps.entry("7", 7))));
 	}
 
 	@Test

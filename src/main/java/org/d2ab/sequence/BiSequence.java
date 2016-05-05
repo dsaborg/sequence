@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.function.QuaternaryPredicate;
 import org.d2ab.function.chars.ToCharBiFunction;
@@ -1162,14 +1163,14 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @return this {@code BiSequence} sorted according to the natural order.
 	 */
 	default BiSequence<L, R> sorted() {
-		return () -> new SortingIterator<>(iterator());
+		return () -> Iterators.unmodifiable(Lists.sort(toList()));
 	}
 
 	/**
 	 * @return this {@code BiSequence} sorted according to the given {@link Comparator}.
 	 */
 	default BiSequence<L, R> sorted(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
-		return () -> new SortingIterator<>(iterator(), comparator);
+		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
 	}
 
 	/**
@@ -1455,23 +1456,26 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order.
 	 */
 	default BiSequence<L, R> shuffle() {
-		return () -> {
-			List<Pair<L, R>> list = toList();
-			Collections.shuffle(list);
-			return list.iterator();
-		};
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList()));
 	}
 
 	/**
 	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order as determined by the
 	 * given random generator.
 	 */
-	default BiSequence<L, R> shuffle(Random md) {
-		return () -> {
-			List<Pair<L, R>> list = toList();
-			Collections.shuffle(list, md);
-			return list.iterator();
-		};
+	default BiSequence<L, R> shuffle(Random random) {
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
+	}
+
+	/**
+	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order as determined by the
+	 * given random generator. A new instance of {@link Random} is created by the given supplier at the start of each
+	 * iteration.
+	 *
+	 * @since 1.2
+	 */
+	default BiSequence<L, R> shuffle(Supplier<? extends Random> randomSupplier) {
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
 	}
 
 	/**

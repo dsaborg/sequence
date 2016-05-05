@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
@@ -1516,14 +1517,14 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> sorted() {
-		return () -> new SortingIterator<>(iterator());
+		return () -> Iterators.unmodifiable(Lists.sort((List) toList()));
 	}
 
 	/**
 	 * @return this {@code Sequence} sorted according to the given {@link Comparator}.
 	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
-		return () -> new SortingIterator<>(iterator(), comparator);
+		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
 	}
 
 	/**
@@ -1722,23 +1723,26 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order.
 	 */
 	default Sequence<T> shuffle() {
-		return () -> {
-			List<T> list = toList();
-			Collections.shuffle(list);
-			return list.iterator();
-		};
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList()));
 	}
 
 	/**
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order as determined by the given
 	 * random generator.
 	 */
-	default Sequence<T> shuffle(Random md) {
-		return () -> {
-			List<T> list = toList();
-			Collections.shuffle(list, md);
-			return list.iterator();
-		};
+	default Sequence<T> shuffle(Random random) {
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
+	}
+
+	/**
+	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order as determined by the given
+	 * random generator. A new instance of {@link Random} is created by the given supplier at the start of each
+	 * iteration.
+	 *
+	 * @since 1.2
+	 */
+	default Sequence<T> shuffle(Supplier<? extends Random> randomSupplier) {
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
 	}
 
 	/**

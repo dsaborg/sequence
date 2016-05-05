@@ -1800,22 +1800,65 @@ public class SequenceTest {
 
 	@Test
 	public void shuffle() {
-		assertThat(empty.shuffle(), is(emptyIterable()));
-		assertThat(_1.shuffle(), contains(1));
-		assertThat(_12.shuffle(), containsInAnyOrder(1, 2));
-		assertThat(_123.shuffle(), containsInAnyOrder(1, 2, 3));
-		assertThat(_123456789.shuffle(), containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9));
+		Sequence<Integer> emptyShuffled = empty.shuffle();
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+
+		Sequence<Integer> oneShuffled = _1.shuffle();
+		twice(() -> assertThat(oneShuffled, contains(1)));
+
+		Sequence<Integer> twoShuffled = _12.shuffle();
+		twice(() -> assertThat(twoShuffled, containsInAnyOrder(1, 2)));
+
+		Sequence<Integer> threeShuffled = _123.shuffle();
+		twice(() -> assertThat(threeShuffled, containsInAnyOrder(1, 2, 3)));
+
+		Sequence<Integer> nineShuffled = _123456789.shuffle();
+		twice(() -> assertThat(nineShuffled, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void shuffleWithRandomSource() {
-		Random seed = new Random(17);
+		Sequence<Integer> emptyShuffled = empty.shuffle(new Random(17));
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
 
-		assertThat(empty.shuffle(seed), is(emptyIterable()));
-		assertThat(_1.shuffle(seed), contains(1));
-		assertThat(_12.shuffle(seed), contains(1, 2));
-		assertThat(_123.shuffle(seed), contains(3, 2, 1));
-		assertThat(_123456789.shuffle(seed), contains(2, 9, 4, 6, 8, 7, 5, 1, 3));
+		Sequence<Integer> oneShuffled = _1.shuffle(new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(1)));
+
+		Sequence<Integer> twoShuffled = _12.shuffle(new Random(17));
+		assertThat(twoShuffled, contains(1, 2));
+		assertThat(twoShuffled, contains(1, 2));
+		assertThat(twoShuffled, contains(1, 2));
+		assertThat(twoShuffled, contains(1, 2));
+		assertThat(twoShuffled, contains(2, 1));
+		assertThat(twoShuffled, contains(2, 1));
+		assertThat(twoShuffled, contains(1, 2));
+		assertThat(twoShuffled, contains(1, 2));
+
+		Sequence<Integer> threeShuffled = _123.shuffle(new Random(17));
+		assertThat(threeShuffled, contains(3, 2, 1));
+		assertThat(threeShuffled, contains(1, 3, 2));
+
+		Sequence<Integer> nineShuffled = _123456789.shuffle(new Random(17));
+		assertThat(nineShuffled, contains(1, 8, 4, 2, 6, 3, 5, 9, 7));
+		assertThat(nineShuffled, contains(6, 3, 5, 2, 9, 4, 1, 7, 8));
+	}
+
+	@Test
+	public void shuffleWithRandomSupplier() {
+		Sequence<Integer> emptyShuffled = empty.shuffle(() -> new Random(17));
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+
+		Sequence<Integer> oneShuffled = _1.shuffle(() -> new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(1)));
+
+		Sequence<Integer> twoShuffled = _12.shuffle(() -> new Random(17));
+		twice(() -> assertThat(twoShuffled, contains(1, 2)));
+
+		Sequence<Integer> threeShuffled = _123.shuffle(() -> new Random(17));
+		twice(() -> assertThat(threeShuffled, contains(3, 2, 1)));
+
+		Sequence<Integer> nineShuffled = _123456789.shuffle(() -> new Random(17));
+		twice(() -> assertThat(nineShuffled, contains(1, 8, 4, 2, 6, 3, 5, 9, 7)));
 	}
 
 	@Test

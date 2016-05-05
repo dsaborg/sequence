@@ -1556,27 +1556,75 @@ public class BiSequenceTest {
 
 	@Test
 	public void shuffle() {
-		assertThat(empty.shuffle(), is(emptyIterable()));
-		assertThat(_1.shuffle(), contains(Pair.of("1", 1)));
-		assertThat(_12.shuffle(), containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2)));
-		assertThat(_123.shuffle(), containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)));
-		assertThat(_123456789.shuffle(),
-		           containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                              Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
-		                              Pair.of("9", 9)));
+		BiSequence<String, Integer> emptyShuffled = empty.shuffle();
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+
+		BiSequence<String, Integer> oneShuffled = _1.shuffle();
+		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> twoShuffled = _12.shuffle();
+		twice(() -> assertThat(twoShuffled, containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> threeShuffled = _123.shuffle();
+		twice(() -> assertThat(threeShuffled, containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> nineShuffled = _123456789.shuffle();
+		twice(() -> assertThat(nineShuffled,
+		                       containsInAnyOrder(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
 	}
 
 	@Test
 	public void shuffleWithRandomSource() {
-		Random seed = new Random(17);
+		BiSequence<String, Integer> emptyShuffled = empty.shuffle(new Random(17));
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
 
-		assertThat(empty.shuffle(seed), is(emptyIterable()));
-		assertThat(_1.shuffle(seed), contains(Pair.of("1", 1)));
-		assertThat(_12.shuffle(seed), contains(Pair.of("1", 1), Pair.of("2", 2)));
-		assertThat(_123.shuffle(seed), contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1)));
-		assertThat(_123456789.shuffle(seed),
-		           contains(Pair.of("2", 2), Pair.of("9", 9), Pair.of("4", 4), Pair.of("6", 6), Pair.of("8", 8),
-		                    Pair.of("7", 7), Pair.of("5", 5), Pair.of("1", 1), Pair.of("3", 3)));
+		BiSequence<String, Integer> oneShuffled = _1.shuffle(new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> twoShuffled = _12.shuffle(new Random(17));
+		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
+		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
+		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+
+		BiSequence<String, Integer> threeShuffled = _123.shuffle(new Random(17));
+		assertThat(threeShuffled, contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1)));
+		assertThat(threeShuffled, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("2", 2)));
+
+		BiSequence<String, Integer> nineShuffled = _123456789.shuffle(new Random(17));
+		assertThat(nineShuffled,
+		           contains(Pair.of("1", 1), Pair.of("8", 8), Pair.of("4", 4), Pair.of("2", 2), Pair.of("6", 6),
+		                    Pair.of("3", 3), Pair.of("5", 5), Pair.of("9", 9), Pair.of("7", 7)));
+		assertThat(nineShuffled,
+		           contains(Pair.of("6", 6), Pair.of("3", 3), Pair.of("5", 5), Pair.of("2", 2), Pair.of("9", 9),
+		                    Pair.of("4", 4), Pair.of("1", 1), Pair.of("7", 7), Pair.of("8", 8)));
+	}
+
+	@Test
+	public void shuffleWithRandomSupplier() {
+		BiSequence<String, Integer> emptyShuffled = empty.shuffle(() -> new Random(17));
+		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+
+		BiSequence<String, Integer> oneShuffled = _1.shuffle(() -> new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> twoShuffled = _12.shuffle(() -> new Random(17));
+		twice(() -> assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> threeShuffled = _123.shuffle(() -> new Random(17));
+		twice(() -> assertThat(threeShuffled, contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1))));
+
+		BiSequence<String, Integer> nineShuffled = _123456789.shuffle(() -> new Random(17));
+		twice(() -> assertThat(nineShuffled,
+		                       contains(Pair.of("1", 1), Pair.of("8", 8), Pair.of("4", 4), Pair.of("2", 2),
+		                                Pair.of("6", 6), Pair.of("3", 3), Pair.of("5", 5), Pair.of("9", 9),
+		                                Pair.of("7", 7))));
 	}
 
 	@Test

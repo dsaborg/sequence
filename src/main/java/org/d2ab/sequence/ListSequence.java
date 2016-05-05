@@ -17,23 +17,26 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.FilteredList;
+import org.d2ab.collection.MappedList;
 import org.d2ab.collection.ReverseList;
 import org.d2ab.iterable.ChainingIterable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableList;
 
 /**
  * A {@link Sequence} backed by a {@link List}. Implements certain operations on {@link Sequence} in a more performant
  * way due to the {@link List} backing. This class should normally not be used directly as e.g.
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
-public abstract class ListSequence<T> implements Sequence<T> {
+public class ListSequence<T> implements Sequence<T> {
+	private List<T> list;
+
 	public static <T> Sequence<T> empty() {
 		return from(emptyList());
 	}
@@ -48,153 +51,97 @@ public abstract class ListSequence<T> implements Sequence<T> {
 	}
 
 	public static <T> Sequence<T> from(List<T> list) {
-		return new Transitive<>(list);
+		return new ListSequence<>(list);
 	}
 
-	@Override
-	public abstract List<T> toList();
+	private ListSequence(List<T> list) {
+		this.list = list;
+	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return toList().iterator();
+		return list.iterator();
 	}
 
-	private static class Transitive<T> extends ListSequence<T> {
-		private List<T> list;
+	@Override
+	public List<T> toList() {
+		return new ArrayList<>(list);
+	}
 
-		private Transitive(List<T> list) {
-			this.list = list;
-		}
+	@Override
+	public List<T> asList() {
+		return list;
+	}
 
-		@Override
-		public Iterator<T> iterator() {
-			return list.iterator();
-		}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Sequence<T> append(Iterable<T> iterable) {
+		if (iterable instanceof List)
+			return ChainedListSequence.from(list, (List<T>) iterable);
 
-		@Override
-		public List<T> toList() {
-			return new ArrayList<>(list);
-		}
+		return new ChainingIterable<>(this, iterable)::iterator;
+	}
 
-		@Override
-		public List<T> asList() {
-			return list;
-		}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Sequence<T> append(T... items) {
+		return append(Arrays.asList(items));
+	}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public Sequence<T> append(Iterable<T> iterable) {
-			if (iterable instanceof List)
-				return ChainedListSequence.from(list, (List<T>) iterable);
+	@Override
+	public <U extends Collection<T>> U collectInto(U collection) {
+		collection.addAll(list);
+		return collection;
+	}
 
-			return new ChainingIterable<>(this, iterable)::iterator;
-		}
+	@Override
+	public void removeAll() {
+		list.clear();
+	}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public Sequence<T> append(T... items) {
-			return append(Arrays.asList(items));
-		}
+	@Override
+	public Stream<T> stream() {
+		return list.stream();
+	}
 
-		@Override
-		public <U extends Collection<T>> U collectInto(U collection) {
-			collection.addAll(list);
-			return collection;
-		}
+	@Override
+	public boolean isEmpty() {
+		return list.isEmpty();
+	}
 
-		@Override
-		public void removeAll() {
-			list.clear();
-		}
+	@Override
+	public boolean contains(T item) {
+		return list.contains(item);
+	}
 
-		@Override
-		public Stream<T> stream() {
-			return list.stream();
-		}
+	@Override
+	public Optional<T> at(long index) {
+		if (index >= list.size())
+			return Optional.empty();
 
-		@Override
-		public boolean isEmpty() {
-			return list.isEmpty();
-		}
+		return Optional.of(list.get((int) index));
+	}
 
-		@Override
-		public boolean contains(T item) {
-			return list.contains(item);
-		}
+	@Override
+	public Optional<T> last() {
+		if (list.size() < 1)
+			return Optional.empty();
 
-		@Override
-		public Optional<T> at(long index) {
-			if (index >= list.size())
-				return Optional.empty();
+		return Optional.of(list.get(list.size() - 1));
+	}
 
-			return Optional.of(list.get((int) index));
-		}
+	@Override
+	public Sequence<T> reverse() {
+		return new ListSequence<>(ReverseList.from(list));
+	}
 
-		@Override
-		public Optional<T> last() {
-			if (list.size() < 1)
-				return Optional.empty();
+	@Override
+	public Sequence<T> filter(Predicate<? super T> predicate) {
+		return new ListSequence<>(FilteredList.from(list, predicate));
+	}
 
-			return Optional.of(list.get(list.size() - 1));
-		}
-
-		@Override
-		public Sequence<T> reverse() {
-			return new Transitive<>(ReverseList.from(list));
-		}
-
-		@Override
-		public Sequence<T> filter(Predicate<? super T> predicate) {
-			return new Transitive<>(FilteredList.from(list, predicate));
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public Sequence<T> sorted() {
-			return new ListSequence<T>() {
-				@Override
-				public List<T> toList() {
-					List sorted = Transitive.this.toList();
-					Collections.sort(sorted);
-					return (List<T>) unmodifiableList(sorted);
-				}
-			};
-		}
-
-		@Override
-		public Sequence<T> sorted(Comparator<? super T> comparator) {
-			return new ListSequence<T>() {
-				@Override
-				public List<T> toList() {
-					List<T> sorted = Transitive.this.toList();
-					Collections.sort(sorted, comparator);
-					return unmodifiableList(sorted);
-				}
-			};
-		}
-
-		@Override
-		public Sequence<T> shuffle() {
-			return new ListSequence<T>() {
-				@Override
-				public List<T> toList() {
-					List<T> shuffled = Transitive.this.toList();
-					Collections.shuffle(shuffled);
-					return unmodifiableList(shuffled);
-				}
-			};
-		}
-
-		@Override
-		public Sequence<T> shuffle(Random random) {
-			return new ListSequence<T>() {
-				@Override
-				public List<T> toList() {
-					List<T> shuffled = Transitive.this.toList();
-					Collections.shuffle(shuffled, random);
-					return unmodifiableList(shuffled);
-				}
-			};
-		}
+	@Override
+	public <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
+		return new ListSequence<>(MappedList.from(list, mapper));
 	}
 }

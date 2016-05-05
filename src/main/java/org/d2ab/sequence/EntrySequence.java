@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.function.QuaternaryPredicate;
@@ -1064,14 +1065,14 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @return this {@code EntrySequence} sorted according to the natural order.
 	 */
 	default EntrySequence<K, V> sorted() {
-		return () -> new SortingIterator<>(iterator());
+		return () -> Iterators.unmodifiable(Lists.sort((List) toList()));
 	}
 
 	/**
 	 * @return this {@code EntrySequence} sorted according to the given {@link Comparator}.
 	 */
 	default EntrySequence<K, V> sorted(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
-		return () -> new SortingIterator<>(iterator(), comparator);
+		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
 	}
 
 	/**
@@ -1356,23 +1357,26 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order.
 	 */
 	default EntrySequence<K, V> shuffle() {
-		return () -> {
-			List<Entry<K, V>> list = toList();
-			Collections.shuffle(list);
-			return list.iterator();
-		};
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList()));
 	}
 
 	/**
-	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order as determined by the
-	 * given random generator.
+	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order as determined by
+	 * the given random generator.
 	 */
-	default EntrySequence<K, V> shuffle(Random md) {
-		return () -> {
-			List<Entry<K, V>> list = toList();
-			Collections.shuffle(list, md);
-			return list.iterator();
-		};
+	default EntrySequence<K, V> shuffle(Random random) {
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
+	}
+
+	/**
+	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order as determined by
+	 * the given random generator. A new instance of {@link Random} is created by the given supplier at the start of
+	 * each iteration.
+	 *
+	 * @since 1.2
+	 */
+	default EntrySequence<K, V> shuffle(Supplier<? extends Random> randomSupplier) {
+		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
 	}
 
 	/**
