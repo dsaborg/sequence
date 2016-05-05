@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -105,22 +106,28 @@ public class SequenceTest {
 			empty.forEachIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
+			AtomicLong index = new AtomicLong();
 			_1.forEachIndexed((e, i) -> {
-				assertThat(e, is(value.get()));
-				assertThat(i, is((long) value.getAndIncrement() - 1));
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
 			});
+			assertThat(index.get(), is(1L));
 
 			value.set(1);
+			index.set(0);
 			_12.forEachIndexed((e, i) -> {
-				assertThat(e, is(value.get()));
-				assertThat(i, is((long) value.getAndIncrement() - 1));
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
 			});
+			assertThat(index.get(), is(2L));
 
 			value.set(1);
+			index.set(0);
 			_12345.forEachIndexed((e, i) -> {
-				assertThat(e, is(value.get()));
-				assertThat(i, is((long) value.getAndIncrement() - 1));
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
 			});
+			assertThat(index.get(), is(5L));
 		});
 	}
 

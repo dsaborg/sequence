@@ -31,6 +31,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -99,7 +100,7 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void forEach() {
+	public void forEachChar() {
 		twice(() -> {
 			empty.forEachChar(c -> fail("Should not get called"));
 
@@ -111,6 +112,37 @@ public class CharSeqTest {
 
 			value.set('a');
 			abcde.forEachChar(c -> assertThat(c, is((char) value.getAndIncrement())));
+		});
+	}
+
+	@Test
+	public void forEachCharIndexed() {
+		twice(() -> {
+			empty.forEachCharIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger('a');
+			AtomicLong index = new AtomicLong();
+			a.forEachCharIndexed((e, i) -> {
+				assertThat(e, is((char) value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(1L));
+
+			value.set('a');
+			index.set(0);
+			ab.forEachCharIndexed((e, i) -> {
+				assertThat(e, is((char) value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(2L));
+
+			value.set('a');
+			index.set(0);
+			abcde.forEachCharIndexed((e, i) -> {
+				assertThat(e, is((char) value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(5L));
 		});
 	}
 

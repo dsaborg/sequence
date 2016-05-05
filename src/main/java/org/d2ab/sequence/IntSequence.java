@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.chars.IntToCharFunction;
 import org.d2ab.function.ints.IntBiPredicate;
+import org.d2ab.function.ints.IntLongConsumer;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
@@ -1313,5 +1314,17 @@ public interface IntSequence extends IntIterable {
 				return true;
 
 		return false;
+	}
+
+	/**
+	 * Perform the given action for each {@code int} in this {@code IntSequence}, with the index of each element passed
+	 * as the second parameter in the action.
+	 *
+	 * @since 1.2
+	 */
+	default void forEachIntIndexed(IntLongConsumer action) {
+		long index = 0;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
+			action.accept(iterator.nextInt(), index++);
 	}
 }

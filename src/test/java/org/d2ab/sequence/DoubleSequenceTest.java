@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.DoubleBinaryOperator;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -84,7 +85,7 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void forEach() {
+	public void forEachDouble() {
 		twice(() -> {
 			empty.forEachDouble(c -> fail("Should not get called"));
 
@@ -96,6 +97,37 @@ public class DoubleSequenceTest {
 
 			value.set(1);
 			_123.forEachDouble(c -> assertThat(c, is((double) value.getAndIncrement())));
+		});
+	}
+
+	@Test
+	public void forEachDoubleIndexed() {
+		twice(() -> {
+			empty.forEachDoubleIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			AtomicLong index = new AtomicLong();
+			_1.forEachDoubleIndexed((e, i) -> {
+				assertThat(e, is((double) value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(1L));
+
+			value.set(1);
+			index.set(0);
+			_12.forEachDoubleIndexed((e, i) -> {
+				assertThat(e, is((double) value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(2L));
+
+			value.set(1);
+			index.set(0);
+			_12345.forEachDoubleIndexed((e, i) -> {
+				assertThat(e, is((double) value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(5L));
 		});
 	}
 

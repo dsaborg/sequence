@@ -1238,4 +1238,16 @@ public interface CharSeq extends CharIterable {
 				return true;
 		return false;
 	}
+
+	/**
+	 * Perform the given action for each {@code char} in this {@code CharSeq}, with the index of each element passed
+	 * as the second parameter in the action.
+	 *
+	 * @since 1.2
+	 */
+	default void forEachCharIndexed(CharLongConsumer action) {
+		long index = 0;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
+			action.accept(iterator.nextChar(), index++);
+	}
 }

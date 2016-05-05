@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.chars.LongToCharFunction;
+import org.d2ab.function.longs.LongBiConsumer;
 import org.d2ab.function.longs.LongBiPredicate;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.longs.ChainingLongIterable;
@@ -1272,6 +1273,7 @@ public interface LongSequence extends LongIterable {
 		for (long item : items)
 			if (!iterator().contains(item))
 				return false;
+
 		return true;
 	}
 
@@ -1284,6 +1286,19 @@ public interface LongSequence extends LongIterable {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.nextLong()))
 				return true;
+
 		return false;
+	}
+
+	/**
+	 * Perform the given action for each {@code long} in this {@code LongSequence}, with the index of each element
+	 * passed as the second parameter in the action.
+	 *
+	 * @since 1.2
+	 */
+	default void forEachLongIndexed(LongBiConsumer action) {
+		long index = 0;
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
+			action.accept(iterator.nextLong(), index++);
 	}
 }

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -86,18 +87,49 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void forEach() {
+	public void forEachInt() {
 		twice(() -> {
-			empty.forEachInt(c -> fail("Should not get called"));
+			empty.forEachInt(i -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			_1.forEachInt(c -> assertThat(c, is(value.getAndIncrement())));
+			_1.forEachInt(i -> assertThat(i, is(value.getAndIncrement())));
 
 			value.set(1);
-			_12.forEachInt(c -> assertThat(c, is(value.getAndIncrement())));
+			_12.forEachInt(i -> assertThat(i, is(value.getAndIncrement())));
 
 			value.set(1);
-			_123.forEachInt(c -> assertThat(c, is(value.getAndIncrement())));
+			_123.forEachInt(i -> assertThat(i, is(value.getAndIncrement())));
+		});
+	}
+
+	@Test
+	public void forEachIntIndexed() {
+		twice(() -> {
+			empty.forEachIntIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			AtomicLong index = new AtomicLong();
+			_1.forEachIntIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(1L));
+
+			value.set(1);
+			index.set(0);
+			_12.forEachIntIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(2L));
+
+			value.set(1);
+			index.set(0);
+			_12345.forEachIntIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(5L));
 		});
 	}
 

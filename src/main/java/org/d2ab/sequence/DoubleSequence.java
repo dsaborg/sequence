@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
+import org.d2ab.function.doubles.DoubleLongConsumer;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
@@ -1155,5 +1156,17 @@ public interface DoubleSequence extends DoubleIterable {
 			if (Arrayz.contains(items, iterator.nextDouble(), precision))
 				return true;
 		return false;
+	}
+
+	/**
+	 * Perform the given action for each {@code double} in this {@code DoubleSequence}, with the index of each element passed
+	 * as the second parameter in the action.
+	 *
+	 * @since 1.2
+	 */
+	default void forEachDoubleIndexed(DoubleLongConsumer action) {
+		long index = 0;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+			action.accept(iterator.nextDouble(), index++);
 	}
 }

@@ -97,7 +97,7 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void forEach() {
+	public void forEachLong() {
 		twice(() -> {
 			empty.forEachLong(c -> fail("Should not get called"));
 
@@ -109,6 +109,37 @@ public class LongSequenceTest {
 
 			value.set(1);
 			_12345.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
+		});
+	}
+
+	@Test
+	public void forEachLongIndexed() {
+		twice(() -> {
+			empty.forEachLongIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicLong value = new AtomicLong(1);
+			AtomicLong index = new AtomicLong();
+			_1.forEachLongIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(1L));
+
+			value.set(1);
+			index.set(0);
+			_12.forEachLongIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(2L));
+
+			value.set(1);
+			index.set(0);
+			_12345.forEachLongIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(5L));
 		});
 	}
 
