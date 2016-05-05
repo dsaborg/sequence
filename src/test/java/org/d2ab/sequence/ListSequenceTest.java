@@ -1204,7 +1204,7 @@ public class ListSequenceTest {
 	@Test
 	public void removeAllAfterFilter() {
 		Sequence<Integer> filtered = _12345.filter(x -> x % 2 != 0);
-		filtered.removeAll();
+		filtered.clear();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		twice(() -> assertThat(_12345, contains(2, 4)));
@@ -1213,7 +1213,7 @@ public class ListSequenceTest {
 	@Test
 	public void removeAllAfterAppend() {
 		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
-		appended.removeAll();
+		appended.clear();
 
 		twice(() -> assertThat(appended, is(emptyIterable())));
 		twice(() -> assertThat(_1, is(emptyIterable())));
@@ -1222,7 +1222,7 @@ public class ListSequenceTest {
 	@Test
 	public void removeAllAfterMapBack() {
 		Sequence<Integer> mappedFiltered = _12345.mapBack((x, y) -> x != null ? x + y : y).filter(x -> x % 3 != 0);
-		mappedFiltered.removeAll();
+		mappedFiltered.clear();
 
 		twice(() -> assertThat(mappedFiltered, contains(2, 7)));
 		twice(() -> assertThat(_12345, contains(2, 5)));

@@ -95,7 +95,7 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public void removeAll() {
+	public void clear() {
 		list.clear();
 	}
 

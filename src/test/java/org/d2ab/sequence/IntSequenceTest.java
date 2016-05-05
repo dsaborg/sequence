@@ -1322,7 +1322,7 @@ public class IntSequenceTest {
 		List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4));
 
 		IntSequence filtered = IntSequence.from(original).filter(x -> x % 2 != 0);
-		filtered.removeAll();
+		filtered.clear();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		assertThat(original, contains(2, 4));

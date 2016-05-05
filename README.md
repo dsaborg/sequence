@@ -242,7 +242,7 @@ and by modifying the underlying collection directly in between iterations.
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-Sequence.from(list).filter(x -> x % 2 != 0).removeAll();
+Sequence.from(list).filter(x -> x % 2 != 0).clear();
 
 assertThat(list, contains(2, 4));
 ```

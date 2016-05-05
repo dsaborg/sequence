@@ -1237,7 +1237,7 @@ public class DoubleSequenceTest {
 		List<Double> original = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0));
 
 		DoubleSequence filtered = DoubleSequence.from(original).filter(x -> x % 2 != 0);
-		filtered.removeAll();
+		filtered.clear();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		assertThat(original, contains(2.0, 4.0));

@@ -1225,7 +1225,7 @@ public class CharSeqTest {
 		List<Character> original = new ArrayList<>(asList('a', 'b', 'c', 'd'));
 
 		CharSeq filtered = CharSeq.from(original).filter(x -> x == 'b');
-		filtered.removeAll();
+		filtered.clear();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		assertThat(original, contains('a', 'c', 'd'));

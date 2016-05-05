@@ -1480,7 +1480,19 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 *
+	 * @since 1.2
 	 */
+	default void clear() {
+		Iterables.removeAll(this);
+	}
+
+	/**
+	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
+	 *
+	 * @deprecated Use {@link #clear()} instead.
+	 */
+	@Deprecated
 	default void removeAll() {
 		Iterables.removeAll(this);
 	}

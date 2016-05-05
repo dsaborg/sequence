@@ -111,7 +111,7 @@ public class ChainedListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public void removeAll() {
+	public void clear() {
 		for (List<T> list : lists)
 			list.clear();
 	}

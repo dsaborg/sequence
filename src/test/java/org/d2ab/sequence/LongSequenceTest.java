@@ -1273,7 +1273,7 @@ public class LongSequenceTest {
 		List<Long> original = new ArrayList<>(asList(1L, 2L, 3L, 4L));
 
 		LongSequence filtered = LongSequence.from(original).filter(x -> x % 2 != 0);
-		filtered.removeAll();
+		filtered.clear();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		assertThat(original, contains(2L, 4L));

@@ -255,7 +255,7 @@ public class EntrySequenceTest {
 
 		twice(() -> assertThat(cached, contains(entries12345)));
 
-		cached.removeAll();
+		cached.clear();
 		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
@@ -267,7 +267,7 @@ public class EntrySequenceTest {
 
 		twice(() -> assertThat(cached, contains(entries12345)));
 
-		cached.removeAll();
+		cached.clear();
 		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
@@ -279,7 +279,7 @@ public class EntrySequenceTest {
 
 		twice(() -> assertThat(cached, contains(entries12345)));
 
-		cached.removeAll();
+		cached.clear();
 		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
@@ -291,7 +291,7 @@ public class EntrySequenceTest {
 
 		twice(() -> assertThat(cached, contains(entries12345)));
 
-		cached.removeAll();
+		cached.clear();
 		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
@@ -1582,7 +1582,7 @@ public class EntrySequenceTest {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
 
 		EntrySequence<String, Integer> filtered = EntrySequence.from(original).filter((k, v) -> v % 2 != 0);
-		filtered.removeAll();
+		filtered.clear();
 
 		twice(() -> assertThat(filtered, is(emptyIterable())));
 		twice(() -> assertThat(original.entrySet(), contains(Maps.entry("2", 2), Maps.entry("4", 4))));
