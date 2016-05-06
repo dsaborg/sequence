@@ -719,37 +719,23 @@ public class IntSequenceTest {
 		IntSequence sorted = IntSequence.from(backing).sorted();
 
 		backing.add(4);
-		assertThat(sorted, containsInts(1, 2, 3, 4));
+		twice(() -> assertThat(sorted, containsInts(1, 2, 3, 4)));
 	}
 
 	@Test
 	public void min() {
-		OptionalInt emptyMin = empty.min();
-		twice(() -> assertThat(emptyMin, is(OptionalInt.empty())));
-
-		OptionalInt oneMin = oneRandom.min();
-		twice(() -> assertThat(oneMin, is(OptionalInt.of(17))));
-
-		OptionalInt twoMin = twoRandom.min();
-		twice(() -> assertThat(twoMin, is(OptionalInt.of(17))));
-
-		OptionalInt nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalInt.of(-7))));
+		twice(() -> assertThat(empty.min(), is(OptionalInt.empty())));
+		twice(() -> assertThat(oneRandom.min(), is(OptionalInt.of(17))));
+		twice(() -> assertThat(twoRandom.min(), is(OptionalInt.of(17))));
+		twice(() -> assertThat(nineRandom.min(), is(OptionalInt.of(-7))));
 	}
 
 	@Test
 	public void max() {
-		OptionalInt emptyMax = empty.max();
-		twice(() -> assertThat(emptyMax, is(OptionalInt.empty())));
-
-		OptionalInt oneMax = oneRandom.max();
-		twice(() -> assertThat(oneMax, is(OptionalInt.of(17))));
-
-		OptionalInt twoMax = twoRandom.max();
-		twice(() -> assertThat(twoMax, is(OptionalInt.of(32))));
-
-		OptionalInt nineMax = nineRandom.max();
-		twice(() -> assertThat(nineMax, is(OptionalInt.of(17))));
+		twice(() -> assertThat(empty.max(), is(OptionalInt.empty())));
+		twice(() -> assertThat(oneRandom.max(), is(OptionalInt.of(17))));
+		twice(() -> assertThat(twoRandom.max(), is(OptionalInt.of(32))));
+		twice(() -> assertThat(nineRandom.max(), is(OptionalInt.of(17))));
 	}
 
 	@Test

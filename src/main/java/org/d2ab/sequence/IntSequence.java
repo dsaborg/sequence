@@ -979,6 +979,65 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * @return the first int of those in this {@code IntSequence} matching the given predicate, or an empty
+	 * {@link OptionalInt} if there are no matching ints in the {@code IntSequence}.
+	 *
+	 * @see #filter(IntPredicate)
+	 * @see #at(long, IntPredicate)
+	 * @since 1.2
+	 */
+	default OptionalInt first(IntPredicate predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the second int of those in this {@code IntSequence} matching the given predicate, or an empty
+	 * {@link OptionalInt} if there are less than two matching ints in the {@code IntSequence}.
+	 *
+	 * @see #filter(IntPredicate)
+	 * @see #at(long, IntPredicate)
+	 * @since 1.2
+	 */
+	default OptionalInt second(IntPredicate predicate) {
+		return at(1, predicate);
+	}
+
+	/**
+	 * @return the third int of those in this {@code IntSequence} matching the given predicate, or an empty
+	 * {@link OptionalInt} if there are less than three matching ints in the {@code IntSequence}.
+	 *
+	 * @see #filter(IntPredicate)
+	 * @see #at(long, IntPredicate)
+	 * @since 1.2
+	 */
+	default OptionalInt third(IntPredicate predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last int of those in this {@code IntSequence} matching the given predicate, or an empty
+	 * {@link OptionalInt} if there are no matching ints in the {@code IntSequence}.
+	 *
+	 * @see #filter(IntPredicate)
+	 * @see #at(long, IntPredicate)
+	 * @since 1.2
+	 */
+	default OptionalInt last(IntPredicate predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the {@code int} at the given index out of ints matching the given predicate, or an empty
+	 * {@link OptionalInt} if the matching {@code IntSequence} is smaller than the index.
+	 *
+	 * @see #filter(IntPredicate)
+	 * @since 1.2
+	 */
+	default OptionalInt at(long index, IntPredicate predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code IntSequence}.
 	 */
 	default IntSequence step(long step) {

@@ -696,6 +696,70 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void firstByPredicate() {
+		twice(() -> {
+			assertThat(empty.first(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(a.first(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(ab.first(x -> x > 'a'), is(OptionalChar.of('b')));
+			assertThat(abcde.first(x -> x > 'a'), is(OptionalChar.of('b')));
+		});
+	}
+
+	@Test
+	public void secondByPredicate() {
+		twice(() -> {
+			assertThat(empty.second(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(a.second(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(ab.second(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(abc.second(x -> x > 'a'), is(OptionalChar.of('c')));
+			assertThat(abcd.second(x -> x > 'a'), is(OptionalChar.of('c')));
+		});
+	}
+
+	@Test
+	public void thirdByPredicate() {
+		twice(() -> {
+			assertThat(empty.third(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(a.third(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(ab.third(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(abc.third(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(abcd.third(x -> x > 'a'), is(OptionalChar.of('d')));
+			assertThat(abcde.third(x -> x > 'a'), is(OptionalChar.of('d')));
+		});
+	}
+
+	@Test
+	public void lastByPredicate() {
+		twice(() -> {
+			assertThat(empty.last(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(a.last(x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(ab.last(x -> x > 'a'), is(OptionalChar.of('b')));
+			assertThat(abcde.last(x -> x > 'a'), is(OptionalChar.of('e')));
+		});
+	}
+
+	@Test
+	public void atByPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(empty.at(17, x -> x > 'a'), is(OptionalChar.empty()));
+
+			assertThat(a.at(0, x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(a.at(17, x -> x > 'a'), is(OptionalChar.empty()));
+
+			assertThat(ab.at(0, x -> x > 'a'), is(OptionalChar.of('b')));
+			assertThat(ab.at(1, x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(ab.at(17, x -> x > 'a'), is(OptionalChar.empty()));
+
+			assertThat(abcde.at(0, x -> x > 'a'), is(OptionalChar.of('b')));
+			assertThat(abcde.at(1, x -> x > 'a'), is(OptionalChar.of('c')));
+			assertThat(abcde.at(3, x -> x > 'a'), is(OptionalChar.of('e')));
+			assertThat(abcde.at(4, x -> x > 'a'), is(OptionalChar.empty()));
+			assertThat(abcde.at(17, x -> x > 'a'), is(OptionalChar.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		CharSeq stepThree = abcdefghi.step(3);
 		twice(() -> assertThat(stepThree, containsChars('a', 'd', 'g')));
@@ -742,32 +806,18 @@ public class CharSeqTest {
 
 	@Test
 	public void min() {
-		OptionalChar emptyMin = empty.min();
-		twice(() -> assertThat(emptyMin, is(OptionalChar.empty())));
-
-		OptionalChar oneMin = oneRandom.min();
-		twice(() -> assertThat(oneMin, is(OptionalChar.of('q'))));
-
-		OptionalChar twoMin = twoRandom.min();
-		twice(() -> assertThat(twoMin, is(OptionalChar.of('q'))));
-
-		OptionalChar nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalChar.of('a'))));
+		twice(() -> assertThat(empty.min(), is(OptionalChar.empty())));
+		twice(() -> assertThat(oneRandom.min(), is(OptionalChar.of('q'))));
+		twice(() -> assertThat(twoRandom.min(), is(OptionalChar.of('q'))));
+		twice(() -> assertThat(nineRandom.min(), is(OptionalChar.of('a'))));
 	}
 
 	@Test
 	public void max() {
-		OptionalChar emptyMax = empty.max();
-		twice(() -> assertThat(emptyMax, is(OptionalChar.empty())));
-
-		OptionalChar oneMax = oneRandom.max();
-		twice(() -> assertThat(oneMax, is(OptionalChar.of('q'))));
-
-		OptionalChar twoMax = twoRandom.max();
-		twice(() -> assertThat(twoMax, is(OptionalChar.of('w'))));
-
-		OptionalChar nineMax = nineRandom.max();
-		twice(() -> assertThat(nineMax, is(OptionalChar.of('q'))));
+		twice(() -> assertThat(empty.max(), is(OptionalChar.empty())));
+		twice(() -> assertThat(oneRandom.max(), is(OptionalChar.of('q'))));
+		twice(() -> assertThat(twoRandom.max(), is(OptionalChar.of('w'))));
+		twice(() -> assertThat(nineRandom.max(), is(OptionalChar.of('q'))));
 	}
 
 	@Test

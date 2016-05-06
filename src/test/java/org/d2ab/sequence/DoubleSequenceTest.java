@@ -644,6 +644,70 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void firstByPredicate() {
+		twice(() -> {
+			assertThat(empty.first(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_1.first(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_12.first(x -> x > 1), is(OptionalDouble.of(2)));
+			assertThat(_12345.first(x -> x > 1), is(OptionalDouble.of(2)));
+		});
+	}
+
+	@Test
+	public void secondByPredicate() {
+		twice(() -> {
+			assertThat(empty.second(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_1.second(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_12.second(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_123.second(x -> x > 1), is(OptionalDouble.of(3)));
+			assertThat(_1234.second(x -> x > 1), is(OptionalDouble.of(3)));
+		});
+	}
+
+	@Test
+	public void thirdByPredicate() {
+		twice(() -> {
+			assertThat(empty.third(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_1.third(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_12.third(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_123.third(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_1234.third(x -> x > 1), is(OptionalDouble.of(4)));
+			assertThat(_12345.third(x -> x > 1), is(OptionalDouble.of(4)));
+		});
+	}
+
+	@Test
+	public void lastByPredicate() {
+		twice(() -> {
+			assertThat(empty.last(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_1.last(x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_12.last(x -> x > 1), is(OptionalDouble.of(2)));
+			assertThat(_12345.last(x -> x > 1), is(OptionalDouble.of(5)));
+		});
+	}
+
+	@Test
+	public void atByPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(empty.at(17, x -> x > 1), is(OptionalDouble.empty()));
+
+			assertThat(_1.at(0, x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_1.at(17, x -> x > 1), is(OptionalDouble.empty()));
+
+			assertThat(_12.at(0, x -> x > 1), is(OptionalDouble.of(2)));
+			assertThat(_12.at(1, x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_12.at(17, x -> x > 1), is(OptionalDouble.empty()));
+
+			assertThat(_12345.at(0, x -> x > 1), is(OptionalDouble.of(2)));
+			assertThat(_12345.at(1, x -> x > 1), is(OptionalDouble.of(3)));
+			assertThat(_12345.at(3, x -> x > 1), is(OptionalDouble.of(5)));
+			assertThat(_12345.at(4, x -> x > 1), is(OptionalDouble.empty()));
+			assertThat(_12345.at(17, x -> x > 1), is(OptionalDouble.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		DoubleSequence stepThree = _123456789.step(3);
 		twice(() -> assertThat(stepThree, containsDoubles(1.0, 4.0, 7.0)));
@@ -675,32 +739,18 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void min() {
-		OptionalDouble emptyMin = empty.min();
-		twice(() -> assertThat(emptyMin, is(OptionalDouble.empty())));
-
-		OptionalDouble oneMin = oneRandom.min();
-		twice(() -> assertThat(oneMin, is(OptionalDouble.of(17.0))));
-
-		OptionalDouble twoMin = twoRandom.min();
-		twice(() -> assertThat(twoMin, is(OptionalDouble.of(17.0))));
-
-		OptionalDouble nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalDouble.of(-7.0))));
+		twice(() -> assertThat(empty.min(), is(OptionalDouble.empty())));
+		twice(() -> assertThat(oneRandom.min(), is(OptionalDouble.of(17.0))));
+		twice(() -> assertThat(twoRandom.min(), is(OptionalDouble.of(17.0))));
+		twice(() -> assertThat(nineRandom.min(), is(OptionalDouble.of(-7.0))));
 	}
 
 	@Test
 	public void max() {
-		OptionalDouble emptyMax = empty.max();
-		twice(() -> assertThat(emptyMax, is(OptionalDouble.empty())));
-
-		OptionalDouble oneMax = oneRandom.max();
-		twice(() -> assertThat(oneMax, is(OptionalDouble.of(17.0))));
-
-		OptionalDouble twoMax = twoRandom.max();
-		twice(() -> assertThat(twoMax, is(OptionalDouble.of(32.0))));
-
-		OptionalDouble nineMax = nineRandom.max();
-		twice(() -> assertThat(nineMax, is(OptionalDouble.of(17.0))));
+		twice(() -> assertThat(empty.max(), is(OptionalDouble.empty())));
+		twice(() -> assertThat(oneRandom.max(), is(OptionalDouble.of(17.0))));
+		twice(() -> assertThat(twoRandom.max(), is(OptionalDouble.of(32.0))));
+		twice(() -> assertThat(nineRandom.max(), is(OptionalDouble.of(17.0))));
 	}
 
 	@Test

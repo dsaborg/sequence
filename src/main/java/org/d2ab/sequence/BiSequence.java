@@ -1174,16 +1174,34 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
+	 * @return the minimal pair in this {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> min() {
+		return min(Comparator.naturalOrder());
+	}
+
+	/**
+	 * @return the maximum pair in this {@code BiSequence}.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<Pair<L, R>> max() {
+		return max(Comparator.naturalOrder());
+	}
+
+	/**
 	 * @return the minimal element in this {@code BiSequence} according to the given {@link Comparator}.
 	 */
-	default Optional<Pair<L, R>> min(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
+	default Optional<Pair<L, R>> min(Comparator<? super Pair<L, R>> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
 	}
 
 	/**
 	 * @return the maximum element in this {@code BiSequence} according to the given {@link Comparator}.
 	 */
-	default Optional<Pair<L, R>> max(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
+	default Optional<Pair<L, R>> max(Comparator<? super Pair<L, R>> comparator) {
 		return reduce(BinaryOperator.maxBy(comparator));
 	}
 

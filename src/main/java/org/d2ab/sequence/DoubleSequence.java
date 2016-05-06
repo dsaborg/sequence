@@ -816,6 +816,65 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * @return the first double of those in this {@code DoubleSequence} matching the given predicate, or an empty
+	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
+	 *
+	 * @see #filter(DoublePredicate)
+	 * @see #at(long, DoublePredicate)
+	 * @since 1.2
+	 */
+	default OptionalDouble first(DoublePredicate predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the second double of those in this {@code DoubleSequence} matching the given predicate, or an empty
+	 * {@link OptionalDouble} if there are less than two matching doubles in the {@code DoubleSequence}.
+	 *
+	 * @see #filter(DoublePredicate)
+	 * @see #at(long, DoublePredicate)
+	 * @since 1.2
+	 */
+	default OptionalDouble second(DoublePredicate predicate) {
+		return at(1, predicate);
+	}
+
+	/**
+	 * @return the third double of those in this {@code DoubleSequence} matching the given predicate, or an empty
+	 * {@link OptionalDouble} if there are less than three matching doubles in the {@code DoubleSequence}.
+	 *
+	 * @see #filter(DoublePredicate)
+	 * @see #at(long, DoublePredicate)
+	 * @since 1.2
+	 */
+	default OptionalDouble third(DoublePredicate predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last double of those in this {@code DoubleSequence} matching the given predicate, or an empty
+	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
+	 *
+	 * @see #filter(DoublePredicate)
+	 * @see #at(long, DoublePredicate)
+	 * @since 1.2
+	 */
+	default OptionalDouble last(DoublePredicate predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the {@code double} at the given index out of doubles matching the given predicate, or an empty
+	 * {@link OptionalDouble} if the matching {@code DoubleSequence} is smaller than the index.
+	 *
+	 * @see #filter(DoublePredicate)
+	 * @since 1.2
+	 */
+	default OptionalDouble at(long index, DoublePredicate predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
 	 */
 	default DoubleSequence step(long step) {

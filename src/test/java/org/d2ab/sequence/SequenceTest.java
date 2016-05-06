@@ -1584,32 +1584,34 @@ public class SequenceTest {
 
 	@Test
 	public void min() {
-		Optional<Integer> emptyMin = empty.min(Comparator.naturalOrder());
-		twice(() -> assertThat(emptyMin, is(Optional.empty())));
-
-		Optional<Integer> oneMin = oneRandom.min(Comparator.naturalOrder());
-		twice(() -> assertThat(oneMin, is(Optional.of(17))));
-
-		Optional<Integer> twoMin = twoRandom.min(Comparator.naturalOrder());
-		twice(() -> assertThat(twoMin, is(Optional.of(17))));
-
-		Optional<Integer> nineMin = nineRandom.min(Comparator.naturalOrder());
-		twice(() -> assertThat(nineMin, is(Optional.of(3))));
+		twice(() -> assertThat(empty.min(), is(Optional.empty())));
+		twice(() -> assertThat(oneRandom.min(), is(Optional.of(17))));
+		twice(() -> assertThat(twoRandom.min(), is(Optional.of(17))));
+		twice(() -> assertThat(nineRandom.min(), is(Optional.of(3))));
 	}
 
 	@Test
 	public void max() {
-		Optional<Integer> emptyMax = empty.max(Comparator.naturalOrder());
-		twice(() -> assertThat(emptyMax, is(Optional.empty())));
+		twice(() -> assertThat(empty.max(), is(Optional.empty())));
+		twice(() -> assertThat(oneRandom.max(), is(Optional.of(17))));
+		twice(() -> assertThat(twoRandom.max(), is(Optional.of(32))));
+		twice(() -> assertThat(nineRandom.max(), is(Optional.of(67))));
+	}
 
-		Optional<Integer> oneMax = oneRandom.max(Comparator.naturalOrder());
-		twice(() -> assertThat(oneMax, is(Optional.of(17))));
+	@Test
+	public void minByComparator() {
+		twice(() -> assertThat(empty.min(Comparator.reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(oneRandom.min(Comparator.reverseOrder()), is(Optional.of(17))));
+		twice(() -> assertThat(twoRandom.min(Comparator.reverseOrder()), is(Optional.of(32))));
+		twice(() -> assertThat(nineRandom.min(Comparator.reverseOrder()), is(Optional.of(67))));
+	}
 
-		Optional<Integer> twoMax = twoRandom.max(Comparator.naturalOrder());
-		twice(() -> assertThat(twoMax, is(Optional.of(32))));
-
-		Optional<Integer> nineMax = nineRandom.max(Comparator.naturalOrder());
-		twice(() -> assertThat(nineMax, is(Optional.of(67))));
+	@Test
+	public void maxByComparator() {
+		twice(() -> assertThat(empty.max(Comparator.reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(oneRandom.max(Comparator.reverseOrder()), is(Optional.of(17))));
+		twice(() -> assertThat(twoRandom.max(Comparator.reverseOrder()), is(Optional.of(17))));
+		twice(() -> assertThat(nineRandom.max(Comparator.reverseOrder()), is(Optional.of(3))));
 	}
 
 	@Test

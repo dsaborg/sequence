@@ -1293,32 +1293,34 @@ public class BiSequenceTest {
 
 	@Test
 	public void min() {
-		Optional<Pair<String, Integer>> emptyMin = empty.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(emptyMin, is(Optional.empty())));
-
-		Optional<Pair<String, Integer>> oneMin = random1.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(oneMin, is(Optional.of(Pair.of("17", 17)))));
-
-		Optional<Pair<String, Integer>> twoMin = random2.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(twoMin, is(Optional.of(Pair.of("17", 17)))));
-
-		Optional<Pair<String, Integer>> nineMin = random9.min((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(nineMin, is(Optional.of(Pair.of("24", 24)))));
+		twice(() -> assertThat(empty.min(), is(Optional.empty())));
+		twice(() -> assertThat(random1.min(), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random2.min(), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random9.min(), is(Optional.of(Pair.of("24", 24)))));
 	}
 
 	@Test
 	public void max() {
-		Optional<Pair<String, Integer>> emptyMax = empty.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(emptyMax, is(Optional.empty())));
+		twice(() -> assertThat(empty.max(), is(Optional.empty())));
+		twice(() -> assertThat(random1.max(), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random2.max(), is(Optional.of(Pair.of("32", 32)))));
+		twice(() -> assertThat(random9.max(), is(Optional.of(Pair.of("7", 7)))));
+	}
 
-		Optional<Pair<String, Integer>> oneMax = random1.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(oneMax, is(Optional.of(Pair.of("17", 17)))));
+	@Test
+	public void minByComparator() {
+		twice(() -> assertThat(empty.min(Comparator.reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(random1.min(Comparator.reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random2.min(Comparator.reverseOrder()), is(Optional.of(Pair.of("32", 32)))));
+		twice(() -> assertThat(random9.min(Comparator.reverseOrder()), is(Optional.of(Pair.of("7", 7)))));
+	}
 
-		Optional<Pair<String, Integer>> twoMax = random2.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(twoMax, is(Optional.of(Pair.of("32", 32)))));
-
-		Optional<Pair<String, Integer>> nineMax = random9.max((Comparator) Comparator.naturalOrder());
-		twice(() -> assertThat(nineMax, is(Optional.of(Pair.of("7", 7)))));
+	@Test
+	public void maxByComparator() {
+		twice(() -> assertThat(empty.max(Comparator.reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(random1.max(Comparator.reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random2.max(Comparator.reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random9.max(Comparator.reverseOrder()), is(Optional.of(Pair.of("24", 24)))));
 	}
 
 	@Test

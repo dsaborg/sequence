@@ -106,7 +106,7 @@ public interface Sequence<T> extends Iterable<T> {
 	@SafeVarargs
 	static <T> Sequence<T> concat(Iterable<T>... iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.of(iterables);
-		if (iterableSequence.all(iterable -> iterable instanceof List))
+		if (iterableSequence.all(List.class))
 			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
 
 		return new ChainingIterable<>(iterables)::iterator;
@@ -124,7 +124,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.from(iterables);
-		if (iterableSequence.all(iterable -> iterable instanceof List))
+		if (iterableSequence.all(List.class))
 			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
 
 		return ChainingIterable.<T>flatten(iterables)::iterator;
@@ -1525,6 +1525,28 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
 		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
+	}
+
+	/**
+	 * @return the minimal element in this {@code Sequence} according to their natural order. Elements in the sequence
+	 * must all implement {@link Comparable} or a {@link ClassCastException} will be thrown at traversal.
+	 *
+	 * @since 1.2
+	 */
+	@SuppressWarnings("unchecked")
+	default Optional<T> min() {
+		return min((Comparator) Comparator.naturalOrder());
+	}
+
+	/**
+	 * @return the maximum element in this {@code Sequence} according to their natural order. Elements in the sequence
+	 * must all implement {@link Comparable} or a {@link ClassCastException} will be thrown at traversal.
+	 *
+	 * @since 1.2
+	 */
+	@SuppressWarnings("unchecked")
+	default Optional<T> max() {
+		return max((Comparator) Comparator.naturalOrder());
 	}
 
 	/**

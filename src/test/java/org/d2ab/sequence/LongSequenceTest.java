@@ -632,6 +632,70 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void firstByPredicate() {
+		twice(() -> {
+			assertThat(empty.first(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_1.first(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_12.first(x -> x > 1), is(OptionalLong.of(2)));
+			assertThat(_12345.first(x -> x > 1), is(OptionalLong.of(2)));
+		});
+	}
+
+	@Test
+	public void secondByPredicate() {
+		twice(() -> {
+			assertThat(empty.second(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_1.second(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_12.second(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_123.second(x -> x > 1), is(OptionalLong.of(3)));
+			assertThat(_1234.second(x -> x > 1), is(OptionalLong.of(3)));
+		});
+	}
+
+	@Test
+	public void thirdByPredicate() {
+		twice(() -> {
+			assertThat(empty.third(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_1.third(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_12.third(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_123.third(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_1234.third(x -> x > 1), is(OptionalLong.of(4)));
+			assertThat(_12345.third(x -> x > 1), is(OptionalLong.of(4)));
+		});
+	}
+
+	@Test
+	public void lastByPredicate() {
+		twice(() -> {
+			assertThat(empty.last(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_1.last(x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_12.last(x -> x > 1), is(OptionalLong.of(2)));
+			assertThat(_12345.last(x -> x > 1), is(OptionalLong.of(5)));
+		});
+	}
+
+	@Test
+	public void atByPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, x -> x > 1), is(OptionalLong.empty()));
+			assertThat(empty.at(17, x -> x > 1), is(OptionalLong.empty()));
+
+			assertThat(_1.at(0, x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_1.at(17, x -> x > 1), is(OptionalLong.empty()));
+
+			assertThat(_12.at(0, x -> x > 1), is(OptionalLong.of(2)));
+			assertThat(_12.at(1, x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_12.at(17, x -> x > 1), is(OptionalLong.empty()));
+
+			assertThat(_12345.at(0, x -> x > 1), is(OptionalLong.of(2)));
+			assertThat(_12345.at(1, x -> x > 1), is(OptionalLong.of(3)));
+			assertThat(_12345.at(3, x -> x > 1), is(OptionalLong.of(5)));
+			assertThat(_12345.at(4, x -> x > 1), is(OptionalLong.empty()));
+			assertThat(_12345.at(17, x -> x > 1), is(OptionalLong.empty()));
+		});
+	}
+
+	@Test
 	public void step() {
 		LongSequence stepThree = _123456789.step(3L);
 		twice(() -> assertThat(stepThree, containsLongs(1L, 4L, 7L)));
@@ -678,32 +742,18 @@ public class LongSequenceTest {
 
 	@Test
 	public void min() {
-		OptionalLong emptyMin = empty.min();
-		twice(() -> assertThat(emptyMin, is(OptionalLong.empty())));
-
-		OptionalLong oneMin = oneRandom.min();
-		twice(() -> assertThat(oneMin, is(OptionalLong.of(17L))));
-
-		OptionalLong twoMin = twoRandom.min();
-		twice(() -> assertThat(twoMin, is(OptionalLong.of(17L))));
-
-		OptionalLong nineMin = nineRandom.min();
-		twice(() -> assertThat(nineMin, is(OptionalLong.of(-7L))));
+		twice(() -> assertThat(empty.min(), is(OptionalLong.empty())));
+		twice(() -> assertThat(oneRandom.min(), is(OptionalLong.of(17L))));
+		twice(() -> assertThat(twoRandom.min(), is(OptionalLong.of(17L))));
+		twice(() -> assertThat(nineRandom.min(), is(OptionalLong.of(-7L))));
 	}
 
 	@Test
 	public void max() {
-		OptionalLong emptyMax = empty.max();
-		twice(() -> assertThat(emptyMax, is(OptionalLong.empty())));
-
-		OptionalLong oneMax = oneRandom.max();
-		twice(() -> assertThat(oneMax, is(OptionalLong.of(17L))));
-
-		OptionalLong twoMax = twoRandom.max();
-		twice(() -> assertThat(twoMax, is(OptionalLong.of(32L))));
-
-		OptionalLong nineMax = nineRandom.max();
-		twice(() -> assertThat(nineMax, is(OptionalLong.of(17L))));
+		twice(() -> assertThat(empty.max(), is(OptionalLong.empty())));
+		twice(() -> assertThat(oneRandom.max(), is(OptionalLong.of(17L))));
+		twice(() -> assertThat(twoRandom.max(), is(OptionalLong.of(32L))));
+		twice(() -> assertThat(nineRandom.max(), is(OptionalLong.of(17L))));
 	}
 
 	@Test

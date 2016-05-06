@@ -1076,16 +1076,38 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
+	 * @return the minimal element in this {@code EntrySequence} according to their natural order. The entries in the
+	 * sequence must all implement {@link Comparable} or a {@link ClassCastException} will be thrown at runtime.
+	 *
+	 * @since 1.2
+	 */
+	@SuppressWarnings("unchecked")
+	default Optional<Entry<K, V>> min() {
+		return min((Comparator) Comparator.naturalOrder());
+	}
+
+	/**
+	 * @return the maximum element in this {@code EntrySequence} according to their natural order. The entries in the
+	 * sequence must all implement {@link Comparable} or a {@link ClassCastException} will be thrown at runtime.
+	 *
+	 * @since 1.2
+	 */
+	@SuppressWarnings("unchecked")
+	default Optional<Entry<K, V>> max() {
+		return max((Comparator) Comparator.naturalOrder());
+	}
+
+	/**
 	 * @return the minimal element in this {@code EntrySequence} according to the given {@link Comparator}.
 	 */
-	default Optional<Entry<K, V>> min(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
+	default Optional<Entry<K, V>> min(Comparator<? super Entry<K, V>> comparator) {
 		return reduce(BinaryOperator.minBy(comparator));
 	}
 
 	/**
 	 * @return the maximum element in this {@code EntrySequence} according to the given {@link Comparator}.
 	 */
-	default Optional<Entry<K, V>> max(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
+	default Optional<Entry<K, V>> max(Comparator<? super Entry<K, V>> comparator) {
 		return reduce(BinaryOperator.maxBy(comparator));
 	}
 

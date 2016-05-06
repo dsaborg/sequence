@@ -978,6 +978,65 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * @return the first long of those in this {@code LongSequence} matching the given predicate, or an empty
+	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
+	 *
+	 * @see #filter(LongPredicate)
+	 * @see #at(long, LongPredicate)
+	 * @since 1.2
+	 */
+	default OptionalLong first(LongPredicate predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the second long of those in this {@code LongSequence} matching the given predicate, or an empty
+	 * {@link OptionalLong} if there are less than two matching longs in the {@code LongSequence}.
+	 *
+	 * @see #filter(LongPredicate)
+	 * @see #at(long, LongPredicate)
+	 * @since 1.2
+	 */
+	default OptionalLong second(LongPredicate predicate) {
+		return at(1, predicate);
+	}
+
+	/**
+	 * @return the third long of those in this {@code LongSequence} matching the given predicate, or an empty
+	 * {@link OptionalLong} if there are less than three matching longs in the {@code LongSequence}.
+	 *
+	 * @see #filter(LongPredicate)
+	 * @see #at(long, LongPredicate)
+	 * @since 1.2
+	 */
+	default OptionalLong third(LongPredicate predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last long of those in this {@code LongSequence} matching the given predicate, or an empty
+	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
+	 *
+	 * @see #filter(LongPredicate)
+	 * @see #at(long, LongPredicate)
+	 * @since 1.2
+	 */
+	default OptionalLong last(LongPredicate predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the {@code long} at the given index out of longs matching the given predicate, or an empty
+	 * {@link OptionalLong} if the matching {@code LongSequence} is smaller than the index.
+	 *
+	 * @see #filter(LongPredicate)
+	 * @since 1.2
+	 */
+	default OptionalLong at(long index, LongPredicate predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code LongSequence}.
 	 */
 	default LongSequence step(long step) {

@@ -923,6 +923,65 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * @return the first char of those in this {@code CharSeq} matching the given predicate, or an empty
+	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
+	 *
+	 * @see #filter(CharPredicate)
+	 * @see #at(char, CharPredicate)
+	 * @since 1.2
+	 */
+	default OptionalChar first(CharPredicate predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the second char of those in this {@code CharSeq} matching the given predicate, or an empty
+	 * {@link OptionalChar} if there are less than two matching chars in the {@code CharSeq}.
+	 *
+	 * @see #filter(CharPredicate)
+	 * @see #at(char, CharPredicate)
+	 * @since 1.2
+	 */
+	default OptionalChar second(CharPredicate predicate) {
+		return at(1, predicate);
+	}
+
+	/**
+	 * @return the third char of those in this {@code CharSeq} matching the given predicate, or an empty
+	 * {@link OptionalChar} if there are less than three matching chars in the {@code CharSeq}.
+	 *
+	 * @see #filter(CharPredicate)
+	 * @see #at(char, CharPredicate)
+	 * @since 1.2
+	 */
+	default OptionalChar third(CharPredicate predicate) {
+		return at(2, predicate);
+	}
+
+	/**
+	 * @return the last char of those in this {@code CharSeq} matching the given predicate, or an empty
+	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
+	 *
+	 * @see #filter(CharPredicate)
+	 * @see #at(char, CharPredicate)
+	 * @since 1.2
+	 */
+	default OptionalChar last(CharPredicate predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the {@code char} at the given index out of chars matching the given predicate, or an empty
+	 * {@link OptionalChar} if the matching {@code CharSeq} is smaller than the index.
+	 *
+	 * @see #filter(CharPredicate)
+	 * @since 1.2
+	 */
+	default OptionalChar at(long index, CharPredicate predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code CharSeq}.
 	 */
 	default CharSeq step(long step) {
