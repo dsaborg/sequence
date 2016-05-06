@@ -74,6 +74,13 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 	}
 
 	/**
+	 * @return a {@code Pair} created from the key and value of the given entry, key being left and value being right.
+	 */
+	public static <K, V> Pair<K, V> copy(Entry<? extends K, ? extends V> entry) {
+		return of(entry.getKey(), entry.getValue());
+	}
+
+	/**
 	 * @return a unary {@code Pair} where both objects are the same.
 	 */
 	public static <T> Pair<T, T> unary(T item) {

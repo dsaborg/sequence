@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -48,28 +49,61 @@ public class PairTest {
 		Pair<Integer, Integer> pairFromEntry = Pair.from(new Entry<Integer, Integer>() {
 			@Override
 			public Integer getKey() {
-				return value.addAndGet(1);
+				return value.incrementAndGet();
 			}
 
 			@Override
 			public Integer getValue() {
-				return value.addAndGet(1);
+				return value.incrementAndGet();
 			}
 
 			@Override
 			public Integer setValue(Integer value) {
-				throw new UnsupportedOperationException();
+				return value;
 			}
 		});
 
 		assertThat(pairFromEntry.getLeft(), is(1));
 		assertThat(pairFromEntry.getRight(), is(2));
+		expecting(UnsupportedOperationException.class, () -> pairFromEntry.setValue(17));
 
 		// Test assignment is pass-through
 		assertThat(pairFromEntry.getLeft(), is(3));
 		assertThat(pairFromEntry.getRight(), is(4));
 
 		assertThat(pairFromEntry.toString(), is("(5, 6)"));
+	}
+
+	@Test
+	public void fromCopiedEntry() {
+		AtomicInteger value = new AtomicInteger();
+
+		Pair<Integer, Integer> pairFromEntry = Pair.copy(new Entry<Integer, Integer>() {
+			@Override
+			public Integer getKey() {
+				return value.incrementAndGet();
+			}
+
+			@Override
+			public Integer getValue() {
+				return value.incrementAndGet();
+			}
+
+			@Override
+			public Integer setValue(Integer value) {
+				return value;
+			}
+		});
+
+		assertThat(pairFromEntry.getLeft(), is(1));
+		assertThat(pairFromEntry.getRight(), is(2));
+		expecting(UnsupportedOperationException.class, () -> pairFromEntry.setValue(17));
+
+		// Test assignment is not pass-through
+		assertThat(pairFromEntry.getLeft(), is(1));
+		assertThat(pairFromEntry.getRight(), is(2));
+
+		assertThat(pairFromEntry.toString(), is("(1, 2)"));
 	}
 
 	@Test
@@ -130,55 +164,60 @@ public class PairTest {
 	}
 
 	@Test
+	public void clonePairCopiedFromEntry() {
+		Pair<Integer, String> original = Pair.copy(Maps.entry(1, "2"));
+		Pair<Integer, String> clone = original.clone();
+		assertThat(clone, is(equalTo(original)));
+	}
+
+	@Test
 	public void cloneUnaryPair() {
 		Pair<Integer, Integer> original = Pair.unary(1);
 		Pair<Integer, Integer> clone = original.clone();
 		assertThat(clone, is(equalTo(original)));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void serializationPairOf() throws IOException, ClassNotFoundException {
 		Pair<Integer, String> original = Pair.of(1, "2");
-
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(bytes);
-		out.writeObject(original);
-
-		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
-		Pair<Integer, String> deserialized = (Pair<Integer, String>) in.readObject();
+		Pair<Integer, String> deserialized = serializeDeserialize(original);
 
 		assertThat(deserialized, is(equalTo(original)));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void serializationPairFromEntry() throws IOException, ClassNotFoundException {
 		Pair<Integer, String> original = Pair.from(Maps.entry(1, "2"));
+		Pair<Integer, String> deserialized = serializeDeserialize(original);
 
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(bytes);
-		out.writeObject(original);
+		assertThat(deserialized, is(equalTo(original)));
+	}
 
-		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
-		Pair<Integer, String> deserialized = (Pair<Integer, String>) in.readObject();
+	@Test
+	public void serializationPairCopiedFromEntry() throws IOException, ClassNotFoundException {
+		Pair<Integer, String> original = Pair.copy(Maps.entry(1, "2"));
+		Pair<Integer, String> deserialized = serializeDeserialize(original);
+
+		assertThat(deserialized, is(equalTo(original)));
+	}
+
+	@Test
+	public void serializationUnaryPair() throws IOException, ClassNotFoundException {
+		Pair<Integer, Integer> original = Pair.unary(1);
+		Pair<Integer, Integer> deserialized = serializeDeserialize(original);
 
 		assertThat(deserialized, is(equalTo(original)));
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
-	public void serializationUnaryPair() throws IOException, ClassNotFoundException {
-		Pair<Integer, Integer> original = Pair.unary(1);
-
+	private static <L, R> Pair<L, R> serializeDeserialize(Pair<L, R> original)
+			throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(bytes);
 		out.writeObject(original);
 
 		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
-		Pair<Integer, Integer> deserialized = (Pair<Integer, Integer>) in.readObject();
-
-		assertThat(deserialized, is(equalTo(original)));
+		return (Pair<L, R>) in.readObject();
 	}
 
 	@Test
