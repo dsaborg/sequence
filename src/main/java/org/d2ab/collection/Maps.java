@@ -18,6 +18,7 @@ package org.d2ab.collection;
 
 import org.d2ab.function.QuaternaryFunction;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
@@ -114,13 +115,13 @@ public class Maps {
 		}
 
 		public Map<K, V> build() {
-			Map<K, V> result = map;
+			Map<K, V> result = map == null ? constructor.get() : map;
 			map = null;
 			return result;
 		}
 	}
 
-	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>> {
+	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>>, Serializable {
 		private final K key;
 		private final V value;
 
@@ -173,11 +174,11 @@ public class Maps {
 		}
 	}
 
-	static class EntryIterator<K extends T, V extends T, T> implements Iterator<T> {
-		private final Entry<K, V> entry;
+	static class EntryIterator<T> implements Iterator<T> {
+		private final Entry<? extends T, ? extends T> entry;
 		int index;
 
-		public EntryIterator(Entry<K, V> entry) {
+		public EntryIterator(Entry<? extends T, ? extends T> entry) {
 			this.entry = entry;
 		}
 

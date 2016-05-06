@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -1631,6 +1630,21 @@ public class BiSequenceTest {
 
 	@Test
 	public void flatten() {
+		Sequence<Object> emptyFlattened = empty.flatten();
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+
+		Sequence<Object> oneFlattened = _1.flatten();
+		twice(() -> assertThat(oneFlattened, contains("1", 1)));
+
+		Sequence<Object> twoFlattened = _12.flatten();
+		twice(() -> assertThat(twoFlattened, contains("1", 1, "2", 2)));
+
+		Sequence<Object> fiveFlattened = _12345.flatten();
+		twice(() -> assertThat(fiveFlattened, contains("1", 1, "2", 2, "3", 3, "4", 4, "5", 5)));
+	}
+
+	@Test
+	public void flattenFunction() {
 		BiSequence<String, Integer> flattened = _123.flatten(pair -> Iterables.of(pair, Pair.of("0", 0)));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
 		                                           Pair.of("3", 3), Pair.of("0", 0))));
@@ -1645,18 +1659,18 @@ public class BiSequenceTest {
 
 	@Test
 	public void flattenLeft() {
-		BiSequence<String, Integer> flattened =
-				BiSequence.<List<String>, Integer>ofPairs(Iterables.of("1", "2", "3"), 1, emptyList(), "4",
-				                                          Iterables.of("5", "6", "7"), 3).flattenLeft(Pair::getLeft);
+		BiSequence<String, Integer> flattened = BiSequence.<Iterable<String>, Integer>ofPairs(
+				Iterables.of("1", "2", "3"), 1, Iterables.empty(), 2, Iterables.of("5", "6", "7"), 3)
+				.flattenLeft(Pair::getLeft);
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("2", 1), Pair.of("3", 1), Pair.of("5", 3),
 		                                           Pair.of("6", 3), Pair.of("7", 3))));
 	}
 
 	@Test
 	public void flattenRight() {
-		BiSequence<String, Integer> flattened =
-				BiSequence.<String, List<Integer>>ofPairs("1", Iterables.of(1, 2, 3), "2", emptyList(), "3",
-				                                          Iterables.of(2, 3, 4)).flattenRight(Pair::getRight);
+		BiSequence<String, Integer> flattened = BiSequence.<String, Iterable<Integer>>ofPairs(
+				"1", Iterables.of(1, 2, 3), "2", Iterables.empty(), "3", Iterables.of(2, 3, 4))
+				.flattenRight(Pair::getRight);
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("1", 2), Pair.of("1", 3), Pair.of("3", 2),
 		                                           Pair.of("3", 3), Pair.of("3", 4))));
 	}

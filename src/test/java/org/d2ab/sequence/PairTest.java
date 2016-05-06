@@ -20,6 +20,7 @@ import org.d2ab.collection.Maps;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -133,6 +134,51 @@ public class PairTest {
 		Pair<Integer, Integer> original = Pair.unary(1);
 		Pair<Integer, Integer> clone = original.clone();
 		assertThat(clone, is(equalTo(original)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void serializationPairOf() throws IOException, ClassNotFoundException {
+		Pair<Integer, String> original = Pair.of(1, "2");
+
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(bytes);
+		out.writeObject(original);
+
+		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+		Pair<Integer, String> deserialized = (Pair<Integer, String>) in.readObject();
+
+		assertThat(deserialized, is(equalTo(original)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void serializationPairFromEntry() throws IOException, ClassNotFoundException {
+		Pair<Integer, String> original = Pair.from(Maps.entry(1, "2"));
+
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(bytes);
+		out.writeObject(original);
+
+		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+		Pair<Integer, String> deserialized = (Pair<Integer, String>) in.readObject();
+
+		assertThat(deserialized, is(equalTo(original)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void serializationUnaryPair() throws IOException, ClassNotFoundException {
+		Pair<Integer, Integer> original = Pair.unary(1);
+
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(bytes);
+		out.writeObject(original);
+
+		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
+		Pair<Integer, Integer> deserialized = (Pair<Integer, Integer>) in.readObject();
+
+		assertThat(deserialized, is(equalTo(original)));
 	}
 
 	@Test

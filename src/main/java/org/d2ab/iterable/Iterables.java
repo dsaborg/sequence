@@ -35,6 +35,13 @@ public class Iterables {
 	}
 
 	/**
+	 * @return an empty {@link Iterable}.
+	 */
+	public static <T> Iterable<T> empty() {
+		return Iterators::empty;
+	}
+
+	/**
 	 * @return an {@link Iterable} containing the given objects.
 	 */
 	@SafeVarargs

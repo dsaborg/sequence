@@ -16,12 +16,37 @@
 
 package org.d2ab.iterator;
 
+import org.d2ab.iterable.Iterables;
 import org.junit.Test;
 
+import static org.d2ab.test.Tests.twice;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class IteratorsTest {
+	@Test
+	public void empty() {
+		Iterable<Object> empty = Iterables.empty();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
+
+	@Test
+	public void of() {
+		Iterable<Integer> none = Iterables.of();
+		twice(() -> assertThat(none, is(emptyIterable())));
+
+		Iterable<Integer> one = Iterables.of(1);
+		twice(() -> assertThat(one, contains(1)));
+
+		Iterable<Integer> two = Iterables.of(1, 2);
+		twice(() -> assertThat(two, contains(1, 2)));
+
+		Iterable<Integer> five = Iterables.of(1, 2, 3, 4, 5);
+		twice(() -> assertThat(five, contains(1, 2, 3, 4, 5)));
+	}
+
 	@Test
 	public void toList() {
 		assertThat(Iterators.toList(Iterators.of(1, 2, 3, 4, 5)), contains(1, 2, 3, 4, 5));

@@ -460,6 +460,14 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
+	 * @return a {@link Sequence} of the {@link Pair}s in this {@code BiSequence} flattened into their left and right
+	 * components and strung together.
+	 */
+	default <T> Sequence<T> flatten() {
+		return toSequence().flatten();
+	}
+
+	/**
 	 * Flatten the elements in this {@code BiSequence} according to the given mapper {@link BiFunction}. The resulting
 	 * {@code BiSequence} contains the elements that is the result of applying the mapper {@link BiFunction} to each
 	 * element, appended together inline as a single {@code BiSequence}.

@@ -18,6 +18,7 @@ package org.d2ab.util;
 
 import org.d2ab.function.QuaternaryFunction;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
@@ -32,7 +33,7 @@ import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
  * @param <L> the type of the "left" side of the pair.
  * @param <R> the type of the "right" side of the pair.
  */
-public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>, Cloneable {
+public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>, Cloneable, Serializable {
 	@SuppressWarnings("unchecked")
 	private static final Comparator<Pair> COMPARATOR =
 			comparing((Function<Pair, Object>) Pair::getLeft, naturalOrderNullsFirst()).thenComparing(

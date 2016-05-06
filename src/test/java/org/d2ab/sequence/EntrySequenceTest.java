@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -1212,17 +1211,23 @@ public class EntrySequenceTest {
 	@Test
 	public void minByComparator() {
 		twice(() -> assertThat(empty.min((Comparator) Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(random1.min((Comparator) Comparator.reverseOrder()), is(Optional.of(Maps.entry("17", 17)))));
-		twice(() -> assertThat(random2.min((Comparator) Comparator.reverseOrder()), is(Optional.of(Maps.entry("32", 32)))));
-		twice(() -> assertThat(random9.min((Comparator) Comparator.reverseOrder()), is(Optional.of(Maps.entry("7", 7)))));
+		twice(() -> assertThat(random1.min((Comparator) Comparator.reverseOrder()),
+		                       is(Optional.of(Maps.entry("17", 17)))));
+		twice(() -> assertThat(random2.min((Comparator) Comparator.reverseOrder()),
+		                       is(Optional.of(Maps.entry("32", 32)))));
+		twice(() -> assertThat(random9.min((Comparator) Comparator.reverseOrder()),
+		                       is(Optional.of(Maps.entry("7", 7)))));
 	}
 
 	@Test
 	public void maxByComparator() {
 		twice(() -> assertThat(empty.max((Comparator) Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(random1.max((Comparator) Comparator.reverseOrder()), is(Optional.of(Maps.entry("17", 17)))));
-		twice(() -> assertThat(random2.max((Comparator) Comparator.reverseOrder()), is(Optional.of(Maps.entry("17", 17)))));
-		twice(() -> assertThat(random9.max((Comparator) Comparator.reverseOrder()), is(Optional.of(Maps.entry("24", 24)))));
+		twice(() -> assertThat(random1.max((Comparator) Comparator.reverseOrder()),
+		                       is(Optional.of(Maps.entry("17", 17)))));
+		twice(() -> assertThat(random2.max((Comparator) Comparator.reverseOrder()),
+		                       is(Optional.of(Maps.entry("17", 17)))));
+		twice(() -> assertThat(random9.max((Comparator) Comparator.reverseOrder()),
+		                       is(Optional.of(Maps.entry("24", 24)))));
 	}
 
 	@Test
@@ -1543,6 +1548,21 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flatten() {
+		Sequence<Object> emptyFlattened = empty.flatten();
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+
+		Sequence<Object> oneFlattened = _1.flatten();
+		twice(() -> assertThat(oneFlattened, contains("1", 1)));
+
+		Sequence<Object> twoFlattened = _12.flatten();
+		twice(() -> assertThat(twoFlattened, contains("1", 1, "2", 2)));
+
+		Sequence<Object> fiveFlattened = _12345.flatten();
+		twice(() -> assertThat(fiveFlattened, contains("1", 1, "2", 2, "3", 3, "4", 4, "5", 5)));
+	}
+
+	@Test
+	public void flattenFunction() {
 		EntrySequence<String, Integer> flattened = _123.flatten(entry -> Iterables.of(entry, Maps.entry("0", 0)));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
@@ -1560,10 +1580,9 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flattenKeys() {
-		EntrySequence<String, Integer> flattened =
-				EntrySequence.<List<String>, Integer>ofEntries(Iterables.of("1", "2", "3"), 1, emptyList(), "4",
-				                                               Iterables.of("5", "6", "7"), 3).flattenKeys(
-						Entry::getKey);
+		EntrySequence<String, Integer> flattened = EntrySequence.<Iterable<String>, Integer>ofEntries(
+				Iterables.of("1", "2", "3"), 1, Iterables.empty(), 2, Iterables.of("5", "6", "7"), 3)
+				.flattenKeys(Entry::getKey);
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 1), Maps.entry("3", 1), Maps.entry("5", 3),
 		                                Maps.entry("6", 3), Maps.entry("7", 3))));
@@ -1571,9 +1590,9 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flattenValues() {
-		EntrySequence<String, Integer> flattened =
-				EntrySequence.<String, List<Integer>>ofEntries("1", Iterables.of(1, 2, 3), "2", emptyList(), "3",
-				                                               Iterables.of(2, 3, 4)).flattenValues(Entry::getValue);
+		EntrySequence<String, Integer> flattened = EntrySequence.<String, Iterable<Integer>>ofEntries(
+				"1", Iterables.of(1, 2, 3), "2", Iterables.empty(), "3", Iterables.of(2, 3, 4))
+				.flattenValues(Entry::getValue);
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("1", 2), Maps.entry("1", 3), Maps.entry("3", 2),
 		                                Maps.entry("3", 3), Maps.entry("3", 4))));

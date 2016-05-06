@@ -472,6 +472,14 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
+	 * @return a {@link Sequence} of the {@link Entry} elements in this {@code EntrySequence} flattened into their
+	 * key and value components strung together.
+	 */
+	default <T> Sequence<T> flatten() {
+		return toSequence().flatten();
+	}
+
+	/**
 	 * Flatten the elements in this {@code EntrySequence} according to the given mapper {@link BiFunction}. The
 	 * resulting {@code EntrySequence} contains the elements that is the result of applying the mapper
 	 * {@link BiFunction} to each element, appended together inline as a single {@code EntrySequence}.
