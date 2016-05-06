@@ -32,7 +32,7 @@ import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
  * @param <L> the type of the "left" side of the pair.
  * @param <R> the type of the "right" side of the pair.
  */
-public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>> {
+public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>, Cloneable {
 	@SuppressWarnings("unchecked")
 	private static final Comparator<Pair> COMPARATOR =
 			comparing((Function<Pair, Object>) Pair::getLeft, naturalOrderNullsFirst()).thenComparing(
@@ -335,6 +335,16 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>> 
 			return '"' + (String) o + '"';
 
 		return String.valueOf(o);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Pair<L, R> clone() {
+		try {
+			return (Pair<L, R>) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	@Override

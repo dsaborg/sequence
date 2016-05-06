@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -111,6 +112,27 @@ public class PairTest {
 	public void equalsAcrossTypes() {
 		assertThat(pair.equals(Pair.from(Maps.entry(1, "2"))), is(true));
 		assertThat(Pair.of(1, 1).equals(Pair.unary(1)), is(true));
+	}
+
+	@Test
+	public void clonePairOf() {
+		Pair<Integer, String> original = Pair.of(1, "2");
+		Pair<Integer, String> clone = original.clone();
+		assertThat(clone, is(equalTo(original)));
+	}
+
+	@Test
+	public void clonePairFromEntry() {
+		Pair<Integer, String> original = Pair.from(Maps.entry(1, "2"));
+		Pair<Integer, String> clone = original.clone();
+		assertThat(clone, is(equalTo(original)));
+	}
+
+	@Test
+	public void cloneUnaryPair() {
+		Pair<Integer, Integer> original = Pair.unary(1);
+		Pair<Integer, Integer> clone = original.clone();
+		assertThat(clone, is(equalTo(original)));
 	}
 
 	@Test
