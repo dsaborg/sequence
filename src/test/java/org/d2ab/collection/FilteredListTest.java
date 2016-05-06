@@ -140,7 +140,7 @@ public class FilteredListTest {
 	}
 
 	@Test
-	public void clear() {
+	public void removeAll() {
 		assertThat(filteredEmpty.removeAll(asList(1, 3)), is(false));
 		assertThat(filteredEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
