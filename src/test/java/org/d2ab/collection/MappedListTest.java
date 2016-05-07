@@ -49,10 +49,10 @@ public class MappedListTest {
 	@Before
 	public void setUp() {
 		originalEmpty = constructor.get();
+		mappedEmpty = MappedList.from(originalEmpty, Object::toString);
+
 		original = constructor.get();
 		original.addAll(asList(1, 2, 3, 4, 5));
-
-		mappedEmpty = MappedList.from(originalEmpty, Object::toString);
 		mapped = MappedList.from(original, Object::toString);
 	}
 

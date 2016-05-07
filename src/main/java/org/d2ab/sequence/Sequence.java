@@ -107,7 +107,7 @@ public interface Sequence<T> extends Iterable<T> {
 	static <T> Sequence<T> concat(Iterable<T>... iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.of(iterables);
 		if (iterableSequence.all(List.class))
-			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
+			return ListSequence.concat(iterableSequence.map(iterable -> (List<T>) iterable).toList());
 
 		return new ChainingIterable<>(iterables)::iterator;
 	}
@@ -125,7 +125,7 @@ public interface Sequence<T> extends Iterable<T> {
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
 		Sequence<Iterable<T>> iterableSequence = Sequence.from(iterables);
 		if (iterableSequence.all(List.class))
-			return ChainedListSequence.from(iterableSequence.map(iterable -> (List<T>) iterable).toList());
+			return ListSequence.concat(iterableSequence.map(iterable -> (List<T>) iterable).toList());
 
 		return ChainingIterable.<T>flatten(iterables)::iterator;
 	}

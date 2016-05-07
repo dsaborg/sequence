@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.ChainedList;
 import org.d2ab.collection.FilteredList;
 import org.d2ab.collection.MappedList;
 import org.d2ab.collection.ReverseList;
@@ -54,6 +55,14 @@ public class ListSequence<T> implements Sequence<T> {
 		return new ListSequence<>(list);
 	}
 
+	public static <T> Sequence<T> concat(List<T>... lists) {
+		return from(ChainedList.from(lists));
+	}
+
+	public static <T> Sequence<T> concat(List<List<T>> lists) {
+		return from(ChainedList.from(lists));
+	}
+
 	private ListSequence(List<T> list) {
 		this.list = list;
 	}
@@ -71,21 +80,6 @@ public class ListSequence<T> implements Sequence<T> {
 	@Override
 	public List<T> asList() {
 		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Sequence<T> append(Iterable<T> iterable) {
-		if (iterable instanceof List)
-			return ChainedListSequence.from(list, (List<T>) iterable);
-
-		return new ChainingIterable<>(this, iterable)::iterator;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Sequence<T> append(T... items) {
-		return append(Arrays.asList(items));
 	}
 
 	@Override
@@ -137,16 +131,31 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public Sequence<T> reverse() {
-		return new ListSequence<>(ReverseList.from(list));
+		return from(ReverseList.from(list));
 	}
 
 	@Override
 	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return new ListSequence<>(FilteredList.from(list, predicate));
+		return from(FilteredList.from(list, predicate));
 	}
 
 	@Override
 	public <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
-		return new ListSequence<>(MappedList.from(list, mapper));
+		return from(MappedList.from(list, mapper));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Sequence<T> append(Iterable<T> iterable) {
+		if (iterable instanceof List)
+			return from(ChainedList.from(list, (List<T>) iterable));
+		
+		return Sequence.concat(this, iterable);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Sequence<T> append(T... items) {
+		return append(Arrays.asList(items));
 	}
 }
