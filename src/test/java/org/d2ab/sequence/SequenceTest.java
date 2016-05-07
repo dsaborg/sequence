@@ -21,6 +21,9 @@ import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -42,21 +45,81 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+@RunWith(Parameterized.class)
 public class SequenceTest {
-	private final Sequence<Integer> empty = Sequence.from(new ArrayDeque<>());
-	private final Sequence<Integer> _1 = Sequence.from(new ArrayDeque<>(Arrays.asList(1)));
-	private final Sequence<Integer> _12 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2)));
-	private final Sequence<Integer> _123 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3)));
-	private final Sequence<Integer> _1234 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4)));
-	private final Sequence<Integer> _12345 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5)));
-	private final Sequence<Integer> _123456789 = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8,
-	                                                                                          9)));
-	private final Sequence<Integer> oneRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(17)));
-	private final Sequence<Integer> twoRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(17, 32)));
-	private final Sequence<Integer> threeRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(2, 3, 1)));
-	private final Sequence<Integer> nineRandom = Sequence.from(new ArrayDeque<>(Arrays.asList(67, 5, 43, 3, 5, 7, 24,
-	                                                                                          5, 67)));
-	private final Sequence<?> mixed = Sequence.of("1", 1, 'x', 1.0, "2", 2, 'y', 2.0, "3", 3, 'z', 3.0);
+	private final Function<Object[], Sequence<?>> generator;
+
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	private final <T> Sequence<T> newSequence(T... ts) {
+		return (Sequence<T>) generator.apply(ts);
+	}
+
+	private final Sequence<Integer> empty;
+	private final Sequence<Integer> _1;
+	private final Sequence<Integer> _12;
+	private final Sequence<Integer> _123;
+	private final Sequence<Integer> _1234;
+	private final Sequence<Integer> _12345;
+	private final Sequence<Integer> _123456789;
+	private final Sequence<Integer> oneRandom;
+	private final Sequence<Integer> twoRandom;
+	private final Sequence<Integer> threeRandom;
+	private final Sequence<Integer> nineRandom;
+	private final Sequence<?> mixed;
+
+	@SuppressWarnings("UnusedParameters")
+	public SequenceTest(String description, Function<Object[], Sequence<?>> generator) {
+		this.generator = generator;
+
+		empty = newSequence();
+		_1 = newSequence(1);
+		_12 = newSequence(1, 2);
+		_123 = newSequence(1, 2, 3);
+		_1234 = newSequence(1, 2, 3, 4);
+		_12345 = newSequence(1, 2, 3, 4, 5);
+		_123456789 = newSequence(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		oneRandom = newSequence(17);
+		twoRandom = newSequence(17, 32);
+		threeRandom = newSequence(2, 3, 1);
+		nineRandom = newSequence(67, 5, 43, 3, 5, 7, 24, 5, 67);
+		mixed = newSequence("1", 1, 'x', 1.0, "2", 2, 'y', 2.0, "3", 3, 'z', 3.0);
+	}
+
+	@SuppressWarnings("Convert2MethodRef")
+	@Parameters(name = "{0}")
+	public static Object[][] parameters() {
+		return new Object[][]{
+				{"Sequence",
+				 (Function<Object[], Sequence<?>>) is -> standardSequence(is)},
+				{"ListSequence",
+				 (Function<Object[], Sequence<?>>) is -> listSequence(is)},
+				{"ChainedListSequence",
+				 (Function<Object[], Sequence<?>>) is -> chainedListSequence(is)},
+				};
+	}
+
+	public static Sequence<?> chainedListSequence(Object... is) {
+		List<List<Object>> lists = new ArrayList<>();
+		List<Object> current = new ArrayList<>();
+		for (int i = 0; i < is.length; i++) {
+			current.add(is[i]);
+			if (i % 3 == 0) {
+				lists.add(current);
+				current = new ArrayList<>();
+			}
+		}
+		lists.add(current);
+		return ListSequence.concat(lists);
+	}
+
+	public static Sequence<Object> listSequence(Object... is) {
+		return ListSequence.from(new ArrayList<>(Arrays.asList(is)));
+	}
+
+	public static Sequence<Object> standardSequence(Object... is) {
+		return Sequence.from(new ArrayDeque<>(Arrays.asList(is)));
+	}
 
 	@Test
 	public void ofOne() {
@@ -158,15 +221,15 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void empty() {
-		twice(() -> assertThat(empty, is(emptyIterable())));
+	public void ofNulls() {
+		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
+
+		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
 	}
 
 	@Test
-	public void fromNulls() {
-		Sequence<Integer> sequence = Sequence.from(Iterables.of(1, null, 2, 3, null));
-
-		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
+	public void empty() {
+		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
 	@Test
@@ -350,8 +413,8 @@ public class SequenceTest {
 
 	@Test
 	public void append() {
-		Sequence<Integer> appended = _123.append(Sequence.from(new ArrayDeque<>(Arrays.asList(4, 5, 6))))
-		                                 .append(Sequence.from(new ArrayDeque<>(Arrays.asList(7, 8))));
+		Sequence<Integer> appended = _123.append(newSequence(4, 5, 6))
+		                                 .append(newSequence(7, 8));
 
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
@@ -529,25 +592,26 @@ public class SequenceTest {
 		twice(() -> assertThat(excludingNone, contains(1, 2, 3, 4, 5)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flatMapIterables() {
-		Sequence<List<Integer>> sequence = Sequence.from(
-				Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6)));
+		Sequence<Iterable<Integer>> sequence = newSequence(
+				Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6));
 
-		Function<List<Integer>, List<Integer>> identity = Function.identity();
+		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
 		Sequence<Integer> flatMap = sequence.flatten(identity);
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flatMapLazy() {
 		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
 
-		Sequence<Integer> flatMap = Sequence.from(
-				new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
-					throw new IllegalStateException();
-				}))).flatten(identity);
+		Sequence<Integer> flatMap = newSequence(Iterables.of(1, 2), () -> {
+			throw new IllegalStateException();
+		}).flatten(identity);
 
 		twice(() -> {
 			Iterator<Integer> iterator = flatMap.iterator(); // ISE if not lazy - expected later below
@@ -557,11 +621,10 @@ public class SequenceTest {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flatMapIterators() {
-		Sequence<Iterator<Integer>> sequence =
-				Sequence.from(
-						new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+		Sequence<Iterator<Integer>> sequence = newSequence(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
 
@@ -571,32 +634,28 @@ public class SequenceTest {
 
 	@Test
 	public void flatMapArrays() {
-		Sequence<Integer[]> sequence =
-				Sequence.from(
-						new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5,
-						                                                                                       6})));
+		Sequence<Integer[]> sequence = newSequence(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
 		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flattenIterables() {
-		Sequence<Integer> flattened =
-				Sequence.from(
-						new ArrayDeque<>(Arrays.asList(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))))
-				        .flatten();
+		Sequence<Integer> flattened = newSequence(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))
+				.flatten();
 
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flattenLazy() {
-		Sequence<Integer> flattened = Sequence.from(
-				new ArrayDeque<>(Arrays.asList(Arrays.asList(1, 2), (Iterable<Integer>) () -> {
-					throw new IllegalStateException();
-				}))).flatten();
+		Sequence<Integer> flattened = newSequence(Iterables.of(1, 2), () -> {
+			throw new IllegalStateException();
+		}).flatten();
 
 		twice(() -> {
 			// IllegalStateException if not lazy - see below
@@ -607,11 +666,10 @@ public class SequenceTest {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flattenIterators() {
-		Sequence<Iterator<Integer>> sequence =
-				Sequence.from(
-						new ArrayDeque<>(Arrays.asList(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6))));
+		Sequence<Iterator<Integer>> sequence = newSequence(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
 		Sequence<Integer> flattened = sequence.flatten();
 		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flattened, is(emptyIterable()));
@@ -619,29 +677,26 @@ public class SequenceTest {
 
 	@Test
 	public void flattenArrays() {
-		Sequence<Integer[]> sequence =
-				Sequence.from(
-						new ArrayDeque<>(Arrays.asList(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5,
-						                                                                                       6})));
+		Sequence<Integer[]> sequence = newSequence(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
 		Sequence<Integer> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flattenPairs() {
-		Sequence<Pair<String, Integer>> sequence =
-				Sequence.from(new ArrayDeque<>(Arrays.asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		Sequence<Pair<String, Integer>> sequence = newSequence(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 
 		Sequence<Object> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flattenEntries() {
-		Sequence<Entry<String, Integer>> sequence =
-				Sequence.from(
-						new ArrayDeque<>(Arrays.asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+		Sequence<Entry<String, Integer>> sequence = newSequence(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                        Maps.entry("3", 3));
 
 		Sequence<Object> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
@@ -655,14 +710,16 @@ public class SequenceTest {
 
 	@Test
 	public void mapIsLazy() {
-		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) () -> Arrays.asList(1, null).iterator());
+		Sequence<Integer> sequence = Sequence.concat(Iterables.of(1), () -> {
+			throw new IllegalStateException();
+		});
 
 		Sequence<String> mapped = sequence.map(Object::toString);
 
 		twice(() -> {
-			Iterator<String> iterator = mapped.iterator(); // NPE here if not lazy
+			Iterator<String> iterator = mapped.iterator(); // ISE here if not lazy
 			assertThat(iterator.next(), is("1"));
-			expecting(NullPointerException.class, iterator::next);
+			expecting(IllegalStateException.class, iterator::next);
 		});
 	}
 
@@ -1383,17 +1440,14 @@ public class SequenceTest {
 		BiSequence<Integer, String> emptyBiSequence = empty.toBiSequence();
 		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
 
-		BiSequence<Integer, String> oneBiSequence =
-				Sequence.from(new ArrayDeque<Pair>(Arrays.asList(Pair.of(1, "1")))).toBiSequence();
+		BiSequence<Integer, String> oneBiSequence = newSequence(Pair.of(1, "1")).toBiSequence();
 		twice(() -> assertThat(oneBiSequence, contains(Pair.of(1, "1"))));
 
-		BiSequence<Integer, String> twoBiSequence =
-				Sequence.from(new ArrayDeque<Pair>(Arrays.asList(Pair.of(1, "1"), Pair.of(2, "2")))).toBiSequence();
+		BiSequence<Integer, String> twoBiSequence = newSequence(Pair.of(1, "1"), Pair.of(2, "2")).toBiSequence();
 		twice(() -> assertThat(twoBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
-		BiSequence<Integer, String> threeBiSequence =
-				Sequence.from(new ArrayDeque<Pair>(Arrays.asList(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))))
-				        .toBiSequence();
+		BiSequence<Integer, String> threeBiSequence = newSequence(Pair.of(1, "1"), Pair.of(2, "2"),
+		                                                          Pair.of(3, "3")).toBiSequence();
 		twice(() -> assertThat(threeBiSequence, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -1403,19 +1457,15 @@ public class SequenceTest {
 		EntrySequence<Integer, String> emptyEntrySequence = empty.toEntrySequence();
 		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
 
-		EntrySequence<Integer, String> oneEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1")))).toEntrySequence();
+		EntrySequence<Integer, String> oneEntrySequence = newSequence(Maps.entry(1, "1")).toEntrySequence();
 		twice(() -> assertThat(oneEntrySequence, contains(Maps.entry(1, "1"))));
 
-		EntrySequence<Integer, String> twoEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2"))))
-				        .toEntrySequence();
+		EntrySequence<Integer, String> twoEntrySequence = newSequence(Maps.entry(1, "1"),
+		                                                              Maps.entry(2, "2")).toEntrySequence();
 		twice(() -> assertThat(twoEntrySequence, contains(Maps.entry(1, "1"), Maps.entry(2, "2"))));
 
-		EntrySequence<Integer, String> threeEntrySequence =
-				Sequence.from(new ArrayDeque<Entry>(Arrays.asList(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3,
-				                                                                                                     "3"))))
-				        .toEntrySequence();
+		EntrySequence<Integer, String> threeEntrySequence = newSequence(Maps.entry(1, "1"), Maps.entry(2, "2"),
+		                                                                Maps.entry(3, "3")).toEntrySequence();
 		twice(() -> assertThat(threeEntrySequence,
 		                       contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
 	}
@@ -1545,7 +1595,7 @@ public class SequenceTest {
 		Sequence<Integer> oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains(17)));
 
-		Sequence<Integer> twoDuplicatesDistinct = Sequence.from(new ArrayDeque<>(Arrays.asList(17, 17))).distinct();
+		Sequence<Integer> twoDuplicatesDistinct = newSequence(17, 17).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17)));
 
 		Sequence<Integer> nineDistinct = nineRandom.distinct();
