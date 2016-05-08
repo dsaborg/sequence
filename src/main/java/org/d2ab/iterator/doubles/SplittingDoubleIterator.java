@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterator.MappedIterator;
+import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.DoubleSequence;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.function.DoublePredicate;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class SplittingDoubleIterator extends MappedIterator<Double, DoubleIterator, DoubleSequence> {
+public class SplittingDoubleIterator extends DelegatingIterator<Double, DoubleIterator, DoubleSequence> {
 	private final DoublePredicate predicate;
 
 	public SplittingDoubleIterator(DoubleIterator iterator, double element) {

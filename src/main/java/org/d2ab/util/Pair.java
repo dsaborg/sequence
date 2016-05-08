@@ -16,7 +16,9 @@
 
 package org.d2ab.util;
 
+import org.d2ab.function.ObjObjLongFunction;
 import org.d2ab.function.QuaternaryFunction;
+import org.d2ab.function.ObjLongFunction;
 
 import java.io.Serializable;
 import java.util.*;
@@ -115,8 +117,13 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 	/**
 	 * @return the given bi-valued function converted to a pair-based function.
 	 */
-	public static <K, V, R> Function<Pair<K, V>, R> asFunction(BiFunction<? super K, ? super V, ? extends R> mapper) {
-		return entry -> mapper.apply(entry.getLeft(), entry.getRight());
+	public static <K, V, R> Function<Pair<K, V>, R> asFunction(BiFunction<? super K, ? super V, ? extends R> f) {
+		return entry -> f.apply(entry.getLeft(), entry.getRight());
+	}
+
+	public static <L, R, LL, RR> ObjLongFunction<Pair<L, R>, Pair<LL, RR>> asPairLongFunction(
+			ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>> f) {
+		return (p, i) -> f.apply(p.getLeft(), p.getRight(), i);
 	}
 
 	/**

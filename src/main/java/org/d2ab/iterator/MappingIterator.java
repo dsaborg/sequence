@@ -19,7 +19,7 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class  MappingIterator<T, U> extends MappedReferenceIterator<T, U> {
+public class  MappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
 	private final Function<? super T, ? extends U> mapper;
 
 	public MappingIterator(Iterator<T> iterator, Function<? super T, ? extends U> mapper) {

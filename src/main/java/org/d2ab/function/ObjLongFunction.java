@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.chars;
-
-import org.d2ab.iterator.MappedIterator;
-
-import java.util.Iterator;
+package org.d2ab.function;
 
 /**
- * A superclass for delegating {@link CharIterator}s.
+ * A functional interface of functions taking a reference argument and a long, returning a reference.
  */
-public abstract class MappedCharIterator<T, I extends Iterator<T>> extends MappedIterator<T, I, Character>
-		implements CharIterator {
-	public MappedCharIterator(I iterator) {
-		super(iterator);
-	}
+@FunctionalInterface
+public interface ObjLongFunction<T, U> {
+	U apply(T o, long l);
 }

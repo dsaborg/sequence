@@ -20,7 +20,7 @@ import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.IntIterable;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.ints.MappedIntIterator;
+import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -1020,7 +1020,7 @@ public class IntSequenceTest {
 				List<Integer> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Integer> iterator = subList.iterator();
-				return new MappedIntIterator<Integer, Iterator<Integer>>(iterator) {
+				return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
 					@Override
 					public int nextInt() {
 						return iterator.next();
@@ -1054,7 +1054,7 @@ public class IntSequenceTest {
 				List<Integer> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Integer> iterator = subList.iterator();
-				return new MappedIntIterator<Integer, Iterator<Integer>>(iterator) {
+				return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
 					@Override
 					public int nextInt() {
 						return iterator.next();

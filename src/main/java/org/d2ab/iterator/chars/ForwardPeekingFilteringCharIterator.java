@@ -20,7 +20,7 @@ import org.d2ab.function.chars.CharBiPredicate;
 
 import java.util.NoSuchElementException;
 
-public class ForwardPeekingFilteringCharIterator extends MappedCharIterator<Character, CharIterator> {
+public class ForwardPeekingFilteringCharIterator extends DelegatingCharIterator<Character, CharIterator> {
 	private char lastNext;
 	private final CharBiPredicate predicate;
 

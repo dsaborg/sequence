@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.iterator.MappedIterator;
+import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.LongSequence;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.function.LongPredicate;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class SplittingLongIterator extends MappedIterator<Long, LongIterator, LongSequence> {
+public class SplittingLongIterator extends DelegatingIterator<Long, LongIterator, LongSequence> {
 	private final LongPredicate predicate;
 
 	public SplittingLongIterator(LongIterator iterator, long element) {

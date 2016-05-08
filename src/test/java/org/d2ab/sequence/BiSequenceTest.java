@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -534,7 +535,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void mapPairFunction() {
-		BiSequence<Integer, String> mapped = _123.map(p -> Pair.of(parseInt(p.getLeft()), p.getRight().toString()));
+		BiSequence<Integer, String> mapped = _123.map(Pair::swap);
 		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
@@ -556,6 +557,76 @@ public class BiSequenceTest {
 				// expected
 			}
 		});
+	}
+
+	@Test
+	public void mapWithIndex() {
+		BiSequence<Integer, String> mappedEmpty = empty.mapIndexed((p, i) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		BiSequence<Integer, String> oneMapped = _1.mapIndexed((p, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return p.swap();
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(oneMapped, contains(Pair.of(1, "1")));
+		});
+
+		BiSequence<Integer, String> twoMapped = _12.mapIndexed((p, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return p.swap();
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2")));
+		});
+
+		BiSequence<Integer, String> fiveMapped = _12345.mapIndexed((p, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return p.swap();
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(fiveMapped,
+			           contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"), Pair.of(4, "4"), Pair.of(5, "5")));
+		});
+	}
+
+	@Test
+	public void mapBiFunctionWithIndex() {
+		BiSequence<Integer, String> mappedEmpty = empty.mapIndexed((l, r, i) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		BiSequence<Integer, String> oneMapped = _1.mapIndexed((l, r, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Pair.of(r, l);
+		});
+		twice(index, () -> {
+			assertThat(oneMapped, contains(Pair.of(1, "1")));
+		});
+
+		BiSequence<Integer, String> twoMapped = _12.mapIndexed((l, r, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Pair.of(r, l);
+		});
+		twice(index, () -> {
+			assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2")));
+		});
+
+		BiSequence<Integer, String> fiveMapped = _12345.mapIndexed((l, r, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Pair.of(r, l);
+		});
+		twice(index, () -> assertThat(fiveMapped,
+		                              contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"), Pair.of(4, "4"),
+		                                       Pair.of(5, "5"))));
 	}
 
 	@Test

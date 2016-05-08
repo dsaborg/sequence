@@ -21,7 +21,7 @@ import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.chars.CharIterable;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.chars.MappedCharIterator;
+import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.primitive.OptionalChar;
 import org.junit.Test;
@@ -997,7 +997,7 @@ public class CharSeqTest {
 				List<Character> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Character> iterator = subList.iterator();
-				return new MappedCharIterator<Character, Iterator<Character>>(iterator) {
+				return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
 					@Override
 					public char nextChar() {
 						return iterator.next();
@@ -1031,7 +1031,7 @@ public class CharSeqTest {
 				List<Character> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Character> iterator = subList.iterator();
-				return new MappedCharIterator<Character, Iterator<Character>>(iterator) {
+				return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
 					@Override
 					public char nextChar() {
 						return iterator.next();

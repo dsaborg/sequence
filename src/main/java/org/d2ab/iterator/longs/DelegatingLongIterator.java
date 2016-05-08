@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.longs;
+
+import org.d2ab.iterator.DelegatingIterator;
 
 import java.util.Iterator;
 
 /**
- * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
+ * A superclass for delegating {@link LongIterator}s.
  */
-public abstract class MappedIterator<T, I extends Iterator<T>, U> implements Iterator<U> {
-	protected I iterator;
-
-	protected MappedIterator(I iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-
-	@Override
-	public void remove() {
-		iterator.remove();
+public abstract class DelegatingLongIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Long>
+		implements LongIterator {
+	protected DelegatingLongIterator(I iterator) {
+		super(iterator);
 	}
 }

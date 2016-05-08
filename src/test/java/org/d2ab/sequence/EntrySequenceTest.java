@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -581,6 +582,77 @@ public class EntrySequenceTest {
 				// expected
 			}
 		});
+	}
+
+	@Test
+	public void mapWithIndex() {
+		EntrySequence<Integer, String> mappedEmpty = empty.mapIndexed((p, i) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((e, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Maps.entry(e.getValue(), e.getKey());
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(oneMapped, contains(Maps.entry(1, "1")));
+		});
+
+		EntrySequence<Integer, String> twoMapped = _12.mapIndexed((e, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Maps.entry(e.getValue(), e.getKey());
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(twoMapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2")));
+		});
+
+		EntrySequence<Integer, String> fiveMapped = _12345.mapIndexed((e, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Maps.entry(e.getValue(), e.getKey());
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(fiveMapped,
+			           contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"), Maps.entry(4, "4"),
+			                    Maps.entry(5, "5")));
+		});
+	}
+
+	@Test
+	public void mapBiFunctionWithIndex() {
+		EntrySequence<Integer, String> mappedEmpty = empty.mapIndexed((k, v, i) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((k, v, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Maps.entry(v, k);
+		});
+		twice(index, () -> {
+			assertThat(oneMapped, contains(Maps.entry(1, "1")));
+		});
+
+		EntrySequence<Integer, String> twoMapped = _12.mapIndexed((k, v, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Maps.entry(v, k);
+		});
+		twice(index, () -> {
+			assertThat(twoMapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2")));
+		});
+
+		EntrySequence<Integer, String> fiveMapped = _12345.mapIndexed((k, v, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return Maps.entry(v, k);
+		});
+		twice(index, () -> assertThat(fiveMapped,
+		                              contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"),
+		                                       Maps.entry(4, "4"), Maps.entry(5, "5"))));
 	}
 
 	@Test

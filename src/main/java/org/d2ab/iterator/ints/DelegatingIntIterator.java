@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.ints;
+
+import org.d2ab.iterator.DelegatingIterator;
 
 import java.util.Iterator;
 
 /**
- * A base class for {@link Iterator}s that iterate over object references, as opposed to primitive values, and
- * delegate to another iterator for its source values.
+ * A superclass for delegating {@link IntIterator}s.
  */
-public abstract class MappedReferenceIterator<T, U> extends MappedIterator<T, Iterator<T>, U> {
-	protected MappedReferenceIterator(Iterator<T> iterator) {
+public abstract class DelegatingIntIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Integer>
+		implements IntIterator {
+	public DelegatingIntIterator(I iterator) {
 		super(iterator);
 	}
 }

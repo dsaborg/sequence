@@ -48,7 +48,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		if (iterator instanceof LongIterator)
 			return (LongIterator) iterator;
 
-		return new MappedLongIterator<Long, OfLong>(iterator) {
+		return new DelegatingLongIterator<Long, OfLong>(iterator) {
 			@Override
 			public long nextLong() {
 				return iterator.nextLong();
@@ -60,7 +60,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		if (iterator instanceof PrimitiveIterator.OfLong)
 			return from((PrimitiveIterator.OfLong) iterator);
 
-		return new MappedLongIterator<Long, Iterator<Long>>(iterator) {
+		return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
 			@Override
 			public long nextLong() {
 				return iterator.next();
@@ -69,7 +69,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	static LongIterator from(PrimitiveIterator.OfDouble iterator) {
-		return new MappedLongIterator<Double, OfDouble>(iterator) {
+		return new DelegatingLongIterator<Double, OfDouble>(iterator) {
 			@Override
 			public long nextLong() {
 				return (long) iterator.nextDouble();
@@ -78,7 +78,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	static LongIterator from(PrimitiveIterator.OfDouble iterator, DoubleToLongFunction mapper) {
-		return new MappedLongIterator<Double, OfDouble>(iterator) {
+		return new DelegatingLongIterator<Double, OfDouble>(iterator) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextDouble());
@@ -87,7 +87,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	static LongIterator from(PrimitiveIterator.OfInt iterator) {
-		return new MappedLongIterator<Integer, OfInt>(iterator) {
+		return new DelegatingLongIterator<Integer, OfInt>(iterator) {
 			@Override
 			public long nextLong() {
 				return iterator.nextInt();
@@ -96,7 +96,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	static LongIterator from(PrimitiveIterator.OfInt iterator, IntToLongFunction mapper) {
-		return new MappedLongIterator<Integer, OfInt>(iterator) {
+		return new DelegatingLongIterator<Integer, OfInt>(iterator) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextInt());
@@ -105,7 +105,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	static <T> LongIterator from(final Iterator<T> iterator, final ToLongFunction<? super T> mapper) {
-		return new MappedLongIterator<T, Iterator<T>>(iterator) {
+		return new DelegatingLongIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.next());

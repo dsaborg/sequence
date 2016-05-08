@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
+package org.d2ab.function;
 
 /**
- * An {@link IntIterator} that converts ints to other ints.
+ * A functional interface of a function taking two objects and a long and returning an object.
  */
-public abstract class UnaryIntIterator extends DelegatingIntIterator<Integer, IntIterator> {
-	protected UnaryIntIterator(IntIterator iterator) {
-		super(iterator);
-	}
+@FunctionalInterface
+public interface ObjObjLongFunction<T, U, R> {
+	R apply(T t, U u, long l);
 }

@@ -19,7 +19,7 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public abstract class PairingIterator<T, E> extends MappedReferenceIterator<T, E> {
+public abstract class PairingIterator<T, E> extends DelegatingReferenceIterator<T, E> {
 	private final long step;
 
 	private T previous;

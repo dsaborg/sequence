@@ -19,7 +19,7 @@ package org.d2ab.iterator.longs;
 /**
  * A {@link LongIterator} that converts longs to other longs.
  */
-public abstract class UnaryLongIterator extends MappedLongIterator<Long, LongIterator> {
+public abstract class UnaryLongIterator extends DelegatingLongIterator<Long, LongIterator> {
 	protected UnaryLongIterator(LongIterator iterator) {
 		super(iterator);
 	}

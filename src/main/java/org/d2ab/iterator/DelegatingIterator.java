@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
-
-import org.d2ab.iterator.MappedIterator;
+package org.d2ab.iterator;
 
 import java.util.Iterator;
 
 /**
- * A superclass for delegating {@link IntIterator}s.
+ * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
  */
-public abstract class MappedIntIterator<T, I extends Iterator<T>> extends MappedIterator<T, I, Integer>
-		implements IntIterator {
-	public MappedIntIterator(I iterator) {
-		super(iterator);
+public abstract class DelegatingIterator<T, I extends Iterator<T>, U> implements Iterator<U> {
+	protected I iterator;
+
+	protected DelegatingIterator(I iterator) {
+		this.iterator = iterator;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return iterator.hasNext();
+	}
+
+	@Override
+	public void remove() {
+		iterator.remove();
 	}
 }

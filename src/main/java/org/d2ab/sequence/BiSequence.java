@@ -17,6 +17,8 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Lists;
+import org.d2ab.function.ObjLongFunction;
+import org.d2ab.function.ObjObjLongFunction;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.function.QuaternaryPredicate;
 import org.d2ab.function.chars.ToCharBiFunction;
@@ -377,6 +379,28 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	default <LL, RR> BiSequence<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
 	                                        Function<? super R, ? extends RR> rightMapper) {
 		return map(p -> p.map(leftMapper, rightMapper));
+	}
+
+	/**
+	 * Map the pairs in this {@code BiSequence} to another set of pairs specified by the given {@code mapper} function.
+	 * In addition to the current pair, the mapper has access to the index of each pair.
+	 *
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjLongFunction<? super Pair<L, R>, ? extends Pair<LL, RR>> mapper) {
+		return () -> new IndexingMappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Map the pairs in this {@code BiSequence} to another set of pairs specified by the given {@code mapper} function.
+	 * In addition to the current pair, the mapper has access to the index of each pair.
+	 *
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
+		return () -> new IndexingMappingIterator<>(iterator(), Pair.asPairLongFunction(mapper));
 	}
 
 	/**

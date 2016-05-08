@@ -704,8 +704,51 @@ public class SequenceTest {
 
 	@Test
 	public void map() {
-		Sequence<String> mapped = _12345.map(Object::toString);
-		twice(() -> assertThat(mapped, contains("1", "2", "3", "4", "5")));
+		Sequence<String> mappedEmpty = empty.map(Object::toString);
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		Sequence<String> oneMapped = _1.map(Object::toString);
+		twice(() -> assertThat(oneMapped, contains("1")));
+
+		Sequence<String> twoMapped = _12.map(Object::toString);
+		twice(() -> assertThat(twoMapped, contains("1", "2")));
+
+		Sequence<String> fiveMapped = _12345.map(Object::toString);
+		twice(() -> assertThat(fiveMapped, contains("1", "2", "3", "4", "5")));
+	}
+
+	@Test
+	public void mapWithIndex() {
+		Sequence<String> mappedEmpty = empty.map(Object::toString);
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		Sequence<String> oneMapped = _1.mapIndexed((e, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return String.valueOf(e);
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(oneMapped, contains("1"));
+		});
+
+		Sequence<String> twoMapped = _12.mapIndexed((e, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return String.valueOf(e);
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(twoMapped, contains("1", "2"));
+		});
+
+		Sequence<String> fiveMapped = _12345.mapIndexed((e, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			return String.valueOf(e);
+		});
+		twice(() -> {
+			index.set(0);
+			assertThat(fiveMapped, contains("1", "2", "3", "4", "5"));
+		});
 	}
 
 	@Test

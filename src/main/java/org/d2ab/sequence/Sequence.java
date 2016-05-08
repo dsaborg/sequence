@@ -19,6 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.chars.ToCharFunction;
+import org.d2ab.function.ObjLongFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
@@ -685,6 +686,9 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 *
+	 * @see #mapIndexed(ObjLongFunction)
+	 * @see #mapBack(BiFunction)
+	 * @see #mapForward(BiFunction)
 	 * @see #flatten()
 	 * @see #flatten(Function)
 	 * @see #toChars(ToCharFunction)
@@ -694,6 +698,24 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
+	 * In addition to the current element, the mapper has access to the index of each element.
+	 *
+	 * @see #map(Function)
+	 * @see #mapBack(BiFunction)
+	 * @see #mapForward(BiFunction)
+	 * @see #flatten()
+	 * @see #flatten(Function)
+	 * @see #toChars(ToCharFunction)
+	 * @see #toInts(ToIntFunction)
+	 * @see #toLongs(ToLongFunction)
+	 * @see #toDoubles(ToDoubleFunction)
+	 */
+	default <U> Sequence<U> mapIndexed(ObjLongFunction<? super T, ? extends U> mapper) {
+		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
 	/**
@@ -1865,7 +1887,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @return a {@link BiSequence} of this sequence paired up with the index of each element.
 	 */
 	default BiSequence<Long, T> index() {
-		return () -> new MappedReferenceIterator<T, Pair<Long, T>>(iterator()) {
+		return () -> new DelegatingReferenceIterator<T, Pair<Long, T>>(iterator()) {
 			private long index;
 
 			@Override

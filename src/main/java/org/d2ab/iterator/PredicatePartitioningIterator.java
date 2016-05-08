@@ -26,7 +26,7 @@ import java.util.function.BiPredicate;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public abstract class PredicatePartitioningIterator<T, S> extends MappedReferenceIterator<T, S> {
+public abstract class PredicatePartitioningIterator<T, S> extends DelegatingReferenceIterator<T, S> {
 	private final BiPredicate<? super T, ? super T> predicate;
 	private T next;
 	private boolean hasNext;

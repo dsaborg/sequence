@@ -15,6 +15,9 @@
  */
 package org.d2ab.test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import static org.junit.Assert.fail;
 
 public class Tests {
@@ -38,5 +41,19 @@ public class Tests {
 	public static void times(int times, Runnable action) {
 		while (times-- > 0)
 			action.run();
+	}
+
+	public static void twice(AtomicLong index, Runnable r) {
+		twice(() -> {
+			index.set(0);
+			r.run();
+		});
+	}
+
+	public static void twice(AtomicInteger index, Runnable r) {
+		twice(() -> {
+			index.set(0);
+			r.run();
+		});
 	}
 }

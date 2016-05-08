@@ -23,7 +23,7 @@ import java.util.function.Predicate;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public abstract class SplittingIterator<T, S> extends MappedReferenceIterator<T, S> {
+public abstract class SplittingIterator<T, S> extends DelegatingReferenceIterator<T, S> {
 	private final Predicate<? super T> predicate;
 
 	public SplittingIterator(Iterator<T> iterator, T element) {

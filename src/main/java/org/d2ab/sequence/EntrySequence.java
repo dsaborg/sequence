@@ -18,6 +18,8 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
+import org.d2ab.function.ObjLongFunction;
+import org.d2ab.function.ObjObjLongFunction;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.function.QuaternaryPredicate;
 import org.d2ab.function.chars.ToCharBiFunction;
@@ -389,6 +391,28 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	default <KK, VV> EntrySequence<KK, VV> map(Function<? super K, ? extends KK> keyMapper,
 	                                           Function<? super V, ? extends VV> valueMapper) {
 		return map(Maps.asFunction(keyMapper, valueMapper));
+	}
+
+	/**
+	 * Map the entries in this {@code EntrySequence} to another set of entries specified by the given {@code mapper}
+	 * function. In addition to the current entry, the mapper has access to the index of each entry.
+	 *
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default <KK, VV> EntrySequence<KK, VV> mapIndexed(ObjLongFunction<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
+		return () -> new IndexingMappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Map the entries in this {@code EntrySequence} to another set of entries specified by the given {@code mapper}
+	 * function. In addition to the current entry, the mapper has access to the index of each entry.
+	 *
+	 * @see #map(Function)
+	 * @see #flatten(Function)
+	 */
+	default <KK, VV> EntrySequence<KK, VV> mapIndexed(ObjObjLongFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
+		return () -> new IndexingMappingIterator<>(iterator(), Maps.asEntryLongFunction(mapper));
 	}
 
 	/**

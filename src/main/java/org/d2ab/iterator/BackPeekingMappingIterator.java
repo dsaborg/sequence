@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 /**
  * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public abstract class BackPeekingMappingIterator<T, U> extends MappedReferenceIterator<T, U> {
+public abstract class BackPeekingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
 	protected T previous;
 
 	public BackPeekingMappingIterator(Iterator<T> iterator, T replacement) {

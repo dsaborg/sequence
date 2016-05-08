@@ -17,7 +17,7 @@
 package org.d2ab.iterator.chars;
 
 import org.d2ab.function.chars.CharPredicate;
-import org.d2ab.iterator.MappedIterator;
+import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.CharSeq;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class SplittingCharIterator extends MappedIterator<Character, CharIterator, CharSeq> {
+public class SplittingCharIterator extends DelegatingIterator<Character, CharIterator, CharSeq> {
 	private final CharPredicate predicate;
 
 	public SplittingCharIterator(CharIterator iterator, char element) {

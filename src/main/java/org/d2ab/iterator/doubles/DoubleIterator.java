@@ -50,7 +50,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		if (iterator instanceof PrimitiveIterator.OfDouble)
 			return from((PrimitiveIterator.OfDouble) iterator);
 
-		return new MappedDoubleIterator<Double, Iterator<Double>>(iterator) {
+		return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
 			@Override
 			public double nextDouble() {
 				return iterator.next();
@@ -62,7 +62,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		if (iterator instanceof DoubleIterator)
 			return (DoubleIterator) iterator;
 
-		return new MappedDoubleIterator<Double, OfDouble>(iterator) {
+		return new DelegatingDoubleIterator<Double, OfDouble>(iterator) {
 			@Override
 			public double nextDouble() {
 				return iterator.nextDouble();
@@ -71,7 +71,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	}
 
 	static DoubleIterator from(PrimitiveIterator.OfLong iterator) {
-		return new MappedDoubleIterator<Long, OfLong>(iterator) {
+		return new DelegatingDoubleIterator<Long, OfLong>(iterator) {
 			@Override
 			public double nextDouble() {
 				return iterator.nextLong();
@@ -80,7 +80,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	}
 
 	static DoubleIterator from(PrimitiveIterator.OfLong iterator, LongToDoubleFunction mapper) {
-		return new MappedDoubleIterator<Long, OfLong>(iterator) {
+		return new DelegatingDoubleIterator<Long, OfLong>(iterator) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextLong());
@@ -89,7 +89,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	}
 
 	static DoubleIterator from(PrimitiveIterator.OfInt iterator) {
-		return new MappedDoubleIterator<Integer, OfInt>(iterator) {
+		return new DelegatingDoubleIterator<Integer, OfInt>(iterator) {
 			@Override
 			public double nextDouble() {
 				return iterator.nextInt();
@@ -98,7 +98,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	}
 
 	static DoubleIterator from(PrimitiveIterator.OfInt iterator, IntToDoubleFunction mapper) {
-		return new MappedDoubleIterator<Integer, OfInt>(iterator) {
+		return new DelegatingDoubleIterator<Integer, OfInt>(iterator) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextInt());
@@ -108,7 +108,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 
 	static <T> DoubleIterator from(final Iterator<T> iterator,
 	                               final ToDoubleFunction<? super T> mapper) {
-		return new MappedDoubleIterator<T, Iterator<T>>(iterator) {
+		return new DelegatingDoubleIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.next());

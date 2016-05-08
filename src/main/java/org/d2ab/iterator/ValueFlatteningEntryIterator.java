@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 public class ValueFlatteningEntryIterator<K, V, VV>
-		extends MappedReferenceIterator<Map.Entry<K, V>, Map.Entry<K, VV>> {
+		extends DelegatingReferenceIterator<Map.Entry<K, V>, Map.Entry<K, VV>> {
 	private final Function<? super Map.Entry<K, V>, ? extends Iterable<VV>> mapper;
 
 	private Iterator<VV> valueIterator = Iterators.empty();
