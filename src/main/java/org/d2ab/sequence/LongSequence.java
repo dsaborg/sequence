@@ -691,6 +691,8 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Map the {@code longs} in this {@code LongSequence} to another set of {@code longs} specified by the given
 	 * {@code mapper} function, while providing the current index to the mapper.
+	 *
+	 * @since 1.2
 	 */
 	default LongSequence mapIndexed(LongBinaryOperator mapper) {
 		return () -> new UnaryLongIterator(iterator()) {

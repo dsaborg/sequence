@@ -474,25 +474,49 @@ public class SequenceTest {
 
 	@Test
 	public void filter() {
+		Sequence<Integer> filteredEmpty = empty.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(filteredEmpty, is(emptyIterable())));
+
+		Sequence<Integer> filteredOne = _1.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(filteredOne, is(emptyIterable())));
+
+		Sequence<Integer> filteredTwo = _12.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(filteredTwo, contains(2)));
+
 		Sequence<Integer> filtered = _123456789.filter(i -> (i % 2) == 0);
 		twice(() -> assertThat(filtered, contains(2, 4, 6, 8)));
 	}
 
 	@Test
+	public void filterIndexed() {
+		Sequence<Integer> emptyFiltered = empty.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		Sequence<Integer> oneFiltered = _1.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		Sequence<Integer> twoFiltered = _12.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(twoFiltered, contains(2)));
+
+		Sequence<Integer> filtered = _123456789.filterIndexed((i, x) -> x > 3);
+		twice(() -> assertThat(filtered, contains(5, 6, 7, 8, 9)));
+	}
+
+	@Test
 	public void filterInstanceOf() {
-		Sequence<?> strings = mixed.filter(String.class);
+		Sequence<String> strings = mixed.filter(String.class);
 		twice(() -> assertThat(strings, contains("1", "2", "3")));
 
-		Sequence<?> numbers = mixed.filter(Number.class);
+		Sequence<Number> numbers = mixed.filter(Number.class);
 		twice(() -> assertThat(numbers, contains(1, 1.0, 2, 2.0, 3, 3.0)));
 
-		Sequence<?> integers = mixed.filter(Integer.class);
+		Sequence<Integer> integers = mixed.filter(Integer.class);
 		twice(() -> assertThat(integers, contains(1, 2, 3)));
 
-		Sequence<?> doubles = mixed.filter(Double.class);
+		Sequence<Double> doubles = mixed.filter(Double.class);
 		twice(() -> assertThat(doubles, contains(1.0, 2.0, 3.0)));
 
-		Sequence<?> chars = mixed.filter(Character.class);
+		Sequence<Character> chars = mixed.filter(Character.class);
 		twice(() -> assertThat(chars, contains('x', 'y', 'z')));
 	}
 

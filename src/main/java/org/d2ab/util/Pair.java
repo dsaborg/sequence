@@ -121,11 +121,6 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 		return entry -> f.apply(entry.getLeft(), entry.getRight());
 	}
 
-	public static <L, R, LL, RR> ObjLongFunction<Pair<L, R>, Pair<LL, RR>> asPairLongFunction(
-			ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>> f) {
-		return (p, i) -> f.apply(p.getLeft(), p.getRight(), i);
-	}
-
 	/**
 	 * @return the given bi-valued predicate converted to a pair-based predicate.
 	 */

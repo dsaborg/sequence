@@ -17,10 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Lists;
-import org.d2ab.function.ObjLongFunction;
-import org.d2ab.function.ObjObjLongFunction;
-import org.d2ab.function.QuaternaryFunction;
-import org.d2ab.function.QuaternaryPredicate;
+import org.d2ab.function.*;
 import org.d2ab.function.chars.ToCharBiFunction;
 import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
@@ -387,8 +384,11 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.2
 	 */
-	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjLongFunction<? super Pair<L, R>, ? extends Pair<LL, RR>> mapper) {
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjLongFunction<? super Pair<L, R>, ? extends Pair<LL, RR>>
+			                                               mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -398,9 +398,12 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.2
 	 */
-	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
-		return () -> new IndexingMappingIterator<>(iterator(), Pair.asPairLongFunction(mapper));
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>>
+			                                               mapper) {
+		return mapIndexed((p, i) -> mapper.apply(p.getLeft(), p.getRight(), i));
 	}
 
 	/**
@@ -443,6 +446,26 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	default BiSequence<L, R> filter(Predicate<? super Pair<L, R>> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the pairs in this {@code BiSequence}, keeping only the elements that match the given
+	 * {@link ObjLongPredicate}, which is passed the current pair and its index in the sequence.
+	 *
+	 * @since 1.2
+	 */
+	default BiSequence<L, R> filterIndexed(ObjLongPredicate<? super Pair<L, R>> predicate) {
+		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the pairs in this {@code BiSequence}, keeping only the elements that match the given
+	 * {@link ObjObjLongPredicate}, which is passed the current pair and its index in the sequence.
+	 *
+	 * @since 1.2
+	 */
+	default BiSequence<L, R> filterIndexed(ObjObjLongPredicate<? super L, ? super R> predicate) {
+		return filterIndexed((p, i) -> predicate.test(p.getLeft(), p.getRight(), i));
 	}
 
 	/**

@@ -18,10 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
-import org.d2ab.function.ObjLongFunction;
-import org.d2ab.function.ObjObjLongFunction;
-import org.d2ab.function.QuaternaryFunction;
-import org.d2ab.function.QuaternaryPredicate;
+import org.d2ab.function.*;
 import org.d2ab.function.chars.ToCharBiFunction;
 import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.iterable.ChainingIterable;
@@ -156,7 +153,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> once(Iterator<Entry<K, V>> iterator) {
@@ -173,7 +169,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> once(Stream<Entry<K, V>> stream) {
@@ -189,7 +184,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
-	 *
 	 * @deprecated Use {@link #once(Iterator)} instead.
 	 */
 	@Deprecated
@@ -207,7 +201,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
-	 *
 	 * @deprecated Use {@link #once(Stream)} instead.
 	 */
 	@Deprecated
@@ -233,7 +226,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterator)
 	 * @see #cache(Stream)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> cache(Iterable<Entry<K, V>> iterable) {
@@ -246,7 +238,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
 	 * @see #once(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> cache(Iterator<Entry<K, V>> iterator) {
@@ -259,7 +250,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static <K, V> EntrySequence<K, V> cache(Stream<Entry<K, V>> stream) {
@@ -288,7 +278,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #endingAt(Entry)
 	 * @see #until(Entry)
 	 */
-	static <K, V> EntrySequence<K, V> multiGenerate(Supplier<? extends Supplier<? extends Entry<K, V>>> supplierSupplier) {
+	static <K, V> EntrySequence<K, V> multiGenerate(Supplier<? extends Supplier<? extends Entry<K, V>>>
+			                                                supplierSupplier) {
 		return () -> {
 			Supplier<? extends Entry<K, V>> supplier = supplierSupplier.get();
 			return (InfiniteIterator<Entry<K, V>>) supplier::get;
@@ -399,8 +390,10 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 * @since 1.2
 	 */
-	default <KK, VV> EntrySequence<KK, VV> mapIndexed(ObjLongFunction<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
+	default <KK, VV> EntrySequence<KK, VV> mapIndexed(
+			ObjLongFunction<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -410,9 +403,11 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 * @since 1.2
 	 */
-	default <KK, VV> EntrySequence<KK, VV> mapIndexed(ObjObjLongFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
-		return () -> new IndexingMappingIterator<>(iterator(), Maps.asEntryLongFunction(mapper));
+	default <KK, VV> EntrySequence<KK, VV> mapIndexed(
+			ObjObjLongFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
+		return mapIndexed((e, i) -> mapper.apply(e.getKey(), e.getValue(), i));
 	}
 
 	/**
@@ -455,6 +450,26 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	default EntrySequence<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
 		return () -> new FilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the entries in this {@code EntrySequence}, keeping only the elements that match the given
+	 * {@link ObjLongPredicate}, which is passed the current entry and its index in the sequence.
+	 *
+	 * @since 1.2
+	 */
+	default EntrySequence<K, V> filterIndexed(ObjLongPredicate<? super Entry<K, V>> predicate) {
+		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the entries in this {@code EntrySequence}, keeping only the elements that match the given
+	 * {@link ObjLongPredicate}, which is passed the current entry and its index in the sequence.
+	 *
+	 * @since 1.2
+	 */
+	default EntrySequence<K, V> filterIndexed(ObjObjLongPredicate<? super K, ? super V> predicate) {
+		return filterIndexed((e, i) -> predicate.test(e.getKey(), e.getValue(), i));
 	}
 
 	/**
@@ -692,10 +707,9 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingFrom(Entry)
-	 *
 	 * @since 1.1
 	 */
-	default EntrySequence<K, V> startingAfter(Entry<K, V>  element) {
+	default EntrySequence<K, V> startingAfter(Entry<K, V> element) {
 		return () -> new ExclusiveStartingIterator<>(iterator(), element);
 	}
 
@@ -706,7 +720,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingFrom(Predicate)
 	 * @see #startingFrom(BiPredicate)
 	 * @see #startingAfter(Entry)
-	 *
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(Entry<K, V> element) {
@@ -720,7 +733,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingAfter(BiPredicate)
 	 * @see #startingAfter(Entry)
 	 * @see #startingFrom(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingAfter(Predicate<? super Entry<K, V>> predicate) {
@@ -734,7 +746,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingFrom(BiPredicate)
 	 * @see #startingFrom(Entry)
 	 * @see #startingAfter(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(Predicate<? super Entry<K, V>> predicate) {
@@ -748,7 +759,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingAfter(Predicate)
 	 * @see #startingAfter(Entry)
 	 * @see #startingFrom(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingAfter(BiPredicate<? super K, ? super V> predicate) {
@@ -762,7 +772,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #startingFrom(Predicate)
 	 * @see #startingFrom(Entry)
 	 * @see #startingAfter(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(BiPredicate<? super K, ? super V> predicate) {

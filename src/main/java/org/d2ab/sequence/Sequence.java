@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
+import org.d2ab.function.ObjLongPredicate;
 import org.d2ab.function.chars.ToCharFunction;
 import org.d2ab.function.ObjLongFunction;
 import org.d2ab.iterable.ChainingIterable;
@@ -713,6 +714,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #toInts(ToIntFunction)
 	 * @see #toLongs(ToLongFunction)
 	 * @see #toDoubles(ToDoubleFunction)
+	 *
+	 * @since 1.2
 	 */
 	default <U> Sequence<U> mapIndexed(ObjLongFunction<? super T, ? extends U> mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
@@ -854,13 +857,24 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given
+	 * {@link ObjLongPredicate}, which is passed the current element and its index in the sequence.
+	 *
+	 * @since 1.2
+	 */
+	default Sequence<T> filterIndexed(ObjLongPredicate<? super T> predicate) {
+		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
+	}
+
+	/**
 	 * Filter the elements in this {@code Sequence}, keeping only the elements are instances of the given
 	 * {@link Class}.
 	 *
 	 * @since 1.2
 	 */
-	default Sequence<T> filter(Class<?> target) {
-		return filter(target::isInstance);
+	@SuppressWarnings("unchecked")
+	default <U> Sequence<U> filter(Class<? extends U> target) {
+		return (Sequence<U>) filter(target::isInstance);
 	}
 
 	/**
@@ -1309,7 +1323,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> first(Class<?> target) {
+	default <U> Optional<U> first(Class<? extends U> target) {
 		return at(0, target);
 	}
 
@@ -1319,7 +1333,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> second(Class<?> target) {
+	default <U> Optional<U> second(Class<? extends U> target) {
 		return at(1, target);
 	}
 
@@ -1329,7 +1343,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> third(Class<?> target) {
+	default <U> Optional<U> third(Class<? extends U> target) {
 		return at(2, target);
 	}
 
@@ -1339,8 +1353,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> last(Class<?> target) {
-		return last(target::isInstance);
+	@SuppressWarnings("unchecked")
+	default <U> Optional<U> last(Class<? extends U> target) {
+		return (Optional<U>) last(target::isInstance);
 	}
 
 	/**
@@ -1349,8 +1364,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> at(long index, Class<?> target) {
-		return at(index, target::isInstance);
+	default <U> Optional<U> at(long index, Class<? extends U> target) {
+		return (Optional<U>) at(index, target::isInstance);
 	}
 
 	/**

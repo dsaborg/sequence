@@ -427,10 +427,54 @@ public class BiSequenceTest {
 
 	@Test
 	public void filter() {
-		BiSequence<String, Integer> filtered = _123456789.filter((s, i) -> i % 2 == 0);
+		BiSequence<String, Integer> emptyFiltered = empty.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 
+		BiSequence<String, Integer> oneFiltered = _1.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		BiSequence<String, Integer> twoFiltered = _12.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
+		twice(() -> assertThat(twoFiltered, contains(Pair.of("2", 2))));
+
+		BiSequence<String, Integer> filtered = _123456789.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(filtered, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("6", 6),
 		                                          Pair.of("8", 8))));
+	}
+
+	@Test
+	public void filterIndexed() {
+		BiSequence<String, Integer> emptyFiltered = empty.filterIndexed((l, r, x) -> parseInt(l) == r && x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		BiSequence<String, Integer> oneFiltered = _1.filterIndexed((l, r, x) -> parseInt(l) == r && x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		BiSequence<String, Integer> twoFiltered = _12.filterIndexed((l, r, x) -> parseInt(l) == r && x > 0);
+		twice(() -> assertThat(twoFiltered, contains(Pair.of("2", 2))));
+
+		BiSequence<String, Integer> filtered = _123456789.filterIndexed((l, r, x) -> parseInt(l) == r && x > 3);
+		twice(() -> assertThat(filtered, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
+	}
+
+	@Test
+	public void filterPairIndexed() {
+		BiSequence<String, Integer> emptyFiltered = empty.filterIndexed(
+				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		BiSequence<String, Integer> oneFiltered = _1.filterIndexed(
+				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		BiSequence<String, Integer> twoFiltered = _12.filterIndexed(
+				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 0);
+		twice(() -> assertThat(twoFiltered, contains(Pair.of("2", 2))));
+
+		BiSequence<String, Integer> filtered = _123456789.filterIndexed(
+				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 3);
+		twice(() -> assertThat(filtered, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
 	}
 
 	@Test

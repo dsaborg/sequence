@@ -707,6 +707,8 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code
 	 * mapper} function, while providing the current index to the mapper.
+	 *
+	 * @since 1.2
 	 */
 	default IntSequence mapIndexed(IntLongToIntFunction mapper) {
 		return () -> new UnaryIntIterator(iterator()) {

@@ -450,10 +450,56 @@ public class EntrySequenceTest {
 
 	@Test
 	public void filter() {
-		EntrySequence<String, Integer> filtered = _123456789.filter((s, i) -> i % 2 == 0);
+		EntrySequence<String, Integer> emptyFiltered = empty.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 
+		EntrySequence<String, Integer> oneFiltered = _1.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		EntrySequence<String, Integer> twoFiltered = _12.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
+		twice(() -> assertThat(twoFiltered, contains(Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> filtered = _123456789.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(filtered, contains(Maps.entry("2", 2), Maps.entry("4", 4), Maps.entry("6", 6),
 		                                          Maps.entry("8", 8))));
+	}
+
+	@Test
+	public void filterIndexed() {
+		EntrySequence<String, Integer> emptyFiltered = empty.filterIndexed((k, v, x) -> parseInt(k) == v && x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		EntrySequence<String, Integer> oneFiltered = _1.filterIndexed((k, v, x) -> parseInt(k) == v && x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		EntrySequence<String, Integer> twoFiltered = _12.filterIndexed((k, v, x) -> parseInt(k) == v && x > 0);
+		twice(() -> assertThat(twoFiltered, contains(Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> filtered = _123456789.filterIndexed((k, v, x) -> parseInt(k) == v && x > 3);
+		twice(() -> assertThat(filtered,
+		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
+		                                Maps.entry("9", 9))));
+	}
+
+	@Test
+	public void filterEntryIndexed() {
+		EntrySequence<String, Integer> emptyFiltered = empty.filterIndexed(
+				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		EntrySequence<String, Integer> oneFiltered = _1.filterIndexed(
+				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		EntrySequence<String, Integer> twoFiltered = _12.filterIndexed(
+				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 0);
+		twice(() -> assertThat(twoFiltered, contains(Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> filtered = _123456789.filterIndexed(
+				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 3);
+		twice(() -> assertThat(filtered,
+		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
+		                                Maps.entry("9", 9))));
 	}
 
 	@Test

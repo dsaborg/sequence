@@ -546,6 +546,8 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Map the {@code doubles} in this {@code DoubleSequence} to another set of {@code doubles} specified by the given
 	 * {@code mapper} function, while providing the current index to the mapper.
+	 *
+	 * @since 1.2
 	 */
 	default DoubleSequence mapIndexed(DoubleLongToDoubleFunction mapper) {
 		return () -> new UnaryDoubleIterator(iterator()) {

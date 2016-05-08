@@ -85,11 +85,6 @@ public class Maps {
 		return entry -> entry(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
 	}
 
-	public static <K, V, KK, VV> ObjLongFunction<Entry<K, V>, Entry<KK, VV>> asEntryLongFunction(
-			ObjObjLongFunction<? super K, ? super V, ? extends Entry<KK, VV>> function) {
-		return (e, i) -> function.apply(e.getKey(), e.getValue(), i);
-	}
-
 	public static <K, V> Predicate<Entry<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
 		return entry -> predicate.test(entry.getKey(), entry.getValue());
 	}
