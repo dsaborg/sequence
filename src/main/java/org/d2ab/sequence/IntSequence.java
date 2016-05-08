@@ -19,6 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.function.chars.IntToCharFunction;
 import org.d2ab.function.ints.IntBiPredicate;
 import org.d2ab.function.ints.IntLongConsumer;
+import org.d2ab.function.ints.IntLongToIntFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
@@ -692,14 +693,28 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code
-	 * mapper}
-	 * function.
+	 * mapper} function.
 	 */
 	default IntSequence map(IntUnaryOperator mapper) {
 		return () -> new UnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextInt());
+			}
+		};
+	}
+
+	/**
+	 * Map the values in this {@code IntSequence} sequence to another set of values specified by the given {@code
+	 * mapper} function, while providing the current index to the mapper.
+	 */
+	default IntSequence mapIndexed(IntLongToIntFunction mapper) {
+		return () -> new UnaryIntIterator(iterator()) {
+			private long index;
+
+			@Override
+			public int nextInt() {
+				return mapper.applyAsInt(iterator.nextInt(), index++);
 			}
 		};
 	}

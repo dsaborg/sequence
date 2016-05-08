@@ -19,8 +19,8 @@ package org.d2ab.sequence;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.longs.LongIterable;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -444,8 +444,32 @@ public class LongSequenceTest {
 
 	@Test
 	public void map() {
-		LongSequence mapped = _123.map(c -> c + 1L);
-		twice(() -> assertThat(mapped, containsLongs(2L, 3L, 4L)));
+		LongSequence emptyMapped = empty.map(l -> l + 1);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		LongSequence oneMapped = _1.map(l -> l + 1);
+		twice(() -> assertThat(oneMapped, containsLongs(2)));
+
+		LongSequence twoMapped = _12.map(l -> l + 1);
+		twice(() -> assertThat(twoMapped, containsLongs(2, 3)));
+
+		LongSequence fiveMapped = _12345.map(l -> l + 1);
+		twice(() -> assertThat(fiveMapped, containsLongs(2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void mapWithIndex() {
+		LongSequence emptyMapped = empty.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		LongSequence oneMapped = _1.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(oneMapped, containsLongs(1)));
+
+		LongSequence twoMapped = _12.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(twoMapped, containsLongs(1, 3)));
+
+		LongSequence mapped = _12345.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(mapped, containsLongs(1, 3, 5, 7, 9)));
 	}
 
 	@Test

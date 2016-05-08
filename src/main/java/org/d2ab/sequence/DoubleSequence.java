@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
 import org.d2ab.function.doubles.DoubleLongConsumer;
+import org.d2ab.function.doubles.DoubleLongToDoubleFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
@@ -538,6 +539,21 @@ public interface DoubleSequence extends DoubleIterable {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextDouble());
+			}
+		};
+	}
+
+	/**
+	 * Map the {@code doubles} in this {@code DoubleSequence} to another set of {@code doubles} specified by the given
+	 * {@code mapper} function, while providing the current index to the mapper.
+	 */
+	default DoubleSequence mapIndexed(DoubleLongToDoubleFunction mapper) {
+		return () -> new UnaryDoubleIterator(iterator()) {
+			private long index;
+
+			@Override
+			public double nextDouble() {
+				return mapper.applyAsDouble(iterator.nextDouble(), index++);
 			}
 		};
 	}

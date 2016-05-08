@@ -633,6 +633,21 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Map the {@code chars} in this {@code CharSeq} to another set of {@code chars} specified by the given
+	 * {@code mapper} function, while providing the current index to the mapper.
+	 */
+	default CharSeq mapIndexed(CharLongToCharFunction mapper) {
+		return () -> new UnaryCharIterator(iterator()) {
+			private long index;
+
+			@Override
+			public char nextChar() {
+				return mapper.applyAsChar(iterator.nextChar(), index++);
+			}
+		};
+	}
+
+	/**
 	 * Map the {@code chars} in this {@code CharSeq} to their boxed {@link Character} counterparts.
 	 */
 	default Sequence<Character> box() {

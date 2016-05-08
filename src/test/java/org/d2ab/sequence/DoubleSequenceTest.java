@@ -455,8 +455,32 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void map() {
-		DoubleSequence mapped = _123.map(c -> c + 1.0);
-		twice(() -> assertThat(mapped, containsDoubles(2.0, 3.0, 4.0)));
+		DoubleSequence emptyMapped = empty.map(d -> d + 1);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		DoubleSequence oneMapped = _1.map(d -> d + 1);
+		twice(() -> assertThat(oneMapped, containsDoubles(2)));
+
+		DoubleSequence twoMapped = _12.map(d -> d + 1);
+		twice(() -> assertThat(twoMapped, containsDoubles(2, 3)));
+
+		DoubleSequence fiveMapped = _12345.map(d -> d + 1);
+		twice(() -> assertThat(fiveMapped, containsDoubles(2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void mapWithIndex() {
+		DoubleSequence emptyMapped = empty.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		DoubleSequence oneMapped = _1.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(oneMapped, containsDoubles(1)));
+
+		DoubleSequence twoMapped = _12.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(twoMapped, containsDoubles(1, 3)));
+
+		DoubleSequence mapped = _12345.mapIndexed((i, x) -> i + x);
+		twice(() -> assertThat(mapped, containsDoubles(1, 3, 5, 7, 9)));
 	}
 
 	@Test

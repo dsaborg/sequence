@@ -19,8 +19,8 @@ package org.d2ab.sequence;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.IntIterable;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -490,8 +490,32 @@ public class IntSequenceTest {
 
 	@Test
 	public void map() {
-		IntSequence mapped = _123.map(c -> c + 1);
-		twice(() -> assertThat(mapped, containsInts(2, 3, 4)));
+		IntSequence emptyMapped = empty.map(i -> i + 1);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		IntSequence oneMapped = _1.map(i -> i + 1);
+		twice(() -> assertThat(oneMapped, containsInts(2)));
+
+		IntSequence twoMapped = _12.map(i -> i + 1);
+		twice(() -> assertThat(twoMapped, containsInts(2, 3)));
+
+		IntSequence mapped = _12345.map(i -> i + 1);
+		twice(() -> assertThat(mapped, containsInts(2, 3, 4, 5, 6)));
+	}
+
+	@Test
+	public void mapWithIndex() {
+		IntSequence emptyMapped = empty.mapIndexed((i, x) -> (int) (i + x));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		IntSequence oneMapped = _1.mapIndexed((i, x) -> (int) (i + x));
+		twice(() -> assertThat(oneMapped, containsInts(1)));
+
+		IntSequence twoMapped = _12.mapIndexed((i, x) -> (int) (i + x));
+		twice(() -> assertThat(twoMapped, containsInts(1, 3)));
+
+		IntSequence mapped = _12345.mapIndexed((i, x) -> (int) (i + x));
+		twice(() -> assertThat(mapped, containsInts(1, 3, 5, 7, 9)));
 	}
 
 	@Test

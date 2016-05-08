@@ -491,8 +491,32 @@ public class CharSeqTest {
 
 	@Test
 	public void map() {
-		CharSeq mapped = abc.map(c -> (char) (c + 1));
-		twice(() -> assertThat(mapped, containsChars('b', 'c', 'd')));
+		CharSeq emptyMapped = empty.map(c -> (char) (c + 1));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		CharSeq oneMapped = a.map(c -> (char) (c + 1));
+		twice(() -> assertThat(oneMapped, containsChars('b')));
+
+		CharSeq twoMapped = ab.map(c -> (char) (c + 1));
+		twice(() -> assertThat(twoMapped, containsChars('b', 'c')));
+
+		CharSeq fiveMapped = abcde.map(c -> (char) (c + 1));
+		twice(() -> assertThat(fiveMapped, containsChars('b', 'c', 'd', 'e', 'f')));
+	}
+
+	@Test
+	public void mapWithIndex() {
+		CharSeq emptyMapped = empty.mapIndexed((c, x) -> (char) (c + x));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+
+		CharSeq oneMapped = a.mapIndexed((c, x) -> (char) (c + x));
+		twice(() -> assertThat(oneMapped, containsChars('a')));
+
+		CharSeq twoMapped = ab.mapIndexed((c, x) -> (char) (c + x));
+		twice(() -> assertThat(twoMapped, containsChars('a', 'c')));
+
+		CharSeq mapped = abcde.mapIndexed((c, x) -> (char) (c + x));
+		twice(() -> assertThat(mapped, containsChars('a', 'c', 'e', 'g', 'i')));
 	}
 
 	@Test
