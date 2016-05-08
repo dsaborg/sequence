@@ -769,6 +769,14 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Filter the elements in this {@code CharSeq}, keeping only the elements that match the given
+	 * {@link CharLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 */
+	default CharSeq filterIndexed(CharLongPredicate predicate) {
+		return () -> new IndexedFilteringCharIterator(iterator(), predicate);
+	}
+
+	/**
 	 * Filter this {@code CharSeq} to another sequence of chars while peeking at the previous value in the
 	 * sequence.
 	 * <p>

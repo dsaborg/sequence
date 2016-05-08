@@ -18,6 +18,7 @@ package org.d2ab.sequence;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
 import org.d2ab.function.doubles.DoubleLongConsumer;
+import org.d2ab.function.doubles.DoubleLongPredicate;
 import org.d2ab.function.doubles.DoubleLongToDoubleFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
@@ -668,6 +669,14 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default DoubleSequence filter(DoublePredicate predicate) {
 		return () -> new FilteringDoubleIterator(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the elements in this {@code DoubleSequence}, keeping only the elements that match the given
+	 * {@link DoubleLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 */
+	default DoubleSequence filterIndexed(DoubleLongPredicate predicate) {
+		return () -> new IndexedFilteringDoubleIterator(iterator(), predicate);
 	}
 
 	/**

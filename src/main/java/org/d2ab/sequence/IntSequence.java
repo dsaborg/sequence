@@ -19,6 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.function.chars.IntToCharFunction;
 import org.d2ab.function.ints.IntBiPredicate;
 import org.d2ab.function.ints.IntLongConsumer;
+import org.d2ab.function.ints.IntLongPredicate;
 import org.d2ab.function.ints.IntLongToIntFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
@@ -834,6 +835,14 @@ public interface IntSequence extends IntIterable {
 	 */
 	default IntSequence filter(IntPredicate predicate) {
 		return () -> new FilteringIntIterator(iterator(), predicate);
+	}
+
+	/**
+	 * Filter the elements in this {@code IntSequence}, keeping only the elements that match the given
+	 * {@link IntLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 */
+	default IntSequence filterIndexed(IntLongPredicate predicate) {
+		return () -> new IndexedFilteringIntIterator(iterator(), predicate);
 	}
 
 	/**

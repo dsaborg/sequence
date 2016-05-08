@@ -388,10 +388,32 @@ public class LongSequenceTest {
 
 	@Test
 	public void filter() {
-		LongSequence filtered =
-				LongSequence.from(StrictLongIterable.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)).filter(i -> (i % 2L) == 0L);
+		LongSequence emptyFiltered = empty.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 
-		twice(() -> assertThat(filtered, containsLongs(2L, 4L, 6L)));
+		LongSequence oneFiltered = _1.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		LongSequence twoFiltered = _12.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(twoFiltered, containsLongs(2)));
+
+		LongSequence filtered = _123456789.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(filtered, containsLongs(2, 4, 6, 8)));
+	}
+
+	@Test
+	public void filterIndexed() {
+		LongSequence emptyFiltered = empty.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		LongSequence oneFiltered = _1.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		LongSequence twoFiltered = _12.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(twoFiltered, containsLongs(2)));
+
+		LongSequence filtered = _123456789.filterIndexed((i, x) -> x > 3);
+		twice(() -> assertThat(filtered, containsLongs(5, 6, 7, 8, 9)));
 	}
 
 	@Test

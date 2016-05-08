@@ -435,10 +435,32 @@ public class CharSeqTest {
 
 	@Test
 	public void filter() {
-		CharSeq filtered =
-				CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e', 'f', 'g')).filter(i -> (i % 2) == 0);
+		CharSeq emptyFiltered = empty.filter(c -> (c % 2) == 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 
-		twice(() -> assertThat(filtered, containsChars('b', 'd', 'f')));
+		CharSeq oneFiltered = a.filter(c -> (c % 2) == 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		CharSeq twoFiltered = ab.filter(c -> (c % 2) == 0);
+		twice(() -> assertThat(twoFiltered, containsChars('b')));
+
+		CharSeq filtered = abcdefghi.filter(c -> (c % 2) == 0);
+		twice(() -> assertThat(filtered, containsChars('b', 'd', 'f', 'h')));
+	}
+
+	@Test
+	public void filterIndexed() {
+		CharSeq emptyFiltered = empty.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		CharSeq oneFiltered = a.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		CharSeq twoFiltered = ab.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(twoFiltered, containsChars('b')));
+
+		CharSeq filtered = abcdefghi.filterIndexed((i, x) -> x > 3);
+		twice(() -> assertThat(filtered, containsChars('e', 'f', 'g', 'h', 'i')));
 	}
 
 	@Test

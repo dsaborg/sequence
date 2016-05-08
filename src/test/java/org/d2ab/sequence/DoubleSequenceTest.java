@@ -399,10 +399,32 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void filter() {
-		DoubleSequence filtered = DoubleSequence.from(StrictDoubleIterable.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0))
-		                                        .filter(i -> (i % 2.0) == 0.0);
+		DoubleSequence emptyFiltered = empty.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 
-		twice(() -> assertThat(filtered, containsDoubles(2.0, 4.0, 6.0)));
+		DoubleSequence oneFiltered = _1.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		DoubleSequence twoFiltered = _12.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(twoFiltered, containsDoubles(2)));
+
+		DoubleSequence filtered = _123456789.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(filtered, containsDoubles(2, 4, 6, 8)));
+	}
+
+	@Test
+	public void filterIndexed() {
+		DoubleSequence emptyFiltered = empty.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		DoubleSequence oneFiltered = _1.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		DoubleSequence twoFiltered = _12.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(twoFiltered, containsDoubles(2)));
+
+		DoubleSequence filtered = _123456789.filterIndexed((i, x) -> x > 3);
+		twice(() -> assertThat(filtered, containsDoubles(5, 6, 7, 8, 9)));
 	}
 
 	@Test

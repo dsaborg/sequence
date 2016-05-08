@@ -435,9 +435,32 @@ public class IntSequenceTest {
 
 	@Test
 	public void filter() {
-		IntSequence filtered = _123456789.filter(i -> (i % 2) == 0);
+		IntSequence emptyFiltered = empty.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 
+		IntSequence oneFiltered = _1.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		IntSequence twoFiltered = _12.filter(i -> (i % 2) == 0);
+		twice(() -> assertThat(twoFiltered, containsInts(2)));
+
+		IntSequence filtered = _123456789.filter(i -> (i % 2) == 0);
 		twice(() -> assertThat(filtered, containsInts(2, 4, 6, 8)));
+	}
+
+	@Test
+	public void filterIndexed() {
+		IntSequence emptyFiltered = empty.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+
+		IntSequence oneFiltered = _1.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
+
+		IntSequence twoFiltered = _12.filterIndexed((i, x) -> x > 0);
+		twice(() -> assertThat(twoFiltered, containsInts(2)));
+
+		IntSequence filtered = _123456789.filterIndexed((i, x) -> x > 3);
+		twice(() -> assertThat(filtered, containsInts(5, 6, 7, 8, 9)));
 	}
 
 	@Test
