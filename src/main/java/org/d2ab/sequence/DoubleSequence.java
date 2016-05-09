@@ -985,6 +985,25 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * Allow the given {@link DoubleLongConsumer} to see each element together with its index in this
+	 * {@code DoubleSequence} as it is traversed.
+	 *
+	 * @since 1.2.2
+	 */
+	default DoubleSequence peekIndexed(DoubleLongConsumer action) {
+		return () -> new UnaryDoubleIterator(iterator()) {
+			private long index;
+
+			@Override
+			public double nextDouble() {
+				double next = iterator.nextDouble();
+				action.accept(next, index++);
+				return next;
+			}
+		};
+	}
+
+	/**
 	 * @return this {@code DoubleSequence} sorted according to the natural order of the double values.
 	 *
 	 * @see #reverse()

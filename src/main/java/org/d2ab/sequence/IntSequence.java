@@ -1156,6 +1156,25 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
+	 * Allow the given {@link IntLongConsumer} to see each element together with its index in this {@code IntSequence}
+	 * as it is traversed.
+	 *
+	 * @since 1.2.2
+	 */
+	default IntSequence peekIndexed(IntLongConsumer action) {
+		return () -> new UnaryIntIterator(iterator()) {
+			private long index;
+
+			@Override
+			public int nextInt() {
+				int next = iterator.nextInt();
+				action.accept(next, index++);
+				return next;
+			}
+		};
+	}
+
+	/**
 	 * @return this {@code IntSequence} sorted according to the natural order of the int values.
 	 *
 	 * @see #reverse()

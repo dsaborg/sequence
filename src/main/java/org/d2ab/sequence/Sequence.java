@@ -1684,6 +1684,8 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Allow the given {@link ObjLongConsumer} to see each element with its index as this {@code Sequence} is
 	 * traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default Sequence<T> peekIndexed(ObjLongConsumer<? super T> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);

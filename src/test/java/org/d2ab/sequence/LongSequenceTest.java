@@ -24,6 +24,7 @@ import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
 import java.util.stream.LongStream;
@@ -833,8 +834,47 @@ public class LongSequenceTest {
 
 	@Test
 	public void peek() {
-		LongSequence peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0L)).and(lessThan(4L)))));
-		twice(() -> assertThat(peek, containsLongs(1L, 2L, 3L)));
+		LongSequence peekEmpty = empty.peek(x -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong value = new AtomicLong(1);
+		LongSequence peekOne = _1.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 1, () -> assertThat(peekOne, containsLongs(1)));
+
+		LongSequence peekTwo = _12.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 2, () -> assertThat(peekTwo, containsLongs(1, 2)));
+
+		LongSequence peek = _12345.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 5, () -> assertThat(peek, containsLongs(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void peekIndexed() {
+		LongSequence peekEmpty = empty.peekIndexed((i, x) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		LongSequence peekOne = _1.peekIndexed((i, x) -> {
+			assertThat(i, is(index.get() + 1));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, containsLongs(1)));
+
+		LongSequence peekTwo = _12.peekIndexed((i, x) -> {
+			assertThat(i, is(index.get() + 1));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsLongs(1, 2)));
+
+		LongSequence peek = _12345.peekIndexed((i, x) -> {
+			assertThat(i, is(index.get() + 1));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test

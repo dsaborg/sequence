@@ -1097,6 +1097,25 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Allow the given {@link CharLongConsumer} to see each element together with its index in this {@code CharSeq} as
+	 * it is traversed.
+	 *
+	 * @since 1.2.2
+	 */
+	default CharSeq peekIndexed(CharLongConsumer action) {
+		return () -> new UnaryCharIterator(iterator()) {
+			private long index;
+
+			@Override
+			public char nextChar() {
+				char next = iterator.nextChar();
+				action.accept(next, index++);
+				return next;
+			}
+		};
+	}
+
+	/**
 	 * @return this {@code CharSeq} sorted according to the natural order of the characters' integer values.
 	 *
 	 * @see #reverse()

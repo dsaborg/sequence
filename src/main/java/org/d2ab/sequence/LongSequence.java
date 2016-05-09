@@ -1152,6 +1152,25 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Allow the given {@link LongBiConsumer} to see each element together with its index in this {@code LongSequence}
+	 * as it is traversed.
+	 *
+	 * @since 1.2.2
+	 */
+	default LongSequence peekIndexed(LongBiConsumer action) {
+		return () -> new UnaryLongIterator(iterator()) {
+			private long index;
+
+			@Override
+			public long nextLong() {
+				long next = iterator.nextLong();
+				action.accept(next, index++);
+				return next;
+			}
+		};
+	}
+
+	/**
 	 * @return this {@code LongSequence} sorted according to the natural order of the long values.
 	 *
 	 * @see #reverse()

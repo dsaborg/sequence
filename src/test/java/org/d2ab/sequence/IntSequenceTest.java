@@ -816,8 +816,47 @@ public class IntSequenceTest {
 
 	@Test
 	public void peek() {
-		IntSequence peek = _123.peek(x -> assertThat(x, is(both(greaterThan(0)).and(lessThan(4)))));
-		twice(() -> assertThat(peek, containsInts(1, 2, 3)));
+		IntSequence peekEmpty = empty.peek(x -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicInteger value = new AtomicInteger(1);
+		IntSequence peekOne = _1.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 1, () -> assertThat(peekOne, containsInts(1)));
+
+		IntSequence peekTwo = _12.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 2, () -> assertThat(peekTwo, containsInts(1, 2)));
+
+		IntSequence peek = _12345.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 5, () -> assertThat(peek, containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void peekIndexed() {
+		IntSequence peekEmpty = empty.peekIndexed((i, x) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		IntSequence peekOne = _1.peekIndexed((i, x) -> {
+			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, containsInts(1)));
+
+		IntSequence peekTwo = _12.peekIndexed((i, x) -> {
+			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsInts(1, 2)));
+
+		IntSequence peek = _12345.peekIndexed((i, x) -> {
+			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, containsInts(1, 2, 3, 4, 5)));
 	}
 
 	@Test

@@ -897,8 +897,47 @@ public class CharSeqTest {
 
 	@Test
 	public void peek() {
-		CharSeq peek = abc.peek(x -> assertThat(x, is(both(greaterThan('@')).and(lessThan('d')))));
-		twice(() -> assertThat(peek, containsChars('a', 'b', 'c')));
+		CharSeq peekEmpty = empty.peek(x -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicInteger value = new AtomicInteger('a');
+		CharSeq peekOne = a.peek(x -> assertThat(x, is((char) value.getAndIncrement())));
+		twiceIndexed(value, 1, () -> assertThat(peekOne, containsChars('a')));
+
+		CharSeq peekTwo = ab.peek(x -> assertThat(x, is((char) value.getAndIncrement())));
+		twiceIndexed(value, 2, () -> assertThat(peekTwo, containsChars('a', 'b')));
+
+		CharSeq peek = abcde.peek(x -> assertThat(x, is((char) value.getAndIncrement())));
+		twiceIndexed(value, 5, () -> assertThat(peek, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void peekIndexed() {
+		CharSeq peekEmpty = empty.peekIndexed((i, x) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		CharSeq peekOne = a.peekIndexed((i, x) -> {
+			assertThat(i, is((char) (index.get() + 'a')));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, containsChars('a')));
+
+		CharSeq peekTwo = ab.peekIndexed((i, x) -> {
+			assertThat(i, is((char) (index.get() + 'a')));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsChars('a', 'b')));
+
+		CharSeq peek = abcde.peekIndexed((i, x) -> {
+			assertThat(i, is((char) (index.get() + 'a')));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test

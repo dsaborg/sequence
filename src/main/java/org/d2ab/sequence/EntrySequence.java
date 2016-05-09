@@ -1209,6 +1209,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 
 	/**
 	 * Allow the given {@link Consumer} to see each entry in this {@code EntrySequence} as it is traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default EntrySequence<K, V> peek(Consumer<? super Entry<K, V>> consumer) {
 		return () -> new PeekingIterator<>(iterator(), consumer);
@@ -1217,6 +1219,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * Allow the given {@link ObjObjLongConsumer} to see the components of each entry with their index as this
 	 * {@code EntrySequence} is traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default EntrySequence<K, V> peekIndexed(ObjObjLongConsumer<? super K, ? super V> action) {
 		return peekIndexed((p, x) -> action.accept(p.getKey(), p.getValue(), x));
@@ -1225,6 +1229,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	/**
 	 * Allow the given {@link ObjLongConsumer} to see each entry with its index as this {@code EntrySequence} is
 	 * traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default EntrySequence<K, V> peekIndexed(ObjLongConsumer<? super Entry<K, V>> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);

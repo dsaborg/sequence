@@ -1317,6 +1317,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 
 	/**
 	 * Allow the given {@link Consumer} to see each pair in this {@code BiSequence} as it is traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default BiSequence<L, R> peek(Consumer<? super Pair<L, R>> consumer) {
 		return () -> new PeekingIterator<>(iterator(), consumer);
@@ -1325,6 +1327,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * Allow the given {@link ObjObjLongConsumer} to see the components of each pair with their index as this
 	 * {@code BiSequence} is traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default BiSequence<L, R> peekIndexed(ObjObjLongConsumer<? super L, ? super R> action) {
 		return peekIndexed((p, x) -> action.accept(p.getLeft(), p.getRight(), x));
@@ -1333,6 +1337,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * Allow the given {@link ObjLongConsumer} to see each pair with its index as this {@code BiSequence} is
 	 * traversed.
+	 *
+	 * @since 1.2.2
 	 */
 	default BiSequence<L, R> peekIndexed(ObjLongConsumer<? super Pair<L, R>> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);

@@ -1799,15 +1799,15 @@ public class SequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicInteger index = new AtomicInteger(1);
-		Sequence<Integer> peekOne = _1.peek(x -> assertThat(x, is(index.getAndIncrement())));
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(1)));
+		AtomicInteger value = new AtomicInteger(1);
+		Sequence<Integer> peekOne = _1.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 1, () -> assertThat(peekOne, contains(1)));
 
-		Sequence<Integer> peekTwo = _12.peek(x -> assertThat(x, is(index.getAndIncrement())));
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(1, 2)));
+		Sequence<Integer> peekTwo = _12.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 2, () -> assertThat(peekTwo, contains(1, 2)));
 
-		Sequence<Integer> peek = _12345.peek(x -> assertThat(x, is(index.getAndIncrement())));
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> peek = _12345.peek(x -> assertThat(x, is(value.getAndIncrement())));
+		twiceIndexed(value, 5, () -> assertThat(peek, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
