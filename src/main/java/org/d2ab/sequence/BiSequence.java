@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IterableCollection;
+import org.d2ab.collection.IterableList;
 import org.d2ab.collection.Lists;
 import org.d2ab.function.*;
 import org.d2ab.function.chars.ToCharBiFunction;
@@ -45,7 +45,7 @@ import static java.util.Collections.emptyIterator;
  * collating the list of {@link Pair}s.
  */
 @FunctionalInterface
-public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
+public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	/**
 	 * Create an empty {@code BiSequence} with no items.
 	 *

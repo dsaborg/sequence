@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.IterableCollection;
+import org.d2ab.collection.IterableList;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.ObjLongPredicate;
@@ -48,7 +49,7 @@ import static java.util.function.BinaryOperator.minBy;
  * the list of elements.
  */
 @FunctionalInterface
-public interface Sequence<T> extends IterableCollection<T> {
+public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * Create an empty {@code Sequence} with no items.
 	 *
@@ -1046,16 +1047,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super T> adder) {
 		forEach(each -> adder.accept(result, each));
 		return result;
-	}
-
-	/**
-	 * @return a {@link List} view of this {@code Sequence}, which is updated in real time as the backing store of the
-	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
-	 *
-	 * @since 1.2
-	 */
-	default List<T> asList() {
-		return Iterables.asList(this);
 	}
 
 	/**

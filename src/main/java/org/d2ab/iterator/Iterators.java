@@ -114,18 +114,30 @@ public class Iterators {
 
 	/**
 	 * Skip one step in the given {@link Iterator}.
+	 *
+	 * @return true if there was an element to skip over.
 	 */
-	public static void skip(Iterator<?> iterator) {
-		if (iterator.hasNext())
+	public static boolean skip(Iterator<?> iterator) {
+		if (iterator.hasNext()) {
 			iterator.next();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Skip the given number of steps in the given {@link Iterator}.
+	 *
+	 * @return the actual number of steps skipped, if iterator terminated early.
 	 */
-	public static void skip(Iterator<?> iterator, long steps) {
-		while (steps-- > 0 && iterator.hasNext())
+	public static long skip(Iterator<?> iterator, long steps) {
+		long count = 0;
+		while (count < steps && iterator.hasNext()) {
 			iterator.next();
+			count++;
+		}
+		return count;
 	}
 
 	/**

@@ -77,11 +77,6 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<T> asList() {
-		return list;
-	}
-
-	@Override
 	public <U extends Collection<T>> U collectInto(U collection) {
 		collection.addAll(list);
 		return collection;

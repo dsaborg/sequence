@@ -1174,26 +1174,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void asList() {
-		List<Integer> emptyList = empty.asList();
-		twice(() -> assertThat(emptyList, is(emptyIterable())));
-
-		List<Integer> singleList = _1.asList();
-		twice(() -> assertThat(singleList, contains(1)));
-
-		List<Integer> doubleList = _12.asList();
-		twice(() -> assertThat(doubleList, contains(1, 2)));
-
-		List<Integer> quintupleList = _12345.asList();
-		twice(() -> assertThat(quintupleList, contains(1, 2, 3, 4, 5)));
-
-		List<Integer> original = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-		List<Integer> asList = Sequence.from(original).asList();
-		original.add(6);
-		twice(() -> assertThat(asList, contains(1, 2, 3, 4, 5, 6)));
-	}
-
-	@Test
 	public void join() {
 		twice(() -> assertThat(_12345.join(), is("12345")));
 	}

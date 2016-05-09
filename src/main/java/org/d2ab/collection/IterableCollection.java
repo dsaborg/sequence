@@ -133,10 +133,6 @@ public interface IterableCollection<T> extends Collection<T> {
 
 	@Override
 	default void clear() {
-		Iterator<T> iterator = iterator();
-		while (iterator.hasNext()) {
-			iterator.next();
-			iterator.remove();
-		}
+		Iterables.removeAll(this);
 	}
 }

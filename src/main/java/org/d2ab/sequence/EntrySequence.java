@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IterableCollection;
+import org.d2ab.collection.IterableList;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.*;
@@ -38,7 +38,6 @@ import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
@@ -48,7 +47,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of {@link Entry} elements.
  */
 @FunctionalInterface
-public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
+public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
 	 *
@@ -926,7 +925,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> first() {
-		return get(0);
+		return at(0);
 	}
 
 	/**
@@ -934,7 +933,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * entries in the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> second() {
-		return get(1);
+		return at(1);
 	}
 
 	/**
@@ -942,14 +941,14 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * entries in the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> third() {
-		return get(2);
+		return at(2);
 	}
 
 	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
 	 * than the index.
 	 */
-	default Optional<Entry<K, V>> get(long index) {
+	default Optional<Entry<K, V>> at(long index) {
 		return Iterators.get(iterator(), index);
 	}
 

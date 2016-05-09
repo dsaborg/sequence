@@ -195,22 +195,6 @@ public class IterableListTest {
 	}
 
 	@Test
-	public void testEquals() {
-		assertThat(listEmpty.equals(asList()), is(true));
-		assertThat(listEmpty.equals(asList(1, 3)), is(false));
-
-		assertThat(list.equals(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(list.equals(asList(1, 17, 3, 4, 5)), is(false));
-	}
-
-	@Test
-	public void testHashCode() {
-		assertThat(listEmpty.hashCode(), is(1));
-
-		assertThat(list.hashCode(), is(29615266));
-	}
-
-	@Test
 	public void get() {
 		assertThat(list.get(0), is(1));
 		assertThat(list.get(2), is(3));
@@ -394,15 +378,6 @@ public class IterableListTest {
 
 		assertThat(list, contains(1, 2, 3, 4, 5));
 		assertThat(original, contains(1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void subList() {
-		List<Integer> emptySubList = listEmpty.subList(0, 0);
-		assertThat(emptySubList, is(emptyIterable()));
-
-		List<Integer> subList = list.subList(2, 4);
-		assertThat(subList, contains(3, 4));
 	}
 
 	@Test
