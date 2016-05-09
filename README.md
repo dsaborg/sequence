@@ -21,6 +21,10 @@ Javadoc for the entire project is available at the [Sequence javadoc.io Page](ht
 
 ### News
 
+**2016-05-09:** Sequence v1.2.1 is released, with bugfixes against 1.2, Sequence as List view,
+filtered ordinal retrieval through first, last, and at, filtering on class, indexed mapping, filtering and forEach,
+inclusion and exclusion, min and max by natural order, random sequence generation, containment checks.
+
 **2016-04-25:** Sequence v1.1.1 is released, with
 [updated javadoc](http://www.javadoc.io/doc/org.d2ab/sequence/1.1.1),
 [dedicated concatenation methods](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/Sequence.html#concat-java.lang.Iterable...-),
