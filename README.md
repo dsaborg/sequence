@@ -21,9 +21,9 @@ Javadoc for the entire project is available at the [Sequence javadoc.io Page](ht
 
 ### News
 
-**2016-05-09:** Sequence v1.2.1 is released, with bugfixes against 1.2, List view of Sequence, Reader view of CharSeq,
+**2016-05-09:** Sequence v1.2.2 is released, with bugfixes against 1.2, List view of Sequence, Reader view of CharSeq,
 InputStream view of IntSequence, filtered ordinal retrieval through first, last, and at, filtering on class,
-indexed mapping, filtering and forEach, inclusion and exclusion, min and max by natural order,
+indexed mapping, filtering, peeking and forEach, inclusion and exclusion, min and max by natural order,
 random sequence generation, and containment checks.
 
 **2016-04-25:** Sequence v1.1.1 is released, with
@@ -90,7 +90,7 @@ To install in maven, use the maven central dependency:
 <dependency>
   <groupId>org.d2ab</groupId>
   <artifactId>sequence</artifactId>
-  <version>1.2.1</version>
+  <version>1.2.2</version>
 </dependency>
 ```
 
@@ -104,7 +104,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.d2ab:sequence:1.2.1'
+    compile 'org.d2ab:sequence:1.2.2'
 }
 ```
 
