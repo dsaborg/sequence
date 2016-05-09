@@ -1289,6 +1289,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharBiFunction<? super K, ? super V> mapper) {
 		return toChars(e -> mapper.applyAsChar(e.getKey(), e.getValue()));
@@ -1305,6 +1307,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntBiFunction<? super K, ? super V> mapper) {
 		return toInts(e -> mapper.applyAsInt(e.getKey(), e.getValue()));
@@ -1321,6 +1325,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongBiFunction<? super K, ? super V> mapper) {
 		return toLongs(e -> mapper.applyAsLong(e.getKey(), e.getValue()));
@@ -1337,6 +1343,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toLongs(ToLongBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleBiFunction<? super K, ? super V> mapper) {
 		return toDoubles(e -> mapper.applyAsDouble(e.getKey(), e.getValue()));
@@ -1353,6 +1361,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharFunction<? super Entry<K, V>> mapper) {
 		return () -> CharIterator.from(iterator(), mapper);
@@ -1369,6 +1379,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntFunction<? super Entry<K, V>> mapper) {
 		return () -> IntIterator.from(iterator(), mapper);
@@ -1385,6 +1397,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongFunction<? super Entry<K, V>> mapper) {
 		return () -> LongIterator.from(iterator(), mapper);
@@ -1401,6 +1415,8 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super Entry<K, V>> mapper) {
 		return () -> DoubleIterator.from(iterator(), mapper);

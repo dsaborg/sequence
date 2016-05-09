@@ -1398,6 +1398,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharBiFunction<? super L, ? super R> mapper) {
 		return toChars(p -> mapper.applyAsChar(p.getLeft(), p.getRight()));
@@ -1414,6 +1416,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntBiFunction<? super L, ? super R> mapper) {
 		return toInts(p -> mapper.applyAsInt(p.getLeft(), p.getRight()));
@@ -1430,6 +1434,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongBiFunction<? super L, ? super R> mapper) {
 		return toLongs(p -> mapper.applyAsLong(p.getLeft(), p.getRight()));
@@ -1446,6 +1452,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toLongs(ToLongBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
+	 *
+	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleBiFunction<? super L, ? super R> mapper) {
 		return toDoubles(p -> mapper.applyAsDouble(p.getLeft(), p.getRight()));
@@ -1462,6 +1470,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharFunction<? super Pair<L, R>> mapper) {
 		return () -> CharIterator.from(iterator(), mapper);
@@ -1478,6 +1488,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntFunction<? super Pair<L, R>> mapper) {
 		return () -> IntIterator.from(iterator(), mapper);
@@ -1494,6 +1506,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongFunction<? super Pair<L, R>> mapper) {
 		return () -> LongIterator.from(iterator(), mapper);
@@ -1510,6 +1524,8 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
+	 *
+	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super Pair<L, R>> mapper) {
 		return () -> DoubleIterator.from(iterator(), mapper);
