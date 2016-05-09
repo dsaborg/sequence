@@ -93,7 +93,7 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public long size() {
+	public int size() {
 		return list.size();
 	}
 
@@ -108,7 +108,7 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public boolean contains(T item) {
+	public boolean contains(Object item) {
 		return list.contains(item);
 	}
 

@@ -227,4 +227,17 @@ public class Iterators {
 			}
 		};
 	}
+
+	/**
+	 * @return true if any object in the given {@link Iterator} is equal to the given object, false otherwise.
+	 *
+	 * @since 2.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> boolean contains(Iterator<? extends T> iterator, T object) {
+		while (iterator.hasNext())
+			if (Objects.equals(object, iterator.next()))
+				return true;
+		return false;
+	}
 }

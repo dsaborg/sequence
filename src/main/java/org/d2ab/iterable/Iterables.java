@@ -35,14 +35,37 @@ public class Iterables {
 	}
 
 	/**
-	 * @return an empty {@link Iterable}.
+	 * @return an unmodifiable empty {@link Iterable}.
 	 */
 	public static <T> Iterable<T> empty() {
 		return Iterators::empty;
 	}
 
 	/**
-	 * @return an {@link Iterable} containing the given objects.
+	 * @return an unmodifiable singleton {@link Iterable} containing the given object.
+	 */
+	public static <T> Iterable<T> of(T object) {
+		return () -> new Iterator<T>() {
+			private boolean used;
+
+			@Override
+			public boolean hasNext() {
+				return !used;
+			}
+
+			@Override
+			public T next() {
+				if (used)
+					throw new NoSuchElementException();
+
+				used = true;
+				return object;
+			}
+		};
+	}
+
+	/**
+	 * @return an unmodifiable {@link Iterable} containing the given objects.
 	 */
 	@SafeVarargs
 	public static <T> Iterable<T> of(T... objects) {

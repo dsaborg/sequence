@@ -1732,10 +1732,10 @@ public class SequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -2046,7 +2046,7 @@ public class SequenceTest {
 		Sequence<Character> chars = Sequence.chars();
 		twice(() -> assertThat(chars, beginsWith((char) 0, (char) 1, (char) 2, (char) 3, (char) 4)));
 		twice(() -> assertThat(chars.limit(0x1400).last(), is(Optional.of('\u13FF'))));
-		twice(() -> assertThat(chars.size(), is(65536L)));
+		twice(() -> assertThat(chars.size(), is(65536)));
 		twice(() -> assertThat(chars.last(), is(Optional.of('\uFFFF'))));
 	}
 

@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.IterableCollection;
 import org.d2ab.collection.Lists;
 import org.d2ab.function.*;
 import org.d2ab.function.chars.ToCharBiFunction;
@@ -35,7 +36,6 @@ import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
@@ -45,7 +45,7 @@ import static java.util.Collections.emptyIterator;
  * collating the list of {@link Pair}s.
  */
 @FunctionalInterface
-public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
+public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * Create an empty {@code BiSequence} with no items.
 	 *
@@ -171,39 +171,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	static <L, R> BiSequence<L, R> once(Stream<Pair<L, R>> stream) {
 		return once(stream.iterator());
-	}
-
-	/**
-	 * Create a once-only {@code BiSequence} from an {@link Iterator} of pairs. Note that {@code BiSequence}s created
-	 * from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
-	 * {@code BiSequence} as empty.
-	 *
-	 * @see #of(Pair)
-	 * @see #of(Pair...)
-	 * @see #from(Iterable)
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static <L, R> BiSequence<L, R> from(Iterator<Pair<L, R>> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code BiSequence} from a {@link Stream} of pairs. Note that {@code BiSequence}s created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code BiSequence} as
-	 * empty.
-	 *
-	 * @see #of(Pair)
-	 * @see #of(Pair...)
-	 * @see #from(Iterable)
-	 * @see #once(Iterator)
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static <L, R> BiSequence<L, R> from(Stream<Pair<L, R>> stream) {
-		return once(stream);
 	}
 
 	/**
@@ -990,17 +957,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	}
 
 	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@code BiSequence} is smaller
-	 * than the index.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default Optional<Pair<L, R>> get(long index) {
-		return at(index);
-	}
-
-	/**
 	 * @return the first pair of this {@code BiSequence} that matches the given predicate, or an empty
 	 * {@link Optional} if there are no matching pairs in the {@code BiSequence}.
 	 *
@@ -1258,32 +1214,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	default Optional<Pair<L, R>> max(Comparator<? super Pair<L, R>> comparator) {
 		return reduce(BinaryOperator.maxBy(comparator));
-	}
-
-	/**
-	 * @return the count of elements in this {@code BiSequence}.
-	 *
-	 * @since 1.2
-	 */
-	default long size() {
-		return Iterables.count(this);
-	}
-
-	/**
-	 * @return the count of elements in this {@code BiSequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
-	}
-
-	/**
-	 * @return this {@code BiSequence} as a {@link Stream} of pairs.
-	 */
-	default Stream<Pair<L, R>> stream() {
-		return StreamSupport.stream(spliterator(), false);
 	}
 
 	/**
@@ -1606,34 +1536,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 */
 	default BiSequence<L, R> shuffle(Supplier<? extends Random> randomSupplier) {
 		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
-	 * @return true if this {@code BiSequence} is empty, false otherwise.
-	 *
-	 * @since 1.1
-	 */
-	default boolean isEmpty() {
-		return !iterator().hasNext();
 	}
 
 	/**

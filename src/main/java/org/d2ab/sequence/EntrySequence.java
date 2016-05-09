@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.IterableCollection;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.*;
@@ -47,7 +48,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of {@link Entry} elements.
  */
 @FunctionalInterface
-public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
+public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
 	 *
@@ -173,39 +174,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	static <K, V> EntrySequence<K, V> once(Stream<Entry<K, V>> stream) {
 		return once(stream.iterator());
-	}
-
-	/**
-	 * Create a once-only {@code EntrySequence} from an {@link Iterator} of entries. Note that {@code EntrySequence}s
-	 * created from {@link Iterator}s cannot be passed over more than once. Further attempts will register the
-	 * {@code EntrySequence} as empty.
-	 *
-	 * @see #of(Entry)
-	 * @see #of(Entry...)
-	 * @see #from(Iterable)
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static <K, V> EntrySequence<K, V> from(Iterator<Entry<K, V>> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code EntrySequence} from a {@link Stream} of entries. Note that {@code EntrySequence}s
-	 * created from {@link Stream}s cannot be passed over more than once. Further attempts will register the
-	 * {@code EntrySequence} as empty.
-	 *
-	 * @see #of(Entry)
-	 * @see #of(Entry...)
-	 * @see #from(Iterable)
-	 * @see #once(Iterator)
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static <K, V> EntrySequence<K, V> from(Stream<Entry<K, V>> stream) {
-		return once(stream);
 	}
 
 	/**
@@ -1153,32 +1121,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the count of elements in this {@code EntrySequence}.
-	 *
-	 * @since 1.2
-	 */
-	default long size() {
-		return Iterables.count(this);
-	}
-
-	/**
-	 * @return the count of elements in this {@code EntrySequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
-	}
-
-	/**
-	 * @return this {@code EntrySequence} as a {@link Stream} of entries.
-	 */
-	default Stream<Entry<K, V>> stream() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
-	/**
 	 * @return true if all elements in this {@code EntrySequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(BiPredicate<? super K, ? super V> biPredicate) {
@@ -1497,34 +1439,6 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 */
 	default EntrySequence<K, V> shuffle(Supplier<? extends Random> randomSupplier) {
 		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
-	 * @return true if this {@code EntrySequence} is empty, false otherwise.
-	 *
-	 * @since 1.1
-	 */
-	default boolean isEmpty() {
-		return !iterator().hasNext();
 	}
 
 	/**
