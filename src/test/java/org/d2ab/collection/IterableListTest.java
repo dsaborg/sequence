@@ -341,6 +341,62 @@ public class IterableListTest {
 	}
 
 	@Test
+	public void iteratorRemoveAll() {
+		Iterator<Integer> iterator = list.iterator();
+
+		int i = 0;
+		while (iterator.hasNext()) {
+			assertThat(iterator.next(), is(i + 1));
+			iterator.remove();
+			i++;
+		}
+		assertThat(i, is(5));
+
+		assertThat(list, is(emptyIterable()));
+		assertThat(original, is(emptyIterable()));
+	}
+
+	@Test
+	public void listIteratorRemove() {
+		ListIterator<Integer> listIterator = list.listIterator();
+
+		int i = 0;
+		while (listIterator.hasNext()) {
+			assertThat(listIterator.next(), is(i + 1));
+			assertThat(listIterator.nextIndex(), is(1));
+			assertThat(listIterator.previousIndex(), is(0));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(0));
+			assertThat(listIterator.previousIndex(), is(-1));
+			i++;
+		}
+		assertThat(i, is(5));
+
+		assertThat(list, is(emptyIterable()));
+		assertThat(original, is(emptyIterable()));
+	}
+
+	@Test
+	public void listIteratorRemoveBackwards() {
+		int i = 5;
+		ListIterator<Integer> listIterator = list.listIterator(i);
+
+		while (listIterator.hasPrevious()) {
+			i--;
+			assertThat(listIterator.previous(), is(i + 1));
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+			expecting(IllegalStateException.class, listIterator::remove);
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+		}
+		assertThat(i, is(0));
+
+		assertThat(list, contains(1, 2, 3, 4, 5));
+		assertThat(original, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
 	public void subList() {
 		List<Integer> emptySubList = listEmpty.subList(0, 0);
 		assertThat(emptySubList, is(emptyIterable()));

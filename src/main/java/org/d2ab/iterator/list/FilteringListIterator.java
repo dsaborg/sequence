@@ -122,6 +122,16 @@ public class FilteringListIterator<T> extends DelegatingIterator<T, ListIterator
 	}
 
 	@Override
+	public void remove() {
+		if (state != PREVIOUS && state != NEXT)
+			throw new IllegalStateException("Next or previous not called");
+
+		iterator.remove();
+		if (state == NEXT)
+			cursor--;
+	}
+
+	@Override
 	public void set(T t) {
 		if (state != PREVIOUS && state != NEXT)
 			throw new IllegalStateException("Next or previous not called");

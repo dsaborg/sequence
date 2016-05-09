@@ -352,6 +352,62 @@ public class FilteredListTest {
 	}
 
 	@Test
+	public void iteratorRemoveAll() {
+		Iterator<Integer> iterator = filtered.iterator();
+
+		int i = 0;
+		while (iterator.hasNext()) {
+			assertThat(iterator.next(), is(i * 2 + 1));
+			iterator.remove();
+			i++;
+		}
+		assertThat(i, is(5));
+
+		assertThat(filtered, is(emptyIterable()));
+		assertThat(original, contains(2, 4, 6, 8, 10));
+	}
+
+	@Test
+	public void listIteratorRemove() {
+		ListIterator<Integer> listIterator = filtered.listIterator();
+
+		int i = 0;
+		while (listIterator.hasNext()) {
+			assertThat(listIterator.next(), is(i * 2 + 1));
+			assertThat(listIterator.nextIndex(), is(1));
+			assertThat(listIterator.previousIndex(), is(0));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(0));
+			assertThat(listIterator.previousIndex(), is(-1));
+			i++;
+		}
+		assertThat(i, is(5));
+
+		assertThat(filtered, is(emptyIterable()));
+		assertThat(original, contains(2, 4, 6, 8, 10));
+	}
+
+	@Test
+	public void listIteratorRemoveBackwards() {
+		int i = 5;
+		ListIterator<Integer> listIterator = filtered.listIterator(i);
+
+		while (listIterator.hasPrevious()) {
+			i--;
+			assertThat(listIterator.previous(), is(i * 2 + 1));
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+		}
+		assertThat(i, is(0));
+
+		assertThat(filtered, is(emptyIterable()));
+		assertThat(original, contains(2, 4, 6, 8, 10));
+	}
+
+	@Test
 	public void subList() {
 		List<Integer> emptySubList = filteredEmpty.subList(0, 0);
 		assertThat(emptySubList, is(emptyIterable()));

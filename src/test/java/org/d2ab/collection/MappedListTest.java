@@ -365,6 +365,62 @@ public class MappedListTest {
 	}
 
 	@Test
+	public void iteratorRemoveAll() {
+		Iterator<String> iterator = mapped.iterator();
+
+		int i = 0;
+		while (iterator.hasNext()) {
+			assertThat(iterator.next(), is(String.valueOf(i + 1)));
+			iterator.remove();
+			i++;
+		}
+		assertThat(i, is(5));
+
+		assertThat(mapped, is(emptyIterable()));
+		assertThat(original, is(emptyIterable()));
+	}
+
+	@Test
+	public void listIteratorRemove() {
+		ListIterator<String> listIterator = mapped.listIterator();
+
+		int i = 0;
+		while (listIterator.hasNext()) {
+			assertThat(listIterator.next(), is(String.valueOf(i + 1)));
+			assertThat(listIterator.nextIndex(), is(1));
+			assertThat(listIterator.previousIndex(), is(0));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(0));
+			assertThat(listIterator.previousIndex(), is(-1));
+			i++;
+		}
+		assertThat(i, is(5));
+
+		assertThat(mapped, is(emptyIterable()));
+		assertThat(original, is(emptyIterable()));
+	}
+
+	@Test
+	public void listIteratorRemoveBackwards() {
+		int i = 5;
+		ListIterator<String> listIterator = mapped.listIterator(i);
+
+		while (listIterator.hasPrevious()) {
+			i--;
+			assertThat(listIterator.previous(), is(String.valueOf(i + 1)));
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+		}
+		assertThat(i, is(0));
+
+		assertThat(mapped, is(emptyIterable()));
+		assertThat(original, is(emptyIterable()));
+	}
+
+	@Test
 	public void subList() {
 		List<String> emptySubList = mappedEmpty.subList(0, 0);
 		assertThat(emptySubList, is(emptyIterable()));

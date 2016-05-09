@@ -97,7 +97,10 @@ public class IterableList<T> extends AbstractSequentialList<T> {
 
 			@Override
 			public void remove() {
+				if (cursor < previous.size())
+					throw new IllegalStateException("Cannot remove after previous");
 				iterator.remove();
+				previous.remove(--cursor);
 			}
 
 			@Override

@@ -458,6 +458,68 @@ public class ChainedListTest {
 	}
 
 	@Test
+	public void iteratorRemoveAll() {
+		Iterator<Integer> iterator = chained.iterator();
+
+		int i = 0;
+		while (iterator.hasNext()) {
+			assertThat(iterator.next(), is(i + 1));
+			iterator.remove();
+			i++;
+		}
+		assertThat(i, is(10));
+
+		assertThat(chained, is(emptyIterable()));
+		assertThat(first, is(emptyIterable()));
+		assertThat(second, is(emptyIterable()));
+		assertThat(third, is(emptyIterable()));
+	}
+
+	@Test
+	public void listIteratorRemove() {
+		ListIterator<Integer> listIterator = chained.listIterator();
+
+		int i = 0;
+		while (listIterator.hasNext()) {
+			assertThat(listIterator.next(), is(i + 1));
+			assertThat(listIterator.nextIndex(), is(1));
+			assertThat(listIterator.previousIndex(), is(0));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(0));
+			assertThat(listIterator.previousIndex(), is(-1));
+			i++;
+		}
+		assertThat(i, is(10));
+
+		assertThat(chained, is(emptyIterable()));
+		assertThat(first, is(emptyIterable()));
+		assertThat(second, is(emptyIterable()));
+		assertThat(third, is(emptyIterable()));
+	}
+
+	@Test
+	public void listIteratorRemoveBackwards() {
+		int i = 10;
+		ListIterator<Integer> listIterator = chained.listIterator(i);
+
+		while (listIterator.hasPrevious()) {
+			i--;
+			assertThat(listIterator.previous(), is(i + 1));
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+		}
+		assertThat(i, is(0));
+
+		assertThat(chained, is(emptyIterable()));
+		assertThat(first, is(emptyIterable()));
+		assertThat(second, is(emptyIterable()));
+		assertThat(third, is(emptyIterable()));
+	}
+
+	@Test
 	public void subList() {
 		List<Integer> emptySubList = chainedEmpty.subList(0, 0);
 		assertThat(emptySubList, is(emptyIterable()));
