@@ -37,6 +37,7 @@ import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.twiceIndexed;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -652,7 +653,7 @@ public class BiSequenceTest {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twice(index, () -> {
+		twiceIndexed(index, 1, () -> {
 			assertThat(oneMapped, contains(Pair.of(1, "1")));
 		});
 
@@ -660,7 +661,7 @@ public class BiSequenceTest {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twice(index, () -> {
+		twiceIndexed(index, 2, () -> {
 			assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2")));
 		});
 
@@ -668,9 +669,10 @@ public class BiSequenceTest {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twice(index, () -> assertThat(fiveMapped,
-		                              contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"), Pair.of(4, "4"),
-		                                       Pair.of(5, "5"))));
+		twiceIndexed(index, 5, () -> assertThat(fiveMapped,
+		                                        contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"),
+		                                                 Pair.of(4, "4"),
+		                                                 Pair.of(5, "5"))));
 	}
 
 	@Test
@@ -1468,9 +1470,117 @@ public class BiSequenceTest {
 
 	@Test
 	public void peek() {
-		BiSequence<String, Integer> peek = _123.peek((s, x) -> assertThat(x, is(both(greaterThanOrEqualTo(1)).and(
-				lessThanOrEqualTo(3)).and(equalTo(parseInt(s))))));
-		twice(() -> assertThat(peek, contains(entries123)));
+		BiSequence<String, Integer> peekEmpty = empty.peek((l, r) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicInteger index = new AtomicInteger();
+		BiSequence<String, Integer> peekOne = _1.peek((l, r) -> {
+			index.getAndIncrement();
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> peekTwo = _12.peek((l, r) -> {
+			index.getAndIncrement();
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> peek = _12345.peek((l, r) -> {
+			index.getAndIncrement();
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void peekIndexed() {
+		BiSequence<String, Integer> peekEmpty = empty.peekIndexed((l, r, x) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		BiSequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is((int) index.get()));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> peekTwo = _12.peekIndexed((l, r, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is((int) index.get()));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> peek = _12345.peekIndexed((l, r, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is((int) index.get()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void peekPair() {
+		BiSequence<String, Integer> peekEmpty = empty.peek(p -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicInteger value = new AtomicInteger(1);
+		BiSequence<String, Integer> peekOne = _1.peek(p -> {
+			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
+		});
+		twiceIndexed(value, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> peekTwo = _12.peek(p -> {
+			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
+		});
+		twiceIndexed(value, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> peek = _12345.peek(p -> {
+			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
+		});
+		twiceIndexed(value, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void peekIndexedPair() {
+		BiSequence<String, Integer> peekEmpty = empty.peekIndexed((p, x) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		BiSequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+
+		BiSequence<String, Integer> peekTwo = _12.peekIndexed((p, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> peek = _12345.peekIndexed((p, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                       Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test

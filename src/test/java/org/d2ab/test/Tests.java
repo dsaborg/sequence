@@ -17,7 +17,10 @@ package org.d2ab.test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class Tests {
@@ -43,17 +46,21 @@ public class Tests {
 			action.run();
 	}
 
-	public static void twice(AtomicLong index, Runnable r) {
+	public static void twiceIndexed(AtomicLong index, long expectedIncrements, Runnable r) {
+		long previousValue = index.get();
 		twice(() -> {
-			index.set(0);
 			r.run();
+			assertThat(index.get(), is(previousValue + expectedIncrements));
+			index.set(previousValue);
 		});
 	}
 
-	public static void twice(AtomicInteger index, Runnable r) {
+	public static void twiceIndexed(AtomicInteger index, int expectedIncrements, Runnable r) {
+		int previousValue = index.get();
 		twice(() -> {
-			index.set(0);
 			r.run();
+			assertThat(index.get(), is(previousValue + expectedIncrements));
+			index.set(previousValue);
 		});
 	}
 }

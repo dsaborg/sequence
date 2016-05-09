@@ -38,8 +38,7 @@ import static java.lang.Integer.parseInt;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
-import static org.d2ab.test.Tests.expecting;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -1795,13 +1794,47 @@ public class SequenceTest {
 
 	@Test
 	public void peek() {
-		AtomicInteger value = new AtomicInteger();
-		Sequence<Integer> peek = _123.peek(x -> assertThat(x, is(value.getAndIncrement())));
-
-		twice(() -> {
-			value.set(1);
-			assertThat(peek, contains(1, 2, 3));
+		Sequence<Integer> peekEmpty = empty.peek(x -> {
+			throw new IllegalStateException("Should not get called");
 		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicInteger index = new AtomicInteger(1);
+		Sequence<Integer> peekOne = _1.peek(x -> assertThat(x, is(index.getAndIncrement())));
+		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(1)));
+
+		Sequence<Integer> peekTwo = _12.peek(x -> assertThat(x, is(index.getAndIncrement())));
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(1, 2)));
+
+		Sequence<Integer> peek = _12345.peek(x -> assertThat(x, is(index.getAndIncrement())));
+		twiceIndexed(index, 5, () -> assertThat(peek, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void peekIndexed() {
+		Sequence<Integer> peekEmpty = empty.peekIndexed((i, x) -> {
+			throw new IllegalStateException("Should not get called");
+		});
+		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+
+		AtomicLong index = new AtomicLong();
+		Sequence<Integer> peekOne = _1.peekIndexed((i, x) -> {
+			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(1)));
+
+		Sequence<Integer> peekTwo = _12.peekIndexed((i, x) -> {
+			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(1, 2)));
+
+		Sequence<Integer> peek = _12345.peekIndexed((i, x) -> {
+			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(x, is(index.getAndIncrement()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(peek, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
