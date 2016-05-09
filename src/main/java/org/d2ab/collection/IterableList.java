@@ -21,7 +21,7 @@ import org.d2ab.iterator.Iterators;
 import java.util.*;
 
 /**
- * A sequential {@link List} view of an {@link Iterable}
+ * A sequential {@link List} view of an {@link Iterable}.
  *
  * @since 1.2
  */
@@ -54,21 +54,21 @@ public class IterableList<T> extends AbstractSequentialList<T> {
 	public ListIterator<T> listIterator(int index) {
 		Iterator<T> iterator = iterator();
 		ListIterator<T> listIterator = new ListIterator<T>() {
-			private final List<T> previous = new LinkedList<T>();
+			private final List<T> previous = new LinkedList<>();
 
 			int cursor;
 
 			@Override
 			public boolean hasNext() {
-				return iterator.hasNext();
+				return cursor < previous.size() || iterator.hasNext();
 			}
 
 			@Override
 			public T next() {
-				cursor++;
-
 				if (cursor < previous.size())
-					return previous.get(cursor);
+					return previous.get(cursor++);
+
+				cursor++;
 
 				T next = iterator.next();
 				previous.add(next);

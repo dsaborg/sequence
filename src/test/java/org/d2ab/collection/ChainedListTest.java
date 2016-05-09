@@ -448,10 +448,10 @@ public class ChainedListTest {
 			assertThat(i.get(), is(10));
 
 			while (listIterator.hasPrevious()) {
-				assertThat(listIterator.previous(), is(i.get()));
-				assertThat(listIterator.nextIndex(), is(i.get() - 1));
-				assertThat(listIterator.previousIndex(), is(i.get() - 2));
 				i.decrementAndGet();
+				assertThat(listIterator.previous(), is(i.get() + 1));
+				assertThat(listIterator.nextIndex(), is(i.get()));
+				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
 		});

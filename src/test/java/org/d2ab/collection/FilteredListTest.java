@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -324,6 +325,30 @@ public class FilteredListTest {
 
 		assertThat(filtered, contains(1, 17, 5, 7, 9));
 		assertThat(original, contains(1, 2, 17, 4, 5, 6, 7, 8, 9, 10));
+	}
+
+	@Test
+	public void exhaustiveListIterator() {
+		ListIterator<Integer> listIterator = filtered.listIterator();
+
+		AtomicInteger i = new AtomicInteger();
+		twice(() -> {
+			while (listIterator.hasNext()) {
+				assertThat(listIterator.next(), is(i.get() * 2 + 1));
+				assertThat(listIterator.nextIndex(), is(i.get() + 1));
+				assertThat(listIterator.previousIndex(), is(i.get()));
+				i.incrementAndGet();
+			}
+			assertThat(i.get(), is(5));
+
+			while (listIterator.hasPrevious()) {
+				i.decrementAndGet();
+				assertThat(listIterator.previous(), is(i.get() * 2 + 1));
+				assertThat(listIterator.nextIndex(), is(i.get()));
+				assertThat(listIterator.previousIndex(), is(i.get() - 1));
+			}
+			assertThat(i.get(), is(0));
+		});
 	}
 
 	@Test

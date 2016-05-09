@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -327,6 +328,30 @@ public class ReverseListTest {
 
 		assertThat(reverse, contains(6, 5, 17, 18, 3, 2, 1));
 		assertThat(original, contains(1, 2, 3, 18, 17, 5, 6));
+	}
+
+	@Test
+	public void exhaustiveListIterator() {
+		ListIterator<Integer> listIterator = reverse.listIterator();
+
+		AtomicInteger i = new AtomicInteger();
+		twice(() -> {
+			while (listIterator.hasNext()) {
+				assertThat(listIterator.next(), is(6 - i.get()));
+				assertThat(listIterator.nextIndex(), is(i.get() + 1));
+				assertThat(listIterator.previousIndex(), is(i.get()));
+				i.incrementAndGet();
+			}
+			assertThat(i.get(), is(6));
+
+			while (listIterator.hasPrevious()) {
+				i.decrementAndGet();
+				assertThat(listIterator.previous(), is(6 - i.get()));
+				assertThat(listIterator.nextIndex(), is(i.get()));
+				assertThat(listIterator.previousIndex(), is(i.get() - 1));
+			}
+			assertThat(i.get(), is(0));
+		});
 	}
 
 	@Test

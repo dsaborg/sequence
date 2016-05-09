@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -302,17 +303,41 @@ public class IterableListTest {
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.next(), is(3));
+		assertThat(listIterator.next(), is(2));
 
 		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.next(), is(4));
+		assertThat(listIterator.next(), is(3));
 
 		assertThat(list, contains(1, 2, 3, 4, 5));
 		assertThat(original, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void exhaustiveListIterator() {
+		ListIterator<Integer> listIterator = list.listIterator();
+
+		AtomicInteger i = new AtomicInteger();
+		twice(() -> {
+			while (listIterator.hasNext()) {
+				assertThat(listIterator.next(), is(i.get() + 1));
+				assertThat(listIterator.nextIndex(), is(i.get() + 1));
+				assertThat(listIterator.previousIndex(), is(i.get()));
+				i.incrementAndGet();
+			}
+			assertThat(i.get(), is(5));
+
+			while (listIterator.hasPrevious()) {
+				i.decrementAndGet();
+				assertThat(listIterator.previous(), is(i.get() + 1));
+				assertThat(listIterator.nextIndex(), is(i.get()));
+				assertThat(listIterator.previousIndex(), is(i.get() - 1));
+			}
+			assertThat(i.get(), is(0));
+		});
 	}
 
 	@Test
