@@ -1074,16 +1074,16 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void get() {
-		twice(() -> assertThat(empty.get(0), is(Optional.empty())));
-		twice(() -> assertThat(empty.get(17), is(Optional.empty())));
-		twice(() -> assertThat(_1.get(0), is(Optional.of(Maps.entry("1", 1)))));
-		twice(() -> assertThat(_1.get(1), is(Optional.empty())));
-		twice(() -> assertThat(_1.get(17), is(Optional.empty())));
-		twice(() -> assertThat(_12345.get(0), is(Optional.of(Maps.entry("1", 1)))));
-		twice(() -> assertThat(_12345.get(1), is(Optional.of(Maps.entry("2", 2)))));
-		twice(() -> assertThat(_12345.get(4), is(Optional.of(Maps.entry("5", 5)))));
-		twice(() -> assertThat(_12345.get(17), is(Optional.empty())));
+	public void at() {
+		twice(() -> assertThat(empty.at(0), is(Optional.empty())));
+		twice(() -> assertThat(empty.at(17), is(Optional.empty())));
+		twice(() -> assertThat(_1.at(0), is(Optional.of(Maps.entry("1", 1)))));
+		twice(() -> assertThat(_1.at(1), is(Optional.empty())));
+		twice(() -> assertThat(_1.at(17), is(Optional.empty())));
+		twice(() -> assertThat(_12345.at(0), is(Optional.of(Maps.entry("1", 1)))));
+		twice(() -> assertThat(_12345.at(1), is(Optional.of(Maps.entry("2", 2)))));
+		twice(() -> assertThat(_12345.at(4), is(Optional.of(Maps.entry("5", 5)))));
+		twice(() -> assertThat(_12345.at(17), is(Optional.empty())));
 	}
 
 	@Test

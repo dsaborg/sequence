@@ -958,7 +958,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> first() {
-		return get(0);
+		return at(0);
 	}
 
 	/**
@@ -966,7 +966,7 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * entries in the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> second() {
-		return get(1);
+		return at(1);
 	}
 
 	/**
@@ -974,13 +974,24 @@ public interface EntrySequence<K, V> extends Iterable<Entry<K, V>> {
 	 * entries in the {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> third() {
-		return get(2);
+		return at(2);
 	}
 
 	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
 	 * than the index.
 	 */
+	default Optional<Entry<K, V>> at(long index) {
+		return Iterators.get(iterator(), index);
+	}
+
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
+	 * than the index.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
+	 */
+	@Deprecated
 	default Optional<Entry<K, V>> get(long index) {
 		return Iterators.get(iterator(), index);
 	}
