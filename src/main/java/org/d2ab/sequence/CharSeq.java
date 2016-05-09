@@ -954,7 +954,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(char, CharPredicate)
+	 * @see #at(long, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar first(CharPredicate predicate) {
@@ -966,7 +966,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are less than two matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(char, CharPredicate)
+	 * @see #at(long, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar second(CharPredicate predicate) {
@@ -978,7 +978,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are less than three matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(char, CharPredicate)
+	 * @see #at(long, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar third(CharPredicate predicate) {
@@ -990,7 +990,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(char, CharPredicate)
+	 * @see #at(long, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar last(CharPredicate predicate) {
