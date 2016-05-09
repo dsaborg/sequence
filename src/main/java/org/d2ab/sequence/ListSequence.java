@@ -20,7 +20,6 @@ import org.d2ab.collection.ChainedList;
 import org.d2ab.collection.FilteredList;
 import org.d2ab.collection.MappedList;
 import org.d2ab.collection.ReverseList;
-import org.d2ab.iterable.ChainingIterable;
 
 import java.util.*;
 import java.util.function.Function;

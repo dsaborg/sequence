@@ -840,6 +840,8 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Filter the elements in this {@code IntSequence}, keeping only the elements that match the given
 	 * {@link IntLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 *
+	 * @since 1.2
 	 */
 	default IntSequence filterIndexed(IntLongPredicate predicate) {
 		return () -> new IndexedFilteringIntIterator(iterator(), predicate);

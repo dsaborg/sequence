@@ -837,6 +837,8 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Filter the elements in this {@code LongSequence}, keeping only the elements that match the given
 	 * {@link LongBiPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 *
+	 * @since 1.2
 	 */
 	default LongSequence filterIndexed(LongBiPredicate predicate) {
 		return () -> new IndexedFilteringLongIterator(iterator(), predicate);

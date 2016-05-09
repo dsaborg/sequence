@@ -674,6 +674,8 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Filter the elements in this {@code DoubleSequence}, keeping only the elements that match the given
 	 * {@link DoubleLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 *
+	 * @since 1.2
 	 */
 	default DoubleSequence filterIndexed(DoubleLongPredicate predicate) {
 		return () -> new IndexedFilteringDoubleIterator(iterator(), predicate);
