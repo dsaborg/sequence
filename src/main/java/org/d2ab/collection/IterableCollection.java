@@ -25,32 +25,32 @@ import java.util.Objects;
 
 /**
  * A {@link Collection} view of an {@link Iterable}, requiring only {@link Iterable#iterator()} to be implemented in
- * order to present a full {@link Collection}. This interface is thus a functional interface of iterable's iterator
- * method. All methods are implemented through {@link Iterator} traversal of the underlying {@link Iterable}. All
- * methods are supported except {@link #add(Object)} and {@link #addAll(Collection)}.
+ * order to present a full {@link Collection}. This interface is thus a functional interface of {@link Iterable}'s
+ * {@link Iterable#iterator()} method. All methods are implemented through {@link Iterator} traversal of the underlying
+ * {@link Iterable}. All methods are supported except {@link #add(Object)} and {@link #addAll(Collection)}.
  */
 @FunctionalInterface
 public interface IterableCollection<T> extends Collection<T> {
-	static IterableCollection<Integer> empty() {
-		return Iterators::empty;
+	static <T> Collection<T> empty() {
+		return (IterableCollection<T>) Iterators::empty;
 	}
 
-	static <T> IterableCollection<T> of(T t) {
+	static <T> Collection<T> of(T t) {
 		return from(Iterables.of(t));
 	}
 
 	@SafeVarargs
-	static <T> IterableCollection<T> of(T... ts) {
+	static <T> Collection<T> of(T... ts) {
 		return from(Iterables.of(ts));
 	}
 
-	static <T> IterableCollection<T> from(Iterable<T> iterable) {
-		return iterable::iterator;
+	static <T> Collection<T> from(Iterable<T> iterable) {
+		return (IterableCollection<T>) iterable::iterator;
 	}
 
 	@Override
 	default int size() {
-		return (int) Iterators.count(iterator());
+		return Iterators.count(iterator());
 	}
 
 	@Override
@@ -105,30 +105,12 @@ public interface IterableCollection<T> extends Collection<T> {
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		boolean changed = false;
-
-		Iterator<T> iterator = iterator();
-		while (iterator.hasNext())
-			if (c.contains(iterator.next())) {
-				iterator.remove();
-				changed = true;
-			}
-
-		return changed;
+		return removeIf(c::contains);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		boolean changed = false;
-
-		Iterator<T> iterator = iterator();
-		while (iterator.hasNext())
-			if (!c.contains(iterator.next())) {
-				iterator.remove();
-				changed = true;
-			}
-
-		return changed;
+		return removeIf(o -> !c.contains(o));
 	}
 
 	@Override

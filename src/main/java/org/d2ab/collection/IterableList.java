@@ -22,25 +22,27 @@ import org.d2ab.iterator.Iterators;
 import java.util.*;
 
 /**
- * A sequential {@link List} view of an {@link Iterable}.
+ * Create a {@link List} view of the given {@link Iterable}, with changes to the underlying {@link Iterable}
+ * reflected in the returned {@link List}. If a {@link List} is given it is returned unchanged. The list does not
+ * implement {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence. The
+ * list supports removal operations, by using {@link Iterator#remove()} if implemented in the {@link Iterable}'s
+ * {@link Iterator}. Add and set operations are supported only if {@link #listIterator(int)} is overridden with
+ * a {@link ListIterator} that supports add and set.
  *
  * @since 1.2
  */
 @FunctionalInterface
 public interface IterableList<T> extends IterableCollection<T>, List<T> {
-	/**
-	 * Create a {@code List} view of the given {@link Iterable}, which is updated in real time as the
-	 * {@link Iterable} changes. If a {@link List} is given it is returned unchanged. The list does not implement
-	 * {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence. The list does
-	 * not support modification except removal, by {@link Iterator#remove()} if implemented in the {@link Iterable}.
-	 */
-	static <T> IterableList<T> from(Iterable<T> iterable) {
-		return iterable::iterator;
+	static <T> List<T> from(Iterable<T> iterable) {
+		if (iterable instanceof List)
+			return (List<T>) iterable;
+
+		return (IterableList<T>) iterable::iterator;
 	}
 
 	@Override
 	default int size() {
-		return (int) Iterators.count(iterator());
+		return Iterators.count(iterator());
 	}
 
 	@Override
@@ -65,7 +67,8 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default boolean add(T t) {
-		throw new UnsupportedOperationException();
+		listIterator(size()).add(t);
+		return true;
 	}
 
 	@Override
@@ -90,35 +93,21 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default boolean addAll(Collection<? extends T> c) {
-		throw new UnsupportedOperationException();
+		if (c.isEmpty())
+			return false;
+
+		c.forEach(listIterator()::add);
+		return true;
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		boolean changed = false;
-
-		Iterator<T> iterator = iterator();
-		while (iterator.hasNext())
-			if (c.contains(iterator.next())) {
-				iterator.remove();
-				changed = true;
-			}
-
-		return changed;
+		return removeIf(c::contains);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		boolean changed = false;
-
-		Iterator<T> iterator = iterator();
-		while (iterator.hasNext())
-			if (!c.contains(iterator.next())) {
-				iterator.remove();
-				changed = true;
-			}
-
-		return changed;
+		return removeIf(o -> !c.contains(o));
 	}
 
 	@Override
@@ -128,7 +117,11 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends T> c) {
-		throw new UnsupportedOperationException();
+		if (c.isEmpty())
+			return false;
+
+		c.forEach(listIterator(index)::add);
+		return true;
 	}
 
 	@Override
@@ -142,12 +135,15 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default T set(int index, T element) {
-		throw new UnsupportedOperationException();
+		ListIterator<T> listIterator = listIterator(index);
+		T previous = listIterator.next();
+		listIterator.set(element);
+		return previous;
 	}
 
 	@Override
 	default void add(int index, T element) {
-		throw new UnsupportedOperationException();
+		listIterator(index).add(element);
 	}
 
 	@Override
@@ -192,7 +188,7 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 	default ListIterator<T> listIterator(int index) {
 		Iterator<T> iterator = iterator();
 		ListIterator<T> listIterator = new ListIterator<T>() {
-			private final List<T> previous = new LinkedList<>();
+			private final List<T> previous = new ArrayList<>();
 
 			int cursor;
 

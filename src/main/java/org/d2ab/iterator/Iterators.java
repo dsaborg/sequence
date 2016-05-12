@@ -207,13 +207,17 @@ public class Iterators {
 	/**
 	 * @return the count of elements remaining in the given {@link Iterator}.
 	 */
-	public static long count(Iterator<?> iterator) {
+	public static int count(Iterator<?> iterator) {
 		long count = 0;
 		while (iterator.hasNext()) {
 			iterator.next();
 			count++;
 		}
-		return count;
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count " + count " > Integer.MAX_VALUE");
+
+		return (int) count;
 	}
 
 	/**
