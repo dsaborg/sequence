@@ -164,36 +164,25 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default int indexOf(Object o) {
-		Iterator<T> iterator = iterator();
-
 		int index = 0;
-		while (iterator.hasNext()) {
-			T next = iterator.next();
-			if (Objects.equals(o, next))
+		for (T each : this) {
+			if (Objects.equals(o, each))
 				return index;
 			index++;
 		}
-
 		return -1;
 	}
 
 	@Override
 	default int lastIndexOf(Object o) {
-		ListIterator<T> listIterator = listIterator();
+		int lastIndex = -1;
 		int index = 0;
-		while (listIterator.hasNext()) {
-			listIterator.next();
+		for (T each : this) {
+			if (Objects.equals(o, each))
+				lastIndex = index;
 			index++;
 		}
-
-		while (listIterator.hasPrevious()) {
-			T previous = listIterator.previous();
-			index--;
-			if (Objects.equals(o, previous))
-				return index;
-		}
-
-		return -1;
+		return lastIndex;
 	}
 
 	default ListIterator<T> listIterator() {

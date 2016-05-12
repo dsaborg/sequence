@@ -16,12 +16,10 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.IntList;
 import org.d2ab.function.chars.IntToCharFunction;
+import org.d2ab.function.ints.IntBiConsumer;
 import org.d2ab.function.ints.IntBiPredicate;
-import org.d2ab.function.ints.IntLongConsumer;
-import org.d2ab.function.ints.IntLongPredicate;
-import org.d2ab.function.ints.IntLongToIntFunction;
-import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.ints.ChainingIntIterable;
 import org.d2ab.iterable.ints.IntIterable;
 import org.d2ab.iterator.IterationException;
@@ -46,7 +44,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of ints.
  */
 @FunctionalInterface
-public interface IntSequence extends IntIterable {
+public interface IntSequence extends IntList {
 	/**
 	 * Create empty {@code IntSequence} with no contents.
 	 */
@@ -130,60 +128,6 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Create a once-only {@code IntSequence} from a {@link PrimitiveIterator.OfInt}. Note that {@code IntSequence}s
-	 * created from {@link PrimitiveIterator.OfInt} cannot be passed over more than once. Further attempts will
-	 * register the {@code IntSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfInt)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfInt)} instead.
-	 */
-	@Deprecated
-	static IntSequence from(PrimitiveIterator.OfInt iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code IntSequence} from an {@link Iterator} of {@code Integer} values. Note that
-	 * {@code IntSequence} created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code IntSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static IntSequence from(Iterator<Integer> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code IntSequence} from an {@link IntStream} of items. Note that {@code IntSequences}
-	 * created from {@link IntStream}s cannot be passed over more than once. Further attempts will register the
-	 * {@code IntSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
-	 * @see #cache(IntStream)
-	 * @deprecated Use {@link #once(IntStream)} instead.
-	 */
-	@Deprecated
-	static IntSequence from(IntStream stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a only-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created
-	 * from{@link Stream}s cannot be passed over more than once. Further attempts will register the {@code IntSequence}
-	 * as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static IntSequence from(Stream<Integer> stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create an {@code IntSequence} from an {@link InputStream} which iterates over the bytes provided in the
 	 * input stream as ints. The {@link InputStream} must support {@link InputStream#reset} or the {@code IntSequence}
 	 * will only be available to iterate over once. The {@link InputStream} will be reset in between iterations,
@@ -195,6 +139,21 @@ public interface IntSequence extends IntIterable {
 	 */
 	static IntSequence read(InputStream inputStream) {
 		return IntIterable.read(inputStream)::iterator;
+	}
+
+	/**
+	 * Create an {@code IntSequence} from a cached copy of an {@link IntIterable}.
+	 *
+	 * @see #cache(Iterable)
+	 * @see #cache(IntStream)
+	 * @see #cache(Stream)
+	 * @see #cache(PrimitiveIterator.OfInt)
+	 * @see #cache(Iterator)
+	 * @see #from(IntIterable)
+	 * @since 1.1
+	 */
+	static IntSequence cache(IntIterable iterable) {
+		return cache(iterable.iterator());
 	}
 
 	/**
@@ -265,21 +224,6 @@ public interface IntSequence extends IntIterable {
 	 */
 	static IntSequence cache(Stream<Integer> stream) {
 		return cache(stream.iterator());
-	}
-
-	/**
-	 * Create an {@code IntSequence} from a cached copy of an {@link IntIterable}.
-	 *
-	 * @see #cache(Iterable)
-	 * @see #cache(IntStream)
-	 * @see #cache(Stream)
-	 * @see #cache(PrimitiveIterator.OfInt)
-	 * @see #cache(Iterator)
-	 * @see #from(IntIterable)
-	 * @since 1.1
-	 */
-	static IntSequence cache(IntIterable iterable) {
-		return cache(iterable.iterator());
 	}
 
 	/**
@@ -711,9 +655,9 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @since 1.2
 	 */
-	default IntSequence mapIndexed(IntLongToIntFunction mapper) {
+	default IntSequence mapIndexed(IntBinaryOperator mapper) {
 		return () -> new UnaryIntIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public int nextInt() {
@@ -739,7 +683,7 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Skip a set number of {@code ints} in this {@code IntSequence}.
 	 */
-	default IntSequence skip(long skip) {
+	default IntSequence skip(int skip) {
 		return () -> new SkippingIntIterator(iterator(), skip);
 	}
 
@@ -758,7 +702,7 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Limit the maximum number of {@code ints} returned by this {@code IntSequence}.
 	 */
-	default IntSequence limit(long limit) {
+	default IntSequence limit(int limit) {
 		return () -> new LimitingIntIterator(iterator(), limit);
 	}
 
@@ -839,11 +783,11 @@ public interface IntSequence extends IntIterable {
 
 	/**
 	 * Filter the elements in this {@code IntSequence}, keeping only the elements that match the given
-	 * {@link IntLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link IntBiPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default IntSequence filterIndexed(IntLongPredicate predicate) {
+	default IntSequence filterIndexed(IntBiPredicate predicate) {
 		return () -> new IndexedFilteringIntIterator(iterator(), predicate);
 	}
 
@@ -996,7 +940,7 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalInt at(long index) {
+	default OptionalInt at(int index) {
 		IntIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -1011,7 +955,7 @@ public interface IntSequence extends IntIterable {
 	 * {@link OptionalInt} if there are no matching ints in the {@code IntSequence}.
 	 *
 	 * @see #filter(IntPredicate)
-	 * @see #at(long, IntPredicate)
+	 * @see #at(int, IntPredicate)
 	 * @since 1.2
 	 */
 	default OptionalInt first(IntPredicate predicate) {
@@ -1023,7 +967,7 @@ public interface IntSequence extends IntIterable {
 	 * {@link OptionalInt} if there are less than two matching ints in the {@code IntSequence}.
 	 *
 	 * @see #filter(IntPredicate)
-	 * @see #at(long, IntPredicate)
+	 * @see #at(int, IntPredicate)
 	 * @since 1.2
 	 */
 	default OptionalInt second(IntPredicate predicate) {
@@ -1035,7 +979,7 @@ public interface IntSequence extends IntIterable {
 	 * {@link OptionalInt} if there are less than three matching ints in the {@code IntSequence}.
 	 *
 	 * @see #filter(IntPredicate)
-	 * @see #at(long, IntPredicate)
+	 * @see #at(int, IntPredicate)
 	 * @since 1.2
 	 */
 	default OptionalInt third(IntPredicate predicate) {
@@ -1047,7 +991,7 @@ public interface IntSequence extends IntIterable {
 	 * {@link OptionalInt} if there are no matching ints in the {@code IntSequence}.
 	 *
 	 * @see #filter(IntPredicate)
-	 * @see #at(long, IntPredicate)
+	 * @see #at(int, IntPredicate)
 	 * @since 1.2
 	 */
 	default OptionalInt last(IntPredicate predicate) {
@@ -1061,14 +1005,14 @@ public interface IntSequence extends IntIterable {
 	 * @see #filter(IntPredicate)
 	 * @since 1.2
 	 */
-	default OptionalInt at(long index, IntPredicate predicate) {
+	default OptionalInt at(int index, IntPredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code IntSequence}.
 	 */
-	default IntSequence step(long step) {
+	default IntSequence step(int step) {
 		return () -> new SteppingIntIterator(iterator(), step);
 	}
 
@@ -1098,18 +1042,19 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
-		return iterator().count();
+	@Override
+	default int size() {
+		return iterator().size();
 	}
 
 	/**
-	 * @return the count of ints in this {@code IntSequence}.
+	 * @return an unsized {@link Spliterator.OfInt} for this {@code IntSequence}.
 	 *
-	 * @deprecated Use {@link #size()} instead.
+	 * @since 2.0
 	 */
-	@Deprecated
-	default long count() {
-		return size();
+	@Override
+	default Spliterator.OfInt spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
 	}
 
 	/**
@@ -1156,14 +1101,14 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Allow the given {@link IntLongConsumer} to see each element together with its index in this {@code IntSequence}
+	 * Allow the given {@link IntBiConsumer} to see each element together with its index in this {@code IntSequence}
 	 * as it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default IntSequence peekIndexed(IntLongConsumer action) {
+	default IntSequence peekIndexed(IntBiConsumer action) {
 		return () -> new UnaryIntIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public int nextInt() {
@@ -1181,37 +1126,10 @@ public interface IntSequence extends IntIterable {
 	 */
 	default IntSequence sorted() {
 		return () -> {
-			int[] array = toArray();
+			int[] array = toIntArray();
 			Arrays.sort(array);
 			return IntIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the ints in this {@code IntSequence} into an array.
-	 */
-	default int[] toArray() {
-		int[] work = new int[10];
-
-		int index = 0;
-		IntIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				int[] newInts = new int[newCapacity];
-				System.arraycopy(work, 0, newInts, 0, work.length);
-				work = newInts;
-			}
-			work[index++] = iterator.nextInt();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		int[] result = new int[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
 	}
 
 	/**
@@ -1242,7 +1160,7 @@ public interface IntSequence extends IntIterable {
 	 * @see #sorted()
 	 */
 	default IntSequence reverse() {
-		return () -> IntIterator.of(Arrayz.reverse(toArray()));
+		return () -> IntIterator.of(Arrayz.reverse(toIntArray()));
 	}
 
 	/**
@@ -1322,7 +1240,7 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * Repeat this sequence of ints x times, looping back to the beginning when the iterator runs out of ints.
 	 */
-	default IntSequence repeat(long times) {
+	default IntSequence repeat(int times) {
 		return () -> new RepeatingIntIterator(this, times);
 	}
 
@@ -1383,76 +1301,13 @@ public interface IntSequence extends IntIterable {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
-	 * @return true if this {@code IntSequence} is empty, false otherwise.
-	 *
-	 * @since 1.1
-	 */
-	default boolean isEmpty() {
-		return !iterator().hasNext();
-	}
-
-	/**
-	 * @return true if this {@code IntSequence} contains the given {@code int}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean contains(int i) {
-		return iterator().contains(i);
-	}
-
-	/**
-	 * @return true if this {@code IntSequence} contains all of the given {@code ints}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAll(int... items) {
-		for (int item : items)
-			if (!iterator().contains(item))
-				return false;
-
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code IntSequence} contains any of the given {@code ints}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAny(int... items) {
-		for (IntIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextInt()))
-				return true;
-
-		return false;
-	}
-
-	/**
 	 * Perform the given action for each {@code int} in this {@code IntSequence}, with the index of each element passed
 	 * as the second parameter in the action.
 	 *
 	 * @since 1.2
 	 */
-	default void forEachIntIndexed(IntLongConsumer action) {
-		long index = 0;
+	default void forEachIntIndexed(IntBiConsumer action) {
+		int index = 0;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextInt(), index++);
 	}

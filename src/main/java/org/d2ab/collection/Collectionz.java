@@ -14,35 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
+package org.d2ab.collection;
 
-import java.util.NoSuchElementException;
+import java.util.Collection;
 
-public class SkippingIntIterator extends UnaryIntIterator {
-	private final int skip;
-
-	private boolean skipped;
-
-	public SkippingIntIterator(IntIterator iterator, int skip) {
-		super(iterator);
-		this.skip = skip;
-	}
-
-	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextInt();
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!skipped) {
-			iterator.skip(skip);
-			skipped = true;
-		}
-
-		return iterator.hasNext();
+/**
+ * Utility methods for {@link Collection} instances.
+ */
+public class Collectionz {
+	private Collectionz() {
 	}
 }

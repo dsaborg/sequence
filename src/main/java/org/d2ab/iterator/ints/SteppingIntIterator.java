@@ -19,13 +19,15 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 
 public class SteppingIntIterator extends UnaryIntIterator {
-	private final long step;
+	private final int step;
 
 	private boolean hasNext;
 	private int next;
 
-	public SteppingIntIterator(IntIterator iterator, long step) {
+	public SteppingIntIterator(IntIterator iterator, int step) {
 		super(iterator);
+		if (step < 1)
+			throw new IllegalArgumentException("step < 1");
 		this.step = step;
 	}
 

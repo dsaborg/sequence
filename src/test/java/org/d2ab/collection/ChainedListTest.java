@@ -387,48 +387,61 @@ public class ChainedListTest {
 		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.add(33);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
 		assertThat(listIterator.next(), is(1));
-
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
 		assertThat(listIterator.next(), is(2));
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.next(), is(3));
-
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
+
+		assertThat(listIterator.next(), is(3));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
+
 		assertThat(listIterator.previous(), is(3));
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.previous(), is(2));
-
-		listIterator.set(17);
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.next(), is(17));
-
-		listIterator.add(18);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.next(), is(3));
 
-		assertThat(chained, contains(1, 17, 18, 3, 4, 5, 6, 7, 8, 9, 10));
-		assertThat(first, contains(1, 17, 18, 3));
+		assertThat(listIterator.previous(), is(2));
+		listIterator.set(17);
+		listIterator.remove();
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		assertThat(listIterator.next(), is(3));
+		listIterator.add(18);
+		listIterator.add(19);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(5));
+		assertThat(listIterator.previousIndex(), is(4));
+
+		assertThat(listIterator.next(), is(4));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(6));
+		assertThat(listIterator.previousIndex(), is(5));
+
+		assertThat(chained, contains(33, 1, 3, 18, 19, 4, 5, 6, 7, 8, 9, 10));
+		assertThat(first, contains(33, 1, 3, 18, 19));
 		assertThat(second, contains(4, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10));
 	}

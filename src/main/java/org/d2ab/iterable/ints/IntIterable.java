@@ -20,18 +20,45 @@ import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.InputStreamIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.sequence.IntSequence;
+import org.d2ab.util.Arrayz;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.PrimitiveIterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
+	static IntIterable of(int... integers) {
+		return () -> new ArrayIntIterator(integers);
+	}
+
+	static IntIterable from(Integer... integers) {
+		return from(asList(integers));
+	}
+
+	static IntIterable from(Iterable<Integer> iterable) {
+		if (iterable instanceof IntIterable)
+			return (IntIterable) iterable;
+
+		return () -> IntIterator.from(iterable.iterator());
+	}
+
+	static IntIterable once(IntIterator iterator) {
+		return () -> iterator;
+	}
+
+	static IntIterable once(PrimitiveIterator.OfInt iterator) {
+		return once(IntIterator.from(iterator));
+	}
+
 	/**
 	 * Create an {@code IntSequence} from an {@link InputStream} which iterates over the bytes provided in the
 	 * input stream as ints. The {@link InputStream} must support {@link InputStream#reset} or the {@code IntSequence}
@@ -43,7 +70,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 * @since 1.1
 	 */
 	static IntIterable read(InputStream inputStream) {
-		return new IntSequence() {
+		return new IntIterable() {
 			boolean started;
 
 			@Override
@@ -82,27 +109,16 @@ public interface IntIterable extends Iterable<Integer> {
 			consumer.accept(iterator.nextInt());
 	}
 
-	static IntIterable of(int... integers) {
-		return () -> new ArrayIntIterator(integers);
+	default Spliterator.OfInt spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
 	}
 
-	static IntIterable from(Integer... integers) {
-		return from(asList(integers));
+	default IntStream intStream() {
+		return StreamSupport.intStream(spliterator(), false);
 	}
 
-	static IntIterable from(Iterable<Integer> iterable) {
-		if (iterable instanceof IntIterable)
-			return (IntIterable) iterable;
-
-		return () -> IntIterator.from(iterable.iterator());
-	}
-
-	static IntIterable once(IntIterator iterator) {
-		return () -> iterator;
-	}
-
-	static IntIterable once(PrimitiveIterator.OfInt iterator) {
-		return once(IntIterator.from(iterator));
+	default IntStream parallelIntStream() {
+		return StreamSupport.intStream(spliterator(), true);
 	}
 
 	/**
@@ -161,7 +177,12 @@ public interface IntIterable extends Iterable<Integer> {
 				if (iterator == null)
 					throw new IOException("closed");
 
-				long skipped = iterator.skip(n);
+				long skipped = 0;
+				while (n > Integer.MAX_VALUE) {
+					skipped += iterator.skip(Integer.MAX_VALUE);
+					n -= Integer.MAX_VALUE;
+				}
+				skipped += iterator.skip((int) n);
 
 				position += skipped;
 
@@ -190,7 +211,8 @@ public interface IntIterable extends Iterable<Integer> {
 
 				iterator = iterator();
 
-				position = iterator.skip(mark);
+				position = 0;
+				skip(mark);
 			}
 
 			@Override
@@ -198,5 +220,18 @@ public interface IntIterable extends Iterable<Integer> {
 				iterator = null;
 			}
 		};
+	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains any of the given {@code ints}, false otherwise.
+	 *
+	 * @since 1.2
+	 */
+	default boolean containsAny(int... items) {
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextInt()))
+				return true;
+
+		return false;
 	}
 }

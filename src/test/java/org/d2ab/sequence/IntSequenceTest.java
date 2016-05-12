@@ -629,7 +629,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toArray(), new int[]{1, 2, 3}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toIntArray(), new int[]{1, 2, 3}), is(true)));
 	}
 
 	@Test
@@ -1410,12 +1410,12 @@ public class IntSequenceTest {
 
 	@Test
 	public void containsInt() {
-		assertThat(empty.contains(17), is(false));
+		assertThat(empty.containsInt(17), is(false));
 
-		assertThat(_12345.contains(1), is(true));
-		assertThat(_12345.contains(3), is(true));
-		assertThat(_12345.contains(5), is(true));
-		assertThat(_12345.contains(17), is(false));
+		assertThat(_12345.containsInt(1), is(true));
+		assertThat(_12345.containsInt(3), is(true));
+		assertThat(_12345.containsInt(5), is(true));
+		assertThat(_12345.containsInt(17), is(false));
 	}
 
 	@Test

@@ -14,35 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
+package org.d2ab.function.ints;
 
-import java.util.NoSuchElementException;
-
-public class SkippingIntIterator extends UnaryIntIterator {
-	private final int skip;
-
-	private boolean skipped;
-
-	public SkippingIntIterator(IntIterator iterator, int skip) {
-		super(iterator);
-		this.skip = skip;
-	}
-
-	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextInt();
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!skipped) {
-			iterator.skip(skip);
-			skipped = true;
-		}
-
-		return iterator.hasNext();
-	}
+/**
+ * A consumer taking two {@code int} values.
+ */
+@FunctionalInterface
+public interface IntBiConsumer {
+	void accept(int i1, int i2);
 }

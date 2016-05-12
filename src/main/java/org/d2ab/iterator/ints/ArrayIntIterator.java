@@ -22,20 +22,36 @@ import java.util.Iterator;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayIntIterator implements IntIterator {
-	private int[] values;
+	private int[] array;
+	private int offset;
+	private int size;
 	private int index;
 
-	public ArrayIntIterator(int... values) {
-		this.values = values;
+	public ArrayIntIterator(int... array) {
+		this(array, array.length);
+	}
+
+	public ArrayIntIterator(int[] array, int size) {
+		this(array, 0, size);
+	}
+
+	public ArrayIntIterator(int[] array, int offset, int size) {
+		if (offset > array.length || offset < 0)
+			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
+		if (offset + size > array.length || size < 0)
+			throw new IndexOutOfBoundsException("size: " + size + ", available: " + (array.length - offset));
+		this.array = array;
+		this.offset = offset;
+		this.size = size;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return index < values.length;
+		return index < size;
 	}
 
 	@Override
 	public int nextInt() {
-		return values[index++];
+		return array[offset + index++];
 	}
 }

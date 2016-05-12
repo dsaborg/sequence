@@ -16,18 +16,18 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.function.ints.IntLongPredicate;
+import org.d2ab.function.ints.IntBiPredicate;
 
 import java.util.NoSuchElementException;
 
 public class IndexedFilteringIntIterator extends UnaryIntIterator {
-	private final IntLongPredicate predicate;
-	private long index;
+	private final IntBiPredicate predicate;
+	private int index;
 
 	private int next;
 	private boolean hasNext;
 
-	public IndexedFilteringIntIterator(IntIterator iterator, IntLongPredicate predicate) {
+	public IndexedFilteringIntIterator(IntIterator iterator, IntBiPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}

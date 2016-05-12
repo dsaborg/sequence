@@ -14,35 +14,19 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
+package org.d2ab.collection;
 
-import java.util.NoSuchElementException;
+import java.util.Comparator;
 
-public class SkippingIntIterator extends UnaryIntIterator {
-	private final int skip;
-
-	private boolean skipped;
-
-	public SkippingIntIterator(IntIterator iterator, int skip) {
-		super(iterator);
-		this.skip = skip;
-	}
-
+/**
+ * A comparator of ints.
+ */
+@FunctionalInterface
+public interface IntComparator extends Comparator<Integer> {
 	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextInt();
+	default int compare(Integer i1, Integer i2) {
+		return compare((int) i1, (int) i2);
 	}
 
-	@Override
-	public boolean hasNext() {
-		if (!skipped) {
-			iterator.skip(skip);
-			skipped = true;
-		}
-
-		return iterator.hasNext();
-	}
+	int compare(int i1, int i2);
 }

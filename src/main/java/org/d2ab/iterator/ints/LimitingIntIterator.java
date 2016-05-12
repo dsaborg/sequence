@@ -19,11 +19,11 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 
 public class LimitingIntIterator extends UnaryIntIterator {
-	private final long limit;
+	private final int limit;
 
 	private long count;
 
-	public LimitingIntIterator(IntIterator iterator, long limit) {
+	public LimitingIntIterator(IntIterator iterator, int limit) {
 		super(iterator);
 		this.limit = limit;
 	}

@@ -138,8 +138,8 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return skip(1) == 1;
 	}
 
-	default long skip(long steps) {
-		long count = 0;
+	default int skip(int steps) {
+		int count = 0;
 		while (count < steps && hasNext()) {
 			nextInt();
 			count++;
@@ -155,22 +155,25 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	/**
-	 * @return true if this {@code IntIterator} contains the given {@code int}, false otherwise.
-	 */
-	default boolean contains(int i) {
-		while (hasNext())
-			if (nextInt() == i)
-				return true;
-		return false;
-	}
-
-	/**
 	 * @return the number of {@code ints} remaining in this iterator.
 	 */
-	default long count() {
+	default int size() {
 		long count = 0;
 		for (; hasNext(); nextInt())
 			count++;
-		return count;
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE");
+		return (int) count;
+	}
+
+	default boolean isEmpty() {
+		return !hasNext();
+	}
+
+	default void removeAll() {
+		while (hasNext()) {
+			nextInt();
+			remove();
+		}
 	}
 }
