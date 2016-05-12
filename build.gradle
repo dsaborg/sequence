@@ -54,9 +54,9 @@ signing {
 }
 
 dependencies {
-    testCompile "org.mockito:mockito-core:[2,)"
-    testCompile 'junit:junit:[4.12,)'
-    testCompile 'org.hamcrest:java-hamcrest:[2,)'
+    testCompile "org.mockito:mockito-core:[2,3)"
+    testCompile 'junit:junit:[4.12,5)'
+    testCompile 'org.hamcrest:java-hamcrest:[2,3)'
 }
 
 distributions {
