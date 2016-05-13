@@ -147,72 +147,6 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Create a once-only {@code CharSeq} from a {@link CharIterator} of character values. Note that {@code
-	 * CharSeq}s created from {@link CharIterator}s cannot be passed over more than once. Further attempts
-	 * will register the {@code CharSeq} as empty.
-	 *
-	 * @see #cache(CharIterator)
-	 * @deprecated Use {@link #once(CharIterator)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(CharIterator iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from a {@link PrimitiveIterator.OfInt} of character values. Note that {@code
-	 * CharSeq}s created from {@link PrimitiveIterator.OfInt}s cannot be passed over more than once. Further attempts
-	 * will register the {@code CharSeq} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfInt)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfInt)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(PrimitiveIterator.OfInt iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from an {@link Iterator} of {@code Character} values. Note that {@code
-	 * CharSeq}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code CharSeq} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated User {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(Iterator<Character> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from a {@link Stream} of items. Note that {@code CharSeq} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(Stream<Character> stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from an {@link IntStream} of char values. Note that {@code CharSeq} created
-	 * from {@link IntStream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq}
-	 * as empty.
-	 *
-	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
-	 * @see #cache(IntStream)
-	 * @deprecated Use {@link #once(IntStream)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(IntStream stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create a {@code CharSeq} from a {@link Reader} which iterates over the characters provided in the reader.
 	 * The {@link Reader} must support {@link Reader#reset} or the {@code CharSeq} will only be available to iterate
 	 * over once. The {@link Reader} will be reset in between iterations, if possible. If an {@link IOException}
@@ -1303,16 +1237,6 @@ public interface CharSeq extends CharIterable {
 	 */
 	default void clear() {
 		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
 	}
 
 	/**

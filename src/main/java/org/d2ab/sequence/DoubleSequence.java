@@ -126,60 +126,6 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Create a once-only {@code DoubleSequence} from a {@link PrimitiveIterator.OfDouble} of double values. Note that
-	 * {@code DoubleSequence}s created from {@link PrimitiveIterator.OfDouble}s cannot be passed over more than once.
-	 * Further attempts will register the {@code DoubleSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfDouble)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfDouble)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(PrimitiveIterator.OfDouble iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code DoubleSequence} from an {@link Iterator} of {@code Double} values. Note that
-	 * {@code DoubleSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts
-	 * will register the {@code DoubleSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(Iterator<Double> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code DoubleSequence} from a {@link DoubleStream} of items. Note that
-	 * {@code DoubleSequence}s created from {@link DoubleStream}s cannot be passed over more than once. Further
-	 * attempts will register the {@code DoubleSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link DoubleStream} is exhausted.
-	 * @see #cache(DoubleStream)
-	 * @deprecated Use {@link #once(DoubleStream)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(DoubleStream stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a once-only {@code DoubleSequence} from a {@link Stream} of items. Note that {@code DoubleSequence}s
-	 * created from {@link Stream}s cannot be passed over more than once. Further attempts will register the
-	 * {@code DoubleSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(Stream<Double> stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create a {@code DoubleSequence} from a cached copy of a {@link PrimitiveIterator.OfDouble}.
 	 *
 	 * @see #cache(Iterator)
@@ -1223,16 +1169,6 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default void clear() {
 		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
 	}
 
 	/**

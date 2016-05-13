@@ -127,60 +127,6 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Create a once-only {@code LongSequence} from a {@link PrimitiveIterator.OfLong} of long values. Note that {@code
-	 * LongSequence}s created from {@link PrimitiveIterator.OfLong}s cannot be passed over more than once. Further
-	 * attempts will register the {@code LongSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfLong)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfLong)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(PrimitiveIterator.OfLong iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that
-	 * {@code LongSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code LongSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(Iterator<Long> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only @code Sequence} from a {@link LongStream} of items. Note that {@code Sequences} created from
-	 * {@link LongStream}s cannot be passed over more than once. Further attempts will register the
-	 * {@code LongSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(LongStream)
-	 * @deprecated Use {@link #once(LongStream)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(LongStream stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a once-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code LongSequence} as
-	 * empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(Stream<Long> stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create a {@code LongSequence} from a cached copy of a {@link PrimitiveIterator.OfLong}.
 	 *
 	 * @see #cache(Iterator)
@@ -1354,16 +1300,6 @@ public interface LongSequence extends LongIterable {
 	 */
 	default void clear() {
 		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
 	}
 
 	/**
