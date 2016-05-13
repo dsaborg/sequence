@@ -141,8 +141,8 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 *
 	 * @return the number of steps actually skipped, may be less if end of iterator was hit.
 	 */
-	default long skip(long steps) {
-		long count = 0;
+	default int skip(int steps) {
+		int count = 0;
 		while (count < steps && hasNext()) {
 			nextChar();
 			count++;
@@ -174,10 +174,14 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	/**
 	 * @return the number of {@code chars} remaining in this iterator.
 	 */
-	default long count() {
+	default int count() {
 		long count = 0;
 		for (; hasNext(); nextChar())
 			count++;
-		return count;
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE");
+
+		return (int) count;
 	}
 }

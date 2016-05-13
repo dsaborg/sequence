@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.doubles;
+package org.d2ab.function.chars;
 
 /**
- * A functiona interface of a consumer taking a double and a long as parameters.
+ * A predicate testing a {@code char} and an {@code int}.
  */
-public interface DoubleLongConsumer {
-	void accept(double d, long l);
+@FunctionalInterface
+public interface CharIntPredicate {
+	boolean test(char c, int i);
 }

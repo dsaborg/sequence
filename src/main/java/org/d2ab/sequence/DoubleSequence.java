@@ -17,9 +17,9 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.doubles.DoubleBiPredicate;
-import org.d2ab.function.doubles.DoubleLongConsumer;
-import org.d2ab.function.doubles.DoubleLongPredicate;
-import org.d2ab.function.doubles.DoubleLongToDoubleFunction;
+import org.d2ab.function.doubles.DoubleIntConsumer;
+import org.d2ab.function.doubles.DoubleIntPredicate;
+import org.d2ab.function.doubles.DoubleIntToDoubleFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.doubles.ChainingDoubleIterable;
 import org.d2ab.iterable.doubles.DoubleIterable;
@@ -550,9 +550,9 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default DoubleSequence mapIndexed(DoubleLongToDoubleFunction mapper) {
+	default DoubleSequence mapIndexed(DoubleIntToDoubleFunction mapper) {
 		return () -> new UnaryDoubleIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public double nextDouble() {
@@ -578,7 +578,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
 	 */
-	default DoubleSequence skip(long skip) {
+	default DoubleSequence skip(int skip) {
 		return () -> new SkippingDoubleIterator(iterator(), skip);
 	}
 
@@ -597,7 +597,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
-	default DoubleSequence limit(long limit) {
+	default DoubleSequence limit(int limit) {
 		return () -> new LimitingDoubleIterator(iterator(), limit);
 	}
 
@@ -673,11 +673,11 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * Filter the elements in this {@code DoubleSequence}, keeping only the elements that match the given
-	 * {@link DoubleLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link DoubleIntPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default DoubleSequence filterIndexed(DoubleLongPredicate predicate) {
+	default DoubleSequence filterIndexed(DoubleIntPredicate predicate) {
 		return () -> new IndexedFilteringDoubleIterator(iterator(), predicate);
 	}
 
@@ -834,7 +834,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalDouble at(long index) {
+	default OptionalDouble at(int index) {
 		DoubleIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -849,7 +849,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
+	 * @see #at(int, DoublePredicate)
 	 * @since 1.2
 	 */
 	default OptionalDouble first(DoublePredicate predicate) {
@@ -861,7 +861,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@link OptionalDouble} if there are less than two matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
+	 * @see #at(int, DoublePredicate)
 	 * @since 1.2
 	 */
 	default OptionalDouble second(DoublePredicate predicate) {
@@ -873,7 +873,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@link OptionalDouble} if there are less than three matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
+	 * @see #at(int, DoublePredicate)
 	 * @since 1.2
 	 */
 	default OptionalDouble third(DoublePredicate predicate) {
@@ -885,7 +885,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
+	 * @see #at(int, DoublePredicate)
 	 * @since 1.2
 	 */
 	default OptionalDouble last(DoublePredicate predicate) {
@@ -899,14 +899,14 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #filter(DoublePredicate)
 	 * @since 1.2
 	 */
-	default OptionalDouble at(long index, DoublePredicate predicate) {
+	default OptionalDouble at(int index, DoublePredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
 	 */
-	default DoubleSequence step(long step) {
+	default DoubleSequence step(int step) {
 		return () -> new SteppingDoubleIterator(iterator(), step);
 	}
 
@@ -929,18 +929,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
+	default int size() {
 		return iterator().count();
-	}
-
-	/**
-	 * @return the count of doubles in this {@code DoubleSequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
 	}
 
 	/**
@@ -985,14 +975,14 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Allow the given {@link DoubleLongConsumer} to see each element together with its index in this
+	 * Allow the given {@link DoubleIntConsumer} to see each element together with its index in this
 	 * {@code DoubleSequence} as it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default DoubleSequence peekIndexed(DoubleLongConsumer action) {
+	default DoubleSequence peekIndexed(DoubleIntConsumer action) {
 		return () -> new UnaryDoubleIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public double nextDouble() {
@@ -1160,7 +1150,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Repeat this sequence of doubles x times, looping back to the beginning when the iterator runs out of doubles.
 	 */
-	default DoubleSequence repeat(long times) {
+	default DoubleSequence repeat(int times) {
 		return () -> new RepeatingDoubleIterator(this, times);
 	}
 
@@ -1294,8 +1284,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachDoubleIndexed(DoubleLongConsumer action) {
-		long index = 0;
+	default void forEachDoubleIndexed(DoubleIntConsumer action) {
+		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextDouble(), index++);
 	}

@@ -31,7 +31,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -121,12 +120,12 @@ public class CharSeqTest {
 			empty.forEachCharIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger('a');
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			a.forEachCharIndexed((e, i) -> {
 				assertThat(e, is((char) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set('a');
 			index.set(0);
@@ -134,7 +133,7 @@ public class CharSeqTest {
 				assertThat(e, is((char) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set('a');
 			index.set(0);
@@ -142,7 +141,7 @@ public class CharSeqTest {
 				assertThat(e, is((char) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -868,10 +867,10 @@ public class CharSeqTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(a.size(), is(1L)));
-		twice(() -> assertThat(ab.size(), is(2L)));
-		twice(() -> assertThat(abcdefghi.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(a.size(), is(1)));
+		twice(() -> assertThat(ab.size(), is(2)));
+		twice(() -> assertThat(abcdefghi.size(), is(9)));
 	}
 
 	@Test
@@ -920,7 +919,7 @@ public class CharSeqTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		CharSeq peekOne = a.peekIndexed((i, x) -> {
 			assertThat(i, is((char) (index.get() + 'a')));
 			assertThat(x, is(index.getAndIncrement()));
@@ -996,7 +995,7 @@ public class CharSeqTest {
 	public void chars() {
 		assertThat(CharSeq.all().limit(5), containsChars('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
-		assertThat(CharSeq.all().size(), is(65536L));
+		assertThat(CharSeq.all().size(), is(65536));
 	}
 
 	@Test
@@ -1004,14 +1003,14 @@ public class CharSeqTest {
 		assertThat(CharSeq.startingAt('A').limit(5), containsChars('A', 'B', 'C', 'D', 'E'));
 		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
 		assertThat(CharSeq.startingAt(Character.MAX_VALUE), containsChars(Character.MAX_VALUE));
-		assertThat(CharSeq.startingAt('\u8000').size(), is(32768L));
+		assertThat(CharSeq.startingAt('\u8000').size(), is(32768));
 	}
 
 	@Test
 	public void charRange() {
 		assertThat(CharSeq.range('A', 'F'), containsChars('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(CharSeq.range('F', 'A'), containsChars('F', 'E', 'D', 'C', 'B', 'A'));
-		assertThat(CharSeq.range('A', 'F').size(), is(6L));
+		assertThat(CharSeq.range('A', 'F').size(), is(6));
 	}
 
 	@Test

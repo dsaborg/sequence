@@ -28,7 +28,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -168,12 +167,12 @@ public class SequenceTest {
 			empty.forEachIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachIndexed((e, i) -> {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -181,7 +180,7 @@ public class SequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -189,7 +188,7 @@ public class SequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -745,7 +744,7 @@ public class SequenceTest {
 		Sequence<String> mappedEmpty = empty.map(Object::toString);
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		Sequence<String> oneMapped = _1.mapIndexed((e, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return String.valueOf(e);
@@ -1797,7 +1796,7 @@ public class SequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		Sequence<Integer> peekOne = _1.peekIndexed((i, x) -> {
 			assertThat(i, is((int) (index.get() + 1)));
 			assertThat(x, is(index.getAndIncrement()));
@@ -2237,9 +2236,9 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void index() {
-		BiSequence<Long, Integer> indexed = _12345.index();
-		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
-		                                         Pair.of(4L, 5))));
+		BiSequence<Integer, Integer> indexed = _12345.index();
+		twice(() -> assertThat(indexed, contains(Pair.of(0, 1), Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4),
+		                                         Pair.of(4, 5))));
 	}
 
 	@Test

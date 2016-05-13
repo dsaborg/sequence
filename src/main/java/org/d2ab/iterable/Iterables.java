@@ -326,7 +326,7 @@ public class Iterables {
 	/**
 	 * @return the number of elements in the given {@link Iterable}, by traversing the {@link Iterable#iterator()}.
 	 */
-	public static long count(Iterable<?> iterable) {
+	public static int size(Iterable<?> iterable) {
 		if (iterable instanceof Collection)
 			return ((Collection) iterable).size();
 

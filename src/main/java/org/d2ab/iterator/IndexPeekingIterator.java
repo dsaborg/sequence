@@ -17,14 +17,13 @@
 package org.d2ab.iterator;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
-import java.util.function.ObjLongConsumer;
+import java.util.function.ObjIntConsumer;
 
 public class IndexPeekingIterator<T> extends ReferenceIterator<T> {
-	private final ObjLongConsumer<? super T> action;
-	private long index;
+	private final ObjIntConsumer<? super T> action;
+	private int index;
 
-	public IndexPeekingIterator(Iterator<T> iterator, ObjLongConsumer<? super T> action) {
+	public IndexPeekingIterator(Iterator<T> iterator, ObjIntConsumer<? super T> action) {
 		super(iterator);
 		this.action = action;
 	}

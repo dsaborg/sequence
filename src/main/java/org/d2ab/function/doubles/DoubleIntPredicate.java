@@ -17,9 +17,9 @@
 package org.d2ab.function.doubles;
 
 /**
- * A predicate that tests a {@code double} and a {@code long}.
+ * A predicate that tests a {@code double} and an {@code int}.
  */
 @FunctionalInterface
-public interface DoubleLongPredicate {
-	boolean test(double d, long l);
+public interface DoubleIntPredicate {
+	boolean test(double d, int i);
 }

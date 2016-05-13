@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.function;
+package org.d2ab.function.longs;
+
+import java.util.function.Predicate;
 
 /**
- * A consumer taking two object references and a long.
+ * A {@link Predicate} testing a {@code long} and an {@code int}.
  */
 @FunctionalInterface
-public interface ObjObjLongConsumer<T, U> {
-	void accept(T t, U u, long l);
+public interface LongIntPredicate {
+	boolean test(long l, int i);
 }

@@ -16,23 +16,28 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.iterator.ForwardListIterator;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 
 import java.util.*;
 
 /**
- * Create a {@link List} view of the given {@link Iterable}, with changes to the underlying {@link Iterable}
- * reflected in the returned {@link List}. If a {@link List} is given it is returned unchanged. The list does not
- * implement {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence. The
- * list supports removal operations, by using {@link Iterator#remove()} if implemented in the {@link Iterable}'s
- * {@link Iterator}. Add and set operations are supported only if {@link #listIterator(int)} is overridden with
- * a {@link ListIterator} that supports add and set.
+ * A {@link List} view of an {@link Iterable}, reflecting changes to the underlying {@link Iterable}. The list does not
+ * implement {@link RandomAccess}, and is best accessed in sequence. The list supports removal operations, by using
+ * {@link Iterator#remove()} if implemented in the {@link Iterable}'s {@link Iterator}. Add and set operations are
+ * supported only if {@link #listIterator(int)} is overridden with a {@link ListIterator} that supports add and set.
+ * The default {@link ListIterator} supports forward traversal only. {@link #subList(int, int)} is not supported.
  *
  * @since 1.2
  */
 @FunctionalInterface
 public interface IterableList<T> extends IterableCollection<T>, List<T> {
+	/**
+	 * @return a {@link List} view of the given {@link Iterable}, reflecting changes to the underlying
+	 * {@link Iterable}. If a {@link List} is given it is returned unchanged. The list does not
+	 * implement {@link RandomAccess} unless the given {@link Iterable} does, and is best accessed in sequence.
+	 */
 	static <T> List<T> from(Iterable<T> iterable) {
 		if (iterable instanceof List)
 			return (List<T>) iterable;
@@ -126,16 +131,19 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default T get(int index) {
-		Iterator<T> iterator = iterator();
-		if (Iterators.skip(iterator, index) == index && iterator.hasNext())
-			return iterator.next();
+		ListIterator<T> listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException();
 
-		throw new IndexOutOfBoundsException();
+		return listIterator.next();
 	}
 
 	@Override
 	default T set(int index, T element) {
 		ListIterator<T> listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException();
+
 		T previous = listIterator.next();
 		listIterator.set(element);
 		return previous;
@@ -148,14 +156,13 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	@Override
 	default T remove(int index) {
-		Iterator<T> iterator = iterator();
-		if (Iterators.skip(iterator, index) == index && iterator.hasNext()) {
-			T next = iterator.next();
-			iterator.remove();
-			return next;
-		}
+		ListIterator<T> listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException();
 
-		throw new IndexOutOfBoundsException();
+		T previous = listIterator.next();
+		listIterator.remove();
+		return previous;
 	}
 
 	@Override
@@ -186,68 +193,12 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 	}
 
 	default ListIterator<T> listIterator(int index) {
-		Iterator<T> iterator = iterator();
-		ListIterator<T> listIterator = new ListIterator<T>() {
-			private final List<T> previous = new ArrayList<>();
+		ListIterator<T> listIterator = new ForwardListIterator<>(iterator());
 
-			int cursor;
+		int skipped = Iterators.skip(listIterator, index);
+		if (skipped < index)
+			throw new IndexOutOfBoundsException("index: " + index + ", size: " + skipped);
 
-			@Override
-			public boolean hasNext() {
-				return cursor < previous.size() || iterator.hasNext();
-			}
-
-			@Override
-			public T next() {
-				if (cursor < previous.size())
-					return previous.get(cursor++);
-
-				cursor++;
-
-				T next = iterator.next();
-				previous.add(next);
-				return next;
-			}
-
-			@Override
-			public boolean hasPrevious() {
-				return cursor > 0;
-			}
-
-			@Override
-			public T previous() {
-				return previous.get(--cursor);
-			}
-
-			@Override
-			public int nextIndex() {
-				return cursor;
-			}
-
-			@Override
-			public int previousIndex() {
-				return cursor - 1;
-			}
-
-			@Override
-			public void remove() {
-				if (cursor < previous.size())
-					throw new IllegalStateException("Cannot remove after previous");
-				iterator.remove();
-				previous.remove(--cursor);
-			}
-
-			@Override
-			public void set(T t) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public void add(T t) {
-				throw new UnsupportedOperationException();
-			}
-		};
-		Iterators.skip(listIterator, index);
 		return listIterator;
 	}
 

@@ -16,18 +16,18 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharLongPredicate;
+import org.d2ab.function.chars.CharIntPredicate;
 
 import java.util.NoSuchElementException;
 
 public class IndexedFilteringCharIterator extends UnaryCharIterator {
-	private final CharLongPredicate predicate;
-	private long index;
+	private final CharIntPredicate predicate;
+	private int index;
 
 	private char next;
 	private boolean hasNext;
 
-	public IndexedFilteringCharIterator(CharIterator iterator, CharLongPredicate predicate) {
+	public IndexedFilteringCharIterator(CharIterator iterator, CharIntPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}

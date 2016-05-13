@@ -16,13 +16,12 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IterableCollection;
 import org.d2ab.collection.IterableList;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
-import org.d2ab.function.ObjLongPredicate;
+import org.d2ab.function.ObjIntFunction;
+import org.d2ab.function.ObjIntPredicate;
 import org.d2ab.function.chars.ToCharFunction;
-import org.d2ab.function.ObjLongFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
@@ -39,7 +38,6 @@ import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
@@ -588,7 +586,7 @@ public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 *
-	 * @see #mapIndexed(ObjLongFunction)
+	 * @see #mapIndexed(ObjIntFunction)
 	 * @see #mapBack(BiFunction)
 	 * @see #mapForward(BiFunction)
 	 * @see #flatten()
@@ -618,7 +616,7 @@ public interface Sequence<T> extends IterableList<T> {
 	 *
 	 * @since 1.2
 	 */
-	default <U> Sequence<U> mapIndexed(ObjLongFunction<? super T, ? extends U> mapper) {
+	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -688,7 +686,7 @@ public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */
-	default Sequence<T> skip(long skip) {
+	default Sequence<T> skip(int skip) {
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
@@ -697,17 +695,17 @@ public interface Sequence<T> extends IterableList<T> {
 	 *
 	 * @since 1.1
 	 */
-	default Sequence<T> skipTail(long skip) {
+	default Sequence<T> skipTail(int skip) {
 		if (skip == 0)
 			return this;
 
-		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
+		return () -> new TailSkippingIterator<>(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of results returned by this {@code Sequence}.
 	 */
-	default Sequence<T> limit(long limit) {
+	default Sequence<T> limit(int limit) {
 		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
@@ -759,11 +757,11 @@ public interface Sequence<T> extends IterableList<T> {
 
 	/**
 	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given
-	 * {@link ObjLongPredicate}, which is passed the current element and its index in the sequence.
+	 * {@link ObjIntPredicate}, which is passed the current element and its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default Sequence<T> filterIndexed(ObjLongPredicate<? super T> predicate) {
+	default Sequence<T> filterIndexed(ObjIntPredicate<? super T> predicate) {
 		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
 	}
 
@@ -1137,7 +1135,7 @@ public interface Sequence<T> extends IterableList<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> at(long index) {
+	default Optional<T> at(int index) {
 		return Iterators.get(iterator(), index);
 	}
 
@@ -1187,7 +1185,7 @@ public interface Sequence<T> extends IterableList<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> at(long index, Predicate<? super T> predicate) {
+	default Optional<T> at(int index, Predicate<? super T> predicate) {
 		return filter(predicate).at(index);
 	}
 
@@ -1238,7 +1236,8 @@ public interface Sequence<T> extends IterableList<T> {
 	 *
 	 * @since 1.2
 	 */
-	default <U> Optional<U> at(long index, Class<? extends U> target) {
+	@SuppressWarnings("unchecked")
+	default <U> Optional<U> at(int index, Class<? extends U> target) {
 		return (Optional<U>) at(index, target::isInstance);
 	}
 
@@ -1398,7 +1397,7 @@ public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
-	default Sequence<T> step(long step) {
+	default Sequence<T> step(int step) {
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
@@ -1518,12 +1517,12 @@ public interface Sequence<T> extends IterableList<T> {
 	}
 
 	/**
-	 * Allow the given {@link ObjLongConsumer} to see each element with its index as this {@code Sequence} is
+	 * Allow the given {@link ObjIntConsumer} to see each element with its index as this {@code Sequence} is
 	 * traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default Sequence<T> peekIndexed(ObjLongConsumer<? super T> action) {
+	default Sequence<T> peekIndexed(ObjIntConsumer<? super T> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);
 	}
 
@@ -1733,7 +1732,7 @@ public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * Repeat this {@code Sequence} the given number of times.
 	 */
-	default Sequence<T> repeat(long times) {
+	default Sequence<T> repeat(int times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
 
@@ -1747,12 +1746,12 @@ public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * @return a {@link BiSequence} of this sequence paired up with the index of each element.
 	 */
-	default BiSequence<Long, T> index() {
-		return () -> new DelegatingReferenceIterator<T, Pair<Long, T>>(iterator()) {
-			private long index;
+	default BiSequence<Integer, T> index() {
+		return () -> new DelegatingReferenceIterator<T, Pair<Integer, T>>(iterator()) {
+			private int index;
 
 			@Override
-			public Pair<Long, T> next() {
+			public Pair<Integer, T> next() {
 				return Pair.of(index++, iterator.next());
 			}
 		};
@@ -1804,8 +1803,8 @@ public interface Sequence<T> extends IterableList<T> {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachIndexed(ObjLongConsumer<? super T> action) {
-		long index = 0;
+	default void forEachIndexed(ObjIntConsumer<? super T> action) {
+		int index = 0;
 		for (T each : this)
 			action.accept(each, index++);
 	}

@@ -17,9 +17,9 @@
 package org.d2ab.function;
 
 /**
- * A functional interface of functions taking a reference argument and a long, returning a reference.
+ * A functional interface of functions taking a reference argument and an {@code int}, returning a reference.
  */
 @FunctionalInterface
-public interface ObjLongFunction<T, U> {
-	U apply(T o, long l);
+public interface ObjIntFunction<T, U> {
+	U apply(T o, int i);
 }

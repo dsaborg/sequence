@@ -19,11 +19,11 @@ package org.d2ab.iterator.chars;
 import java.util.NoSuchElementException;
 
 public class SkippingCharIterator extends UnaryCharIterator {
-	private final long skip;
+	private final int skip;
 
 	private boolean skipped;
 
-	public SkippingCharIterator(CharIterator iterator, long skip) {
+	public SkippingCharIterator(CharIterator iterator, int skip) {
 		super(iterator);
 		this.skip = skip;
 	}

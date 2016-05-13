@@ -26,7 +26,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -638,7 +637,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((e, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(e.getValue(), e.getKey());
@@ -676,7 +675,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((k, v, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(v, k);
@@ -1417,7 +1416,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
@@ -1475,7 +1474,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(p, is(Maps.entry(String.valueOf(index.get()), (int) index.get())));

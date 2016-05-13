@@ -27,9 +27,9 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingIterator<T> extends ReferenceIterator<T> {
 	private final Iterable<? extends T> iterable;
-	private long times;
+	private int times;
 
-	public RepeatingIterator(Iterable<? extends T> iterable, long times) {
+	public RepeatingIterator(Iterable<? extends T> iterable, int times) {
 		super(Iterators.empty());
 		this.iterable = iterable;
 		this.times = times;

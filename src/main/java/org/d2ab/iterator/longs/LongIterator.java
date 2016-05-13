@@ -113,14 +113,17 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		};
 	}
 
-	default void skip() {
-		skip(1);
+	default boolean skip() {
+		return skip(1) == 1;
 	}
 
-	default void skip(long steps) {
-		long count = 0;
-		while ((count++ < steps) && hasNext())
+	default int skip(int steps) {
+		int count = 0;
+		while (count < steps && hasNext()) {
 			nextLong();
+			count++;
+		}
+		return count;
 	}
 
 	default long reduce(long identity, LongBinaryOperator operator) {
@@ -143,10 +146,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	/**
 	 * @return the number of {@code longs} remaining in this iterator.
 	 */
-	default long count() {
+	default int count() {
 		long count = 0;
 		for (; hasNext(); nextLong())
 			count++;
-		return count;
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE");
+
+		return (int) count;
 	}
 }

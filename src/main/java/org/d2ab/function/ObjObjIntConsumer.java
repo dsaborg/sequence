@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.ints;
+package org.d2ab.function;
+
+import java.util.function.Consumer;
 
 /**
- * A predicate that tests an {@code int} and a {@code long}.
+ * A functional interface of a {@link Consumer} taking two object references and an {@code int}.
  */
 @FunctionalInterface
-public interface IntLongPredicate {
-	boolean test(int i, long l);
+public interface ObjObjIntConsumer<T, U> {
+	void accept(T t, U u, int i);
 }

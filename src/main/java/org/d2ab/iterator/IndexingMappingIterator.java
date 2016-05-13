@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.function.ObjLongFunction;
+import org.d2ab.function.ObjIntFunction;
 
 import java.util.Iterator;
 
@@ -24,10 +24,10 @@ import java.util.Iterator;
  * An iterator mapping elements with the index of the current element.
  */
 public class IndexingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
-	private final ObjLongFunction<? super T, ? extends U> mapper;
-	private long index;
+	private final ObjIntFunction<? super T, ? extends U> mapper;
+	private int index;
 
-	public IndexingMappingIterator(Iterator<T> iterator, ObjLongFunction<? super T, ? extends U> mapper) {
+	public IndexingMappingIterator(Iterator<T> iterator, ObjIntFunction<? super T, ? extends U> mapper) {
 		super(iterator);
 		this.mapper = mapper;
 	}

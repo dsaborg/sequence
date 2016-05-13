@@ -19,11 +19,11 @@ package org.d2ab.iterator.longs;
 import java.util.NoSuchElementException;
 
 public class LimitingLongIterator extends UnaryLongIterator {
-	private final long limit;
+	private final int limit;
 
-	private long count;
+	private int count;
 
-	public LimitingLongIterator(LongIterator iterator, long limit) {
+	public LimitingLongIterator(LongIterator iterator, int limit) {
 		super(iterator);
 		this.limit = limit;
 	}

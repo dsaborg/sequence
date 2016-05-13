@@ -19,11 +19,11 @@ package org.d2ab.iterator.chars;
 import java.util.NoSuchElementException;
 
 public class LimitingCharIterator extends UnaryCharIterator {
-	private final long limit;
+	private final int limit;
 
-	private long count;
+	private int count;
 
-	public LimitingCharIterator(CharIterator iterator, long limit) {
+	public LimitingCharIterator(CharIterator iterator, int limit) {
 		super(iterator);
 		this.limit = limit;
 	}

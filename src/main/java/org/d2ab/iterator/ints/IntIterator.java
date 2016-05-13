@@ -161,8 +161,10 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		long count = 0;
 		for (; hasNext(); nextInt())
 			count++;
+
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE");
+
 		return (int) count;
 	}
 

@@ -108,11 +108,11 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> at(long index) {
+	public Optional<T> at(int index) {
 		if (index >= list.size())
 			return Optional.empty();
 
-		return Optional.of(list.get((int) index));
+		return Optional.of(list.get(index));
 	}
 
 	@Override

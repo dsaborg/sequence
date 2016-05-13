@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.ints;
+package org.d2ab.function.longs;
+
+import java.util.function.Consumer;
 
 /**
- * A functional interface for a consumer taking an int and a long as parameters.
+ * A {@link Consumer} taking a {@code long} and an {@code int}.
  */
 @FunctionalInterface
-public interface IntLongConsumer {
-	void accept(int i, long l);
+public interface LongIntConsumer {
+	void accept(long l, int i);
 }

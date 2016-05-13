@@ -119,12 +119,12 @@ public class LongSequenceTest {
 			empty.forEachLongIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicLong value = new AtomicLong(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachLongIndexed((e, i) -> {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -132,7 +132,7 @@ public class LongSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -140,7 +140,7 @@ public class LongSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -260,19 +260,19 @@ public class LongSequenceTest {
 
 	@Test
 	public void skip() {
-		LongSequence skipNone = _123.skip(0L);
+		LongSequence skipNone = _123.skip(0);
 		twice(() -> assertThat(skipNone, containsLongs(1L, 2L, 3L)));
 
-		LongSequence skipOne = _123.skip(1L);
+		LongSequence skipOne = _123.skip(1);
 		twice(() -> assertThat(skipOne, containsLongs(2L, 3L)));
 
-		LongSequence skipTwo = _123.skip(2L);
+		LongSequence skipTwo = _123.skip(2);
 		twice(() -> assertThat(skipTwo, containsLongs(3L)));
 
-		LongSequence skipThree = _123.skip(3L);
+		LongSequence skipThree = _123.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
-		LongSequence skipFour = _123.skip(4L);
+		LongSequence skipFour = _123.skip(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
@@ -296,19 +296,19 @@ public class LongSequenceTest {
 
 	@Test
 	public void limit() {
-		LongSequence limitNone = _123.limit(0L);
+		LongSequence limitNone = _123.limit(0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
-		LongSequence limitOne = _123.limit(1L);
+		LongSequence limitOne = _123.limit(1);
 		twice(() -> assertThat(limitOne, containsLongs(1L)));
 
-		LongSequence limitTwo = _123.limit(2L);
+		LongSequence limitTwo = _123.limit(2);
 		twice(() -> assertThat(limitTwo, containsLongs(1L, 2L)));
 
-		LongSequence limitThree = _123.limit(3L);
+		LongSequence limitThree = _123.limit(3);
 		twice(() -> assertThat(limitThree, containsLongs(1L, 2L, 3L)));
 
-		LongSequence limitFour = _123.limit(4L);
+		LongSequence limitFour = _123.limit(4);
 		twice(() -> assertThat(limitFour, containsLongs(1L, 2L, 3L)));
 	}
 
@@ -744,8 +744,8 @@ public class LongSequenceTest {
 
 	@Test
 	public void step() {
-		LongSequence stepThree = _123456789.step(3L);
-		twice(() -> assertThat(stepThree, containsLongs(1L, 4L, 7L)));
+		LongSequence stepThree = _123456789.step(3);
+		twice(() -> assertThat(stepThree, containsLongs(1, 4, 7)));
 	}
 
 	@Test
@@ -805,10 +805,10 @@ public class LongSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -857,21 +857,21 @@ public class LongSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		LongSequence peekOne = _1.peekIndexed((i, x) -> {
-			assertThat(i, is(index.get() + 1));
+			assertThat(i, is(index.get() + 1L));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, containsLongs(1)));
 
 		LongSequence peekTwo = _12.peekIndexed((i, x) -> {
-			assertThat(i, is(index.get() + 1));
+			assertThat(i, is(index.get() + 1L));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsLongs(1, 2)));
 
 		LongSequence peek = _12345.peekIndexed((i, x) -> {
-			assertThat(i, is(index.get() + 1));
+			assertThat(i, is(index.get() + 1L));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsLongs(1, 2, 3, 4, 5)));

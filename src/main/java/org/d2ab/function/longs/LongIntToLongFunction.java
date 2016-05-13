@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.ints;
+package org.d2ab.function.longs;
+
+import java.util.function.Function;
 
 /**
- * A function taking an int and a long and returning an int.
+ * A {@link Function} taking a {@code long} and an {@code int} and returning a {@code long}.
  */
 @FunctionalInterface
-public interface IntLongToIntFunction {
-	int applyAsInt(int i, long l);
+public interface LongIntToLongFunction {
+	long applyAsLong(long l, int i);
 }

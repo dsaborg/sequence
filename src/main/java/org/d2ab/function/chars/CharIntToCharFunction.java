@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.longs;
+package org.d2ab.function.chars;
+
+import java.util.function.Function;
 
 /**
- * A consumer taking two longs as arguments.
+ * A {@link Function} taking a {@code char} and an {@code int} and returning a {@code char}.
  */
 @FunctionalInterface
-public interface LongBiConsumer {
-	void accept(long l1, long l2);
+public interface CharIntToCharFunction {
+	char applyAsChar(char c, int i);
 }

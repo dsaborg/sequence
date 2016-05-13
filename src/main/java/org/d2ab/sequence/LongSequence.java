@@ -17,8 +17,10 @@
 package org.d2ab.sequence;
 
 import org.d2ab.function.chars.LongToCharFunction;
-import org.d2ab.function.longs.LongBiConsumer;
 import org.d2ab.function.longs.LongBiPredicate;
+import org.d2ab.function.longs.LongIntConsumer;
+import org.d2ab.function.longs.LongIntPredicate;
+import org.d2ab.function.longs.LongIntToLongFunction;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterable.longs.ChainingLongIterable;
 import org.d2ab.iterable.longs.LongIterable;
@@ -694,9 +696,9 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default LongSequence mapIndexed(LongBinaryOperator mapper) {
+	default LongSequence mapIndexed(LongIntToLongFunction mapper) {
 		return () -> new UnaryLongIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public long nextLong() {
@@ -746,7 +748,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Skip a set number of {@code longs} in this {@code LongSequence}.
 	 */
-	default LongSequence skip(long skip) {
+	default LongSequence skip(int skip) {
 		return () -> new SkippingLongIterator(iterator(), skip);
 	}
 
@@ -765,7 +767,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
 	 */
-	default LongSequence limit(long limit) {
+	default LongSequence limit(int limit) {
 		return () -> new LimitingLongIterator(iterator(), limit);
 	}
 
@@ -836,11 +838,11 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * Filter the elements in this {@code LongSequence}, keeping only the elements that match the given
-	 * {@link LongBiPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link LongIntPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default LongSequence filterIndexed(LongBiPredicate predicate) {
+	default LongSequence filterIndexed(LongIntPredicate predicate) {
 		return () -> new IndexedFilteringLongIterator(iterator(), predicate);
 	}
 
@@ -994,7 +996,7 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalLong at(long index) {
+	default OptionalLong at(int index) {
 		LongIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -1009,7 +1011,7 @@ public interface LongSequence extends LongIterable {
 	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
+	 * @see #at(int, LongPredicate)
 	 * @since 1.2
 	 */
 	default OptionalLong first(LongPredicate predicate) {
@@ -1021,7 +1023,7 @@ public interface LongSequence extends LongIterable {
 	 * {@link OptionalLong} if there are less than two matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
+	 * @see #at(int, LongPredicate)
 	 * @since 1.2
 	 */
 	default OptionalLong second(LongPredicate predicate) {
@@ -1033,7 +1035,7 @@ public interface LongSequence extends LongIterable {
 	 * {@link OptionalLong} if there are less than three matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
+	 * @see #at(int, LongPredicate)
 	 * @since 1.2
 	 */
 	default OptionalLong third(LongPredicate predicate) {
@@ -1045,7 +1047,7 @@ public interface LongSequence extends LongIterable {
 	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
+	 * @see #at(int, LongPredicate)
 	 * @since 1.2
 	 */
 	default OptionalLong last(LongPredicate predicate) {
@@ -1059,14 +1061,14 @@ public interface LongSequence extends LongIterable {
 	 * @see #filter(LongPredicate)
 	 * @since 1.2
 	 */
-	default OptionalLong at(long index, LongPredicate predicate) {
+	default OptionalLong at(int index, LongPredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code LongSequence}.
 	 */
-	default LongSequence step(long step) {
+	default LongSequence step(int step) {
 		return () -> new SteppingLongIterator(iterator(), step);
 	}
 
@@ -1096,18 +1098,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
+	default int size() {
 		return iterator().count();
-	}
-
-	/**
-	 * @return the count of longs in this {@code LongSequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
 	}
 
 	/**
@@ -1152,14 +1144,14 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Allow the given {@link LongBiConsumer} to see each element together with its index in this {@code LongSequence}
+	 * Allow the given {@link LongIntConsumer} to see each element together with its index in this {@code LongSequence}
 	 * as it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default LongSequence peekIndexed(LongBiConsumer action) {
+	default LongSequence peekIndexed(LongIntConsumer action) {
 		return () -> new UnaryLongIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public long nextLong() {
@@ -1295,7 +1287,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Repeat this sequence of longs x times, looping back to the beginning when the iterator runs out of longs.
 	 */
-	default LongSequence repeat(long times) {
+	default LongSequence repeat(int times) {
 		return () -> new RepeatingLongIterator(this, times);
 	}
 
@@ -1424,8 +1416,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachLongIndexed(LongBiConsumer action) {
-		long index = 0;
+	default void forEachLongIndexed(LongIntConsumer action) {
+		int index = 0;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextLong(), index++);
 	}

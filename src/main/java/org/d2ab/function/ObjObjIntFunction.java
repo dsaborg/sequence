@@ -16,10 +16,12 @@
 
 package org.d2ab.function;
 
+import java.util.function.Function;
+
 /**
- * A predicate that tests an object and a long.
+ * A functional interface of a {@link Function} taking two objects and an {@code int} and returning an object.
  */
 @FunctionalInterface
-public interface ObjLongPredicate<T> {
-	boolean test(T t, long l);
+public interface ObjObjIntFunction<T, U, R> {
+	R apply(T t, U u, int i);
 }

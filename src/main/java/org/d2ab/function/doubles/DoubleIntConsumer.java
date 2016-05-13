@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.chars;
+package org.d2ab.function.doubles;
+
+import java.util.function.Consumer;
 
 /**
- * A function taking a {@code char} and a {@code long} and returning a {@code char}.
+ * A functional interface of a {@link Consumer} taking a {@code double} and an {@code int} as parameters.
  */
 @FunctionalInterface
-public interface CharLongToCharFunction {
-	char applyAsChar(char c, long l);
+public interface DoubleIntConsumer {
+	void accept(double d, int i);
 }

@@ -131,8 +131,8 @@ public class Iterators {
 	 *
 	 * @return the actual number of steps skipped, if iterator terminated early.
 	 */
-	public static long skip(Iterator<?> iterator, long steps) {
-		long count = 0;
+	public static int skip(Iterator<?> iterator, int steps) {
+		int count = 0;
 		while (count < steps && iterator.hasNext()) {
 			iterator.next();
 			count++;
@@ -172,7 +172,7 @@ public class Iterators {
 	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
 	 * items than the index.
 	 */
-	public static <T> Optional<T> get(Iterator<? extends T> iterator, long index) {
+	public static <T> Optional<T> get(Iterator<? extends T> iterator, int index) {
 		skip(iterator, index);
 		if (!iterator.hasNext())
 			return Optional.empty();
@@ -215,7 +215,7 @@ public class Iterators {
 		}
 
 		if (count > Integer.MAX_VALUE)
-			throw new IllegalStateException("count " + count " > Integer.MAX_VALUE");
+			throw new IllegalStateException("count " + count + " > Integer.MAX_VALUE");
 
 		return (int) count;
 	}

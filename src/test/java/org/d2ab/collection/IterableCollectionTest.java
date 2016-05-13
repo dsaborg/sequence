@@ -19,6 +19,7 @@ package org.d2ab.collection;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
@@ -27,11 +28,11 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class IterableCollectionTest {
-	private final IterableCollection<Integer> empty = IterableCollection.empty();
-	private final IterableCollection<Integer> single = IterableCollection.of(1);
-	private final IterableCollection<Integer> regular = IterableCollection.of(1, 2, 3, 4, 5);
-	private final IterableCollection<Integer> mutable = IterableCollection.from(new ArrayList<>(asList(1, 2, 3, 4,
-	                                                                                                   5)));
+	private final Collection<Integer> empty = IterableCollection.empty();
+	private final Collection<Integer> single = IterableCollection.of(1);
+	private final Collection<Integer> regular = IterableCollection.of(1, 2, 3, 4, 5);
+	private final Collection<Integer> mutable = IterableCollection.from(new ArrayList<>(asList(1, 2, 3, 4, 5)));
+
 	@Test
 	public void iteration() {
 		assertThat(empty, is(emptyIterable()));

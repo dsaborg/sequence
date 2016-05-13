@@ -147,7 +147,12 @@ public interface CharIterable extends Iterable<Character> {
 				if (iterator == null)
 					throw new IOException("closed");
 
-				long skipped = iterator.skip(n);
+				long skipped = 0;
+				while (n > Integer.MAX_VALUE) {
+					skipped += iterator.skip(Integer.MAX_VALUE);
+					n -= Integer.MAX_VALUE;
+				}
+				skipped += iterator.skip((int) n);
 
 				position += skipped;
 
@@ -178,8 +183,14 @@ public interface CharIterable extends Iterable<Character> {
 					throw new IOException("closed");
 
 				iterator = iterator();
+				position = 0;
 
-				position = iterator.skip(mark);
+				long skip = mark;
+				while (skip > Integer.MAX_VALUE) {
+					position += iterator.skip(Integer.MAX_VALUE);
+				    skip -= Integer.MAX_VALUE;
+				}
+				position += iterator.skip((int) skip);
 			}
 
 			@Override

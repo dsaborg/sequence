@@ -16,18 +16,18 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.function.doubles.DoubleLongPredicate;
+import org.d2ab.function.doubles.DoubleIntPredicate;
 
 import java.util.NoSuchElementException;
 
 public class IndexedFilteringDoubleIterator extends UnaryDoubleIterator {
-	private final DoubleLongPredicate predicate;
-	private long index;
+	private final DoubleIntPredicate predicate;
+	private int index;
 
 	private double next;
 	private boolean hasNext;
 
-	public IndexedFilteringDoubleIterator(DoubleIterator iterator, DoubleLongPredicate predicate) {
+	public IndexedFilteringDoubleIterator(DoubleIterator iterator, DoubleIntPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}

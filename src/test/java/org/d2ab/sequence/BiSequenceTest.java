@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -611,7 +610,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<Integer, String> oneMapped = _1.mapIndexed((p, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return p.swap();
@@ -648,7 +647,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<Integer, String> oneMapped = _1.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
@@ -1506,7 +1505,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
@@ -1562,7 +1561,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));

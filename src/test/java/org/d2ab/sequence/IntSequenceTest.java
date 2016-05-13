@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -108,12 +107,12 @@ public class IntSequenceTest {
 			empty.forEachIntIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachIntIndexed((e, i) -> {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -121,7 +120,7 @@ public class IntSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -129,7 +128,7 @@ public class IntSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -787,10 +786,10 @@ public class IntSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -839,21 +838,21 @@ public class IntSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		IntSequence peekOne = _1.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, containsInts(1)));
 
 		IntSequence peekTwo = _12.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsInts(1, 2)));
 
 		IntSequence peek = _12345.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsInts(1, 2, 3, 4, 5)));

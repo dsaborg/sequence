@@ -16,19 +16,19 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.function.ObjLongPredicate;
+import org.d2ab.function.ObjIntPredicate;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class IndexedFilteringIterator<T> extends ReferenceIterator<T> {
-	private final ObjLongPredicate<? super T> predicate;
+	private final ObjIntPredicate<? super T> predicate;
 
 	private T next;
 	private boolean hasNext;
-	private long index;
+	private int index;
 
-	public IndexedFilteringIterator(Iterator<T> iterator, ObjLongPredicate<? super T> predicate) {
+	public IndexedFilteringIterator(Iterator<T> iterator, ObjIntPredicate<? super T> predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}

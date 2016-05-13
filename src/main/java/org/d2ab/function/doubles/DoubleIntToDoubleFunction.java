@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.function;
+package org.d2ab.function.doubles;
 
 /**
- * A functional interface of a function taking two objects and a long and returning an object.
+ * A function taking a {@code double} and an {@code int} and returning a {@code double}.
  */
 @FunctionalInterface
-public interface ObjObjLongFunction<T, U, R> {
-	R apply(T t, U u, long l);
+public interface DoubleIntToDoubleFunction {
+	double applyAsDouble(double d, int i);
 }

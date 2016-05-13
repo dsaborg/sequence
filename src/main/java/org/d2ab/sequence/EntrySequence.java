@@ -360,7 +360,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @since 1.2
 	 */
 	default <KK, VV> EntrySequence<KK, VV> mapIndexed(
-			ObjLongFunction<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
+			ObjIntFunction<? super Entry<K, V>, ? extends Entry<KK, VV>> mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -373,7 +373,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @since 1.2
 	 */
 	default <KK, VV> EntrySequence<KK, VV> mapIndexed(
-			ObjObjLongFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
+			ObjObjIntFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
 		return mapIndexed((e, i) -> mapper.apply(e.getKey(), e.getValue(), i));
 	}
 
@@ -389,7 +389,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 *
 	 * @since 1.1
 	 */
-	default EntrySequence<K, V> skipTail(long skip) {
+	default EntrySequence<K, V> skipTail(int skip) {
 		if (skip == 0)
 			return this;
 
@@ -421,21 +421,21 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 
 	/**
 	 * Filter the entries in this {@code EntrySequence}, keeping only the elements that match the given
-	 * {@link ObjLongPredicate}, which is passed the current entry and its index in the sequence.
+	 * {@link ObjIntPredicate}, which is passed the current entry and its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default EntrySequence<K, V> filterIndexed(ObjLongPredicate<? super Entry<K, V>> predicate) {
+	default EntrySequence<K, V> filterIndexed(ObjIntPredicate<? super Entry<K, V>> predicate) {
 		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
 	}
 
 	/**
 	 * Filter the entries in this {@code EntrySequence}, keeping only the elements that match the given
-	 * {@link ObjLongPredicate}, which is passed the current entry and its index in the sequence.
+	 * {@link ObjIntPredicate}, which is passed the current entry and its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default EntrySequence<K, V> filterIndexed(ObjObjLongPredicate<? super K, ? super V> predicate) {
+	default EntrySequence<K, V> filterIndexed(ObjObjIntPredicate<? super K, ? super V> predicate) {
 		return filterIndexed((e, i) -> predicate.test(e.getKey(), e.getValue(), i));
 	}
 
@@ -948,7 +948,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
 	 * than the index.
 	 */
-	default Optional<Entry<K, V>> at(long index) {
+	default Optional<Entry<K, V>> at(int index) {
 		return Iterators.get(iterator(), index);
 	}
 
@@ -1158,22 +1158,22 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	}
 
 	/**
-	 * Allow the given {@link ObjObjLongConsumer} to see the components of each entry with their index as this
+	 * Allow the given {@link ObjObjIntConsumer} to see the components of each entry with their index as this
 	 * {@code EntrySequence} is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default EntrySequence<K, V> peekIndexed(ObjObjLongConsumer<? super K, ? super V> action) {
+	default EntrySequence<K, V> peekIndexed(ObjObjIntConsumer<? super K, ? super V> action) {
 		return peekIndexed((p, x) -> action.accept(p.getKey(), p.getValue(), x));
 	}
 
 	/**
-	 * Allow the given {@link ObjLongConsumer} to see each entry with its index as this {@code EntrySequence} is
+	 * Allow the given {@link ObjIntConsumer} to see each entry with its index as this {@code EntrySequence} is
 	 * traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default EntrySequence<K, V> peekIndexed(ObjLongConsumer<? super Entry<K, V>> action) {
+	default EntrySequence<K, V> peekIndexed(ObjIntConsumer<? super Entry<K, V>> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);
 	}
 
@@ -1403,7 +1403,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	/**
 	 * Repeat this {@code EntrySequence} the given number of times.
 	 */
-	default EntrySequence<K, V> repeat(long times) {
+	default EntrySequence<K, V> repeat(int times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
 

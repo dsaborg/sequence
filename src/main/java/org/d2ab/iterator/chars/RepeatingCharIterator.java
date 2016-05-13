@@ -28,9 +28,9 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingCharIterator extends UnaryCharIterator {
 	private final CharIterable iterable;
-	private long times;
+	private int times;
 
-	public RepeatingCharIterator(CharIterable iterable, long times) {
+	public RepeatingCharIterator(CharIterable iterable, int times) {
 		super(CharIterator.EMPTY);
 		this.iterable = iterable;
 		this.times = times;

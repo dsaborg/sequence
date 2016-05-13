@@ -16,7 +16,6 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.Arrayz;
 
@@ -87,7 +86,7 @@ public class ArrayIntList implements IntList {
 
 	@Override
 	public IntIterator iterator() {
-		return new ArrayIntIterator(array, offset, size);
+		return listIterator();
 	}
 
 	@Override

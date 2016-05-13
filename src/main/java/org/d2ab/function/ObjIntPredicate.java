@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.d2ab.function.chars;
+package org.d2ab.function;
 
 /**
- * A functional interface of a consumer taking a char and a long as parameters.
+ * A predicate that tests an object and an {@code int}.
  */
-public interface CharLongConsumer {
-	void accept(char c, long l);
+@FunctionalInterface
+public interface ObjIntPredicate<T> {
+	boolean test(T t, int i);
 }

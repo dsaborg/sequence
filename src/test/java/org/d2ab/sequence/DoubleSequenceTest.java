@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.DoubleBinaryOperator;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -106,12 +105,12 @@ public class DoubleSequenceTest {
 			empty.forEachDoubleIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachDoubleIndexed((e, i) -> {
 				assertThat(e, is((double) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -119,7 +118,7 @@ public class DoubleSequenceTest {
 				assertThat(e, is((double) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -127,7 +126,7 @@ public class DoubleSequenceTest {
 				assertThat(e, is((double) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -801,10 +800,10 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -835,7 +834,7 @@ public class DoubleSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong value = new AtomicLong(1);
+		AtomicInteger value = new AtomicInteger(1);
 		DoubleSequence peekOne = _1.peek(x -> assertThat(x, is((double) value.getAndIncrement())));
 		twiceIndexed(value, 1, () -> assertThat(peekOne, containsDoubles(1)));
 
@@ -853,7 +852,7 @@ public class DoubleSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		DoubleSequence peekOne = _1.peekIndexed((i, x) -> {
 			assertThat(i, is((double) (index.get() + 1)));
 			assertThat(x, is(index.getAndIncrement()));

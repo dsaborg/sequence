@@ -638,9 +638,9 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default CharSeq mapIndexed(CharLongToCharFunction mapper) {
+	default CharSeq mapIndexed(CharIntToCharFunction mapper) {
 		return () -> new UnaryCharIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public char nextChar() {
@@ -666,7 +666,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Skip a set number of {@code chars} in this {@code CharSeq}.
 	 */
-	default CharSeq skip(long skip) {
+	default CharSeq skip(int skip) {
 		return () -> new SkippingCharIterator(iterator(), skip);
 	}
 
@@ -685,7 +685,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
 	 */
-	default CharSeq limit(long limit) {
+	default CharSeq limit(int limit) {
 		return () -> new LimitingCharIterator(iterator(), limit);
 	}
 
@@ -770,11 +770,11 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Filter the elements in this {@code CharSeq}, keeping only the elements that match the given
-	 * {@link CharLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link CharIntPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default CharSeq filterIndexed(CharLongPredicate predicate) {
+	default CharSeq filterIndexed(CharIntPredicate predicate) {
 		return () -> new IndexedFilteringCharIterator(iterator(), predicate);
 	}
 
@@ -939,7 +939,7 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalChar at(long index) {
+	default OptionalChar at(int index) {
 		CharIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -954,7 +954,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
+	 * @see #at(int, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar first(CharPredicate predicate) {
@@ -966,7 +966,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are less than two matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
+	 * @see #at(int, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar second(CharPredicate predicate) {
@@ -978,7 +978,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are less than three matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
+	 * @see #at(int, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar third(CharPredicate predicate) {
@@ -990,7 +990,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
+	 * @see #at(int, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar last(CharPredicate predicate) {
@@ -1004,14 +1004,14 @@ public interface CharSeq extends CharIterable {
 	 * @see #filter(CharPredicate)
 	 * @since 1.2
 	 */
-	default OptionalChar at(long index, CharPredicate predicate) {
+	default OptionalChar at(int index, CharPredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code CharSeq}.
 	 */
-	default CharSeq step(long step) {
+	default CharSeq step(int step) {
 		return () -> new SteppingCharIterator(iterator(), step);
 	}
 
@@ -1041,18 +1041,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
+	default int size() {
 		return iterator().count();
-	}
-
-	/**
-	 * @return the count of characters in this {@code CharSeq}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
 	}
 
 	/**
@@ -1097,14 +1087,14 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Allow the given {@link CharLongConsumer} to see each element together with its index in this {@code CharSeq} as
+	 * Allow the given {@link CharIntConsumer} to see each element together with its index in this {@code CharSeq} as
 	 * it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default CharSeq peekIndexed(CharLongConsumer action) {
+	default CharSeq peekIndexed(CharIntConsumer action) {
 		return () -> new UnaryCharIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public char nextChar() {
@@ -1246,7 +1236,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Repeat this sequence of characters x times, looping back to the beginning when the iterator runs out of chars.
 	 */
-	default CharSeq repeat(long times) {
+	default CharSeq repeat(int times) {
 		return () -> new RepeatingCharIterator(this, times);
 	}
 
@@ -1373,8 +1363,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachCharIndexed(CharLongConsumer action) {
-		long index = 0;
+	default void forEachCharIndexed(CharIntConsumer action) {
+		int index = 0;
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextChar(), index++);
 	}

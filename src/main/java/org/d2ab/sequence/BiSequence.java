@@ -354,7 +354,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.2
 	 */
-	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjLongFunction<? super Pair<L, R>, ? extends Pair<LL, RR>>
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjIntFunction<? super Pair<L, R>, ? extends Pair<LL, RR>>
 			                                               mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
@@ -368,7 +368,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.2
 	 */
-	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>>
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjIntFunction<? super L, ? super R, ? extends Pair<LL, RR>>
 			                                               mapper) {
 		return mapIndexed((p, i) -> mapper.apply(p.getLeft(), p.getRight(), i));
 	}
@@ -385,7 +385,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.1
 	 */
-	default BiSequence<L, R> skipTail(long skip) {
+	default BiSequence<L, R> skipTail(int skip) {
 		if (skip == 0)
 			return this;
 
@@ -417,21 +417,21 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 
 	/**
 	 * Filter the pairs in this {@code BiSequence}, keeping only the elements that match the given
-	 * {@link ObjLongPredicate}, which is passed the current pair and its index in the sequence.
+	 * {@link ObjIntPredicate}, which is passed the current pair and its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default BiSequence<L, R> filterIndexed(ObjLongPredicate<? super Pair<L, R>> predicate) {
+	default BiSequence<L, R> filterIndexed(ObjIntPredicate<? super Pair<L, R>> predicate) {
 		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
 	}
 
 	/**
 	 * Filter the pairs in this {@code BiSequence}, keeping only the elements that match the given
-	 * {@link ObjObjLongPredicate}, which is passed the current pair and its index in the sequence.
+	 * {@link ObjObjIntPredicate}, which is passed the current pair and its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default BiSequence<L, R> filterIndexed(ObjObjLongPredicate<? super L, ? super R> predicate) {
+	default BiSequence<L, R> filterIndexed(ObjObjIntPredicate<? super L, ? super R> predicate) {
 		return filterIndexed((p, i) -> predicate.test(p.getLeft(), p.getRight(), i));
 	}
 
@@ -952,7 +952,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<Pair<L, R>> at(long index) {
+	default Optional<Pair<L, R>> at(int index) {
 		return Iterators.get(iterator(), index);
 	}
 
@@ -1002,7 +1002,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<Pair<L, R>> at(long index, Predicate<? super Pair<L, R>> predicate) {
+	default Optional<Pair<L, R>> at(int index, Predicate<? super Pair<L, R>> predicate) {
 		return filter(predicate).at(index);
 	}
 
@@ -1052,7 +1052,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<Pair<L, R>> at(long index, BiPredicate<? super L, ? super R> predicate) {
+	default Optional<Pair<L, R>> at(int index, BiPredicate<? super L, ? super R> predicate) {
 		return filter(predicate).at(index);
 	}
 
@@ -1255,12 +1255,12 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	}
 
 	/**
-	 * Allow the given {@link ObjObjLongConsumer} to see the components of each pair with their index as this
+	 * Allow the given {@link ObjObjIntConsumer} to see the components of each pair with their index as this
 	 * {@code BiSequence} is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default BiSequence<L, R> peekIndexed(ObjObjLongConsumer<? super L, ? super R> action) {
+	default BiSequence<L, R> peekIndexed(ObjObjIntConsumer<? super L, ? super R> action) {
 		return peekIndexed((p, x) -> action.accept(p.getLeft(), p.getRight(), x));
 	}
 
@@ -1270,7 +1270,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @since 1.2.2
 	 */
-	default BiSequence<L, R> peekIndexed(ObjLongConsumer<? super Pair<L, R>> action) {
+	default BiSequence<L, R> peekIndexed(ObjIntConsumer<? super Pair<L, R>> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);
 	}
 
@@ -1501,7 +1501,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	/**
 	 * Repeat this {@code BiSequence} the given number of times.
 	 */
-	default BiSequence<L, R> repeat(long times) {
+	default BiSequence<L, R> repeat(int times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
 

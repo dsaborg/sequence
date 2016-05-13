@@ -20,12 +20,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public abstract class PairingIterator<T, E> extends DelegatingReferenceIterator<T, E> {
-	private final long step;
+	private final int step;
 
 	private T previous;
 	private boolean hasPrevious;
 
-	public PairingIterator(Iterator<T> iterator, long step) {
+	public PairingIterator(Iterator<T> iterator, int step) {
 		super(iterator);
 		this.step = step;
 	}
