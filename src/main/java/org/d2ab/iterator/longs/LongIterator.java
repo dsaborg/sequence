@@ -146,7 +146,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	/**
 	 * @return the number of {@code longs} remaining in this iterator.
 	 */
-	default int count() {
+	default int size() {
 		long count = 0;
 		for (; hasNext(); nextLong())
 			count++;
@@ -155,5 +155,16 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			throw new IllegalStateException("count > Integer.MAX_VALUE");
 
 		return (int) count;
+	}
+
+	default boolean isEmpty() {
+		return !hasNext();
+	}
+
+	default void removeAll() {
+		while (hasNext()) {
+			nextLong();
+			remove();
+		}
 	}
 }

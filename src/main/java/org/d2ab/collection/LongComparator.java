@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.collection;
 
-import java.util.Iterator;
+import java.util.Comparator;
 
 /**
- * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
+ * A primitive specialization of {@link Comparator} for {@code long} values.
  */
-public abstract class DelegatingIterator<T, I extends Iterator<? extends T>, U> implements Iterator<U> {
-	protected I iterator;
-
-	protected DelegatingIterator(I iterator) {
-		this.iterator = iterator;
+@FunctionalInterface
+public interface LongComparator extends Comparator<Long> {
+	default int compare(Long l1, Long l2) {
+		return compare((long) l1, (long) l2);
 	}
 
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-
-	@Override
-	public void remove() {
-		iterator.remove();
-	}
+	int compare(long l1, long l2);
 }

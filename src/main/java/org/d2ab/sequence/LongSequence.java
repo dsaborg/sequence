@@ -1045,7 +1045,7 @@ public interface LongSequence extends LongIterable {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**

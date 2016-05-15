@@ -20,8 +20,12 @@ import org.d2ab.iterator.longs.ArrayLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.PrimitiveIterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
+import java.util.stream.LongStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
@@ -47,6 +51,18 @@ public interface LongIterable extends Iterable<Long> {
 			consumer.accept(iterator.nextLong());
 	}
 
+	default Spliterator.OfLong spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
+	}
+
+	default LongStream longStream() {
+		return StreamSupport.longStream(spliterator(), false);
+	}
+
+	default LongStream parallelLongStream() {
+		return StreamSupport.longStream(spliterator(), true);
+	}
+
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
 	}
@@ -69,4 +85,6 @@ public interface LongIterable extends Iterable<Long> {
 	static LongIterable once(PrimitiveIterator.OfLong iterator) {
 		return once(LongIterator.from(iterator));
 	}
+
+
 }

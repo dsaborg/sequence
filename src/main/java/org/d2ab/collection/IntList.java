@@ -48,13 +48,12 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default Integer[] toArray() {
-		return IntCollection.toArray(this);
+		return Collectionz.toBoxedIntegerArray(this);
 	}
 
 	@Override
-	@Deprecated
 	default <T> T[] toArray(T[] a) {
-		return IntCollection.toArray(this, a);
+		return Collectionz.toArray(this, a);
 	}
 
 	@Override
@@ -136,14 +135,9 @@ public interface IntList extends List<Integer>, IntCollection {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		for (int i : (Collection<Integer>) c)
-			if (!containsInt(i))
-				return false;
-
-		return true;
+		return Collectionz.containsAll(this, c);
 	}
 
 	@Override

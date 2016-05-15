@@ -110,7 +110,7 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default Spliterator.OfInt spliterator() {
-		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
 	}
 
 	default IntStream intStream() {

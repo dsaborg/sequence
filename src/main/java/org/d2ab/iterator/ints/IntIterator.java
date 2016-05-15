@@ -47,11 +47,11 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return new ArrayIntIterator(ints);
 	}
 
-	static IntIterator from(Iterator<Integer> iterator) {
+	static IntIterator from(Iterator<? extends Integer> iterator) {
 		if (iterator instanceof PrimitiveIterator.OfInt)
 			return from((PrimitiveIterator.OfInt) iterator);
 
-		return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
+		return new DelegatingIntIterator<Integer, Iterator<? extends Integer>>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.next();
