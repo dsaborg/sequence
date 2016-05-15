@@ -16,8 +16,8 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.ints.DelegatingIntIterator;
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.collection.iterator.DelegatingIntIterator;
+import org.d2ab.collection.iterator.IntIterator;
 
 import java.util.PrimitiveIterator;
 import java.util.Set;
@@ -34,12 +34,7 @@ public class BitIntSet implements IntSortedSet {
 
 	@Override
 	public int size() {
-		long bitCount = values.bitCount();
-
-		if (bitCount > Integer.MAX_VALUE)
-			throw new IllegalStateException("size > Integer.MAX_VALUE");
-
-		return (int) bitCount;
+		return values.size();
 	}
 
 	@Override

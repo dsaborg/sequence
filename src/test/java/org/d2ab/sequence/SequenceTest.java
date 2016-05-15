@@ -16,9 +16,10 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.Maps;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterator.Iterators;
+import org.d2ab.collection.iterator.Iterators;
+import org.d2ab.sequence.collection.ListSequence;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;

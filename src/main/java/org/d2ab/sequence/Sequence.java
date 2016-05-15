@@ -16,20 +16,13 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IterableList;
-import org.d2ab.collection.Lists;
-import org.d2ab.collection.Maps;
+import org.d2ab.collection.*;
+import org.d2ab.collection.iterator.*;
 import org.d2ab.function.ObjIntFunction;
 import org.d2ab.function.ObjIntPredicate;
-import org.d2ab.function.chars.ToCharFunction;
-import org.d2ab.iterable.ChainingIterable;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterator.*;
-import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.function.ToCharFunction;
+import org.d2ab.sequence.collection.ListSequence;
+import org.d2ab.sequence.iterator.*;
 import org.d2ab.util.Pair;
 
 import java.util.*;

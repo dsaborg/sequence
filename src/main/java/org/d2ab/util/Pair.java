@@ -16,15 +16,16 @@
 
 package org.d2ab.util;
 
-import org.d2ab.function.QuaternaryFunction;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.Comparator.comparing;
-import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
+import static org.d2ab.collection.Comparators.naturalOrderNullsFirst;
 
 /**
  * A general purpose pair of two objects, "{@code left}" and "{@code right}". Pairs implement {@link Map.Entry} where
@@ -95,42 +96,6 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 				return item;
 			}
 		};
-	}
-
-	/**
-	 * @return the given bi-valued function converted to a pair-based unary operator.
-	 */
-	public static <K, V> UnaryOperator<Pair<K, V>> asUnaryOperator(
-			BiFunction<? super K, ? super V, ? extends Pair<K, V>> op) {
-		return entry -> op.apply(entry.getLeft(), entry.getRight());
-	}
-
-	/**
-	 * @return the given doubly bi-valued function converted to a pair-based binary operator.
-	 */
-	public static <K, V> BinaryOperator<Pair<K, V>> asBinaryOperator(QuaternaryFunction<K, V, K, V, Pair<K, V>> f) {
-		return (e1, e2) -> f.apply(e1.getLeft(), e1.getRight(), e2.getLeft(), e2.getRight());
-	}
-
-	/**
-	 * @return the given bi-valued function converted to a pair-based function.
-	 */
-	public static <K, V, R> Function<Pair<K, V>, R> asFunction(BiFunction<? super K, ? super V, ? extends R> f) {
-		return entry -> f.apply(entry.getLeft(), entry.getRight());
-	}
-
-	/**
-	 * @return the given bi-valued predicate converted to a pair-based predicate.
-	 */
-	public static <K, V> Predicate<Pair<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
-		return entry -> predicate.test(entry.getLeft(), entry.getRight());
-	}
-
-	/**
-	 * @return the given bi-valued consumer converted to a pair-based consumer.
-	 */
-	public static <K, V> Consumer<Pair<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
-		return entry -> action.accept(entry.getLeft(), entry.getRight());
 	}
 
 	/**

@@ -16,15 +16,15 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.function.QuaternaryFunction;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.*;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 import static java.util.Comparator.comparing;
-import static org.d2ab.util.Comparators.naturalOrderNullsFirst;
+import static org.d2ab.collection.Comparators.naturalOrderNullsFirst;
 
 /**
  * Utility methods for {@link Map} instances
@@ -62,37 +62,6 @@ public class Maps {
 	public static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> entry) {
 		result.put(entry.getKey(), entry.getValue());
 		return result;
-	}
-
-	public static <K, V> UnaryOperator<Entry<K, V>> asUnaryOperator(BiFunction<? super K, ? super V, ? extends
-			Entry<K, V>> op) {
-		return entry -> op.apply(entry.getKey(), entry.getValue());
-	}
-
-	public static <K, V> BinaryOperator<Entry<K, V>> asBinaryOperator(QuaternaryFunction<? super K, ? super V, ? super
-			K, ? super V, ? extends Entry<K, V>> f) {
-		return (e1, e2) -> f.apply(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue());
-	}
-
-	public static <K, V, R> Function<Entry<K, V>, R> asFunction(BiFunction<? super K, ? super V, ? extends R> mapper) {
-		return entry -> mapper.apply(entry.getKey(), entry.getValue());
-	}
-
-	public static <K, V, KK, VV> Function<Entry<K, V>, Entry<KK, VV>> asFunction(
-			Function<? super K, ? extends KK> keyMapper, Function<? super V, ? extends VV> valueMapper) {
-		return entry -> entry(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));
-	}
-
-	public static <K, V> Predicate<Entry<K, V>> asPredicate(BiPredicate<? super K, ? super V> predicate) {
-		return entry -> predicate.test(entry.getKey(), entry.getValue());
-	}
-
-	public static <K, V> Consumer<Entry<K, V>> asConsumer(BiConsumer<? super K, ? super V> action) {
-		return entry -> action.accept(entry.getKey(), entry.getValue());
-	}
-
-	public static <K, V> boolean test(Entry<K, V> entry, BiPredicate<K, V> biPredicate) {
-		return asPredicate(biPredicate).test(entry);
 	}
 
 	public static <T> Iterator<T> iterator(Entry<? extends T, ? extends T> entry) {

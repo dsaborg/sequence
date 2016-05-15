@@ -16,11 +16,11 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.longs.LongIterable;
-import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.longs.DelegatingLongIterator;
-import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.LongIterable;
+import org.d2ab.collection.iterator.DelegatingLongIterator;
+import org.d2ab.collection.iterator.Iterators;
+import org.d2ab.collection.iterator.LongIterator;
 import org.junit.Test;
 
 import java.util.*;

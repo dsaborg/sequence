@@ -16,20 +16,13 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.chars.LongToCharFunction;
-import org.d2ab.function.longs.LongBiPredicate;
-import org.d2ab.function.longs.LongIntConsumer;
-import org.d2ab.function.longs.LongIntPredicate;
-import org.d2ab.function.longs.LongIntToLongFunction;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.longs.ChainingLongIterable;
-import org.d2ab.iterable.longs.LongIterable;
-import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.longs.*;
-import org.d2ab.util.Arrayz;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.ChainingLongIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.LongIterable;
+import org.d2ab.collection.iterator.*;
+import org.d2ab.function.*;
+import org.d2ab.sequence.iterator.longs.*;
 
 import java.util.*;
 import java.util.function.*;

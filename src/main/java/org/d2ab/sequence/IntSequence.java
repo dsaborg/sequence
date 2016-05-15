@@ -16,19 +16,15 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.ChainingIntIterable;
+import org.d2ab.collection.IntIterable;
 import org.d2ab.collection.IntList;
-import org.d2ab.function.chars.IntToCharFunction;
-import org.d2ab.function.ints.IntBiConsumer;
-import org.d2ab.function.ints.IntBiPredicate;
-import org.d2ab.iterable.ints.ChainingIntIterable;
-import org.d2ab.iterable.ints.IntIterable;
-import org.d2ab.iterator.IterationException;
-import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.iterator.ints.*;
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.collection.iterator.*;
+import org.d2ab.function.IntBiConsumer;
+import org.d2ab.function.IntBiPredicate;
+import org.d2ab.function.IntToCharFunction;
+import org.d2ab.sequence.iterator.ints.*;
 
 import java.io.IOException;
 import java.io.InputStream;

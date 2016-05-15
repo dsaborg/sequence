@@ -16,11 +16,11 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.ints.IntIterable;
-import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.ints.DelegatingIntIterator;
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.collection.IntIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.iterator.DelegatingIntIterator;
+import org.d2ab.collection.iterator.IntIterator;
+import org.d2ab.collection.iterator.Iterators;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

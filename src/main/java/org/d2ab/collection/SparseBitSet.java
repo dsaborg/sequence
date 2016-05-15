@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.collection.iterator.LongIterator;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -141,8 +141,10 @@ public class SparseBitSet implements LongSortedSet {
 	@Override
 	public int size() {
 		long bitCount = bitCount();
+
 		if (bitCount > Integer.MAX_VALUE)
-			throw new IllegalStateException("size > Integer.MAX_VALUE");
+			throw new IllegalStateException("size > Integer.MAX_VALUE: " + bitCount);
+
 		return (int) bitCount;
 	}
 

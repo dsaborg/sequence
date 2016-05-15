@@ -16,20 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IterableList;
-import org.d2ab.collection.Lists;
-import org.d2ab.collection.Maps;
+import org.d2ab.collection.*;
+import org.d2ab.collection.iterator.*;
 import org.d2ab.function.*;
-import org.d2ab.function.chars.ToCharBiFunction;
-import org.d2ab.function.chars.ToCharFunction;
-import org.d2ab.iterable.ChainingIterable;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterator.*;
-import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.sequence.iterator.*;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -41,6 +31,9 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
+import static java.util.function.BinaryOperator.maxBy;
+import static java.util.function.BinaryOperator.minBy;
+import static org.d2ab.sequence.util.SequenceFunctions.*;
 
 /**
  * An {@link Iterable} sequence of {@link Entry} elements with {@link Stream}-like operations for refining,
@@ -266,7 +259,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @see #until(Entry)
 	 */
 	static <K, V> EntrySequence<K, V> recurse(K keySeed, V valueSeed, BiFunction<K, V, ? extends Entry<K, V>> op) {
-		return recurse(Maps.entry(keySeed, valueSeed), Maps.asUnaryOperator(op));
+		return recurse(Maps.entry(keySeed, valueSeed), entry -> op.apply(entry.getKey(), entry.getValue()));
 	}
 
 	/**
@@ -309,8 +302,8 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	static <K, V, KK, VV> EntrySequence<KK, VV> recurse(K keySeed, V valueSeed,
 	                                                    BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> f,
 	                                                    BiFunction<? super KK, ? super VV, ? extends Entry<K, V>> g) {
-		Function<Entry<K, V>, Entry<KK, VV>> f1 = Maps.asFunction(f);
-		Function<Entry<KK, VV>, Entry<K, V>> g1 = Maps.asFunction(g);
+		Function<Entry<K, V>, Entry<KK, VV>> f1 = asEntryFunction(f);
+		Function<Entry<KK, VV>, Entry<K, V>> g1 = asEntryFunction(g);
 		return recurse(f.apply(keySeed, valueSeed), f1.compose(g1)::apply);
 	}
 
@@ -323,7 +316,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @see #flatten(Function)
 	 */
 	default <KK, VV> EntrySequence<KK, VV> map(BiFunction<? super K, ? super V, ? extends Entry<KK, VV>> mapper) {
-		return map(Maps.asFunction(mapper));
+		return map(asEntryFunction(mapper));
 	}
 
 	/**
@@ -348,7 +341,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 */
 	default <KK, VV> EntrySequence<KK, VV> map(Function<? super K, ? extends KK> keyMapper,
 	                                           Function<? super V, ? extends VV> valueMapper) {
-		return map(Maps.asFunction(keyMapper, valueMapper));
+		return map(entry -> Maps.entry(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue())));
 	}
 
 	/**
@@ -393,7 +386,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 		if (skip == 0)
 			return this;
 
-		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
+		return () -> new TailSkippingIterator<>(iterator(), skip);
 	}
 
 	/**
@@ -408,7 +401,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * {@link BiPredicate}.
 	 */
 	default EntrySequence<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
-		return filter(Maps.asPredicate(predicate));
+		return filter(asEntryPredicate(predicate));
 	}
 
 	/**
@@ -498,7 +491,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 */
 	default <KK, VV> EntrySequence<KK, VV> flatten(
 			BiFunction<? super K, ? super V, ? extends Iterable<Entry<KK, VV>>> mapper) {
-		return flatten(Maps.asFunction(mapper));
+		return flatten(asEntryFunction(mapper));
 	}
 
 	/**
@@ -617,7 +610,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @see #repeat()
 	 */
 	default EntrySequence<K, V> until(BiPredicate<? super K, ? super V> terminal) {
-		return until(Maps.asPredicate(terminal));
+		return until(asEntryPredicate(terminal));
 	}
 
 	/**
@@ -633,7 +626,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @see #repeat()
 	 */
 	default EntrySequence<K, V> endingAt(BiPredicate<? super K, ? super V> terminal) {
-		return endingAt(Maps.asPredicate(terminal));
+		return endingAt(asEntryPredicate(terminal));
 	}
 
 	/**
@@ -729,7 +722,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingAfter(BiPredicate<? super K, ? super V> predicate) {
-		return startingAfter(Maps.asPredicate(predicate));
+		return startingAfter(asEntryPredicate(predicate));
 	}
 
 	/**
@@ -742,7 +735,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> startingFrom(BiPredicate<? super K, ? super V> predicate) {
-		return startingFrom(Maps.asPredicate(predicate));
+		return startingFrom(asEntryPredicate(predicate));
 	}
 
 	/**
@@ -899,7 +892,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * followed by the keys and values of the current entry, respectively.
 	 */
 	default Optional<Entry<K, V>> reduce(QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
-		return reduce(Maps.asBinaryOperator(operator));
+		return reduce(asEntryBinaryOperator(operator));
 	}
 
 	/**
@@ -917,7 +910,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * respectively.
 	 */
 	default Entry<K, V> reduce(K key, V value, QuaternaryFunction<K, V, K, V, Entry<K, V>> operator) {
-		return reduce(Maps.entry(key, value), Maps.asBinaryOperator(operator));
+		return reduce(Maps.entry(key, value), asEntryBinaryOperator(operator));
 	}
 
 	/**
@@ -1051,7 +1044,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * matching the predicate are not included in the result.
 	 */
 	default Sequence<EntrySequence<K, V>> split(BiPredicate<? super K, ? super V> predicate) {
-		return split(Maps.asPredicate(predicate));
+		return split(asEntryPredicate(predicate));
 	}
 
 	/**
@@ -1109,21 +1102,21 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @return the minimal element in this {@code EntrySequence} according to the given {@link Comparator}.
 	 */
 	default Optional<Entry<K, V>> min(Comparator<? super Entry<K, V>> comparator) {
-		return reduce(BinaryOperator.minBy(comparator));
+		return reduce(minBy(comparator));
 	}
 
 	/**
 	 * @return the maximum element in this {@code EntrySequence} according to the given {@link Comparator}.
 	 */
 	default Optional<Entry<K, V>> max(Comparator<? super Entry<K, V>> comparator) {
-		return reduce(BinaryOperator.maxBy(comparator));
+		return reduce(maxBy(comparator));
 	}
 
 	/**
 	 * @return true if all elements in this {@code EntrySequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(BiPredicate<? super K, ? super V> biPredicate) {
-		return Iterables.all(this, Maps.asPredicate(biPredicate));
+		return Iterables.all(this, asEntryPredicate(biPredicate));
 	}
 
 	/**
@@ -1137,7 +1130,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @return true if any element in this {@code EntrySequence} satisfies the given predicate, false otherwise.
 	 */
 	default boolean any(BiPredicate<? super K, ? super V> biPredicate) {
-		return Iterables.any(this, Maps.asPredicate(biPredicate));
+		return Iterables.any(this, asEntryPredicate(biPredicate));
 	}
 
 	/**
@@ -1145,7 +1138,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * traversed.
 	 */
 	default EntrySequence<K, V> peek(BiConsumer<? super K, ? super V> action) {
-		return peek(Maps.asConsumer(action));
+		return peek(asEntryConsumer(action));
 	}
 
 	/**
@@ -1231,7 +1224,7 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * Convert this {@code EntrySequence} to a {@link Sequence} where each item is generated by the given mapper.
 	 */
 	default <T> Sequence<T> toSequence(BiFunction<? super K, ? super V, ? extends T> mapper) {
-		return toSequence(Maps.asFunction(mapper));
+		return toSequence(asEntryFunction(mapper));
 	}
 
 	/**
@@ -1504,6 +1497,6 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	 * @since 1.2
 	 */
 	default void forEach(BiConsumer<? super K, ? super V> action) {
-		forEach(Maps.asConsumer(action));
+		forEach(asEntryConsumer(action));
 	}
 }

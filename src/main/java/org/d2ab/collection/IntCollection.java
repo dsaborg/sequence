@@ -16,9 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterable.ints.IntIterable;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.collection.iterator.IntIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;

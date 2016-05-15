@@ -30,8 +30,8 @@
 
 package org.d2ab.test;
 
-import org.d2ab.iterable.doubles.DoubleIterable;
-import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.collection.DoubleIterable;
+import org.d2ab.collection.iterator.DoubleIterator;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;

@@ -16,19 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IterableList;
-import org.d2ab.collection.Lists;
+import org.d2ab.collection.*;
+import org.d2ab.collection.iterator.*;
 import org.d2ab.function.*;
-import org.d2ab.function.chars.ToCharBiFunction;
-import org.d2ab.function.chars.ToCharFunction;
-import org.d2ab.iterable.ChainingIterable;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterator.*;
-import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.sequence.iterator.*;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -39,6 +30,9 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
+import static java.util.function.BinaryOperator.maxBy;
+import static java.util.function.BinaryOperator.minBy;
+import static org.d2ab.sequence.util.SequenceFunctions.*;
 
 /**
  * An {@link Iterable} sequence of {@link Pair}s with {@link Stream}-like operations for refining, transforming and
@@ -263,7 +257,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 */
 	static <L, R> BiSequence<L, R> recurse(L leftSeed, R rightSeed,
 	                                       BiFunction<? super L, ? super R, ? extends Pair<L, R>> op) {
-		return recurse(Pair.of(leftSeed, rightSeed), Pair.asUnaryOperator(op));
+		return recurse(Pair.of(leftSeed, rightSeed), p -> op.apply(p.getLeft(), p.getRight()));
 	}
 
 	/**
@@ -303,8 +297,8 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	static <L, R, LL, RR> BiSequence<LL, RR> recurse(L leftSeed, R rightSeed,
 	                                                 BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> f,
 	                                                 BiFunction<? super LL, ? super RR, ? extends Pair<L, R>> g) {
-		Function<Pair<L, R>, Pair<LL, RR>> f1 = Pair.asFunction(f);
-		Function<Pair<LL, RR>, Pair<L, R>> g1 = Pair.asFunction(g);
+		Function<Pair<L, R>, Pair<LL, RR>> f1 = asPairFunction(f);
+		Function<Pair<LL, RR>, Pair<L, R>> g1 = asPairFunction(g);
 		return recurse(f.apply(leftSeed, rightSeed), f1.compose(g1)::apply);
 	}
 
@@ -317,7 +311,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 */
 	default <LL, RR> BiSequence<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
-		return map(Pair.asFunction(mapper));
+		return map(asPairFunction(mapper));
 	}
 
 	/**
@@ -389,7 +383,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 		if (skip == 0)
 			return this;
 
-		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
+		return () -> new TailSkippingIterator<>(iterator(), skip);
 	}
 
 	/**
@@ -404,7 +398,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * {@link BiPredicate}.
 	 */
 	default BiSequence<L, R> filter(BiPredicate<? super L, ? super R> predicate) {
-		return filter(Pair.asPredicate(predicate));
+		return filter(asPairPredicate(predicate));
 	}
 
 	/**
@@ -494,7 +488,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>> mapper) {
-		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = Pair.asFunction(mapper);
+		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = asPairFunction(mapper);
 		return flatten(function);
 	}
 
@@ -613,7 +607,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #repeat()
 	 */
 	default BiSequence<L, R> until(BiPredicate<? super L, ? super R> terminal) {
-		return until(Pair.asPredicate(terminal));
+		return until(asPairPredicate(terminal));
 	}
 
 	/**
@@ -629,7 +623,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #repeat()
 	 */
 	default BiSequence<L, R> endingAt(BiPredicate<? super L, ? super R> terminal) {
-		return endingAt(Pair.asPredicate(terminal));
+		return endingAt(asPairPredicate(terminal));
 	}
 
 	/**
@@ -724,7 +718,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingAfter(BiPredicate<? super L, ? super R> predicate) {
-		return startingAfter(Pair.asPredicate(predicate));
+		return startingAfter(asPairPredicate(predicate));
 	}
 
 	/**
@@ -737,7 +731,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingFrom(BiPredicate<? super L, ? super R> predicate) {
-		return startingFrom(Pair.asPredicate(predicate));
+		return startingFrom(asPairPredicate(predicate));
 	}
 
 	/**
@@ -893,7 +887,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * the result pair, followed by the left and right components of the current pair, respectively.
 	 */
 	default Optional<Pair<L, R>> reduce(QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
-		return reduce(Pair.asBinaryOperator(operator));
+		return reduce(asPairBinaryOperator(operator));
 	}
 
 	/**
@@ -911,7 +905,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * the current entry, respectively.
 	 */
 	default Pair<L, R> reduce(L left, R right, QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
-		return reduce(Pair.of(left, right), Pair.asBinaryOperator(operator));
+		return reduce(Pair.of(left, right), asPairBinaryOperator(operator));
 	}
 
 	/**
@@ -1152,7 +1146,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default Sequence<BiSequence<L, R>> split(BiPredicate<? super L, ? super R> predicate) {
-		return split(Pair.asPredicate(predicate));
+		return split(asPairPredicate(predicate));
 	}
 
 	/**
@@ -1206,21 +1200,21 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @return the minimal element in this {@code BiSequence} according to the given {@link Comparator}.
 	 */
 	default Optional<Pair<L, R>> min(Comparator<? super Pair<L, R>> comparator) {
-		return reduce(BinaryOperator.minBy(comparator));
+		return reduce(minBy(comparator));
 	}
 
 	/**
 	 * @return the maximum element in this {@code BiSequence} according to the given {@link Comparator}.
 	 */
 	default Optional<Pair<L, R>> max(Comparator<? super Pair<L, R>> comparator) {
-		return reduce(BinaryOperator.maxBy(comparator));
+		return reduce(maxBy(comparator));
 	}
 
 	/**
 	 * @return true if all elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(BiPredicate<? super L, ? super R> biPredicate) {
-		return Iterables.all(this, Pair.asPredicate(biPredicate));
+		return Iterables.all(this, asPairPredicate(biPredicate));
 	}
 
 	/**
@@ -1234,7 +1228,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @return true if any element in this {@code BiSequence} satisfies the given predicate, false otherwise.
 	 */
 	default boolean any(BiPredicate<? super L, ? super R> biPredicate) {
-		return Iterables.any(this, Pair.asPredicate(biPredicate));
+		return Iterables.any(this, asPairPredicate(biPredicate));
 	}
 
 	/**
@@ -1242,7 +1236,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * traversed.
 	 */
 	default BiSequence<L, R> peek(BiConsumer<? super L, ? super R> action) {
-		return peek(Pair.asConsumer(action));
+		return peek(asPairConsumer(action));
 	}
 
 	/**
@@ -1328,8 +1322,7 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * Convert this {@code BiSequence} to a {@link Sequence} where each item is generated by the given mapper.
 	 */
 	default <T> Sequence<T> toSequence(BiFunction<? super L, ? super R, ? extends T> mapper) {
-		Function<? super Pair<L, R>, ? extends T> function = Pair.asFunction(mapper);
-		return toSequence(function);
+		return toSequence(asPairFunction(mapper));
 	}
 
 	/**
@@ -1602,6 +1595,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default void forEach(BiConsumer<? super L, ? super R> action) {
-		forEach(Pair.asConsumer(action));
+		forEach(asPairConsumer(action));
 	}
 }

@@ -16,18 +16,16 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.doubles.DoubleBiPredicate;
-import org.d2ab.function.doubles.DoubleIntConsumer;
-import org.d2ab.function.doubles.DoubleIntPredicate;
-import org.d2ab.function.doubles.DoubleIntToDoubleFunction;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.doubles.ChainingDoubleIterable;
-import org.d2ab.iterable.doubles.DoubleIterable;
-import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.doubles.*;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.ChainingDoubleIterable;
+import org.d2ab.collection.DoubleIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.iterator.*;
+import org.d2ab.function.DoubleBiPredicate;
+import org.d2ab.function.DoubleIntConsumer;
+import org.d2ab.function.DoubleIntPredicate;
+import org.d2ab.function.DoubleIntToDoubleFunction;
+import org.d2ab.sequence.iterator.doubles.*;
 
 import java.util.*;
 import java.util.function.*;

@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.collection.iterator.IntIterator;
 
 import java.util.ListIterator;
 

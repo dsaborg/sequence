@@ -30,8 +30,8 @@
 
 package org.d2ab.test;
 
-import org.d2ab.iterable.chars.CharIterable;
-import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.collection.CharIterable;
+import org.d2ab.collection.iterator.CharIterator;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;

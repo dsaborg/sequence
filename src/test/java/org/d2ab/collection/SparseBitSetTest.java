@@ -16,8 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
+import org.d2ab.collection.iterator.LongIterator;
 import org.junit.Test;
 
 import java.util.*;
