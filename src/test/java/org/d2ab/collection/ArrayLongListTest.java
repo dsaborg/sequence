@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.LongIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

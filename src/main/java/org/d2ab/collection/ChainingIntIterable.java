@@ -16,8 +16,8 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ChainingIntIterator;
-import org.d2ab.collection.iterator.IntIterator;
+import org.d2ab.iterator.ints.ChainingIntIterator;
+import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;

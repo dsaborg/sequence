@@ -16,10 +16,10 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ArrayIntIterator;
-import org.d2ab.collection.iterator.InputStreamIntIterator;
-import org.d2ab.collection.iterator.IntIterator;
-import org.d2ab.collection.iterator.IterationException;
+import org.d2ab.iterator.IterationException;
+import org.d2ab.iterator.ints.ArrayIntIterator;
+import org.d2ab.iterator.ints.InputStreamIntIterator;
+import org.d2ab.iterator.ints.IntIterator;
 
 import java.io.IOException;
 import java.io.InputStream;

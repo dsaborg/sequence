@@ -16,10 +16,15 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.*;
-import org.d2ab.collection.iterator.*;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.ChainingCharIterable;
+import org.d2ab.collection.CharIterable;
+import org.d2ab.collection.Iterables;
 import org.d2ab.function.*;
-import org.d2ab.sequence.iterator.chars.*;
+import org.d2ab.iterator.IterationException;
+import org.d2ab.iterator.Iterators;
+import org.d2ab.iterator.chars.*;
+import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.OptionalChar;
 
 import java.io.IOException;

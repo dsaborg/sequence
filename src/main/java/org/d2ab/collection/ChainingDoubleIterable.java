@@ -16,8 +16,8 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ChainingDoubleIterator;
-import org.d2ab.collection.iterator.DoubleIterator;
+import org.d2ab.iterator.doubles.ChainingDoubleIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;

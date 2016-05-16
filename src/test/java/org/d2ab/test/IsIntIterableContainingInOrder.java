@@ -31,7 +31,7 @@
 package org.d2ab.test;
 
 import org.d2ab.collection.IntIterable;
-import org.d2ab.collection.iterator.IntIterator;
+import org.d2ab.iterator.ints.IntIterator;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;

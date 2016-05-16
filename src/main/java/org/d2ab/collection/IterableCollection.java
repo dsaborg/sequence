@@ -16,6 +16,8 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.Iterators;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;

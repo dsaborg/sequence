@@ -18,11 +18,11 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.CharIterable;
 import org.d2ab.collection.Iterables;
-import org.d2ab.collection.Iterators;
-import org.d2ab.collection.iterator.CharIterator;
-import org.d2ab.collection.iterator.DelegatingCharIterator;
-import org.d2ab.collection.iterator.IntIterator;
 import org.d2ab.function.CharBinaryOperator;
+import org.d2ab.iterator.Iterators;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.DelegatingCharIterator;
+import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.OptionalChar;
 import org.junit.Test;
 

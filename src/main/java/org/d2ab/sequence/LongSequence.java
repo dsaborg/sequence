@@ -17,9 +17,12 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.*;
-import org.d2ab.collection.iterator.*;
 import org.d2ab.function.*;
-import org.d2ab.sequence.iterator.longs.*;
+import org.d2ab.iterator.Iterators;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.*;
 
 import java.util.*;
 import java.util.function.*;

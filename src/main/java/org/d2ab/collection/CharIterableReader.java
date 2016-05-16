@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.CharIterator;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.io.IOException;
 import java.io.Reader;

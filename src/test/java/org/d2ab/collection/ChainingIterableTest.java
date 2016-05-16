@@ -16,6 +16,7 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 

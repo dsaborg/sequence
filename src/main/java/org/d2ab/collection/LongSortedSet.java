@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.LongIterator;
+import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.SortedSet;
 import java.util.Spliterator;

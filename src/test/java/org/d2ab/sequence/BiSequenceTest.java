@@ -17,9 +17,9 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
-import org.d2ab.collection.Iterators;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 

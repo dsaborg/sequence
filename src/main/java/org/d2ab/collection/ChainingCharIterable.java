@@ -16,8 +16,8 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ChainingCharIterator;
-import org.d2ab.collection.iterator.CharIterator;
+import org.d2ab.iterator.chars.ChainingCharIterator;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ChainingIterator;
+import org.d2ab.iterator.ChainingIterator;
 
 import java.util.*;
 

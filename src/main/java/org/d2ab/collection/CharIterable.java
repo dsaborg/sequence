@@ -16,11 +16,11 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ArrayCharIterator;
-import org.d2ab.collection.iterator.CharIterator;
-import org.d2ab.collection.iterator.IterationException;
-import org.d2ab.collection.iterator.ReaderCharIterator;
 import org.d2ab.function.CharConsumer;
+import org.d2ab.iterator.IterationException;
+import org.d2ab.iterator.chars.ArrayCharIterator;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.ReaderCharIterator;
 
 import java.io.IOException;
 import java.io.Reader;

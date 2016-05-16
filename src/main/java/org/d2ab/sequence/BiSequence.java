@@ -17,9 +17,12 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.*;
-import org.d2ab.collection.iterator.*;
 import org.d2ab.function.*;
-import org.d2ab.sequence.iterator.*;
+import org.d2ab.iterator.*;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -32,7 +35,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
-import static org.d2ab.sequence.util.SequenceFunctions.*;
+import static org.d2ab.sequence.SequenceFunctions.*;
 
 /**
  * An {@link Iterable} sequence of {@link Pair}s with {@link Stream}-like operations for refining, transforming and

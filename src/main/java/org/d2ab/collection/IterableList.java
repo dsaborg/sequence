@@ -16,7 +16,8 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.ForwardListIterator;
+import org.d2ab.iterator.ForwardListIterator;
+import org.d2ab.iterator.Iterators;
 
 import java.util.*;
 
