@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ChainingLongIterable;
-import org.d2ab.collection.Iterables;
-import org.d2ab.collection.LongIterable;
+import org.d2ab.collection.*;
 import org.d2ab.collection.iterator.*;
 import org.d2ab.function.*;
 import org.d2ab.sequence.iterator.longs.*;
@@ -36,7 +33,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of longs.
  */
 @FunctionalInterface
-public interface LongSequence extends LongIterable {
+public interface LongSequence extends LongList {
 	/**
 	 * Create empty {@code LongSequence} with no contents.
 	 */
@@ -45,10 +42,25 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Create a {@code LongSequence} with the given longs.
+	 * Create a {@code LongSequence} with the given {@code longs}.
 	 */
 	static LongSequence of(long... ls) {
-		return () -> new ArrayLongIterator(ls);
+		return () -> LongIterator.of(ls);
+	}
+
+	/**
+	 * Create a {@code LongSequence} with the given {@code longs}, limited to the given size.
+	 */
+	static LongSequence from(long[] ls, int size) {
+		return () -> LongIterator.from(ls, size);
+	}
+
+	/**
+	 * Create a {@code LongSequence} with the given {@code longs}, reading from the given offset and limited to the
+	 * given size.
+	 */
+	static LongSequence from(long[] ls, int offset, int size) {
+		return () -> LongIterator.from(ls, offset, size);
 	}
 
 	/**
@@ -139,9 +151,7 @@ public interface LongSequence extends LongIterable {
 				cache = Arrays.copyOf(cache, cache.length * 2);
 			cache[position++] = next;
 		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(cache, position);
 	}
 
 	/**
@@ -1108,7 +1118,7 @@ public interface LongSequence extends LongIterable {
 	 */
 	default LongSequence sorted() {
 		return () -> {
-			long[] array = toArray();
+			long[] array = toLongArray();
 			Arrays.sort(array);
 			return LongIterator.of(array);
 		};
@@ -1117,28 +1127,8 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Collect the longs in this {@code LongSequence} into an array.
 	 */
-	default long[] toArray() {
-		long[] work = new long[10];
-
-		int index = 0;
-		LongIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				long[] newLongs = new long[newCapacity];
-				System.arraycopy(work, 0, newLongs, 0, work.length);
-				work = newLongs;
-			}
-			work[index++] = iterator.nextLong();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		long[] result = new long[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
+	default long[] toLongArray() {
+		return iterator().toArray();
 	}
 
 	/**
@@ -1169,7 +1159,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #sorted()
 	 */
 	default LongSequence reverse() {
-		return () -> LongIterator.of(Arrayz.reverse(toArray()));
+		return () -> LongIterator.of(Arrayz.reverse(toLongArray()));
 	}
 
 	/**
@@ -1262,7 +1252,7 @@ public interface LongSequence extends LongIterable {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<LongSequence> batch(LongBiPredicate predicate) {
-		return () -> new PredicatePartitioningLongIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningLongIterator(iterator(), predicate);
 	}
 
 	/**
@@ -1309,7 +1299,7 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default boolean contains(long l) {
+	default boolean containsLong(long l) {
 		return iterator().contains(l);
 	}
 

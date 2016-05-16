@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence.collection;
+package org.d2ab.collection;
 
 import org.junit.Test;
 

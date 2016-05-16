@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.iterator;
+package org.d2ab.collection;
 
-import org.d2ab.collection.Iterables;
 import org.junit.Test;
 
 import static org.d2ab.test.Tests.twice;

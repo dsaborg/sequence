@@ -18,6 +18,7 @@ package org.d2ab.collection.iterator;
 
 import org.d2ab.function.CharToIntFunction;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -44,6 +45,14 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 
 	static IntIterator of(int... ints) {
 		return new ArrayIntIterator(ints);
+	}
+
+	static IntIterator from(int[] ints, int size) {
+		return new ArrayIntIterator(ints, size);
+	}
+
+	static IntIterator from(int[] ints, int offset, int size) {
+		return new ArrayIntIterator(ints, offset, size);
 	}
 
 	static IntIterator from(Iterator<? extends Integer> iterator) {
@@ -146,13 +155,6 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return count;
 	}
 
-	default int reduce(int identity, IntBinaryOperator operator) {
-		int result = identity;
-		while (hasNext())
-			result = operator.applyAsInt(result, nextInt());
-		return result;
-	}
-
 	/**
 	 * @return the number of {@code ints} remaining in this iterator.
 	 */
@@ -176,5 +178,38 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 			nextInt();
 			remove();
 		}
+	}
+
+	default boolean contains(int i) {
+		while (hasNext())
+			if (nextInt() == i)
+				return true;
+
+		return false;
+	}
+
+	default int reduce(int identity, IntBinaryOperator operator) {
+		int result = identity;
+		while (hasNext())
+			result = operator.applyAsInt(result, nextInt());
+		return result;
+	}
+
+	default int[] toArray() {
+		return toArray(new int[10]);
+	}
+
+	default int[] toArray(int[] array) {
+		int index = 0;
+		while (hasNext()) {
+			if (index > array.length)
+				array = Arrays.copyOf(array, Math.min(10, array.length + (array.length >> 1)));
+			array[index++] = nextInt();
+		}
+
+		if (index < array.length)
+			array = Arrays.copyOf(array, index);
+
+		return array;
 	}
 }

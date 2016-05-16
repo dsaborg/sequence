@@ -28,8 +28,7 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
+import java.util.function.IntPredicate;
 
 import static java.util.Arrays.asList;
 
@@ -59,11 +58,11 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	/**
-	 * Create an {@code IntSequence} from an {@link InputStream} which iterates over the bytes provided in the
-	 * input stream as ints. The {@link InputStream} must support {@link InputStream#reset} or the {@code IntSequence}
+	 * Create an {@code IntIterable} from an {@link InputStream} which iterates over the bytes provided in the
+	 * input stream as ints. The {@link InputStream} must support {@link InputStream#reset} or the {@code IntIterable}
 	 * will only be available to iterate over once. The {@link InputStream} will be reset in between iterations,
 	 * if possible. If an {@link IOException} occurs during iteration, an {@link IterationException} will be thrown.
-	 * The {@link InputStream} will not be closed by the {@code IntSequence} when iteration finishes, it must be closed
+	 * The {@link InputStream} will not be closed by the {@code IntIterable} when iteration finishes, it must be closed
 	 * externally when iteration is finished.
 	 *
 	 * @since 1.1
@@ -94,30 +93,89 @@ public interface IntIterable extends Iterable<Integer> {
 	/**
 	 * Performs the given action for each {@code int} in this iterable.
 	 */
-	@Override
-	default void forEach(Consumer<? super Integer> consumer) {
-		forEachInt((consumer instanceof IntConsumer) ? (IntConsumer) consumer : consumer::accept);
+	default void forEachInt(IntConsumer consumer) {
+		iterator().forEachRemaining(consumer);
 	}
 
 	/**
 	 * Performs the given action for each {@code int} in this iterable.
 	 */
-	default void forEachInt(IntConsumer consumer) {
-		IntIterator iterator = iterator();
-		while (iterator.hasNext())
-			consumer.accept(iterator.nextInt());
+	@Override
+	default void forEach(Consumer<? super Integer> consumer) {
+		iterator().forEachRemaining(consumer);
+	}
+
+	default void clear() {
+		iterator().removeAll();
+	}
+
+	default boolean containsAll(IntCollection c) {
+		for (int i : c)
+			if (!containsInt(i))
+				return false;
+
+		return true;
+	}
+
+	default boolean removeAll(IntCollection c) {
+		return removeIntsIf(c::containsInt);
+	}
+
+	default boolean retainAll(IntCollection c) {
+		return removeIntsIf(i -> !c.containsInt(i));
+	}
+
+	default boolean containsAll(int... is) {
+		for (int i : is)
+			if (!containsInt(i))
+				return false;
+
+		return true;
+	}
+
+	default boolean removeAll(int... is) {
+		return removeIntsIf(i -> Arrayz.contains(is, i));
+	}
+
+	default boolean retainAll(int... is) {
+		return removeIntsIf(i -> !Arrayz.contains(is, i));
+	}
+
+	default boolean removeIntsIf(IntPredicate filter) {
+		boolean changed = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (filter.test(iterator.nextInt())) {
+				iterator.remove();
+				changed = true;
+			}
+		}
+		return changed;
 	}
 
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
 	}
 
-	default IntStream intStream() {
-		return StreamSupport.intStream(spliterator(), false);
+	default boolean containsInt(int i) {
+		return iterator().contains(i);
 	}
 
-	default IntStream parallelIntStream() {
-		return StreamSupport.intStream(spliterator(), true);
+	default boolean removeInt(int i) {
+		IntIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (iterator.nextInt() == i) {
+				iterator.remove();
+				return true;
+			}
+
+		return false;
+	}
+
+	/**
+	 * Collect the {@code ints} in this {@code IntIterable} into an {@code int}-array.
+	 */
+	default int[] toIntArray() {
+		return iterator().toArray();
 	}
 
 	/**
@@ -128,97 +186,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 * @since 1.2
 	 */
 	default InputStream asInputStream() {
-		return new InputStream() {
-			private long position;
-			private long mark;
-
-			private IntIterator iterator = iterator();
-
-			@Override
-			public int read() throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				if (!iterator.hasNext())
-					return -1;
-
-				return nextByte();
-			}
-
-			private byte nextByte() throws IOException {
-				int nextInt = iterator.nextInt();
-				position++;
-				if (nextInt < 0 || nextInt > 255)
-					throw new IOException("Invalid byte value: " + nextInt);
-				return (byte) nextInt;
-			}
-
-			@Override
-			public int read(byte[] buf, int off, int len) throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				if (len == 0)
-					return 0;
-
-				if (!iterator.hasNext())
-					return -1;
-
-				int index = 0;
-				while (index < len && iterator.hasNext())
-					buf[off + index++] = nextByte();
-
-				return index;
-			}
-
-			@Override
-			public long skip(long n) throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				long skipped = 0;
-				while (n > Integer.MAX_VALUE) {
-					skipped += iterator.skip(Integer.MAX_VALUE);
-					n -= Integer.MAX_VALUE;
-				}
-				skipped += iterator.skip((int) n);
-
-				position += skipped;
-
-				return skipped;
-			}
-
-			@Override
-			public boolean markSupported() {
-				return true;
-			}
-
-			@Override
-			public void mark(int readAheadLimit) {
-				mark = position;
-			}
-
-			@Override
-			public int available() throws IOException {
-				return 0;
-			}
-
-			@Override
-			public void reset() throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				iterator = iterator();
-
-				position = 0;
-				skip(mark);
-			}
-
-			@Override
-			public void close() throws IOException {
-				iterator = null;
-			}
-		};
+		return new IntIterableInputStream(this);
 	}
 
 	/**

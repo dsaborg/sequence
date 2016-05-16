@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ChainingIntIterable;
-import org.d2ab.collection.IntIterable;
-import org.d2ab.collection.IntList;
+import org.d2ab.collection.*;
 import org.d2ab.collection.iterator.*;
 import org.d2ab.function.IntBiConsumer;
 import org.d2ab.function.IntBiPredicate;
@@ -49,10 +46,25 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
-	 * Create an {@code IntSequence} with the given ints.
+	 * Create an {@code IntSequence} with the given {@code ints].
 	 */
 	static IntSequence of(int... is) {
 		return () -> IntIterator.of(is);
+	}
+
+	/**
+	 * Create an {@code intSequence} with the given {@code ints], limited to the given size.
+	 */
+	static IntSequence from(int[] is, int size) {
+		return () -> IntIterator.from(is, size);
+	}
+
+	/**
+	 * Create an {@code IntSequence} with the given {@code ints}, reading from the given offset and limited to the
+	 * given size.
+	 */
+	static IntSequence from(int[] is, int offset, int size) {
+		return () -> IntIterator.from(is, offset, size);
 	}
 
 	/**
@@ -1129,6 +1141,13 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
+	 * Collect the ints in this {@code IntSequence} into an array.
+	 */
+	default int[] toIntArray() {
+		return iterator().toArray();
+	}
+
+	/**
 	 * Prefix the ints in this {@code IntSequence} with the given ints.
 	 */
 	default IntSequence prefix(int... cs) {
@@ -1272,7 +1291,7 @@ public interface IntSequence extends IntList {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<IntSequence> batch(IntBiPredicate predicate) {
-		return () -> new PredicatePartitioningIntIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningIntIterator(iterator(), predicate);
 	}
 
 	/**

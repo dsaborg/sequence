@@ -42,20 +42,10 @@ public class Collectionz {
 		return a;
 	}
 
-	public static Integer[] toBoxedIntegerArray(Collection<? extends Integer> collection) {
-		Integer[] array = new Integer[collection.size()];
-
-		int index = 0;
-		for (Integer i : collection)
-			array[index++] = i;
-
-		return array;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static boolean containsAll(IntCollection integers, Collection<?> c) {
 		if (c instanceof IntCollection)
-			return containsAll(integers, (IntCollection) c);
+			return integers.containsAll((IntCollection) c);
 
 		for (int i : (Collection<? extends Integer>) c)
 			if (!integers.containsInt(i))
@@ -66,7 +56,7 @@ public class Collectionz {
 
 	public static boolean addAll(IntCollection integers, Collection<? extends Integer> c) {
 		if (c instanceof IntCollection)
-			return addAll(integers, (IntCollection) c);
+			return integers.addAll((IntCollection) c);
 
 		if (c.isEmpty())
 			return false;
@@ -77,57 +67,22 @@ public class Collectionz {
 
 	public static boolean retainAll(IntCollection integers, Collection<?> c) {
 		if (c instanceof IntCollection)
-			return retainAll(integers, (IntCollection) c);
+			return integers.retainAll((IntCollection) c);
 
 		return integers.removeIntsIf(i -> !c.contains(i));
 	}
 
 	public static boolean removeAll(IntCollection integers, Collection<?> c) {
 		if (c instanceof IntCollection)
-			return removeAll(integers, (IntCollection) c);
+			return integers.removeAll((IntCollection) c);
 
 		return integers.removeIntsIf(c::contains);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(IntCollection integers, IntCollection c) {
-		for (int i : c)
-			if (!integers.containsInt(i))
-				return false;
-
-		return true;
-	}
-
-	public static boolean addAll(IntCollection integers, IntCollection c) {
-		if (c.isEmpty())
-			return false;
-
-		c.forEachInt(integers::addInt);
-		return true;
-	}
-
-	public static boolean retainAll(IntCollection integers, IntCollection c) {
-		return integers.removeIntsIf(i -> !c.containsInt(i));
-	}
-
-	public static boolean removeAll(IntCollection integers, IntCollection c) {
-		return integers.removeIntsIf(c::containsInt);
-	}
-
-	public static Long[] toBoxedLongArray(Collection<? extends Long> collection) {
-		Long[] array = new Long[collection.size()];
-
-		int index = 0;
-		for (Long i : collection)
-			array[index++] = i;
-
-		return array;
-	}
-
-	@SuppressWarnings("unchecked")
 	public static boolean containsAll(LongCollection longs, Collection<?> c) {
 		if (c instanceof LongCollection)
-			return containsAll(longs, (LongCollection) c);
+			return longs.containsAll((LongCollection) c);
 
 		for (long i : (Collection<? extends Long>) c)
 			if (!longs.containsLong(i))
@@ -138,7 +93,7 @@ public class Collectionz {
 
 	public static boolean addAll(LongCollection longs, Collection<? extends Long> c) {
 		if (c instanceof LongCollection)
-			return addAll(longs, (LongCollection) c);
+			return longs.addAll((LongCollection) c);
 
 		if (c.isEmpty())
 			return false;
@@ -149,40 +104,15 @@ public class Collectionz {
 
 	public static boolean retainAll(LongCollection longs, Collection<?> c) {
 		if (c instanceof LongCollection)
-			return retainAll(longs, (LongCollection) c);
+			return longs.retainAll((LongCollection) c);
 
 		return longs.removeLongsIf(i -> !c.contains(i));
 	}
 
 	public static boolean removeAll(LongCollection longs, Collection<?> c) {
 		if (c instanceof LongCollection)
-			return removeAll(longs, (LongCollection) c);
+			return longs.removeAll((LongCollection) c);
 
 		return longs.removeLongsIf(c::contains);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static boolean containsAll(LongCollection longs, LongCollection c) {
-		for (long i : c)
-			if (!longs.containsLong(i))
-				return false;
-
-		return true;
-	}
-
-	public static boolean addAll(LongCollection longs, LongCollection c) {
-		if (c.isEmpty())
-			return false;
-
-		c.forEachLong(longs::addLong);
-		return true;
-	}
-
-	public static boolean retainAll(LongCollection longs, LongCollection c) {
-		return longs.removeLongsIf(i -> !c.containsLong(i));
-	}
-
-	public static boolean removeAll(LongCollection longs, LongCollection c) {
-		return longs.removeLongsIf(c::containsLong);
 	}
 }

@@ -57,10 +57,7 @@ public class SplittingLongIterator extends DelegatingIterator<Long, LongIterator
 			buffer[position++] = next;
 		}
 
-		if (position < buffer.length)
-			buffer = Arrays.copyOf(buffer, position);
-
-		return LongSequence.of(buffer);
+		return LongSequence.from(buffer, position);
 	}
 
 	@Override

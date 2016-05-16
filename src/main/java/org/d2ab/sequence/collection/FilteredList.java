@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence.collection;
 
-import org.d2ab.collection.iterator.Iterators;
+import org.d2ab.collection.Iterators;
 
 import java.util.AbstractSequentialList;
 import java.util.Collection;

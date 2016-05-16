@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningIntIterator<T> extends DelegatingIterator<Integer, IntIterator, IntSequence> {
+public class PredicatePartitioningIntIterator extends DelegatingIterator<Integer, IntIterator, IntSequence> {
 	private final IntBiPredicate predicate;
 	private int next;
 	private boolean hasNext;
@@ -69,9 +69,7 @@ public class PredicatePartitioningIntIterator<T> extends DelegatingIterator<Inte
 			if (split)
 				break;
 		} while (hasNext);
-		if (buffer.length > size)
-			buffer = Arrays.copyOf(buffer, size);
-		return IntSequence.of(buffer);
+		return IntSequence.from(buffer, size);
 	}
 
 	@Override

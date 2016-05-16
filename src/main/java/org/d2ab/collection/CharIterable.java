@@ -66,18 +66,16 @@ public interface CharIterable extends Iterable<Character> {
 	/**
 	 * Perform the given action for each {@code char} in this iterable.
 	 */
-	@Override
-	default void forEach(Consumer<? super Character> consumer) {
-		forEachChar((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
+	default void forEachChar(CharConsumer consumer) {
+		iterator().forEachRemaining(consumer);
 	}
 
 	/**
 	 * Perform the given action for each {@code char} in this iterable.
 	 */
-	default void forEachChar(CharConsumer consumer) {
-		CharIterator iterator = iterator();
-		while (iterator.hasNext())
-			consumer.accept(iterator.nextChar());
+	@Override
+	default void forEach(Consumer<? super Character> consumer) {
+		iterator().forEachRemaining(consumer);
 	}
 
 	static CharIterable of(char... characters) {
@@ -103,100 +101,6 @@ public interface CharIterable extends Iterable<Character> {
 	 * @since 1.2
 	 */
 	default Reader asReader() {
-		return new Reader() {
-			private long position;
-			private long mark;
-
-			private CharIterator iterator = iterator();
-
-			@Override
-			public int read() throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				if (!iterator.hasNext())
-					return -1;
-
-				position++;
-
-				return iterator.nextChar();
-			}
-
-			@Override
-			public int read(char[] cbuf, int off, int len) throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				if (len == 0)
-					return 0;
-
-				if (!iterator.hasNext())
-					return -1;
-
-				int index = 0;
-				while (index < len && iterator.hasNext())
-					cbuf[off + index++] = iterator.nextChar();
-
-				position += index;
-
-				return index;
-			}
-
-			@Override
-			public long skip(long n) throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				long skipped = 0;
-				while (n > Integer.MAX_VALUE) {
-					skipped += iterator.skip(Integer.MAX_VALUE);
-					n -= Integer.MAX_VALUE;
-				}
-				skipped += iterator.skip((int) n);
-
-				position += skipped;
-
-				return skipped;
-			}
-
-			@Override
-			public boolean markSupported() {
-				return true;
-			}
-
-			@Override
-			public void mark(int readAheadLimit) throws IOException {
-				mark = position;
-			}
-
-			@Override
-			public boolean ready() throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				return true;
-			}
-
-			@Override
-			public void reset() throws IOException {
-				if (iterator == null)
-					throw new IOException("closed");
-
-				iterator = iterator();
-				position = 0;
-
-				long skip = mark;
-				while (skip > Integer.MAX_VALUE) {
-					position += iterator.skip(Integer.MAX_VALUE);
-				    skip -= Integer.MAX_VALUE;
-				}
-				position += iterator.skip((int) skip);
-			}
-
-			@Override
-			public void close() throws IOException {
-				iterator = null;
-			}
-		};
+		return new CharIterableReader(this);
 	}
 }

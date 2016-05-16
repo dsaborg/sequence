@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ChainingCharIterable;
-import org.d2ab.collection.CharIterable;
-import org.d2ab.collection.Iterables;
+import org.d2ab.collection.*;
 import org.d2ab.collection.iterator.*;
 import org.d2ab.function.*;
 import org.d2ab.sequence.iterator.chars.*;
@@ -973,7 +970,7 @@ public interface CharSeq extends CharIterable {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**
@@ -1203,7 +1200,7 @@ public interface CharSeq extends CharIterable {
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<CharSeq> batch(CharBiPredicate predicate) {
-		return () -> new PredicatePartitioningCharIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningCharIterator(iterator(), predicate);
 	}
 
 	/**

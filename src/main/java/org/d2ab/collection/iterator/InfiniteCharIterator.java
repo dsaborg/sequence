@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence.iterator.chars;
-
-import org.d2ab.collection.iterator.CharIterator;
-import org.d2ab.collection.iterator.InfiniteIterator;
+package org.d2ab.collection.iterator;
 
 /**
  * Base class for {@link CharIterator}s that never run out of elements. The {@link CharIterator#hasNext()} method always

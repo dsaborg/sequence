@@ -18,9 +18,9 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.DoubleIterable;
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Iterators;
 import org.d2ab.collection.iterator.DelegatingDoubleIterator;
 import org.d2ab.collection.iterator.DoubleIterator;
-import org.d2ab.collection.iterator.Iterators;
 import org.junit.Test;
 
 import java.util.*;

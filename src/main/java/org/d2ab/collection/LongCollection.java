@@ -54,12 +54,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	default boolean containsLong(long l) {
-		LongIterator iterator = iterator();
-		while (iterator.hasNext())
-			if (iterator.nextLong() == l)
-				return true;
-
-		return false;
+		return iterator().contains(l);
 	}
 
 	@Override
@@ -68,8 +63,9 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	default boolean removeLong(long l) {
-		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			if (l == iterator.nextLong()) {
+		LongIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (iterator.nextLong() == l) {
 				iterator.remove();
 				return true;
 			}
@@ -81,18 +77,12 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	 * Collect the {@code longs} in this {@code LongCollection} into an {@code long}-array.
 	 */
 	default long[] toLongArray() {
-		long[] array = new long[size()];
-
-		int index = 0;
-		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			array[index++] = iterator.nextLong();
-
-		return array;
+		return iterator().toArray(new long[size()]);
 	}
 
 	@Override
 	default Long[] toArray() {
-		return Collectionz.toBoxedLongArray(this);
+		return toArray(new Long[size()]);
 	}
 
 	@Override
@@ -101,19 +91,27 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	default boolean addAll(LongCollection c) {
-		return Collectionz.addAll(this, c);
+		if (c.isEmpty())
+			return false;
+
+		c.forEachLong(this::addLong);
+		return true;
 	}
 
 	default boolean containsAll(LongCollection c) {
-		return Collectionz.containsAll(this, c);
+		for (long i : c)
+			if (!containsLong(i))
+				return false;
+
+		return true;
 	}
 
 	default boolean removeAll(LongCollection c) {
-		return Collectionz.removeAll(this, c);
+		return removeLongsIf(c::containsLong);
 	}
 
 	default boolean retainAll(LongCollection c) {
-		return Collectionz.retainAll(this, c);
+		return removeLongsIf(i -> !c.containsLong(i));
 	}
 
 	default boolean addAll(long... is) {

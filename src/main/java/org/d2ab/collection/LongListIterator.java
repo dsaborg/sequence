@@ -16,33 +16,33 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.IntIterator;
+import org.d2ab.collection.iterator.LongIterator;
 
 import java.util.ListIterator;
 
 /**
- * A {@link ListIterator} over a sequence of {@code int} values.
+ * A {@link ListIterator} over a sequence of {@code long} values.
  */
-public interface IntListIterator extends ListIterator<Integer>, IntIterator {
+public interface LongListIterator extends ListIterator<Long>, LongIterator {
 	@Override
 	boolean hasNext();
 
 	@Override
-	int nextInt();
+	long nextLong();
 
 	@Override
-	default Integer next() {
-		return nextInt();
+	default Long next() {
+		return nextLong();
 	}
 
 	@Override
 	boolean hasPrevious();
 
-	int previousInt();
+	long previousLong();
 
 	@Override
-	default Integer previous() {
-		return previousInt();
+	default Long previous() {
+		return previousLong();
 	}
 
 	@Override
@@ -56,27 +56,27 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 		throw new UnsupportedOperationException();
 	}
 
-	default void set(int i) {
+	default void set(long l) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default void set(Integer i) {
-		set((int) i);
+	default void set(Long l) {
+		set((long) l);
 	}
 
-	default void add(int i) {
+	default void add(long l) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default void add(Integer i) {
-		add((int) i);
+	default void add(Long l) {
+		add((long) l);
 	}
 
-	static IntListIterator forwardOnly(IntIterator iterator, int index) {
+	static LongListIterator forwardOnly(LongIterator iterator, int index) {
 		iterator.skip(index);
-		return new IntListIterator() {
+		return new LongListIterator() {
 			int cursor = index;
 
 			@Override
@@ -85,10 +85,10 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 			}
 
 			@Override
-			public int nextInt() {
-				int nextInt = iterator.nextInt();
+			public long nextLong() {
+				long nextLong = iterator.nextLong();
 				cursor++;
-				return nextInt;
+				return nextLong;
 			}
 
 			@Override
@@ -97,7 +97,7 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 			}
 
 			@Override
-			public int previousInt() {
+			public long previousLong() {
 				throw new UnsupportedOperationException();
 			}
 

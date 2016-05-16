@@ -52,7 +52,7 @@ public interface LongSet extends Set<Long>, LongCollection {
 
 	@Override
 	default Long[] toArray() {
-		return Collectionz.toBoxedLongArray(this);
+		return toArray(new Long[size()]);
 	}
 
 	@Override

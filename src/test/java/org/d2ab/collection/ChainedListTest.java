@@ -16,7 +16,6 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.sequence.collection.ChainedList;
 import org.junit.Test;
 
 import java.util.*;

@@ -17,9 +17,9 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Iterators;
 import org.d2ab.collection.LongIterable;
 import org.d2ab.collection.iterator.DelegatingLongIterator;
-import org.d2ab.collection.iterator.Iterators;
 import org.d2ab.collection.iterator.LongIterator;
 import org.junit.Test;
 
@@ -583,7 +583,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toArray(), new long[]{1L, 2L, 3L}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toLongArray(), new long[]{1L, 2L, 3L}), is(true)));
 	}
 
 	@Test
@@ -1425,12 +1425,12 @@ public class LongSequenceTest {
 
 	@Test
 	public void containsLong() {
-		assertThat(empty.contains(17), is(false));
+		assertThat(empty.containsLong(17), is(false));
 
-		assertThat(_12345.contains(1), is(true));
-		assertThat(_12345.contains(3), is(true));
-		assertThat(_12345.contains(5), is(true));
-		assertThat(_12345.contains(17), is(false));
+		assertThat(_12345.containsLong(1), is(true));
+		assertThat(_12345.containsLong(3), is(true));
+		assertThat(_12345.containsLong(5), is(true));
+		assertThat(_12345.containsLong(17), is(false));
 	}
 
 	@Test

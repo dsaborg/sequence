@@ -129,6 +129,16 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		return count;
 	}
 
+	/**
+	 * @return the number of {@code doubles} remaining in this iterator.
+	 */
+	default int size() {
+		int count = 0;
+		for (; hasNext(); nextDouble())
+			count++;
+		return count;
+	}
+
 	default double reduce(double identity, DoubleBinaryOperator operator) {
 		double result = identity;
 		while (hasNext())
@@ -141,18 +151,9 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	 */
 	default boolean contains(double d, double precision) {
 		while (hasNext())
-			if (DoubleComparator.compare(nextDouble(), d, precision))
+			if (DoubleComparator.equals(nextDouble(), d, precision))
 				return true;
-		return false;
-	}
 
-	/**
-	 * @return the number of {@code doubles} remaining in this iterator.
-	 */
-	default int count() {
-		int count = 0;
-		for (; hasNext(); nextDouble())
-			count++;
-		return count;
+		return false;
 	}
 }

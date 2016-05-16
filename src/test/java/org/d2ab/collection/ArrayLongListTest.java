@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.IntIterator;
+import org.d2ab.collection.iterator.LongIterator;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.emptyIterable;
@@ -34,26 +34,26 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public class ArrayIntListTest {
-	private final ArrayIntList empty = new ArrayIntList();
+public class ArrayLongListTest {
+	private final ArrayLongList empty = new ArrayLongList();
 
-	private final int[] contents;
-	private final int[] prefix;
-	private final int[] suffix;
-	private final ArrayIntList full;
+	private final long[] contents;
+	private final long[] prefix;
+	private final long[] suffix;
+	private final ArrayLongList full;
 
-	public ArrayIntListTest(int[] contents, int offset, int length, int capacity, int[] prefix, int[] suffix) {
+	public ArrayLongListTest(long[] contents, int offset, int length, int capacity, long[] prefix, long[] suffix) {
 		this.contents = Arrays.copyOf(contents, contents.length);
 		this.prefix = prefix;
 		this.suffix = suffix;
-		full = new ArrayIntList(this.contents, offset, length, capacity);
+		full = new ArrayLongList(this.contents, offset, length, capacity);
 	}
 
 	@Parameters
 	public static Object[][] parameters() {
 		return new Object[][]{
-				{new int[]{0xD, 0xE, 0xA, 0xD, 1, 2, 3, 4, 5, 0xB, 0xE, 0xE, 0xF}, 4, 5, 5,
-				 new int[]{0xD, 0xE, 0xA, 0xD}, new int[]{0xB, 0xE, 0xE, 0xF}},
+				{new long[]{0xD, 0xE, 0xA, 0xD, 1, 2, 3, 4, 5, 0xB, 0xE, 0xE, 0xF}, 4, 5, 5,
+				 new long[]{0xD, 0xE, 0xA, 0xD}, new long[]{0xB, 0xE, 0xE, 0xF}},
 				};
 	}
 
@@ -85,20 +85,20 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void toIntArray() throws Exception {
-		assertArrayEquals(new int[0], empty.toIntArray());
-		assertArrayEquals(new int[]{1, 2, 3, 4, 5}, full.toIntArray());
+	public void toLongArray() throws Exception {
+		assertArrayEquals(new long[0], empty.toLongArray());
+		assertArrayEquals(new long[]{1, 2, 3, 4, 5}, full.toLongArray());
 	}
 
 	@Test
 	public void iterator() throws Exception {
 		assertThat(empty, is(emptyIterable()));
-		assertThat(full, containsInts(1, 2, 3, 4, 5));
+		assertThat(full, containsLongs(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void listIteratorEmpty() {
-		IntListIterator emptyIterator = empty.listIterator();
+		LongListIterator emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
@@ -109,44 +109,44 @@ public class ArrayIntListTest {
 
 	@Test
 	public void listIterator() {
-		IntListIterator listIterator = full.listIterator();
+		LongListIterator listIterator = full.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.nextInt(), is(1));
+		assertThat(listIterator.nextLong(), is(1L));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextInt(), is(2));
+		assertThat(listIterator.nextLong(), is(2L));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.nextInt(), is(3));
+		assertThat(listIterator.nextLong(), is(3L));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.previousInt(), is(3));
+		assertThat(listIterator.previousLong(), is(3L));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.previousInt(), is(2));
+		assertThat(listIterator.previousLong(), is(2L));
 
 		listIterator.set(17);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextInt(), is(17));
+		assertThat(listIterator.nextLong(), is(17L));
 
 		listIterator.add(18);
 		listIterator.add(19);
@@ -154,19 +154,19 @@ public class ArrayIntListTest {
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
-		assertThat(listIterator.nextInt(), is(3));
+		assertThat(listIterator.nextLong(), is(3L));
 
-		assertThat(full, containsInts(1, 17, 18, 19, 3, 4, 5));
+		assertThat(full, containsLongs(1, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void exhaustiveListIterator() {
-		IntListIterator listIterator = full.listIterator();
+		LongListIterator listIterator = full.listIterator();
 
 		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
 			while (listIterator.hasNext()) {
-				assertThat(listIterator.nextInt(), is(i.get() + 1));
+				assertThat(listIterator.nextLong(), is((long) (i.get() + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
@@ -175,7 +175,7 @@ public class ArrayIntListTest {
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
-				assertThat(listIterator.previousInt(), is(i.get() + 1));
+				assertThat(listIterator.previousLong(), is((long) (i.get() + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get()));
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
@@ -185,34 +185,34 @@ public class ArrayIntListTest {
 
 	@Test
 	public void iteratorRemoveAll() {
-		IntIterator iterator = full.iterator();
+		LongIterator iterator = full.iterator();
 
-		int i = 0;
+		long l = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.nextInt(), is(i + 1));
+			assertThat(iterator.nextLong(), is(l + 1));
 			iterator.remove();
-			i++;
+			l++;
 		}
-		assertThat(i, is(5));
+		assertThat(l, is(5L));
 
 		assertThat(full, is(emptyIterable()));
 	}
 
 	@Test
 	public void listIteratorRemove() {
-		IntListIterator listIterator = full.listIterator();
+		LongListIterator listIterator = full.listIterator();
 
-		int i = 0;
+		long l = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextInt(), is(i + 1));
+			assertThat(listIterator.nextLong(), is(l + 1));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
 			assertThat(listIterator.nextIndex(), is(0));
 			assertThat(listIterator.previousIndex(), is(-1));
-			i++;
+			l++;
 		}
-		assertThat(i, is(5));
+		assertThat(l, is(5L));
 
 		assertThat(full, is(emptyIterable()));
 	}
@@ -220,11 +220,11 @@ public class ArrayIntListTest {
 	@Test
 	public void listIteratorRemoveBackwards() {
 		int i = 5;
-		IntListIterator listIterator = full.listIterator(i);
+		LongListIterator listIterator = full.listIterator(i);
 
 		while (listIterator.hasPrevious()) {
 			i--;
-			assertThat(listIterator.previousInt(), is(i + 1));
+			assertThat(listIterator.previousLong(), is((long) (i + 1)));
 			assertThat(listIterator.nextIndex(), is(i));
 			assertThat(listIterator.previousIndex(), is(i - 1));
 			listIterator.remove();
@@ -242,7 +242,7 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void replaceAllInts() throws Exception {
+	public void replaceAllLongs() throws Exception {
 
 	}
 
@@ -277,7 +277,7 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void addInt() throws Exception {
+	public void addLong() throws Exception {
 
 	}
 
@@ -297,12 +297,12 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void removeInt() throws Exception {
+	public void removeLong() throws Exception {
 
 	}
 
 	@Test
-	public void containsInt() throws Exception {
+	public void containsLong() throws Exception {
 
 	}
 
@@ -317,12 +317,12 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void removeIntsIf() throws Exception {
+	public void removeLongsIf() throws Exception {
 
 	}
 
 	@Test
-	public void forEachInt() throws Exception {
+	public void forEachLong() throws Exception {
 
 	}
 }

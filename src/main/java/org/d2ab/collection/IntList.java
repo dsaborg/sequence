@@ -48,7 +48,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default Integer[] toArray() {
-		return Collectionz.toBoxedIntegerArray(this);
+		return toArray(new Integer[size()]);
 	}
 
 	@Override

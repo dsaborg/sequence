@@ -16,6 +16,8 @@
 
 package org.d2ab.sequence.collection;
 
+import org.d2ab.collection.ChainedList;
+import org.d2ab.collection.ReverseList;
 import org.d2ab.sequence.Sequence;
 
 import java.util.*;

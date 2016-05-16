@@ -16,8 +16,6 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.iterator.IntIterator;
-
 import java.util.Collection;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -53,46 +51,21 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 		return containsInt((int) o);
 	}
 
-	default boolean containsInt(int i) {
-		IntIterator iterator = iterator();
-		while (iterator.hasNext())
-			if (iterator.nextInt() == i)
-				return true;
-
-		return false;
-	}
-
 	@Override
 	default boolean remove(Object o) {
 		return removeInt((int) o);
-	}
-
-	default boolean removeInt(int i) {
-		for (IntIterator iterator = iterator(); iterator.hasNext(); )
-			if (i == iterator.nextInt()) {
-				iterator.remove();
-				return true;
-			}
-
-		return false;
 	}
 
 	/**
 	 * Collect the {@code ints} in this {@code IntCollection} into an {@code int}-array.
 	 */
 	default int[] toIntArray() {
-		int[] array = new int[size()];
-
-		int index = 0;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); )
-			array[index++] = iterator.nextInt();
-
-		return array;
+		return iterator().toArray(new int[size()]);
 	}
 
 	@Override
 	default Integer[] toArray() {
-		return Collectionz.toBoxedIntegerArray(this);
+		return toArray(new Integer[size()]);
 	}
 
 	@Override
@@ -101,19 +74,11 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	default boolean addAll(IntCollection c) {
-		return Collectionz.addAll(this, c);
-	}
+		if (c.isEmpty())
+			return false;
 
-	default boolean containsAll(IntCollection c) {
-		return Collectionz.containsAll(this, c);
-	}
-
-	default boolean removeAll(IntCollection c) {
-		return Collectionz.removeAll(this, c);
-	}
-
-	default boolean retainAll(IntCollection c) {
-		return Collectionz.retainAll(this, c);
+		c.forEachInt(this::addInt);
+		return true;
 	}
 
 	default boolean addAll(int... is) {
@@ -121,22 +86,6 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 		for (int i : is)
 			changed |= addInt(i);
 		return changed;
-	}
-
-	default boolean containsAll(int... is) {
-		for (int i : is)
-			if (!containsInt(i))
-				return false;
-
-		return true;
-	}
-
-	default boolean removeAll(int... is) {
-		return removeIntsIf(i -> Arrayz.contains(is, i));
-	}
-
-	default boolean retainAll(int... is) {
-		return removeIntsIf(i -> !Arrayz.contains(is, i));
 	}
 
 	@Override
@@ -163,18 +112,6 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	default boolean removeIf(Predicate<? super Integer> filter) {
 		return removeIntsIf((IntPredicate) filter);
 	}
-
-	default boolean removeIntsIf(IntPredicate filter) {
-		boolean changed = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (filter.test(iterator.nextInt())) {
-				iterator.remove();
-				changed = true;
-			}
-		}
-		return changed;
-	}
-
 
 	@Override
 	default Spliterator.OfInt spliterator() {

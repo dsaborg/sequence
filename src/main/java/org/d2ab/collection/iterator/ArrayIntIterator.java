@@ -39,7 +39,7 @@ public class ArrayIntIterator implements IntIterator {
 		if (offset > array.length || offset < 0)
 			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
 		if (offset + size > array.length || size < 0)
-			throw new IndexOutOfBoundsException("size: " + size + ", available: " + (array.length - offset));
+			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (array.length - offset));
 		this.array = array;
 		this.offset = offset;
 		this.size = size;

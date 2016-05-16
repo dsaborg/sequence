@@ -16,9 +16,9 @@
 
 package org.d2ab.sequence.iterator;
 
+import org.d2ab.collection.Iterators;
 import org.d2ab.collection.Maps;
 import org.d2ab.collection.iterator.DelegatingReferenceIterator;
-import org.d2ab.collection.iterator.Iterators;
 
 import java.util.Iterator;
 import java.util.Map;

@@ -52,7 +52,7 @@ public interface IntSet extends Set<Integer>, IntCollection {
 
 	@Override
 	default Integer[] toArray() {
-		return Collectionz.toBoxedIntegerArray(this);
+		return toArray(new Integer[size()]);
 	}
 
 	@Override

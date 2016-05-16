@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.iterator;
+package org.d2ab.collection;
 
+import org.d2ab.collection.iterator.ArrayIterator;
+import org.d2ab.collection.iterator.CharIterator;
+import org.d2ab.collection.iterator.DelegatingIterator;
 import org.d2ab.function.CharFunction;
 
 import java.util.*;

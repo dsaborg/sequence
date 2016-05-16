@@ -16,6 +16,7 @@
 
 package org.d2ab.collection.iterator;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -42,6 +43,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 
 	static LongIterator of(long... longs) {
 		return new ArrayLongIterator(longs);
+	}
+
+	static LongIterator from(long[] longs, int size) {
+		return new ArrayLongIterator(longs, size);
+	}
+
+	static LongIterator from(long[] longs, int offset, int size) {
+		return new ArrayLongIterator(longs, offset, size);
 	}
 
 	static LongIterator from(PrimitiveIterator.OfLong iterator) {
@@ -166,5 +175,23 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			nextLong();
 			remove();
 		}
+	}
+
+	default long[] toArray() {
+		return toArray(new long[10]);
+	}
+
+	default long[] toArray(long[] array) {
+		int index = 0;
+		while (hasNext()) {
+			if (index > array.length)
+				array = Arrays.copyOf(array, Math.min(10, array.length + (array.length >> 1)));
+			array[index++] = nextLong();
+		}
+
+		if (index < array.length)
+			array = Arrays.copyOf(array, index);
+
+		return array;
 	}
 }

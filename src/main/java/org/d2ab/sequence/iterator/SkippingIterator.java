@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence.iterator;
 
-import org.d2ab.collection.iterator.Iterators;
+import org.d2ab.collection.Iterators;
 import org.d2ab.collection.iterator.ReferenceIterator;
 
 import java.util.Iterator;

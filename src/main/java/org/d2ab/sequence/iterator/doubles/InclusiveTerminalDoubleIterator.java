@@ -30,7 +30,7 @@ public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 	private boolean hasPrevious;
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal, double accuracy) {
-		this(iterator, d -> DoubleComparator.compare(d, terminal, accuracy));
+		this(iterator, d -> DoubleComparator.equals(d, terminal, accuracy));
 	}
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {

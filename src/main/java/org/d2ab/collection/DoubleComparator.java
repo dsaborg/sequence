@@ -30,7 +30,16 @@ public interface DoubleComparator extends Comparator<Double> {
 
 	int compareDoubles(double d1, double d2);
 
-	static boolean compare(double d1, double d2, double accuracy) {
-		return d1 - accuracy <= d2 && d1 + accuracy >= d2;
+	static DoubleComparator withPrecision(double precision) {
+		return (d1, d2) -> {
+			if (equals(d1, d2, precision))
+				return 0;
+
+			return Double.compare(d1, d2);
+		};
+	}
+
+	static boolean equals(double d1, double d2, double precision) {
+		return Math.abs(d1 - d2) <= precision;
 	}
 }

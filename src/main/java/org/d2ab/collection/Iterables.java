@@ -17,7 +17,6 @@
 package org.d2ab.collection;
 
 import org.d2ab.collection.iterator.ArrayIterator;
-import org.d2ab.collection.iterator.Iterators;
 import org.d2ab.util.Pair;
 
 import java.util.*;

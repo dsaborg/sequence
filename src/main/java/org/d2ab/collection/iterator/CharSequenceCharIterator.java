@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence.iterator.chars;
-
-import org.d2ab.collection.iterator.CharIterator;
+package org.d2ab.collection.iterator;
 
 import java.util.NoSuchElementException;
 

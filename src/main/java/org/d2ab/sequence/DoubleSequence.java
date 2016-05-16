@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ChainingDoubleIterable;
-import org.d2ab.collection.DoubleIterable;
-import org.d2ab.collection.Iterables;
+import org.d2ab.collection.*;
 import org.d2ab.collection.iterator.*;
 import org.d2ab.function.DoubleBiPredicate;
 import org.d2ab.function.DoubleIntConsumer;
@@ -874,7 +871,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**
@@ -1134,7 +1131,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<DoubleSequence> batch(DoubleBiPredicate predicate) {
-		return () -> new PredicatePartitioningDoubleIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningDoubleIterator(iterator(), predicate);
 	}
 
 	/**

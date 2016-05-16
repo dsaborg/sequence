@@ -31,7 +31,7 @@ public class InclusiveStartingDoubleIterator extends UnaryDoubleIterator {
 	private boolean hasNext;
 
 	public InclusiveStartingDoubleIterator(DoubleIterator iterator, double element, double accuracy) {
-		this(iterator, d -> DoubleComparator.compare(d, element, accuracy));
+		this(iterator, d -> DoubleComparator.equals(d, element, accuracy));
 	}
 
 	public InclusiveStartingDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {

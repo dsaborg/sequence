@@ -17,25 +17,46 @@
 package org.d2ab.collection.iterator;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayLongIterator implements LongIterator {
-	private long[] values;
+	private final long[] values;
+	private final int offset;
+	private final int size;
+
 	private int index;
 
 	public ArrayLongIterator(long... values) {
+		this(values, values.length);
+	}
+
+	public ArrayLongIterator(long[] values, int size) {
+		this(values, 0, size);
+	}
+
+	public ArrayLongIterator(long[] values, int offset, int size) {
+		if (offset > values.length || offset < 0)
+			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + values.length);
+		if (offset + size > values.length || size < 0)
+			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (values.length - offset));
 		this.values = values;
+		this.offset = offset;
+		this.size = size;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return index < values.length;
+		return index < size;
 	}
 
 	@Override
 	public long nextLong() {
-		return values[index++];
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return values[offset + index++];
 	}
 }

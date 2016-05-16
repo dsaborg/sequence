@@ -24,45 +24,11 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
-import java.util.stream.LongStream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
-	@Override
-	LongIterator iterator();
-
-	/**
-	 * Performs the given action for each {@code long} in this iterable.
-	 */
-	@Override
-	default void forEach(Consumer<? super Long> consumer) {
-		forEachLong((consumer instanceof LongConsumer) ? (LongConsumer) consumer : consumer::accept);
-	}
-
-	/**
-	 * Performs the given action for each {@code long} in this iterable.
-	 */
-	default void forEachLong(LongConsumer consumer) {
-		LongIterator iterator = iterator();
-		while (iterator.hasNext())
-			consumer.accept(iterator.nextLong());
-	}
-
-	default Spliterator.OfLong spliterator() {
-		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
-	}
-
-	default LongStream longStream() {
-		return StreamSupport.longStream(spliterator(), false);
-	}
-
-	default LongStream parallelLongStream() {
-		return StreamSupport.longStream(spliterator(), true);
-	}
-
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
 	}
@@ -86,5 +52,32 @@ public interface LongIterable extends Iterable<Long> {
 		return once(LongIterator.from(iterator));
 	}
 
+	@Override
+	LongIterator iterator();
 
+	/**
+	 * Performs the given action for each {@code long} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Long> consumer) {
+		iterator().forEachRemaining(consumer);
+	}
+
+	/**
+	 * Performs the given action for each {@code long} in this iterable.
+	 */
+	default void forEachLong(LongConsumer consumer) {
+		iterator().forEachRemaining(consumer);
+	}
+
+	default Spliterator.OfLong spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * Collect the longs in this {@code LongIterable} into an array.
+	 */
+	default long[] toLongArray() {
+		return iterator().toArray();
+	}
 }

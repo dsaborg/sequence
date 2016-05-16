@@ -29,7 +29,7 @@ public class ExclusiveStartingDoubleIterator extends UnaryDoubleIterator {
 	private boolean started;
 
 	public ExclusiveStartingDoubleIterator(DoubleIterator iterator, double element, double accuracy) {
-		this(iterator, d -> DoubleComparator.compare(d, element, accuracy));
+		this(iterator, d -> DoubleComparator.equals(d, element, accuracy));
 	}
 
 	public ExclusiveStartingDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {
