@@ -1415,8 +1415,19 @@ public interface IntSequence extends IntIterable {
 	 *
 	 * @since 1.2
 	 */
-	default boolean contains(int i) {
+	default boolean containsInt(int i) {
 		return iterator().contains(i);
+	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains the given {@code int}, false otherwise.
+	 *
+	 * @since 1.2
+	 * @deprecated Use {@link #containsInt(int)} instead.
+	 */
+	@Deprecated
+	default boolean contains(int i) {
+		return containsInt(i);
 	}
 
 	/**

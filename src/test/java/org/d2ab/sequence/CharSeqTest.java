@@ -1376,12 +1376,12 @@ public class CharSeqTest {
 
 	@Test
 	public void containsChar() {
-		assertThat(empty.contains('q'), is(false));
+		assertThat(empty.containsChar('q'), is(false));
 
-		assertThat(abcde.contains('a'), is(true));
-		assertThat(abcde.contains('c'), is(true));
-		assertThat(abcde.contains('e'), is(true));
-		assertThat(abcde.contains('q'), is(false));
+		assertThat(abcde.containsChar('a'), is(true));
+		assertThat(abcde.containsChar('c'), is(true));
+		assertThat(abcde.containsChar('e'), is(true));
+		assertThat(abcde.containsChar('q'), is(false));
 	}
 
 	@Test

@@ -1388,8 +1388,19 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default boolean contains(long l) {
+	default boolean containsLong(long l) {
 		return iterator().contains(l);
+	}
+
+	/**
+	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
+	 *
+	 * @since 1.2
+	 * @deprecated Use {@link #containsLong(long)} instead.
+	 */
+	@Deprecated
+	default boolean contains(long l) {
+		return containsLong(l);
 	}
 
 	/**

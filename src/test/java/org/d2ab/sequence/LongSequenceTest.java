@@ -24,7 +24,6 @@ import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
 import java.util.stream.LongStream;
@@ -1425,12 +1424,12 @@ public class LongSequenceTest {
 
 	@Test
 	public void containsLong() {
-		assertThat(empty.contains(17), is(false));
+		assertThat(empty.containsLong(17), is(false));
 
-		assertThat(_12345.contains(1), is(true));
-		assertThat(_12345.contains(3), is(true));
-		assertThat(_12345.contains(5), is(true));
-		assertThat(_12345.contains(17), is(false));
+		assertThat(_12345.containsLong(1), is(true));
+		assertThat(_12345.containsLong(3), is(true));
+		assertThat(_12345.containsLong(5), is(true));
+		assertThat(_12345.containsLong(17), is(false));
 	}
 
 	@Test
