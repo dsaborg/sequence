@@ -27,6 +27,7 @@ archivesBaseName = project.name
 
 repositories {
     jcenter()
+    mavenLocal()
 }
 
 javadoc {
@@ -54,6 +55,7 @@ signing {
 }
 
 dependencies {
+    compile 'org.d2ab:collection:1.0-SNAPSHOT'
     testCompile "org.mockito:mockito-core:[2,3)"
     testCompile 'junit:junit:[4.12,5)'
     testCompile 'org.hamcrest:java-hamcrest:[2,3)'
