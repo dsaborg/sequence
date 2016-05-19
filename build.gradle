@@ -30,6 +30,11 @@ repositories {
     mavenLocal()
 }
 
+configurations.all {
+    // Check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 javadoc {
     options.overview = "src/main/java/overview.html"
 }
