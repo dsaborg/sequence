@@ -1185,8 +1185,19 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default boolean contains(double d, double precision) {
+	default boolean containsDouble(double d, double precision) {
 		return iterator().contains(d, precision);
+	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
+	 *
+	 * @since 1.2
+	 * @deprecated Use {@link #containsDouble(double, double)} instead.
+	 */
+	@Deprecated
+	default boolean contains(double d, double precision) {
+		return containsDouble(d, precision);
 	}
 
 	/**

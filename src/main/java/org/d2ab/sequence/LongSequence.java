@@ -1307,6 +1307,17 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
+	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
+	 *
+	 * @since 1.2
+	 * @deprecated Use {@link #containsLong(long)} instead.
+	 */
+	@Deprecated
+	default boolean contains(long l) {
+		return containsLong(l);
+	}
+
+	/**
 	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
 	 *
 	 * @since 1.2

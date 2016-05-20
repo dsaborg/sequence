@@ -24,7 +24,6 @@ import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
 import java.util.stream.LongStream;

@@ -1252,8 +1252,19 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default boolean contains(char l) {
-		return iterator().contains(l);
+	default boolean containsChar(char c) {
+		return iterator().contains(c);
+	}
+
+	/**
+	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
+	 *
+	 * @since 1.2
+	 * @deprecated Use {@link #containsChar(char)} instead.
+	 */
+	@Deprecated
+	default boolean contains(char c) {
+		return containsChar(c);
 	}
 
 	/**
