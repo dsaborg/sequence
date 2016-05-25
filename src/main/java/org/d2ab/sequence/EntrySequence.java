@@ -925,6 +925,14 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	}
 
 	/**
+	 * @return the last entry of this {@code EntrySequence} or an empty {@link Optional} if there are no entries in
+	 * the {@code EntrySequence}.
+	 */
+	default Optional<Entry<K, V>> last() {
+		return Iterators.last(iterator());
+	}
+
+	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
 	 * than the index.
 	 */
@@ -933,11 +941,64 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the last entry of this {@code EntrySequence} or an empty {@link Optional} if there are no entries in
-	 * the {@code EntrySequence}.
+	 * @return the first entry of this {@code EntrySequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching entries in the {@code EntrySequence}.
+	 *
+	 * @since 1.3
 	 */
-	default Optional<Entry<K, V>> last() {
-		return Iterators.last(iterator());
+	default Optional<Entry<K, V>> first(Predicate<? super Entry<K, V>> predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the last entry of this {@code EntrySequence} the matches the given predicate, or an empty
+	 * {@link Optional}
+	 * if there are no matching entries in the {@code EntrySequence}.
+	 *
+	 * @since 1.3
+	 */
+	default Optional<Entry<K, V>> last(Predicate<? super Entry<K, V>> predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the entry at the given index out of the entries matching the given predicate, or an empty
+	 * {@link Optional} if the {@code EntrySequence} of matching entries is smaller than the index.
+	 *
+	 * @since 1.3
+	 */
+	default Optional<Entry<K, V>> at(int index, Predicate<? super Entry<K, V>> predicate) {
+		return filter(predicate).at(index);
+	}
+
+	/**
+	 * @return the first entry of this {@code EntrySequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching entries in the {@code EntrySequence}.
+	 *
+	 * @since 1.3
+	 */
+	default Optional<Entry<K, V>> first(BiPredicate<? super K, ? super V> predicate) {
+		return at(0, predicate);
+	}
+
+	/**
+	 * @return the last entry of this {@code EntrySequence} the matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching entries in the {@code EntrySequence}.
+	 *
+	 * @since 1.3
+	 */
+	default Optional<Entry<K, V>> last(BiPredicate<? super K, ? super V> predicate) {
+		return filter(predicate).last();
+	}
+
+	/**
+	 * @return the entry at the given index out of the entries matching the given predicate, or an empty
+	 * {@link Optional} if the {@code EntrySequence} of matching entries is smaller than the index.
+	 *
+	 * @since 1.3
+	 */
+	default Optional<Entry<K, V>> at(int index, BiPredicate<? super K, ? super V> predicate) {
+		return filter(predicate).at(index);
 	}
 
 	/**

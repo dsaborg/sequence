@@ -348,7 +348,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.2
 	 */
 	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjIntFunction<? super Pair<L, R>, ? extends Pair<LL, RR>>
@@ -362,7 +361,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.2
 	 */
 	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjIntFunction<? super L, ? super R, ? extends Pair<LL, RR>>
@@ -1297,7 +1295,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharBiFunction<? super L, ? super R> mapper) {
@@ -1315,7 +1312,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntBiFunction<? super L, ? super R> mapper) {
@@ -1333,7 +1329,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongBiFunction<? super L, ? super R> mapper) {
@@ -1351,7 +1346,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toLongs(ToLongBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleBiFunction<? super L, ? super R> mapper) {
@@ -1369,7 +1363,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharFunction<? super Pair<L, R>> mapper) {
@@ -1387,7 +1380,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntFunction<? super Pair<L, R>> mapper) {
@@ -1405,7 +1397,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongFunction<? super Pair<L, R>> mapper) {
@@ -1423,7 +1414,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super Pair<L, R>> mapper) {
