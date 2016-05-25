@@ -691,29 +691,6 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalChar.empty()));
-			assertThat(a.second(), is(OptionalChar.empty()));
-			assertThat(ab.second(), is(OptionalChar.of('b')));
-			assertThat(abc.second(), is(OptionalChar.of('b')));
-			assertThat(abcd.second(), is(OptionalChar.of('b')));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalChar.empty()));
-			assertThat(a.third(), is(OptionalChar.empty()));
-			assertThat(ab.third(), is(OptionalChar.empty()));
-			assertThat(abc.third(), is(OptionalChar.of('c')));
-			assertThat(abcd.third(), is(OptionalChar.of('c')));
-			assertThat(abcde.third(), is(OptionalChar.of('c')));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalChar.empty()));
@@ -747,29 +724,6 @@ public class CharSeqTest {
 			assertThat(a.first(x -> x > 'a'), is(OptionalChar.empty()));
 			assertThat(ab.first(x -> x > 'a'), is(OptionalChar.of('b')));
 			assertThat(abcde.first(x -> x > 'a'), is(OptionalChar.of('b')));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(a.second(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(ab.second(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(abc.second(x -> x > 'a'), is(OptionalChar.of('c')));
-			assertThat(abcd.second(x -> x > 'a'), is(OptionalChar.of('c')));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(a.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(ab.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(abc.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(abcd.third(x -> x > 'a'), is(OptionalChar.of('d')));
-			assertThat(abcde.third(x -> x > 'a'), is(OptionalChar.of('d')));
 		});
 	}
 

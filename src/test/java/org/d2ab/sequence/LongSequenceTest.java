@@ -628,29 +628,6 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalLong.empty()));
-			assertThat(_1.second(), is(OptionalLong.empty()));
-			assertThat(_12.second(), is(OptionalLong.of(2L)));
-			assertThat(_123.second(), is(OptionalLong.of(2L)));
-			assertThat(_1234.second(), is(OptionalLong.of(2L)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalLong.empty()));
-			assertThat(_1.third(), is(OptionalLong.empty()));
-			assertThat(_12.third(), is(OptionalLong.empty()));
-			assertThat(_123.third(), is(OptionalLong.of(3L)));
-			assertThat(_1234.third(), is(OptionalLong.of(3L)));
-			assertThat(_12345.third(), is(OptionalLong.of(3L)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalLong.empty()));
@@ -684,29 +661,6 @@ public class LongSequenceTest {
 			assertThat(_1.first(x -> x > 1), is(OptionalLong.empty()));
 			assertThat(_12.first(x -> x > 1), is(OptionalLong.of(2)));
 			assertThat(_12345.first(x -> x > 1), is(OptionalLong.of(2)));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_1.second(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_12.second(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_123.second(x -> x > 1), is(OptionalLong.of(3)));
-			assertThat(_1234.second(x -> x > 1), is(OptionalLong.of(3)));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_1.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_12.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_123.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_1234.third(x -> x > 1), is(OptionalLong.of(4)));
-			assertThat(_12345.third(x -> x > 1), is(OptionalLong.of(4)));
 		});
 	}
 

@@ -743,22 +743,6 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * @return the second double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
-	 * than two doubles in the {@code DoubleSequence}.
-	 */
-	default OptionalDouble second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
-	 * than three doubles in the {@code DoubleSequence}.
-	 */
-	default OptionalDouble third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are no
 	 * doubles in the {@code DoubleSequence}.
 	 */
@@ -800,30 +784,6 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default OptionalDouble first(DoublePredicate predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are less than two matching doubles in the {@code DoubleSequence}.
-	 *
-	 * @see #filter(DoublePredicate)
-	 * @see #at(int, DoublePredicate)
-	 * @since 1.2
-	 */
-	default OptionalDouble second(DoublePredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are less than three matching doubles in the {@code DoubleSequence}.
-	 *
-	 * @see #filter(DoublePredicate)
-	 * @see #at(int, DoublePredicate)
-	 * @since 1.2
-	 */
-	default OptionalDouble third(DoublePredicate predicate) {
-		return at(2, predicate);
 	}
 
 	/**

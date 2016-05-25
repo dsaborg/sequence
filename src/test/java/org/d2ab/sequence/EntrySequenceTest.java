@@ -1050,29 +1050,6 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(Maps.entry("2", 2))));
-			assertThat(_123.second(), is(Optional.of(Maps.entry("2", 2))));
-			assertThat(_1234.second(), is(Optional.of(Maps.entry("2", 2))));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(_1.third(), is(Optional.empty()));
-			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(Maps.entry("3", 3))));
-			assertThat(_1234.third(), is(Optional.of(Maps.entry("3", 3))));
-			assertThat(_12345.third(), is(Optional.of(Maps.entry("3", 3))));
-		});
-	}
-
-	@Test
 	public void at() {
 		twice(() -> assertThat(empty.at(0), is(Optional.empty())));
 		twice(() -> assertThat(empty.at(17), is(Optional.empty())));

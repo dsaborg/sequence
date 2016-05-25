@@ -1015,29 +1015,6 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_123.second(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_1234.second(), is(Optional.of(Pair.of("2", 2))));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(_1.third(), is(Optional.empty()));
-			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.third(), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_12345.third(), is(Optional.of(Pair.of("3", 3))));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -1071,29 +1048,6 @@ public class BiSequenceTest {
 			assertThat(_1.first(p -> p.getRight() > 1), is(Optional.empty()));
 			assertThat(_12.first(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
 			assertThat(_123.first(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_1.second(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_12.second(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_123.second(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.second(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_1.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_12.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_123.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_1234.third(p -> p.getRight() > 1), is(Optional.of(Pair.of("4", 4))));
-			assertThat(_12345.third(p -> p.getRight() > 1), is(Optional.of(Pair.of("4", 4))));
 		});
 	}
 
@@ -1135,29 +1089,6 @@ public class BiSequenceTest {
 			assertThat(_1.first((l, r) -> r > 1), is(Optional.empty()));
 			assertThat(_12.first((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
 			assertThat(_123.first((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
-		});
-	}
-
-	@Test
-	public void secondByBiPredicate() {
-		twice(() -> {
-			assertThat(empty.second((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_1.second((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_12.second((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_123.second((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.second((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
-		});
-	}
-
-	@Test
-	public void thirdByBiPredicate() {
-		twice(() -> {
-			assertThat(empty.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_1.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_12.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_123.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_1234.third((l, r) -> r > 1), is(Optional.of(Pair.of("4", 4))));
-			assertThat(_12345.third((l, r) -> r > 1), is(Optional.of(Pair.of("4", 4))));
 		});
 	}
 

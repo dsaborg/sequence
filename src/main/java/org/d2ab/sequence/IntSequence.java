@@ -918,22 +918,6 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
-	 * @return the second int of this {@code IntSequence} or an empty {@link OptionalInt} if there are less than two
-	 * ints in the {@code IntSequence}.
-	 */
-	default OptionalInt second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third int of this {@code IntSequence} or an empty {@link OptionalInt} if there are less than
-	 * three ints in the {@code IntSequence}.
-	 */
-	default OptionalInt third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no
 	 * ints in the {@code IntSequence}.
 	 */
@@ -975,30 +959,6 @@ public interface IntSequence extends IntList {
 	 */
 	default OptionalInt first(IntPredicate predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second int of those in this {@code IntSequence} matching the given predicate, or an empty
-	 * {@link OptionalInt} if there are less than two matching ints in the {@code IntSequence}.
-	 *
-	 * @see #filter(IntPredicate)
-	 * @see #at(int, IntPredicate)
-	 * @since 1.2
-	 */
-	default OptionalInt second(IntPredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third int of those in this {@code IntSequence} matching the given predicate, or an empty
-	 * {@link OptionalInt} if there are less than three matching ints in the {@code IntSequence}.
-	 *
-	 * @see #filter(IntPredicate)
-	 * @see #at(int, IntPredicate)
-	 * @since 1.2
-	 */
-	default OptionalInt third(IntPredicate predicate) {
-		return at(2, predicate);
 	}
 
 	/**

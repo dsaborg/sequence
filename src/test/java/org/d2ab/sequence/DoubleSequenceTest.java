@@ -639,29 +639,6 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalDouble.empty()));
-			assertThat(_1.second(), is(OptionalDouble.empty()));
-			assertThat(_12.second(), is(OptionalDouble.of(2.0)));
-			assertThat(_123.second(), is(OptionalDouble.of(2.0)));
-			assertThat(_1234.second(), is(OptionalDouble.of(2.0)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalDouble.empty()));
-			assertThat(_1.third(), is(OptionalDouble.empty()));
-			assertThat(_12.third(), is(OptionalDouble.empty()));
-			assertThat(_123.third(), is(OptionalDouble.of(3.0)));
-			assertThat(_1234.third(), is(OptionalDouble.of(3.0)));
-			assertThat(_12345.third(), is(OptionalDouble.of(3.0)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalDouble.empty()));
@@ -695,29 +672,6 @@ public class DoubleSequenceTest {
 			assertThat(_1.first(x -> x > 1), is(OptionalDouble.empty()));
 			assertThat(_12.first(x -> x > 1), is(OptionalDouble.of(2)));
 			assertThat(_12345.first(x -> x > 1), is(OptionalDouble.of(2)));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_1.second(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_12.second(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_123.second(x -> x > 1), is(OptionalDouble.of(3)));
-			assertThat(_1234.second(x -> x > 1), is(OptionalDouble.of(3)));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_1.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_12.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_123.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_1234.third(x -> x > 1), is(OptionalDouble.of(4)));
-			assertThat(_12345.third(x -> x > 1), is(OptionalDouble.of(4)));
 		});
 	}
 

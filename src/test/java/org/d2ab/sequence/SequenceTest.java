@@ -1218,29 +1218,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(2)));
-			assertThat(_123.second(), is(Optional.of(2)));
-			assertThat(_1234.second(), is(Optional.of(2)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(_1.third(), is(Optional.empty()));
-			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(3)));
-			assertThat(_1234.third(), is(Optional.of(3)));
-			assertThat(_12345.third(), is(Optional.of(3)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -1274,29 +1251,6 @@ public class SequenceTest {
 			assertThat(_1.first(x -> x > 1), is(Optional.empty()));
 			assertThat(_12.first(x -> x > 1), is(Optional.of(2)));
 			assertThat(_12345.first(x -> x > 1), is(Optional.of(2)));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 1), is(Optional.empty()));
-			assertThat(_1.second(x -> x > 1), is(Optional.empty()));
-			assertThat(_12.second(x -> x > 1), is(Optional.empty()));
-			assertThat(_123.second(x -> x > 1), is(Optional.of(3)));
-			assertThat(_1234.second(x -> x > 1), is(Optional.of(3)));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_1.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_12.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_123.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_1234.third(x -> x > 1), is(Optional.of(4)));
-			assertThat(_12345.third(x -> x > 1), is(Optional.of(4)));
 		});
 	}
 
@@ -1339,28 +1293,6 @@ public class SequenceTest {
 			assertThat(mixed.first(Number.class), is(Optional.of(1)));
 			assertThat(mixed.first(Integer.class), is(Optional.of(1)));
 			assertThat(mixed.first(Double.class), is(Optional.of(1.0)));
-		});
-	}
-
-	@Test
-	public void secondByClass() {
-		twice(() -> {
-			assertThat(mixed.second(Long.class), is(Optional.empty()));
-			assertThat(mixed.second(String.class), is(Optional.of("2")));
-			assertThat(mixed.second(Number.class), is(Optional.of(1.0)));
-			assertThat(mixed.second(Integer.class), is(Optional.of(2)));
-			assertThat(mixed.second(Double.class), is(Optional.of(2.0)));
-		});
-	}
-
-	@Test
-	public void thirdByClass() {
-		twice(() -> {
-			assertThat(mixed.third(Long.class), is(Optional.empty()));
-			assertThat(mixed.third(String.class), is(Optional.of("3")));
-			assertThat(mixed.third(Number.class), is(Optional.of(2)));
-			assertThat(mixed.third(Integer.class), is(Optional.of(3)));
-			assertThat(mixed.third(Double.class), is(Optional.of(3.0)));
 		});
 	}
 

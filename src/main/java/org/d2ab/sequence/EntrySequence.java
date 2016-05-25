@@ -925,22 +925,6 @@ public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the second entry of this {@code EntrySequence} or an empty {@link Optional} if there are one or less
-	 * entries in the {@code EntrySequence}.
-	 */
-	default Optional<Entry<K, V>> second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third entry of this {@code EntrySequence} or an empty {@link Optional} if there are two or less
-	 * entries in the {@code EntrySequence}.
-	 */
-	default Optional<Entry<K, V>> third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@code EntrySequence} is smaller
 	 * than the index.
 	 */

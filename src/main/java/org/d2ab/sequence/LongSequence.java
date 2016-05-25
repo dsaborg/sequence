@@ -911,22 +911,6 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
-	 * @return the second long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than two
-	 * longs in the {@code LongSequence}.
-	 */
-	default OptionalLong second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than
-	 * three longs in the {@code LongSequence}.
-	 */
-	default OptionalLong third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
 	 * longs in the {@code LongSequence}.
 	 */
@@ -968,30 +952,6 @@ public interface LongSequence extends LongList {
 	 */
 	default OptionalLong first(LongPredicate predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are less than two matching longs in the {@code LongSequence}.
-	 *
-	 * @see #filter(LongPredicate)
-	 * @see #at(int, LongPredicate)
-	 * @since 1.2
-	 */
-	default OptionalLong second(LongPredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are less than three matching longs in the {@code LongSequence}.
-	 *
-	 * @see #filter(LongPredicate)
-	 * @see #at(int, LongPredicate)
-	 * @since 1.2
-	 */
-	default OptionalLong third(LongPredicate predicate) {
-		return at(2, predicate);
 	}
 
 	/**

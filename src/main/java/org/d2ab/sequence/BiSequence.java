@@ -920,22 +920,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	}
 
 	/**
-	 * @return the second pair of this {@code BiSequence} or an empty {@link Optional} if there are one or less pairs
-	 * in the {@code BiSequence}.
-	 */
-	default Optional<Pair<L, R>> second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third pair of this {@code BiSequence} or an empty {@link Optional} if there are two or less pairs
-	 * in the {@code BiSequence}.
-	 */
-	default Optional<Pair<L, R>> third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last pair of this {@code BiSequence} or an empty {@link Optional} if there are no pairs in the
 	 * {@code BiSequence}.
 	 */
@@ -961,26 +945,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 */
 	default Optional<Pair<L, R>> first(Predicate<? super Pair<L, R>> predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second pair of this {@code BiSequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is one or less matching pairs in the {@code BiSequence}.
-	 *
-	 * @since 1.2
-	 */
-	default Optional<Pair<L, R>> second(Predicate<? super Pair<L, R>> predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third pair of this {@code BiSequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is two or less matching pairs in the {@code BiSequence}.
-	 *
-	 * @since 1.2
-	 */
-	default Optional<Pair<L, R>> third(Predicate<? super Pair<L, R>> predicate) {
-		return at(2, predicate);
 	}
 
 	/**
@@ -1011,26 +975,6 @@ public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
 	 */
 	default Optional<Pair<L, R>> first(BiPredicate<? super L, ? super R> predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second pair of this {@code BiSequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is one or less matching pairs in the {@code BiSequence}.
-	 *
-	 * @since 1.2
-	 */
-	default Optional<Pair<L, R>> second(BiPredicate<? super L, ? super R> predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third pair of this {@code BiSequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is two or less matching pairs in the {@code BiSequence}.
-	 *
-	 * @since 1.2
-	 */
-	default Optional<Pair<L, R>> third(BiPredicate<? super L, ? super R> predicate) {
-		return at(2, predicate);
 	}
 
 	/**

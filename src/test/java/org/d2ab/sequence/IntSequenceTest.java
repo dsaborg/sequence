@@ -674,29 +674,6 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalInt.empty()));
-			assertThat(_1.second(), is(OptionalInt.empty()));
-			assertThat(_12.second(), is(OptionalInt.of(2)));
-			assertThat(_123.second(), is(OptionalInt.of(2)));
-			assertThat(_1234.second(), is(OptionalInt.of(2)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalInt.empty()));
-			assertThat(_1.third(), is(OptionalInt.empty()));
-			assertThat(_12.third(), is(OptionalInt.empty()));
-			assertThat(_123.third(), is(OptionalInt.of(3)));
-			assertThat(_1234.third(), is(OptionalInt.of(3)));
-			assertThat(_12345.third(), is(OptionalInt.of(3)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalInt.empty()));

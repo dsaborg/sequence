@@ -835,22 +835,6 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * @return the second character of this {@code CharSeq} or an empty {@link OptionalChar} if there are less than two
-	 * characters in the {@code CharSeq}.
-	 */
-	default OptionalChar second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third character of this {@code CharSeq} or an empty {@link OptionalChar} if there are less than
-	 * three characters in the {@code CharSeq}.
-	 */
-	default OptionalChar third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last character of this {@code CharSeq} or an empty {@link OptionalChar} if there are no
 	 * characters in the {@code CharSeq}.
 	 */
@@ -892,30 +876,6 @@ public interface CharSeq extends CharIterable {
 	 */
 	default OptionalChar first(CharPredicate predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second char of those in this {@code CharSeq} matching the given predicate, or an empty
-	 * {@link OptionalChar} if there are less than two matching chars in the {@code CharSeq}.
-	 *
-	 * @see #filter(CharPredicate)
-	 * @see #at(int, CharPredicate)
-	 * @since 1.2
-	 */
-	default OptionalChar second(CharPredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third char of those in this {@code CharSeq} matching the given predicate, or an empty
-	 * {@link OptionalChar} if there are less than three matching chars in the {@code CharSeq}.
-	 *
-	 * @see #filter(CharPredicate)
-	 * @see #at(int, CharPredicate)
-	 * @since 1.2
-	 */
-	default OptionalChar third(CharPredicate predicate) {
-		return at(2, predicate);
 	}
 
 	/**

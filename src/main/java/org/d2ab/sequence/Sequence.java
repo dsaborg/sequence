@@ -1113,22 +1113,6 @@ public interface Sequence<T> extends IterableList<T> {
 	}
 
 	/**
-	 * @return the second element of this {@code Sequence} or an empty {@link Optional} if there is one or less
-	 * elements in the {@code Sequence}.
-	 */
-	default Optional<T> second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third element of this {@code Sequence} or an empty {@link Optional} if there is two or less
-	 * elements in the {@code Sequence}.
-	 */
-	default Optional<T> third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no
 	 * elements in the {@code Sequence}.
 	 */
@@ -1154,26 +1138,6 @@ public interface Sequence<T> extends IterableList<T> {
 	 */
 	default Optional<T> first(Predicate<? super T> predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 */
-	default Optional<T> second(Predicate<? super T> predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 */
-	default Optional<T> third(Predicate<? super T> predicate) {
-		return at(2, predicate);
 	}
 
 	/**
@@ -1204,26 +1168,6 @@ public interface Sequence<T> extends IterableList<T> {
 	 */
 	default <U> Optional<U> first(Class<? extends U> target) {
 		return at(0, target);
-	}
-
-	/**
-	 * @return the second element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
-	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 */
-	default <U> Optional<U> second(Class<? extends U> target) {
-		return at(1, target);
-	}
-
-	/**
-	 * @return the third element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
-	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 */
-	default <U> Optional<U> third(Class<? extends U> target) {
-		return at(2, target);
 	}
 
 	/**
