@@ -1074,6 +1074,16 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void last() {
+		twice(() -> {
+			assertThat(empty.last(), is(Optional.empty()));
+			assertThat(_1.last(), is(Optional.of(Maps.entry("1", 1))));
+			assertThat(_12.last(), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_123.last(), is(Optional.of(Maps.entry("3", 3))));
+		});
+	}
+
+	@Test
 	public void at() {
 		twice(() -> assertThat(empty.at(0), is(Optional.empty())));
 		twice(() -> assertThat(empty.at(17), is(Optional.empty())));
@@ -1087,12 +1097,84 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void last() {
+	public void firstByPredicate() {
 		twice(() -> {
-			assertThat(empty.last(), is(Optional.empty()));
-			assertThat(_1.last(), is(Optional.of(Maps.entry("1", 1))));
-			assertThat(_12.last(), is(Optional.of(Maps.entry("2", 2))));
-			assertThat(_123.last(), is(Optional.of(Maps.entry("3", 3))));
+			assertThat(empty.first(e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_1.first(e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_12.first(e -> e.getValue() > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_123.first(e -> e.getValue() > 1), is(Optional.of(Maps.entry("2", 2))));
+		});
+	}
+
+	@Test
+	public void lastByPredicate() {
+		twice(() -> {
+			assertThat(empty.last(e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_1.last(e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_12.last(e -> e.getValue() > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_123.last(e -> e.getValue() > 1), is(Optional.of(Maps.entry("3", 3))));
+		});
+	}
+
+	@Test
+	public void atByPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(empty.at(17, e -> e.getValue() > 1), is(Optional.empty()));
+
+			assertThat(_1.at(0, e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_1.at(17, e -> e.getValue() > 1), is(Optional.empty()));
+
+			assertThat(_12.at(0, e -> e.getValue() > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_12.at(1, e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_12.at(17, e -> e.getValue() > 1), is(Optional.empty()));
+
+			assertThat(_12345.at(0, e -> e.getValue() > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_12345.at(1, e -> e.getValue() > 1), is(Optional.of(Maps.entry("3", 3))));
+			assertThat(_12345.at(3, e -> e.getValue() > 1), is(Optional.of(Maps.entry("5", 5))));
+			assertThat(_12345.at(4, e -> e.getValue() > 1), is(Optional.empty()));
+			assertThat(_12345.at(17, e -> e.getValue() > 1), is(Optional.empty()));
+		});
+	}
+
+	@Test
+	public void firstByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.first((k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_1.first((k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_12.first((k, v) -> v > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_123.first((k, v) -> v > 1), is(Optional.of(Maps.entry("2", 2))));
+		});
+	}
+
+	@Test
+	public void lastByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.last((k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_1.last((k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_12.last((k, v) -> v > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_123.last((k, v) -> v > 1), is(Optional.of(Maps.entry("3", 3))));
+		});
+	}
+
+	@Test
+	public void atByBiPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, (k, v) -> v > 1), is(Optional.empty()));
+			assertThat(empty.at(17, (k, v) -> v > 1), is(Optional.empty()));
+
+			assertThat(_1.at(0, (k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_1.at(17, (k, v) -> v > 1), is(Optional.empty()));
+
+			assertThat(_12.at(0, (k, v) -> v > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_12.at(1, (k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_12.at(17, (k, v) -> v > 1), is(Optional.empty()));
+
+			assertThat(_12345.at(0, (k, v) -> v > 1), is(Optional.of(Maps.entry("2", 2))));
+			assertThat(_12345.at(1, (k, v) -> v > 1), is(Optional.of(Maps.entry("3", 3))));
+			assertThat(_12345.at(3, (k, v) -> v > 1), is(Optional.of(Maps.entry("5", 5))));
+			assertThat(_12345.at(4, (k, v) -> v > 1), is(Optional.empty()));
+			assertThat(_12345.at(17, (k, v) -> v > 1), is(Optional.empty()));
 		});
 	}
 

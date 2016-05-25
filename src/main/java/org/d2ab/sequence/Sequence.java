@@ -18,9 +18,9 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
+import org.d2ab.function.ObjLongFunction;
 import org.d2ab.function.ObjLongPredicate;
 import org.d2ab.function.chars.ToCharFunction;
-import org.d2ab.function.ObjLongFunction;
 import org.d2ab.iterable.ChainingIterable;
 import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.*;
@@ -1225,7 +1225,10 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * @return the second element of this {@code Sequence} or an empty {@link Optional} if there is one or less
 	 * elements in the {@code Sequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default Optional<T> second() {
 		return at(1);
 	}
@@ -1233,7 +1236,10 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * @return the third element of this {@code Sequence} or an empty {@link Optional} if there is two or less
 	 * elements in the {@code Sequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default Optional<T> third() {
 		return at(2);
 	}
@@ -1282,7 +1288,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, Predicate)} instead.
 	 */
+	@Deprecated
 	default Optional<T> second(Predicate<? super T> predicate) {
 		return at(1, predicate);
 	}
@@ -1292,7 +1300,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, Predicate)} instead.
 	 */
+	@Deprecated
 	default Optional<T> third(Predicate<? super T> predicate) {
 		return at(2, predicate);
 	}
@@ -1332,7 +1342,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, Class)} instead.
 	 */
+	@Deprecated
 	default <U> Optional<U> second(Class<? extends U> target) {
 		return at(1, target);
 	}
@@ -1342,7 +1354,9 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, Class)} instead.
 	 */
+	@Deprecated
 	default <U> Optional<U> third(Class<? extends U> target) {
 		return at(2, target);
 	}

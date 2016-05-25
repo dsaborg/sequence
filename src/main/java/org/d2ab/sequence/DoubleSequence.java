@@ -799,7 +799,10 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * @return the second double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
 	 * than two doubles in the {@code DoubleSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default OptionalDouble second() {
 		return at(1);
 	}
@@ -807,7 +810,10 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * @return the third double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
 	 * than three doubles in the {@code DoubleSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default OptionalDouble third() {
 		return at(2);
 	}
@@ -863,7 +869,9 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #filter(DoublePredicate)
 	 * @see #at(long, DoublePredicate)
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, DoublePredicate)} instead.
 	 */
+	@Deprecated
 	default OptionalDouble second(DoublePredicate predicate) {
 		return at(1, predicate);
 	}
@@ -875,7 +883,9 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #filter(DoublePredicate)
 	 * @see #at(long, DoublePredicate)
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, DoublePredicate)} instead.
 	 */
+	@Deprecated
 	default OptionalDouble third(DoublePredicate predicate) {
 		return at(2, predicate);
 	}

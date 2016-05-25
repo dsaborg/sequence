@@ -961,7 +961,10 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * @return the second int of this {@code IntSequence} or an empty {@link OptionalInt} if there are less than two
 	 * ints in the {@code IntSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default OptionalInt second() {
 		return at(1);
 	}
@@ -969,7 +972,10 @@ public interface IntSequence extends IntIterable {
 	/**
 	 * @return the third int of this {@code IntSequence} or an empty {@link OptionalInt} if there are less than
 	 * three ints in the {@code IntSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default OptionalInt third() {
 		return at(2);
 	}
@@ -1025,7 +1031,10 @@ public interface IntSequence extends IntIterable {
 	 * @see #filter(IntPredicate)
 	 * @see #at(long, IntPredicate)
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #at(long, IntPredicate)} instead.
 	 */
+	@Deprecated
 	default OptionalInt second(IntPredicate predicate) {
 		return at(1, predicate);
 	}
@@ -1037,7 +1046,10 @@ public interface IntSequence extends IntIterable {
 	 * @see #filter(IntPredicate)
 	 * @see #at(long, IntPredicate)
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #at(long, IntPredicate)} instead.
 	 */
+	@Deprecated
 	default OptionalInt third(IntPredicate predicate) {
 		return at(2, predicate);
 	}

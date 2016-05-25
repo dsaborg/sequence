@@ -384,7 +384,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.2
 	 */
 	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjLongFunction<? super Pair<L, R>, ? extends Pair<LL, RR>>
@@ -398,7 +397,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 *
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.2
 	 */
 	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjLongFunction<? super L, ? super R, ? extends Pair<LL, RR>>
@@ -958,7 +956,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * @return the second pair of this {@code BiSequence} or an empty {@link Optional} if there are one or less pairs
 	 * in the {@code BiSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default Optional<Pair<L, R>> second() {
 		return at(1);
 	}
@@ -966,7 +967,10 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	/**
 	 * @return the third pair of this {@code BiSequence} or an empty {@link Optional} if there are two or less pairs
 	 * in the {@code BiSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default Optional<Pair<L, R>> third() {
 		return at(2);
 	}
@@ -1015,7 +1019,9 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@link Optional} if there is one or less matching pairs in the {@code BiSequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, Predicate)} instead.
 	 */
+	@Deprecated
 	default Optional<Pair<L, R>> second(Predicate<? super Pair<L, R>> predicate) {
 		return at(1, predicate);
 	}
@@ -1025,7 +1031,9 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@link Optional} if there is two or less matching pairs in the {@code BiSequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, Predicate)} instead.
 	 */
+	@Deprecated
 	default Optional<Pair<L, R>> third(Predicate<? super Pair<L, R>> predicate) {
 		return at(2, predicate);
 	}
@@ -1065,7 +1073,9 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@link Optional} if there is one or less matching pairs in the {@code BiSequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, BiPredicate)} instead.
 	 */
+	@Deprecated
 	default Optional<Pair<L, R>> second(BiPredicate<? super L, ? super R> predicate) {
 		return at(1, predicate);
 	}
@@ -1075,7 +1085,9 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * {@link Optional} if there is two or less matching pairs in the {@code BiSequence}.
 	 *
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, BiPredicate)} instead.
 	 */
+	@Deprecated
 	default Optional<Pair<L, R>> third(BiPredicate<? super L, ? super R> predicate) {
 		return at(2, predicate);
 	}
@@ -1427,7 +1439,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharBiFunction<? super L, ? super R> mapper) {
@@ -1445,7 +1456,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntBiFunction<? super L, ? super R> mapper) {
@@ -1463,7 +1473,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongBiFunction<? super L, ? super R> mapper) {
@@ -1481,7 +1490,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toLongs(ToLongBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleBiFunction<? super L, ? super R> mapper) {
@@ -1499,7 +1507,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharFunction<? super Pair<L, R>> mapper) {
@@ -1517,7 +1524,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntFunction<? super Pair<L, R>> mapper) {
@@ -1535,7 +1541,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongFunction<? super Pair<L, R>> mapper) {
@@ -1553,7 +1558,6 @@ public interface BiSequence<L, R> extends Iterable<Pair<L, R>> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super Pair<L, R>> mapper) {

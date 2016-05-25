@@ -959,7 +959,10 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * @return the second long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than two
 	 * longs in the {@code LongSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default OptionalLong second() {
 		return at(1);
 	}
@@ -967,7 +970,10 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * @return the third long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than
 	 * three longs in the {@code LongSequence}.
+	 *
+	 * @deprecated Use {@link #at(long)} instead.
 	 */
+	@Deprecated
 	default OptionalLong third() {
 		return at(2);
 	}
@@ -1023,7 +1029,9 @@ public interface LongSequence extends LongIterable {
 	 * @see #filter(LongPredicate)
 	 * @see #at(long, LongPredicate)
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, LongPredicate)} instead.
 	 */
+	@Deprecated
 	default OptionalLong second(LongPredicate predicate) {
 		return at(1, predicate);
 	}
@@ -1035,7 +1043,9 @@ public interface LongSequence extends LongIterable {
 	 * @see #filter(LongPredicate)
 	 * @see #at(long, LongPredicate)
 	 * @since 1.2
+	 * @deprecated Use {@link #at(long, LongPredicate)} instead.
 	 */
+	@Deprecated
 	default OptionalLong third(LongPredicate predicate) {
 		return at(2, predicate);
 	}
