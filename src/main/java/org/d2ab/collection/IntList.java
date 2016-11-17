@@ -34,6 +34,16 @@ public interface IntList extends List<Integer>, IntCollection {
 		return ArrayIntList.of(is);
 	}
 
+	/**
+	 * @return an {@code IntList} initialized with the members of the given {@link PrimitiveIterator.OfInt}.
+	 */
+	static IntList copy(PrimitiveIterator.OfInt iterator) {
+		IntList copy = new ArrayIntList();
+		while (iterator.hasNext())
+			copy.add(iterator.nextInt());
+		return copy;
+	}
+
 	default void clear() {
 		iterator().removeAll();
 	}

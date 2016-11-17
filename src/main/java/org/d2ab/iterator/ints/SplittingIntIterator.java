@@ -16,10 +16,11 @@
 
 package org.d2ab.iterator.ints;
 
+import org.d2ab.collection.ArrayIntList;
+import org.d2ab.collection.IntList;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.IntSequence;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
@@ -45,21 +46,16 @@ public class SplittingIntIterator extends DelegatingIterator<Integer, IntIterato
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int position = 0;
-		int[] buffer = new int[10];
+		IntList buffer = new ArrayIntList();
 		while (iterator.hasNext()) {
 			int next = iterator.nextInt();
 			if (predicate.test(next))
 				break;
-			if (buffer.length == position)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[position++] = next;
+
+			buffer.addInt(next);
 		}
 
-		if (position < buffer.length)
-			buffer = Arrays.copyOf(buffer, position);
-
-		return IntSequence.of(buffer);
+		return IntSequence.from(buffer);
 	}
 
 	@Override

@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ChainingIntIterable;
-import org.d2ab.collection.IntIterable;
-import org.d2ab.collection.IntList;
+import org.d2ab.collection.*;
 import org.d2ab.function.IntBiConsumer;
 import org.d2ab.function.IntBiPredicate;
 import org.d2ab.function.IntToCharFunction;
@@ -183,17 +180,7 @@ public interface IntSequence extends IntList {
 	 * @since 1.1
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
-		int[] cache = new int[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			int next = iterator.nextInt();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(copy(iterator));
 	}
 
 	/**

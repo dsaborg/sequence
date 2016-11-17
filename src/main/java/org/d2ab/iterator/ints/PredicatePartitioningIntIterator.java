@@ -16,12 +16,13 @@
 
 package org.d2ab.iterator.ints;
 
+import org.d2ab.collection.ArrayIntList;
+import org.d2ab.collection.IntList;
 import org.d2ab.function.IntBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.IntSequence;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
@@ -52,23 +53,21 @@ public class PredicatePartitioningIntIterator extends DelegatingIterator<Integer
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int[] buffer = new int[3];
-		int size = 0;
+		IntList buffer = new ArrayIntList();
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.add(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
+
 			int following = iterator.nextInt();
 			boolean split = predicate.test(next, following);
 			next = following;
 			if (split)
 				break;
 		} while (hasNext);
-		return IntSequence.from(buffer, size);
+		return IntSequence.from(buffer);
 	}
 
 	@Override
