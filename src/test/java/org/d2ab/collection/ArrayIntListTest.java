@@ -17,11 +17,9 @@
 package org.d2ab.collection;
 
 import org.d2ab.iterator.ints.IntIterator;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,37 +32,9 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-@RunWith(Parameterized.class)
 public class ArrayIntListTest {
 	private final ArrayIntList empty = new ArrayIntList();
-
-	private final int[] contents;
-	private final int[] prefix;
-	private final int[] suffix;
-	private final ArrayIntList list;
-
-	public ArrayIntListTest(int[] contents, int offset, int length, int capacity, int[] prefix, int[] suffix) {
-		this.contents = Arrays.copyOf(contents, contents.length);
-		this.prefix = prefix;
-		this.suffix = suffix;
-		list = new ArrayIntList(this.contents, offset, length, capacity);
-	}
-
-	@Parameters
-	public static Object[][] parameters() {
-		return new Object[][]{
-				{new int[]{0xD, 0xE, 0xA, 0xD, 1, 2, 3, 4, 5, 0xB, 0xE, 0xE, 0xF}, 4, 5, 5,
-				 new int[]{0xD, 0xE, 0xA, 0xD}, new int[]{0xB, 0xE, 0xE, 0xF}},
-				{new int[]{1, 2, 3, 4, 5}, 0, 5, 5,
-				 new int[]{}, new int[]{}},
-				};
-	}
-
-	@After
-	public void checkPadding() {
-		assertArrayEquals(prefix, Arrays.copyOf(contents, prefix.length));
-		assertArrayEquals(suffix, Arrays.copyOfRange(contents, contents.length - suffix.length, contents.length));
-	}
+	private final ArrayIntList list = ArrayIntList.of(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -327,10 +297,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addAllIntCollection() {
-		empty.addAll(new ArrayIntList(1, 2, 3));
+		empty.addAll(ArrayIntList.of(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAll(new ArrayIntList(6, 7, 8));
+		list.addAll(ArrayIntList.of(6, 7, 8));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -345,7 +315,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addAllAtIntCollection() {
-		empty.addAllAt(0, new ArrayIntList(1, 2, 3));
+		empty.addAllAt(0, ArrayIntList.of(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
 		list.addAllAt(2, 17, 18, 19);
@@ -362,10 +332,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void containsAllIntCollection() {
-		assertThat(empty.containsAll(new ArrayIntList(17, 18, 19)), is(false));
+		assertThat(empty.containsAll(ArrayIntList.of(17, 18, 19)), is(false));
 
-		assertThat(list.containsAll(new ArrayIntList(17, 18, 19)), is(false));
-		assertThat(list.containsAll(new ArrayIntList(1, 2, 3)), is(true));
+		assertThat(list.containsAll(ArrayIntList.of(17, 18, 19)), is(false));
+		assertThat(list.containsAll(ArrayIntList.of(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -397,10 +367,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void removeAllIntCollection() {
-		assertThat(empty.removeAll(new ArrayIntList(1, 2, 3)), is(false));
+		assertThat(empty.removeAll(ArrayIntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(new ArrayIntList(1, 2, 3)), is(true));
+		assertThat(list.removeAll(ArrayIntList.of(1, 2, 3)), is(true));
 		assertThat(list, containsInts(4, 5));
 	}
 
@@ -415,10 +385,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void retainAllIntCollection() {
-		assertThat(empty.retainAll(new ArrayIntList(1, 2, 3)), is(false));
+		assertThat(empty.retainAll(ArrayIntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(new ArrayIntList(1, 2, 3)), is(true));
+		assertThat(list.retainAll(ArrayIntList.of(1, 2, 3)), is(true));
 		assertThat(list, containsInts(1, 2, 3));
 	}
 

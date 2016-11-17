@@ -29,38 +29,31 @@ import java.util.function.IntUnaryOperator;
  * underlying array.
  */
 public class ArrayIntList implements IntList {
-	private int[] array;
-	private int offset;
+	private int[] contents;
 	private int size;
-	private int capacity;
+
+	public static ArrayIntList of(int... contents) {
+		return new ArrayIntList(contents);
+	}
 
 	public ArrayIntList() {
-		this(new int[10], 0, 0, 10);
+		this(10);
 	}
 
-	public ArrayIntList(int... is) {
-		this(is, is.length);
+	public ArrayIntList(int capacity) {
+		this.contents = new int[capacity];
 	}
 
-	public ArrayIntList(int[] array, int size) {
-		this(array, 0, size);
-	}
-
-	public ArrayIntList(int[] array, int offset, int size) {
-		this(array, offset, size, size);
-	}
-
-	public ArrayIntList(int[] array, int offset, int size, int capacity) {
-		if (offset > array.length || offset < 0)
-			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
-		if (size > capacity || size < 0)
-			throw new IllegalArgumentException("size: " + size + ", capacity: " + capacity);
-		if (offset + capacity > array.length || capacity < 0)
-			throw new IndexOutOfBoundsException("capacity: " + capacity + ", available: " + (array.length - offset));
-		this.array = array;
-		this.offset = offset;
-		this.size = size;
-		this.capacity = capacity;
+	/**
+	 * Private to avoid conflict with standard int-taking capacity constructor.
+	 * Use {@link #of(int...)} for public access.
+	 *
+	 * @see #ArrayIntList(int)
+	 * @see #of(int...)
+	 */
+	private ArrayIntList(int... contents) {
+		this.contents = Arrays.copyOf(contents, contents.length);
+		this.size = contents.length;
 	}
 
 	@Override
@@ -80,7 +73,7 @@ public class ArrayIntList implements IntList {
 
 	@Override
 	public int[] toIntArray() {
-		return Arrays.copyOfRange(array, offset, offset + size);
+		return Arrays.copyOfRange(contents, 0, size);
 	}
 
 	@Override
@@ -101,22 +94,21 @@ public class ArrayIntList implements IntList {
 
 	@Override
 	public void replaceAllInts(IntUnaryOperator operator) {
-		for (int x = offset; x < offset + size; x++)
-			array[x] = operator.applyAsInt(array[x]);
+		for (int x = 0; x < size; x++)
+			contents[x] = operator.applyAsInt(contents[x]);
 	}
 
 	@Override
 	public int getAt(int index) {
 		rangeCheck(index);
-		return array[offset + index];
+		return contents[index];
 	}
 
 	@Override
 	public int setAt(int index, int element) {
 		rangeCheck(index);
-		int pos = offset + index;
-		int previous = array[pos];
-		array[pos] = element;
+		int previous = contents[index];
+		contents[index] = element;
 		return previous;
 	}
 
@@ -129,38 +121,38 @@ public class ArrayIntList implements IntList {
 	@Override
 	public int removeAt(int index) {
 		rangeCheck(index);
-		int previous = array[offset + index];
-		uncheckedRemove(offset + index);
+		int previous = contents[index];
+		uncheckedRemove(index);
 		return previous;
 	}
 
 	@Override
 	public int lastIndexOf(int i) {
-		for (int x = offset + size - 1; x >= offset; x--)
-			if (array[x] == i)
-				return x - offset;
+		for (int x = size - 1; x >= 0; x--)
+			if (contents[x] == i)
+				return x;
 
 		return -1;
 	}
 
 	@Override
 	public int indexOf(int i) {
-		for (int x = offset; x < offset + size; x++)
-			if (array[x] == i)
-				return x - offset;
+		for (int x = 0; x < size; x++)
+			if (contents[x] == i)
+				return x;
 
 		return -1;
 	}
 
 	@Override
 	public Spliterator.OfInt spliterator() {
-		return Arrays.spliterator(array, offset, offset + size);
+		return Arrays.spliterator(contents, 0, size);
 	}
 
 	@Override
 	public boolean addInt(int i) {
 		growIfNecessary(1);
-		array[offset + size++] = i;
+		contents[size++] = i;
 		return true;
 	}
 
@@ -170,7 +162,7 @@ public class ArrayIntList implements IntList {
 			return false;
 
 		growIfNecessary(is.length);
-		System.arraycopy(is, 0, array, offset + size, is.length);
+		System.arraycopy(is, 0, contents, size, is.length);
 		size += is.length;
 		return true;
 	}
@@ -182,9 +174,8 @@ public class ArrayIntList implements IntList {
 
 		rangeCheckForAdd(index);
 		growIfNecessary(is.length);
-		int pos = offset + index;
-		System.arraycopy(array, pos, array, pos + is.length, size - index);
-		System.arraycopy(is, 0, array, pos, is.length);
+		System.arraycopy(contents, index, contents, index + is.length, size - index);
+		System.arraycopy(is, 0, contents, index, is.length);
 		size += is.length;
 		return true;
 	}
@@ -195,11 +186,10 @@ public class ArrayIntList implements IntList {
 
 		rangeCheckForAdd(index);
 		growIfNecessary(c.size());
-		int pos = offset + index;
-		System.arraycopy(array, pos, array, pos + c.size(), size - index);
+		System.arraycopy(contents, index, contents, index + c.size(), size - index);
 		IntIterator iterator = c.iterator();
-		for (int x = pos; x < c.size(); x++)
-			array[x] = iterator.nextInt();
+		for (int x = index; x < c.size(); x++)
+			contents[x] = iterator.nextInt();
 		size += c.size();
 		return true;
 	}
@@ -215,8 +205,8 @@ public class ArrayIntList implements IntList {
 
 	@Override
 	public boolean removeInt(int i) {
-		for (int x = offset; x < offset + size; x++)
-			if (array[x] == i)
+		for (int x = 0; x < size; x++)
+			if (contents[x] == i)
 				return uncheckedRemove(x);
 
 		return false;
@@ -224,8 +214,8 @@ public class ArrayIntList implements IntList {
 
 	@Override
 	public boolean containsInt(int i) {
-		for (int x = offset; x < offset + size; x++)
-			if (array[x] == i)
+		for (int x = 0; x < size; x++)
+			if (contents[x] == i)
 				return true;
 
 		return false;
@@ -234,8 +224,8 @@ public class ArrayIntList implements IntList {
 	@Override
 	public boolean removeAll(int... is) {
 		boolean modified = false;
-		for (int x = offset; x < offset + size; x++)
-			if (Arrayz.contains(is, array[x]))
+		for (int x = 0; x < size; x++)
+			if (Arrayz.contains(is, contents[x]))
 				modified |= uncheckedRemove(x--);
 		return modified;
 	}
@@ -243,8 +233,8 @@ public class ArrayIntList implements IntList {
 	@Override
 	public boolean retainAll(int... is) {
 		boolean modified = false;
-		for (int x = offset; x < offset + size; x++)
-			if (!Arrayz.contains(is, array[x]))
+		for (int x = 0; x < size; x++)
+			if (!Arrayz.contains(is, contents[x]))
 				modified |= uncheckedRemove(x--);
 		return modified;
 	}
@@ -252,40 +242,37 @@ public class ArrayIntList implements IntList {
 	@Override
 	public boolean removeIntsIf(IntPredicate filter) {
 		boolean modified = false;
-		for (int x = offset; x < offset + size; x++)
-			if (filter.test(array[x]))
+		for (int x = 0; x < size; x++)
+			if (filter.test(contents[x]))
 				modified |= uncheckedRemove(x--);
 		return modified;
 	}
 
 	@Override
 	public void forEachInt(IntConsumer consumer) {
-		for (int x = offset; x < offset + size; x++)
-			consumer.accept(array[x]);
+		for (int x = 0; x < size; x++)
+			consumer.accept(contents[x]);
 	}
 
 	private void growIfNecessary(int grow) {
 		int newSize = size + grow;
-		if (newSize > capacity) {
+		if (newSize > contents.length) {
 			int newLength = newSize + ((newSize) >> 1);
 			int[] copy = new int[newLength];
-			System.arraycopy(array, offset, copy, 0, size);
-			array = copy;
-			offset = 0;
-			capacity = newLength;
+			System.arraycopy(contents, 0, copy, 0, size);
+			contents = copy;
 		}
 	}
 
 	private boolean uncheckedAdd(int index, int element) {
 		growIfNecessary(1);
-		int pos = offset + index;
-		System.arraycopy(array, pos, array, pos + 1, size++ - (pos - offset));
-		array[pos] = element;
+		System.arraycopy(contents, index, contents, index + 1, size++ - index);
+		contents[index] = element;
 		return true;
 	}
 
-	private boolean uncheckedRemove(int pos) {
-		System.arraycopy(array, pos + 1, array, pos, size-- - (pos - offset) - 1);
+	private boolean uncheckedRemove(int index) {
+		System.arraycopy(contents, index + 1, contents, index, size-- - index - 1);
 		return true;
 	}
 
@@ -319,7 +306,7 @@ public class ArrayIntList implements IntList {
 		public int nextInt() {
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return array[offset + (currentIndex = nextIndex++)];
+			return contents[currentIndex = nextIndex++];
 		}
 
 		@Override
@@ -331,7 +318,7 @@ public class ArrayIntList implements IntList {
 		public int previousInt() {
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return array[offset + (currentIndex = --nextIndex)];
+			return contents[currentIndex = --nextIndex];
 		}
 
 		@Override
@@ -351,7 +338,7 @@ public class ArrayIntList implements IntList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextInt() or previousInt() not called");
 
-			uncheckedRemove(offset + (nextIndex = currentIndex--));
+			uncheckedRemove(nextIndex = currentIndex--);
 			addOrRemove = true;
 		}
 
@@ -362,7 +349,7 @@ public class ArrayIntList implements IntList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextInt() or previousInt() not called");
 
-			array[offset + currentIndex] = i;
+			contents[currentIndex] = i;
 		}
 
 		@Override

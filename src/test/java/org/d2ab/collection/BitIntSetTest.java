@@ -121,10 +121,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void addAllIntCollection() {
-		assertThat(empty.addAll(new ArrayIntList(1, 2, 3)), is(true));
+		assertThat(empty.addAll(IntList.of(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(intSet.addAll(new ArrayIntList(3, 4, 5, 6, 7)), is(true));
+		assertThat(intSet.addAll(IntList.of(3, 4, 5, 6, 7)), is(true));
 		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -170,10 +170,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void removeAllIntCollection() {
-		assertThat(empty.removeAll(new ArrayIntList(1, 2, 3)), is(false));
+		assertThat(empty.removeAll(IntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeAll(new ArrayIntList(1, 2, 3)), is(true));
+		assertThat(intSet.removeAll(IntList.of(1, 2, 3)), is(true));
 		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
@@ -188,10 +188,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void retainAllIntCollection() {
-		assertThat(empty.retainAll(new ArrayIntList(1, 2, 3)), is(false));
+		assertThat(empty.retainAll(IntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.retainAll(new ArrayIntList(1, 2, 3)), is(true));
+		assertThat(intSet.retainAll(IntList.of(1, 2, 3)), is(true));
 		assertThat(intSet, containsInts(1, 2, 3));
 	}
 
@@ -213,9 +213,9 @@ public class BitIntSetTest {
 
 	@Test
 	public void containsAllIntCollection() {
-		assertThat(empty.containsAll(new ArrayIntList(1, 2, 3)), is(false));
-		assertThat(intSet.containsAll(new ArrayIntList(1, 2, 3)), is(true));
-		assertThat(intSet.containsAll(new ArrayIntList(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(IntList.of(1, 2, 3)), is(false));
+		assertThat(intSet.containsAll(IntList.of(1, 2, 3)), is(true));
+		assertThat(intSet.containsAll(IntList.of(1, 2, 3, 17)), is(false));
 	}
 
 	@Test

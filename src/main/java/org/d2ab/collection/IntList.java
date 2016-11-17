@@ -27,8 +27,11 @@ import java.util.function.UnaryOperator;
  * A {@link List} backed by ints.
  */
 public interface IntList extends List<Integer>, IntCollection {
+	/**
+	 * @return an {@code IntList} of the given elements.
+	 */
 	static IntList of(int... is) {
-		return new ArrayIntList(is);
+		return ArrayIntList.of(is);
 	}
 
 	default void clear() {
