@@ -16,6 +16,8 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.ints.IntIterable;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -43,9 +45,9 @@ public class Collectionz {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(IntIterable integers, Collection<?> c) {
-		if (c instanceof IntIterable)
-			return integers.containsAllInts((IntIterable) c);
+	public static boolean containsAll(org.d2ab.collection.ints.IntIterable integers, Collection<?> c) {
+		if (c instanceof org.d2ab.collection.ints.IntIterable)
+			return integers.containsAllInts((org.d2ab.collection.ints.IntIterable) c);
 
 		for (int i : (Collection<? extends Integer>) c)
 			if (!integers.containsInt(i))
@@ -54,9 +56,9 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean addAll(IntCollection integers, Collection<? extends Integer> c) {
-		if (c instanceof IntCollection)
-			return integers.addAllInts((IntCollection) c);
+	public static boolean addAll(org.d2ab.collection.ints.IntCollection integers, Collection<? extends Integer> c) {
+		if (c instanceof org.d2ab.collection.ints.IntCollection)
+			return integers.addAllInts((org.d2ab.collection.ints.IntCollection) c);
 
 		if (c.isEmpty())
 			return false;
@@ -65,24 +67,24 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean retainAll(IntCollection integers, Collection<?> c) {
-		if (c instanceof IntIterable)
-			return integers.retainAllInts((IntIterable) c);
+	public static boolean retainAll(org.d2ab.collection.ints.IntCollection integers, Collection<?> c) {
+		if (c instanceof org.d2ab.collection.ints.IntIterable)
+			return integers.retainAllInts((org.d2ab.collection.ints.IntIterable) c);
 
 		return integers.removeIntsIf(i -> !c.contains(i));
 	}
 
-	public static boolean removeAll(IntCollection integers, Collection<?> c) {
-		if (c instanceof IntIterable)
+	public static boolean removeAll(org.d2ab.collection.ints.IntCollection integers, Collection<?> c) {
+		if (c instanceof org.d2ab.collection.ints.IntIterable)
 			return integers.removeAllInts((IntIterable) c);
 
 		return integers.removeIntsIf(c::contains);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(LongCollection longs, Collection<?> c) {
-		if (c instanceof LongCollection)
-			return longs.containsAllLongs((LongCollection) c);
+	public static boolean containsAll(org.d2ab.collection.longs.LongCollection longs, Collection<?> c) {
+		if (c instanceof org.d2ab.collection.longs.LongCollection)
+			return longs.containsAllLongs((org.d2ab.collection.longs.LongCollection) c);
 
 		for (long i : (Collection<? extends Long>) c)
 			if (!longs.containsLong(i))
@@ -91,9 +93,9 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean addAll(LongCollection longs, Collection<? extends Long> c) {
-		if (c instanceof LongCollection)
-			return longs.addAllLongs((LongCollection) c);
+	public static boolean addAll(org.d2ab.collection.longs.LongCollection longs, Collection<? extends Long> c) {
+		if (c instanceof org.d2ab.collection.longs.LongCollection)
+			return longs.addAllLongs((org.d2ab.collection.longs.LongCollection) c);
 
 		if (c.isEmpty())
 			return false;
@@ -102,16 +104,16 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean retainAll(LongCollection longs, Collection<?> c) {
-		if (c instanceof LongCollection)
-			return longs.retainAllLongs((LongCollection) c);
+	public static boolean retainAll(org.d2ab.collection.longs.LongCollection longs, Collection<?> c) {
+		if (c instanceof org.d2ab.collection.longs.LongCollection)
+			return longs.retainAllLongs((org.d2ab.collection.longs.LongCollection) c);
 
 		return longs.removeLongsIf(i -> !c.contains(i));
 	}
 
-	public static boolean removeAll(LongCollection longs, Collection<?> c) {
-		if (c instanceof LongCollection)
-			return longs.removeAllLongs((LongCollection) c);
+	public static boolean removeAll(org.d2ab.collection.longs.LongCollection longs, Collection<?> c) {
+		if (c instanceof org.d2ab.collection.longs.LongCollection)
+			return longs.removeAllLongs((org.d2ab.collection.longs.LongCollection) c);
 
 		return longs.removeLongsIf(c::contains);
 	}

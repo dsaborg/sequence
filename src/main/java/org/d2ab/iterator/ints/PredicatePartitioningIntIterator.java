@@ -16,8 +16,8 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.collection.ArrayIntList;
-import org.d2ab.collection.IntList;
+import org.d2ab.collection.ints.ArrayIntList;
+import org.d2ab.collection.ints.IntList;
 import org.d2ab.function.IntBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;

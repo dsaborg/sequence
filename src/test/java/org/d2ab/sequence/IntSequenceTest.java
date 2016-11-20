@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.IntIterable;
+import org.d2ab.collection.ints.IntIterable;
 import org.d2ab.collection.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.DelegatingIntIterator;

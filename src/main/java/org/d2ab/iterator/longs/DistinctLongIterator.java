@@ -16,8 +16,8 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.collection.BitLongSet;
-import org.d2ab.collection.LongSet;
+import org.d2ab.collection.longs.BitLongSet;
+import org.d2ab.collection.longs.LongSet;
 
 import java.util.NoSuchElementException;
 

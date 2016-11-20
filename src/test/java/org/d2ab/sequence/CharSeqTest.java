@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.CharIterable;
+import org.d2ab.collection.chars.CharIterable;
 import org.d2ab.collection.Iterables;
 import org.d2ab.function.CharBinaryOperator;
 import org.d2ab.iterator.Iterators;

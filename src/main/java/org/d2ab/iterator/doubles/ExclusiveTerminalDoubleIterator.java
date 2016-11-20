@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.DoubleComparator;
+import org.d2ab.collection.doubles.DoubleComparator;
 
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;

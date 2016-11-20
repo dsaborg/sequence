@@ -17,8 +17,8 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ChainingCharIterable;
-import org.d2ab.collection.CharIterable;
+import org.d2ab.collection.chars.ChainingCharIterable;
+import org.d2ab.collection.chars.CharIterable;
 import org.d2ab.collection.Iterables;
 import org.d2ab.function.*;
 import org.d2ab.iterator.IterationException;

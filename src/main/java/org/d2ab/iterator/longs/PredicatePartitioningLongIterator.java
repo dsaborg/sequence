@@ -16,14 +16,13 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.collection.ArrayLongList;
-import org.d2ab.collection.LongList;
+import org.d2ab.collection.longs.ArrayLongList;
+import org.d2ab.collection.longs.LongList;
 import org.d2ab.function.LongBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.LongSequence;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**

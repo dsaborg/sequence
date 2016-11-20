@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.collection.IntIterable;
+import org.d2ab.collection.ints.IntIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

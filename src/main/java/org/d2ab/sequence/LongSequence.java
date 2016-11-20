@@ -36,7 +36,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of longs.
  */
 @FunctionalInterface
-public interface LongSequence extends LongList {
+public interface LongSequence extends org.d2ab.collection.longs.LongList {
 	/**
 	 * Create empty {@code LongSequence} with no contents.
 	 */
@@ -67,11 +67,11 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
-	 * Create a {@code LongSequence} from a {@link LongIterable}.
+	 * Create a {@code LongSequence} from a {@link org.d2ab.collection.longs.LongIterable}.
 	 *
-	 * @see #cache(LongIterable)
+	 * @see #cache(org.d2ab.collection.longs.LongIterable)
 	 */
-	static LongSequence from(LongIterable iterable) {
+	static LongSequence from(org.d2ab.collection.longs.LongIterable iterable) {
 		return iterable::iterator;
 	}
 
@@ -81,7 +81,7 @@ public interface LongSequence extends LongList {
 	 * @see #cache(Iterable)
 	 */
 	static LongSequence from(Iterable<Long> iterable) {
-		return from(LongIterable.from(iterable));
+		return from(org.d2ab.collection.longs.LongIterable.from(iterable));
 	}
 
 	/**
@@ -93,7 +93,7 @@ public interface LongSequence extends LongList {
 	 * @since 1.1
 	 */
 	static LongSequence once(PrimitiveIterator.OfLong iterator) {
-		return from(LongIterable.once(iterator));
+		return from(org.d2ab.collection.longs.LongIterable.once(iterator));
 	}
 
 	/**
@@ -140,13 +140,13 @@ public interface LongSequence extends LongList {
 	 * @see #cache(Iterator)
 	 * @see #cache(LongStream)
 	 * @see #cache(Stream)
-	 * @see #cache(LongIterable)
+	 * @see #cache(org.d2ab.collection.longs.LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(PrimitiveIterator.OfLong)
 	 * @since 1.1
 	 */
 	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
-		return from(LongList.copy(iterator));
+		return from(org.d2ab.collection.longs.LongList.copy(iterator));
 	}
 
 	/**
@@ -155,7 +155,7 @@ public interface LongSequence extends LongList {
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(LongStream)
 	 * @see #cache(Stream)
-	 * @see #cache(LongIterable)
+	 * @see #cache(org.d2ab.collection.longs.LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
 	 * @since 1.1
@@ -168,7 +168,7 @@ public interface LongSequence extends LongList {
 	 * Create a {@code LongSequence} from a cached copy of a {@link LongStream}.
 	 *
 	 * @see #cache(Stream)
-	 * @see #cache(LongIterable)
+	 * @see #cache(org.d2ab.collection.longs.LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
@@ -183,7 +183,7 @@ public interface LongSequence extends LongList {
 	 * Create a {@code LongSequence} from a cached copy of a {@link Stream} of {@link Long}s.
 	 *
 	 * @see #cache(LongStream)
-	 * @see #cache(LongIterable)
+	 * @see #cache(org.d2ab.collection.longs.LongIterable)
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
@@ -195,24 +195,24 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
-	 * Create a {@code LongSequence} from a cached copy of an {@link LongIterable}.
+	 * Create a {@code LongSequence} from a cached copy of an {@link org.d2ab.collection.longs.LongIterable}.
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(LongStream)
 	 * @see #cache(Stream)
 	 * @see #cache(PrimitiveIterator.OfLong)
 	 * @see #cache(Iterator)
-	 * @see #from(LongIterable)
+	 * @see #from(org.d2ab.collection.longs.LongIterable)
 	 * @since 1.1
 	 */
-	static LongSequence cache(LongIterable iterable) {
+	static LongSequence cache(org.d2ab.collection.longs.LongIterable iterable) {
 		return cache(iterable.iterator());
 	}
 
 	/**
 	 * Create a {@code LongSequence} from a cached copy of an {@link Iterable} of {@code Long} values.
 	 *
-	 * @see #cache(LongIterable)
+	 * @see #cache(org.d2ab.collection.longs.LongIterable)
 	 * @see #cache(LongStream)
 	 * @see #cache(Stream)
 	 * @see #cache(PrimitiveIterator.OfLong)
@@ -719,21 +719,21 @@ public interface LongSequence extends LongList {
 	 * Append the given {@code longs} to the end of this {@code LongSequence}.
 	 */
 	default LongSequence append(long... longs) {
-		return append(LongIterable.of(longs));
+		return append(org.d2ab.collection.longs.LongIterable.of(longs));
 	}
 
 	/**
-	 * Append the {@code longs} in the given {@link LongIterable} to the end of this {@code LongSequence}.
+	 * Append the {@code longs} in the given {@link org.d2ab.collection.longs.LongIterable} to the end of this {@code LongSequence}.
 	 */
-	default LongSequence append(LongIterable iterable) {
-		return new ChainingLongIterable(this, iterable)::iterator;
+	default LongSequence append(org.d2ab.collection.longs.LongIterable iterable) {
+		return new org.d2ab.collection.longs.ChainingLongIterable(this, iterable)::iterator;
 	}
 
 	/**
 	 * Append the {@link Long}s in the given {@link Iterable} to the end of this {@code LongSequence}.
 	 */
 	default LongSequence append(Iterable<Long> iterable) {
-		return append(LongIterable.from(iterable));
+		return append(org.d2ab.collection.longs.LongIterable.from(iterable));
 	}
 
 	/**
@@ -742,7 +742,7 @@ public interface LongSequence extends LongList {
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(PrimitiveIterator.OfLong iterator) {
-		return append(LongIterable.once(iterator));
+		return append(org.d2ab.collection.longs.LongIterable.once(iterator));
 	}
 
 	/**
@@ -1090,21 +1090,21 @@ public interface LongSequence extends LongList {
 	 * Prefix the longs in this {@code LongSequence} with the given longs.
 	 */
 	default LongSequence prefix(long... cs) {
-		return () -> new ChainingLongIterator(LongIterable.of(cs), this);
+		return () -> new ChainingLongIterator(org.d2ab.collection.longs.LongIterable.of(cs), this);
 	}
 
 	/**
 	 * Suffix the longs in this {@code LongSequence} with the given longs.
 	 */
 	default LongSequence suffix(long... cs) {
-		return () -> new ChainingLongIterator(this, LongIterable.of(cs));
+		return () -> new ChainingLongIterator(this, org.d2ab.collection.longs.LongIterable.of(cs));
 	}
 
 	/**
 	 * Interleave the elements in this {@code LongSequence} with those of the given {@code LongIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default LongSequence interleave(LongIterable that) {
+	default LongSequence interleave(org.d2ab.collection.longs.LongIterable that) {
 		return () -> new InterleavingLongIterator(this, that);
 	}
 

@@ -41,7 +41,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of ints.
  */
 @FunctionalInterface
-public interface IntSequence extends IntList {
+public interface IntSequence extends org.d2ab.collection.ints.IntList {
 	/**
 	 * Create empty {@code IntSequence} with no contents.
 	 */
@@ -72,11 +72,11 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
-	 * Create an {@code IntSequence} from a {@link IntIterable}.
+	 * Create an {@code IntSequence} from a {@link org.d2ab.collection.ints.IntIterable}.
 	 *
-	 * @see #cache(IntIterable)
+	 * @see #cache(org.d2ab.collection.ints.IntIterable)
 	 */
-	static IntSequence from(IntIterable iterable) {
+	static IntSequence from(org.d2ab.collection.ints.IntIterable iterable) {
 		return iterable::iterator;
 	}
 
@@ -86,7 +86,7 @@ public interface IntSequence extends IntList {
 	 * @see #cache(Iterable)
 	 */
 	static IntSequence from(Iterable<Integer> iterable) {
-		return from(IntIterable.from(iterable));
+		return from(org.d2ab.collection.ints.IntIterable.from(iterable));
 	}
 
 	/**
@@ -98,7 +98,7 @@ public interface IntSequence extends IntList {
 	 * @since 1.1
 	 */
 	static IntSequence once(PrimitiveIterator.OfInt iterator) {
-		return from(IntIterable.once(iterator));
+		return from(org.d2ab.collection.ints.IntIterable.once(iterator));
 	}
 
 	/**
@@ -150,21 +150,21 @@ public interface IntSequence extends IntList {
 	 * @since 1.1
 	 */
 	static IntSequence read(InputStream inputStream) {
-		return IntIterable.read(inputStream)::iterator;
+		return org.d2ab.collection.ints.IntIterable.read(inputStream)::iterator;
 	}
 
 	/**
-	 * Create an {@code IntSequence} from a cached copy of an {@link IntIterable}.
+	 * Create an {@code IntSequence} from a cached copy of an {@link org.d2ab.collection.ints.IntIterable}.
 	 *
 	 * @see #cache(Iterable)
 	 * @see #cache(IntStream)
 	 * @see #cache(Stream)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
-	 * @see #from(IntIterable)
+	 * @see #from(org.d2ab.collection.ints.IntIterable)
 	 * @since 1.1
 	 */
-	static IntSequence cache(IntIterable iterable) {
+	static IntSequence cache(org.d2ab.collection.ints.IntIterable iterable) {
 		return cache(iterable.iterator());
 	}
 
@@ -174,13 +174,13 @@ public interface IntSequence extends IntList {
 	 * @see #cache(Iterator)
 	 * @see #cache(IntStream)
 	 * @see #cache(Stream)
-	 * @see #cache(IntIterable)
+	 * @see #cache(org.d2ab.collection.ints.IntIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(PrimitiveIterator.OfInt)
 	 * @since 1.1
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
-		return from(IntList.copy(iterator));
+		return from(org.d2ab.collection.ints.IntList.copy(iterator));
 	}
 
 	/**
@@ -189,7 +189,7 @@ public interface IntSequence extends IntList {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(IntStream)
 	 * @see #cache(Stream)
-	 * @see #cache(IntIterable)
+	 * @see #cache(org.d2ab.collection.ints.IntIterable)
 	 * @see #cache(Iterable)
 	 * @see #once(Iterator)
 	 * @since 1.1
@@ -202,7 +202,7 @@ public interface IntSequence extends IntList {
 	 * Create an {@code IntSequence} from a cached copy of an {@link IntStream}.
 	 *
 	 * @see #cache(Stream)
-	 * @see #cache(IntIterable)
+	 * @see #cache(org.d2ab.collection.ints.IntIterable)
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
@@ -217,7 +217,7 @@ public interface IntSequence extends IntList {
 	 * Create an {@code IntSequence} from a cached copy of a {@link Stream} of {@link Integer}s.
 	 *
 	 * @see #cache(IntStream)
-	 * @see #cache(IntIterable)
+	 * @see #cache(org.d2ab.collection.ints.IntIterable)
 	 * @see #cache(Iterable)
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 * @see #cache(Iterator)
@@ -231,7 +231,7 @@ public interface IntSequence extends IntList {
 	/**
 	 * Create an {@code IntSequence} from a cached copy of an {@link Iterable} of {@code Integer} values.
 	 *
-	 * @see #cache(IntIterable)
+	 * @see #cache(org.d2ab.collection.ints.IntIterable)
 	 * @see #cache(IntStream)
 	 * @see #cache(Stream)
 	 * @see #cache(PrimitiveIterator.OfInt)
@@ -712,21 +712,21 @@ public interface IntSequence extends IntList {
 	 * Append the given {@code ints} to the end of this {@code IntSequence}.
 	 */
 	default IntSequence append(int... ints) {
-		return append(IntIterable.of(ints));
+		return append(org.d2ab.collection.ints.IntIterable.of(ints));
 	}
 
 	/**
-	 * Append the {@code ints} in the given {@link IntIterable} to the end of this {@code IntSequence}.
+	 * Append the {@code ints} in the given {@link org.d2ab.collection.ints.IntIterable} to the end of this {@code IntSequence}.
 	 */
-	default IntSequence append(IntIterable that) {
-		return new ChainingIntIterable(this, that)::iterator;
+	default IntSequence append(org.d2ab.collection.ints.IntIterable that) {
+		return new org.d2ab.collection.ints.ChainingIntIterable(this, that)::iterator;
 	}
 
 	/**
 	 * Append the {@link Integer}s in the given {@link Iterable} to the end of this {@code IntSequence}.
 	 */
 	default IntSequence append(Iterable<Integer> iterable) {
-		return append(IntIterable.from(iterable));
+		return append(org.d2ab.collection.ints.IntIterable.from(iterable));
 	}
 
 	/**
@@ -737,7 +737,7 @@ public interface IntSequence extends IntList {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 */
 	default IntSequence append(PrimitiveIterator.OfInt iterator) {
-		return append(IntIterable.once(iterator));
+		return append(org.d2ab.collection.ints.IntIterable.once(iterator));
 	}
 
 	/**
@@ -1105,21 +1105,21 @@ public interface IntSequence extends IntList {
 	 * Prefix the ints in this {@code IntSequence} with the given ints.
 	 */
 	default IntSequence prefix(int... cs) {
-		return () -> new ChainingIntIterator(IntIterable.of(cs), this);
+		return () -> new ChainingIntIterator(org.d2ab.collection.ints.IntIterable.of(cs), this);
 	}
 
 	/**
 	 * Suffix the ints in this {@code IntSequence} with the given ints.
 	 */
 	default IntSequence suffix(int... cs) {
-		return () -> new ChainingIntIterator(this, IntIterable.of(cs));
+		return () -> new ChainingIntIterator(this, org.d2ab.collection.ints.IntIterable.of(cs));
 	}
 
 	/**
 	 * Interleave the elements in this {@code IntSequence} with those of the given {@code IntIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default IntSequence interleave(IntIterable that) {
+	default IntSequence interleave(org.d2ab.collection.ints.IntIterable that) {
 		return () -> new InterleavingIntIterator(this, that);
 	}
 

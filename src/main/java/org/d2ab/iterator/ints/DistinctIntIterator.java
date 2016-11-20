@@ -16,8 +16,8 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.collection.BitIntSet;
-import org.d2ab.collection.IntSet;
+import org.d2ab.collection.ints.BitIntSet;
+import org.d2ab.collection.ints.IntSet;
 
 import java.util.NoSuchElementException;
 

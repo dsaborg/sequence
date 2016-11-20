@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.DoubleIterable;
+import org.d2ab.collection.doubles.DoubleIterable;
 import org.d2ab.collection.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;

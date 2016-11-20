@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.collection.LongIterable;
+import org.d2ab.collection.longs.LongIterable;
 
 import java.util.ArrayList;
 import java.util.Iterator;

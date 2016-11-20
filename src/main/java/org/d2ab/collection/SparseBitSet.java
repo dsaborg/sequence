@@ -30,7 +30,7 @@ import java.util.Set;
  * {@code 0} and {@link Long#MAX_VALUE}, inclusive. However, the maximum number of 64-bit words in use is limited by
  * the int length limit of arrays.
  */
-public class SparseBitSet implements LongSortedSet {
+public class SparseBitSet implements org.d2ab.collection.longs.LongSortedSet {
 	private long[] words;
 	private long[] indices;
 	private int size;
