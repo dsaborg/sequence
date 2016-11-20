@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.chars;
+package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
 
 import java.util.Collection;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Predicate;
 
 /**
- * A primitive specialization of {@link Collection} for {code char} values. Supplements all {@link Character}-valued
- * methods with corresponding {@code char}-valued methods.
+ * A primitive specialization of {@link Collection} for {code double} values. Supplements all {@link Double}-valued
+ * methods with corresponding {@code double}-valued methods.
  */
-public interface CharCollection extends Collection<Character>, CharIterable {
+public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -37,8 +39,8 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	}
 
 	@Override
-	default Character[] toArray() {
-		return toArray(new Character[size()]);
+	default Double[] toArray() {
+		return toArray(new Double[size()]);
 	}
 
 	@Override
@@ -47,48 +49,48 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	}
 
 	/**
-	 * Collect the {@code chars} in this {@code CharCollection} into an {@code char}-array.
+	 * Collect the {@code doubles} in this {@code DoubleCollection} into an {@code double}-array.
 	 */
-	default char[] toCharArray() {
-		return new ArrayCharList(this).toCharArray();
+	default double[] toDoubleArray() {
+		return new ArrayDoubleList(this).toDoubleArray();
 	}
 
 	@Override
-	default boolean add(Character i) {
-		return addChar(i);
+	default boolean add(Double l) {
+		return addDouble(l);
 	}
 
-	default boolean addChar(char i) {
+	default boolean addDouble(double l) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Character && containsChar((char) o);
+		return o instanceof Double && containsDouble((double) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Character && removeChar((char) o);
+		return o instanceof Double && removeDouble((double) o);
 	}
 
 	@Override
-	default boolean addAll(Collection<? extends Character> c) {
+	default boolean addAll(Collection<? extends Double> c) {
 		return Collectionz.addAll(this, c);
 	}
 
-	default boolean addAllChars(char... is) {
+	default boolean addAllDoubles(double... is) {
 		boolean changed = false;
-		for (char i : is)
-			changed |= addChar(i);
+		for (double i : is)
+			changed |= addDouble(i);
 		return changed;
 	}
 
-	default boolean addAllChars(CharCollection is) {
-		if (is.isEmpty())
+	default boolean addAllDoubles(DoubleCollection c) {
+		if (c.isEmpty())
 			return false;
 
-		is.forEachChar(this::addChar);
+		c.forEachDouble(this::addDouble);
 		return true;
 	}
 
@@ -108,7 +110,12 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	}
 
 	@Override
-	default boolean removeIf(Predicate<? super Character> filter) {
-		return removeCharsIf(filter::test);
+	default boolean removeIf(Predicate<? super Double> filter) {
+		return removeDoublesIf(filter::test);
+	}
+
+	@Override
+	default Spliterator.OfDouble spliterator() {
+		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
 	}
 }

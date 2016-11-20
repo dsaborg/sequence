@@ -16,6 +16,8 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.doubles.DoubleComparator;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -176,11 +178,21 @@ public class Arrayz {
 	}
 
 	/**
-	 * @return true if the given array contains the given target {@code double}, false otherwise.
+	 * @return true if the given array contains exactly the given target {@code double}, false otherwise.
+	 */
+	public static boolean contains(double[] items, double target) {
+		for (double item : items)
+			if (item == target)
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if the given array contains the given target {@code double} within the given precision, false otherwise.
 	 */
 	public static boolean contains(double[] items, double target, double precision) {
 		for (double item : items)
-			if (org.d2ab.collection.doubles.DoubleComparator.equals(item, target, precision))
+			if (DoubleComparator.equals(item, target, precision))
 				return true;
 		return false;
 	}

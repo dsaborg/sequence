@@ -77,7 +77,7 @@ public interface LongIterable extends Iterable<Long> {
 	}
 
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	default void clear() {

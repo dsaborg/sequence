@@ -593,7 +593,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toArray(), new double[]{1.0, 2.0, 3.0}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toDoubleArray(), new double[]{1.0, 2.0, 3.0}), is(true)));
 	}
 
 	@Test

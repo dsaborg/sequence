@@ -122,7 +122,7 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	default void clear() {

@@ -18,6 +18,7 @@ package org.d2ab.collection;
 
 import org.d2ab.collection.chars.CharCollection;
 import org.d2ab.collection.chars.CharIterable;
+import org.d2ab.collection.doubles.DoubleCollection;
 import org.d2ab.collection.ints.IntCollection;
 import org.d2ab.collection.ints.IntIterable;
 import org.d2ab.collection.longs.LongCollection;
@@ -157,5 +158,42 @@ public class Collectionz {
 			return xs.removeAllChars((CharIterable) c);
 
 		return xs.removeCharsIf(c::contains);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static boolean containsAll(DoubleCollection xs, Collection<?> c) {
+		if (c instanceof DoubleCollection)
+			return xs.containsAllDoubles((DoubleCollection) c);
+
+		for (double x : (Collection<? extends Double>) c)
+			if (!xs.containsDouble(x))
+				return false;
+
+		return true;
+	}
+
+	public static boolean addAll(DoubleCollection xs, Collection<? extends Double> c) {
+		if (c instanceof DoubleCollection)
+			return xs.addAllDoubles((DoubleCollection) c);
+
+		if (c.isEmpty())
+			return false;
+
+		c.forEach(xs::addDouble);
+		return true;
+	}
+
+	public static boolean retainAll(DoubleCollection xs, Collection<?> c) {
+		if (c instanceof DoubleCollection)
+			return xs.retainAllDoubles((DoubleCollection) c);
+
+		return xs.removeDoublesIf(x -> !c.contains(x));
+	}
+
+	public static boolean removeAll(DoubleCollection xs, Collection<?> c) {
+		if (c instanceof DoubleCollection)
+			return xs.removeAllDoubles((DoubleCollection) c);
+
+		return xs.removeDoublesIf(c::contains);
 	}
 }

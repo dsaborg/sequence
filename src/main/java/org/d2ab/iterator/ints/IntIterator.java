@@ -19,7 +19,6 @@ package org.d2ab.iterator.ints;
 import org.d2ab.function.CharToIntFunction;
 import org.d2ab.iterator.chars.CharIterator;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;

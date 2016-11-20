@@ -1240,7 +1240,7 @@ public interface LongSequence extends org.d2ab.collection.longs.LongList {
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	/**

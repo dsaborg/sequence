@@ -1178,7 +1178,7 @@ public interface CharSeq extends CharList {
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	/**

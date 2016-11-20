@@ -17,9 +17,10 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.doubles.ChainingDoubleIterable;
 import org.d2ab.collection.doubles.DoubleIterable;
-import org.d2ab.collection.Iterables;
+import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.function.DoubleBiPredicate;
 import org.d2ab.function.DoubleIntConsumer;
 import org.d2ab.function.DoubleIntPredicate;
@@ -42,7 +43,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of doubles.
  */
 @FunctionalInterface
-public interface DoubleSequence extends DoubleIterable {
+public interface DoubleSequence extends DoubleList {
 	/**
 	 * Create empty {@code DoubleSequence} with no contents.
 	 */
@@ -906,37 +907,10 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default DoubleSequence sorted() {
 		return () -> {
-			double[] array = toArray();
+			double[] array = toDoubleArray();
 			Arrays.sort(array);
 			return DoubleIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the doubles in this {@code DoubleSequence} into an array.
-	 */
-	default double[] toArray() {
-		double[] work = new double[10];
-
-		int index = 0;
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				double[] newDoubles = new double[newCapacity];
-				System.arraycopy(work, 0, newDoubles, 0, work.length);
-				work = newDoubles;
-			}
-			work[index++] = iterator.nextDouble();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		double[] result = new double[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
 	}
 
 	/**
@@ -968,7 +942,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default DoubleSequence reverse() {
 		return () -> {
-			double[] array = toArray();
+			double[] array = toDoubleArray();
 			Arrayz.reverse(array);
 			return DoubleIterator.of(array);
 		};
@@ -1137,7 +1111,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	/**
@@ -1147,17 +1121,6 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default boolean containsDouble(double d, double precision) {
 		return iterator().contains(d, precision);
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #containsDouble(double, double)} instead.
-	 */
-	@Deprecated
-	default boolean contains(double d, double precision) {
-		return containsDouble(d, precision);
 	}
 
 	/**

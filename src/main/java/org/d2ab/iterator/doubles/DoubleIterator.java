@@ -156,4 +156,15 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 
 		return false;
 	}
+
+	default boolean isEmpty() {
+		return !hasNext();
+	}
+
+	default void removeAll() {
+		while (hasNext()) {
+			nextDouble();
+			remove();
+		}
+	}
 }

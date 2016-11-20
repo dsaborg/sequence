@@ -20,7 +20,9 @@ import org.d2ab.collection.Collectionz;
 import org.d2ab.function.CharUnaryOperator;
 import org.d2ab.iterator.chars.CharIterator;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 

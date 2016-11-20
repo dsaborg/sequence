@@ -16,37 +16,21 @@
 
 package org.d2ab.collection.doubles;
 
+import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.PrimitiveIterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
+import java.util.function.DoublePredicate;
 
 import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
-	@Override
-	DoubleIterator iterator();
-
-	/**
-	 * Performs the given action for each {@code double} in this iterable.
-	 */
-	@Override
-	default void forEach(Consumer<? super Double> consumer) {
-		forEachDouble((consumer instanceof DoubleConsumer) ? (DoubleConsumer) consumer : consumer::accept);
-	}
-
-	/**
-	 * Performs the given action for each {@code double} in this iterable.
-	 */
-	default void forEachDouble(DoubleConsumer consumer) {
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
-			consumer.accept(iterator.nextDouble());
-	}
-
 	static DoubleIterable of(double... doubles) {
 		return () -> new ArrayDoubleIterator(doubles);
 	}
@@ -68,5 +52,123 @@ public interface DoubleIterable extends Iterable<Double> {
 
 	static DoubleIterable once(PrimitiveIterator.OfDouble iterator) {
 		return once(DoubleIterator.from(iterator));
+	}
+
+	@Override
+	DoubleIterator iterator();
+
+	/**
+	 * Performs the given action for each {@code double} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Double> consumer) {
+		forEachDouble((consumer instanceof DoubleConsumer) ? (DoubleConsumer) consumer : consumer::accept);
+	}
+
+	/**
+	 * Performs the given action for each {@code double} in this iterable.
+	 */
+	default void forEachDouble(DoubleConsumer consumer) {
+		DoubleIterator iterator = iterator();
+		while (iterator.hasNext())
+			consumer.accept(iterator.nextDouble());
+	}
+
+	default Spliterator.OfDouble spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
+	}
+
+	default boolean isEmpty() {
+		return iterator().isEmpty();
+	}
+
+	default void clear() {
+		iterator().removeAll();
+	}
+
+	default boolean containsDouble(double x) {
+		return containsDouble(x, 0);
+	}
+
+	default boolean containsDouble(double x, double precision) {
+		return iterator().contains(x, precision);
+	}
+
+	default boolean removeDouble(double x) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+			if (iterator.nextDouble() == x) {
+				iterator.remove();
+				return true;
+			}
+
+		return false;
+	}
+
+	default boolean containsAllDoubles(double... xs) {
+		for (double x : xs)
+			if (!containsDouble(x))
+				return false;
+
+		return true;
+	}
+
+	default boolean containsAllDoubles(DoubleIterable c) {
+		for (double x : c)
+			if (!containsDouble(x))
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code DoubleIterable} contains any of the given {@code doubles}, false otherwise.
+	 */
+	default boolean containsAnyDoubles(double... xs) {
+		DoubleIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (Arrayz.contains(xs, iterator.nextDouble(), 0))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code DoubleIterable},
+	 * false otherwise.
+	 */
+	default boolean containsAnyDoubles(DoubleIterable xs) {
+		DoubleIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (xs.containsDouble(iterator.nextDouble()))
+				return true;
+
+		return false;
+	}
+
+	default boolean removeAllDoubles(DoubleIterable c) {
+		return removeDoublesIf(c::containsDouble);
+	}
+
+	default boolean retainAllDoubles(DoubleIterable c) {
+		return removeDoublesIf(x -> !c.containsDouble(x));
+	}
+
+	default boolean removeAllDoubles(double... xs) {
+		return removeDoublesIf(x -> Arrayz.contains(xs, x, 0.0));
+	}
+
+	default boolean retainAllDoubles(double... xs) {
+		return removeDoublesIf(x -> !Arrayz.contains(xs, x, 0.0));
+	}
+
+	default boolean removeDoublesIf(DoublePredicate filter) {
+		boolean changed = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (filter.test(iterator.nextDouble())) {
+				iterator.remove();
+				changed = true;
+			}
+		}
+		return changed;
 	}
 }

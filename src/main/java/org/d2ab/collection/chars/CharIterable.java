@@ -107,7 +107,7 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	default void clear() {
