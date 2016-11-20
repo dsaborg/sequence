@@ -219,10 +219,10 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default void add(int index, Integer x) {
-		addInt(index, x);
+		addIntAt(index, x);
 	}
 
-	default void addInt(int index, int x) {
+	default void addIntAt(int index, int x) {
 		listIterator(index).add(x);
 	}
 

@@ -118,7 +118,7 @@ public class ArrayIntList implements IntList {
 	}
 
 	@Override
-	public void addInt(int index, int x) {
+	public void addIntAt(int index, int x) {
 		rangeCheckForAdd(index);
 		uncheckedAdd(index, x);
 	}

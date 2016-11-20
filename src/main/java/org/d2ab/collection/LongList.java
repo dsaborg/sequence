@@ -219,10 +219,10 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default void add(int index, Long x) {
-		addLong(index, x);
+		addLongAt(index, x);
 	}
 
-	default void addLong(int index, long x) {
+	default void addLongAt(int index, long x) {
 		listIterator(index).add(x);
 	}
 

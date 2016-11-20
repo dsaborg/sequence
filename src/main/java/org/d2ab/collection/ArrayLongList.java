@@ -118,7 +118,7 @@ public class ArrayLongList implements LongList {
 	}
 
 	@Override
-	public void addLong(int index, long x) {
+	public void addLongAt(int index, long x) {
 		rangeCheckForAdd(index);
 		uncheckedAdd(index, x);
 	}
