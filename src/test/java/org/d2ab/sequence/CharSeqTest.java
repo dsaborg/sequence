@@ -1338,29 +1338,29 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(), is(true));
-		assertThat(empty.containsAll('p', 'q', 'r'), is(false));
+	public void containsAllChars() {
+		assertThat(empty.containsAllChars(), is(true));
+		assertThat(empty.containsAllChars('p', 'q', 'r'), is(false));
 
-		assertThat(abcde.containsAll(), is(true));
-		assertThat(abcde.containsAll('a'), is(true));
-		assertThat(abcde.containsAll('a', 'c', 'e'), is(true));
-		assertThat(abcde.containsAll('a', 'b', 'c', 'd', 'e'), is(true));
-		assertThat(abcde.containsAll('a', 'b', 'c', 'd', 'e', 'p'), is(false));
-		assertThat(abcde.containsAll('p', 'q', 'r'), is(false));
+		assertThat(abcde.containsAllChars(), is(true));
+		assertThat(abcde.containsAllChars('a'), is(true));
+		assertThat(abcde.containsAllChars('a', 'c', 'e'), is(true));
+		assertThat(abcde.containsAllChars('a', 'b', 'c', 'd', 'e'), is(true));
+		assertThat(abcde.containsAllChars('a', 'b', 'c', 'd', 'e', 'p'), is(false));
+		assertThat(abcde.containsAllChars('p', 'q', 'r'), is(false));
 	}
 
 	@Test
-	public void containsAny() {
-		assertThat(empty.containsAny(), is(false));
-		assertThat(empty.containsAny('p', 'q', 'r'), is(false));
+	public void containsAnyChars() {
+		assertThat(empty.containsAnyChars(), is(false));
+		assertThat(empty.containsAnyChars('p', 'q', 'r'), is(false));
 
-		assertThat(abcde.containsAny(), is(false));
-		assertThat(abcde.containsAny('a'), is(true));
-		assertThat(abcde.containsAny('a', 'c', 'e'), is(true));
-		assertThat(abcde.containsAny('a', 'b', 'c', 'd', 'e'), is(true));
-		assertThat(abcde.containsAny('a', 'b', 'c', 'd', 'e', 'p'), is(true));
-		assertThat(abcde.containsAny('p', 'q', 'r'), is(false));
+		assertThat(abcde.containsAnyChars(), is(false));
+		assertThat(abcde.containsAnyChars('a'), is(true));
+		assertThat(abcde.containsAnyChars('a', 'c', 'e'), is(true));
+		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e'), is(true));
+		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e', 'p'), is(true));
+		assertThat(abcde.containsAnyChars('p', 'q', 'r'), is(false));
 	}
 
 	@FunctionalInterface

@@ -17,7 +17,6 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.Iterables;
 import org.d2ab.collection.doubles.ChainingDoubleIterable;
 import org.d2ab.collection.doubles.DoubleIterable;
 import org.d2ab.collection.doubles.DoubleList;
@@ -656,20 +655,42 @@ public interface DoubleSequence extends DoubleList {
 	/**
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array.
 	 *
-	 * @since 1.2
+	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
-	default DoubleSequence including(double precision, double... elements) {
+	default DoubleSequence includingExactly(double... elements) {
+		return filter(e -> Arrayz.containsExactly(elements, e));
+	}
+
+	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
+	 * compared with the given precision.
+	 *
+	 * @since 2.0
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence including(double[] elements, double precision) {
 		return filter(e -> Arrayz.contains(elements, e, precision));
 	}
 
 	/**
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array.
 	 *
-	 * @since 1.2
+	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
-	default DoubleSequence excluding(double precision, double... elements) {
+	default DoubleSequence excludingExactly(double... elements) {
+		return filter(e -> !Arrayz.containsExactly(elements, e));
+	}
+
+	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array,
+	 * compared with the given precision.
+	 *
+	 * @since 2.0
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence excluding(double[] elements, double precision) {
 		return filter(e -> !Arrayz.contains(elements, e, precision));
 	}
 
@@ -1097,46 +1118,12 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
 	 * @return true if this {@code DoubleSequence} is empty, false otherwise.
 	 *
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return iterator().isEmpty();
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
-	 * precision, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAll(double precision, double... items) {
-		for (double item : items)
-			if (!iterator().contains(item, precision))
-				return false;
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAny(double precision, double... items) {
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextDouble(), precision))
-				return true;
-		return false;
 	}
 
 	/**

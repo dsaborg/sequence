@@ -1395,7 +1395,7 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
+	public void containsAllInts() {
 		assertThat(empty.containsAllInts(), is(true));
 		assertThat(empty.containsAllInts(17, 18, 19), is(false));
 
@@ -1408,7 +1408,7 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void containsAny() {
+	public void containsAnyInts() {
 		assertThat(empty.containsAnyInts(), is(false));
 		assertThat(empty.containsAnyInts(17, 18, 19), is(false));
 

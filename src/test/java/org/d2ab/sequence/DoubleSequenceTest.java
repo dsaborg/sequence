@@ -445,32 +445,62 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void includingArray() {
-		DoubleSequence emptyIncluding = empty.including(0.1, 1, 3, 5, 17);
+	public void includingExactlyArray() {
+		DoubleSequence emptyIncluding = empty.includingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
 
-		DoubleSequence including = _12345.including(0.1, 1, 3, 5, 17);
+		DoubleSequence including = _12345.includingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(including, containsDoubles(1, 3, 5)));
 
-		DoubleSequence includingAll = _12345.including(0.1, 1, 2, 3, 4, 5, 17);
+		DoubleSequence includingAll = _12345.includingExactly(1, 2, 3, 4, 5, 17);
 		twice(() -> assertThat(includingAll, containsDoubles(1, 2, 3, 4, 5)));
 
-		DoubleSequence includingNone = _12345.including(0.1);
+		DoubleSequence includingNone = _12345.includingExactly();
 		twice(() -> assertThat(includingNone, is(emptyIterable())));
 	}
 
 	@Test
-	public void excludingArray() {
-		DoubleSequence emptyExcluding = empty.excluding(0.1, 1, 3, 5, 17);
+	public void includingArray() {
+		DoubleSequence emptyIncluding = empty.including(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		DoubleSequence including = _12345.including(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(including, containsDoubles(1, 3, 5)));
+
+		DoubleSequence includingAll = _12345.including(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(includingAll, containsDoubles(1, 2, 3, 4, 5)));
+
+		DoubleSequence includingNone = _12345.including(new double[0], 0.5);
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingExactlyArray() {
+		DoubleSequence emptyExcluding = empty.excludingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
 
-		DoubleSequence excluding = _12345.excluding(0.1, 1, 3, 5, 17);
+		DoubleSequence excluding = _12345.excludingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(excluding, containsDoubles(2, 4)));
 
-		DoubleSequence excludingAll = _12345.excluding(0.1, 1, 2, 3, 4, 5, 17);
+		DoubleSequence excludingAll = _12345.excludingExactly(1, 2, 3, 4, 5, 17);
 		twice(() -> assertThat(excludingAll, is(emptyIterable())));
 
-		DoubleSequence excludingNone = _12345.excluding(0.1);
+		DoubleSequence excludingNone = _12345.excludingExactly();
+		twice(() -> assertThat(excludingNone, containsDoubles(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void excludingArray() {
+		DoubleSequence emptyExcluding = empty.excluding(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		DoubleSequence excluding = _12345.excluding(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(excluding, containsDoubles(2, 4)));
+
+		DoubleSequence excludingAll = _12345.excluding(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		DoubleSequence excludingNone = _12345.excluding(new double[0], 0.5);
 		twice(() -> assertThat(excludingNone, containsDoubles(1, 2, 3, 4, 5)));
 	}
 
@@ -1350,29 +1380,29 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(0.1), is(true));
-		assertThat(empty.containsAll(0.1, 17, 18, 19), is(false));
+	public void containsAllDoubles() {
+		assertThat(empty.containsAllDoubles(new double[0], 0.5), is(true));
+		assertThat(empty.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 
-		assertThat(_12345.containsAll(0.1), is(true));
-		assertThat(_12345.containsAll(0.1, 1), is(true));
-		assertThat(_12345.containsAll(0.1, 1, 3, 5), is(true));
-		assertThat(_12345.containsAll(0.1, 1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAll(0.1, 1, 2, 3, 4, 5, 17), is(false));
-		assertThat(_12345.containsAll(0.1, 17, 18, 19), is(false));
+		assertThat(_12345.containsAllDoubles(new double[0], 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1 }, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 3.1, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(false));
+		assertThat(_12345.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 	}
 
 	@Test
-	public void containsAny() {
-		assertThat(empty.containsAny(0.1), is(false));
-		assertThat(empty.containsAny(0.1, 17, 18, 19), is(false));
+	public void containsAnyDoubles() {
+		assertThat(empty.containsAnyDoubles(new double[0], 0.5), is(false));
+		assertThat(empty.containsAnyDoubles(new double[] { 17.1, 17.9, 18.1 }, 0.5), is(false));
 
-		assertThat(_12345.containsAny(0.1), is(false));
-		assertThat(_12345.containsAny(0.1, 1), is(true));
-		assertThat(_12345.containsAny(0.1, 1, 3, 5), is(true));
-		assertThat(_12345.containsAny(0.1, 1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAny(0.1, 1, 2, 3, 4, 5, 17), is(true));
-		assertThat(_12345.containsAny(0.1, 17, 18, 19), is(false));
+		assertThat(_12345.containsAnyDoubles(new double[0], 0.5), is(false));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 3.1, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 	}
 
 	@FunctionalInterface

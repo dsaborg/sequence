@@ -1164,54 +1164,12 @@ public interface CharSeq extends CharList {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
 	 * @return true if this {@code CharSeq} is empty, false otherwise.
 	 *
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return iterator().isEmpty();
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsChar(char c) {
-		return iterator().contains(c);
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAll(char... items) {
-		for (char item : items)
-			if (!iterator().contains(item))
-				return false;
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAny(char... items) {
-		for (CharIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextChar()))
-				return true;
-		return false;
 	}
 
 	/**

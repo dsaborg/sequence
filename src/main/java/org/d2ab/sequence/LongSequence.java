@@ -1226,47 +1226,12 @@ public interface LongSequence extends org.d2ab.collection.longs.LongList {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
 	 * @return true if this {@code LongSequence} is empty, false otherwise.
 	 *
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
 		return iterator().isEmpty();
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAllLongs(long... ls) {
-		for (long item : ls)
-			if (!iterator().contains(item))
-				return false;
-
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsAny(long... items) {
-		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextLong()))
-				return true;
-
-		return false;
 	}
 
 	/**

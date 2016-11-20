@@ -1388,7 +1388,7 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
+	public void containsAllLongs() {
 		assertThat(empty.containsAllLongs(), is(true));
 		assertThat(empty.containsAllLongs(17, 18, 19), is(false));
 
@@ -1402,15 +1402,15 @@ public class LongSequenceTest {
 
 	@Test
 	public void containsAny() {
-		assertThat(empty.containsAny(), is(false));
-		assertThat(empty.containsAny(17, 18, 19), is(false));
+		assertThat(empty.containsAnyLongs(), is(false));
+		assertThat(empty.containsAnyLongs(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAny(), is(false));
-		assertThat(_12345.containsAny(1), is(true));
-		assertThat(_12345.containsAny(1, 3, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5, 17), is(true));
-		assertThat(_12345.containsAny(17, 18, 19), is(false));
+		assertThat(_12345.containsAnyLongs(), is(false));
+		assertThat(_12345.containsAnyLongs(1), is(true));
+		assertThat(_12345.containsAnyLongs(1, 3, 5), is(true));
+		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5, 17), is(true));
+		assertThat(_12345.containsAnyLongs(17, 18, 19), is(false));
 	}
 
 	@FunctionalInterface
