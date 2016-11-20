@@ -31,13 +31,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class CharIterableTest {
-	private final org.d2ab.collection.chars.CharIterable abcde = org.d2ab.collection.chars.CharIterable.of('a', 'b', 'c', 'd', 'e');
+	private final CharIterable abcde = CharIterable.of('a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void read() throws IOException {
 		Reader reader = new StringReader("abcde");
 
-		org.d2ab.collection.chars.CharIterable iterable = org.d2ab.collection.chars.CharIterable.read(reader);
+		CharIterable iterable = CharIterable.read(reader);
 		twice(() -> assertThat(iterable, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
@@ -45,7 +45,7 @@ public class CharIterableTest {
 	public void readEmpty() throws IOException {
 		Reader reader = new StringReader("");
 
-		org.d2ab.collection.chars.CharIterable iterable = org.d2ab.collection.chars.CharIterable.read(reader);
+		CharIterable iterable = CharIterable.read(reader);
 		twice(() -> assertThat(iterable, is(emptyIterable())));
 	}
 
@@ -56,7 +56,7 @@ public class CharIterableTest {
 
 		reader.mark(0);
 
-		org.d2ab.collection.chars.CharIterable iterable = org.d2ab.collection.chars.CharIterable.read(reader);
+		CharIterable iterable = CharIterable.read(reader);
 		twice(() -> assertThat(iterable, containsChars('b', 'c', 'd', 'e')));
 	}
 
@@ -65,7 +65,7 @@ public class CharIterableTest {
 		Reader reader = new StringReader("abcde");
 		assertThat((char) reader.read(), CoreMatchers.is('a'));
 
-		org.d2ab.collection.chars.CharIterable iterable = org.d2ab.collection.chars.CharIterable.read(reader);
+		CharIterable iterable = CharIterable.read(reader);
 		assertThat(iterable, containsChars('b', 'c', 'd', 'e'));
 		assertThat(iterable, containsChars('a', 'b', 'c', 'd', 'e'));
 	}

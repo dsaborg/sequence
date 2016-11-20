@@ -16,7 +16,6 @@
 
 package org.d2ab.collection.longs;
 
-import org.d2ab.collection.longs.LongListIterator;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
@@ -33,8 +32,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayLongListTest {
-	private final org.d2ab.collection.longs.ArrayLongList empty = new org.d2ab.collection.longs.ArrayLongList();
-	private final org.d2ab.collection.longs.ArrayLongList list = org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3, 4, 5);
+	private final LongList empty = new ArrayLongList();
+	private final LongList list = ArrayLongList.of(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -342,10 +341,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addAllLongsCollection() {
-		empty.addAllLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3));
+		empty.addAllLongs(ArrayLongList.of(1, 2, 3));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongs(org.d2ab.collection.longs.ArrayLongList.of(6, 7, 8));
+		list.addAllLongs(ArrayLongList.of(6, 7, 8));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -369,7 +368,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addAllLongAtCollection() {
-		empty.addAllLongsAt(0, org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3));
+		empty.addAllLongsAt(0, ArrayLongList.of(1, 2, 3));
 		assertThat(empty, containsLongs(1, 2, 3));
 
 		list.addAllLongsAt(2, 17, 18, 19);
@@ -452,10 +451,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void containsAllLongsCollection() {
-		assertThat(empty.containsAllLongs(org.d2ab.collection.longs.ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAllLongs(ArrayLongList.of(17, 18, 19)), is(false));
 
-		assertThat(list.containsAllLongs(org.d2ab.collection.longs.ArrayLongList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAllLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3)), is(true));
+		assertThat(list.containsAllLongs(ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(list.containsAllLongs(ArrayLongList.of(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -468,10 +467,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void containsAnyLongsCollection() {
-		assertThat(empty.containsAnyLongs(org.d2ab.collection.longs.ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAnyLongs(ArrayLongList.of(17, 18, 19)), is(false));
 
-		assertThat(list.containsAnyLongs(org.d2ab.collection.longs.ArrayLongList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAnyLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 17, 3)), is(true));
+		assertThat(list.containsAnyLongs(ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(list.containsAnyLongs(ArrayLongList.of(1, 17, 3)), is(true));
 	}
 
 	@Test
@@ -496,11 +495,11 @@ public class ArrayLongListTest {
 
 	@Test
 	public void removeAllLongsCollection() {
-		assertThat(empty.removeAllLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.removeAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllLongs(org.d2ab.collection.longs.ArrayLongList.of(17, 18, 19)), is(false));
-		assertThat(list.removeAllLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.removeAllLongs(ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(list.removeAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(4, 5));
 	}
 
@@ -544,10 +543,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void retainAllLongsCollection() {
-		assertThat(empty.retainAllLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.retainAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllLongs(org.d2ab.collection.longs.ArrayLongList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.retainAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(1, 2, 3));
 	}
 
