@@ -707,22 +707,52 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array.
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
+	 * compared to the given precision.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #including(double[], double)} instead.
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	default DoubleSequence including(double precision, double... elements) {
 		return filter(e -> Arrayz.contains(elements, e, precision));
 	}
 
 	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array.
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array,
+	 * compared to the given precision.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #excluding(double[], double)} instead.
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	default DoubleSequence excluding(double precision, double... elements) {
+		return filter(e -> !Arrayz.contains(elements, e, precision));
+	}
+
+	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
+	 * compared to the given precision.
+	 *
+	 * @since 1.3
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence including(double[] elements, double precision) {
+		return filter(e -> Arrayz.contains(elements, e, precision));
+	}
+
+	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array,
+	 * compared to the given precision.
+	 *
+	 * @since 1.3
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence excluding(double[] elements, double precision) {
 		return filter(e -> !Arrayz.contains(elements, e, precision));
 	}
 
