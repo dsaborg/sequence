@@ -1368,7 +1368,10 @@ public interface CharSeq extends CharIterable {
 	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAllChars(char...)} instead.
 	 */
+	@Deprecated
 	default boolean containsAll(char... items) {
 		for (char item : items)
 			if (!iterator().contains(item))
@@ -1380,8 +1383,35 @@ public interface CharSeq extends CharIterable {
 	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAnyChars(char...)} instead.
 	 */
+	@Deprecated
 	default boolean containsAny(char... items) {
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextChar()))
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAllChars(char... items) {
+		for (char item : items)
+			if (!iterator().contains(item))
+				return false;
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAnyChars(char... items) {
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.nextChar()))
 				return true;

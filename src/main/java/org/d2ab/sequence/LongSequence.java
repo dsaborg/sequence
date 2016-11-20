@@ -1417,7 +1417,10 @@ public interface LongSequence extends LongIterable {
 	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAllLongs(long...)} instead.
 	 */
+	@Deprecated
 	default boolean containsAll(long... items) {
 		for (long item : items)
 			if (!iterator().contains(item))
@@ -1430,8 +1433,37 @@ public interface LongSequence extends LongIterable {
 	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAnyLongs(long...)} instead.
 	 */
+	@Deprecated
 	default boolean containsAny(long... items) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextLong()))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAllLongs(long... items) {
+		for (long item : items)
+			if (!iterator().contains(item))
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAnyLongs(long... items) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.nextLong()))
 				return true;

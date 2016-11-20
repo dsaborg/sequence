@@ -1319,7 +1319,10 @@ public interface DoubleSequence extends DoubleIterable {
 	 * precision, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAllDoubles(double[], double)} instead.
 	 */
+	@Deprecated
 	default boolean containsAll(double precision, double... items) {
 		for (double item : items)
 			if (!iterator().contains(item, precision))
@@ -1331,8 +1334,36 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAnyDoubles(double[], double)} instead.
 	 */
+	@Deprecated
 	default boolean containsAny(double precision, double... items) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextDouble(), precision))
+				return true;
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
+	 * precision, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAllDoubles(double[] items, double precision) {
+		for (double item : items)
+			if (!iterator().contains(item, precision))
+				return false;
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAnyDoubles(double[] items, double precision) {
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.nextDouble(), precision))
 				return true;

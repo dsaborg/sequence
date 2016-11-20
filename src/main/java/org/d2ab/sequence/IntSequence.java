@@ -1446,7 +1446,10 @@ public interface IntSequence extends IntIterable {
 	 * @return true if this {@code IntSequence} contains all of the given {@code ints}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAllInts(int...)} instead.
 	 */
+	@Deprecated
 	default boolean containsAll(int... items) {
 		for (int item : items)
 			if (!iterator().contains(item))
@@ -1459,8 +1462,37 @@ public interface IntSequence extends IntIterable {
 	 * @return true if this {@code IntSequence} contains any of the given {@code ints}, false otherwise.
 	 *
 	 * @since 1.2
+	 *
+	 * @deprecated Use {@link #containsAnyInts(int...)} instead.
 	 */
+	@Deprecated
 	default boolean containsAny(int... items) {
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.nextInt()))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains all of the given {@code ints}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAllInts(int... items) {
+		for (int item : items)
+			if (!iterator().contains(item))
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code IntSequence} contains any of the given {@code ints}, false otherwise.
+	 *
+	 * @since 1.3
+	 */
+	default boolean containsAnyInts(int... items) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.nextInt()))
 				return true;
