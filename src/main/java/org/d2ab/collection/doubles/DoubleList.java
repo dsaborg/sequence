@@ -56,7 +56,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Double && containsDouble((double) o);
+		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Double && removeDouble((double) o);
+		return o instanceof Double && removeDoubleExactly((double) o);
 	}
 
 	@Override
@@ -241,10 +241,10 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
-		return o instanceof Double ? lastIndexOfDouble((double) o) : -1;
+		return o instanceof Double ? lastIndexOfDoubleExactly((double) o) : -1;
 	}
 
-	default int lastIndexOfDouble(double x) {
+	default int lastIndexOfDoubleExactly(double x) {
 		int lastIndex = -1;
 
 		int index = 0;
@@ -255,15 +255,35 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		return lastIndex;
 	}
 
-	@Override
-	default int indexOf(Object o) {
-		return o instanceof Double ? indexOfDouble((double) o) : -1;
+	default int lastIndexOfDouble(double x, double precision) {
+		int lastIndex = -1;
+
+		int index = 0;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
+			if (DoubleComparator.equals(iterator.nextDouble(), x, precision))
+				lastIndex = index;
+
+		return lastIndex;
 	}
 
-	default int indexOfDouble(double x) {
+	@Override
+	default int indexOf(Object o) {
+		return o instanceof Double ? indexOfDoubleExactly((double) o) : -1;
+	}
+
+	default int indexOfDoubleExactly(double x) {
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
 			if (iterator.next() == x)
+				return index;
+
+		return -1;
+	}
+
+	default int indexOfDouble(double x, double precision) {
+		int index = 0;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
+			if (DoubleComparator.equals(iterator.next(), x, precision))
 				return index;
 
 		return -1;

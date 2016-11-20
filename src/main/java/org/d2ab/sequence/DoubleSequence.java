@@ -1115,15 +1115,6 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
-	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsDouble(double d, double precision) {
-		return iterator().contains(d, precision);
-	}
-
-	/**
 	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
 	 * precision, false otherwise.
 	 *

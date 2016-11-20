@@ -66,12 +66,12 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Double && containsDouble((double) o);
+		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Double && removeDouble((double) o);
+		return o instanceof Double && removeDoubleExactly((double) o);
 	}
 
 	@Override

@@ -163,10 +163,10 @@ public class Collectionz {
 	@SuppressWarnings("unchecked")
 	public static boolean containsAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
-			return xs.containsAllDoubles((DoubleCollection) c);
+			return xs.containsAllDoublesExactly((DoubleCollection) c);
 
 		for (double x : (Collection<? extends Double>) c)
-			if (!xs.containsDouble(x))
+			if (!xs.containsDoubleExactly(x))
 				return false;
 
 		return true;
@@ -185,14 +185,14 @@ public class Collectionz {
 
 	public static boolean retainAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
-			return xs.retainAllDoubles((DoubleCollection) c);
+			return xs.retainAllDoublesExactly((DoubleCollection) c);
 
 		return xs.removeDoublesIf(x -> !c.contains(x));
 	}
 
 	public static boolean removeAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
-			return xs.removeAllDoubles((DoubleCollection) c);
+			return xs.removeAllDoublesExactly((DoubleCollection) c);
 
 		return xs.removeDoublesIf(c::contains);
 	}

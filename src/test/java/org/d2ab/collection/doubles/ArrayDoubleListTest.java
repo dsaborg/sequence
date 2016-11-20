@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
@@ -32,8 +31,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayDoubleListTest {
-	private final org.d2ab.collection.doubles.ArrayDoubleList empty = new org.d2ab.collection.doubles.ArrayDoubleList();
-	private final org.d2ab.collection.doubles.ArrayDoubleList list = org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3, 4, 5);
+	private final ArrayDoubleList empty = new ArrayDoubleList();
+	private final ArrayDoubleList list = ArrayDoubleList.of(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -222,11 +221,19 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void lastIndexOfDouble() {
-		assertThat(empty.lastIndexOfDouble(17), is(-1));
+	public void lastIndexOfDoubleExactly() {
+		assertThat(empty.lastIndexOfDoubleExactly(17), is(-1));
 
-		assertThat(list.lastIndexOfDouble(17), is(-1));
-		assertThat(list.lastIndexOfDouble(2), is(1));
+		assertThat(list.lastIndexOfDoubleExactly(17), is(-1));
+		assertThat(list.lastIndexOfDoubleExactly(2), is(1));
+	}
+
+	@Test
+	public void lastIndexOfDouble() {
+		assertThat(empty.lastIndexOfDouble(17.1, 0.5), is(-1));
+
+		assertThat(list.lastIndexOfDouble(17.1, 0.5), is(-1));
+		assertThat(list.lastIndexOfDouble(2.1, 0.5), is(1));
 	}
 
 	@Test
@@ -238,11 +245,19 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void indexOfDouble() {
-		assertThat(empty.indexOfDouble(17), is(-1));
+	public void indexOfDoubleExactly() {
+		assertThat(empty.indexOfDoubleExactly(17), is(-1));
 
-		assertThat(list.indexOfDouble(17), is(-1));
-		assertThat(list.indexOfDouble(2), is(1));
+		assertThat(list.indexOfDoubleExactly(17), is(-1));
+		assertThat(list.indexOfDoubleExactly(2), is(1));
+	}
+
+	@Test
+	public void indexOfDouble() {
+		assertThat(empty.indexOfDouble(17.1, 0.5), is(-1));
+
+		assertThat(list.indexOfDouble(17.1, 0.5), is(-1));
+		assertThat(list.indexOfDouble(2.1, 0.5), is(1));
 	}
 
 	@Test
@@ -341,10 +356,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void addAllDoublesCollection() {
-		empty.addAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3));
+		empty.addAllDoubles(ArrayDoubleList.of(1, 2, 3));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
-		list.addAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(6, 7, 8));
+		list.addAllDoubles(ArrayDoubleList.of(6, 7, 8));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -368,7 +383,7 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void addAllDoubleAtCollection() {
-		empty.addAllDoublesAt(0, org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3));
+		empty.addAllDoublesAt(0, ArrayDoubleList.of(1, 2, 3));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		list.addAllDoublesAt(2, 17, 18, 19);
@@ -388,12 +403,22 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void removeDouble() {
-		assertThat(empty.removeDouble(17), is(false));
+	public void removeDoubleExactly() {
+		assertThat(empty.removeDoubleExactly(17), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeDouble(17), is(false));
-		assertThat(list.removeDouble(2), is(true));
+		assertThat(list.removeDoubleExactly(17), is(false));
+		assertThat(list.removeDoubleExactly(2), is(true));
+		assertThat(list, containsDoubles(1, 3, 4, 5));
+	}
+
+	@Test
+	public void removeDouble() {
+		assertThat(empty.removeDouble(17.1, 0.5), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.removeDouble(17.1, 0.5), is(false));
+		assertThat(list.removeDouble(2.1, 0.5), is(true));
 		assertThat(list, containsDoubles(1, 3, 4, 5));
 	}
 
@@ -426,11 +451,19 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void containsDouble() {
-		assertThat(empty.containsDouble(17), is(false));
+	public void containsDoubleExactly() {
+		assertThat(empty.containsDoubleExactly(17), is(false));
 
-		assertThat(list.containsDouble(17), is(false));
-		assertThat(list.containsDouble(2), is(true));
+		assertThat(list.containsDoubleExactly(17), is(false));
+		assertThat(list.containsDoubleExactly(2), is(true));
+	}
+
+	@Test
+	public void containsDouble() {
+		assertThat(empty.containsDouble(17.1, 0.5), is(false));
+
+		assertThat(list.containsDouble(17.1, 0.5), is(false));
+		assertThat(list.containsDouble(2.1, 0.5), is(true));
 	}
 
 	@Test
@@ -442,35 +475,67 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void containsAllDoublesArray() {
-		assertThat(empty.containsAllDoubles(17, 18, 19), is(false));
+	public void containsAllDoublesExactlyArray() {
+		assertThat(empty.containsAllDoublesExactly(17, 18, 19), is(false));
 
-		assertThat(list.containsAllDoubles(17, 18, 19), is(false));
-		assertThat(list.containsAllDoubles(1, 2, 3), is(true));
+		assertThat(list.containsAllDoublesExactly(17, 18, 19), is(false));
+		assertThat(list.containsAllDoublesExactly(1, 2, 3), is(true));
+	}
+
+	@Test
+	public void containsAllDoublesArray() {
+		assertThat(empty.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+
+		assertThat(list.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(list.containsAllDoubles(new double[] { 1.1, 1.9, 3.1 }, 0.5), is(true));
+	}
+
+	@Test
+	public void containsAllDoublesExactlyCollection() {
+		assertThat(empty.containsAllDoublesExactly(ArrayDoubleList.of(17, 18, 19)), is(false));
+
+		assertThat(list.containsAllDoublesExactly(ArrayDoubleList.of(17, 18, 19)), is(false));
+		assertThat(list.containsAllDoublesExactly(ArrayDoubleList.of(1, 2, 3)), is(true));
 	}
 
 	@Test
 	public void containsAllDoublesCollection() {
-		assertThat(empty.containsAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAllDoubles(ArrayDoubleList.of(17.1, 17.9, 19.1), 0.5), is(false));
 
-		assertThat(list.containsAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3)), is(true));
+		assertThat(list.containsAllDoubles(ArrayDoubleList.of(17.1, 17.9, 19.1), 0.5), is(false));
+		assertThat(list.containsAllDoubles(ArrayDoubleList.of(1.1, 1.9, 3.1), 0.5), is(true));
+	}
+
+	@Test
+	public void containsAnyDoublesExactlyArray() {
+		assertThat(empty.containsAnyDoublesExactly(17, 18, 19), is(false));
+
+		assertThat(list.containsAnyDoublesExactly(17, 18, 19), is(false));
+		assertThat(list.containsAnyDoublesExactly(1, 17, 3), is(true));
 	}
 
 	@Test
 	public void containsAnyDoublesArray() {
-		assertThat(empty.containsAnyDoubles(17, 18, 19), is(false));
+		assertThat(empty.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 
-		assertThat(list.containsAnyDoubles(17, 18, 19), is(false));
-		assertThat(list.containsAnyDoubles(1, 17, 3), is(true));
+		assertThat(list.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(list.containsAnyDoubles(new double[] { 1.1, 17.1, 3.1 }, 0.5), is(true));
+	}
+
+	@Test
+	public void containsAnyDoublesExactlyCollection() {
+		assertThat(empty.containsAnyDoublesExactly(ArrayDoubleList.of(17, 18, 19)), is(false));
+
+		assertThat(list.containsAnyDoublesExactly(ArrayDoubleList.of(17, 18, 19)), is(false));
+		assertThat(list.containsAnyDoublesExactly(ArrayDoubleList.of(1, 17, 3)), is(true));
 	}
 
 	@Test
 	public void containsAnyDoublesCollection() {
-		assertThat(empty.containsAnyDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAnyDoubles(ArrayDoubleList.of(17.1, 17.9, 19.1), 0.5), is(false));
 
-		assertThat(list.containsAnyDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAnyDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 17, 3)), is(true));
+		assertThat(list.containsAnyDoubles(ArrayDoubleList.of(17.1, 17.9, 19.1), 0.5), is(false));
+		assertThat(list.containsAnyDoubles(ArrayDoubleList.of(1.1, 17.1, 3.1), 0.5), is(true));
 	}
 
 	@Test
@@ -484,22 +549,42 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void removeAllDoublesArray() {
-		assertThat(empty.removeAllDoubles(1, 2, 3, 17), is(false));
+	public void removeAllDoublesExactlyArray() {
+		assertThat(empty.removeAllDoublesExactly(1, 2, 3, 17), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllDoubles(17, 17, 19), is(false));
-		assertThat(list.removeAllDoubles(1, 2, 3, 17), is(true));
+		assertThat(list.removeAllDoublesExactly(17, 18, 19), is(false));
+		assertThat(list.removeAllDoublesExactly(1, 2, 3, 17), is(true));
+		assertThat(list, containsDoubles(4, 5));
+	}
+
+	@Test
+	public void removeAllDoublesArray() {
+		assertThat(empty.removeAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.removeAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(list.removeAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(true));
+		assertThat(list, containsDoubles(4, 5));
+	}
+
+	@Test
+	public void removeAllDoublesExactlyCollection() {
+		assertThat(empty.removeAllDoublesExactly(ArrayDoubleList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.removeAllDoublesExactly(ArrayDoubleList.of(17, 18, 19)), is(false));
+		assertThat(list.removeAllDoublesExactly(ArrayDoubleList.of(1, 2, 3, 17)), is(true));
 		assertThat(list, containsDoubles(4, 5));
 	}
 
 	@Test
 	public void removeAllDoublesCollection() {
-		assertThat(empty.removeAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.removeAllDoubles(ArrayDoubleList.of(1.1, 1.9, 3.1, 17.1), 0.5), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(17, 18, 19)), is(false));
-		assertThat(list.removeAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.removeAllDoubles(ArrayDoubleList.of(17.1, 17.9, 19.1), 0.5), is(false));
+		assertThat(list.removeAllDoubles(ArrayDoubleList.of(1.1, 1.9, 3.1, 17.1), 0.5), is(true));
 		assertThat(list, containsDoubles(4, 5));
 	}
 
@@ -533,20 +618,38 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void retainAllDoublesArray() {
-		assertThat(empty.retainAllDoubles(1, 2, 3, 17), is(false));
+	public void retainAllDoublesExactlyArray() {
+		assertThat(empty.retainAllDoublesExactly(1, 2, 3, 17), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllDoubles(1, 2, 3, 17), is(true));
+		assertThat(list.retainAllDoublesExactly(1, 2, 3, 17), is(true));
+		assertThat(list, containsDoubles(1, 2, 3));
+	}
+
+	@Test
+	public void retainAllDoublesArray() {
+		assertThat(empty.retainAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.retainAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(true));
+		assertThat(list, containsDoubles(1, 2, 3));
+	}
+
+	@Test
+	public void retainAllDoublesExactlyCollection() {
+		assertThat(empty.retainAllDoublesExactly(ArrayDoubleList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.retainAllDoublesExactly(ArrayDoubleList.of(1, 2, 3, 17)), is(true));
 		assertThat(list, containsDoubles(1, 2, 3));
 	}
 
 	@Test
 	public void retainAllDoublesCollection() {
-		assertThat(empty.retainAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.retainAllDoubles(ArrayDoubleList.of(1.1, 1.9, 3.1, 17.1), 0.5), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllDoubles(org.d2ab.collection.doubles.ArrayDoubleList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.retainAllDoubles(ArrayDoubleList.of(1.1, 1.9, 3.1, 17.1), 0.5), is(true));
 		assertThat(list, containsDoubles(1, 2, 3));
 	}
 

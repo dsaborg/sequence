@@ -138,7 +138,7 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
-	public int lastIndexOfDouble(double x) {
+	public int lastIndexOfDoubleExactly(double x) {
 		for (int i = size - 1; i >= 0; i--)
 			if (contents[i] == x)
 				return i;
@@ -147,7 +147,7 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
-	public int indexOfDouble(double x) {
+	public int indexOfDoubleExactly(double x) {
 		for (int i = 0; i < size; i++)
 			if (contents[i] == x)
 				return i;
@@ -234,16 +234,16 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
-	public boolean containsAllDoubles(double... xs) {
+	public boolean containsAllDoublesExactly(double... xs) {
 		for (double x : xs)
-			if (!containsDouble(x))
+			if (!containsDoubleExactly(x))
 				return false;
 
 		return true;
 	}
 
 	@Override
-	public boolean removeDouble(double x) {
+	public boolean removeDoubleExactly(double x) {
 		for (int i = 0; i < size; i++)
 			if (contents[i] == x)
 				return uncheckedRemove(i);
@@ -252,7 +252,7 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
-	public boolean containsDouble(double x) {
+	public boolean containsDoubleExactly(double x) {
 		for (int i = 0; i < size; i++)
 			if (contents[i] == x)
 				return true;
@@ -261,19 +261,19 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
-	public boolean removeAllDoubles(double... xs) {
+	public boolean removeAllDoublesExactly(double... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (Arrayz.contains(xs, contents[i]))
+			if (Arrayz.containsExactly(xs, contents[i]))
 				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
-	public boolean retainAllDoubles(double... xs) {
+	public boolean retainAllDoublesExactly(double... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (!Arrayz.contains(xs, contents[i]))
+			if (!Arrayz.containsExactly(xs, contents[i]))
 				modified |= uncheckedRemove(i--);
 		return modified;
 	}

@@ -28,6 +28,8 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.collection.Arrayz.contains;
+import static org.d2ab.collection.Arrayz.containsExactly;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
@@ -86,7 +88,7 @@ public interface DoubleIterable extends Iterable<Double> {
 		iterator().removeAll();
 	}
 
-	default boolean containsDouble(double x) {
+	default boolean containsDoubleExactly(double x) {
 		return containsDouble(x, 0);
 	}
 
@@ -94,7 +96,7 @@ public interface DoubleIterable extends Iterable<Double> {
 		return iterator().contains(x, precision);
 	}
 
-	default boolean removeDouble(double x) {
+	default boolean removeDoubleExactly(double x) {
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (iterator.nextDouble() == x) {
 				iterator.remove();
@@ -104,17 +106,43 @@ public interface DoubleIterable extends Iterable<Double> {
 		return false;
 	}
 
-	default boolean containsAllDoubles(double... xs) {
+	default boolean removeDouble(double x, double precision) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+			if (DoubleComparator.equals(iterator.nextDouble(), x, precision)) {
+				iterator.remove();
+				return true;
+			}
+
+		return false;
+	}
+
+	default boolean containsAllDoublesExactly(double... xs) {
 		for (double x : xs)
-			if (!containsDouble(x))
+			if (!containsDoubleExactly(x))
 				return false;
 
 		return true;
 	}
 
-	default boolean containsAllDoubles(DoubleIterable c) {
+	default boolean containsAllDoubles(double[] xs, double precision) {
+		for (double x : xs)
+			if (!containsDouble(x, precision))
+				return false;
+
+		return true;
+	}
+
+	default boolean containsAllDoublesExactly(DoubleIterable c) {
 		for (double x : c)
-			if (!containsDouble(x))
+			if (!containsDoubleExactly(x))
+				return false;
+
+		return true;
+	}
+
+	default boolean containsAllDoubles(DoubleIterable c, double precision) {
+		for (double x : c)
+			if (!containsDouble(x, precision))
 				return false;
 
 		return true;
@@ -123,10 +151,23 @@ public interface DoubleIterable extends Iterable<Double> {
 	/**
 	 * @return true if this {@code DoubleIterable} contains any of the given {@code doubles}, false otherwise.
 	 */
-	default boolean containsAnyDoubles(double... xs) {
+	default boolean containsAnyDoublesExactly(double... xs) {
 		DoubleIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (Arrayz.contains(xs, iterator.nextDouble(), 0))
+			if (containsExactly(xs, iterator.nextDouble()))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code DoubleIterable} contains any of the given {@code doubles} to the given precision,
+	 * false otherwise.
+	 */
+	default boolean containsAnyDoubles(double[] xs, double precision) {
+		DoubleIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (contains(xs, iterator.nextDouble(), precision))
 				return true;
 
 		return false;
@@ -136,29 +177,58 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code DoubleIterable},
 	 * false otherwise.
 	 */
-	default boolean containsAnyDoubles(DoubleIterable xs) {
+	default boolean containsAnyDoublesExactly(DoubleIterable xs) {
 		DoubleIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (xs.containsDouble(iterator.nextDouble()))
+			if (xs.containsDoubleExactly(iterator.nextDouble()))
 				return true;
 
 		return false;
 	}
 
-	default boolean removeAllDoubles(DoubleIterable c) {
-		return removeDoublesIf(c::containsDouble);
+	/**
+	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given
+	 * {@code DoubleIterable} to the given precision, false otherwise.
+	 */
+	default boolean containsAnyDoubles(DoubleIterable xs, double precision) {
+		DoubleIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (xs.containsDouble(iterator.nextDouble(), precision))
+				return true;
+
+		return false;
 	}
 
-	default boolean retainAllDoubles(DoubleIterable c) {
-		return removeDoublesIf(x -> !c.containsDouble(x));
+	default boolean removeAllDoublesExactly(double... xs) {
+		return removeDoublesIf(x -> containsExactly(xs, x));
 	}
 
-	default boolean removeAllDoubles(double... xs) {
-		return removeDoublesIf(x -> Arrayz.contains(xs, x, 0.0));
+	default boolean removeAllDoubles(double[] xs, double precision) {
+		return removeDoublesIf(x -> contains(xs, x, precision));
 	}
 
-	default boolean retainAllDoubles(double... xs) {
-		return removeDoublesIf(x -> !Arrayz.contains(xs, x, 0.0));
+	default boolean removeAllDoublesExactly(DoubleIterable c) {
+		return removeDoublesIf(c::containsDoubleExactly);
+	}
+
+	default boolean removeAllDoubles(DoubleIterable c, double precision) {
+		return removeDoublesIf(x -> c.containsDouble(x, precision));
+	}
+
+	default boolean retainAllDoublesExactly(double... xs) {
+		return removeDoublesIf(x -> !containsExactly(xs, x));
+	}
+
+	default boolean retainAllDoubles(double[] xs, double precision) {
+		return removeDoublesIf(x -> !contains(xs, x, precision));
+	}
+
+	default boolean retainAllDoublesExactly(DoubleIterable c) {
+		return removeDoublesIf(x -> !c.containsDoubleExactly(x));
+	}
+
+	default boolean retainAllDoubles(DoubleIterable c, double precision) {
+		return removeDoublesIf(x -> !c.containsDouble(x, precision));
 	}
 
 	default boolean removeDoublesIf(DoublePredicate filter) {

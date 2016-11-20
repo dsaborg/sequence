@@ -180,7 +180,7 @@ public class Arrayz {
 	/**
 	 * @return true if the given array contains exactly the given target {@code double}, false otherwise.
 	 */
-	public static boolean contains(double[] items, double target) {
+	public static boolean containsExactly(double[] items, double target) {
 		for (double item : items)
 			if (item == target)
 				return true;
