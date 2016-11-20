@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.ints;
+package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.ints.IntIterable;
+import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -24,10 +26,10 @@ import java.util.Spliterators;
 import java.util.function.Predicate;
 
 /**
- * A primitive specialization of {@link Collection} for {code int} values. Supplements all {@link Integer}-valued
- * methods with corresponding {@code int}-valued methods.
+ * A primitive specialization of {@link Collection} for {code char} values. Supplements all {@link Character}-valued
+ * methods with corresponding {@code char}-valued methods.
  */
-public interface IntCollection extends Collection<Integer>, IntIterable {
+public interface CharCollection extends Collection<Character>, CharIterable {
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -39,8 +41,8 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	@Override
-	default Integer[] toArray() {
-		return toArray(new Integer[size()]);
+	default Character[] toArray() {
+		return toArray(new Character[size()]);
 	}
 
 	@Override
@@ -49,48 +51,48 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	/**
-	 * Collect the {@code ints} in this {@code IntCollection} into an {@code int}-array.
+	 * Collect the {@code chars} in this {@code CharCollection} into an {@code char}-array.
 	 */
-	default int[] toIntArray() {
-		return new ArrayIntList(this).toIntArray();
+	default char[] toCharArray() {
+		return new ArrayCharList(this).toCharArray();
 	}
 
 	@Override
-	default boolean add(Integer i) {
-		return addInt(i);
+	default boolean add(Character i) {
+		return addChar(i);
 	}
 
-	default boolean addInt(int i) {
+	default boolean addChar(char i) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Integer && containsInt((int) o);
+		return o instanceof Character && containsChar((char) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Integer && removeInt((int) o);
+		return o instanceof Character && removeChar((char) o);
 	}
 
 	@Override
-	default boolean addAll(Collection<? extends Integer> c) {
+	default boolean addAll(Collection<? extends Character> c) {
 		return Collectionz.addAll(this, c);
 	}
 
-	default boolean addAllInts(int... is) {
+	default boolean addAllChars(char... is) {
 		boolean changed = false;
-		for (int i : is)
-			changed |= addInt(i);
+		for (char i : is)
+			changed |= addChar(i);
 		return changed;
 	}
 
-	default boolean addAllInts(IntCollection is) {
+	default boolean addAllChars(CharCollection is) {
 		if (is.isEmpty())
 			return false;
 
-		is.forEachInt(this::addInt);
+		is.forEachChar(this::addChar);
 		return true;
 	}
 
@@ -110,12 +112,7 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	@Override
-	default boolean removeIf(Predicate<? super Integer> filter) {
-		return removeIntsIf(filter::test);
-	}
-
-	@Override
-	default Spliterator.OfInt spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
+	default boolean removeIf(Predicate<? super Character> filter) {
+		return removeCharsIf(filter::test);
 	}
 }

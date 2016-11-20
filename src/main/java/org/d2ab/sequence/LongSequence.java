@@ -16,7 +16,8 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.*;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Iterables;
 import org.d2ab.function.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
@@ -1003,7 +1004,7 @@ public interface LongSequence extends org.d2ab.collection.longs.LongList {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().size();
+		return iterator().count();
 	}
 
 	/**
@@ -1077,13 +1078,6 @@ public interface LongSequence extends org.d2ab.collection.longs.LongList {
 			Arrays.sort(array);
 			return LongIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the longs in this {@code LongSequence} into an array.
-	 */
-	default long[] toLongArray() {
-		return iterator().toArray();
 	}
 
 	/**
@@ -1247,26 +1241,6 @@ public interface LongSequence extends org.d2ab.collection.longs.LongList {
 	 */
 	default boolean isEmpty() {
 		return !iterator().hasNext();
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsLong(long l) {
-		return iterator().contains(l);
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #containsLong(long)} instead.
-	 */
-	@Deprecated
-	default boolean contains(long l) {
-		return containsLong(l);
 	}
 
 	/**

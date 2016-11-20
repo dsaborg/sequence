@@ -836,7 +836,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().size();
+		return iterator().count();
 	}
 
 	/**

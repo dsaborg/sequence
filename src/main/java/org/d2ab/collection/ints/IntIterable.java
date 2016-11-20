@@ -129,13 +129,13 @@ public interface IntIterable extends Iterable<Integer> {
 		iterator().removeAll();
 	}
 
-	default boolean containsInt(int i) {
-		return iterator().contains(i);
+	default boolean containsInt(int x) {
+		return iterator().contains(x);
 	}
 
-	default boolean removeInt(int i) {
+	default boolean removeInt(int x) {
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
-			if (iterator.nextInt() == i) {
+			if (iterator.nextInt() == x) {
 				iterator.remove();
 				return true;
 			}
@@ -143,17 +143,17 @@ public interface IntIterable extends Iterable<Integer> {
 		return false;
 	}
 
-	default boolean containsAllInts(int... is) {
-		for (int i : is)
-			if (!containsInt(i))
+	default boolean containsAllInts(int... xs) {
+		for (int x : xs)
+			if (!containsInt(x))
 				return false;
 
 		return true;
 	}
 
 	default boolean containsAllInts(IntIterable c) {
-		for (int i : c)
-			if (!containsInt(i))
+		for (int x : c)
+			if (!containsInt(x))
 				return false;
 
 		return true;
@@ -162,10 +162,10 @@ public interface IntIterable extends Iterable<Integer> {
 	/**
 	 * @return true if this {@code IntIterable} contains any of the given {@code ints}, false otherwise.
 	 */
-	default boolean containsAnyInts(int... is) {
+	default boolean containsAnyInts(int... xs) {
 		IntIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (Arrayz.contains(is, iterator.nextInt()))
+			if (Arrayz.contains(xs, iterator.nextInt()))
 				return true;
 
 		return false;
@@ -175,29 +175,29 @@ public interface IntIterable extends Iterable<Integer> {
 	 * @return true if this {@code IntIterable} contains any of the {@code ints} in the given {@code IntIterable},
 	 * false otherwise.
 	 */
-	default boolean containsAnyInts(IntIterable is) {
+	default boolean containsAnyInts(IntIterable xs) {
 		IntIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (is.containsInt(iterator.nextInt()))
+			if (xs.containsInt(iterator.nextInt()))
 				return true;
 
 		return false;
 	}
 
-	default boolean removeAllInts(int... is) {
-		return removeIntsIf(i -> Arrayz.contains(is, i));
+	default boolean removeAllInts(int... xs) {
+		return removeIntsIf(x -> Arrayz.contains(xs, x));
 	}
 
-	default boolean removeAllInts(IntIterable is) {
-		return removeIntsIf(is::containsInt);
+	default boolean removeAllInts(IntIterable xs) {
+		return removeIntsIf(xs::containsInt);
 	}
 
-	default boolean retainAllInts(int... is) {
-		return removeIntsIf(i -> !Arrayz.contains(is, i));
+	default boolean retainAllInts(int... xs) {
+		return removeIntsIf(x -> !Arrayz.contains(xs, x));
 	}
 
-	default boolean retainAllInts(IntIterable is) {
-		return removeIntsIf(i -> !is.containsInt(i));
+	default boolean retainAllInts(IntIterable xs) {
+		return removeIntsIf(x -> !xs.containsInt(x));
 	}
 
 	default boolean removeIntsIf(IntPredicate filter) {

@@ -17,9 +17,10 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.chars.ChainingCharIterable;
 import org.d2ab.collection.chars.CharIterable;
-import org.d2ab.collection.Iterables;
+import org.d2ab.collection.chars.CharList;
 import org.d2ab.function.*;
 import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.Iterators;
@@ -44,7 +45,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of characters.
  */
 @FunctionalInterface
-public interface CharSeq extends CharIterable {
+public interface CharSeq extends CharList {
 	/**
 	 * Create an empty {@code CharSeq} with no characters.
 	 */
@@ -935,7 +936,7 @@ public interface CharSeq extends CharIterable {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().size();
+		return iterator().count();
 	}
 
 	/**
@@ -1005,37 +1006,10 @@ public interface CharSeq extends CharIterable {
 	 */
 	default CharSeq sorted() {
 		return () -> {
-			char[] array = toArray();
+			char[] array = toCharArray();
 			Arrays.sort(array);
 			return CharIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the characters in this {@code CharSeq} into an array.
-	 */
-	default char[] toArray() {
-		char[] work = new char[10];
-
-		int index = 0;
-		CharIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				char[] newChars = new char[newCapacity];
-				System.arraycopy(work, 0, newChars, 0, work.length);
-				work = newChars;
-			}
-			work[index++] = iterator.nextChar();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		char[] result = new char[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
 	}
 
 	/**
@@ -1066,7 +1040,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #sorted()
 	 */
 	default CharSeq reverse() {
-		return () -> CharIterator.of(Arrayz.reverse(toArray()));
+		return () -> CharIterator.of(Arrayz.reverse(toCharArray()));
 	}
 
 	/**
@@ -1077,7 +1051,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #collect(Supplier, ObjCharConsumer)
 	 */
 	default String asString() {
-		return new String(toArray());
+		return new String(toCharArray());
 	}
 
 	/**
@@ -1214,17 +1188,6 @@ public interface CharSeq extends CharIterable {
 	 */
 	default boolean containsChar(char c) {
 		return iterator().contains(c);
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #containsChar(char)} instead.
-	 */
-	@Deprecated
-	default boolean contains(char c) {
-		return containsChar(c);
 	}
 
 	/**

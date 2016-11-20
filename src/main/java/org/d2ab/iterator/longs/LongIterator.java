@@ -155,7 +155,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	/**
 	 * @return the number of {@code longs} remaining in this iterator.
 	 */
-	default int size() {
+	default int count() {
 		long count = 0;
 		for (; hasNext(); nextLong())
 			count++;
@@ -175,23 +175,5 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			nextLong();
 			remove();
 		}
-	}
-
-	default long[] toArray() {
-		return toArray(new long[10]);
-	}
-
-	default long[] toArray(long[] array) {
-		int index = 0;
-		while (hasNext()) {
-			if (index > array.length)
-				array = Arrays.copyOf(array, Math.min(10, array.length + (array.length >> 1)));
-			array[index++] = nextLong();
-		}
-
-		if (index < array.length)
-			array = Arrays.copyOf(array, index);
-
-		return array;
 	}
 }

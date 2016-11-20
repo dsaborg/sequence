@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.ints;
+package org.d2ab.collection.chars;
 
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.ListIterator;
 
 /**
- * A {@link ListIterator} over a sequence of {@code int} values.
+ * A {@link ListIterator} over a sequence of {@code char} values.
  */
-public interface IntListIterator extends ListIterator<Integer>, IntIterator {
+public interface CharListIterator extends ListIterator<Character>, CharIterator {
 	@Override
 	boolean hasNext();
 
 	@Override
-	int nextInt();
+	char nextChar();
 
 	@Override
-	default Integer next() {
-		return nextInt();
+	default Character next() {
+		return nextChar();
 	}
 
 	@Override
 	boolean hasPrevious();
 
-	int previousInt();
+	char previousChar();
 
 	@Override
-	default Integer previous() {
-		return previousInt();
+	default Character previous() {
+		return previousChar();
 	}
 
 	@Override
@@ -56,27 +56,27 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 		throw new UnsupportedOperationException();
 	}
 
-	default void set(int x) {
+	default void set(char x) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default void set(Integer x) {
-		set((int) x);
+	default void set(Character x) {
+		set((char) x);
 	}
 
-	default void add(int x) {
+	default void add(char x) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default void add(Integer x) {
-		add((int) x);
+	default void add(Character x) {
+		add((char) x);
 	}
 
-	static IntListIterator forwardOnly(IntIterator iterator, int index) {
+	static CharListIterator forwardOnly(CharIterator iterator, int index) {
 		iterator.skip(index);
-		return new IntListIterator() {
+		return new CharListIterator() {
 			int cursor = index;
 
 			@Override
@@ -85,10 +85,10 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 			}
 
 			@Override
-			public int nextInt() {
-				int nextInt = iterator.nextInt();
+			public char nextChar() {
+				char nextChar = iterator.nextChar();
 				cursor++;
-				return nextInt;
+				return nextChar;
 			}
 
 			@Override
@@ -97,7 +97,7 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 			}
 
 			@Override
-			public int previousInt() {
+			public char previousChar() {
 				throw new UnsupportedOperationException();
 			}
 

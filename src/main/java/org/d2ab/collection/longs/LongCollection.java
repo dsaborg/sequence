@@ -52,7 +52,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	 * Collect the {@code longs} in this {@code LongCollection} into an {@code long}-array.
 	 */
 	default long[] toLongArray() {
-		return iterator().toArray(new long[size()]);
+		return new ArrayLongList(this).toLongArray();
 	}
 
 	@Override

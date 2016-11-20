@@ -16,7 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.*;
+import org.d2ab.collection.Arrayz;
 import org.d2ab.function.IntBiConsumer;
 import org.d2ab.function.IntBiPredicate;
 import org.d2ab.function.IntToCharFunction;
@@ -1006,7 +1006,7 @@ public interface IntSequence extends org.d2ab.collection.ints.IntList {
 	 */
 	@Override
 	default int size() {
-		return iterator().size();
+		return iterator().count();
 	}
 
 	/**
@@ -1092,13 +1092,6 @@ public interface IntSequence extends org.d2ab.collection.ints.IntList {
 			Arrays.sort(array);
 			return IntIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the ints in this {@code IntSequence} into an array.
-	 */
-	default int[] toIntArray() {
-		return iterator().toArray();
 	}
 
 	/**

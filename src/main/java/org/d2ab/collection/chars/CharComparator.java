@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.longs;
+package org.d2ab.collection.chars;
 
 import java.util.Comparator;
 
 /**
- * A primitive specialization of {@link Comparator} for {@code long} values.
+ * A primitive specialization of {@link Comparator} for {@code char} values.
  */
 @FunctionalInterface
-public interface LongComparator extends Comparator<Long> {
-	default int compare(Long x1, Long x2) {
-		return compare((long) x1, (long) x2);
+public interface CharComparator extends Comparator<Character> {
+	@Override
+	default int compare(Character x1, Character x2) {
+		return compare((char) x1, (char) x2);
 	}
 
-	int compare(long x1, long x2);
+	int compare(char x1, char x2);
 }

@@ -45,6 +45,11 @@ public class ArrayIntList implements IntList {
 		this.contents = new int[capacity];
 	}
 
+	public ArrayIntList(IntCollection xs) {
+		this();
+		addAllInts(xs);
+	}
+
 	/**
 	 * Private to avoid conflict with standard int-taking capacity constructor.
 	 * Use {@link #of(int...)} for public access.

@@ -75,8 +75,8 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	@Override
-	default boolean add(Integer integer) {
-		return addInt(integer);
+	default boolean add(Integer x) {
+		return addInt(x);
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	default int getInt(int index) {
-		return listIterator(index).next();
+		return listIterator(index).nextInt();
 	}
 
 	@Override

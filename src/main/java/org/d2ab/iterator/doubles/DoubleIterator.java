@@ -132,7 +132,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	/**
 	 * @return the number of {@code doubles} remaining in this iterator.
 	 */
-	default int size() {
+	default int count() {
 		int count = 0;
 		for (; hasNext(); nextDouble())
 			count++;

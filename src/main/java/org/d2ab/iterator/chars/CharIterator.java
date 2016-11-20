@@ -153,7 +153,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	/**
 	 * @return the number of {@code chars} remaining in this iterator.
 	 */
-	default int size() {
+	default int count() {
 		long count = 0;
 		for (; hasNext(); nextChar())
 			count++;
@@ -176,17 +176,6 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	/**
-	 * Reduce this {@code CharIterator} into a single element by iteratively applying the given binary operator to
-	 * the current result and each element in the iterator, starting with the given identity as the initial result.
-	 */
-	default char reduce(char identity, CharBinaryOperator operator) {
-		char result = identity;
-		while (hasNext())
-			result = operator.applyAsChar(result, nextChar());
-		return result;
-	}
-
-	/**
 	 * @return true if this {@code CharIterator} contains the given {@code char}, false otherwise.
 	 */
 	default boolean contains(char c) {
@@ -195,5 +184,16 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 				return true;
 
 		return false;
+	}
+
+	/**
+	 * Reduce this {@code CharIterator} into a single element by iteratively applying the given binary operator to
+	 * the current result and each element in the iterator, starting with the given identity as the initial result.
+	 */
+	default char reduce(char identity, CharBinaryOperator operator) {
+		char result = identity;
+		while (hasNext())
+			result = operator.applyAsChar(result, nextChar());
+		return result;
 	}
 }

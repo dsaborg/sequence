@@ -56,22 +56,22 @@ public interface LongListIterator extends ListIterator<Long>, LongIterator {
 		throw new UnsupportedOperationException();
 	}
 
-	default void set(long l) {
+	default void set(long x) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default void set(Long l) {
-		set((long) l);
+	default void set(Long x) {
+		set((long) x);
 	}
 
-	default void add(long l) {
+	default void add(long x) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default void add(Long l) {
-		add((long) l);
+	default void add(Long x) {
+		add((long) x);
 	}
 
 	static LongListIterator forwardOnly(LongIterator iterator, int index) {

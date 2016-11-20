@@ -19,14 +19,14 @@ package org.d2ab.collection.ints;
 import java.util.Comparator;
 
 /**
- * A comparator of ints.
+ * A primitive specialization of {@link Comparator} for {@code int} values.
  */
 @FunctionalInterface
 public interface IntComparator extends Comparator<Integer> {
 	@Override
-	default int compare(Integer i1, Integer i2) {
-		return compare((int) i1, (int) i2);
+	default int compare(Integer x1, Integer x2) {
+		return compare((int) x1, (int) x2);
 	}
 
-	int compare(int i1, int i2);
+	int compare(int x1, int x2);
 }

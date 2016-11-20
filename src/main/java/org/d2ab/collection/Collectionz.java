@@ -16,7 +16,11 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.chars.CharCollection;
+import org.d2ab.collection.chars.CharIterable;
+import org.d2ab.collection.ints.IntCollection;
 import org.d2ab.collection.ints.IntIterable;
+import org.d2ab.collection.longs.LongCollection;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,76 +49,113 @@ public class Collectionz {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(org.d2ab.collection.ints.IntIterable integers, Collection<?> c) {
-		if (c instanceof org.d2ab.collection.ints.IntIterable)
-			return integers.containsAllInts((org.d2ab.collection.ints.IntIterable) c);
+	public static boolean containsAll(IntIterable xs, Collection<?> c) {
+		if (c instanceof IntIterable)
+			return xs.containsAllInts((IntIterable) c);
 
-		for (int i : (Collection<? extends Integer>) c)
-			if (!integers.containsInt(i))
+		for (int x : (Collection<? extends Integer>) c)
+			if (!xs.containsInt(x))
 				return false;
 
 		return true;
 	}
 
-	public static boolean addAll(org.d2ab.collection.ints.IntCollection integers, Collection<? extends Integer> c) {
-		if (c instanceof org.d2ab.collection.ints.IntCollection)
-			return integers.addAllInts((org.d2ab.collection.ints.IntCollection) c);
+	public static boolean addAll(IntCollection xs, Collection<? extends Integer> c) {
+		if (c instanceof IntCollection)
+			return xs.addAllInts((IntCollection) c);
 
 		if (c.isEmpty())
 			return false;
 
-		c.forEach(integers::addInt);
+		c.forEach(xs::addInt);
 		return true;
 	}
 
-	public static boolean retainAll(org.d2ab.collection.ints.IntCollection integers, Collection<?> c) {
-		if (c instanceof org.d2ab.collection.ints.IntIterable)
-			return integers.retainAllInts((org.d2ab.collection.ints.IntIterable) c);
+	public static boolean retainAll(IntCollection xs, Collection<?> c) {
+		if (c instanceof IntIterable)
+			return xs.retainAllInts((IntIterable) c);
 
-		return integers.removeIntsIf(i -> !c.contains(i));
+		return xs.removeIntsIf(x -> !c.contains(x));
 	}
 
-	public static boolean removeAll(org.d2ab.collection.ints.IntCollection integers, Collection<?> c) {
-		if (c instanceof org.d2ab.collection.ints.IntIterable)
-			return integers.removeAllInts((IntIterable) c);
+	public static boolean removeAll(IntCollection xs, Collection<?> c) {
+		if (c instanceof IntIterable)
+			return xs.removeAllInts((IntIterable) c);
 
-		return integers.removeIntsIf(c::contains);
+		return xs.removeIntsIf(c::contains);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(org.d2ab.collection.longs.LongCollection longs, Collection<?> c) {
-		if (c instanceof org.d2ab.collection.longs.LongCollection)
-			return longs.containsAllLongs((org.d2ab.collection.longs.LongCollection) c);
+	public static boolean containsAll(LongCollection xs, Collection<?> c) {
+		if (c instanceof LongCollection)
+			return xs.containsAllLongs((LongCollection) c);
 
-		for (long i : (Collection<? extends Long>) c)
-			if (!longs.containsLong(i))
+		for (long x : (Collection<? extends Long>) c)
+			if (!xs.containsLong(x))
 				return false;
 
 		return true;
 	}
 
-	public static boolean addAll(org.d2ab.collection.longs.LongCollection longs, Collection<? extends Long> c) {
-		if (c instanceof org.d2ab.collection.longs.LongCollection)
-			return longs.addAllLongs((org.d2ab.collection.longs.LongCollection) c);
+	public static boolean addAll(LongCollection xs, Collection<? extends Long> c) {
+		if (c instanceof LongCollection)
+			return xs.addAllLongs((LongCollection) c);
 
 		if (c.isEmpty())
 			return false;
 
-		c.forEach(longs::addLong);
+		c.forEach(xs::addLong);
 		return true;
 	}
 
-	public static boolean retainAll(org.d2ab.collection.longs.LongCollection longs, Collection<?> c) {
-		if (c instanceof org.d2ab.collection.longs.LongCollection)
-			return longs.retainAllLongs((org.d2ab.collection.longs.LongCollection) c);
+	public static boolean retainAll(LongCollection xs, Collection<?> c) {
+		if (c instanceof LongCollection)
+			return xs.retainAllLongs((LongCollection) c);
 
-		return longs.removeLongsIf(i -> !c.contains(i));
+		return xs.removeLongsIf(x -> !c.contains(x));
 	}
 
-	public static boolean removeAll(org.d2ab.collection.longs.LongCollection longs, Collection<?> c) {
-		if (c instanceof org.d2ab.collection.longs.LongCollection)
-			return longs.removeAllLongs((org.d2ab.collection.longs.LongCollection) c);
+	public static boolean removeAll(LongCollection xs, Collection<?> c) {
+		if (c instanceof LongCollection)
+			return xs.removeAllLongs((LongCollection) c);
 
-		return longs.removeLongsIf(c::contains);
+		return xs.removeLongsIf(c::contains);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static boolean containsAll(CharIterable xs, Collection<?> c) {
+		if (c instanceof CharIterable)
+			return xs.containsAllChars((CharIterable) c);
+
+		for (char x : (Collection<? extends Character>) c)
+			if (!xs.containsChar(x))
+				return false;
+
+		return true;
+	}
+
+	public static boolean addAll(CharCollection xs, Collection<? extends Character> c) {
+		if (c instanceof CharCollection)
+			return xs.addAllChars((CharCollection) c);
+
+		if (c.isEmpty())
+			return false;
+
+		c.forEach(xs::addChar);
+		return true;
+	}
+
+	public static boolean retainAll(CharCollection xs, Collection<?> c) {
+		if (c instanceof CharIterable)
+			return xs.retainAllChars((CharIterable) c);
+
+		return xs.removeCharsIf(x -> !c.contains(x));
+	}
+
+	public static boolean removeAll(CharCollection xs, Collection<?> c) {
+		if (c instanceof CharIterable)
+			return xs.removeAllChars((CharIterable) c);
+
+		return xs.removeCharsIf(c::contains);
 	}
 }

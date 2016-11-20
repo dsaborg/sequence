@@ -84,13 +84,13 @@ public interface LongIterable extends Iterable<Long> {
 		iterator().removeAll();
 	}
 
-	default boolean containsLong(long l) {
-		return iterator().contains(l);
+	default boolean containsLong(long x) {
+		return iterator().contains(x);
 	}
 
-	default boolean removeLong(long l) {
+	default boolean removeLong(long x) {
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			if (iterator.nextLong() == l) {
+			if (iterator.nextLong() == x) {
 				iterator.remove();
 				return true;
 			}
@@ -98,17 +98,17 @@ public interface LongIterable extends Iterable<Long> {
 		return false;
 	}
 
-	default boolean containsAllLongs(long... ls) {
-		for (long l : ls)
-			if (!containsLong(l))
+	default boolean containsAllLongs(long... xs) {
+		for (long x : xs)
+			if (!containsLong(x))
 				return false;
 
 		return true;
 	}
 
 	default boolean containsAllLongs(LongIterable c) {
-		for (long i : c)
-			if (!containsLong(i))
+		for (long x : c)
+			if (!containsLong(x))
 				return false;
 
 		return true;
@@ -117,10 +117,10 @@ public interface LongIterable extends Iterable<Long> {
 	/**
 	 * @return true if this {@code LongIterable} contains any of the given {@code longs}, false otherwise.
 	 */
-	default boolean containsAnyLongs(long... is) {
+	default boolean containsAnyLongs(long... xs) {
 		LongIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (Arrayz.contains(is, iterator.nextLong()))
+			if (Arrayz.contains(xs, iterator.nextLong()))
 				return true;
 
 		return false;
@@ -130,10 +130,10 @@ public interface LongIterable extends Iterable<Long> {
 	 * @return true if this {@code LongIterable} contains any of the {@code longs} in the given {@code LongIterable},
 	 * false otherwise.
 	 */
-	default boolean containsAnyLongs(LongIterable is) {
+	default boolean containsAnyLongs(LongIterable xs) {
 		LongIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (is.containsLong(iterator.nextLong()))
+			if (xs.containsLong(iterator.nextLong()))
 				return true;
 
 		return false;
@@ -144,15 +144,15 @@ public interface LongIterable extends Iterable<Long> {
 	}
 
 	default boolean retainAllLongs(LongIterable c) {
-		return removeLongsIf(i -> !c.containsLong(i));
+		return removeLongsIf(x -> !c.containsLong(x));
 	}
 
-	default boolean removeAllLongs(long... ls) {
-		return removeLongsIf(i -> Arrayz.contains(ls, i));
+	default boolean removeAllLongs(long... xs) {
+		return removeLongsIf(x -> Arrayz.contains(xs, x));
 	}
 
-	default boolean retainAllLongs(long... ls) {
-		return removeLongsIf(i -> !Arrayz.contains(ls, i));
+	default boolean retainAllLongs(long... xs) {
+		return removeLongsIf(x -> !Arrayz.contains(xs, x));
 	}
 
 	default boolean removeLongsIf(LongPredicate filter) {

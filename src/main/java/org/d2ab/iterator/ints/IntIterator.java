@@ -159,7 +159,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	/**
 	 * @return the number of {@code ints} remaining in this iterator.
 	 */
-	default int size() {
+	default int count() {
 		long count = 0;
 		for (; hasNext(); nextInt())
 			count++;
@@ -194,23 +194,5 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		while (hasNext())
 			result = operator.applyAsInt(result, nextInt());
 		return result;
-	}
-
-	default int[] toArray() {
-		return toArray(new int[10]);
-	}
-
-	default int[] toArray(int[] array) {
-		int index = 0;
-		while (hasNext()) {
-			if (index > array.length)
-				array = Arrays.copyOf(array, Math.min(10, array.length + (array.length >> 1)));
-			array[index++] = nextInt();
-		}
-
-		if (index < array.length)
-			array = Arrays.copyOf(array, index);
-
-		return array;
 	}
 }

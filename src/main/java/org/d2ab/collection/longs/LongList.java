@@ -75,8 +75,8 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean add(Long integer) {
-		return addLong(integer);
+	default boolean add(Long x) {
+		return addLong(x);
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	default long getLong(int index) {
-		return listIterator(index).next();
+		return listIterator(index).nextLong();
 	}
 
 	@Override

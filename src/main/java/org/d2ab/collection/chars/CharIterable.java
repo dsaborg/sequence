@@ -16,7 +16,9 @@
 
 package org.d2ab.collection.chars;
 
+import org.d2ab.collection.Arrayz;
 import org.d2ab.function.CharConsumer;
+import org.d2ab.function.CharPredicate;
 import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.chars.ArrayCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
@@ -102,5 +104,95 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	default Reader asReader() {
 		return new CharIterableReader(this);
+	}
+
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
+
+	default void clear() {
+		iterator().removeAll();
+	}
+
+	default boolean containsChar(char x) {
+		return iterator().contains(x);
+	}
+
+	default boolean removeChar(char x) {
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
+			if (iterator.nextChar() == x) {
+				iterator.remove();
+				return true;
+			}
+
+		return false;
+	}
+
+	default boolean containsAllChars(char... xs) {
+		for (char x : xs)
+			if (!containsChar(x))
+				return false;
+
+		return true;
+	}
+
+	default boolean containsAllChars(CharIterable c) {
+		for (char x : c)
+			if (!containsChar(x))
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * @return true if this {@code CharIterable} contains any of the given {@code chars}, false otherwise.
+	 */
+	default boolean containsAnyChars(char... xs) {
+		CharIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (Arrayz.contains(xs, iterator.nextChar()))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code CharIterable} contains any of the {@code chars} in the given {@code CharIterable},
+	 * false otherwise.
+	 */
+	default boolean containsAnyChars(CharIterable xs) {
+		CharIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (xs.containsChar(iterator.nextChar()))
+				return true;
+
+		return false;
+	}
+
+	default boolean removeAllChars(char... xs) {
+		return removeCharsIf(x -> Arrayz.contains(xs, x));
+	}
+
+	default boolean removeAllChars(CharIterable xs) {
+		return removeCharsIf(xs::containsChar);
+	}
+
+	default boolean retainAllChars(char... xs) {
+		return removeCharsIf(x -> !Arrayz.contains(xs, x));
+	}
+
+	default boolean retainAllChars(CharIterable xs) {
+		return removeCharsIf(x -> !xs.containsChar(x));
+	}
+
+	default boolean removeCharsIf(CharPredicate filter) {
+		boolean changed = false;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (filter.test(iterator.nextChar())) {
+				iterator.remove();
+				changed = true;
+			}
+		}
+		return changed;
 	}
 }

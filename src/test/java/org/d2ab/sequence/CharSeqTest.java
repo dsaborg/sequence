@@ -640,7 +640,7 @@ public class CharSeqTest {
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(abc.toArray(), new char[]{'a', 'b', 'c'}), is(true)));
+		twice(() -> assertThat(Arrays.equals(abc.toCharArray(), new char[]{'a', 'b', 'c'}), is(true)));
 	}
 
 	@Test
