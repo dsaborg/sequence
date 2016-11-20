@@ -43,9 +43,9 @@ public class Collectionz {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(IntCollection integers, Collection<?> c) {
-		if (c instanceof IntCollection)
-			return integers.containsAll((IntCollection) c);
+	public static boolean containsAll(IntIterable integers, Collection<?> c) {
+		if (c instanceof IntIterable)
+			return integers.containsAllInts((IntIterable) c);
 
 		for (int i : (Collection<? extends Integer>) c)
 			if (!integers.containsInt(i))
@@ -56,7 +56,7 @@ public class Collectionz {
 
 	public static boolean addAll(IntCollection integers, Collection<? extends Integer> c) {
 		if (c instanceof IntCollection)
-			return integers.addAll((IntCollection) c);
+			return integers.addAllInts((IntCollection) c);
 
 		if (c.isEmpty())
 			return false;
@@ -66,15 +66,15 @@ public class Collectionz {
 	}
 
 	public static boolean retainAll(IntCollection integers, Collection<?> c) {
-		if (c instanceof IntCollection)
-			return integers.retainAll((IntCollection) c);
+		if (c instanceof IntIterable)
+			return integers.retainAllInts((IntIterable) c);
 
 		return integers.removeIntsIf(i -> !c.contains(i));
 	}
 
 	public static boolean removeAll(IntCollection integers, Collection<?> c) {
-		if (c instanceof IntCollection)
-			return integers.removeAll((IntCollection) c);
+		if (c instanceof IntIterable)
+			return integers.removeAllInts((IntIterable) c);
 
 		return integers.removeIntsIf(c::contains);
 	}
@@ -82,7 +82,7 @@ public class Collectionz {
 	@SuppressWarnings("unchecked")
 	public static boolean containsAll(LongCollection longs, Collection<?> c) {
 		if (c instanceof LongCollection)
-			return longs.containsAll((LongCollection) c);
+			return longs.containsAllLongs((LongCollection) c);
 
 		for (long i : (Collection<? extends Long>) c)
 			if (!longs.containsLong(i))
@@ -93,7 +93,7 @@ public class Collectionz {
 
 	public static boolean addAll(LongCollection longs, Collection<? extends Long> c) {
 		if (c instanceof LongCollection)
-			return longs.addAll((LongCollection) c);
+			return longs.addAllLongs((LongCollection) c);
 
 		if (c.isEmpty())
 			return false;
@@ -104,14 +104,14 @@ public class Collectionz {
 
 	public static boolean retainAll(LongCollection longs, Collection<?> c) {
 		if (c instanceof LongCollection)
-			return longs.retainAll((LongCollection) c);
+			return longs.retainAllLongs((LongCollection) c);
 
 		return longs.removeLongsIf(i -> !c.contains(i));
 	}
 
 	public static boolean removeAll(LongCollection longs, Collection<?> c) {
 		if (c instanceof LongCollection)
-			return longs.removeAll((LongCollection) c);
+			return longs.removeAllLongs((LongCollection) c);
 
 		return longs.removeLongsIf(c::contains);
 	}

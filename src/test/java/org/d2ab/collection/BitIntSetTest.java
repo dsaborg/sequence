@@ -112,19 +112,19 @@ public class BitIntSetTest {
 
 	@Test
 	public void addAllIntArray() {
-		assertThat(empty.addAll(1, 2, 3), is(true));
+		assertThat(empty.addAllInts(1, 2, 3), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(intSet.addAll(3, 4, 5, 6, 7), is(true));
+		assertThat(intSet.addAllInts(3, 4, 5, 6, 7), is(true));
 		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
 	@Test
 	public void addAllIntCollection() {
-		assertThat(empty.addAll(IntList.of(1, 2, 3)), is(true));
+		assertThat(empty.addAllInts(IntList.of(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(intSet.addAll(IntList.of(3, 4, 5, 6, 7)), is(true));
+		assertThat(intSet.addAllInts(IntList.of(3, 4, 5, 6, 7)), is(true));
 		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -161,10 +161,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void removeAllIntArray() {
-		assertThat(empty.removeAll(1, 2, 3), is(false));
+		assertThat(empty.removeAllInts(1, 2, 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeAll(1, 2, 3), is(true));
+		assertThat(intSet.removeAllInts(1, 2, 3), is(true));
 		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
@@ -179,10 +179,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void retainAllIntArray() {
-		assertThat(empty.retainAll(1, 2, 3), is(false));
+		assertThat(empty.retainAllInts(1, 2, 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.retainAll(1, 2, 3), is(true));
+		assertThat(intSet.retainAllInts(1, 2, 3), is(true));
 		assertThat(intSet, containsInts(1, 2, 3));
 	}
 
@@ -206,9 +206,9 @@ public class BitIntSetTest {
 
 	@Test
 	public void containsAllIntArray() {
-		assertThat(empty.containsAll(1, 2, 3), is(false));
-		assertThat(intSet.containsAll(1, 2, 3), is(true));
-		assertThat(intSet.containsAll(1, 2, 3, 17), is(false));
+		assertThat(empty.containsAllInts(1, 2, 3), is(false));
+		assertThat(intSet.containsAllInts(1, 2, 3), is(true));
+		assertThat(intSet.containsAllInts(1, 2, 3, 17), is(false));
 	}
 
 	@Test
@@ -367,7 +367,7 @@ public class BitIntSetTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(randomValues), is(true));
+		assertThat(empty.containsAllInts(randomValues), is(true));
 
 		for (int randomValue : randomValues)
 			assertThat(empty.containsInt(randomValue), is(true));

@@ -1396,28 +1396,28 @@ public class IntSequenceTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(), is(true));
-		assertThat(empty.containsAll(17, 18, 19), is(false));
+		assertThat(empty.containsAllInts(), is(true));
+		assertThat(empty.containsAllInts(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAll(), is(true));
-		assertThat(_12345.containsAll(1), is(true));
-		assertThat(_12345.containsAll(1, 3, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5, 17), is(false));
-		assertThat(_12345.containsAll(17, 18, 19), is(false));
+		assertThat(_12345.containsAllInts(), is(true));
+		assertThat(_12345.containsAllInts(1), is(true));
+		assertThat(_12345.containsAllInts(1, 3, 5), is(true));
+		assertThat(_12345.containsAllInts(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAllInts(1, 2, 3, 4, 5, 17), is(false));
+		assertThat(_12345.containsAllInts(17, 18, 19), is(false));
 	}
 
 	@Test
 	public void containsAny() {
-		assertThat(empty.containsAny(), is(false));
-		assertThat(empty.containsAny(17, 18, 19), is(false));
+		assertThat(empty.containsAnyInts(), is(false));
+		assertThat(empty.containsAnyInts(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAny(), is(false));
-		assertThat(_12345.containsAny(1), is(true));
-		assertThat(_12345.containsAny(1, 3, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5, 17), is(true));
-		assertThat(_12345.containsAny(17, 18, 19), is(false));
+		assertThat(_12345.containsAnyInts(), is(false));
+		assertThat(_12345.containsAnyInts(1), is(true));
+		assertThat(_12345.containsAnyInts(1, 3, 5), is(true));
+		assertThat(_12345.containsAnyInts(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAnyInts(1, 2, 3, 4, 5, 17), is(true));
+		assertThat(_12345.containsAnyInts(17, 18, 19), is(false));
 	}
 
 	@FunctionalInterface

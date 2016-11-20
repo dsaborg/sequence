@@ -93,33 +93,38 @@ public class ArrayIntList implements IntList {
 	}
 
 	@Override
-	public void replaceAllInts(IntUnaryOperator operator) {
-		for (int x = 0; x < size; x++)
-			contents[x] = operator.applyAsInt(contents[x]);
+	public void sortInts() {
+		Arrays.sort(contents, 0, size);
 	}
 
 	@Override
-	public int getAt(int index) {
+	public void replaceAllInts(IntUnaryOperator operator) {
+		for (int i = 0; i < size; i++)
+			contents[i] = operator.applyAsInt(contents[i]);
+	}
+
+	@Override
+	public int getInt(int index) {
 		rangeCheck(index);
 		return contents[index];
 	}
 
 	@Override
-	public int setAt(int index, int element) {
+	public int setInt(int index, int x) {
 		rangeCheck(index);
 		int previous = contents[index];
-		contents[index] = element;
+		contents[index] = x;
 		return previous;
 	}
 
 	@Override
-	public void addAt(int index, int element) {
+	public void addInt(int index, int x) {
 		rangeCheckForAdd(index);
-		uncheckedAdd(index, element);
+		uncheckedAdd(index, x);
 	}
 
 	@Override
-	public int removeAt(int index) {
+	public int removeIntAt(int index) {
 		rangeCheck(index);
 		int previous = contents[index];
 		uncheckedRemove(index);
@@ -127,19 +132,19 @@ public class ArrayIntList implements IntList {
 	}
 
 	@Override
-	public int lastIndexOf(int i) {
-		for (int x = size - 1; x >= 0; x--)
-			if (contents[x] == i)
-				return x;
+	public int lastIndexOfInt(int x) {
+		for (int i = size - 1; i >= 0; i--)
+			if (contents[i] == x)
+				return i;
 
 		return -1;
 	}
 
 	@Override
-	public int indexOf(int i) {
-		for (int x = 0; x < size; x++)
-			if (contents[x] == i)
-				return x;
+	public int indexOfInt(int x) {
+		for (int i = 0; i < size; i++)
+			if (contents[i] == x)
+				return i;
 
 		return -1;
 	}
@@ -150,124 +155,152 @@ public class ArrayIntList implements IntList {
 	}
 
 	@Override
-	public boolean addInt(int i) {
-		growIfNecessary(1);
-		contents[size++] = i;
+	public boolean addInt(int x) {
+		growIfNecessaryBy(1);
+		contents[size++] = x;
 		return true;
 	}
 
 	@Override
-	public boolean addAll(int... is) {
-		if (is.length == 0)
+	public boolean addAllInts(int... xs) {
+		if (xs.length == 0)
 			return false;
 
-		growIfNecessary(is.length);
-		System.arraycopy(is, 0, contents, size, is.length);
-		size += is.length;
+		growIfNecessaryBy(xs.length);
+		System.arraycopy(xs, 0, contents, size, xs.length);
+		size += xs.length;
 		return true;
 	}
 
 	@Override
-	public boolean addAllAt(int index, int... is) {
-		if (is.length == 0)
+	public boolean addAllInts(IntCollection xs) {
+		if (xs.isEmpty())
+			return false;
+
+		if (xs instanceof ArrayIntList) {
+			ArrayIntList axs = (ArrayIntList) xs;
+
+			growIfNecessaryBy(axs.size);
+			System.arraycopy(axs.contents, 0, contents, size, axs.size);
+			size += axs.size;
+
+			return true;
+		} else {
+			xs.forEachInt(this::addInt);
+			return true;
+		}
+	}
+
+	@Override
+	public boolean addAllIntsAt(int index, int... xs) {
+		if (xs.length == 0)
 			return false;
 
 		rangeCheckForAdd(index);
-		growIfNecessary(is.length);
-		System.arraycopy(contents, index, contents, index + is.length, size - index);
-		System.arraycopy(is, 0, contents, index, is.length);
-		size += is.length;
-		return true;
-	}
-
-	public boolean addAllAt(int index, IntCollection c) {
-		if (c.size() == 0)
-			return false;
-
-		rangeCheckForAdd(index);
-		growIfNecessary(c.size());
-		System.arraycopy(contents, index, contents, index + c.size(), size - index);
-		IntIterator iterator = c.iterator();
-		for (int x = index; x < c.size(); x++)
-			contents[x] = iterator.nextInt();
-		size += c.size();
+		growIfNecessaryBy(xs.length);
+		System.arraycopy(contents, index, contents, index + xs.length, size - index);
+		System.arraycopy(xs, 0, contents, index, xs.length);
+		size += xs.length;
 		return true;
 	}
 
 	@Override
-	public boolean containsAll(int... is) {
-		for (int i : is)
-			if (!containsInt(i))
+	public boolean addAllIntsAt(int index, IntCollection xs) {
+		if (xs.isEmpty())
+			return false;
+
+		rangeCheckForAdd(index);
+		growIfNecessaryBy(xs.size());
+		System.arraycopy(contents, index, contents, index + xs.size(), size - index);
+
+		if (xs instanceof ArrayIntList) {
+			ArrayIntList il = (ArrayIntList) xs;
+			System.arraycopy(il.contents, 0, contents, index, il.size);
+		} else {
+			IntIterator iterator = xs.iterator();
+			for (int i = index; i < xs.size(); i++)
+				contents[i] = iterator.nextInt();
+		}
+
+		size += xs.size();
+
+		return true;
+	}
+
+	@Override
+	public boolean containsAllInts(int... xs) {
+		for (int x : xs)
+			if (!containsInt(x))
 				return false;
 
 		return true;
 	}
 
 	@Override
-	public boolean removeInt(int i) {
-		for (int x = 0; x < size; x++)
-			if (contents[x] == i)
-				return uncheckedRemove(x);
+	public boolean removeInt(int x) {
+		for (int i = 0; i < size; i++)
+			if (contents[i] == x)
+				return uncheckedRemove(i);
 
 		return false;
 	}
 
 	@Override
-	public boolean containsInt(int i) {
-		for (int x = 0; x < size; x++)
-			if (contents[x] == i)
+	public boolean containsInt(int x) {
+		for (int i = 0; i < size; i++)
+			if (contents[i] == x)
 				return true;
 
 		return false;
 	}
 
 	@Override
-	public boolean removeAll(int... is) {
+	public boolean removeAllInts(int... xs) {
 		boolean modified = false;
-		for (int x = 0; x < size; x++)
-			if (Arrayz.contains(is, contents[x]))
-				modified |= uncheckedRemove(x--);
+		for (int i = 0; i < size; i++)
+			if (Arrayz.contains(xs, contents[i]))
+				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
-	public boolean retainAll(int... is) {
+	public boolean retainAllInts(int... xs) {
 		boolean modified = false;
-		for (int x = 0; x < size; x++)
-			if (!Arrayz.contains(is, contents[x]))
-				modified |= uncheckedRemove(x--);
+		for (int i = 0; i < size; i++)
+			if (!Arrayz.contains(xs, contents[i]))
+				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
 	public boolean removeIntsIf(IntPredicate filter) {
 		boolean modified = false;
-		for (int x = 0; x < size; x++)
-			if (filter.test(contents[x]))
-				modified |= uncheckedRemove(x--);
+		for (int i = 0; i < size; i++)
+			if (filter.test(contents[i]))
+				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
 	public void forEachInt(IntConsumer consumer) {
-		for (int x = 0; x < size; x++)
-			consumer.accept(contents[x]);
+		for (int i = 0; i < size; i++)
+			consumer.accept(contents[i]);
 	}
 
-	private void growIfNecessary(int grow) {
+	private void growIfNecessaryBy(int grow) {
 		int newSize = size + grow;
 		if (newSize > contents.length) {
-			int newLength = newSize + ((newSize) >> 1);
-			int[] copy = new int[newLength];
+			int newCapacity = newSize + (newSize >> 1);
+			int[] copy = new int[newCapacity];
 			System.arraycopy(contents, 0, copy, 0, size);
 			contents = copy;
 		}
 	}
 
-	private boolean uncheckedAdd(int index, int element) {
-		growIfNecessary(1);
+	private boolean uncheckedAdd(int index, int x) {
+		growIfNecessaryBy(1);
 		System.arraycopy(contents, index, contents, index + 1, size++ - index);
-		contents[index] = element;
+		contents[index] = x;
 		return true;
 	}
 
@@ -343,18 +376,18 @@ public class ArrayIntList implements IntList {
 		}
 
 		@Override
-		public void set(int i) {
+		public void set(int x) {
 			if (addOrRemove)
 				throw new IllegalStateException("add() or remove() called");
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextInt() or previousInt() not called");
 
-			contents[currentIndex] = i;
+			contents[currentIndex] = x;
 		}
 
 		@Override
-		public void add(int i) {
-			uncheckedAdd(currentIndex = nextIndex++, i);
+		public void add(int x) {
+			uncheckedAdd(currentIndex = nextIndex++, x);
 			addOrRemove = true;
 		}
 	}

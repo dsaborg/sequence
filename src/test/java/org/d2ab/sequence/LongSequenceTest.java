@@ -1389,15 +1389,15 @@ public class LongSequenceTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(), is(true));
-		assertThat(empty.containsAll(17, 18, 19), is(false));
+		assertThat(empty.containsAllLongs(), is(true));
+		assertThat(empty.containsAllLongs(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAll(), is(true));
-		assertThat(_12345.containsAll(1), is(true));
-		assertThat(_12345.containsAll(1, 3, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5, 17), is(false));
-		assertThat(_12345.containsAll(17, 18, 19), is(false));
+		assertThat(_12345.containsAllLongs(), is(true));
+		assertThat(_12345.containsAllLongs(1), is(true));
+		assertThat(_12345.containsAllLongs(1, 3, 5), is(true));
+		assertThat(_12345.containsAllLongs(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAllLongs(1, 2, 3, 4, 5, 17), is(false));
+		assertThat(_12345.containsAllLongs(17, 18, 19), is(false));
 	}
 
 	@Test

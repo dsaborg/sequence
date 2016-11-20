@@ -29,7 +29,7 @@ public class BitIntSet implements IntSortedSet {
 	private final SparseBitSet values = new SparseBitSet();
 
 	public BitIntSet(int... is) {
-		addAll(is);
+		addAllInts(is);
 	}
 
 	@Override

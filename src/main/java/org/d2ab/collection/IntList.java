@@ -24,14 +24,14 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * A {@link List} backed by ints.
+ * A primitive specialization of {@link List} for {@code int} values.
  */
 public interface IntList extends List<Integer>, IntCollection {
 	/**
 	 * @return an {@code IntList} of the given elements.
 	 */
-	static IntList of(int... is) {
-		return ArrayIntList.of(is);
+	static IntList of(int... xs) {
+		return ArrayIntList.of(xs);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean contains(Object o) {
-		return containsInt((int) o);
+		return o instanceof Integer && containsInt((int) o);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean remove(Object o) {
-		return removeInt((int) o);
+		return o instanceof Integer && removeInt((int) o);
 	}
 
 	@Override
@@ -83,17 +83,30 @@ public interface IntList extends List<Integer>, IntCollection {
 		if (c.size() == 0)
 			return false;
 
-		c.forEach(listIterator(index)::add);
+		IntListIterator listIterator = listIterator(index);
+		c.forEach(listIterator::add);
+
 		return true;
 	}
 
-	default boolean addAllAt(int index, int... is) {
-		if (is.length == 0)
+	default boolean addAllIntsAt(int index, int... xs) {
+		if (xs.length == 0)
 			return false;
 
 		IntListIterator listIterator = listIterator(index);
-		for (int i : is)
-			listIterator.add(i);
+		for (int x : xs)
+			listIterator.add(x);
+
+		return true;
+	}
+
+	default boolean addAllIntsAt(int index, IntCollection xs) {
+		if (xs.isEmpty())
+			return false;
+
+		IntListIterator listIterator = listIterator(index);
+		xs.forEach(listIterator::add);
+
 		return true;
 	}
 
@@ -108,13 +121,17 @@ public interface IntList extends List<Integer>, IntCollection {
 			listIterator.set(operator.applyAsInt(listIterator.nextInt()));
 	}
 
+	default void sortInts() {
+		throw new UnsupportedOperationException();
+	}
+
 	default void sortInts(IntComparator c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	default void sort(Comparator<? super Integer> c) {
-		sortInts((IntComparator) c);
+		sortInts(c::compare);
 	}
 
 	@Override
@@ -125,23 +142,36 @@ public interface IntList extends List<Integer>, IntCollection {
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
 		boolean modified = false;
-		for (int i : c)
-			modified |= addInt(i);
+		for (int x : c)
+			modified |= addInt(x);
 		return modified;
 	}
 
-	default boolean addInt(int i) {
-		listIterator(size()).add(i);
+	@Override
+	default boolean addInt(int x) {
+		listIterator(size()).add(x);
 		return true;
 	}
 
-	default boolean addAll(int... is) {
-		if (is.length == 0)
+	@Override
+	default boolean addAllInts(int... xs) {
+		if (xs.length == 0)
 			return false;
 
 		IntListIterator listIterator = listIterator(size());
-		for (int i : is)
-			listIterator.add(i);
+		for (int x : xs)
+			listIterator.add(x);
+
+		return true;
+	}
+
+	@Override
+	default boolean addAllInts(IntCollection xs) {
+		if (xs.isEmpty())
+			return false;
+
+		IntListIterator listIterator = listIterator(size());
+		xs.forEachInt(listIterator::add);
 
 		return true;
 	}
@@ -163,45 +193,45 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return removeIntsIf(i -> !c.contains(i));
+		return removeIntsIf(x -> !c.contains(x));
 	}
 
 	@Override
 	default Integer get(int index) {
-		return getAt(index);
+		return getInt(index);
 	}
 
-	default int getAt(int index) {
+	default int getInt(int index) {
 		return listIterator(index).next();
 	}
 
 	@Override
-	default Integer set(int index, Integer element) {
-		return setAt(index, element);
+	default Integer set(int index, Integer x) {
+		return setInt(index, x);
 	}
 
-	default int setAt(int index, int element) {
+	default int setInt(int index, int x) {
 		IntListIterator listIterator = listIterator(index);
 		int previous = listIterator.next();
-		listIterator.set(element);
+		listIterator.set(x);
 		return previous;
 	}
 
 	@Override
-	default void add(int index, Integer element) {
-		addAt(index, element);
+	default void add(int index, Integer x) {
+		addInt(index, x);
 	}
 
-	default void addAt(int index, int element) {
-		listIterator(index).add(element);
+	default void addInt(int index, int x) {
+		listIterator(index).add(x);
 	}
 
 	@Override
 	default Integer remove(int index) {
-		return removeAt(index);
+		return removeIntAt(index);
 	}
 
-	default int removeAt(int index) {
+	default int removeIntAt(int index) {
 		IntListIterator listIterator = listIterator(index);
 		int previous = listIterator.next();
 		listIterator.remove();
@@ -210,15 +240,15 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
-		return lastIndexOf((int) o);
+		return o instanceof Integer ? lastIndexOfInt((int) o) : -1;
 	}
 
-	default int lastIndexOf(int i) {
+	default int lastIndexOfInt(int x) {
 		int lastIndex = -1;
 
 		int index = 0;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (iterator.nextInt() == i)
+			if (iterator.nextInt() == x)
 				lastIndex = index;
 
 		return lastIndex;
@@ -226,13 +256,13 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default int indexOf(Object o) {
-		return indexOf((int) o);
+		return o instanceof Integer ? indexOfInt((int) o) : -1;
 	}
 
-	default int indexOf(int i) {
+	default int indexOfInt(int x) {
 		int index = 0;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (iterator.next() == i)
+			if (iterator.next() == x)
 				return index;
 
 		return -1;
@@ -248,6 +278,7 @@ public interface IntList extends List<Integer>, IntCollection {
 		return IntListIterator.forwardOnly(iterator(), index);
 	}
 
+	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
 	}

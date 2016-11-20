@@ -16,12 +16,9 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.longs.LongIterator;
-
 import java.util.Collection;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
 /**
@@ -40,37 +37,13 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	@Override
-	default boolean add(Long l) {
-		return addLong(l);
-	}
-
-	default boolean addLong(long l) {
-		throw new UnsupportedOperationException();
+	default Long[] toArray() {
+		return toArray(new Long[size()]);
 	}
 
 	@Override
-	default boolean contains(Object o) {
-		return containsLong((long) o);
-	}
-
-	default boolean containsLong(long l) {
-		return iterator().contains(l);
-	}
-
-	@Override
-	default boolean remove(Object o) {
-		return removeLong((long) o);
-	}
-
-	default boolean removeLong(long l) {
-		LongIterator iterator = iterator();
-		while (iterator.hasNext())
-			if (iterator.nextLong() == l) {
-				iterator.remove();
-				return true;
-			}
-
-		return false;
+	default <T> T[] toArray(T[] a) {
+		return Collectionz.toArray(this, a);
 	}
 
 	/**
@@ -81,65 +54,42 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	@Override
-	default Long[] toArray() {
-		return toArray(new Long[size()]);
+	default boolean add(Long l) {
+		return addLong(l);
+	}
+
+	default boolean addLong(long l) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default <T> T[] toArray(T[] a) {
-		return Collectionz.toArray(this, a);
+	default boolean contains(Object o) {
+		return o instanceof Long && containsLong((long) o);
 	}
 
-	default boolean addAll(LongCollection c) {
-		if (c.isEmpty())
-			return false;
-
-		c.forEachLong(this::addLong);
-		return true;
+	@Override
+	default boolean remove(Object o) {
+		return o instanceof Long && removeLong((long) o);
 	}
 
-	default boolean containsAll(LongCollection c) {
-		for (long i : c)
-			if (!containsLong(i))
-				return false;
-
-		return true;
+	@Override
+	default boolean addAll(Collection<? extends Long> c) {
+		return Collectionz.addAll(this, c);
 	}
 
-	default boolean removeAll(LongCollection c) {
-		return removeLongsIf(c::containsLong);
-	}
-
-	default boolean retainAll(LongCollection c) {
-		return removeLongsIf(i -> !c.containsLong(i));
-	}
-
-	default boolean addAll(long... is) {
+	default boolean addAllLongs(long... is) {
 		boolean changed = false;
 		for (long i : is)
 			changed |= addLong(i);
 		return changed;
 	}
 
-	default boolean containsAll(long... is) {
-		for (long i : is)
-			if (!containsLong(i))
-				return false;
+	default boolean addAllLongs(LongCollection c) {
+		if (c.isEmpty())
+			return false;
 
+		c.forEachLong(this::addLong);
 		return true;
-	}
-
-	default boolean removeAll(long... is) {
-		return removeLongsIf(i -> Arrayz.contains(is, i));
-	}
-
-	default boolean retainAll(long... is) {
-		return removeLongsIf(i -> !Arrayz.contains(is, i));
-	}
-
-	@Override
-	default boolean addAll(Collection<? extends Long> c) {
-		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -159,18 +109,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 
 	@Override
 	default boolean removeIf(Predicate<? super Long> filter) {
-		return removeLongsIf((LongPredicate) filter);
-	}
-
-	default boolean removeLongsIf(LongPredicate filter) {
-		boolean changed = false;
-		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (filter.test(iterator.nextLong())) {
-				iterator.remove();
-				changed = true;
-			}
-		}
-		return changed;
+		return removeLongsIf(filter::test);
 	}
 
 	@Override

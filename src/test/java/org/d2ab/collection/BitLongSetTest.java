@@ -140,7 +140,7 @@ public class BitLongSetTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(randomValues), is(true));
+		assertThat(empty.containsAllLongs(randomValues), is(true));
 
 		for (long randomValue : randomValues)
 			assertThat(empty.containsLong(randomValue), is(true));

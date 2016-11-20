@@ -16,6 +16,8 @@
 
 package org.d2ab.iterator.longs;
 
+import org.d2ab.collection.ArrayLongList;
+import org.d2ab.collection.LongList;
 import org.d2ab.function.LongBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
@@ -52,12 +54,10 @@ public class PredicatePartitioningLongIterator extends DelegatingIterator<Long, 
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		long[] buffer = new long[3];
+		LongList buffer = new ArrayLongList();
 		int size = 0;
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.addLong(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
@@ -68,7 +68,7 @@ public class PredicatePartitioningLongIterator extends DelegatingIterator<Long, 
 			if (split)
 				break;
 		} while (hasNext);
-		return LongSequence.from(buffer, size);
+		return LongSequence.from(buffer);
 	}
 
 	@Override

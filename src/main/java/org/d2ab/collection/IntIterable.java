@@ -93,89 +93,20 @@ public interface IntIterable extends Iterable<Integer> {
 	/**
 	 * Performs the given action for each {@code int} in this iterable.
 	 */
-	default void forEachInt(IntConsumer consumer) {
+	@Override
+	default void forEach(Consumer<? super Integer> consumer) {
 		iterator().forEachRemaining(consumer);
 	}
 
 	/**
 	 * Performs the given action for each {@code int} in this iterable.
 	 */
-	@Override
-	default void forEach(Consumer<? super Integer> consumer) {
+	default void forEachInt(IntConsumer consumer) {
 		iterator().forEachRemaining(consumer);
-	}
-
-	default void clear() {
-		iterator().removeAll();
-	}
-
-	default boolean containsAll(IntCollection c) {
-		for (int i : c)
-			if (!containsInt(i))
-				return false;
-
-		return true;
-	}
-
-	default boolean removeAll(IntCollection c) {
-		return removeIntsIf(c::containsInt);
-	}
-
-	default boolean retainAll(IntCollection c) {
-		return removeIntsIf(i -> !c.containsInt(i));
-	}
-
-	default boolean containsAll(int... is) {
-		for (int i : is)
-			if (!containsInt(i))
-				return false;
-
-		return true;
-	}
-
-	default boolean removeAll(int... is) {
-		return removeIntsIf(i -> Arrayz.contains(is, i));
-	}
-
-	default boolean retainAll(int... is) {
-		return removeIntsIf(i -> !Arrayz.contains(is, i));
-	}
-
-	default boolean removeIntsIf(IntPredicate filter) {
-		boolean changed = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (filter.test(iterator.nextInt())) {
-				iterator.remove();
-				changed = true;
-			}
-		}
-		return changed;
 	}
 
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
-	}
-
-	default boolean containsInt(int i) {
-		return iterator().contains(i);
-	}
-
-	default boolean removeInt(int i) {
-		IntIterator iterator = iterator();
-		while (iterator.hasNext())
-			if (iterator.nextInt() == i) {
-				iterator.remove();
-				return true;
-			}
-
-		return false;
-	}
-
-	/**
-	 * Collect the {@code ints} in this {@code IntIterable} into an {@code int}-array.
-	 */
-	default int[] toIntArray() {
-		return iterator().toArray();
 	}
 
 	/**
@@ -189,17 +120,93 @@ public interface IntIterable extends Iterable<Integer> {
 		return new IntIterableInputStream(this);
 	}
 
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
+
+	default void clear() {
+		iterator().removeAll();
+	}
+
+	default boolean containsInt(int i) {
+		return iterator().contains(i);
+	}
+
+	default boolean removeInt(int i) {
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
+			if (iterator.nextInt() == i) {
+				iterator.remove();
+				return true;
+			}
+
+		return false;
+	}
+
+	default boolean containsAllInts(int... is) {
+		for (int i : is)
+			if (!containsInt(i))
+				return false;
+
+		return true;
+	}
+
+	default boolean containsAllInts(IntIterable c) {
+		for (int i : c)
+			if (!containsInt(i))
+				return false;
+
+		return true;
+	}
+
 	/**
 	 * @return true if this {@code IntIterable} contains any of the given {@code ints}, false otherwise.
-	 *
-	 * @since 1.2
 	 */
-	default boolean containsAny(int... items) {
+	default boolean containsAnyInts(int... is) {
 		IntIterator iterator = iterator();
 		while (iterator.hasNext())
-			if (Arrayz.contains(items, iterator.nextInt()))
+			if (Arrayz.contains(is, iterator.nextInt()))
 				return true;
 
 		return false;
+	}
+
+	/**
+	 * @return true if this {@code IntIterable} contains any of the {@code ints} in the given {@code IntIterable},
+	 * false otherwise.
+	 */
+	default boolean containsAnyInts(IntIterable is) {
+		IntIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (is.containsInt(iterator.nextInt()))
+				return true;
+
+		return false;
+	}
+
+	default boolean removeAllInts(int... is) {
+		return removeIntsIf(i -> Arrayz.contains(is, i));
+	}
+
+	default boolean removeAllInts(IntIterable is) {
+		return removeIntsIf(is::containsInt);
+	}
+
+	default boolean retainAllInts(int... is) {
+		return removeIntsIf(i -> !Arrayz.contains(is, i));
+	}
+
+	default boolean retainAllInts(IntIterable is) {
+		return removeIntsIf(i -> !is.containsInt(i));
+	}
+
+	default boolean removeIntsIf(IntPredicate filter) {
+		boolean changed = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (filter.test(iterator.nextInt())) {
+				iterator.remove();
+				changed = true;
+			}
+		}
+		return changed;
 	}
 }

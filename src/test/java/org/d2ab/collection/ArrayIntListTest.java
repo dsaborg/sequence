@@ -18,8 +18,6 @@ package org.d2ab.collection;
 
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -225,56 +223,56 @@ public class ArrayIntListTest {
 
 	@Test
 	public void getAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.getAt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(2));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.getAt(2), is(3));
+		assertThat(list.getInt(2), is(3));
 	}
 
 	@Test
 	public void setAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.setAt(2, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.setInt(2, 17));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.setAt(2, 17), is(3));
+		assertThat(list.setInt(2, 17), is(3));
 		assertThat(list, containsInts(1, 2, 17, 4, 5));
 	}
 
 	@Test
 	public void addAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.addAt(2, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.addInt(2, 17));
 		assertThat(empty, is(emptyIterable()));
 
-		empty.addAt(0, 17);
+		empty.addInt(0, 17);
 		assertThat(empty, containsInts(17));
 
-		list.addAt(2, 17);
+		list.addInt(2, 17);
 		assertThat(list, containsInts(1, 2, 17, 3, 4, 5));
 	}
 
 	@Test
 	public void removeAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.removeAt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(2));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAt(2), is(3));
+		assertThat(list.removeIntAt(2), is(3));
 		assertThat(list, containsInts(1, 2, 4, 5));
 	}
 
 	@Test
 	public void lastIndexOf() {
-		assertThat(empty.lastIndexOf(17), is(-1));
+		assertThat(empty.lastIndexOfInt(17), is(-1));
 
-		assertThat(list.lastIndexOf(17), is(-1));
-		assertThat(list.lastIndexOf(2), is(1));
+		assertThat(list.lastIndexOfInt(17), is(-1));
+		assertThat(list.lastIndexOfInt(2), is(1));
 	}
 
 	@Test
 	public void indexOf() {
-		assertThat(empty.indexOf(17), is(-1));
+		assertThat(empty.indexOfInt(17), is(-1));
 
-		assertThat(list.indexOf(17), is(-1));
-		assertThat(list.indexOf(2), is(1));
+		assertThat(list.indexOfInt(17), is(-1));
+		assertThat(list.indexOfInt(2), is(1));
 	}
 
 	@Test
@@ -288,54 +286,54 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addAllIntArray() {
-		empty.addAll(1, 2, 3);
+		empty.addAllInts(1, 2, 3);
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAll(6, 7, 8);
+		list.addAllInts(6, 7, 8);
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllIntCollection() {
-		empty.addAll(ArrayIntList.of(1, 2, 3));
+		empty.addAllInts(ArrayIntList.of(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAll(ArrayIntList.of(6, 7, 8));
+		list.addAllInts(ArrayIntList.of(6, 7, 8));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllAtIntArray() {
-		empty.addAllAt(0, 1, 2, 3);
+		empty.addAllIntsAt(0, 1, 2, 3);
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllAt(2, 17, 18, 19);
+		list.addAllIntsAt(2, 17, 18, 19);
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllAtIntCollection() {
-		empty.addAllAt(0, ArrayIntList.of(1, 2, 3));
+		empty.addAllIntsAt(0, ArrayIntList.of(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllAt(2, 17, 18, 19);
+		list.addAllIntsAt(2, 17, 18, 19);
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void containsAllIntArray() {
-		assertThat(empty.containsAll(17, 18, 19), is(false));
+		assertThat(empty.containsAllInts(17, 18, 19), is(false));
 
-		assertThat(list.containsAll(17, 18, 19), is(false));
-		assertThat(list.containsAll(1, 2, 3), is(true));
+		assertThat(list.containsAllInts(17, 18, 19), is(false));
+		assertThat(list.containsAllInts(1, 2, 3), is(true));
 	}
 
 	@Test
 	public void containsAllIntCollection() {
-		assertThat(empty.containsAll(ArrayIntList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAllInts(ArrayIntList.of(17, 18, 19)), is(false));
 
-		assertThat(list.containsAll(ArrayIntList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAll(ArrayIntList.of(1, 2, 3)), is(true));
+		assertThat(list.containsAllInts(ArrayIntList.of(17, 18, 19)), is(false));
+		assertThat(list.containsAllInts(ArrayIntList.of(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -358,37 +356,37 @@ public class ArrayIntListTest {
 
 	@Test
 	public void removeAllIntArray() {
-		assertThat(empty.removeAll(1, 2, 3), is(false));
+		assertThat(empty.removeAllInts(1, 2, 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(1, 2, 3), is(true));
+		assertThat(list.removeAllInts(1, 2, 3), is(true));
 		assertThat(list, containsInts(4, 5));
 	}
 
 	@Test
 	public void removeAllIntCollection() {
-		assertThat(empty.removeAll(ArrayIntList.of(1, 2, 3)), is(false));
+		assertThat(empty.removeAllInts(ArrayIntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(ArrayIntList.of(1, 2, 3)), is(true));
+		assertThat(list.removeAllInts(ArrayIntList.of(1, 2, 3)), is(true));
 		assertThat(list, containsInts(4, 5));
 	}
 
 	@Test
 	public void retainAllIntArray() {
-		assertThat(empty.retainAll(1, 2, 3), is(false));
+		assertThat(empty.retainAllInts(1, 2, 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(1, 2, 3), is(true));
+		assertThat(list.retainAllInts(1, 2, 3), is(true));
 		assertThat(list, containsInts(1, 2, 3));
 	}
 
 	@Test
 	public void retainAllIntCollection() {
-		assertThat(empty.retainAll(ArrayIntList.of(1, 2, 3)), is(false));
+		assertThat(empty.retainAllInts(ArrayIntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(ArrayIntList.of(1, 2, 3)), is(true));
+		assertThat(list.retainAllInts(ArrayIntList.of(1, 2, 3)), is(true));
 		assertThat(list, containsInts(1, 2, 3));
 	}
 

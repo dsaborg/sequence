@@ -180,7 +180,7 @@ public interface IntSequence extends IntList {
 	 * @since 1.1
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
-		return from(copy(iterator));
+		return from(IntList.copy(iterator));
 	}
 
 	/**

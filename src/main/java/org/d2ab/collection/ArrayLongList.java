@@ -25,42 +25,35 @@ import java.util.function.LongPredicate;
 import java.util.function.LongUnaryOperator;
 
 /**
- * An {@link LongList} backed by a long-array, supporting all {@link LongList}-methods by modifying and/or replacing the
+ * A {@link LongList} backed by a long-array, supporting all {@link LongList}-methods by modifying and/or replacing the
  * underlying array.
  */
 public class ArrayLongList implements LongList {
-	private long[] array;
-	private int offset;
+	private long[] contents;
 	private int size;
-	private int capacity;
+
+	public static ArrayLongList of(long... contents) {
+		return new ArrayLongList(contents);
+	}
 
 	public ArrayLongList() {
-		this(new long[10], 0, 0, 10);
+		this(10);
 	}
 
-	public ArrayLongList(long... is) {
-		this(is, is.length);
+	public ArrayLongList(int capacity) {
+		this.contents = new long[capacity];
 	}
 
-	public ArrayLongList(long[] array, int size) {
-		this(array, 0, size);
-	}
-
-	public ArrayLongList(long[] array, int offset, int size) {
-		this(array, offset, size, size);
-	}
-
-	public ArrayLongList(long[] array, int offset, int size, int capacity) {
-		if (offset > array.length || offset < 0)
-			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
-		if (size > capacity || size < 0)
-			throw new IllegalArgumentException("size: " + size + ", capacity: " + capacity);
-		if (offset + capacity > array.length || capacity < 0)
-			throw new IndexOutOfBoundsException("capacity: " + capacity + ", available: " + (array.length - offset));
-		this.array = array;
-		this.offset = offset;
-		this.size = size;
-		this.capacity = capacity;
+	/**
+	 * Private to avoid conflict with standard int-taking capacity constructor.
+	 * Use {@link #of(long...)} for public access.
+	 *
+	 * @see #ArrayLongList(int)
+	 * @see #of(long...)
+	 */
+	private ArrayLongList(long... contents) {
+		this.contents = Arrays.copyOf(contents, contents.length);
+		this.size = contents.length;
 	}
 
 	@Override
@@ -80,7 +73,7 @@ public class ArrayLongList implements LongList {
 
 	@Override
 	public long[] toLongArray() {
-		return Arrays.copyOfRange(array, offset, offset + size);
+		return Arrays.copyOfRange(contents, 0, size);
 	}
 
 	@Override
@@ -96,181 +89,223 @@ public class ArrayLongList implements LongList {
 
 	@Override
 	public LongList subList(int fromIndex, int toIndex) {
-		return new ArrayLongList(array, fromIndex, toIndex - fromIndex);
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void sortLongs() {
+		Arrays.sort(contents, 0, size);
 	}
 
 	@Override
 	public void replaceAllLongs(LongUnaryOperator operator) {
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			array[x] = operator.applyAsLong(array[x]);
+		for (int i = 0; i < size; i++)
+			contents[i] = operator.applyAsLong(contents[i]);
 	}
 
 	@Override
-	public long getAt(int index) {
+	public long getLong(int index) {
 		rangeCheck(index);
-		return array[offset + index];
+		return contents[index];
 	}
 
 	@Override
-	public long setAt(int index, long element) {
+	public long setLong(int index, long x) {
 		rangeCheck(index);
-		int pos = offset + index;
-		long previous = array[pos];
-		array[pos] = element;
+		long previous = contents[index];
+		contents[index] = x;
 		return previous;
 	}
 
 	@Override
-	public void addAt(int index, long element) {
+	public void addLong(int index, long x) {
 		rangeCheckForAdd(index);
-		uncheckedAdd(index, element);
+		uncheckedAdd(index, x);
 	}
 
 	@Override
-	public long removeAt(int index) {
+	public long removeLongAt(int index) {
 		rangeCheck(index);
-		long previous = array[offset + index];
-		uncheckedRemove(offset + index);
+		long previous = contents[index];
+		uncheckedRemove(index);
 		return previous;
 	}
 
 	@Override
-	public int lastIndexOf(long i) {
-		for (int x = offset + size - 1; x >= offset; x--)
-			if (array[x] == i)
-				return x;
+	public int lastIndexOfLong(long x) {
+		for (int i = size - 1; i >= 0; i--)
+			if (contents[i] == x)
+				return i;
 
 		return -1;
 	}
 
 	@Override
-	public int indexOf(long i) {
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			if (array[x] == i)
-				return x;
+	public int indexOfLong(long x) {
+		for (int i = 0; i < size; i++)
+			if (contents[i] == x)
+				return i;
 
 		return -1;
 	}
 
 	@Override
 	public Spliterator.OfLong spliterator() {
-		return Arrays.spliterator(array, offset, offset + size);
+		return Arrays.spliterator(contents, 0, size);
 	}
 
 	@Override
-	public boolean addLong(long i) {
-		growIfNecessary(1);
-		array[offset + size++] = i;
+	public boolean addLong(long x) {
+		growIfNecessaryBy(1);
+		contents[size++] = x;
 		return true;
 	}
 
 	@Override
-	public boolean addAll(long... is) {
-		if (is.length == 0)
+	public boolean addAllLongs(long... xs) {
+		if (xs.length == 0)
 			return false;
 
-		growIfNecessary(is.length);
-		System.arraycopy(is, 0, array, offset + size, is.length);
-		size += is.length;
+		growIfNecessaryBy(xs.length);
+		System.arraycopy(xs, 0, contents, size, xs.length);
+		size += xs.length;
 		return true;
 	}
 
 	@Override
-	public boolean addAllAt(int index, long... is) {
-		if (is.length == 0)
+	public boolean addAllLongs(LongCollection xs) {
+		if (xs.isEmpty())
+			return false;
+
+		if (xs instanceof ArrayLongList) {
+			ArrayLongList axs = (ArrayLongList) xs;
+
+			growIfNecessaryBy(axs.size);
+			System.arraycopy(axs.contents, 0, contents, size, axs.size);
+			size += axs.size;
+
+			return true;
+		} else {
+			xs.forEachLong(this::addLong);
+			return true;
+		}
+	}
+
+	@Override
+	public boolean addAllLongsAt(int index, long... xs) {
+		if (xs.length == 0)
 			return false;
 
 		rangeCheckForAdd(index);
-		growIfNecessary(is.length);
-		int pos = offset + index;
-		System.arraycopy(array, pos, array, pos + is.length, size - index);
-		System.arraycopy(is, 0, array, pos, is.length);
-		size += is.length;
+		growIfNecessaryBy(xs.length);
+		System.arraycopy(contents, index, contents, index + xs.length, size - index);
+		System.arraycopy(xs, 0, contents, index, xs.length);
+		size += xs.length;
 		return true;
 	}
 
 	@Override
-	public boolean containsAll(long... is) {
-		for (long i : is)
-			if (!containsLong(i))
+	public boolean addAllLongsAt(int index, LongCollection xs) {
+		if (xs.size() == 0)
+			return false;
+
+		rangeCheckForAdd(index);
+		growIfNecessaryBy(xs.size());
+		System.arraycopy(contents, index, contents, index + xs.size(), size - index);
+
+		if (xs instanceof ArrayLongList) {
+			ArrayLongList il = (ArrayLongList) xs;
+			System.arraycopy(il.contents, 0, contents, index, il.size);
+		} else {
+			LongIterator iterator = xs.iterator();
+			for (int i = index; i < xs.size(); i++)
+				contents[i] = iterator.nextLong();
+		}
+
+		size += xs.size();
+
+		return true;
+	}
+
+	@Override
+	public boolean containsAllLongs(long... xs) {
+		for (long x : xs)
+			if (!containsLong(x))
 				return false;
 
 		return true;
 	}
 
 	@Override
-	public boolean removeLong(long i) {
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			if (array[x] == i)
-				return uncheckedRemove(x);
+	public boolean removeLong(long x) {
+		for (int i = 0; i < size; i++)
+			if (contents[i] == x)
+				return uncheckedRemove(i);
 
 		return false;
 	}
 
 	@Override
-	public boolean containsLong(long i) {
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			if (array[x] == i)
+	public boolean containsLong(long x) {
+		for (int i = 0; i < size; i++)
+			if (contents[i] == x)
 				return true;
 
 		return false;
 	}
 
 	@Override
-	public boolean removeAll(long... is) {
+	public boolean removeAllLongs(long... xs) {
 		boolean modified = false;
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			if (Arrayz.contains(is, array[x]))
-				modified |= uncheckedRemove(x--);
+		for (int i = 0; i < size; i++)
+			if (Arrayz.contains(xs, contents[i]))
+				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
-	public boolean retainAll(long... is) {
+	public boolean retainAllLongs(long... xs) {
 		boolean modified = false;
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			if (!Arrayz.contains(is, array[x]))
-				modified |= uncheckedRemove(x--);
+		for (int i = 0; i < size; i++)
+			if (!Arrayz.contains(xs, contents[i]))
+				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
 	public boolean removeLongsIf(LongPredicate filter) {
 		boolean modified = false;
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			if (!filter.test(array[x]))
-				modified |= uncheckedRemove(x--);
+		for (int i = 0; i < size; i++)
+			if (filter.test(contents[i]))
+				modified |= uncheckedRemove(i--);
 		return modified;
 	}
 
 	@Override
 	public void forEachLong(LongConsumer consumer) {
-		for (int x = offset, ceiling = offset + size; x < ceiling; x++)
-			consumer.accept(array[x]);
+		for (int i = 0; i < size; i++)
+			consumer.accept(contents[i]);
 	}
 
-	private void growIfNecessary(int grow) {
+	private void growIfNecessaryBy(int grow) {
 		int newSize = size + grow;
-		if (newSize > capacity) {
-			int newLength = newSize + ((newSize) >> 1);
-			long[] copy = new long[newLength];
-			System.arraycopy(array, offset, copy, 0, size);
-			array = copy;
-			offset = 0;
-			capacity = newLength;
+		if (newSize > contents.length) {
+			int newCapacity = newSize + (newSize >> 1);
+			long[] copy = new long[newCapacity];
+			System.arraycopy(contents, 0, copy, 0, size);
+			contents = copy;
 		}
 	}
 
-	private boolean uncheckedAdd(int index, long element) {
-		growIfNecessary(1);
-		int pos = offset + index;
-		System.arraycopy(array, pos, array, pos + 1, size++ - (pos - offset));
-		array[pos] = element;
+	private boolean uncheckedAdd(int index, long x) {
+		growIfNecessaryBy(1);
+		System.arraycopy(contents, index, contents, index + 1, size++ - index);
+		contents[index] = x;
 		return true;
 	}
 
-	private boolean uncheckedRemove(int pos) {
-		System.arraycopy(array, pos + 1, array, pos, size-- - (pos - offset) - 1);
+	private boolean uncheckedRemove(int index) {
+		System.arraycopy(contents, index + 1, contents, index, size-- - index - 1);
 		return true;
 	}
 
@@ -304,7 +339,7 @@ public class ArrayLongList implements LongList {
 		public long nextLong() {
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return array[offset + (currentIndex = nextIndex++)];
+			return contents[currentIndex = nextIndex++];
 		}
 
 		@Override
@@ -316,7 +351,7 @@ public class ArrayLongList implements LongList {
 		public long previousLong() {
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return array[offset + (currentIndex = --nextIndex)];
+			return contents[currentIndex = --nextIndex];
 		}
 
 		@Override
@@ -336,23 +371,23 @@ public class ArrayLongList implements LongList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextLong() or previousLong() not called");
 
-			uncheckedRemove(offset + (nextIndex = currentIndex--));
+			uncheckedRemove(nextIndex = currentIndex--);
 			addOrRemove = true;
 		}
 
 		@Override
-		public void set(long i) {
+		public void set(long x) {
 			if (addOrRemove)
 				throw new IllegalStateException("add() or remove() called");
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextLong() or previousLong() not called");
 
-			array[offset + currentIndex] = i;
+			contents[currentIndex] = x;
 		}
 
 		@Override
-		public void add(long i) {
-			uncheckedAdd(currentIndex = nextIndex++, i);
+		public void add(long x) {
+			uncheckedAdd(currentIndex = nextIndex++, x);
 			addOrRemove = true;
 		}
 	}

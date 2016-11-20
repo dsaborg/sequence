@@ -30,7 +30,7 @@ public class BitLongSet implements LongSortedSet {
 	private final SparseBitSet negatives = new SparseBitSet();
 
 	public BitLongSet(long... ls) {
-		addAll(ls);
+		addAllLongs(ls);
 	}
 
 	@Override

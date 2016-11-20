@@ -37,22 +37,13 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	@Override
-	default boolean add(Integer integer) {
-		return addInt(integer);
-	}
-
-	default boolean addInt(int i) {
-		throw new UnsupportedOperationException();
+	default Integer[] toArray() {
+		return toArray(new Integer[size()]);
 	}
 
 	@Override
-	default boolean contains(Object o) {
-		return containsInt((int) o);
-	}
-
-	@Override
-	default boolean remove(Object o) {
-		return removeInt((int) o);
+	default <T> T[] toArray(T[] a) {
+		return Collectionz.toArray(this, a);
 	}
 
 	/**
@@ -63,33 +54,42 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	@Override
-	default Integer[] toArray() {
-		return toArray(new Integer[size()]);
+	default boolean add(Integer i) {
+		return addInt(i);
+	}
+
+	default boolean addInt(int i) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	default <T> T[] toArray(T[] a) {
-		return Collectionz.toArray(this, a);
+	default boolean contains(Object o) {
+		return o instanceof Integer && containsInt((int) o);
 	}
 
-	default boolean addAll(IntCollection c) {
-		if (c.isEmpty())
-			return false;
-
-		c.forEachInt(this::addInt);
-		return true;
+	@Override
+	default boolean remove(Object o) {
+		return o instanceof Integer && removeInt((int) o);
 	}
 
-	default boolean addAll(int... is) {
+	@Override
+	default boolean addAll(Collection<? extends Integer> c) {
+		return Collectionz.addAll(this, c);
+	}
+
+	default boolean addAllInts(int... is) {
 		boolean changed = false;
 		for (int i : is)
 			changed |= addInt(i);
 		return changed;
 	}
 
-	@Override
-	default boolean addAll(Collection<? extends Integer> c) {
-		return Collectionz.addAll(this, c);
+	default boolean addAllInts(IntCollection is) {
+		if (is.isEmpty())
+			return false;
+
+		is.forEachInt(this::addInt);
+		return true;
 	}
 
 	@Override
@@ -114,6 +114,6 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default Spliterator.OfInt spliterator() {
-		return Spliterators.spliterator(iterator(), size(), 0);
+		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
 	}
 }

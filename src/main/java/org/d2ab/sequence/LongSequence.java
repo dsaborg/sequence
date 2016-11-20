@@ -146,15 +146,7 @@ public interface LongSequence extends LongList {
 	 * @since 1.1
 	 */
 	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
-		long[] cache = new long[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			long next = iterator.nextLong();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		return from(cache, position);
+		return from(LongList.copy(iterator));
 	}
 
 	/**
@@ -1282,8 +1274,8 @@ public interface LongSequence extends LongList {
 	 *
 	 * @since 1.2
 	 */
-	default boolean containsAll(long... items) {
-		for (long item : items)
+	default boolean containsAllLongs(long... ls) {
+		for (long item : ls)
 			if (!iterator().contains(item))
 				return false;
 

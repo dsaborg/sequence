@@ -24,6 +24,7 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
+import java.util.function.LongPredicate;
 
 import static java.util.Arrays.asList;
 
@@ -74,10 +75,93 @@ public interface LongIterable extends Iterable<Long> {
 		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
 	}
 
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
+
+	default void clear() {
+		iterator().removeAll();
+	}
+
+	default boolean containsLong(long l) {
+		return iterator().contains(l);
+	}
+
+	default boolean removeLong(long l) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
+			if (iterator.nextLong() == l) {
+				iterator.remove();
+				return true;
+			}
+
+		return false;
+	}
+
+	default boolean containsAllLongs(long... ls) {
+		for (long l : ls)
+			if (!containsLong(l))
+				return false;
+
+		return true;
+	}
+
+	default boolean containsAllLongs(LongIterable c) {
+		for (long i : c)
+			if (!containsLong(i))
+				return false;
+
+		return true;
+	}
+
 	/**
-	 * Collect the longs in this {@code LongIterable} into an array.
+	 * @return true if this {@code LongIterable} contains any of the given {@code longs}, false otherwise.
 	 */
-	default long[] toLongArray() {
-		return iterator().toArray();
+	default boolean containsAnyLongs(long... is) {
+		LongIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (Arrayz.contains(is, iterator.nextLong()))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * @return true if this {@code LongIterable} contains any of the {@code longs} in the given {@code LongIterable},
+	 * false otherwise.
+	 */
+	default boolean containsAnyLongs(LongIterable is) {
+		LongIterator iterator = iterator();
+		while (iterator.hasNext())
+			if (is.containsLong(iterator.nextLong()))
+				return true;
+
+		return false;
+	}
+
+	default boolean removeAllLongs(LongIterable c) {
+		return removeLongsIf(c::containsLong);
+	}
+
+	default boolean retainAllLongs(LongIterable c) {
+		return removeLongsIf(i -> !c.containsLong(i));
+	}
+
+	default boolean removeAllLongs(long... ls) {
+		return removeLongsIf(i -> Arrayz.contains(ls, i));
+	}
+
+	default boolean retainAllLongs(long... ls) {
+		return removeLongsIf(i -> !Arrayz.contains(ls, i));
+	}
+
+	default boolean removeLongsIf(LongPredicate filter) {
+		boolean changed = false;
+		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (filter.test(iterator.nextLong())) {
+				iterator.remove();
+				changed = true;
+			}
+		}
+		return changed;
 	}
 }
