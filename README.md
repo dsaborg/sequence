@@ -21,6 +21,9 @@ Javadoc for the entire project is available at the [Sequence javadoc.io Page](ht
 
 ### News
 
+**2016-11-21* Sequence v1.3 is released, as a transitional release to prepare for 2.0. To prepare for upgrading to 2.0,
+upgrade to 1.3 and take note of deprecated methods, replacing them with corresponding method calls as per the javadoc.
+
 **2016-05-09:** Sequence v1.2.2 is released, with bugfixes against 1.2,
 [List view of Sequence](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#asList--),
 [Reader view of CharSeq](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/iterable/chars/CharIterable.html#asReader--),
@@ -106,7 +109,7 @@ To install in maven, use the maven central dependency:
 <dependency>
   <groupId>org.d2ab</groupId>
   <artifactId>sequence</artifactId>
-  <version>[1.2.2,2.0)</version>
+  <version>[1.3.0,2.0)</version>
 </dependency>
 ```
 
@@ -120,7 +123,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.d2ab:sequence:[1.2.2,2.0)'
+    compile 'org.d2ab:sequence:[1.3.0,2.0)'
 }
 ```
 
