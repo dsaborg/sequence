@@ -17,9 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
-import org.d2ab.collection.doubles.ArrayDoubleList;
-import org.d2ab.collection.doubles.DoubleIterable;
-import org.d2ab.collection.doubles.DoubleList;
+import org.d2ab.collection.doubles.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
@@ -625,6 +623,24 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void toSet() {
+		twice(() -> {
+			DoubleSet set = _12345.toSet();
+			assertThat(set, instanceOf(RawDoubleSet.class));
+			assertThat(set, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			DoubleSet set = _12345.toSet(RawDoubleSet::new);
+			assertThat(set, instanceOf(RawDoubleSet.class));
+			assertThat(set, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void toCollection() {
 		twice(() -> {
 			DoubleList deque = _12345.toCollection(ArrayDoubleList::new);
@@ -782,6 +798,21 @@ public class DoubleSequenceTest {
 	public void step() {
 		DoubleSequence stepThree = _123456789.step(3);
 		twice(() -> assertThat(stepThree, containsDoubles(1.0, 4.0, 7.0)));
+	}
+
+	@Test
+	public void distinctExactly() {
+		DoubleSequence emptyDistinct = empty.distinctExactly();
+		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+
+		DoubleSequence oneDistinct = oneRandom.distinctExactly();
+		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
+
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17)).distinctExactly();
+		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17)));
+
+		DoubleSequence nineDistinct = nineRandom.distinctExactly();
+		twice(() -> assertThat(nineDistinct, containsDoubles(6, 1, -7, 2, 17, 5, 4)));
 	}
 
 	@Test

@@ -690,15 +690,31 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
-	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList} of the type determined by the given
-	 * constructor.
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList} of the type determined by the
+	 * given constructor.
 	 */
 	default DoubleList toList(Supplier<? extends DoubleList> constructor) {
 		return toCollection(constructor);
 	}
 
 	/**
-	 * Collect this {@code DoubleSequence} into an {@link DoubleCollection} of the type determined by the given constructor.
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleSet}.
+	 */
+	default DoubleSet toSet() {
+		return toSet(RawDoubleSet::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleSet} of the type determined by the
+	 * given constructor.
+	 */
+	default <S extends DoubleSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect this {@code DoubleSequence} into an {@link DoubleCollection} of the type determined by the given
+	 * constructor.
 	 */
 	default <U extends DoubleCollection> U toCollection(Supplier<? extends U> constructor) {
 		return collectInto(constructor.get());
@@ -854,6 +870,13 @@ public interface DoubleSequence extends DoubleList {
 	 */
 	default DoubleSequence step(int step) {
 		return () -> new SteppingDoubleIterator(iterator(), step);
+	}
+
+	/**
+	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered.
+	 */
+	default DoubleSequence distinctExactly() {
+		return () -> new DistinctDoubleIterator(iterator());
 	}
 
 	/**
@@ -1145,8 +1168,8 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
-	 * Perform the given action for each {@code double} in this {@code DoubleSequence}, with the index of each element passed
-	 * as the second parameter in the action.
+	 * Perform the given action for each {@code double} in this {@code DoubleSequence}, with the index of each element
+	 * passed as the second parameter in the action.
 	 *
 	 * @since 1.2
 	 */

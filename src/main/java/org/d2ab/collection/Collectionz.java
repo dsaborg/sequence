@@ -50,12 +50,12 @@ public class Collectionz {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(IntIterable xs, Collection<?> c) {
+	public static boolean containsAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.containsAllInts((IntIterable) c);
 
-		for (int x : (Collection<? extends Integer>) c)
-			if (!xs.containsInt(x))
+		for (Object x : c)
+			if (!xs.contains(x))
 				return false;
 
 		return true;
@@ -91,8 +91,8 @@ public class Collectionz {
 		if (c instanceof LongCollection)
 			return xs.containsAllLongs((LongCollection) c);
 
-		for (long x : (Collection<? extends Long>) c)
-			if (!xs.containsLong(x))
+		for (Object x : c)
+			if (!xs.contains(x))
 				return false;
 
 		return true;
@@ -124,12 +124,12 @@ public class Collectionz {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static boolean containsAll(CharIterable xs, Collection<?> c) {
+	public static boolean containsAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.containsAllChars((CharIterable) c);
 
-		for (char x : (Collection<? extends Character>) c)
-			if (!xs.containsChar(x))
+		for (Object x : c)
+			if (!xs.contains(x))
 				return false;
 
 		return true;
@@ -165,8 +165,8 @@ public class Collectionz {
 		if (c instanceof DoubleCollection)
 			return xs.containsAllDoublesExactly((DoubleCollection) c);
 
-		for (double x : (Collection<? extends Double>) c)
-			if (!xs.containsDoubleExactly(x))
+		for (Object x : c)
+			if (!xs.contains(x))
 				return false;
 
 		return true;

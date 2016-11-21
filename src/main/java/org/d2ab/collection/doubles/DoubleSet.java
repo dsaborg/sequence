@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.longs;
+package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
 
@@ -24,9 +24,9 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 
 /**
- * A primitive specialization of {@link Set} for {@code long} values.
+ * A primitive specialization of {@link Set} for {@code double} values.
  */
-public interface LongSet extends Set<Long>, LongCollection {
+public interface DoubleSet extends Set<Double>, DoubleCollection {
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -38,23 +38,23 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean add(Long x) {
-		return addLong(x);
+	default boolean add(Double x) {
+		return addDouble(x);
 	}
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Long && containsLong((long) o);
+		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Long && removeLong((long) o);
+		return o instanceof Double && removeDoubleExactly((double) o);
 	}
 
 	@Override
-	default Long[] toArray() {
-		return toArray(new Long[size()]);
+	default Double[] toArray() {
+		return toArray(new Double[size()]);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean addAll(Collection<? extends Long> c) {
+	default boolean addAll(Collection<? extends Double> c) {
 		return Collectionz.addAll(this, c);
 	}
 
@@ -83,7 +83,7 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default Spliterator.OfLong spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT | Spliterator.NONNULL);
+	default Spliterator.OfDouble spliterator() {
+		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT);
 	}
 }

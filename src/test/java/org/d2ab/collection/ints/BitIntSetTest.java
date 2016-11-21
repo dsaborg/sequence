@@ -35,25 +35,25 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class BitIntSetTest {
-	private final org.d2ab.collection.ints.BitIntSet empty = new org.d2ab.collection.ints.BitIntSet();
-	private final org.d2ab.collection.ints.BitIntSet intSet = new org.d2ab.collection.ints.BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+	private final BitIntSet empty = new BitIntSet();
+	private final BitIntSet set = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
-		assertThat(intSet.size(), is(10));
+		assertThat(set.size(), is(10));
 	}
 
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
-		assertThat(intSet.isEmpty(), is(false));
+		assertThat(set.isEmpty(), is(false));
 	}
 
 	@Test
@@ -61,8 +61,8 @@ public class BitIntSetTest {
 		empty.clear();
 		assertThat(empty.isEmpty(), is(true));
 
-		intSet.clear();
-		assertThat(intSet.isEmpty(), is(true));
+		set.clear();
+		assertThat(set.isEmpty(), is(true));
 	}
 
 	@Test
@@ -70,45 +70,45 @@ public class BitIntSetTest {
 		empty.addInt(17);
 		assertThat(empty, containsInts(17));
 
-		intSet.addInt(17);
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		set.addInt(17);
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 	}
 
 	@Test
 	public void containsInt() {
 		assertThat(empty.containsInt(17), is(false));
 
-		assertThat(intSet.containsInt(17), is(false));
-		for (int i = -5; i <= 4; i++)
-			assertThat(intSet.containsInt(i), is(true));
+		assertThat(set.containsInt(17), is(false));
+		for (int x = -5; x <= 4; x++)
+			assertThat(set.containsInt(x), is(true));
 	}
 
 	@Test
 	public void removeInt() {
 		assertThat(empty.removeInt(17), is(false));
 
-		assertThat(intSet.removeInt(17), is(false));
-		for (int i = -5; i <= 4; i++)
-			assertThat(intSet.removeInt(i), is(true));
-		assertThat(intSet.isEmpty(), is(true));
+		assertThat(set.removeInt(17), is(false));
+		for (int x = -5; x <= 4; x++)
+			assertThat(set.removeInt(x), is(true));
+		assertThat(set.isEmpty(), is(true));
 	}
 
 	@Test
 	public void testToString() {
 		assertThat(empty.toString(), is("[]"));
-		assertThat(intSet.toString(), is("[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]"));
+		assertThat(set.toString(), is("[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]"));
 	}
 
 	@Test
 	public void testEqualsHashCode() {
-		org.d2ab.collection.ints.BitIntSet intSet2 = new org.d2ab.collection.ints.BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
-		assertThat(intSet, is(not(equalTo(intSet2))));
-		assertThat(intSet.hashCode(), is(CoreMatchers.not(intSet2.hashCode())));
+		BitIntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		assertThat(set, is(not(equalTo(set2))));
+		assertThat(set.hashCode(), is(CoreMatchers.not(set2.hashCode())));
 
-		intSet2.removeInt(17);
+		set2.removeInt(17);
 
-		assertThat(intSet, is(equalTo(intSet2)));
-		assertThat(intSet.hashCode(), CoreMatchers.is(intSet2.hashCode()));
+		assertThat(set, is(equalTo(set2)));
+		assertThat(set.hashCode(), CoreMatchers.is(set2.hashCode()));
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class BitIntSetTest {
 		assertThat(empty.addAllInts(1, 2, 3), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(intSet.addAllInts(3, 4, 5, 6, 7), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
+		assertThat(set.addAllInts(3, 4, 5, 6, 7), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
 	@Test
@@ -125,31 +125,61 @@ public class BitIntSetTest {
 		assertThat(empty.addAllInts(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(intSet.addAllInts(org.d2ab.collection.ints.IntList.of(3, 4, 5, 6, 7)), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
+		assertThat(set.addAllInts(org.d2ab.collection.ints.IntList.of(3, 4, 5, 6, 7)), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
 	@Test
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(intSet.stream().collect(Collectors.toList()), contains(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		assertThat(set.stream().collect(Collectors.toList()), contains(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
-	public void lastInt() {
-		expecting(NoSuchElementException.class, empty::firstInt);
-		assertThat(intSet.firstInt(), is(-5));
+	public void parallelStream() {
+		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(set.parallelStream().collect(Collectors.toList()), contains(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+	}
+
+	@Test
+	public void intStream() {
+		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(set.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+	}
+
+	@Test
+	public void parallelIntStream() {
+		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(set.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+	}
+
+	@Test
+	public void sequence() {
+		assertThat(empty.sequence(), is(emptyIterable()));
+		assertThat(set.sequence(), containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
 	public void firstInt() {
+		expecting(NoSuchElementException.class, empty::firstInt);
+		assertThat(set.firstInt(), is(-5));
+	}
+
+	@Test
+	public void lastInt() {
 		expecting(NoSuchElementException.class, empty::lastInt);
-		assertThat(intSet.lastInt(), is(4));
+		assertThat(set.lastInt(), is(4));
 	}
 
 	@Test
 	public void iteratorRemoveAll() {
-		IntIterator iterator = intSet.iterator();
+		IntIterator iterator = set.iterator();
 		int value = -5;
 		while (iterator.hasNext()) {
 			assertThat(iterator.nextInt(), is(value));
@@ -157,7 +187,7 @@ public class BitIntSetTest {
 			value++;
 		}
 		assertThat(value, is(5));
-		assertThat(intSet, is(emptyIterable()));
+		assertThat(set, is(emptyIterable()));
 	}
 
 	@Test
@@ -165,8 +195,8 @@ public class BitIntSetTest {
 		assertThat(empty.removeAllInts(1, 2, 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeAllInts(1, 2, 3), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 4));
+		assertThat(set.removeAllInts(1, 2, 3), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
 	@Test
@@ -174,8 +204,8 @@ public class BitIntSetTest {
 		assertThat(empty.removeAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 4));
+		assertThat(set.removeAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
 	@Test
@@ -183,8 +213,8 @@ public class BitIntSetTest {
 		assertThat(empty.retainAllInts(1, 2, 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.retainAllInts(1, 2, 3), is(true));
-		assertThat(intSet, containsInts(1, 2, 3));
+		assertThat(set.retainAllInts(1, 2, 3), is(true));
+		assertThat(set, containsInts(1, 2, 3));
 	}
 
 	@Test
@@ -192,8 +222,8 @@ public class BitIntSetTest {
 		assertThat(empty.retainAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.retainAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
-		assertThat(intSet, containsInts(1, 2, 3));
+		assertThat(set.retainAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
+		assertThat(set, containsInts(1, 2, 3));
 	}
 
 	@Test
@@ -201,22 +231,22 @@ public class BitIntSetTest {
 		assertThat(empty.removeIntsIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeIntsIf(x -> x > 3), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3));
+		assertThat(set.removeIntsIf(x -> x > 3), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3));
 	}
 
 	@Test
 	public void containsAllIntArray() {
 		assertThat(empty.containsAllInts(1, 2, 3), is(false));
-		assertThat(intSet.containsAllInts(1, 2, 3), is(true));
-		assertThat(intSet.containsAllInts(1, 2, 3, 17), is(false));
+		assertThat(set.containsAllInts(1, 2, 3), is(true));
+		assertThat(set.containsAllInts(1, 2, 3, 17), is(false));
 	}
 
 	@Test
 	public void containsAllIntCollection() {
 		assertThat(empty.containsAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(false));
-		assertThat(intSet.containsAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
-		assertThat(intSet.containsAll(IntList.of(1, 2, 3, 17)), is(false));
+		assertThat(set.containsAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
+		assertThat(set.containsAll(IntList.of(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -226,7 +256,7 @@ public class BitIntSetTest {
 		});
 
 		AtomicInteger value = new AtomicInteger(-5);
-		intSet.forEachInt(x -> assertThat(x, is(value.getAndIncrement())));
+		set.forEachInt(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(5));
 	}
 
@@ -235,29 +265,29 @@ public class BitIntSetTest {
 		empty.add(17);
 		assertThat(empty, containsInts(17));
 
-		intSet.add(17);
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		set.add(17);
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 	}
 
 	@Test
 	public void containsBoxed() {
 		assertThat(empty.contains(17), is(false));
 
-		assertThat(intSet.contains(17), is(false));
-		assertThat(intSet.contains(new Object()), is(false));
-		for (int i = -5; i <= 4; i++)
-			assertThat(intSet.contains(i), is(true));
+		assertThat(set.contains(17), is(false));
+		assertThat(set.contains(new Object()), is(false));
+		for (int x = -5; x <= 4; x++)
+			assertThat(set.contains(x), is(true));
 	}
 
 	@Test
 	public void removeBoxed() {
 		assertThat(empty.remove(17), is(false));
 
-		assertThat(intSet.remove(17), is(false));
-		assertThat(intSet.remove(new Object()), is(false));
-		for (int i = -5; i <= 4; i++)
-			assertThat(intSet.remove(i), is(true));
-		assertThat(intSet.isEmpty(), is(true));
+		assertThat(set.remove(17), is(false));
+		assertThat(set.remove(new Object()), is(false));
+		for (int x = -5; x <= 4; x++)
+			assertThat(set.remove(x), is(true));
+		assertThat(set.isEmpty(), is(true));
 	}
 
 	@Test
@@ -265,20 +295,20 @@ public class BitIntSetTest {
 		assertThat(empty.addAll(Arrays.asList(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(intSet.addAll(Arrays.asList(3, 4, 5, 6, 7)), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void lastBoxed() {
-		expecting(NoSuchElementException.class, empty::first);
-		assertThat(intSet.first(), is(-5));
+		assertThat(set.addAll(Arrays.asList(3, 4, 5, 6, 7)), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
 	@Test
 	public void firstBoxed() {
+		expecting(NoSuchElementException.class, empty::first);
+		assertThat(set.first(), is(-5));
+	}
+
+	@Test
+	public void lastBoxed() {
 		expecting(NoSuchElementException.class, empty::last);
-		assertThat(intSet.last(), is(4));
+		assertThat(set.last(), is(4));
 	}
 
 	@Test
@@ -286,8 +316,8 @@ public class BitIntSetTest {
 		assertThat(empty.removeAll(Arrays.asList(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeAll(Arrays.asList(1, 2, 3)), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 4));
+		assertThat(set.removeAll(Arrays.asList(1, 2, 3)), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
 	@Test
@@ -295,8 +325,8 @@ public class BitIntSetTest {
 		assertThat(empty.retainAll(Arrays.asList(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.retainAll(Arrays.asList(1, 2, 3)), is(true));
-		assertThat(intSet, containsInts(1, 2, 3));
+		assertThat(set.retainAll(Arrays.asList(1, 2, 3)), is(true));
+		assertThat(set, containsInts(1, 2, 3));
 	}
 
 	@Test
@@ -304,15 +334,15 @@ public class BitIntSetTest {
 		assertThat(empty.removeIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(intSet.removeIf(x -> x > 3), is(true));
-		assertThat(intSet, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3));
+		assertThat(set.removeIf(x -> x > 3), is(true));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3));
 	}
 
 	@Test
 	public void containsIntCollection() {
 		assertThat(empty.containsAll(Arrays.asList(1, 2, 3)), is(false));
-		assertThat(intSet.containsAll(Arrays.asList(1, 2, 3)), is(true));
-		assertThat(intSet.containsAll(Arrays.asList(1, 2, 3, 17)), is(false));
+		assertThat(set.containsAll(Arrays.asList(1, 2, 3)), is(true));
+		assertThat(set.containsAll(Arrays.asList(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -322,13 +352,13 @@ public class BitIntSetTest {
 		});
 
 		AtomicInteger value = new AtomicInteger(-5);
-		intSet.forEach(x -> assertThat(x, is(value.getAndIncrement())));
+		set.forEach(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(5));
 	}
 
 	@Test
 	public void boundaries() {
-		org.d2ab.collection.ints.BitIntSet intSet = new org.d2ab.collection.ints.BitIntSet();
+		BitIntSet intSet = new BitIntSet();
 		assertThat(intSet.addInt(Integer.MIN_VALUE), is(true));
 		assertThat(intSet.addInt(0), is(true));
 		assertThat(intSet.addInt(Integer.MAX_VALUE), is(true));
