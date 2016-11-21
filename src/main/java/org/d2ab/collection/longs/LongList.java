@@ -135,6 +135,10 @@ public interface LongList extends List<Long>, LongCollection {
 		sortLongs(c::compare);
 	}
 
+	default int binarySearch(long x) {
+		throw new UnsupportedOperationException();
+	}
+
 	@Override
 	default LongList subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();

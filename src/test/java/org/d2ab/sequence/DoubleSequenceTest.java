@@ -632,6 +632,15 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			DoubleSortedSet sortedSet = _12345.toSortedSet();
+			assertThat(sortedSet, instanceOf(SortedListDoubleSet.class));
+			assertThat(sortedSet, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void toSetWithType() {
 		twice(() -> {
 			DoubleSet set = _12345.toSet(RawDoubleSet::new);

@@ -104,6 +104,11 @@ public class ArrayIntList implements IntList {
 	}
 
 	@Override
+	public int binarySearch(int x) {
+		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
 	public void replaceAllInts(IntUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsInt(contents[i]);

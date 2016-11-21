@@ -713,6 +713,13 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleSortedSet}.
+	 */
+	default DoubleSortedSet toSortedSet() {
+		return toSet(SortedListDoubleSet::new);
+	}
+
+	/**
 	 * Collect this {@code DoubleSequence} into an {@link DoubleCollection} of the type determined by the given
 	 * constructor.
 	 */

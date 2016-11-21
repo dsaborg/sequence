@@ -135,6 +135,10 @@ public interface IntList extends List<Integer>, IntCollection {
 		sortInts(c::compare);
 	}
 
+	default int binarySearch(int x) {
+		throw new UnsupportedOperationException();
+	}
+
 	@Override
 	default IntList subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();

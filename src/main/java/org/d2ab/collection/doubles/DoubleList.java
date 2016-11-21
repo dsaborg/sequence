@@ -130,6 +130,10 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		throw new UnsupportedOperationException();
 	}
 
+	default int binarySearchExactly(double x) {
+		throw new UnsupportedOperationException();
+	}
+
 	@Override
 	default void sort(Comparator<? super Double> c) {
 		sortDoubles(c::compare);

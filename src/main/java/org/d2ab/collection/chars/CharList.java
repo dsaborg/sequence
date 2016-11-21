@@ -135,6 +135,10 @@ public interface CharList extends List<Character>, CharCollection {
 		sortChars(c::compare);
 	}
 
+	default int binarySearch(char x) {
+		throw new UnsupportedOperationException();
+	}
+
 	@Override
 	default CharList subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();

@@ -104,6 +104,11 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
+	public int binarySearchExactly(double x) {
+		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
 	public void replaceAllDoubles(DoubleUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsDouble(contents[i]);

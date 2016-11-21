@@ -104,6 +104,11 @@ public class ArrayLongList implements LongList {
 	}
 
 	@Override
+	public int binarySearch(long x) {
+		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
 	public void replaceAllLongs(LongUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsLong(contents[i]);

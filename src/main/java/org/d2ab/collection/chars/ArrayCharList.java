@@ -103,6 +103,11 @@ public class ArrayCharList implements CharList {
 	}
 
 	@Override
+	public int binarySearch(char x) {
+		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
 	public void replaceAllChars(CharUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsChar(contents[i]);
