@@ -17,7 +17,6 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.Iterables;
 import org.d2ab.collection.chars.ChainingCharIterable;
 import org.d2ab.collection.chars.CharIterable;
 import org.d2ab.collection.chars.CharList;
@@ -172,17 +171,7 @@ public interface CharSeq extends CharList {
 	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterator iterator) {
-		char[] cache = new char[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			char next = iterator.nextChar();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(CharList.copy(iterator));
 	}
 
 	/**

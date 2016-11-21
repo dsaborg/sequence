@@ -16,11 +16,12 @@
 
 package org.d2ab.iterator.chars;
 
+import org.d2ab.collection.chars.ArrayCharList;
+import org.d2ab.collection.chars.CharList;
 import org.d2ab.function.CharPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.CharSeq;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -45,21 +46,16 @@ public class SplittingCharIterator extends DelegatingIterator<Character, CharIte
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int position = 0;
-		char[] buffer = new char[10];
+		CharList buffer = new ArrayCharList();
 		while (iterator.hasNext()) {
 			char next = iterator.nextChar();
 			if (predicate.test(next))
 				break;
-			if (buffer.length == position)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[position++] = next;
+
+			buffer.addChar(next);
 		}
 
-		if (position < buffer.length)
-			buffer = Arrays.copyOf(buffer, position);
-
-		return CharSeq.of(buffer);
+		return CharSeq.from(buffer);
 	}
 
 	@Override

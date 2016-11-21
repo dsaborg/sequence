@@ -16,11 +16,12 @@
 
 package org.d2ab.iterator.chars;
 
+import org.d2ab.collection.chars.ArrayCharList;
+import org.d2ab.collection.chars.CharList;
 import org.d2ab.function.CharBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.CharSeq;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
@@ -51,12 +52,9 @@ public class PredicatePartitioningCharIterator extends DelegatingIterator<Charac
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		char[] buffer = new char[3];
-		int size = 0;
+		CharList buffer = new ArrayCharList();
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.addChar(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
@@ -67,9 +65,8 @@ public class PredicatePartitioningCharIterator extends DelegatingIterator<Charac
 			if (split)
 				break;
 		} while (hasNext);
-		if (buffer.length > size)
-			buffer = Arrays.copyOf(buffer, size);
-		return CharSeq.of(buffer);
+
+		return CharSeq.from(buffer);
 	}
 
 	@Override

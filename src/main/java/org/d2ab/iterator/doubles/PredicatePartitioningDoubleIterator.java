@@ -16,12 +16,13 @@
 
 package org.d2ab.iterator.doubles;
 
+import org.d2ab.collection.doubles.ArrayDoubleList;
+import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.function.DoubleBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.DoubleSequence;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
@@ -52,25 +53,22 @@ public class PredicatePartitioningDoubleIterator extends DelegatingIterator<Doub
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		double[] buffer = new double[3];
-		int size = 0;
+		DoubleList buffer = new ArrayDoubleList();
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.addDouble(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
+
 			double following = iterator.nextDouble();
 			boolean split = predicate.test(next, following);
 			next = following;
 			if (split)
 				break;
 		} while (hasNext);
-		if (buffer.length > size)
-			buffer = Arrays.copyOf(buffer, size);
-		return DoubleSequence.of(buffer);
+
+		return DoubleSequence.from(buffer);
 	}
 
 	@Override

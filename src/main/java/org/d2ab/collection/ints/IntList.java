@@ -23,8 +23,6 @@ import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * A primitive specialization of {@link List} for {@code int} values.
@@ -43,7 +41,7 @@ public interface IntList extends List<Integer>, IntCollection {
 	static IntList copy(PrimitiveIterator.OfInt iterator) {
 		IntList copy = new ArrayIntList();
 		while (iterator.hasNext())
-			copy.add(iterator.nextInt());
+			copy.addInt(iterator.nextInt());
 		return copy;
 	}
 

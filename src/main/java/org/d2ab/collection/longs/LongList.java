@@ -41,7 +41,7 @@ public interface LongList extends List<Long>, LongCollection {
 	static LongList copy(PrimitiveIterator.OfLong iterator) {
 		LongList copy = new ArrayLongList();
 		while (iterator.hasNext())
-			copy.add(iterator.nextLong());
+			copy.addLong(iterator.nextLong());
 		return copy;
 	}
 

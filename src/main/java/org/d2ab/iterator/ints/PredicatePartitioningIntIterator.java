@@ -55,7 +55,7 @@ public class PredicatePartitioningIntIterator extends DelegatingIterator<Integer
 
 		IntList buffer = new ArrayIntList();
 		do {
-			buffer.add(next);
+			buffer.addInt(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)

@@ -17,7 +17,6 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.Iterables;
 import org.d2ab.collection.longs.ChainingLongIterable;
 import org.d2ab.collection.longs.LongIterable;
 import org.d2ab.collection.longs.LongList;

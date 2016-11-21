@@ -41,7 +41,7 @@ public interface CharList extends List<Character>, CharCollection {
 	static CharList copy(CharIterator iterator) {
 		CharList copy = new ArrayCharList();
 		while (iterator.hasNext())
-			copy.add(iterator.nextChar());
+			copy.addChar(iterator.nextChar());
 		return copy;
 	}
 

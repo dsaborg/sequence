@@ -16,10 +16,11 @@
 
 package org.d2ab.iterator.doubles;
 
+import org.d2ab.collection.doubles.ArrayDoubleList;
+import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.DoubleSequence;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
@@ -45,21 +46,15 @@ public class SplittingDoubleIterator extends DelegatingIterator<Double, DoubleIt
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int position = 0;
-		double[] buffer = new double[10];
+		DoubleList buffer = new ArrayDoubleList();
 		while (iterator.hasNext()) {
 			double next = iterator.nextDouble();
 			if (predicate.test(next))
 				break;
-			if (buffer.length == position)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[position++] = next;
+			buffer.addDouble(next);
 		}
 
-		if (position < buffer.length)
-			buffer = Arrays.copyOf(buffer, position);
-
-		return DoubleSequence.of(buffer);
+		return DoubleSequence.from(buffer);
 	}
 
 	@Override

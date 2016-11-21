@@ -17,7 +17,6 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.ints.IntIterator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -232,7 +231,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void add() {
+	public void addBoxed() {
 		empty.add(17);
 		assertThat(empty, containsInts(17));
 
@@ -241,7 +240,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void containsObject() {
+	public void containsBoxed() {
 		assertThat(empty.contains(17), is(false));
 
 		assertThat(intSet.contains(17), is(false));
@@ -251,7 +250,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void remove() {
+	public void removeBoxed() {
 		assertThat(empty.remove(17), is(false));
 
 		assertThat(intSet.remove(17), is(false));
@@ -262,7 +261,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void addAllCollection() {
+	public void addAllBoxed() {
 		assertThat(empty.addAll(Arrays.asList(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
@@ -271,19 +270,19 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void last() {
+	public void lastBoxed() {
 		expecting(NoSuchElementException.class, empty::first);
 		assertThat(intSet.first(), is(-5));
 	}
 
 	@Test
-	public void first() {
+	public void firstBoxed() {
 		expecting(NoSuchElementException.class, empty::last);
 		assertThat(intSet.last(), is(4));
 	}
 
 	@Test
-	public void removeAllCollection() {
+	public void removeAllBoxed() {
 		assertThat(empty.removeAll(Arrays.asList(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -292,7 +291,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void retainAllCollection() {
+	public void retainAllBoxed() {
 		assertThat(empty.retainAll(Arrays.asList(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -301,7 +300,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void removeIf() {
+	public void removeIfBoxed() {
 		assertThat(empty.removeIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -317,7 +316,7 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void forEach() {
+	public void forEachBoxed() {
 		empty.forEach(x -> {
 			throw new IllegalStateException("should not get called");
 		});

@@ -137,17 +137,7 @@ public interface DoubleSequence extends DoubleList {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(PrimitiveIterator.OfDouble iterator) {
-		double[] cache = new double[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			double next = iterator.nextDouble();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(DoubleList.copy(iterator));
 	}
 
 	/**

@@ -41,7 +41,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	static DoubleList copy(PrimitiveIterator.OfDouble iterator) {
 		DoubleList copy = new ArrayDoubleList();
 		while (iterator.hasNext())
-			copy.add(iterator.nextDouble());
+			copy.addDouble(iterator.nextDouble());
 		return copy;
 	}
 
