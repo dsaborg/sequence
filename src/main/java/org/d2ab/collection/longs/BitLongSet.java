@@ -30,8 +30,8 @@ public class BitLongSet implements LongSortedSet {
 	private final SparseBitSet positives = new SparseBitSet();
 	private final SparseBitSet negatives = new SparseBitSet();
 
-	public BitLongSet(long... ls) {
-		addAllLongs(ls);
+	public BitLongSet(long... xs) {
+		addAllLongs(xs);
 	}
 
 	@Override
@@ -62,27 +62,27 @@ public class BitLongSet implements LongSortedSet {
 	}
 
 	@Override
-	public boolean addLong(long l) {
-		if (l >= 0)
-			return positives.set(l);
+	public boolean addLong(long x) {
+		if (x >= 0)
+			return positives.set(x);
 		else
-			return negatives.set(-(l + 1));
+			return negatives.set(-(x + 1));
 	}
 
 	@Override
-	public boolean removeLong(long l) {
-		if (l >= 0)
-			return positives.clear(l);
+	public boolean removeLong(long x) {
+		if (x >= 0)
+			return positives.clear(x);
 		else
-			return negatives.clear(-(l + 1));
+			return negatives.clear(-(x + 1));
 	}
 
 	@Override
-	public boolean containsLong(long l) {
-		if (l >= 0)
-			return positives.get(l);
+	public boolean containsLong(long x) {
+		if (x >= 0)
+			return positives.get(x);
 		else
-			return negatives.get(-(l + 1));
+			return negatives.get(-(x + 1));
 	}
 
 	@Override
@@ -91,8 +91,7 @@ public class BitLongSet implements LongSortedSet {
 		builder.append("[");
 
 		boolean started = false;
-		LongIterator iterator = iterator();
-		while (iterator.hasNext()) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (started)
 				builder.append(", ");
 			else

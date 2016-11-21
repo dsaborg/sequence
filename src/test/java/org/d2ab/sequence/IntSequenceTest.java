@@ -16,8 +16,8 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.ints.IntIterable;
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.ints.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
@@ -619,10 +619,77 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			IntList list = _12345.toList();
+			assertThat(list, is(instanceOf(ArrayIntList.class)));
+			assertThat(list, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			IntSet set = _12345.toSet();
+			assertThat(set, instanceOf(BitIntSet.class));
+			assertThat(set, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			IntSortedSet sortedSet = _12345.toSortedSet();
+			assertThat(sortedSet, instanceOf(BitIntSet.class));
+			assertThat(sortedSet, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			IntSet set = _12345.toSet(BitIntSet::new);
+			assertThat(set, instanceOf(BitIntSet.class));
+			assertThat(set, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			IntList deque = _12345.toCollection(ArrayIntList::new);
+			assertThat(deque, instanceOf(ArrayIntList.class));
+			assertThat(deque, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void collectIntoIntCollection() {
+		twice(() -> {
+			IntList list = new ArrayIntList();
+			IntList result = _12345.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
 			assertThat(builder.toString(), is("123"));
+		});
+	}
+
+	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			IntList list = new ArrayIntList();
+			IntList result = _12345.collectInto(list, IntList::addInt);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsInts(1, 2, 3, 4, 5));
 		});
 	}
 

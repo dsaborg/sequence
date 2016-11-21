@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.ints;
+package org.d2ab.collection.chars;
 
 import org.d2ab.collection.SparseBitSet;
-import org.d2ab.iterator.ints.DelegatingIntIterator;
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.chars.CharIterator;
 
-import java.util.PrimitiveIterator;
 import java.util.Set;
 
 /**
- * An implementation of {@link IntSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
+ * An implementation of {@link CharSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
  */
-public class BitIntSet implements IntSortedSet {
+public class BitCharSet implements CharSortedSet {
 	private final SparseBitSet values = new SparseBitSet();
 
-	public BitIntSet(int... xs) {
-		addAllInts(xs);
+	public BitCharSet(char... xs) {
+		addAllChars(xs);
 	}
 
 	@Override
@@ -39,13 +37,8 @@ public class BitIntSet implements IntSortedSet {
 	}
 
 	@Override
-	public IntIterator iterator() {
-		return new DelegatingIntIterator<Long, PrimitiveIterator.OfLong>(values.iterator()) {
-			@Override
-			public int nextInt() {
-				return (int) (iterator.nextLong() + Integer.MIN_VALUE);
-			}
-		};
+	public CharIterator iterator() {
+		return CharIterator.from(values.iterator());
 	}
 
 	@Override
@@ -59,42 +52,42 @@ public class BitIntSet implements IntSortedSet {
 	}
 
 	@Override
-	public boolean addInt(int x) {
-		return values.set((long) x - Integer.MIN_VALUE);
+	public boolean addChar(char x) {
+		return values.set(x);
 	}
 
 	@Override
-	public boolean removeInt(int x) {
-		return values.clear((long) x - Integer.MIN_VALUE);
+	public boolean removeChar(char x) {
+		return values.clear(x);
 	}
 
 	@Override
-	public boolean containsInt(int x) {
-		return values.get((long) x - Integer.MIN_VALUE);
+	public boolean containsChar(char x) {
+		return values.get(x);
 	}
 
 	@Override
-	public int firstInt() {
-		return (int) (values.firstLong() + Integer.MIN_VALUE);
+	public char firstChar() {
+		return (char) (values.firstLong() + Character.MIN_VALUE);
 	}
 
 	@Override
-	public int lastInt() {
-		return (int) (values.lastLong() + Integer.MIN_VALUE);
+	public char lastChar() {
+		return (char) (values.lastLong() + Character.MIN_VALUE);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(size() * 5); // heuristic
+		StringBuilder builder = new StringBuilder(size() * 3); // heuristic
 		builder.append("[");
 
 		boolean started = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (started)
 				builder.append(", ");
 			else
 				started = true;
-			builder.append(iterator.nextInt());
+			builder.append(iterator.nextChar());
 		}
 
 		builder.append("]");
@@ -113,8 +106,8 @@ public class BitIntSet implements IntSortedSet {
 
 	public int hashCode() {
 		int hashCode = 0;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); )
-			hashCode += Integer.hashCode(iterator.nextInt());
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
+			hashCode += Character.hashCode(iterator.nextChar());
 		return hashCode;
 	}
 }

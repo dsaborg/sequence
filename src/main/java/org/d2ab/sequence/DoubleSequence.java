@@ -17,9 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.doubles.ChainingDoubleIterable;
-import org.d2ab.collection.doubles.DoubleIterable;
-import org.d2ab.collection.doubles.DoubleList;
+import org.d2ab.collection.doubles.*;
 import org.d2ab.function.DoubleBiPredicate;
 import org.d2ab.function.DoubleIntConsumer;
 import org.d2ab.function.DoubleIntPredicate;
@@ -685,6 +683,28 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList}.
+	 */
+	default DoubleList toList() {
+		return toList(ArrayDoubleList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList} of the type determined by the given
+	 * constructor.
+	 */
+	default DoubleList toList(Supplier<? extends DoubleList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect this {@code DoubleSequence} into an {@link DoubleCollection} of the type determined by the given constructor.
+	 */
+	default <U extends DoubleCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
+	}
+
+	/**
 	 * Collect this {@code DoubleSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {
@@ -692,10 +712,18 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
+	 * Collect this {@code DoubleSequence} into the given {@link DoubleCollection}.
+	 */
+	default <U extends DoubleCollection> U collectInto(U collection) {
+		collection.addAllDoubles(this);
+		return collection;
+	}
+
+	/**
 	 * Collect this {@code DoubleSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjDoubleConsumer<? super C> adder) {
-		forEachDouble(d -> adder.accept(result, d));
+		forEachDouble(x -> adder.accept(result, x));
 		return result;
 	}
 

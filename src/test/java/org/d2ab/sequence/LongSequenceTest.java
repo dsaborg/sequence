@@ -17,7 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
-import org.d2ab.collection.longs.LongIterable;
+import org.d2ab.collection.longs.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.longs.DelegatingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
@@ -574,10 +574,77 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			LongList list = _12345.toList();
+			assertThat(list, is(instanceOf(ArrayLongList.class)));
+			assertThat(list, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			LongSet set = _12345.toSet();
+			assertThat(set, instanceOf(BitLongSet.class));
+			assertThat(set, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			LongSortedSet sortedSet = _12345.toSortedSet();
+			assertThat(sortedSet, instanceOf(BitLongSet.class));
+			assertThat(sortedSet, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			LongSet set = _12345.toSet(BitLongSet::new);
+			assertThat(set, instanceOf(BitLongSet.class));
+			assertThat(set, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			LongList deque = _12345.toCollection(ArrayLongList::new);
+			assertThat(deque, instanceOf(ArrayLongList.class));
+			assertThat(deque, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void collectIntoLongCollection() {
+		twice(() -> {
+			LongList list = new ArrayLongList();
+			LongList result = _12345.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
 			assertThat(builder.toString(), is("123"));
+		});
+	}
+
+	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			LongList list = new ArrayLongList();
+			LongList result = _12345.collectInto(list, LongList::addLong);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsLongs(1, 2, 3, 4, 5));
 		});
 	}
 

@@ -16,8 +16,10 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.doubles.DoubleIterable;
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.doubles.ArrayDoubleList;
+import org.d2ab.collection.doubles.DoubleIterable;
+import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
@@ -614,10 +616,50 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			DoubleList list = _12345.toList();
+			assertThat(list, is(instanceOf(ArrayDoubleList.class)));
+			assertThat(list, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			DoubleList deque = _12345.toCollection(ArrayDoubleList::new);
+			assertThat(deque, instanceOf(ArrayDoubleList.class));
+			assertThat(deque, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void collectIntoDoubleCollection() {
+		twice(() -> {
+			DoubleList list = new ArrayDoubleList();
+			DoubleList result = _12345.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
 			assertThat(builder.toString(), is("1.02.03.0"));
+		});
+	}
+
+	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			DoubleList list = new ArrayDoubleList();
+			DoubleList result = _12345.collectInto(list, DoubleList::addDouble);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsDoubles(1, 2, 3, 4, 5));
 		});
 	}
 

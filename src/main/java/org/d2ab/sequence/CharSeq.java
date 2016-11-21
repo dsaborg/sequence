@@ -17,9 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.chars.ChainingCharIterable;
-import org.d2ab.collection.chars.CharIterable;
-import org.d2ab.collection.chars.CharList;
+import org.d2ab.collection.chars.*;
 import org.d2ab.function.*;
 import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.Iterators;
@@ -745,6 +743,52 @@ public interface CharSeq extends CharList {
 	}
 
 	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharList}.
+	 */
+	default CharList toList() {
+		return toList(ArrayCharList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharList} of the type determined by the given
+	 * constructor.
+	 */
+	default CharList toList(Supplier<? extends CharList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharSet}.
+	 *
+	 * @see #toSortedSet()
+	 */
+	default CharSet toSet() {
+		return toSortedSet();
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharSet} of the type determined by the given
+	 * constructor.
+	 */
+	default <S extends CharSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharSortedSet}.
+	 */
+	default CharSortedSet toSortedSet() {
+		return toSet(BitCharSet::new);
+	}
+
+	/**
+	 * Collect this {@code CharSeq} into an {@link CharCollection} of the type determined by the given constructor.
+	 */
+	default <U extends CharCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
+	}
+
+	/**
 	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
@@ -752,10 +796,18 @@ public interface CharSeq extends CharList {
 	}
 
 	/**
+	 * Collect this {@code CharSeq} into the given {@link CharCollection}.
+	 */
+	default <U extends CharCollection> U collectInto(U collection) {
+		collection.addAllChars(this);
+		return collection;
+	}
+
+	/**
 	 * Collect this {@code CharSeq} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjCharConsumer<? super C> adder) {
-		forEachChar(c -> adder.accept(result, c));
+		forEachChar(x -> adder.accept(result, x));
 		return result;
 	}
 

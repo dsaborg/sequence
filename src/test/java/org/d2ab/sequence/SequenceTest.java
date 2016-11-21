@@ -1071,6 +1071,7 @@ public class SequenceTest {
 		twice(() -> {
 			Deque<Integer> deque = new ArrayDeque<>();
 			Deque<Integer> result = _12345.collectInto(deque);
+
 			assertThat(result, is(sameInstance(deque)));
 			assertThat(result, contains(1, 2, 3, 4, 5));
 		});

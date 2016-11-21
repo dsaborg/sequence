@@ -16,13 +16,13 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.collection.ints.BitIntSet;
-import org.d2ab.collection.ints.IntSet;
+import org.d2ab.collection.chars.BitCharSet;
+import org.d2ab.collection.chars.CharSet;
 
 import java.util.NoSuchElementException;
 
 public class DistinctCharIterator extends UnaryCharIterator {
-	private final IntSet seen = new BitIntSet();
+	private final CharSet seen = new BitCharSet();
 
 	private char next;
 	private boolean hasNext;
@@ -47,7 +47,7 @@ public class DistinctCharIterator extends UnaryCharIterator {
 
 		while (!hasNext && iterator.hasNext()) {
 			char maybeNext = iterator.nextChar();
-			if (hasNext = seen.addInt(maybeNext))
+			if (hasNext = seen.addChar(maybeNext))
 				next = maybeNext;
 		}
 

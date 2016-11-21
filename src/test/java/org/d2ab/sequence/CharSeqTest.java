@@ -16,8 +16,8 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.chars.CharIterable;
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.chars.*;
 import org.d2ab.function.CharBinaryOperator;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
@@ -619,22 +619,77 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			CharList list = abcde.toList();
+			assertThat(list, is(instanceOf(ArrayCharList.class)));
+			assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			CharSet set = abcde.toSet();
+			assertThat(set, instanceOf(BitCharSet.class));
+			assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			CharSortedSet sortedSet = abcde.toSortedSet();
+			assertThat(sortedSet, instanceOf(BitCharSet.class));
+			assertThat(sortedSet, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			CharSet set = abcde.toSet(BitCharSet::new);
+			assertThat(set, instanceOf(BitCharSet.class));
+			assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			CharList deque = abcde.toCollection(ArrayCharList::new);
+			assertThat(deque, instanceOf(ArrayCharList.class));
+			assertThat(deque, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void collectIntoCharCollection() {
+		twice(() -> {
+			CharList list = new ArrayCharList();
+			CharList result = abcde.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = abc.collect(StringBuilder::new, StringBuilder::append);
-
 			assertThat(builder.toString(), is("abc"));
 		});
 	}
 
 	@Test
-	public void collectInto() {
+	public void collectIntoContainer() {
 		twice(() -> {
-			StringBuilder builder = new StringBuilder();
-			StringBuilder result = abc.collectInto(builder, StringBuilder::append);
+			CharList list = new ArrayCharList();
+			CharList result = abcde.collectInto(list, CharList::addChar);
 
-			assertThat(result, is(sameInstance(builder)));
-			assertThat(result.toString(), is("abc"));
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsChars('a', 'b', 'c', 'd', 'e'));
 		});
 	}
 

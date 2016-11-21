@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.longs;
+package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Collectionz;
 
@@ -24,9 +24,9 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 
 /**
- * A primitive specialization of {@link Set} for {@code long} values.
+ * A primitive specialization of {@link Set} for {@code char} values.
  */
-public interface LongSet extends Set<Long>, LongCollection {
+public interface CharSet extends Set<Character>, CharCollection {
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -38,23 +38,23 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean add(Long x) {
-		return addLong(x);
+	default boolean add(Character x) {
+		return addChar(x);
 	}
 
 	@Override
 	default boolean contains(Object o) {
-		return containsLong((long) o);
+		return o instanceof Character && containsChar((char) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return removeLong((long) o);
+		return o instanceof Character && removeChar((char) o);
 	}
 
 	@Override
-	default Long[] toArray() {
-		return toArray(new Long[size()]);
+	default Character[] toArray() {
+		return toArray(new Character[size()]);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean addAll(Collection<? extends Long> c) {
+	default boolean addAll(Collection<? extends Character> c) {
 		return Collectionz.addAll(this, c);
 	}
 
@@ -83,7 +83,7 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default Spliterator.OfLong spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT | Spliterator.NONNULL);
+	default Spliterator.OfInt intSpliterator() {
+		return Spliterators.spliterator(intIterator(), size(), Spliterator.DISTINCT);
 	}
 }

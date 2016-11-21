@@ -17,9 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.longs.ChainingLongIterable;
-import org.d2ab.collection.longs.LongIterable;
-import org.d2ab.collection.longs.LongList;
+import org.d2ab.collection.longs.*;
 import org.d2ab.function.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
@@ -837,6 +835,52 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongList}.
+	 */
+	default LongList toList() {
+		return toList(ArrayLongList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongList} of the type determined by the given
+	 * constructor.
+	 */
+	default LongList toList(Supplier<? extends LongList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongSet}.
+	 *
+	 * @see #toSortedSet()
+	 */
+	default LongSet toSet() {
+		return toSortedSet();
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongSet} of the type determined by the given
+	 * constructor.
+	 */
+	default <S extends LongSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongSortedSet}.
+	 */
+	default LongSortedSet toSortedSet() {
+		return toSet(BitLongSet::new);
+	}
+
+	/**
+	 * Collect this {@code LongSequence} into an {@link LongCollection} of the type determined by the given constructor.
+	 */
+	default <U extends LongCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
+	}
+
+	/**
 	 * Collect this {@code LongSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
@@ -844,10 +888,18 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
+	 * Collect this {@code LongSequence} into the given {@link LongCollection}.
+	 */
+	default <U extends LongCollection> U collectInto(U collection) {
+		collection.addAllLongs(this);
+		return collection;
+	}
+
+	/**
 	 * Collect this {@code LongSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjLongConsumer<? super C> adder) {
-		forEachLong(l -> adder.accept(result, l));
+		forEachLong(x -> adder.accept(result, x));
 		return result;
 	}
 

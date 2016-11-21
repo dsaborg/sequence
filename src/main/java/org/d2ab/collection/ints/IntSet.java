@@ -38,8 +38,8 @@ public interface IntSet extends Set<Integer>, IntCollection {
 	}
 
 	@Override
-	default boolean add(Integer integer) {
-		return addInt(integer);
+	default boolean add(Integer x) {
+		return addInt(x);
 	}
 
 	@Override

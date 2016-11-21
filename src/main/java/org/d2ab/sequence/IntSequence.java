@@ -17,9 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ints.ChainingIntIterable;
-import org.d2ab.collection.ints.IntIterable;
-import org.d2ab.collection.ints.IntList;
+import org.d2ab.collection.ints.*;
 import org.d2ab.function.IntBiConsumer;
 import org.d2ab.function.IntBiPredicate;
 import org.d2ab.function.IntToCharFunction;
@@ -840,10 +838,64 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
+	 * Collect the elements in this {@code IntSequence} into an {@link IntList}.
+	 */
+	default IntList toList() {
+		return toList(ArrayIntList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code IntSequence} into an {@link IntList} of the type determined by the given
+	 * constructor.
+	 */
+	default IntList toList(Supplier<? extends IntList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code IntSequence} into an {@link IntSet}.
+	 *
+	 * @see #toSortedSet()
+	 */
+	default IntSet toSet() {
+		return toSortedSet();
+	}
+
+	/**
+	 * Collect the elements in this {@code IntSequence} into an {@link IntSet} of the type determined by the given
+	 * constructor.
+	 */
+	default <S extends IntSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code IntSequence} into an {@link IntSortedSet}.
+	 */
+	default IntSortedSet toSortedSet() {
+		return toSet(BitIntSet::new);
+	}
+
+	/**
+	 * Collect this {@code IntSequence} into an {@link IntCollection} of the type determined by the given constructor.
+	 */
+	default <U extends IntCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
+	}
+
+	/**
 	 * Collect this {@code IntSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {
 		return collectInto(constructor.get(), adder);
+	}
+
+	/**
+	 * Collect this {@code IntSequence} into the given {@link IntCollection}.
+	 */
+	default <U extends IntCollection> U collectInto(U collection) {
+		collection.addAllInts(this);
+		return collection;
 	}
 
 	/**
