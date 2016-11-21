@@ -19,6 +19,7 @@ package org.d2ab.collection.longs;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.ArrayLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.sequence.LongSequence;
 
 import java.util.PrimitiveIterator;
 import java.util.Spliterator;
@@ -84,6 +85,13 @@ public interface LongIterable extends Iterable<Long> {
 
 	default Spliterator.OfLong spliterator() {
 		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * @return a {@link LongSequence} over the {@code long} values in this {@code LongIterable}.
+	 */
+	default LongSequence sequence() {
+		return LongSequence.from(this);
 	}
 
 	default boolean isEmpty() {

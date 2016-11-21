@@ -16,6 +16,7 @@
 
 package org.d2ab.collection.chars;
 
+import org.d2ab.collection.ints.ArrayIntList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
@@ -210,6 +212,31 @@ public class ArrayCharListTest {
 	@Test
 	public void subList() {
 		expecting(UnsupportedOperationException.class, () -> list.subList(1, 2));
+	}
+
+	@Test
+	public void intStream() {
+		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(list.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           containsInts('a', 'b', 'c', 'd', 'e'));
+	}
+
+	@Test
+	public void parallelIntStream() {
+		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt,
+		                                             ArrayIntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(list.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           containsInts('a', 'b', 'c', 'd', 'e'));
+	}
+
+	@Test
+	public void sequence() {
+		assertThat(empty.sequence(), is(emptyIterable()));
+		assertThat(list.sequence(), containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.InputStreamIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.sequence.IntSequence;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -118,6 +119,13 @@ public interface IntIterable extends Iterable<Integer> {
 
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * @return an {@link IntSequence} over the {@code int} values in this {@code IntIterable}.
+	 */
+	default IntSequence sequence() {
+		return IntSequence.from(this);
 	}
 
 	/**

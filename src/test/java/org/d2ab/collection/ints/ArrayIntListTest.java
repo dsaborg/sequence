@@ -16,7 +16,6 @@
 
 package org.d2ab.collection.ints;
 
-import org.d2ab.collection.ints.IntListIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
@@ -211,6 +210,30 @@ public class ArrayIntListTest {
 	@Test
 	public void subList() {
 		expecting(UnsupportedOperationException.class, () -> list.subList(1, 2));
+	}
+
+	@Test
+	public void intStream() {
+		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(list.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           containsInts(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void parallelIntStream() {
+		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(list.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		           containsInts(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void sequence() {
+		assertThat(empty.sequence(), is(emptyIterable()));
+		assertThat(list.sequence(), containsInts(1, 2, 3, 4, 5));
 	}
 
 	@Test

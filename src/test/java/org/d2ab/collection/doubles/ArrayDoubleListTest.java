@@ -213,6 +213,34 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
+	public void doubleStream() {
+		assertThat(empty.doubleStream()
+		                .collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		           is(emptyIterable()));
+
+		assertThat(list.doubleStream()
+		               .collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		           containsDoubles(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void parallelDoubleStream() {
+		assertThat(empty.parallelDoubleStream()
+		                .collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		           is(emptyIterable()));
+
+		assertThat(list.parallelDoubleStream()
+		               .collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		           containsDoubles(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void sequence() {
+		assertThat(empty.sequence(), is(emptyIterable()));
+		assertThat(list.sequence(), containsDoubles(1, 2, 3, 4, 5));
+	}
+
+	@Test
 	public void lastIndexOfBoxed() {
 		assertThat(empty.lastIndexOf(17.0), is(-1));
 
@@ -484,10 +512,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void containsAllDoublesArray() {
-		assertThat(empty.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(empty.containsAllDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
 
-		assertThat(list.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
-		assertThat(list.containsAllDoubles(new double[] { 1.1, 1.9, 3.1 }, 0.5), is(true));
+		assertThat(list.containsAllDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
+		assertThat(list.containsAllDoubles(new double[]{1.1, 1.9, 3.1}, 0.5), is(true));
 	}
 
 	@Test
@@ -516,10 +544,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void containsAnyDoublesArray() {
-		assertThat(empty.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(empty.containsAnyDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
 
-		assertThat(list.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
-		assertThat(list.containsAnyDoubles(new double[] { 1.1, 17.1, 3.1 }, 0.5), is(true));
+		assertThat(list.containsAnyDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
+		assertThat(list.containsAnyDoubles(new double[]{1.1, 17.1, 3.1}, 0.5), is(true));
 	}
 
 	@Test
@@ -560,11 +588,11 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void removeAllDoublesArray() {
-		assertThat(empty.removeAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(false));
+		assertThat(empty.removeAllDoubles(new double[]{1.1, 1.9, 3.1, 17.1}, 0.5), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
-		assertThat(list.removeAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(true));
+		assertThat(list.removeAllDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
+		assertThat(list.removeAllDoubles(new double[]{1.1, 1.9, 3.1, 17.1}, 0.5), is(true));
 		assertThat(list, containsDoubles(4, 5));
 	}
 
@@ -628,10 +656,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void retainAllDoublesArray() {
-		assertThat(empty.retainAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(false));
+		assertThat(empty.retainAllDoubles(new double[]{1.1, 1.9, 3.1, 17.1}, 0.5), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllDoubles(new double[] { 1.1, 1.9, 3.1, 17.1 }, 0.5), is(true));
+		assertThat(list.retainAllDoubles(new double[]{1.1, 1.9, 3.1, 17.1}, 0.5), is(true));
 		assertThat(list, containsDoubles(1, 2, 3));
 	}
 

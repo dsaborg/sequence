@@ -214,6 +214,32 @@ public class ArrayLongListTest {
 	}
 
 	@Test
+	public void longStream() {
+		assertThat(empty.longStream().collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		           is(emptyIterable()));
+
+		assertThat(list.longStream().collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		           containsLongs(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void parallelLongStream() {
+		assertThat(empty.parallelLongStream()
+		                .collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		           is(emptyIterable()));
+
+		assertThat(list.parallelLongStream()
+		               .collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		           containsLongs(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void sequence() {
+		assertThat(empty.sequence(), is(emptyIterable()));
+		assertThat(list.sequence(), containsLongs(1, 2, 3, 4, 5));
+	}
+
+	@Test
 	public void lastIndexOfBoxed() {
 		assertThat(empty.lastIndexOf(17L), is(-1));
 

@@ -24,6 +24,7 @@ import org.d2ab.iterator.chars.ArrayCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ReaderCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.sequence.CharSeq;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -91,6 +92,13 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	default IntIterator intIterator() {
 		return IntIterator.from(iterator());
+	}
+
+	/**
+	 * @return a {@link CharSeq} over the {@code long} values in this {@code CharIterable}.
+	 */
+	default CharSeq sequence() {
+		return CharSeq.from(this);
 	}
 
 	/**

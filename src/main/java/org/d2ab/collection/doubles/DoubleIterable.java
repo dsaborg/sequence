@@ -18,6 +18,7 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.sequence.DoubleSequence;
 
 import java.util.PrimitiveIterator;
 import java.util.Spliterator;
@@ -87,6 +88,13 @@ public interface DoubleIterable extends Iterable<Double> {
 
 	default Spliterator.OfDouble spliterator() {
 		return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * @return a {@link DoubleSequence} over the {@code double} values in this {@code DoubleIterable}.
+	 */
+	default DoubleSequence sequence() {
+		return DoubleSequence.from(this);
 	}
 
 	default boolean isEmpty() {
