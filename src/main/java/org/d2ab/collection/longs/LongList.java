@@ -281,6 +281,6 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default Spliterator.OfLong spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
+		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 }

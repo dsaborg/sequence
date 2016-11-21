@@ -23,10 +23,15 @@ import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.chars.ArrayCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ReaderCharIterator;
+import org.d2ab.iterator.ints.IntIterator;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
@@ -62,24 +67,6 @@ public interface CharIterable extends Iterable<Character> {
 		};
 	}
 
-	@Override
-	CharIterator iterator();
-
-	/**
-	 * Perform the given action for each {@code char} in this iterable.
-	 */
-	default void forEachChar(CharConsumer consumer) {
-		iterator().forEachRemaining(consumer);
-	}
-
-	/**
-	 * Perform the given action for each {@code char} in this iterable.
-	 */
-	@Override
-	default void forEach(Consumer<? super Character> consumer) {
-		iterator().forEachRemaining(consumer);
-	}
-
 	static CharIterable of(char... characters) {
 		return () -> new ArrayCharIterator(characters);
 	}
@@ -96,6 +83,16 @@ public interface CharIterable extends Iterable<Character> {
 		return () -> iterator;
 	}
 
+	@Override
+	CharIterator iterator();
+
+	/**
+	 * @return an {@link IntIterator} over the characters in this {@code CharIterable} as {@code int} values.
+	 */
+	default IntIterator intIterator() {
+		return IntIterator.from(iterator());
+	}
+
 	/**
 	 * @return this {@code CharIterable} as a {@link Reader}. Mark and reset is supported, by re-traversing
 	 * the iterator to the mark position.
@@ -104,6 +101,33 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	default Reader asReader() {
 		return new CharIterableReader(this);
+	}
+
+	/**
+	 * Perform the given action for each {@code char} in this iterable.
+	 */
+	default void forEachChar(CharConsumer consumer) {
+		iterator().forEachRemaining(consumer);
+	}
+
+	/**
+	 * Perform the given action for each {@code char} in this iterable.
+	 */
+	@Override
+	default void forEach(Consumer<? super Character> consumer) {
+		iterator().forEachRemaining(consumer);
+	}
+
+	default IntStream intStream() {
+		return StreamSupport.intStream(intSpliterator(), false);
+	}
+
+	default IntStream parallelIntStream() {
+		return StreamSupport.intStream(intSpliterator(), true);
+	}
+
+	default Spliterator.OfInt intSpliterator() {
+		return Spliterators.spliteratorUnknownSize(intIterator(), Spliterator.NONNULL);
 	}
 
 	default boolean isEmpty() {

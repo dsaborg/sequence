@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A primitive specialization of {@link List} for {@code int} values.
@@ -281,6 +283,6 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default Spliterator.OfInt spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
+		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 }

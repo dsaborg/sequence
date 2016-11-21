@@ -19,6 +19,8 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Collectionz;
 
 import java.util.Collection;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Predicate;
 
 /**
@@ -110,5 +112,10 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	@Override
 	default boolean removeIf(Predicate<? super Character> filter) {
 		return removeCharsIf(filter::test);
+	}
+
+	@Override
+	default Spliterator.OfInt intSpliterator() {
+		return Spliterators.spliterator(intIterator(), size(), Spliterator.NONNULL);
 	}
 }

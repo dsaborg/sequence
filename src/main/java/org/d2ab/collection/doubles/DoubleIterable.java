@@ -16,7 +16,6 @@
 
 package org.d2ab.collection.doubles;
 
-import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
@@ -26,6 +25,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
+import java.util.stream.DoubleStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.contains;
@@ -74,6 +75,14 @@ public interface DoubleIterable extends Iterable<Double> {
 		DoubleIterator iterator = iterator();
 		while (iterator.hasNext())
 			consumer.accept(iterator.nextDouble());
+	}
+
+	default DoubleStream doubleStream() {
+		return StreamSupport.doubleStream(spliterator(), false);
+	}
+
+	default DoubleStream parallelDoubleStream() {
+		return StreamSupport.doubleStream(spliterator(), true);
 	}
 
 	default Spliterator.OfDouble spliterator() {

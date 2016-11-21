@@ -30,6 +30,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
@@ -104,6 +106,14 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	default void forEachInt(IntConsumer consumer) {
 		iterator().forEachRemaining(consumer);
+	}
+
+	default IntStream intStream() {
+		return StreamSupport.intStream(spliterator(), false);
+	}
+
+	default IntStream parallelIntStream() {
+		return StreamSupport.intStream(spliterator(), true);
 	}
 
 	default Spliterator.OfInt spliterator() {

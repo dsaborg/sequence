@@ -26,6 +26,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.function.LongPredicate;
+import java.util.stream.LongStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
@@ -70,6 +72,14 @@ public interface LongIterable extends Iterable<Long> {
 	 */
 	default void forEachLong(LongConsumer consumer) {
 		iterator().forEachRemaining(consumer);
+	}
+
+	default LongStream longStream() {
+		return StreamSupport.longStream(spliterator(), false);
+	}
+
+	default LongStream parallelLongStream() {
+		return StreamSupport.longStream(spliterator(), true);
 	}
 
 	default Spliterator.OfLong spliterator() {

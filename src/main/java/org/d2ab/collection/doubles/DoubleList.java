@@ -301,6 +301,6 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default Spliterator.OfDouble spliterator() {
-		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
+		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 }
