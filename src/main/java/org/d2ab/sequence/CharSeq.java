@@ -1214,30 +1214,6 @@ public interface CharSeq extends CharList {
 	}
 
 	/**
-	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
-	 *
-	 * @since 1.3
-	 */
-	default boolean containsAllChars(char... items) {
-		for (char item : items)
-			if (!iterator().contains(item))
-				return false;
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
-	 *
-	 * @since 1.3
-	 */
-	default boolean containsAnyChars(char... items) {
-		for (CharIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextChar()))
-				return true;
-		return false;
-	}
-
-	/**
 	 * Perform the given action for each {@code char} in this {@code CharSeq}, with the index of each element passed
 	 * as the second parameter in the action.
 	 *

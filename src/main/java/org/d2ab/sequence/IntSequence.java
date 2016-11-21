@@ -1318,6 +1318,15 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
+	 * @return true if this {@code IntSequence} is empty, false otherwise.
+	 *
+	 * @since 1.1
+	 */
+	default boolean isEmpty() {
+		return iterator().isEmpty();
+	}
+
+	/**
 	 * Perform the given action for each {@code int} in this {@code IntSequence}, with the index of each element passed
 	 * as the second parameter in the action.
 	 *
