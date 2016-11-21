@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.function.ints.CharToIntFunction;
+import org.d2ab.function.CharToIntFunction;
 import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Iterator;
@@ -47,11 +47,19 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return new ArrayIntIterator(ints);
 	}
 
-	static IntIterator from(Iterator<Integer> iterator) {
+	static IntIterator from(int[] ints, int size) {
+		return new ArrayIntIterator(ints, size);
+	}
+
+	static IntIterator from(int[] ints, int offset, int size) {
+		return new ArrayIntIterator(ints, offset, size);
+	}
+
+	static IntIterator from(Iterator<? extends Integer> iterator) {
 		if (iterator instanceof PrimitiveIterator.OfInt)
 			return from((PrimitiveIterator.OfInt) iterator);
 
-		return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
+		return new DelegatingIntIterator<Integer, Iterator<? extends Integer>>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.next();
@@ -138,8 +146,8 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return skip(1) == 1;
 	}
 
-	default long skip(long steps) {
-		long count = 0;
+	default int skip(int steps) {
+		int count = 0;
 		while (count < steps && hasNext()) {
 			nextInt();
 			count++;
@@ -147,30 +155,43 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		return count;
 	}
 
+	/**
+	 * @return the number of {@code ints} remaining in this iterator.
+	 */
+	default int count() {
+		long count = 0;
+		for (; hasNext(); nextInt())
+			count++;
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);
+
+		return (int) count;
+	}
+
+	default boolean isEmpty() {
+		return !hasNext();
+	}
+
+	default void removeAll() {
+		while (hasNext()) {
+			nextInt();
+			remove();
+		}
+	}
+
+	default boolean contains(int i) {
+		while (hasNext())
+			if (nextInt() == i)
+				return true;
+
+		return false;
+	}
+
 	default int reduce(int identity, IntBinaryOperator operator) {
 		int result = identity;
 		while (hasNext())
 			result = operator.applyAsInt(result, nextInt());
 		return result;
-	}
-
-	/**
-	 * @return true if this {@code IntIterator} contains the given {@code int}, false otherwise.
-	 */
-	default boolean contains(int i) {
-		while (hasNext())
-			if (nextInt() == i)
-				return true;
-		return false;
-	}
-
-	/**
-	 * @return the number of {@code ints} remaining in this iterator.
-	 */
-	default long count() {
-		long count = 0;
-		for (; hasNext(); nextInt())
-			count++;
-		return count;
 	}
 }

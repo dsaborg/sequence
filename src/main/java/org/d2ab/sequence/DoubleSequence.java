@@ -16,18 +16,16 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.doubles.DoubleBiPredicate;
-import org.d2ab.function.doubles.DoubleLongConsumer;
-import org.d2ab.function.doubles.DoubleLongPredicate;
-import org.d2ab.function.doubles.DoubleLongToDoubleFunction;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.doubles.ChainingDoubleIterable;
-import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.doubles.*;
+import org.d2ab.function.DoubleBiPredicate;
+import org.d2ab.function.DoubleIntConsumer;
+import org.d2ab.function.DoubleIntPredicate;
+import org.d2ab.function.DoubleIntToDoubleFunction;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.*;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
 
 import java.util.*;
 import java.util.function.*;
@@ -42,7 +40,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of doubles.
  */
 @FunctionalInterface
-public interface DoubleSequence extends DoubleIterable {
+public interface DoubleSequence extends DoubleList {
 	/**
 	 * Create empty {@code DoubleSequence} with no contents.
 	 */
@@ -126,60 +124,6 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Create a once-only {@code DoubleSequence} from a {@link PrimitiveIterator.OfDouble} of double values. Note that
-	 * {@code DoubleSequence}s created from {@link PrimitiveIterator.OfDouble}s cannot be passed over more than once.
-	 * Further attempts will register the {@code DoubleSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfDouble)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfDouble)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(PrimitiveIterator.OfDouble iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code DoubleSequence} from an {@link Iterator} of {@code Double} values. Note that
-	 * {@code DoubleSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts
-	 * will register the {@code DoubleSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(Iterator<Double> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code DoubleSequence} from a {@link DoubleStream} of items. Note that
-	 * {@code DoubleSequence}s created from {@link DoubleStream}s cannot be passed over more than once. Further
-	 * attempts will register the {@code DoubleSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link DoubleStream} is exhausted.
-	 * @see #cache(DoubleStream)
-	 * @deprecated Use {@link #once(DoubleStream)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(DoubleStream stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a once-only {@code DoubleSequence} from a {@link Stream} of items. Note that {@code DoubleSequence}s
-	 * created from {@link Stream}s cannot be passed over more than once. Further attempts will register the
-	 * {@code DoubleSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static DoubleSequence from(Stream<Double> stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create a {@code DoubleSequence} from a cached copy of a {@link PrimitiveIterator.OfDouble}.
 	 *
 	 * @see #cache(Iterator)
@@ -191,17 +135,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(PrimitiveIterator.OfDouble iterator) {
-		double[] cache = new double[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			double next = iterator.nextDouble();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(DoubleList.copy(iterator));
 	}
 
 	/**
@@ -550,9 +484,9 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default DoubleSequence mapIndexed(DoubleLongToDoubleFunction mapper) {
+	default DoubleSequence mapIndexed(DoubleIntToDoubleFunction mapper) {
 		return () -> new UnaryDoubleIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public double nextDouble() {
@@ -578,7 +512,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
 	 */
-	default DoubleSequence skip(long skip) {
+	default DoubleSequence skip(int skip) {
 		return () -> new SkippingDoubleIterator(iterator(), skip);
 	}
 
@@ -597,7 +531,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
-	default DoubleSequence limit(long limit) {
+	default DoubleSequence limit(int limit) {
 		return () -> new LimitingDoubleIterator(iterator(), limit);
 	}
 
@@ -673,11 +607,11 @@ public interface DoubleSequence extends DoubleIterable {
 
 	/**
 	 * Filter the elements in this {@code DoubleSequence}, keeping only the elements that match the given
-	 * {@link DoubleLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link DoubleIntPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default DoubleSequence filterIndexed(DoubleLongPredicate predicate) {
+	default DoubleSequence filterIndexed(DoubleIntPredicate predicate) {
 		return () -> new IndexedFilteringDoubleIterator(iterator(), predicate);
 	}
 
@@ -710,35 +644,18 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
 	 * compared to the given precision.
 	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #including(double[], double)} instead.
+	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
-	@Deprecated
-	default DoubleSequence including(double precision, double... elements) {
-		return filter(e -> Arrayz.contains(elements, e, precision));
-	}
-
-	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array,
-	 * compared to the given precision.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #excluding(double[], double)} instead.
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	default DoubleSequence excluding(double precision, double... elements) {
-		return filter(e -> !Arrayz.contains(elements, e, precision));
+	default DoubleSequence includingExactly(double... elements) {
+		return filter(e -> Arrayz.containsExactly(elements, e));
 	}
 
 	/**
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
-	 * compared to the given precision.
+	 * compared with the given precision.
 	 *
-	 * @since 1.3
+	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
 	default DoubleSequence including(double[] elements, double precision) {
@@ -749,11 +666,67 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array,
 	 * compared to the given precision.
 	 *
-	 * @since 1.3
+	 * @since 2.0
+	 */
+	@SuppressWarnings("unchecked")
+	default DoubleSequence excludingExactly(double... elements) {
+		return filter(e -> !Arrayz.containsExactly(elements, e));
+	}
+
+	/**
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} not found in the given target array,
+	 * compared with the given precision.
+	 *
+	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
 	default DoubleSequence excluding(double[] elements, double precision) {
 		return filter(e -> !Arrayz.contains(elements, e, precision));
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList}.
+	 */
+	default DoubleList toList() {
+		return toList(ArrayDoubleList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList} of the type determined by the
+	 * given constructor.
+	 */
+	default DoubleList toList(Supplier<? extends DoubleList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleSet}.
+	 */
+	default DoubleSet toSet() {
+		return toSet(RawDoubleSet::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleSet} of the type determined by the
+	 * given constructor.
+	 */
+	default <S extends DoubleSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleSortedSet}.
+	 */
+	default DoubleSortedSet toSortedSet() {
+		return toSet(SortedListDoubleSet::new);
+	}
+
+	/**
+	 * Collect this {@code DoubleSequence} into an {@link DoubleCollection} of the type determined by the given
+	 * constructor.
+	 */
+	default <U extends DoubleCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
 	}
 
 	/**
@@ -764,10 +737,18 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
+	 * Collect this {@code DoubleSequence} into the given {@link DoubleCollection}.
+	 */
+	default <U extends DoubleCollection> U collectInto(U collection) {
+		collection.addAllDoubles(this);
+		return collection;
+	}
+
+	/**
 	 * Collect this {@code DoubleSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjDoubleConsumer<? super C> adder) {
-		forEachDouble(d -> adder.accept(result, d));
+		forEachDouble(x -> adder.accept(result, x));
 		return result;
 	}
 
@@ -827,28 +808,6 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * @return the second double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
-	 * than two doubles in the {@code DoubleSequence}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default OptionalDouble second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are less
-	 * than three doubles in the {@code DoubleSequence}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default OptionalDouble third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are no
 	 * doubles in the {@code DoubleSequence}.
 	 */
@@ -870,7 +829,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalDouble at(long index) {
+	default OptionalDouble at(int index) {
 		DoubleIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -885,7 +844,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
+	 * @see #at(int, DoublePredicate)
 	 * @since 1.2
 	 */
 	default OptionalDouble first(DoublePredicate predicate) {
@@ -893,39 +852,11 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * @return the second double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are less than two matching doubles in the {@code DoubleSequence}.
-	 *
-	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, DoublePredicate)} instead.
-	 */
-	@Deprecated
-	default OptionalDouble second(DoublePredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are less than three matching doubles in the {@code DoubleSequence}.
-	 *
-	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, DoublePredicate)} instead.
-	 */
-	@Deprecated
-	default OptionalDouble third(DoublePredicate predicate) {
-		return at(2, predicate);
-	}
-
-	/**
 	 * @return the last double of those in this {@code DoubleSequence} matching the given predicate, or an empty
 	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
-	 * @see #at(long, DoublePredicate)
+	 * @see #at(int, DoublePredicate)
 	 * @since 1.2
 	 */
 	default OptionalDouble last(DoublePredicate predicate) {
@@ -939,29 +870,44 @@ public interface DoubleSequence extends DoubleIterable {
 	 * @see #filter(DoublePredicate)
 	 * @since 1.2
 	 */
-	default OptionalDouble at(long index, DoublePredicate predicate) {
+	default OptionalDouble at(int index, DoublePredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
 	 */
-	default DoubleSequence step(long step) {
+	default DoubleSequence step(int step) {
 		return () -> new SteppingDoubleIterator(iterator(), step);
+	}
+
+	/**
+	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered,
+	 * compared to the given precision.
+	 */
+	default DoubleSequence distinct(double precision) {
+		return () -> new DistinctDoubleIterator(iterator(), precision);
+	}
+
+	/**
+	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered.
+	 */
+	default DoubleSequence distinctExactly() {
+		return () -> new DistinctExactlyDoubleIterator(iterator());
 	}
 
 	/**
 	 * @return the smallest double in this {@code DoubleSequence}.
 	 */
 	default OptionalDouble min() {
-		return reduce((a, b) -> (a < b) ? a : b);
+		return reduce(Math::min);
 	}
 
 	/**
 	 * @return the greatest double in this {@code DoubleSequence}.
 	 */
 	default OptionalDouble max() {
-		return reduce((a, b) -> (a > b) ? a : b);
+		return reduce(Math::max);
 	}
 
 	/**
@@ -969,18 +915,8 @@ public interface DoubleSequence extends DoubleIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
+	default int size() {
 		return iterator().count();
-	}
-
-	/**
-	 * @return the count of doubles in this {@code DoubleSequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
 	}
 
 	/**
@@ -1025,14 +961,14 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Allow the given {@link DoubleLongConsumer} to see each element together with its index in this
+	 * Allow the given {@link DoubleIntConsumer} to see each element together with its index in this
 	 * {@code DoubleSequence} as it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default DoubleSequence peekIndexed(DoubleLongConsumer action) {
+	default DoubleSequence peekIndexed(DoubleIntConsumer action) {
 		return () -> new UnaryDoubleIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public double nextDouble() {
@@ -1050,37 +986,10 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default DoubleSequence sorted() {
 		return () -> {
-			double[] array = toArray();
+			double[] array = toDoubleArray();
 			Arrays.sort(array);
 			return DoubleIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the doubles in this {@code DoubleSequence} into an array.
-	 */
-	default double[] toArray() {
-		double[] work = new double[10];
-
-		int index = 0;
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				double[] newDoubles = new double[newCapacity];
-				System.arraycopy(work, 0, newDoubles, 0, work.length);
-				work = newDoubles;
-			}
-			work[index++] = iterator.nextDouble();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		double[] result = new double[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
 	}
 
 	/**
@@ -1112,7 +1021,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 */
 	default DoubleSequence reverse() {
 		return () -> {
-			double[] array = toArray();
+			double[] array = toDoubleArray();
 			Arrayz.reverse(array);
 			return DoubleIterator.of(array);
 		};
@@ -1200,7 +1109,7 @@ public interface DoubleSequence extends DoubleIterable {
 	/**
 	 * Repeat this sequence of doubles x times, looping back to the beginning when the iterator runs out of doubles.
 	 */
-	default DoubleSequence repeat(long times) {
+	default DoubleSequence repeat(int times) {
 		return () -> new RepeatingDoubleIterator(this, times);
 	}
 
@@ -1240,7 +1149,7 @@ public interface DoubleSequence extends DoubleIterable {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<DoubleSequence> batch(DoubleBiPredicate predicate) {
-		return () -> new PredicatePartitioningDoubleIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningDoubleIterator(iterator(), predicate);
 	}
 
 	/**
@@ -1267,117 +1176,22 @@ public interface DoubleSequence extends DoubleIterable {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
 	 * @return true if this {@code DoubleSequence} is empty, false otherwise.
 	 *
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return iterator().isEmpty();
 	}
 
 	/**
-	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
+	 * Perform the given action for each {@code double} in this {@code DoubleSequence}, with the index of each element
+	 * passed as the second parameter in the action.
 	 *
 	 * @since 1.2
 	 */
-	default boolean containsDouble(double d, double precision) {
-		return iterator().contains(d, precision);
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains the given {@code double}, false otherwise.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #containsDouble(double, double)} instead.
-	 */
-	@Deprecated
-	default boolean contains(double d, double precision) {
-		return containsDouble(d, precision);
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
-	 * precision, false otherwise.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #containsAllDoubles(double[], double)} instead.
-	 */
-	@Deprecated
-	default boolean containsAll(double precision, double... items) {
-		for (double item : items)
-			if (!iterator().contains(item, precision))
-				return false;
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #containsAnyDoubles(double[], double)} instead.
-	 */
-	@Deprecated
-	default boolean containsAny(double precision, double... items) {
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextDouble(), precision))
-				return true;
-		return false;
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains all of the given {@code doubles} compared to the given
-	 * precision, false otherwise.
-	 *
-	 * @since 1.3
-	 */
-	default boolean containsAllDoubles(double[] items, double precision) {
-		for (double item : items)
-			if (!iterator().contains(item, precision))
-				return false;
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code DoubleSequence} contains any of the given {@code doubles}, false otherwise.
-	 *
-	 * @since 1.3
-	 */
-	default boolean containsAnyDoubles(double[] items, double precision) {
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextDouble(), precision))
-				return true;
-		return false;
-	}
-
-	/**
-	 * Perform the given action for each {@code double} in this {@code DoubleSequence}, with the index of each element passed
-	 * as the second parameter in the action.
-	 *
-	 * @since 1.2
-	 */
-	default void forEachDoubleIndexed(DoubleLongConsumer action) {
-		long index = 0;
+	default void forEachDoubleIndexed(DoubleIntConsumer action) {
+		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextDouble(), index++);
 	}

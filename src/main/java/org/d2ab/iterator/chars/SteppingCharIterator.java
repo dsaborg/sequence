@@ -19,12 +19,12 @@ package org.d2ab.iterator.chars;
 import java.util.NoSuchElementException;
 
 public class SteppingCharIterator extends UnaryCharIterator {
-	private final long step;
+	private final int step;
 
 	private boolean hasNext;
 	private char next;
 
-	public SteppingCharIterator(CharIterator iterator, long step) {
+	public SteppingCharIterator(CharIterator iterator, int step) {
 		super(iterator);
 		this.step = step;
 	}

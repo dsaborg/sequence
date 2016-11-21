@@ -19,11 +19,11 @@ package org.d2ab.iterator.doubles;
 import java.util.NoSuchElementException;
 
 public class SkippingDoubleIterator extends UnaryDoubleIterator {
-	private final long skip;
+	private final int skip;
 
 	private boolean skipped;
 
-	public SkippingDoubleIterator(DoubleIterator iterator, long skip) {
+	public SkippingDoubleIterator(DoubleIterator iterator, int skip) {
 		super(iterator);
 		this.skip = skip;
 	}

@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.util.primitive.Doubles;
+import org.d2ab.collection.doubles.DoubleComparator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -27,7 +27,7 @@ import java.util.function.LongToDoubleFunction;
 import java.util.function.ToDoubleFunction;
 
 /**
- * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
+ * An Iterator specialized for {@code double} values. Extends {@link PrimitiveIterator.OfDouble} with helper methods.
  */
 public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	DoubleIterator EMPTY = new DoubleIterator() {
@@ -116,15 +116,27 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		};
 	}
 
-	default void skip() {
-		skip(1);
+	default boolean skip() {
+		return skip(1) == 1;
 	}
 
-	default void skip(double steps) {
-		double count = 0;
-		while ((count++ < steps) && hasNext()) {
+	default int skip(int steps) {
+		int count = 0;
+		while (count < steps && hasNext()) {
 			nextDouble();
+			count++;
 		}
+		return count;
+	}
+
+	/**
+	 * @return the number of {@code doubles} remaining in this iterator.
+	 */
+	default int count() {
+		int count = 0;
+		for (; hasNext(); nextDouble())
+			count++;
+		return count;
 	}
 
 	default double reduce(double identity, DoubleBinaryOperator operator) {
@@ -139,18 +151,20 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	 */
 	default boolean contains(double d, double precision) {
 		while (hasNext())
-			if (Doubles.equal(nextDouble(), d, precision))
+			if (DoubleComparator.equals(nextDouble(), d, precision))
 				return true;
+
 		return false;
 	}
 
-	/**
-	 * @return the number of {@code doubles} remaining in this iterator.
-	 */
-	default long count() {
-		long count = 0;
-		for (; hasNext(); nextDouble())
-			count++;
-		return count;
+	default boolean isEmpty() {
+		return !hasNext();
+	}
+
+	default void removeAll() {
+		while (hasNext()) {
+			nextDouble();
+			remove();
+		}
 	}
 }

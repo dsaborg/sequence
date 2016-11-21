@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharPredicate;
+import org.d2ab.function.CharPredicate;
 
 import java.util.NoSuchElementException;
 

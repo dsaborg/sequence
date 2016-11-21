@@ -30,7 +30,7 @@
 
 package org.d2ab.test;
 
-import org.d2ab.iterable.longs.LongIterable;
+import org.d2ab.collection.longs.LongIterable;
 import org.d2ab.iterator.longs.LongIterator;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

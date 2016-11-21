@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.function.longs.LongBiPredicate;
+import org.d2ab.function.LongBiPredicate;
 
 import java.util.NoSuchElementException;
 

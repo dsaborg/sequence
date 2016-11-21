@@ -16,10 +16,11 @@
 
 package org.d2ab.iterator.longs;
 
+import org.d2ab.collection.longs.ArrayLongList;
+import org.d2ab.collection.longs.LongList;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.LongSequence;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.LongPredicate;
@@ -45,21 +46,15 @@ public class SplittingLongIterator extends DelegatingIterator<Long, LongIterator
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int position = 0;
-		long[] buffer = new long[10];
+		LongList buffer = new ArrayLongList();
 		while (iterator.hasNext()) {
 			long next = iterator.nextLong();
 			if (predicate.test(next))
 				break;
-			if (buffer.length == position)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[position++] = next;
+			buffer.addLong(next);
 		}
 
-		if (position < buffer.length)
-			buffer = Arrays.copyOf(buffer, position);
-
-		return LongSequence.of(buffer);
+		return LongSequence.from(buffer);
 	}
 
 	@Override

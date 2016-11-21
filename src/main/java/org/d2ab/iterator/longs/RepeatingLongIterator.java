@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.iterable.longs.LongIterable;
+import org.d2ab.collection.longs.LongIterable;
 
 import java.util.NoSuchElementException;
 
@@ -28,10 +28,10 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingLongIterator extends UnaryLongIterator {
 	private final LongIterable iterable;
-	private long times;
+	private int times;
 
-	public RepeatingLongIterator(LongIterable iterable, long times) {
-		super(LongIterator.EMPTY);
+	public RepeatingLongIterator(LongIterable iterable, int times) {
+		super(EMPTY);
 		this.iterable = iterable;
 		this.times = times;
 	}

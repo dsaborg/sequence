@@ -16,19 +16,15 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Lists;
-import org.d2ab.collection.Maps;
-import org.d2ab.function.ObjLongFunction;
-import org.d2ab.function.ObjLongPredicate;
-import org.d2ab.function.chars.ToCharFunction;
-import org.d2ab.iterable.ChainingIterable;
-import org.d2ab.iterable.Iterables;
+import org.d2ab.collection.*;
+import org.d2ab.function.ObjIntFunction;
+import org.d2ab.function.ObjIntPredicate;
+import org.d2ab.function.ToCharFunction;
 import org.d2ab.iterator.*;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Arrayz;
 import org.d2ab.util.Pair;
 
 import java.util.*;
@@ -37,7 +33,6 @@ import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
@@ -47,7 +42,7 @@ import static java.util.function.BinaryOperator.minBy;
  * the list of elements.
  */
 @FunctionalInterface
-public interface Sequence<T> extends Iterable<T> {
+public interface Sequence<T> extends IterableList<T> {
 	/**
 	 * Create an empty {@code Sequence} with no items.
 	 *
@@ -133,23 +128,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
-	 * the stream of items in the {@code Sequence}.
-	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
-	 *
-	 * @deprecated Use {@link #concat(Iterable...)} instead.
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	@SafeVarargs
-	static <T> Sequence<T> from(Iterable<T>... iterables) {
-		return concat(iterables);
-	}
-
-	/**
 	 * Create a one-pass-only {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created
 	 * from {@link Iterator}s will be exhausted when the given iterator has been passed over. Further attempts will
 	 * register the {@code Sequence} as empty. If the sequence is terminated partway through iteration, further
@@ -184,41 +162,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static <T> Sequence<T> once(Stream<T> stream) {
 		return once(stream.iterator());
-	}
-
-	/**
-	 * Create a once-only {@code Sequence} from an {@link Iterator} of items. Note that {@code Sequences} created from
-	 * {@link Iterator}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
-	 * empty.
-	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
-	 * @see #cache(Iterator)
-	 *
-	 * @deprecated Use {@link Sequence#once(Iterator)} instead.
-	 */
-	@Deprecated
-	static <T> Sequence<T> from(Iterator<T> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code Sequence} as
-	 * empty.
-	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
-	 * @see #from(Iterable)
-	 * @see #once(Iterator)
-	 * @see #cache(Stream)
-	 *
-	 * @deprecated Use {@link Sequence#once(Stream)} instead.
-	 */
-	@Deprecated
-	static <T> Sequence<T> from(Stream<T> stream) {
-		return once(stream);
 	}
 
 	/**
@@ -306,23 +249,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #ints()
 	 * @see #range(int, int)
 	 *
-	 * @deprecated Use {@link #intsFrom(int)} instead.
-	 */
-	@Deprecated
-	static Sequence<Integer> ints(int start) {
-		return intsFrom(start);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Integer} numbers starting at the given start and ending at {@link
-	 * Integer#MAX_VALUE} inclusive.
-	 * <p>
-	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
-	 * eventually {@link Integer#MAX_VALUE}.
-	 *
-	 * @see #ints()
-	 * @see #range(int, int)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Integer> intsFrom(int start) {
@@ -378,24 +304,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 * @see #longsFromZero()
 	 * @see #range(long, long)
 	 *
-	 * @deprecated Use {@link #longsFrom(long)} instead
-	 */
-	@Deprecated
-	static Sequence<Long> longs(long start) {
-		return longsFrom(start);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Long} numbers starting at the given value and ending at {@link
-	 * Long#MAX_VALUE} inclusive.
-	 * <p>
-	 * The start value may be negative, in which case the sequence will continue towards positive numbers and
-	 * eventually {@link Long#MAX_VALUE}.
-	 *
-	 * @see #longs()
-	 * @see #longsFromZero()
-	 * @see #range(long, long)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Long> longsFrom(long start) {
@@ -425,20 +333,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	static Sequence<Character> chars() {
 		return range(Character.MIN_VALUE, Character.MAX_VALUE);
-	}
-
-	/**
-	 * A {@code Sequence} of all the {@link Character} values starting at the given value and ending at {@link
-	 * Character#MAX_VALUE} inclusive.
-	 *
-	 * @see #chars()
-	 * @see #range(char, char)
-	 *
-	 * @deprecated Use {@link #charsFrom(char)} instead.
-	 */
-	@Deprecated
-	static Sequence<Character> chars(char start) {
-		return charsFrom(start);
 	}
 
 	/**
@@ -687,7 +581,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 *
-	 * @see #mapIndexed(ObjLongFunction)
+	 * @see #mapIndexed(ObjIntFunction)
 	 * @see #mapBack(BiFunction)
 	 * @see #mapForward(BiFunction)
 	 * @see #flatten()
@@ -717,7 +611,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default <U> Sequence<U> mapIndexed(ObjLongFunction<? super T, ? extends U> mapper) {
+	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -787,7 +681,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */
-	default Sequence<T> skip(long skip) {
+	default Sequence<T> skip(int skip) {
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
@@ -796,17 +690,17 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.1
 	 */
-	default Sequence<T> skipTail(long skip) {
+	default Sequence<T> skipTail(int skip) {
 		if (skip == 0)
 			return this;
 
-		return () -> new TailSkippingIterator<>(iterator(), (int) skip);
+		return () -> new TailSkippingIterator<>(iterator(), skip);
 	}
 
 	/**
 	 * Limit the maximum number of results returned by this {@code Sequence}.
 	 */
-	default Sequence<T> limit(long limit) {
+	default Sequence<T> limit(int limit) {
 		return () -> new LimitingIterator<>(iterator(), limit);
 	}
 
@@ -858,11 +752,11 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given
-	 * {@link ObjLongPredicate}, which is passed the current element and its index in the sequence.
+	 * {@link ObjIntPredicate}, which is passed the current element and its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default Sequence<T> filterIndexed(ObjLongPredicate<? super T> predicate) {
+	default Sequence<T> filterIndexed(ObjIntPredicate<? super T> predicate) {
 		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
 	}
 
@@ -1002,13 +896,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Collect the elements in this {@code Sequence} into an array.
-	 */
-	default Object[] toArray() {
-		return toList().toArray();
-	}
-
-	/**
 	 * Collect the elements in this {@code Sequence} into an array of the type determined by the given array
 	 * constructor.
 	 */
@@ -1143,7 +1030,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Collect this {@code Sequence} into the given {@link Collection}.
 	 */
 	default <U extends Collection<T>> U collectInto(U collection) {
-		return collectInto(collection, Collection::add);
+		collection.addAll(this);
+		return collection;
 	}
 
 	/**
@@ -1159,9 +1047,11 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
 	 *
 	 * @since 1.2
+	 * @deprecated Use the sequence directly as a {@link List} instead.
 	 */
+	@Deprecated
 	default List<T> asList() {
-		return Iterables.asList(this);
+		return this;
 	}
 
 	/**
@@ -1223,28 +1113,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * @return the second element of this {@code Sequence} or an empty {@link Optional} if there is one or less
-	 * elements in the {@code Sequence}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default Optional<T> second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third element of this {@code Sequence} or an empty {@link Optional} if there is two or less
-	 * elements in the {@code Sequence}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default Optional<T> third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no
 	 * elements in the {@code Sequence}.
 	 */
@@ -1258,19 +1126,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> at(long index) {
+	default Optional<T> at(int index) {
 		return Iterators.get(iterator(), index);
-	}
-
-	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than
-	 * the index.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default Optional<T> get(long index) {
-		return at(index);
 	}
 
 	/**
@@ -1281,30 +1138,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default Optional<T> first(Predicate<? super T> predicate) {
 		return at(0, predicate);
-	}
-
-	/**
-	 * @return the second element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, Predicate)} instead.
-	 */
-	@Deprecated
-	default Optional<T> second(Predicate<? super T> predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, Predicate)} instead.
-	 */
-	@Deprecated
-	default Optional<T> third(Predicate<? super T> predicate) {
-		return at(2, predicate);
 	}
 
 	/**
@@ -1323,7 +1156,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default Optional<T> at(long index, Predicate<? super T> predicate) {
+	default Optional<T> at(int index, Predicate<? super T> predicate) {
 		return filter(predicate).at(index);
 	}
 
@@ -1335,30 +1168,6 @@ public interface Sequence<T> extends Iterable<T> {
 	 */
 	default <U> Optional<U> first(Class<? extends U> target) {
 		return at(0, target);
-	}
-
-	/**
-	 * @return the second element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
-	 * {@link Optional} if there is one or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, Class)} instead.
-	 */
-	@Deprecated
-	default <U> Optional<U> second(Class<? extends U> target) {
-		return at(1, target);
-	}
-
-	/**
-	 * @return the third element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
-	 * {@link Optional} if there is two or less matching elements in the {@code Sequence}.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, Class)} instead.
-	 */
-	@Deprecated
-	default <U> Optional<U> third(Class<? extends U> target) {
-		return at(2, target);
 	}
 
 	/**
@@ -1378,7 +1187,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default <U> Optional<U> at(long index, Class<? extends U> target) {
+	@SuppressWarnings("unchecked")
+	default <U> Optional<U> at(int index, Class<? extends U> target) {
 		return (Optional<U>) at(index, target::isInstance);
 	}
 
@@ -1468,18 +1278,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Partition the elements of this {@code Sequence} into a sequence of {@code Sequence}s of elements, each with the
-	 * size of the given window. The first item in each sequence is the second item in the previous sequence. The final
-	 * sequence may be shorter than the window. This method is equivalent to {@code window(window)}.
-	 *
-	 * @deprecated Use {@link #window(int)} instead.
-	 */
-	@Deprecated
-	default Sequence<Sequence<T>> partition(int window) {
-		return window(window);
-	}
-
-	/**
 	 * Window the elements of this {@code Sequence} into a sequence of {@code Sequence}s of elements, each with the
 	 * size of the given window, stepping {@code step} elements between each window. If the given step is less than the
 	 * window size, the windows will overlap each other. If the step is larger than the window size, elements will be
@@ -1550,7 +1348,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
-	default Sequence<T> step(long step) {
+	default Sequence<T> step(int step) {
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
@@ -1615,32 +1413,6 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * @return the count of elements in this {@code Sequence}.
-	 *
-	 * @since 1.2
-	 */
-	default long size() {
-		return Iterables.count(this);
-	}
-
-	/**
-	 * @return the count of elements in this {@code Sequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
-	}
-
-	/**
-	 * @return this {@code Sequence} as a {@link Stream}.
-	 */
-	default Stream<T> stream() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
-	/**
 	 * @return true if all elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(Predicate<? super T> predicate) {
@@ -1696,12 +1468,12 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Allow the given {@link ObjLongConsumer} to see each element with its index as this {@code Sequence} is
+	 * Allow the given {@link ObjIntConsumer} to see each element with its index as this {@code Sequence} is
 	 * traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default Sequence<T> peekIndexed(ObjLongConsumer<? super T> action) {
+	default Sequence<T> peekIndexed(ObjIntConsumer<? super T> action) {
 		return () -> new IndexPeekingIterator<>(iterator(), action);
 	}
 
@@ -1911,7 +1683,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Repeat this {@code Sequence} the given number of times.
 	 */
-	default Sequence<T> repeat(long times) {
+	default Sequence<T> repeat(int times) {
 		return () -> new RepeatingIterator<>(this, times);
 	}
 
@@ -1925,52 +1697,15 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * @return a {@link BiSequence} of this sequence paired up with the index of each element.
 	 */
-	default BiSequence<Long, T> index() {
-		return () -> new DelegatingReferenceIterator<T, Pair<Long, T>>(iterator()) {
-			private long index;
+	default BiSequence<Integer, T> index() {
+		return () -> new DelegatingReferenceIterator<T, Pair<Integer, T>>(iterator()) {
+			private int index;
 
 			@Override
-			public Pair<Long, T> next() {
+			public Pair<Integer, T> next() {
 				return Pair.of(index++, iterator.next());
 			}
 		};
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
-	 * @return true if this {@code Sequence} is empty, false otherwise.
-	 *
-	 * @since 1.1
-	 */
-	default boolean isEmpty() {
-		return !iterator().hasNext();
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains the given item, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean contains(T item) {
-		return Iterables.contains(this, item);
 	}
 
 	/**
@@ -2019,8 +1754,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachIndexed(ObjLongConsumer<? super T> action) {
-		long index = 0;
+	default void forEachIndexed(ObjIntConsumer<? super T> action) {
+		int index = 0;
 		for (T each : this)
 			action.accept(each, index++);
 	}

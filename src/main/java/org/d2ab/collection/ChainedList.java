@@ -17,7 +17,6 @@
 package org.d2ab.collection;
 
 import org.d2ab.iterator.ChainingIterator;
-import org.d2ab.iterator.list.ChainedListIterator;
 
 import java.util.*;
 

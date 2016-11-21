@@ -16,18 +16,14 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.chars.LongToCharFunction;
-import org.d2ab.function.longs.LongBiConsumer;
-import org.d2ab.function.longs.LongBiPredicate;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.longs.ChainingLongIterable;
-import org.d2ab.iterable.longs.LongIterable;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.longs.*;
+import org.d2ab.function.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.longs.*;
-import org.d2ab.util.Arrayz;
 
 import java.util.*;
 import java.util.function.*;
@@ -41,7 +37,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of longs.
  */
 @FunctionalInterface
-public interface LongSequence extends LongIterable {
+public interface LongSequence extends LongList {
 	/**
 	 * Create empty {@code LongSequence} with no contents.
 	 */
@@ -50,10 +46,25 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Create a {@code LongSequence} with the given longs.
+	 * Create a {@code LongSequence} with the given {@code longs}.
 	 */
 	static LongSequence of(long... ls) {
-		return () -> new ArrayLongIterator(ls);
+		return () -> LongIterator.of(ls);
+	}
+
+	/**
+	 * Create a {@code LongSequence} with the given {@code longs}, limited to the given size.
+	 */
+	static LongSequence from(long[] ls, int size) {
+		return () -> LongIterator.from(ls, size);
+	}
+
+	/**
+	 * Create a {@code LongSequence} with the given {@code longs}, reading from the given offset and limited to the
+	 * given size.
+	 */
+	static LongSequence from(long[] ls, int offset, int size) {
+		return () -> LongIterator.from(ls, offset, size);
 	}
 
 	/**
@@ -125,60 +136,6 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Create a once-only {@code LongSequence} from a {@link PrimitiveIterator.OfLong} of long values. Note that {@code
-	 * LongSequence}s created from {@link PrimitiveIterator.OfLong}s cannot be passed over more than once. Further
-	 * attempts will register the {@code LongSequence} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfLong)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfLong)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(PrimitiveIterator.OfLong iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code LongSequence} from an {@link Iterator} of {@code Long} values. Note that
-	 * {@code LongSequence}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code LongSequence} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated Use {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(Iterator<Long> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only @code Sequence} from a {@link LongStream} of items. Note that {@code Sequences} created from
-	 * {@link LongStream}s cannot be passed over more than once. Further attempts will register the
-	 * {@code LongSequence} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(LongStream)
-	 * @deprecated Use {@link #once(LongStream)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(LongStream stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a once-only {@code Sequence} from a {@link Stream} of items. Note that {@code Sequences} created from
-	 * {@link Stream}s cannot be passed over more than once. Further attempts will register the {@code LongSequence} as
-	 * empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static LongSequence from(Stream<Long> stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create a {@code LongSequence} from a cached copy of a {@link PrimitiveIterator.OfLong}.
 	 *
 	 * @see #cache(Iterator)
@@ -190,17 +147,7 @@ public interface LongSequence extends LongIterable {
 	 * @since 1.1
 	 */
 	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
-		long[] cache = new long[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			long next = iterator.nextLong();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(LongList.copy(iterator));
 	}
 
 	/**
@@ -694,9 +641,9 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default LongSequence mapIndexed(LongBinaryOperator mapper) {
+	default LongSequence mapIndexed(LongIntToLongFunction mapper) {
 		return () -> new UnaryLongIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public long nextLong() {
@@ -746,7 +693,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Skip a set number of {@code longs} in this {@code LongSequence}.
 	 */
-	default LongSequence skip(long skip) {
+	default LongSequence skip(int skip) {
 		return () -> new SkippingLongIterator(iterator(), skip);
 	}
 
@@ -765,7 +712,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
 	 */
-	default LongSequence limit(long limit) {
+	default LongSequence limit(int limit) {
 		return () -> new LimitingLongIterator(iterator(), limit);
 	}
 
@@ -836,11 +783,11 @@ public interface LongSequence extends LongIterable {
 
 	/**
 	 * Filter the elements in this {@code LongSequence}, keeping only the elements that match the given
-	 * {@link LongBiPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link LongIntPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default LongSequence filterIndexed(LongBiPredicate predicate) {
+	default LongSequence filterIndexed(LongIntPredicate predicate) {
 		return () -> new IndexedFilteringLongIterator(iterator(), predicate);
 	}
 
@@ -888,6 +835,52 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongList}.
+	 */
+	default LongList toList() {
+		return toList(ArrayLongList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongList} of the type determined by the given
+	 * constructor.
+	 */
+	default LongList toList(Supplier<? extends LongList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongSet}.
+	 *
+	 * @see #toSortedSet()
+	 */
+	default LongSet toSet() {
+		return toSortedSet();
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongSet} of the type determined by the given
+	 * constructor.
+	 */
+	default <S extends LongSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code LongSequence} into an {@link LongSortedSet}.
+	 */
+	default LongSortedSet toSortedSet() {
+		return toSet(BitLongSet::new);
+	}
+
+	/**
+	 * Collect this {@code LongSequence} into an {@link LongCollection} of the type determined by the given constructor.
+	 */
+	default <U extends LongCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
+	}
+
+	/**
 	 * Collect this {@code LongSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
@@ -895,10 +888,18 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
+	 * Collect this {@code LongSequence} into the given {@link LongCollection}.
+	 */
+	default <U extends LongCollection> U collectInto(U collection) {
+		collection.addAllLongs(this);
+		return collection;
+	}
+
+	/**
 	 * Collect this {@code LongSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjLongConsumer<? super C> adder) {
-		forEachLong(l -> adder.accept(result, l));
+		forEachLong(x -> adder.accept(result, x));
 		return result;
 	}
 
@@ -957,28 +958,6 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * @return the second long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than two
-	 * longs in the {@code LongSequence}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default OptionalLong second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third long of this {@code LongSequence} or an empty {@link OptionalLong} if there are less than
-	 * three longs in the {@code LongSequence}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default OptionalLong third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
 	 * longs in the {@code LongSequence}.
 	 */
@@ -1000,7 +979,7 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalLong at(long index) {
+	default OptionalLong at(int index) {
 		LongIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -1015,7 +994,7 @@ public interface LongSequence extends LongIterable {
 	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
+	 * @see #at(int, LongPredicate)
 	 * @since 1.2
 	 */
 	default OptionalLong first(LongPredicate predicate) {
@@ -1023,39 +1002,11 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * @return the second long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are less than two matching longs in the {@code LongSequence}.
-	 *
-	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, LongPredicate)} instead.
-	 */
-	@Deprecated
-	default OptionalLong second(LongPredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are less than three matching longs in the {@code LongSequence}.
-	 *
-	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, LongPredicate)} instead.
-	 */
-	@Deprecated
-	default OptionalLong third(LongPredicate predicate) {
-		return at(2, predicate);
-	}
-
-	/**
 	 * @return the last long of those in this {@code LongSequence} matching the given predicate, or an empty
 	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
-	 * @see #at(long, LongPredicate)
+	 * @see #at(int, LongPredicate)
 	 * @since 1.2
 	 */
 	default OptionalLong last(LongPredicate predicate) {
@@ -1069,14 +1020,14 @@ public interface LongSequence extends LongIterable {
 	 * @see #filter(LongPredicate)
 	 * @since 1.2
 	 */
-	default OptionalLong at(long index, LongPredicate predicate) {
+	default OptionalLong at(int index, LongPredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code LongSequence}.
 	 */
-	default LongSequence step(long step) {
+	default LongSequence step(int step) {
 		return () -> new SteppingLongIterator(iterator(), step);
 	}
 
@@ -1091,14 +1042,14 @@ public interface LongSequence extends LongIterable {
 	 * @return the smallest long in this {@code LongSequence}.
 	 */
 	default OptionalLong min() {
-		return reduce((a, b) -> (a < b) ? a : b);
+		return reduce(Math::min);
 	}
 
 	/**
 	 * @return the greatest long in this {@code LongSequence}.
 	 */
 	default OptionalLong max() {
-		return reduce((a, b) -> (a > b) ? a : b);
+		return reduce(Math::max);
 	}
 
 	/**
@@ -1106,18 +1057,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
+	default int size() {
 		return iterator().count();
-	}
-
-	/**
-	 * @return the count of longs in this {@code LongSequence}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
 	}
 
 	/**
@@ -1162,14 +1103,14 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Allow the given {@link LongBiConsumer} to see each element together with its index in this {@code LongSequence}
+	 * Allow the given {@link LongIntConsumer} to see each element together with its index in this {@code LongSequence}
 	 * as it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default LongSequence peekIndexed(LongBiConsumer action) {
+	default LongSequence peekIndexed(LongIntConsumer action) {
 		return () -> new UnaryLongIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public long nextLong() {
@@ -1187,37 +1128,10 @@ public interface LongSequence extends LongIterable {
 	 */
 	default LongSequence sorted() {
 		return () -> {
-			long[] array = toArray();
+			long[] array = toLongArray();
 			Arrays.sort(array);
 			return LongIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the longs in this {@code LongSequence} into an array.
-	 */
-	default long[] toArray() {
-		long[] work = new long[10];
-
-		int index = 0;
-		LongIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				long[] newLongs = new long[newCapacity];
-				System.arraycopy(work, 0, newLongs, 0, work.length);
-				work = newLongs;
-			}
-			work[index++] = iterator.nextLong();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		long[] result = new long[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
 	}
 
 	/**
@@ -1248,7 +1162,7 @@ public interface LongSequence extends LongIterable {
 	 * @see #sorted()
 	 */
 	default LongSequence reverse() {
-		return () -> LongIterator.of(Arrayz.reverse(toArray()));
+		return () -> LongIterator.of(Arrayz.reverse(toLongArray()));
 	}
 
 	/**
@@ -1305,7 +1219,7 @@ public interface LongSequence extends LongIterable {
 	/**
 	 * Repeat this sequence of longs x times, looping back to the beginning when the iterator runs out of longs.
 	 */
-	default LongSequence repeat(long times) {
+	default LongSequence repeat(int times) {
 		return () -> new RepeatingLongIterator(this, times);
 	}
 
@@ -1341,7 +1255,7 @@ public interface LongSequence extends LongIterable {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<LongSequence> batch(LongBiPredicate predicate) {
-		return () -> new PredicatePartitioningLongIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningLongIterator(iterator(), predicate);
 	}
 
 	/**
@@ -1366,109 +1280,12 @@ public interface LongSequence extends LongIterable {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
 	 * @return true if this {@code LongSequence} is empty, false otherwise.
 	 *
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsLong(long l) {
-		return iterator().contains(l);
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains the given {@code long}, false otherwise.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #containsLong(long)} instead.
-	 */
-	@Deprecated
-	default boolean contains(long l) {
-		return containsLong(l);
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #containsAllLongs(long...)} instead.
-	 */
-	@Deprecated
-	default boolean containsAll(long... items) {
-		for (long item : items)
-			if (!iterator().contains(item))
-				return false;
-
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #containsAnyLongs(long...)} instead.
-	 */
-	@Deprecated
-	default boolean containsAny(long... items) {
-		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextLong()))
-				return true;
-
-		return false;
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains all of the given {@code longs}, false otherwise.
-	 *
-	 * @since 1.3
-	 */
-	default boolean containsAllLongs(long... items) {
-		for (long item : items)
-			if (!iterator().contains(item))
-				return false;
-
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code LongSequence} contains any of the given {@code longs}, false otherwise.
-	 *
-	 * @since 1.3
-	 */
-	default boolean containsAnyLongs(long... items) {
-		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextLong()))
-				return true;
-
-		return false;
+		return iterator().isEmpty();
 	}
 
 	/**
@@ -1477,8 +1294,8 @@ public interface LongSequence extends LongIterable {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachLongIndexed(LongBiConsumer action) {
-		long index = 0;
+	default void forEachLongIndexed(LongIntConsumer action) {
+		int index = 0;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextLong(), index++);
 	}

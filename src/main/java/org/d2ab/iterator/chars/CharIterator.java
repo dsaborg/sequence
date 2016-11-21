@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.*;
+import org.d2ab.function.*;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -38,36 +38,6 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 			throw new NoSuchElementException();
 		}
 	};
-
-	/**
-	 * Return the next {@code char} in this iterator.
-	 */
-	char nextChar();
-
-	/**
-	 * Return the next {@code char} boxed into a {@link Character}.
-	 */
-	@Override
-	default Character next() {
-		return nextChar();
-	}
-
-	/**
-	 * Perform the given action once for each remaining {@code char} in this iterator.
-	 */
-	@Override
-	default void forEachRemaining(CharConsumer consumer) {
-		while (hasNext())
-			consumer.accept(nextChar());
-	}
-
-	/**
-	 * Perform the given action once for each remaining {@code char} in this iterator.
-	 */
-	@Override
-	default void forEachRemaining(Consumer<? super Character> consumer) {
-		forEachRemaining((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
-	}
 
 	static CharIterator of(char... chars) {
 		return new ArrayCharIterator(chars);
@@ -128,6 +98,36 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	/**
+	 * Return the next {@code char} in this iterator.
+	 */
+	char nextChar();
+
+	/**
+	 * Return the next {@code char} boxed into a {@link Character}.
+	 */
+	@Override
+	default Character next() {
+		return nextChar();
+	}
+
+	/**
+	 * Perform the given action once for each remaining {@code char} in this iterator.
+	 */
+	@Override
+	default void forEachRemaining(CharConsumer consumer) {
+		while (hasNext())
+			consumer.accept(nextChar());
+	}
+
+	/**
+	 * Perform the given action once for each remaining {@code char} in this iterator.
+	 */
+	@Override
+	default void forEachRemaining(Consumer<? super Character> consumer) {
+		forEachRemaining((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
+	}
+
+	/**
 	 * Skip one {@code char} in this iterator.
 	 *
 	 * @return true if there was a character left to skip, false if the end of the iterator has been hit.
@@ -141,13 +141,49 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 *
 	 * @return the number of steps actually skipped, may be less if end of iterator was hit.
 	 */
-	default long skip(long steps) {
-		long count = 0;
+	default int skip(int steps) {
+		int count = 0;
 		while (count < steps && hasNext()) {
 			nextChar();
 			count++;
 		}
 		return count;
+	}
+
+	/**
+	 * @return the number of {@code chars} remaining in this iterator.
+	 */
+	default int count() {
+		long count = 0;
+		for (; hasNext(); nextChar())
+			count++;
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);
+
+		return (int) count;
+	}
+
+	default boolean isEmpty() {
+		return !hasNext();
+	}
+
+	default void removeAll() {
+		while (hasNext()) {
+			nextChar();
+			remove();
+		}
+	}
+
+	/**
+	 * @return true if this {@code CharIterator} contains the given {@code char}, false otherwise.
+	 */
+	default boolean contains(char c) {
+		while (hasNext())
+			if (nextChar() == c)
+				return true;
+
+		return false;
 	}
 
 	/**
@@ -159,25 +195,5 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		while (hasNext())
 			result = operator.applyAsChar(result, nextChar());
 		return result;
-	}
-
-	/**
-	 * @return true if this {@code CharIterator} contains the given {@code char}, false otherwise.
-	 */
-	default boolean contains(char c) {
-		while (hasNext())
-			if (nextChar() == c)
-				return true;
-		return false;
-	}
-
-	/**
-	 * @return the number of {@code chars} remaining in this iterator.
-	 */
-	default long count() {
-		long count = 0;
-		for (; hasNext(); nextChar())
-			count++;
-		return count;
 	}
 }

@@ -16,18 +16,18 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.function.longs.LongBiPredicate;
+import org.d2ab.function.LongIntPredicate;
 
 import java.util.NoSuchElementException;
 
 public class IndexedFilteringLongIterator extends UnaryLongIterator {
-	private final LongBiPredicate predicate;
-	private long index;
+	private final LongIntPredicate predicate;
+	private int index;
 
 	private long next;
 	private boolean hasNext;
 
-	public IndexedFilteringLongIterator(LongIterator iterator, LongBiPredicate predicate) {
+	public IndexedFilteringLongIterator(LongIterator iterator, LongIntPredicate predicate) {
 		super(iterator);
 		this.predicate = predicate;
 	}

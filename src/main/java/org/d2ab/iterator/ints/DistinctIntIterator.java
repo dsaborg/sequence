@@ -16,14 +16,13 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.collection.LongMemoizer;
+import org.d2ab.collection.ints.BitIntSet;
+import org.d2ab.collection.ints.IntSet;
 
 import java.util.NoSuchElementException;
 
 public class DistinctIntIterator extends UnaryIntIterator {
-	private static final int THRESHOLD = 256;
-
-	private final LongMemoizer seen = new LongMemoizer(THRESHOLD);
+	private final IntSet seen = new BitIntSet();
 
 	private int next;
 	private boolean hasNext;
@@ -47,10 +46,9 @@ public class DistinctIntIterator extends UnaryIntIterator {
 			return true;
 
 		while (!hasNext && iterator.hasNext()) {
-			int next = iterator.nextInt();
-			hasNext = seen.add(next);
-			if (hasNext)
-				this.next = next;
+			int maybeNext = iterator.nextInt();
+			if (hasNext = seen.addInt(maybeNext))
+				next = maybeNext;
 		}
 
 		return hasNext;

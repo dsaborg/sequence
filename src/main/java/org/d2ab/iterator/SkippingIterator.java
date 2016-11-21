@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SkippingIterator<T> extends ReferenceIterator<T> {
-	private final long skip;
+	private final int skip;
 
 	private boolean skipped;
 
-	public SkippingIterator(Iterator<T> iterator, long skip) {
+	public SkippingIterator(Iterator<T> iterator, int skip) {
 		super(iterator);
 		this.skip = skip;
 	}

@@ -16,19 +16,20 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.function.longs.LongBiPredicate;
+import org.d2ab.collection.longs.ArrayLongList;
+import org.d2ab.collection.longs.LongList;
+import org.d2ab.function.LongBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.LongSequence;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningLongIterator<T> extends DelegatingIterator<Long, LongIterator, LongSequence> {
+public class PredicatePartitioningLongIterator extends DelegatingIterator<Long, LongIterator, LongSequence> {
 	private final LongBiPredicate predicate;
 	private long next;
 	private boolean hasNext;
@@ -52,12 +53,10 @@ public class PredicatePartitioningLongIterator<T> extends DelegatingIterator<Lon
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		long[] buffer = new long[3];
+		LongList buffer = new ArrayLongList();
 		int size = 0;
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.addLong(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
@@ -68,9 +67,7 @@ public class PredicatePartitioningLongIterator<T> extends DelegatingIterator<Lon
 			if (split)
 				break;
 		} while (hasNext);
-		if (buffer.length > size)
-			buffer = Arrays.copyOf(buffer, size);
-		return LongSequence.of(buffer);
+		return LongSequence.from(buffer);
 	}
 
 	@Override

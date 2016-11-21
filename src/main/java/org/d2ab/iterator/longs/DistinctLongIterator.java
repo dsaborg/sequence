@@ -16,14 +16,13 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.collection.LongMemoizer;
+import org.d2ab.collection.longs.BitLongSet;
+import org.d2ab.collection.longs.LongSet;
 
 import java.util.NoSuchElementException;
 
 public class DistinctLongIterator extends UnaryLongIterator {
-	private static final int THRESHOLD = 256;
-
-	private final LongMemoizer seen = new LongMemoizer(THRESHOLD);
+	private final LongSet seen = new BitLongSet();
 
 	private long next;
 	private boolean hasNext;
@@ -33,26 +32,25 @@ public class DistinctLongIterator extends UnaryLongIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		if (hasNext)
+			return true;
+
+		while (!hasNext && iterator.hasNext()) {
+			long maybeNext = iterator.nextLong();
+			if (hasNext = seen.addLong(maybeNext))
+				next = maybeNext;
+		}
+
+		return hasNext;
+	}
+
+	@Override
 	public long nextLong() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasNext = false;
 		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (hasNext)
-			return true;
-
-		while (!hasNext && iterator.hasNext()) {
-			long next = iterator.nextLong();
-			hasNext = seen.add(next);
-			if (hasNext)
-				this.next = next;
-		}
-
-		return hasNext;
 	}
 }

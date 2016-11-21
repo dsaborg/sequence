@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.function.chars.CharFunction;
+import org.d2ab.function.CharFunction;
 import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.*;
@@ -114,18 +114,30 @@ public class Iterators {
 
 	/**
 	 * Skip one step in the given {@link Iterator}.
+	 *
+	 * @return true if there was an element to skip over.
 	 */
-	public static void skip(Iterator<?> iterator) {
-		if (iterator.hasNext())
+	public static boolean skip(Iterator<?> iterator) {
+		if (iterator.hasNext()) {
 			iterator.next();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Skip the given number of steps in the given {@link Iterator}.
+	 *
+	 * @return the actual number of steps skipped, if iterator terminated early.
 	 */
-	public static void skip(Iterator<?> iterator, long steps) {
-		while (steps-- > 0 && iterator.hasNext())
+	public static int skip(Iterator<?> iterator, int steps) {
+		int count = 0;
+		while (count < steps && iterator.hasNext()) {
 			iterator.next();
+			count++;
+		}
+		return count;
 	}
 
 	/**
@@ -160,7 +172,7 @@ public class Iterators {
 	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
 	 * items than the index.
 	 */
-	public static <T> Optional<T> get(Iterator<? extends T> iterator, long index) {
+	public static <T> Optional<T> get(Iterator<? extends T> iterator, int index) {
 		skip(iterator, index);
 		if (!iterator.hasNext())
 			return Optional.empty();
@@ -195,13 +207,17 @@ public class Iterators {
 	/**
 	 * @return the count of elements remaining in the given {@link Iterator}.
 	 */
-	public static long count(Iterator<?> iterator) {
+	public static int count(Iterator<?> iterator) {
 		long count = 0;
 		while (iterator.hasNext()) {
 			iterator.next();
 			count++;
 		}
-		return count;
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);
+
+		return (int) count;
 	}
 
 	/**
@@ -226,5 +242,19 @@ public class Iterators {
 				return iterator.next();
 			}
 		};
+	}
+
+	/**
+	 * @return true if any object in the given {@link Iterator} is equal to the given object, false otherwise.
+	 *
+	 * @since 2.0
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> boolean contains(Iterator<? extends T> iterator, T object) {
+		while (iterator.hasNext())
+			if (Objects.equals(object, iterator.next()))
+				return true;
+
+		return false;
 	}
 }

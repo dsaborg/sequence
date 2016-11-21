@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.collection.doubles.DoubleIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

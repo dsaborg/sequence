@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.collection.doubles.DoubleIterable;
 
 import java.util.NoSuchElementException;
 
@@ -28,9 +28,9 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingDoubleIterator extends UnaryDoubleIterator {
 	private final DoubleIterable iterable;
-	private long times;
+	private int times;
 
-	public RepeatingDoubleIterator(DoubleIterable iterable, long times) {
+	public RepeatingDoubleIterator(DoubleIterable iterable, int times) {
 		super(DoubleIterator.EMPTY);
 		this.iterable = iterable;
 		this.times = times;

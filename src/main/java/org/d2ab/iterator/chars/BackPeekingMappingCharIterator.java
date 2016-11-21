@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharBinaryOperator;
+import org.d2ab.function.CharBinaryOperator;
 
 /**
  * An iterator over chars that also maps each element by looking at the current AND the previous element.

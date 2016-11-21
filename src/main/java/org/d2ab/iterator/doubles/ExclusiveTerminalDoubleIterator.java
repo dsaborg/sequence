@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.util.primitive.Doubles;
+import org.d2ab.collection.doubles.DoubleComparator;
 
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
@@ -28,7 +28,7 @@ public class ExclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 	private boolean hasNext;
 
 	public ExclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal, double accuracy) {
-		this(iterator, d -> Doubles.equal(d, terminal, accuracy));
+		this(iterator, d -> DoubleComparator.equals(d, terminal, accuracy));
 	}
 
 	public ExclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {

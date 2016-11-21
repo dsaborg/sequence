@@ -16,8 +16,8 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.doubles.DoubleIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.doubles.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.DoubleBinaryOperator;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -106,12 +105,12 @@ public class DoubleSequenceTest {
 			empty.forEachDoubleIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachDoubleIndexed((e, i) -> {
 				assertThat(e, is((double) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -119,7 +118,7 @@ public class DoubleSequenceTest {
 				assertThat(e, is((double) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -127,7 +126,7 @@ public class DoubleSequenceTest {
 				assertThat(e, is((double) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -446,32 +445,62 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void includingArray() {
-		DoubleSequence emptyIncluding = empty.including(0.1, 1, 3, 5, 17);
+	public void includingExactlyArray() {
+		DoubleSequence emptyIncluding = empty.includingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
 
-		DoubleSequence including = _12345.including(0.1, 1, 3, 5, 17);
+		DoubleSequence including = _12345.includingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(including, containsDoubles(1, 3, 5)));
 
-		DoubleSequence includingAll = _12345.including(0.1, 1, 2, 3, 4, 5, 17);
+		DoubleSequence includingAll = _12345.includingExactly(1, 2, 3, 4, 5, 17);
 		twice(() -> assertThat(includingAll, containsDoubles(1, 2, 3, 4, 5)));
 
-		DoubleSequence includingNone = _12345.including(0.1);
+		DoubleSequence includingNone = _12345.includingExactly();
 		twice(() -> assertThat(includingNone, is(emptyIterable())));
 	}
 
 	@Test
-	public void excludingArray() {
-		DoubleSequence emptyExcluding = empty.excluding(0.1, 1, 3, 5, 17);
+	public void includingArray() {
+		DoubleSequence emptyIncluding = empty.including(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+
+		DoubleSequence including = _12345.including(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(including, containsDoubles(1, 3, 5)));
+
+		DoubleSequence includingAll = _12345.including(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(includingAll, containsDoubles(1, 2, 3, 4, 5)));
+
+		DoubleSequence includingNone = _12345.including(new double[0], 0.5);
+		twice(() -> assertThat(includingNone, is(emptyIterable())));
+	}
+
+	@Test
+	public void excludingExactlyArray() {
+		DoubleSequence emptyExcluding = empty.excludingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
 
-		DoubleSequence excluding = _12345.excluding(0.1, 1, 3, 5, 17);
+		DoubleSequence excluding = _12345.excludingExactly(1, 3, 5, 17);
 		twice(() -> assertThat(excluding, containsDoubles(2, 4)));
 
-		DoubleSequence excludingAll = _12345.excluding(0.1, 1, 2, 3, 4, 5, 17);
+		DoubleSequence excludingAll = _12345.excludingExactly(1, 2, 3, 4, 5, 17);
 		twice(() -> assertThat(excludingAll, is(emptyIterable())));
 
-		DoubleSequence excludingNone = _12345.excluding(0.1);
+		DoubleSequence excludingNone = _12345.excludingExactly();
+		twice(() -> assertThat(excludingNone, containsDoubles(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void excludingArray() {
+		DoubleSequence emptyExcluding = empty.excluding(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+
+		DoubleSequence excluding = _12345.excluding(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(excluding, containsDoubles(2, 4)));
+
+		DoubleSequence excludingAll = _12345.excluding(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5);
+		twice(() -> assertThat(excludingAll, is(emptyIterable())));
+
+		DoubleSequence excludingNone = _12345.excluding(new double[0], 0.5);
 		twice(() -> assertThat(excludingNone, containsDoubles(1, 2, 3, 4, 5)));
 	}
 
@@ -585,6 +614,62 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			DoubleList list = _12345.toList();
+			assertThat(list, is(instanceOf(ArrayDoubleList.class)));
+			assertThat(list, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			DoubleSet set = _12345.toSet();
+			assertThat(set, instanceOf(RawDoubleSet.class));
+			assertThat(set, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			DoubleSortedSet sortedSet = _12345.toSortedSet();
+			assertThat(sortedSet, instanceOf(SortedListDoubleSet.class));
+			assertThat(sortedSet, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			DoubleSet set = _12345.toSet(RawDoubleSet::new);
+			assertThat(set, instanceOf(RawDoubleSet.class));
+			assertThat(set, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			DoubleList deque = _12345.toCollection(ArrayDoubleList::new);
+			assertThat(deque, instanceOf(ArrayDoubleList.class));
+			assertThat(deque, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void collectIntoDoubleCollection() {
+		twice(() -> {
+			DoubleList list = new ArrayDoubleList();
+			DoubleList result = _12345.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
@@ -593,8 +678,19 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			DoubleList list = new ArrayDoubleList();
+			DoubleList result = _12345.collectInto(list, DoubleList::addDouble);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsDoubles(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toArray(), new double[]{1.0, 2.0, 3.0}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toDoubleArray(), new double[]{1.0, 2.0, 3.0}), is(true)));
 	}
 
 	@Test
@@ -640,29 +736,6 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalDouble.empty()));
-			assertThat(_1.second(), is(OptionalDouble.empty()));
-			assertThat(_12.second(), is(OptionalDouble.of(2.0)));
-			assertThat(_123.second(), is(OptionalDouble.of(2.0)));
-			assertThat(_1234.second(), is(OptionalDouble.of(2.0)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalDouble.empty()));
-			assertThat(_1.third(), is(OptionalDouble.empty()));
-			assertThat(_12.third(), is(OptionalDouble.empty()));
-			assertThat(_123.third(), is(OptionalDouble.of(3.0)));
-			assertThat(_1234.third(), is(OptionalDouble.of(3.0)));
-			assertThat(_12345.third(), is(OptionalDouble.of(3.0)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalDouble.empty()));
@@ -696,29 +769,6 @@ public class DoubleSequenceTest {
 			assertThat(_1.first(x -> x > 1), is(OptionalDouble.empty()));
 			assertThat(_12.first(x -> x > 1), is(OptionalDouble.of(2)));
 			assertThat(_12345.first(x -> x > 1), is(OptionalDouble.of(2)));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_1.second(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_12.second(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_123.second(x -> x > 1), is(OptionalDouble.of(3)));
-			assertThat(_1234.second(x -> x > 1), is(OptionalDouble.of(3)));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_1.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_12.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_123.third(x -> x > 1), is(OptionalDouble.empty()));
-			assertThat(_1234.third(x -> x > 1), is(OptionalDouble.of(4)));
-			assertThat(_12345.third(x -> x > 1), is(OptionalDouble.of(4)));
 		});
 	}
 
@@ -757,6 +807,36 @@ public class DoubleSequenceTest {
 	public void step() {
 		DoubleSequence stepThree = _123456789.step(3);
 		twice(() -> assertThat(stepThree, containsDoubles(1.0, 4.0, 7.0)));
+	}
+
+	@Test
+	public void distinct() {
+		DoubleSequence emptyDistinct = empty.distinct(0.5);
+		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+
+		DoubleSequence oneDistinct = oneRandom.distinct(0.5);
+		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
+
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17.15, 17.3)).distinct(0.2);
+		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17, 17.3)));
+
+		DoubleSequence nineDistinct = nineRandom.distinct(0.5);
+		twice(() -> assertThat(nineDistinct, containsDoubles(6, 1, -7, 2, 17, 5, 4)));
+	}
+
+	@Test
+	public void distinctExactly() {
+		DoubleSequence emptyDistinct = empty.distinctExactly();
+		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+
+		DoubleSequence oneDistinct = oneRandom.distinctExactly();
+		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
+
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17)).distinctExactly();
+		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17)));
+
+		DoubleSequence nineDistinct = nineRandom.distinctExactly();
+		twice(() -> assertThat(nineDistinct, containsDoubles(6, 1, -7, 2, 17, 5, 4)));
 	}
 
 	@Test
@@ -801,10 +881,10 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -835,7 +915,7 @@ public class DoubleSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong value = new AtomicLong(1);
+		AtomicInteger value = new AtomicInteger(1);
 		DoubleSequence peekOne = _1.peek(x -> assertThat(x, is((double) value.getAndIncrement())));
 		twiceIndexed(value, 1, () -> assertThat(peekOne, containsDoubles(1)));
 
@@ -853,7 +933,7 @@ public class DoubleSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		DoubleSequence peekOne = _1.peekIndexed((i, x) -> {
 			assertThat(i, is((double) (index.get() + 1)));
 			assertThat(x, is(index.getAndIncrement()));
@@ -1397,29 +1477,29 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(0.1), is(true));
-		assertThat(empty.containsAll(0.1, 17, 18, 19), is(false));
+	public void containsAllDoubles() {
+		assertThat(empty.containsAllDoubles(new double[0], 0.5), is(true));
+		assertThat(empty.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 
-		assertThat(_12345.containsAll(0.1), is(true));
-		assertThat(_12345.containsAll(0.1, 1), is(true));
-		assertThat(_12345.containsAll(0.1, 1, 3, 5), is(true));
-		assertThat(_12345.containsAll(0.1, 1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAll(0.1, 1, 2, 3, 4, 5, 17), is(false));
-		assertThat(_12345.containsAll(0.1, 17, 18, 19), is(false));
+		assertThat(_12345.containsAllDoubles(new double[0], 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1 }, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 3.1, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(false));
+		assertThat(_12345.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 	}
 
 	@Test
-	public void containsAny() {
-		assertThat(empty.containsAny(0.1), is(false));
-		assertThat(empty.containsAny(0.1, 17, 18, 19), is(false));
+	public void containsAnyDoubles() {
+		assertThat(empty.containsAnyDoubles(new double[0], 0.5), is(false));
+		assertThat(empty.containsAnyDoubles(new double[] { 17.1, 17.9, 18.1 }, 0.5), is(false));
 
-		assertThat(_12345.containsAny(0.1), is(false));
-		assertThat(_12345.containsAny(0.1, 1), is(true));
-		assertThat(_12345.containsAny(0.1, 1, 3, 5), is(true));
-		assertThat(_12345.containsAny(0.1, 1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAny(0.1, 1, 2, 3, 4, 5, 17), is(true));
-		assertThat(_12345.containsAny(0.1, 17, 18, 19), is(false));
+		assertThat(_12345.containsAnyDoubles(new double[0], 0.5), is(false));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 3.1, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
 	}
 
 	@FunctionalInterface

@@ -30,7 +30,7 @@
 
 package org.d2ab.test;
 
-import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.collection.ints.IntIterable;
 import org.d2ab.iterator.ints.IntIterator;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

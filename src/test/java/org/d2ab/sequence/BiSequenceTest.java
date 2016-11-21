@@ -16,16 +16,15 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
-import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -611,7 +610,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<Integer, String> oneMapped = _1.mapIndexed((p, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return p.swap();
@@ -648,7 +647,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<Integer, String> oneMapped = _1.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
@@ -1016,29 +1015,6 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_123.second(), is(Optional.of(Pair.of("2", 2))));
-			assertThat(_1234.second(), is(Optional.of(Pair.of("2", 2))));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(_1.third(), is(Optional.empty()));
-			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.third(), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_12345.third(), is(Optional.of(Pair.of("3", 3))));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -1072,29 +1048,6 @@ public class BiSequenceTest {
 			assertThat(_1.first(p -> p.getRight() > 1), is(Optional.empty()));
 			assertThat(_12.first(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
 			assertThat(_123.first(p -> p.getRight() > 1), is(Optional.of(Pair.of("2", 2))));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_1.second(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_12.second(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_123.second(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.second(p -> p.getRight() > 1), is(Optional.of(Pair.of("3", 3))));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_1.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_12.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_123.third(p -> p.getRight() > 1), is(Optional.empty()));
-			assertThat(_1234.third(p -> p.getRight() > 1), is(Optional.of(Pair.of("4", 4))));
-			assertThat(_12345.third(p -> p.getRight() > 1), is(Optional.of(Pair.of("4", 4))));
 		});
 	}
 
@@ -1136,29 +1089,6 @@ public class BiSequenceTest {
 			assertThat(_1.first((l, r) -> r > 1), is(Optional.empty()));
 			assertThat(_12.first((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
 			assertThat(_123.first((l, r) -> r > 1), is(Optional.of(Pair.of("2", 2))));
-		});
-	}
-
-	@Test
-	public void secondByBiPredicate() {
-		twice(() -> {
-			assertThat(empty.second((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_1.second((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_12.second((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_123.second((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
-			assertThat(_1234.second((l, r) -> r > 1), is(Optional.of(Pair.of("3", 3))));
-		});
-	}
-
-	@Test
-	public void thirdByBiPredicate() {
-		twice(() -> {
-			assertThat(empty.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_1.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_12.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_123.third((l, r) -> r > 1), is(Optional.empty()));
-			assertThat(_1234.third((l, r) -> r > 1), is(Optional.of(Pair.of("4", 4))));
-			assertThat(_12345.third((l, r) -> r > 1), is(Optional.of(Pair.of("4", 4))));
 		});
 	}
 
@@ -1441,10 +1371,10 @@ public class BiSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -1506,7 +1436,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
@@ -1562,7 +1492,7 @@ public class BiSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		BiSequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));

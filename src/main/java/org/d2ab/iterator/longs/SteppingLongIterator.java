@@ -19,12 +19,12 @@ package org.d2ab.iterator.longs;
 import java.util.NoSuchElementException;
 
 public class SteppingLongIterator extends UnaryLongIterator {
-	private final long step;
+	private final int step;
 
 	private boolean hasNext;
 	private long next;
 
-	public SteppingLongIterator(LongIterator iterator, long step) {
+	public SteppingLongIterator(LongIterator iterator, int step) {
 		super(iterator);
 		this.step = step;
 	}

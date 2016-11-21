@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator;
 
-import org.d2ab.iterable.Iterables;
+import org.d2ab.collection.Iterables;
 import org.junit.Test;
 
 import static org.d2ab.test.Tests.twice;

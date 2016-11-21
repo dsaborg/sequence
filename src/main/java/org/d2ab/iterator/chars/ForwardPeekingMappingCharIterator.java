@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharBinaryOperator;
+import org.d2ab.function.CharBinaryOperator;
 
 import java.util.NoSuchElementException;
 

@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.function.ints.IntBiPredicate;
+import org.d2ab.function.IntBiPredicate;
 
 import java.util.NoSuchElementException;
 

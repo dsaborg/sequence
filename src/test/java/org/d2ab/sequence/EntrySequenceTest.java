@@ -16,9 +16,9 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
-import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
@@ -26,7 +26,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -638,7 +637,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((e, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(e.getValue(), e.getKey());
@@ -676,7 +675,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((k, v, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(v, k);
@@ -1051,29 +1050,6 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(Maps.entry("2", 2))));
-			assertThat(_123.second(), is(Optional.of(Maps.entry("2", 2))));
-			assertThat(_1234.second(), is(Optional.of(Maps.entry("2", 2))));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(_1.third(), is(Optional.empty()));
-			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(Maps.entry("3", 3))));
-			assertThat(_1234.third(), is(Optional.of(Maps.entry("3", 3))));
-			assertThat(_12345.third(), is(Optional.of(Maps.entry("3", 3))));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -1433,10 +1409,10 @@ public class EntrySequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -1499,7 +1475,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
@@ -1557,7 +1533,7 @@ public class EntrySequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		EntrySequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(p, is(Maps.entry(String.valueOf(index.get()), (int) index.get())));

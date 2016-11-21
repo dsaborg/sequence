@@ -16,14 +16,15 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.longs.LongIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.longs.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.longs.DelegatingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
 import java.util.stream.LongStream;
@@ -118,12 +119,12 @@ public class LongSequenceTest {
 			empty.forEachLongIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicLong value = new AtomicLong(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachLongIndexed((e, i) -> {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -131,7 +132,7 @@ public class LongSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -139,7 +140,7 @@ public class LongSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -259,19 +260,19 @@ public class LongSequenceTest {
 
 	@Test
 	public void skip() {
-		LongSequence skipNone = _123.skip(0L);
+		LongSequence skipNone = _123.skip(0);
 		twice(() -> assertThat(skipNone, containsLongs(1L, 2L, 3L)));
 
-		LongSequence skipOne = _123.skip(1L);
+		LongSequence skipOne = _123.skip(1);
 		twice(() -> assertThat(skipOne, containsLongs(2L, 3L)));
 
-		LongSequence skipTwo = _123.skip(2L);
+		LongSequence skipTwo = _123.skip(2);
 		twice(() -> assertThat(skipTwo, containsLongs(3L)));
 
-		LongSequence skipThree = _123.skip(3L);
+		LongSequence skipThree = _123.skip(3);
 		twice(() -> assertThat(skipThree, is(emptyIterable())));
 
-		LongSequence skipFour = _123.skip(4L);
+		LongSequence skipFour = _123.skip(4);
 		twice(() -> assertThat(skipFour, is(emptyIterable())));
 	}
 
@@ -295,19 +296,19 @@ public class LongSequenceTest {
 
 	@Test
 	public void limit() {
-		LongSequence limitNone = _123.limit(0L);
+		LongSequence limitNone = _123.limit(0);
 		twice(() -> assertThat(limitNone, is(emptyIterable())));
 
-		LongSequence limitOne = _123.limit(1L);
+		LongSequence limitOne = _123.limit(1);
 		twice(() -> assertThat(limitOne, containsLongs(1L)));
 
-		LongSequence limitTwo = _123.limit(2L);
+		LongSequence limitTwo = _123.limit(2);
 		twice(() -> assertThat(limitTwo, containsLongs(1L, 2L)));
 
-		LongSequence limitThree = _123.limit(3L);
+		LongSequence limitThree = _123.limit(3);
 		twice(() -> assertThat(limitThree, containsLongs(1L, 2L, 3L)));
 
-		LongSequence limitFour = _123.limit(4L);
+		LongSequence limitFour = _123.limit(4);
 		twice(() -> assertThat(limitFour, containsLongs(1L, 2L, 3L)));
 	}
 
@@ -573,6 +574,62 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			LongList list = _12345.toList();
+			assertThat(list, is(instanceOf(ArrayLongList.class)));
+			assertThat(list, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			LongSet set = _12345.toSet();
+			assertThat(set, instanceOf(BitLongSet.class));
+			assertThat(set, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			LongSortedSet sortedSet = _12345.toSortedSet();
+			assertThat(sortedSet, instanceOf(BitLongSet.class));
+			assertThat(sortedSet, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			LongSet set = _12345.toSet(BitLongSet::new);
+			assertThat(set, instanceOf(BitLongSet.class));
+			assertThat(set, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			LongList deque = _12345.toCollection(ArrayLongList::new);
+			assertThat(deque, instanceOf(ArrayLongList.class));
+			assertThat(deque, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void collectIntoLongCollection() {
+		twice(() -> {
+			LongList list = new ArrayLongList();
+			LongList result = _12345.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
@@ -581,8 +638,19 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			LongList list = new ArrayLongList();
+			LongList result = _12345.collectInto(list, LongList::addLong);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsLongs(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toArray(), new long[]{1L, 2L, 3L}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toLongArray(), new long[]{1L, 2L, 3L}), is(true)));
 	}
 
 	@Test
@@ -628,29 +696,6 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalLong.empty()));
-			assertThat(_1.second(), is(OptionalLong.empty()));
-			assertThat(_12.second(), is(OptionalLong.of(2L)));
-			assertThat(_123.second(), is(OptionalLong.of(2L)));
-			assertThat(_1234.second(), is(OptionalLong.of(2L)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalLong.empty()));
-			assertThat(_1.third(), is(OptionalLong.empty()));
-			assertThat(_12.third(), is(OptionalLong.empty()));
-			assertThat(_123.third(), is(OptionalLong.of(3L)));
-			assertThat(_1234.third(), is(OptionalLong.of(3L)));
-			assertThat(_12345.third(), is(OptionalLong.of(3L)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalLong.empty()));
@@ -688,29 +733,6 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_1.second(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_12.second(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_123.second(x -> x > 1), is(OptionalLong.of(3)));
-			assertThat(_1234.second(x -> x > 1), is(OptionalLong.of(3)));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_1.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_12.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_123.third(x -> x > 1), is(OptionalLong.empty()));
-			assertThat(_1234.third(x -> x > 1), is(OptionalLong.of(4)));
-			assertThat(_12345.third(x -> x > 1), is(OptionalLong.of(4)));
-		});
-	}
-
-	@Test
 	public void lastByPredicate() {
 		twice(() -> {
 			assertThat(empty.last(x -> x > 1), is(OptionalLong.empty()));
@@ -743,8 +765,8 @@ public class LongSequenceTest {
 
 	@Test
 	public void step() {
-		LongSequence stepThree = _123456789.step(3L);
-		twice(() -> assertThat(stepThree, containsLongs(1L, 4L, 7L)));
+		LongSequence stepThree = _123456789.step(3);
+		twice(() -> assertThat(stepThree, containsLongs(1, 4, 7)));
 	}
 
 	@Test
@@ -804,10 +826,10 @@ public class LongSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -856,21 +878,21 @@ public class LongSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		LongSequence peekOne = _1.peekIndexed((i, x) -> {
-			assertThat(i, is(index.get() + 1));
+			assertThat(i, is(index.get() + 1L));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, containsLongs(1)));
 
 		LongSequence peekTwo = _12.peekIndexed((i, x) -> {
-			assertThat(i, is(index.get() + 1));
+			assertThat(i, is(index.get() + 1L));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsLongs(1, 2)));
 
 		LongSequence peek = _12345.peekIndexed((i, x) -> {
-			assertThat(i, is(index.get() + 1));
+			assertThat(i, is(index.get() + 1L));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsLongs(1, 2, 3, 4, 5)));
@@ -1433,29 +1455,29 @@ public class LongSequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(), is(true));
-		assertThat(empty.containsAll(17, 18, 19), is(false));
+	public void containsAllLongs() {
+		assertThat(empty.containsAllLongs(), is(true));
+		assertThat(empty.containsAllLongs(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAll(), is(true));
-		assertThat(_12345.containsAll(1), is(true));
-		assertThat(_12345.containsAll(1, 3, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5, 17), is(false));
-		assertThat(_12345.containsAll(17, 18, 19), is(false));
+		assertThat(_12345.containsAllLongs(), is(true));
+		assertThat(_12345.containsAllLongs(1), is(true));
+		assertThat(_12345.containsAllLongs(1, 3, 5), is(true));
+		assertThat(_12345.containsAllLongs(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAllLongs(1, 2, 3, 4, 5, 17), is(false));
+		assertThat(_12345.containsAllLongs(17, 18, 19), is(false));
 	}
 
 	@Test
 	public void containsAny() {
-		assertThat(empty.containsAny(), is(false));
-		assertThat(empty.containsAny(17, 18, 19), is(false));
+		assertThat(empty.containsAnyLongs(), is(false));
+		assertThat(empty.containsAnyLongs(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAny(), is(false));
-		assertThat(_12345.containsAny(1), is(true));
-		assertThat(_12345.containsAny(1, 3, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5, 17), is(true));
-		assertThat(_12345.containsAny(17, 18, 19), is(false));
+		assertThat(_12345.containsAnyLongs(), is(false));
+		assertThat(_12345.containsAnyLongs(1), is(true));
+		assertThat(_12345.containsAnyLongs(1, 3, 5), is(true));
+		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5, 17), is(true));
+		assertThat(_12345.containsAnyLongs(17, 18, 19), is(false));
 	}
 
 	@FunctionalInterface

@@ -16,18 +16,19 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.function.chars.CharBiPredicate;
+import org.d2ab.collection.chars.ArrayCharList;
+import org.d2ab.collection.chars.CharList;
+import org.d2ab.function.CharBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.CharSeq;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningCharIterator<T> extends DelegatingIterator<Character, CharIterator, CharSeq> {
+public class PredicatePartitioningCharIterator extends DelegatingIterator<Character, CharIterator, CharSeq> {
 	private final CharBiPredicate predicate;
 	private char next;
 	private boolean hasNext;
@@ -51,12 +52,9 @@ public class PredicatePartitioningCharIterator<T> extends DelegatingIterator<Cha
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		char[] buffer = new char[3];
-		int size = 0;
+		CharList buffer = new ArrayCharList();
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.addChar(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
@@ -67,9 +65,8 @@ public class PredicatePartitioningCharIterator<T> extends DelegatingIterator<Cha
 			if (split)
 				break;
 		} while (hasNext);
-		if (buffer.length > size)
-			buffer = Arrays.copyOf(buffer, size);
-		return CharSeq.of(buffer);
+
+		return CharSeq.from(buffer);
 	}
 
 	@Override

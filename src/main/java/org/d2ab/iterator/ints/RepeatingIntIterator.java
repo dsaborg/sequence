@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.collection.ints.IntIterable;
 
 import java.util.NoSuchElementException;
 
@@ -28,10 +28,10 @@ import java.util.NoSuchElementException;
  */
 public class RepeatingIntIterator extends UnaryIntIterator {
 	private final IntIterable iterable;
-	private long times;
+	private int times;
 
-	public RepeatingIntIterator(IntIterable iterable, long times) {
-		super(IntIterator.EMPTY);
+	public RepeatingIntIterator(IntIterable iterable, int times) {
+		super(EMPTY);
 		this.iterable = iterable;
 		this.times = times;
 	}

@@ -20,12 +20,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SteppingIterator<T> extends ReferenceIterator<T> {
-	private final long step;
+	private final int step;
 
 	private boolean hasNext;
 	private T next;
 
-	public SteppingIterator(Iterator<T> iterator, long step) {
+	public SteppingIterator(Iterator<T> iterator, int step) {
 		super(iterator);
 		this.step = step;
 	}

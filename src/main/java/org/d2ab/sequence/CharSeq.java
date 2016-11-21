@@ -16,17 +16,14 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.chars.*;
-import org.d2ab.function.ints.CharToIntFunction;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.chars.ChainingCharIterable;
-import org.d2ab.iterable.chars.CharIterable;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.chars.*;
+import org.d2ab.function.*;
 import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.*;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.util.Arrayz;
-import org.d2ab.util.primitive.OptionalChar;
+import org.d2ab.util.OptionalChar;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -45,7 +42,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of characters.
  */
 @FunctionalInterface
-public interface CharSeq extends CharIterable {
+public interface CharSeq extends CharList {
 	/**
 	 * Create an empty {@code CharSeq} with no characters.
 	 */
@@ -147,72 +144,6 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Create a once-only {@code CharSeq} from a {@link CharIterator} of character values. Note that {@code
-	 * CharSeq}s created from {@link CharIterator}s cannot be passed over more than once. Further attempts
-	 * will register the {@code CharSeq} as empty.
-	 *
-	 * @see #cache(CharIterator)
-	 * @deprecated Use {@link #once(CharIterator)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(CharIterator iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from a {@link PrimitiveIterator.OfInt} of character values. Note that {@code
-	 * CharSeq}s created from {@link PrimitiveIterator.OfInt}s cannot be passed over more than once. Further attempts
-	 * will register the {@code CharSeq} as empty.
-	 *
-	 * @see #cache(PrimitiveIterator.OfInt)
-	 * @deprecated Use {@link #once(PrimitiveIterator.OfInt)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(PrimitiveIterator.OfInt iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from an {@link Iterator} of {@code Character} values. Note that {@code
-	 * CharSeq}s created from {@link Iterator}s cannot be passed over more than once. Further attempts will
-	 * register the {@code CharSeq} as empty.
-	 *
-	 * @see #cache(Iterator)
-	 * @deprecated User {@link #once(Iterator)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(Iterator<Character> iterator) {
-		return once(iterator);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from a {@link Stream} of items. Note that {@code CharSeq} created from {@link
-	 * Stream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq} as empty.
-	 *
-	 * @throws IllegalStateException if the {@link Stream} is exhausted.
-	 * @see #cache(Stream)
-	 * @deprecated Use {@link #once(Stream)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(Stream<Character> stream) {
-		return once(stream);
-	}
-
-	/**
-	 * Create a once-only {@code CharSeq} from an {@link IntStream} of char values. Note that {@code CharSeq} created
-	 * from {@link IntStream}s cannot be passed over more than once. Further attempts will register the {@code CharSeq}
-	 * as empty.
-	 *
-	 * @throws IllegalStateException if the {@link IntStream} is exhausted.
-	 * @see #cache(IntStream)
-	 * @deprecated Use {@link #once(IntStream)} instead.
-	 */
-	@Deprecated
-	static CharSeq from(IntStream stream) {
-		return once(stream);
-	}
-
-	/**
 	 * Create a {@code CharSeq} from a {@link Reader} which iterates over the characters provided in the reader.
 	 * The {@link Reader} must support {@link Reader#reset} or the {@code CharSeq} will only be available to iterate
 	 * over once. The {@link Reader} will be reset in between iterations, if possible. If an {@link IOException}
@@ -238,17 +169,7 @@ public interface CharSeq extends CharIterable {
 	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterator iterator) {
-		char[] cache = new char[10];
-		int position = 0;
-		while (iterator.hasNext()) {
-			char next = iterator.nextChar();
-			if (position == cache.length)
-				cache = Arrays.copyOf(cache, cache.length * 2);
-			cache[position++] = next;
-		}
-		if (cache.length > position)
-			cache = Arrays.copyOf(cache, position);
-		return of(cache);
+		return from(CharList.copy(iterator));
 	}
 
 	/**
@@ -638,9 +559,9 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default CharSeq mapIndexed(CharLongToCharFunction mapper) {
+	default CharSeq mapIndexed(CharIntToCharFunction mapper) {
 		return () -> new UnaryCharIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public char nextChar() {
@@ -666,7 +587,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Skip a set number of {@code chars} in this {@code CharSeq}.
 	 */
-	default CharSeq skip(long skip) {
+	default CharSeq skip(int skip) {
 		return () -> new SkippingCharIterator(iterator(), skip);
 	}
 
@@ -685,7 +606,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
 	 */
-	default CharSeq limit(long limit) {
+	default CharSeq limit(int limit) {
 		return () -> new LimitingCharIterator(iterator(), limit);
 	}
 
@@ -770,11 +691,11 @@ public interface CharSeq extends CharIterable {
 
 	/**
 	 * Filter the elements in this {@code CharSeq}, keeping only the elements that match the given
-	 * {@link CharLongPredicate}, which is passed each {@code double} together with its index in the sequence.
+	 * {@link CharIntPredicate}, which is passed each {@code double} together with its index in the sequence.
 	 *
 	 * @since 1.2
 	 */
-	default CharSeq filterIndexed(CharLongPredicate predicate) {
+	default CharSeq filterIndexed(CharIntPredicate predicate) {
 		return () -> new IndexedFilteringCharIterator(iterator(), predicate);
 	}
 
@@ -822,6 +743,52 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharList}.
+	 */
+	default CharList toList() {
+		return toList(ArrayCharList::new);
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharList} of the type determined by the given
+	 * constructor.
+	 */
+	default CharList toList(Supplier<? extends CharList> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharSet}.
+	 *
+	 * @see #toSortedSet()
+	 */
+	default CharSet toSet() {
+		return toSortedSet();
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharSet} of the type determined by the given
+	 * constructor.
+	 */
+	default <S extends CharSet> S toSet(Supplier<? extends S> constructor) {
+		return toCollection(constructor);
+	}
+
+	/**
+	 * Collect the elements in this {@code CharSeq} into an {@link CharSortedSet}.
+	 */
+	default CharSortedSet toSortedSet() {
+		return toSet(BitCharSet::new);
+	}
+
+	/**
+	 * Collect this {@code CharSeq} into an {@link CharCollection} of the type determined by the given constructor.
+	 */
+	default <U extends CharCollection> U toCollection(Supplier<? extends U> constructor) {
+		return collectInto(constructor.get());
+	}
+
+	/**
 	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
@@ -829,10 +796,18 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
+	 * Collect this {@code CharSeq} into the given {@link CharCollection}.
+	 */
+	default <U extends CharCollection> U collectInto(U collection) {
+		collection.addAllChars(this);
+		return collection;
+	}
+
+	/**
 	 * Collect this {@code CharSeq} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjCharConsumer<? super C> adder) {
-		forEachChar(c -> adder.accept(result, c));
+		forEachChar(x -> adder.accept(result, x));
 		return result;
 	}
 
@@ -902,28 +877,6 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * @return the second character of this {@code CharSeq} or an empty {@link OptionalChar} if there are less than two
-	 * characters in the {@code CharSeq}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default OptionalChar second() {
-		return at(1);
-	}
-
-	/**
-	 * @return the third character of this {@code CharSeq} or an empty {@link OptionalChar} if there are less than
-	 * three characters in the {@code CharSeq}.
-	 *
-	 * @deprecated Use {@link #at(long)} instead.
-	 */
-	@Deprecated
-	default OptionalChar third() {
-		return at(2);
-	}
-
-	/**
 	 * @return the last character of this {@code CharSeq} or an empty {@link OptionalChar} if there are no
 	 * characters in the {@code CharSeq}.
 	 */
@@ -945,7 +898,7 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default OptionalChar at(long index) {
+	default OptionalChar at(int index) {
 		CharIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -960,7 +913,7 @@ public interface CharSeq extends CharIterable {
 	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
+	 * @see #at(int, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar first(CharPredicate predicate) {
@@ -968,39 +921,11 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * @return the second char of those in this {@code CharSeq} matching the given predicate, or an empty
-	 * {@link OptionalChar} if there are less than two matching chars in the {@code CharSeq}.
-	 *
-	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, CharPredicate)} instead.
-	 */
-	@Deprecated
-	default OptionalChar second(CharPredicate predicate) {
-		return at(1, predicate);
-	}
-
-	/**
-	 * @return the third char of those in this {@code CharSeq} matching the given predicate, or an empty
-	 * {@link OptionalChar} if there are less than three matching chars in the {@code CharSeq}.
-	 *
-	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
-	 * @since 1.2
-	 * @deprecated Use {@link #at(long, CharPredicate)} instead.
-	 */
-	@Deprecated
-	default OptionalChar third(CharPredicate predicate) {
-		return at(2, predicate);
-	}
-
-	/**
 	 * @return the last char of those in this {@code CharSeq} matching the given predicate, or an empty
 	 * {@link OptionalChar} if there are no matching chars in the {@code CharSeq}.
 	 *
 	 * @see #filter(CharPredicate)
-	 * @see #at(long, CharPredicate)
+	 * @see #at(int, CharPredicate)
 	 * @since 1.2
 	 */
 	default OptionalChar last(CharPredicate predicate) {
@@ -1014,14 +939,14 @@ public interface CharSeq extends CharIterable {
 	 * @see #filter(CharPredicate)
 	 * @since 1.2
 	 */
-	default OptionalChar at(long index, CharPredicate predicate) {
+	default OptionalChar at(int index, CharPredicate predicate) {
 		return filter(predicate).at(index);
 	}
 
 	/**
 	 * Skip x number of steps in between each invocation of the iterator of this {@code CharSeq}.
 	 */
-	default CharSeq step(long step) {
+	default CharSeq step(int step) {
 		return () -> new SteppingCharIterator(iterator(), step);
 	}
 
@@ -1051,18 +976,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default long size() {
+	default int size() {
 		return iterator().count();
-	}
-
-	/**
-	 * @return the count of characters in this {@code CharSeq}.
-	 *
-	 * @deprecated Use {@link #size()} instead.
-	 */
-	@Deprecated
-	default long count() {
-		return size();
 	}
 
 	/**
@@ -1107,14 +1022,14 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Allow the given {@link CharLongConsumer} to see each element together with its index in this {@code CharSeq} as
+	 * Allow the given {@link CharIntConsumer} to see each element together with its index in this {@code CharSeq} as
 	 * it is traversed.
 	 *
 	 * @since 1.2.2
 	 */
-	default CharSeq peekIndexed(CharLongConsumer action) {
+	default CharSeq peekIndexed(CharIntConsumer action) {
 		return () -> new UnaryCharIterator(iterator()) {
-			private long index;
+			private int index;
 
 			@Override
 			public char nextChar() {
@@ -1132,37 +1047,10 @@ public interface CharSeq extends CharIterable {
 	 */
 	default CharSeq sorted() {
 		return () -> {
-			char[] array = toArray();
+			char[] array = toCharArray();
 			Arrays.sort(array);
 			return CharIterator.of(array);
 		};
-	}
-
-	/**
-	 * Collect the characters in this {@code CharSeq} into an array.
-	 */
-	default char[] toArray() {
-		char[] work = new char[10];
-
-		int index = 0;
-		CharIterator iterator = iterator();
-		while (iterator.hasNext()) {
-			if (work.length < (index + 1)) {
-				int newCapacity = work.length + (work.length >> 1);
-				char[] newChars = new char[newCapacity];
-				System.arraycopy(work, 0, newChars, 0, work.length);
-				work = newChars;
-			}
-			work[index++] = iterator.nextChar();
-		}
-
-		if (work.length == index) {
-			return work; // Not very likely, but still
-		}
-
-		char[] result = new char[index];
-		System.arraycopy(work, 0, result, 0, index);
-		return result;
 	}
 
 	/**
@@ -1193,7 +1081,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #sorted()
 	 */
 	default CharSeq reverse() {
-		return () -> CharIterator.of(Arrayz.reverse(toArray()));
+		return () -> CharIterator.of(Arrayz.reverse(toCharArray()));
 	}
 
 	/**
@@ -1204,7 +1092,7 @@ public interface CharSeq extends CharIterable {
 	 * @see #collect(Supplier, ObjCharConsumer)
 	 */
 	default String asString() {
-		return new String(toArray());
+		return new String(toCharArray());
 	}
 
 	/**
@@ -1256,7 +1144,7 @@ public interface CharSeq extends CharIterable {
 	/**
 	 * Repeat this sequence of characters x times, looping back to the beginning when the iterator runs out of chars.
 	 */
-	default CharSeq repeat(long times) {
+	default CharSeq repeat(int times) {
 		return () -> new RepeatingCharIterator(this, times);
 	}
 
@@ -1292,7 +1180,7 @@ public interface CharSeq extends CharIterable {
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<CharSeq> batch(CharBiPredicate predicate) {
-		return () -> new PredicatePartitioningCharIterator<>(iterator(), predicate);
+		return () -> new PredicatePartitioningCharIterator(iterator(), predicate);
 	}
 
 	/**
@@ -1317,81 +1205,12 @@ public interface CharSeq extends CharIterable {
 	}
 
 	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @since 1.2
-	 */
-	default void clear() {
-		Iterables.removeAll(this);
-	}
-
-	/**
-	 * Remove all elements matched by this sequence using {@link Iterator#remove()}.
-	 *
-	 * @deprecated Use {@link #clear()} instead.
-	 */
-	@Deprecated
-	default void removeAll() {
-		clear();
-	}
-
-	/**
 	 * @return true if this {@code CharSeq} is empty, false otherwise.
 	 *
 	 * @since 1.1
 	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	default boolean containsChar(char c) {
-		return iterator().contains(c);
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains the given {@code char}, false otherwise.
-	 *
-	 * @since 1.2
-	 * @deprecated Use {@link #containsChar(char)} instead.
-	 */
-	@Deprecated
-	default boolean contains(char c) {
-		return containsChar(c);
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains all of the given {@code chars}, false otherwise.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #containsAllChars(char...)} instead.
-	 */
-	@Deprecated
-	default boolean containsAll(char... items) {
-		for (char item : items)
-			if (!iterator().contains(item))
-				return false;
-		return true;
-	}
-
-	/**
-	 * @return true if this {@code CharSeq} contains any of the given {@code chars}, false otherwise.
-	 *
-	 * @since 1.2
-	 *
-	 * @deprecated Use {@link #containsAnyChars(char...)} instead.
-	 */
-	@Deprecated
-	default boolean containsAny(char... items) {
-		for (CharIterator iterator = iterator(); iterator.hasNext(); )
-			if (Arrayz.contains(items, iterator.nextChar()))
-				return true;
-		return false;
+		return iterator().isEmpty();
 	}
 
 	/**
@@ -1424,8 +1243,8 @@ public interface CharSeq extends CharIterable {
 	 *
 	 * @since 1.2
 	 */
-	default void forEachCharIndexed(CharLongConsumer action) {
-		long index = 0;
+	default void forEachCharIndexed(CharIntConsumer action) {
+		int index = 0;
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextChar(), index++);
 	}

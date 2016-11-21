@@ -16,8 +16,8 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.ints.IntIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.ints.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.DelegatingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -108,12 +107,12 @@ public class IntSequenceTest {
 			empty.forEachIntIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachIntIndexed((e, i) -> {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -121,7 +120,7 @@ public class IntSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -129,7 +128,7 @@ public class IntSequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -620,6 +619,62 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			IntList list = _12345.toList();
+			assertThat(list, is(instanceOf(ArrayIntList.class)));
+			assertThat(list, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			IntSet set = _12345.toSet();
+			assertThat(set, instanceOf(BitIntSet.class));
+			assertThat(set, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			IntSortedSet sortedSet = _12345.toSortedSet();
+			assertThat(sortedSet, instanceOf(BitIntSet.class));
+			assertThat(sortedSet, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			IntSet set = _12345.toSet(BitIntSet::new);
+			assertThat(set, instanceOf(BitIntSet.class));
+			assertThat(set, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			IntList deque = _12345.toCollection(ArrayIntList::new);
+			assertThat(deque, instanceOf(ArrayIntList.class));
+			assertThat(deque, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
+	public void collectIntoIntCollection() {
+		twice(() -> {
+			IntList list = new ArrayIntList();
+			IntList result = _12345.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = _123.collect(StringBuilder::new, StringBuilder::append);
@@ -628,8 +683,19 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void collectIntoContainer() {
+		twice(() -> {
+			IntList list = new ArrayIntList();
+			IntList result = _12345.collectInto(list, IntList::addInt);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsInts(1, 2, 3, 4, 5));
+		});
+	}
+
+	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toArray(), new int[]{1, 2, 3}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toIntArray(), new int[]{1, 2, 3}), is(true)));
 	}
 
 	@Test
@@ -671,29 +737,6 @@ public class IntSequenceTest {
 			assertThat(_1.first(), is(OptionalInt.of(1)));
 			assertThat(_12.first(), is(OptionalInt.of(1)));
 			assertThat(_123.first(), is(OptionalInt.of(1)));
-		});
-	}
-
-	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalInt.empty()));
-			assertThat(_1.second(), is(OptionalInt.empty()));
-			assertThat(_12.second(), is(OptionalInt.of(2)));
-			assertThat(_123.second(), is(OptionalInt.of(2)));
-			assertThat(_1234.second(), is(OptionalInt.of(2)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalInt.empty()));
-			assertThat(_1.third(), is(OptionalInt.empty()));
-			assertThat(_12.third(), is(OptionalInt.empty()));
-			assertThat(_123.third(), is(OptionalInt.of(3)));
-			assertThat(_1234.third(), is(OptionalInt.of(3)));
-			assertThat(_12345.third(), is(OptionalInt.of(3)));
 		});
 	}
 
@@ -787,10 +830,10 @@ public class IntSequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -839,21 +882,21 @@ public class IntSequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		IntSequence peekOne = _1.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, containsInts(1)));
 
 		IntSequence peekTwo = _12.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, containsInts(1, 2)));
 
 		IntSequence peek = _12345.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsInts(1, 2, 3, 4, 5)));
@@ -1419,29 +1462,29 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(), is(true));
-		assertThat(empty.containsAll(17, 18, 19), is(false));
+	public void containsAllInts() {
+		assertThat(empty.containsAllInts(), is(true));
+		assertThat(empty.containsAllInts(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAll(), is(true));
-		assertThat(_12345.containsAll(1), is(true));
-		assertThat(_12345.containsAll(1, 3, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAll(1, 2, 3, 4, 5, 17), is(false));
-		assertThat(_12345.containsAll(17, 18, 19), is(false));
+		assertThat(_12345.containsAllInts(), is(true));
+		assertThat(_12345.containsAllInts(1), is(true));
+		assertThat(_12345.containsAllInts(1, 3, 5), is(true));
+		assertThat(_12345.containsAllInts(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAllInts(1, 2, 3, 4, 5, 17), is(false));
+		assertThat(_12345.containsAllInts(17, 18, 19), is(false));
 	}
 
 	@Test
-	public void containsAny() {
-		assertThat(empty.containsAny(), is(false));
-		assertThat(empty.containsAny(17, 18, 19), is(false));
+	public void containsAnyInts() {
+		assertThat(empty.containsAnyInts(), is(false));
+		assertThat(empty.containsAnyInts(17, 18, 19), is(false));
 
-		assertThat(_12345.containsAny(), is(false));
-		assertThat(_12345.containsAny(1), is(true));
-		assertThat(_12345.containsAny(1, 3, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5), is(true));
-		assertThat(_12345.containsAny(1, 2, 3, 4, 5, 17), is(true));
-		assertThat(_12345.containsAny(17, 18, 19), is(false));
+		assertThat(_12345.containsAnyInts(), is(false));
+		assertThat(_12345.containsAnyInts(1), is(true));
+		assertThat(_12345.containsAnyInts(1, 3, 5), is(true));
+		assertThat(_12345.containsAnyInts(1, 2, 3, 4, 5), is(true));
+		assertThat(_12345.containsAnyInts(1, 2, 3, 4, 5, 17), is(true));
+		assertThat(_12345.containsAnyInts(17, 18, 19), is(false));
 	}
 
 	@FunctionalInterface

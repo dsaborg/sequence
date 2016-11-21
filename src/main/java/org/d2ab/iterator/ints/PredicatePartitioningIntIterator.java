@@ -16,19 +16,20 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.function.ints.IntBiPredicate;
+import org.d2ab.collection.ints.ArrayIntList;
+import org.d2ab.collection.ints.IntList;
+import org.d2ab.function.IntBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.IntSequence;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 /**
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningIntIterator<T> extends DelegatingIterator<Integer, IntIterator, IntSequence> {
+public class PredicatePartitioningIntIterator extends DelegatingIterator<Integer, IntIterator, IntSequence> {
 	private final IntBiPredicate predicate;
 	private int next;
 	private boolean hasNext;
@@ -52,25 +53,21 @@ public class PredicatePartitioningIntIterator<T> extends DelegatingIterator<Inte
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int[] buffer = new int[3];
-		int size = 0;
+		IntList buffer = new ArrayIntList();
 		do {
-			if (buffer.length == size)
-				buffer = Arrays.copyOf(buffer, buffer.length * 2);
-			buffer[size++] = next;
+			buffer.addInt(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
+
 			int following = iterator.nextInt();
 			boolean split = predicate.test(next, following);
 			next = following;
 			if (split)
 				break;
 		} while (hasNext);
-		if (buffer.length > size)
-			buffer = Arrays.copyOf(buffer, size);
-		return IntSequence.of(buffer);
+		return IntSequence.from(buffer);
 	}
 
 	@Override

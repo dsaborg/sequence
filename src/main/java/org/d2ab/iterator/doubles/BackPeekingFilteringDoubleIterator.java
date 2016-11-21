@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.function.doubles.DoubleBiPredicate;
+import org.d2ab.function.DoubleBiPredicate;
 
 import java.util.NoSuchElementException;
 

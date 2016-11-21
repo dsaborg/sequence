@@ -16,8 +16,8 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.Maps;
-import org.d2ab.iterable.Iterables;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 import org.junit.Test;
@@ -28,7 +28,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -168,12 +167,12 @@ public class SequenceTest {
 			empty.forEachIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger(1);
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			_1.forEachIndexed((e, i) -> {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set(1);
 			index.set(0);
@@ -181,7 +180,7 @@ public class SequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set(1);
 			index.set(0);
@@ -189,7 +188,7 @@ public class SequenceTest {
 				assertThat(e, is(value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -745,7 +744,7 @@ public class SequenceTest {
 		Sequence<String> mappedEmpty = empty.map(Object::toString);
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		Sequence<String> oneMapped = _1.mapIndexed((e, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return String.valueOf(e);
@@ -1072,6 +1071,7 @@ public class SequenceTest {
 		twice(() -> {
 			Deque<Integer> deque = new ArrayDeque<>();
 			Deque<Integer> result = _12345.collectInto(deque);
+
 			assertThat(result, is(sameInstance(deque)));
 			assertThat(result, contains(1, 2, 3, 4, 5));
 		});
@@ -1174,26 +1174,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void asList() {
-		List<Integer> emptyList = empty.asList();
-		twice(() -> assertThat(emptyList, is(emptyIterable())));
-
-		List<Integer> singleList = _1.asList();
-		twice(() -> assertThat(singleList, contains(1)));
-
-		List<Integer> doubleList = _12.asList();
-		twice(() -> assertThat(doubleList, contains(1, 2)));
-
-		List<Integer> quintupleList = _12345.asList();
-		twice(() -> assertThat(quintupleList, contains(1, 2, 3, 4, 5)));
-
-		List<Integer> original = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-		List<Integer> asList = Sequence.from(original).asList();
-		original.add(6);
-		twice(() -> assertThat(asList, contains(1, 2, 3, 4, 5, 6)));
-	}
-
-	@Test
 	public void join() {
 		twice(() -> assertThat(_12345.join(), is("12345")));
 	}
@@ -1239,29 +1219,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(Optional.empty()));
-			assertThat(_1.second(), is(Optional.empty()));
-			assertThat(_12.second(), is(Optional.of(2)));
-			assertThat(_123.second(), is(Optional.of(2)));
-			assertThat(_1234.second(), is(Optional.of(2)));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(Optional.empty()));
-			assertThat(_1.third(), is(Optional.empty()));
-			assertThat(_12.third(), is(Optional.empty()));
-			assertThat(_123.third(), is(Optional.of(3)));
-			assertThat(_1234.third(), is(Optional.of(3)));
-			assertThat(_12345.third(), is(Optional.of(3)));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(Optional.empty()));
@@ -1295,29 +1252,6 @@ public class SequenceTest {
 			assertThat(_1.first(x -> x > 1), is(Optional.empty()));
 			assertThat(_12.first(x -> x > 1), is(Optional.of(2)));
 			assertThat(_12345.first(x -> x > 1), is(Optional.of(2)));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 1), is(Optional.empty()));
-			assertThat(_1.second(x -> x > 1), is(Optional.empty()));
-			assertThat(_12.second(x -> x > 1), is(Optional.empty()));
-			assertThat(_123.second(x -> x > 1), is(Optional.of(3)));
-			assertThat(_1234.second(x -> x > 1), is(Optional.of(3)));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_1.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_12.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_123.third(x -> x > 1), is(Optional.empty()));
-			assertThat(_1234.third(x -> x > 1), is(Optional.of(4)));
-			assertThat(_12345.third(x -> x > 1), is(Optional.of(4)));
 		});
 	}
 
@@ -1360,28 +1294,6 @@ public class SequenceTest {
 			assertThat(mixed.first(Number.class), is(Optional.of(1)));
 			assertThat(mixed.first(Integer.class), is(Optional.of(1)));
 			assertThat(mixed.first(Double.class), is(Optional.of(1.0)));
-		});
-	}
-
-	@Test
-	public void secondByClass() {
-		twice(() -> {
-			assertThat(mixed.second(Long.class), is(Optional.empty()));
-			assertThat(mixed.second(String.class), is(Optional.of("2")));
-			assertThat(mixed.second(Number.class), is(Optional.of(1.0)));
-			assertThat(mixed.second(Integer.class), is(Optional.of(2)));
-			assertThat(mixed.second(Double.class), is(Optional.of(2.0)));
-		});
-	}
-
-	@Test
-	public void thirdByClass() {
-		twice(() -> {
-			assertThat(mixed.third(Long.class), is(Optional.empty()));
-			assertThat(mixed.third(String.class), is(Optional.of("3")));
-			assertThat(mixed.third(Number.class), is(Optional.of(2)));
-			assertThat(mixed.third(Integer.class), is(Optional.of(3)));
-			assertThat(mixed.third(Double.class), is(Optional.of(3.0)));
 		});
 	}
 
@@ -1732,10 +1644,10 @@ public class SequenceTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(_1.size(), is(1L)));
-		twice(() -> assertThat(_12.size(), is(2L)));
-		twice(() -> assertThat(_123456789.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(_1.size(), is(1)));
+		twice(() -> assertThat(_12.size(), is(2)));
+		twice(() -> assertThat(_123456789.size(), is(9)));
 	}
 
 	@Test
@@ -1817,7 +1729,7 @@ public class SequenceTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		Sequence<Integer> peekOne = _1.peekIndexed((i, x) -> {
 			assertThat(i, is((int) (index.get() + 1)));
 			assertThat(x, is(index.getAndIncrement()));
@@ -2046,7 +1958,7 @@ public class SequenceTest {
 		Sequence<Character> chars = Sequence.chars();
 		twice(() -> assertThat(chars, beginsWith((char) 0, (char) 1, (char) 2, (char) 3, (char) 4)));
 		twice(() -> assertThat(chars.limit(0x1400).last(), is(Optional.of('\u13FF'))));
-		twice(() -> assertThat(chars.size(), is(65536L)));
+		twice(() -> assertThat(chars.size(), is(65536)));
 		twice(() -> assertThat(chars.last(), is(Optional.of('\uFFFF'))));
 	}
 
@@ -2257,9 +2169,9 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void index() {
-		BiSequence<Long, Integer> indexed = _12345.index();
-		twice(() -> assertThat(indexed, contains(Pair.of(0L, 1), Pair.of(1L, 2), Pair.of(2L, 3), Pair.of(3L, 4),
-		                                         Pair.of(4L, 5))));
+		BiSequence<Integer, Integer> indexed = _12345.index();
+		twice(() -> assertThat(indexed, contains(Pair.of(0, 1), Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4),
+		                                         Pair.of(4, 5))));
 	}
 
 	@Test

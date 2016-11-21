@@ -77,11 +77,6 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<T> asList() {
-		return list;
-	}
-
-	@Override
 	public <U extends Collection<T>> U collectInto(U collection) {
 		collection.addAll(list);
 		return collection;
@@ -93,7 +88,7 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public long size() {
+	public int size() {
 		return list.size();
 	}
 
@@ -108,16 +103,16 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public boolean contains(T item) {
+	public boolean contains(Object item) {
 		return list.contains(item);
 	}
 
 	@Override
-	public Optional<T> at(long index) {
+	public Optional<T> at(int index) {
 		if (index >= list.size())
 			return Optional.empty();
 
-		return Optional.of(list.get((int) index));
+		return Optional.of(list.get(index));
 	}
 
 	@Override

@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
-import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -195,22 +194,6 @@ public class IterableListTest {
 	}
 
 	@Test
-	public void testEquals() {
-		assertThat(listEmpty.equals(asList()), is(true));
-		assertThat(listEmpty.equals(asList(1, 3)), is(false));
-
-		assertThat(list.equals(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(list.equals(asList(1, 17, 3, 4, 5)), is(false));
-	}
-
-	@Test
-	public void testHashCode() {
-		assertThat(listEmpty.hashCode(), is(1));
-
-		assertThat(list.hashCode(), is(29615266));
-	}
-
-	@Test
 	public void get() {
 		assertThat(list.get(0), is(1));
 		assertThat(list.get(2), is(3));
@@ -253,7 +236,6 @@ public class IterableListTest {
 	public void listIteratorEmpty() {
 		ListIterator<Integer> emptyIterator = listEmpty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
-		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
@@ -269,75 +251,38 @@ public class IterableListTest {
 		ListIterator<Integer> listIterator = list.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
 		assertThat(listIterator.next(), is(1));
 
 		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
 		assertThat(listIterator.next(), is(2));
 
 		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 		assertThat(listIterator.next(), is(3));
 
 		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.previous(), is(3));
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.previous(), is(2));
+		assertThat(listIterator.next(), is(4));
 
 		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
 		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.next(), is(2));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
+		assertThat(listIterator.next(), is(5));
 
 		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.next(), is(3));
+		assertThat(listIterator.hasNext(), is(false));
+		assertThat(listIterator.nextIndex(), is(5));
+		assertThat(listIterator.previousIndex(), is(4));
 
 		assertThat(list, contains(1, 2, 3, 4, 5));
 		assertThat(original, contains(1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void exhaustiveListIterator() {
-		ListIterator<Integer> listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger();
-		twice(() -> {
-			while (listIterator.hasNext()) {
-				assertThat(listIterator.next(), is(i.get() + 1));
-				assertThat(listIterator.nextIndex(), is(i.get() + 1));
-				assertThat(listIterator.previousIndex(), is(i.get()));
-				i.incrementAndGet();
-			}
-			assertThat(i.get(), is(5));
-
-			while (listIterator.hasPrevious()) {
-				i.decrementAndGet();
-				assertThat(listIterator.previous(), is(i.get() + 1));
-				assertThat(listIterator.nextIndex(), is(i.get()));
-				assertThat(listIterator.previousIndex(), is(i.get() - 1));
-			}
-			assertThat(i.get(), is(0));
-		});
 	}
 
 	@Test
@@ -374,35 +319,6 @@ public class IterableListTest {
 
 		assertThat(list, is(emptyIterable()));
 		assertThat(original, is(emptyIterable()));
-	}
-
-	@Test
-	public void listIteratorRemoveBackwards() {
-		int i = 5;
-		ListIterator<Integer> listIterator = list.listIterator(i);
-
-		while (listIterator.hasPrevious()) {
-			i--;
-			assertThat(listIterator.previous(), is(i + 1));
-			assertThat(listIterator.nextIndex(), is(i));
-			assertThat(listIterator.previousIndex(), is(i - 1));
-			expecting(IllegalStateException.class, listIterator::remove);
-			assertThat(listIterator.nextIndex(), is(i));
-			assertThat(listIterator.previousIndex(), is(i - 1));
-		}
-		assertThat(i, is(0));
-
-		assertThat(list, contains(1, 2, 3, 4, 5));
-		assertThat(original, contains(1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void subList() {
-		List<Integer> emptySubList = listEmpty.subList(0, 0);
-		assertThat(emptySubList, is(emptyIterable()));
-
-		List<Integer> subList = list.subList(2, 4);
-		assertThat(subList, contains(3, 4));
 	}
 
 	@Test

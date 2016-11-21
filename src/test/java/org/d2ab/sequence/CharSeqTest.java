@@ -16,14 +16,14 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.function.chars.CharBinaryOperator;
-import org.d2ab.iterable.Iterables;
-import org.d2ab.iterable.chars.CharIterable;
+import org.d2ab.collection.Iterables;
+import org.d2ab.collection.chars.*;
+import org.d2ab.function.CharBinaryOperator;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.util.primitive.OptionalChar;
+import org.d2ab.util.OptionalChar;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -31,7 +31,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -121,12 +120,12 @@ public class CharSeqTest {
 			empty.forEachCharIndexed((e, i) -> fail("Should not get called"));
 
 			AtomicInteger value = new AtomicInteger('a');
-			AtomicLong index = new AtomicLong();
+			AtomicInteger index = new AtomicInteger();
 			a.forEachCharIndexed((e, i) -> {
 				assertThat(e, is((char) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(1L));
+			assertThat(index.get(), is(1));
 
 			value.set('a');
 			index.set(0);
@@ -134,7 +133,7 @@ public class CharSeqTest {
 				assertThat(e, is((char) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(2L));
+			assertThat(index.get(), is(2));
 
 			value.set('a');
 			index.set(0);
@@ -142,7 +141,7 @@ public class CharSeqTest {
 				assertThat(e, is((char) value.getAndIncrement()));
 				assertThat(i, is(index.getAndIncrement()));
 			});
-			assertThat(index.get(), is(5L));
+			assertThat(index.get(), is(5));
 		});
 	}
 
@@ -620,28 +619,83 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void toList() {
+		twice(() -> {
+			CharList list = abcde.toList();
+			assertThat(list, is(instanceOf(ArrayCharList.class)));
+			assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toSet() {
+		twice(() -> {
+			CharSet set = abcde.toSet();
+			assertThat(set, instanceOf(BitCharSet.class));
+			assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toSortedSet() {
+		twice(() -> {
+			CharSortedSet sortedSet = abcde.toSortedSet();
+			assertThat(sortedSet, instanceOf(BitCharSet.class));
+			assertThat(sortedSet, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toSetWithType() {
+		twice(() -> {
+			CharSet set = abcde.toSet(BitCharSet::new);
+			assertThat(set, instanceOf(BitCharSet.class));
+			assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void toCollection() {
+		twice(() -> {
+			CharList deque = abcde.toCollection(ArrayCharList::new);
+			assertThat(deque, instanceOf(ArrayCharList.class));
+			assertThat(deque, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
+	public void collectIntoCharCollection() {
+		twice(() -> {
+			CharList list = new ArrayCharList();
+			CharList result = abcde.collectInto(list);
+
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsChars('a', 'b', 'c', 'd', 'e'));
+		});
+	}
+
+	@Test
 	public void collect() {
 		twice(() -> {
 			StringBuilder builder = abc.collect(StringBuilder::new, StringBuilder::append);
-
 			assertThat(builder.toString(), is("abc"));
 		});
 	}
 
 	@Test
-	public void collectInto() {
+	public void collectIntoContainer() {
 		twice(() -> {
-			StringBuilder builder = new StringBuilder();
-			StringBuilder result = abc.collectInto(builder, StringBuilder::append);
+			CharList list = new ArrayCharList();
+			CharList result = abcde.collectInto(list, CharList::addChar);
 
-			assertThat(result, is(sameInstance(builder)));
-			assertThat(result.toString(), is("abc"));
+			assertThat(result, is(sameInstance(list)));
+			assertThat(result, containsChars('a', 'b', 'c', 'd', 'e'));
 		});
 	}
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(abc.toArray(), new char[]{'a', 'b', 'c'}), is(true)));
+		twice(() -> assertThat(Arrays.equals(abc.toCharArray(), new char[]{'a', 'b', 'c'}), is(true)));
 	}
 
 	@Test
@@ -692,29 +746,6 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void second() {
-		twice(() -> {
-			assertThat(empty.second(), is(OptionalChar.empty()));
-			assertThat(a.second(), is(OptionalChar.empty()));
-			assertThat(ab.second(), is(OptionalChar.of('b')));
-			assertThat(abc.second(), is(OptionalChar.of('b')));
-			assertThat(abcd.second(), is(OptionalChar.of('b')));
-		});
-	}
-
-	@Test
-	public void third() {
-		twice(() -> {
-			assertThat(empty.third(), is(OptionalChar.empty()));
-			assertThat(a.third(), is(OptionalChar.empty()));
-			assertThat(ab.third(), is(OptionalChar.empty()));
-			assertThat(abc.third(), is(OptionalChar.of('c')));
-			assertThat(abcd.third(), is(OptionalChar.of('c')));
-			assertThat(abcde.third(), is(OptionalChar.of('c')));
-		});
-	}
-
-	@Test
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalChar.empty()));
@@ -748,29 +779,6 @@ public class CharSeqTest {
 			assertThat(a.first(x -> x > 'a'), is(OptionalChar.empty()));
 			assertThat(ab.first(x -> x > 'a'), is(OptionalChar.of('b')));
 			assertThat(abcde.first(x -> x > 'a'), is(OptionalChar.of('b')));
-		});
-	}
-
-	@Test
-	public void secondByPredicate() {
-		twice(() -> {
-			assertThat(empty.second(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(a.second(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(ab.second(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(abc.second(x -> x > 'a'), is(OptionalChar.of('c')));
-			assertThat(abcd.second(x -> x > 'a'), is(OptionalChar.of('c')));
-		});
-	}
-
-	@Test
-	public void thirdByPredicate() {
-		twice(() -> {
-			assertThat(empty.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(a.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(ab.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(abc.third(x -> x > 'a'), is(OptionalChar.empty()));
-			assertThat(abcd.third(x -> x > 'a'), is(OptionalChar.of('d')));
-			assertThat(abcde.third(x -> x > 'a'), is(OptionalChar.of('d')));
 		});
 	}
 
@@ -868,10 +876,10 @@ public class CharSeqTest {
 
 	@Test
 	public void size() {
-		twice(() -> assertThat(empty.size(), is(0L)));
-		twice(() -> assertThat(a.size(), is(1L)));
-		twice(() -> assertThat(ab.size(), is(2L)));
-		twice(() -> assertThat(abcdefghi.size(), is(9L)));
+		twice(() -> assertThat(empty.size(), is(0)));
+		twice(() -> assertThat(a.size(), is(1)));
+		twice(() -> assertThat(ab.size(), is(2)));
+		twice(() -> assertThat(abcdefghi.size(), is(9)));
 	}
 
 	@Test
@@ -920,7 +928,7 @@ public class CharSeqTest {
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
-		AtomicLong index = new AtomicLong();
+		AtomicInteger index = new AtomicInteger();
 		CharSeq peekOne = a.peekIndexed((i, x) -> {
 			assertThat(i, is((char) (index.get() + 'a')));
 			assertThat(x, is(index.getAndIncrement()));
@@ -996,7 +1004,7 @@ public class CharSeqTest {
 	public void chars() {
 		assertThat(CharSeq.all().limit(5), containsChars('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
-		assertThat(CharSeq.all().size(), is(65536L));
+		assertThat(CharSeq.all().size(), is(65536));
 	}
 
 	@Test
@@ -1004,14 +1012,14 @@ public class CharSeqTest {
 		assertThat(CharSeq.startingAt('A').limit(5), containsChars('A', 'B', 'C', 'D', 'E'));
 		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
 		assertThat(CharSeq.startingAt(Character.MAX_VALUE), containsChars(Character.MAX_VALUE));
-		assertThat(CharSeq.startingAt('\u8000').size(), is(32768L));
+		assertThat(CharSeq.startingAt('\u8000').size(), is(32768));
 	}
 
 	@Test
 	public void charRange() {
 		assertThat(CharSeq.range('A', 'F'), containsChars('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(CharSeq.range('F', 'A'), containsChars('F', 'E', 'D', 'C', 'B', 'A'));
-		assertThat(CharSeq.range('A', 'F').size(), is(6L));
+		assertThat(CharSeq.range('A', 'F').size(), is(6));
 	}
 
 	@Test
@@ -1385,29 +1393,29 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(), is(true));
-		assertThat(empty.containsAll('p', 'q', 'r'), is(false));
+	public void containsAllChars() {
+		assertThat(empty.containsAllChars(), is(true));
+		assertThat(empty.containsAllChars('p', 'q', 'r'), is(false));
 
-		assertThat(abcde.containsAll(), is(true));
-		assertThat(abcde.containsAll('a'), is(true));
-		assertThat(abcde.containsAll('a', 'c', 'e'), is(true));
-		assertThat(abcde.containsAll('a', 'b', 'c', 'd', 'e'), is(true));
-		assertThat(abcde.containsAll('a', 'b', 'c', 'd', 'e', 'p'), is(false));
-		assertThat(abcde.containsAll('p', 'q', 'r'), is(false));
+		assertThat(abcde.containsAllChars(), is(true));
+		assertThat(abcde.containsAllChars('a'), is(true));
+		assertThat(abcde.containsAllChars('a', 'c', 'e'), is(true));
+		assertThat(abcde.containsAllChars('a', 'b', 'c', 'd', 'e'), is(true));
+		assertThat(abcde.containsAllChars('a', 'b', 'c', 'd', 'e', 'p'), is(false));
+		assertThat(abcde.containsAllChars('p', 'q', 'r'), is(false));
 	}
 
 	@Test
-	public void containsAny() {
-		assertThat(empty.containsAny(), is(false));
-		assertThat(empty.containsAny('p', 'q', 'r'), is(false));
+	public void containsAnyChars() {
+		assertThat(empty.containsAnyChars(), is(false));
+		assertThat(empty.containsAnyChars('p', 'q', 'r'), is(false));
 
-		assertThat(abcde.containsAny(), is(false));
-		assertThat(abcde.containsAny('a'), is(true));
-		assertThat(abcde.containsAny('a', 'c', 'e'), is(true));
-		assertThat(abcde.containsAny('a', 'b', 'c', 'd', 'e'), is(true));
-		assertThat(abcde.containsAny('a', 'b', 'c', 'd', 'e', 'p'), is(true));
-		assertThat(abcde.containsAny('p', 'q', 'r'), is(false));
+		assertThat(abcde.containsAnyChars(), is(false));
+		assertThat(abcde.containsAnyChars('a'), is(true));
+		assertThat(abcde.containsAnyChars('a', 'c', 'e'), is(true));
+		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e'), is(true));
+		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e', 'p'), is(true));
+		assertThat(abcde.containsAnyChars('p', 'q', 'r'), is(false));
 	}
 
 	@FunctionalInterface
