@@ -16,21 +16,19 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.ArrayDoubleList;
-import org.d2ab.collection.doubles.DoubleList;
+import org.d2ab.collection.doubles.DoubleSet;
+import org.d2ab.collection.doubles.RawDoubleSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctDoubleIterator extends UnaryDoubleIterator {
-	private final DoubleList seen = new ArrayDoubleList();
-	private final double precision;
+public class DistinctExactlyDoubleIterator extends UnaryDoubleIterator {
+	private final DoubleSet seen = new RawDoubleSet();
 
 	private double next;
 	private boolean hasNext;
 
-	public DistinctDoubleIterator(DoubleIterator iterator, double precision) {
+	public DistinctExactlyDoubleIterator(DoubleIterator iterator) {
 		super(iterator);
-		this.precision = precision;
 	}
 
 	@Override
@@ -49,10 +47,8 @@ public class DistinctDoubleIterator extends UnaryDoubleIterator {
 
 		while (!hasNext && iterator.hasNext()) {
 			double maybeNext = iterator.nextDouble();
-			if (hasNext = !seen.containsDouble(maybeNext, precision)) {
-				seen.addDouble(maybeNext);
+			if (hasNext = seen.addDouble(maybeNext))
 				next = maybeNext;
-			}
 		}
 
 		return hasNext;

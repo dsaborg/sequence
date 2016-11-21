@@ -880,24 +880,32 @@ public interface DoubleSequence extends DoubleList {
 	}
 
 	/**
+	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered,
+	 * compared to the given precision.
+	 */
+	default DoubleSequence distinct(double precision) {
+		return () -> new DistinctDoubleIterator(iterator(), precision);
+	}
+
+	/**
 	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered.
 	 */
 	default DoubleSequence distinctExactly() {
-		return () -> new DistinctDoubleIterator(iterator());
+		return () -> new DistinctExactlyDoubleIterator(iterator());
 	}
 
 	/**
 	 * @return the smallest double in this {@code DoubleSequence}.
 	 */
 	default OptionalDouble min() {
-		return reduce((a, b) -> (a < b) ? a : b);
+		return reduce(Math::min);
 	}
 
 	/**
 	 * @return the greatest double in this {@code DoubleSequence}.
 	 */
 	default OptionalDouble max() {
-		return reduce((a, b) -> (a > b) ? a : b);
+		return reduce(Math::max);
 	}
 
 	/**

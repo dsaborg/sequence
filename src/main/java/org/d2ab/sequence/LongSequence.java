@@ -1042,14 +1042,14 @@ public interface LongSequence extends LongList {
 	 * @return the smallest long in this {@code LongSequence}.
 	 */
 	default OptionalLong min() {
-		return reduce((a, b) -> (a < b) ? a : b);
+		return reduce(Math::min);
 	}
 
 	/**
 	 * @return the greatest long in this {@code LongSequence}.
 	 */
 	default OptionalLong max() {
-		return reduce((a, b) -> (a > b) ? a : b);
+		return reduce(Math::max);
 	}
 
 	/**

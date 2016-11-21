@@ -810,6 +810,21 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void distinct() {
+		DoubleSequence emptyDistinct = empty.distinct(0.5);
+		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+
+		DoubleSequence oneDistinct = oneRandom.distinct(0.5);
+		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
+
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17.15, 17.3)).distinct(0.2);
+		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17, 17.3)));
+
+		DoubleSequence nineDistinct = nineRandom.distinct(0.5);
+		twice(() -> assertThat(nineDistinct, containsDoubles(6, 1, -7, 2, 17, 5, 4)));
+	}
+
+	@Test
 	public void distinctExactly() {
 		DoubleSequence emptyDistinct = empty.distinctExactly();
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));

@@ -1044,14 +1044,14 @@ public interface IntSequence extends IntList {
 	 * @return the smallest int in this {@code IntSequence}.
 	 */
 	default OptionalInt min() {
-		return reduce((a, b) -> (a < b) ? a : b);
+		return reduce(Math::min);
 	}
 
 	/**
 	 * @return the greatest int in this {@code IntSequence}.
 	 */
 	default OptionalInt max() {
-		return reduce((a, b) -> (a > b) ? a : b);
+		return reduce(Math::max);
 	}
 
 	/**
