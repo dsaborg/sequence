@@ -56,11 +56,11 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	}
 
 	@Override
-	default boolean add(Character i) {
-		return addChar(i);
+	default boolean add(Character x) {
+		return addChar(x);
 	}
 
-	default boolean addChar(char i) {
+	default boolean addChar(char x) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -79,18 +79,18 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 		return Collectionz.addAll(this, c);
 	}
 
-	default boolean addAllChars(char... is) {
+	default boolean addAllChars(char... xs) {
 		boolean changed = false;
-		for (char i : is)
-			changed |= addChar(i);
+		for (char x : xs)
+			changed |= addChar(x);
 		return changed;
 	}
 
-	default boolean addAllChars(CharCollection is) {
-		if (is.isEmpty())
+	default boolean addAllChars(CharCollection xs) {
+		if (xs.isEmpty())
 			return false;
 
-		is.forEachChar(this::addChar);
+		xs.forEachChar(this::addChar);
 		return true;
 	}
 

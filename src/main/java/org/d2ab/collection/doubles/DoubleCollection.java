@@ -79,10 +79,10 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 		return Collectionz.addAll(this, c);
 	}
 
-	default boolean addAllDoubles(double... is) {
+	default boolean addAllDoubles(double... xs) {
 		boolean changed = false;
-		for (double i : is)
-			changed |= addDouble(i);
+		for (double x : xs)
+			changed |= addDouble(x);
 		return changed;
 	}
 

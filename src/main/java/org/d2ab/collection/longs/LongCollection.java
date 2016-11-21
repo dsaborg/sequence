@@ -56,11 +56,11 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	@Override
-	default boolean add(Long l) {
-		return addLong(l);
+	default boolean add(Long x) {
+		return addLong(x);
 	}
 
-	default boolean addLong(long l) {
+	default boolean addLong(long x) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -79,10 +79,10 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 		return Collectionz.addAll(this, c);
 	}
 
-	default boolean addAllLongs(long... is) {
+	default boolean addAllLongs(long... xs) {
 		boolean changed = false;
-		for (long i : is)
-			changed |= addLong(i);
+		for (long x : xs)
+			changed |= addLong(x);
 		return changed;
 	}
 

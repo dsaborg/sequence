@@ -56,11 +56,11 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	@Override
-	default boolean add(Integer i) {
-		return addInt(i);
+	default boolean add(Integer x) {
+		return addInt(x);
 	}
 
-	default boolean addInt(int i) {
+	default boolean addInt(int x) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -79,18 +79,18 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 		return Collectionz.addAll(this, c);
 	}
 
-	default boolean addAllInts(int... is) {
+	default boolean addAllInts(int... xs) {
 		boolean changed = false;
-		for (int i : is)
-			changed |= addInt(i);
+		for (int x : xs)
+			changed |= addInt(x);
 		return changed;
 	}
 
-	default boolean addAllInts(IntCollection is) {
-		if (is.isEmpty())
+	default boolean addAllInts(IntCollection xs) {
+		if (xs.isEmpty())
 			return false;
 
-		is.forEachInt(this::addInt);
+		xs.forEachInt(this::addInt);
 		return true;
 	}
 
