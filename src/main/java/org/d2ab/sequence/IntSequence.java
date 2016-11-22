@@ -51,14 +51,14 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
-	 * Create an {@code IntSequence} with the given {@code ints].
+	 * Create an {@code IntSequence} with the given {@code ints}.
 	 */
 	static IntSequence of(int... is) {
 		return () -> IntIterator.of(is);
 	}
 
 	/**
-	 * Create an {@code intSequence} with the given {@code ints], limited to the given size.
+	 * Create an {@code IntSequence} with the given {@code ints}, limited to the given size.
 	 */
 	static IntSequence from(int[] is, int size) {
 		return () -> IntIterator.from(is, size);
@@ -73,7 +73,7 @@ public interface IntSequence extends IntList {
 	}
 
 	/**
-	 * Create an {@code IntSequence} from a {@link IntIterable}.
+	 * Create an {@code IntSequence} from an {@link IntIterable}.
 	 *
 	 * @see #cache(IntIterable)
 	 */
