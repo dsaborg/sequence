@@ -62,6 +62,14 @@ public class ListSequence<T> implements Sequence<T> {
 		return from(ChainedList.from(lists));
 	}
 
+	public ListSequence() {
+		this(new ArrayList<>());
+	}
+
+	public ListSequence(int capacity) {
+		this(new ArrayList<>(capacity));
+	}
+
 	private ListSequence(List<T> list) {
 		this.list = list;
 	}
@@ -69,6 +77,16 @@ public class ListSequence<T> implements Sequence<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return list.iterator();
+	}
+
+	@Override
+	public ListIterator<T> listIterator() {
+		return list.listIterator();
+	}
+
+	@Override
+	public ListIterator<T> listIterator(int index) {
+		return list.listIterator(index);
 	}
 
 	@Override
