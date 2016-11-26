@@ -17,7 +17,10 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.longs.LimitingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.iterator.longs.SkippingLongIterator;
+import org.d2ab.iterator.longs.UnaryLongIterator;
 
 import java.util.*;
 import java.util.function.LongUnaryOperator;
@@ -140,8 +143,8 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	@Override
-	default LongList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
+	default LongList subList(int from, int to) {
+		return new SubList(this, from, to);
 	}
 
 	@Override
@@ -286,5 +289,37 @@ public interface LongList extends List<Long>, LongCollection {
 	@Override
 	default Spliterator.OfLong spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
+	}
+
+	class SubList implements LongList {
+		private final LongList list;
+
+		private int from;
+		private int to;
+
+		public SubList(LongList list, int from, int to) {
+			this.list = list;
+			this.from = from;
+			this.to = to;
+		}
+
+		public LongIterator iterator() {
+			return new UnaryLongIterator(new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
+				@Override
+				public long nextLong() {
+					return iterator.nextLong();
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
+		}
 	}
 }

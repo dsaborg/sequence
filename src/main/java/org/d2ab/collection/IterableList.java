@@ -218,7 +218,7 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 		}
 
 		public Iterator<T> iterator() {
-			return new DelegatingIterator<T, Iterator<T>, T>(new LimitingIterator<>(new SkippingIterator<>(iterableList.iterator(), from), to - from)) {
+			return new UnaryIterator<T>(new LimitingIterator<>(new SkippingIterator<>(iterableList.iterator(), from), to - from)) {
 				@Override
 				public T next() {
 					return iterator.next();

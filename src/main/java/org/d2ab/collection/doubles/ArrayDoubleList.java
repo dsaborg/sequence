@@ -94,11 +94,6 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	@Override
-	public DoubleList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void sortDoubles() {
 		Arrays.sort(contents, 0, size);
 	}

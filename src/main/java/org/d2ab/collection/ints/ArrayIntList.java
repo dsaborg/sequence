@@ -94,11 +94,6 @@ public class ArrayIntList implements IntList {
 	}
 
 	@Override
-	public IntList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void sortInts() {
 		Arrays.sort(contents, 0, size);
 	}

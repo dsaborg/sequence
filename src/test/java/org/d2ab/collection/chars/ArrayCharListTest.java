@@ -211,7 +211,33 @@ public class ArrayCharListTest {
 
 	@Test
 	public void subList() {
-		expecting(UnsupportedOperationException.class, () -> list.subList(1, 2));
+		CharList list = CharList.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
+
+		CharList subList = list.subList(2, 8);
+		twice(() -> assertThat(subList, containsChars('c', 'd', 'e', 'f', 'g', 'h')));
+
+		assertThat(subList.removeCharAt(1), is('d'));
+		twice(() -> assertThat(subList, containsChars('c', 'e', 'f', 'g', 'h')));
+		twice(() -> assertThat(list, containsChars('a', 'b', 'c', 'e', 'f', 'g', 'h', 'i', 'j')));
+
+		assertThat(subList.removeChar('e'), is(true));
+		twice(() -> assertThat(subList, containsChars('c', 'f', 'g', 'h')));
+		twice(() -> assertThat(list, containsChars('a', 'b', 'c', 'f', 'g', 'h', 'i', 'j')));
+
+		CharIterator subListIterator = subList.iterator();
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.nextChar(), is('c'));
+		subListIterator.remove();
+		twice(() -> assertThat(subList, containsChars('f', 'g', 'h')));
+		twice(() -> assertThat(list, containsChars('a', 'b', 'f', 'g', 'h', 'i', 'j')));
+
+		subList.removeIf(x -> x != 'g');
+		twice(() -> assertThat(subList, containsChars('g')));
+		twice(() -> assertThat(list, containsChars('a', 'b', 'g', 'i', 'j')));
+
+		subList.clear();
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(list, containsChars('a', 'b', 'i', 'j')));
 	}
 
 	@Test

@@ -19,6 +19,9 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Collectionz;
 import org.d2ab.function.CharUnaryOperator;
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.LimitingCharIterator;
+import org.d2ab.iterator.chars.SkippingCharIterator;
+import org.d2ab.iterator.chars.UnaryCharIterator;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -140,8 +143,8 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	@Override
-	default CharList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
+	default CharList subList(int from, int to) {
+		return new SubList(this, from, to);
 	}
 
 	@Override
@@ -286,5 +289,37 @@ public interface CharList extends List<Character>, CharCollection {
 	@Override
 	default Spliterator.OfInt intSpliterator() {
 		return Spliterators.spliterator(intIterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
+	}
+
+	class SubList implements CharList {
+		private final CharList list;
+
+		private int from;
+		private int to;
+
+		public SubList(CharList list, int from, int to) {
+			this.list = list;
+			this.from = from;
+			this.to = to;
+		}
+
+		public CharIterator iterator() {
+			return new UnaryCharIterator(new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
+				@Override
+				public char nextChar() {
+					return iterator.nextChar();
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
+		}
 	}
 }

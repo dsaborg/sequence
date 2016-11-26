@@ -92,6 +92,11 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 			}
 
 			@Override
+			public void remove() {
+				iterator.remove();
+			}
+
+			@Override
 			public boolean hasPrevious() {
 				throw new UnsupportedOperationException();
 			}

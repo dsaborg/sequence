@@ -210,7 +210,33 @@ public class ArrayLongListTest {
 
 	@Test
 	public void subList() {
-		expecting(UnsupportedOperationException.class, () -> list.subList(1, 2));
+		LongList list = LongList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		LongList subList = list.subList(2, 8);
+		twice(() -> assertThat(subList, containsLongs(3, 4, 5, 6, 7, 8)));
+
+		assertThat(subList.removeLongAt(1), is(4L));
+		twice(() -> assertThat(subList, containsLongs(3, 5, 6, 7, 8)));
+		twice(() -> assertThat(list, containsLongs(1, 2, 3, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(subList.removeLong(5), is(true));
+		twice(() -> assertThat(subList, containsLongs(3, 6, 7, 8)));
+		twice(() -> assertThat(list, containsLongs(1, 2, 3, 6, 7, 8, 9, 10)));
+
+		LongIterator subListIterator = subList.iterator();
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.nextLong(), is(3L));
+		subListIterator.remove();
+		twice(() -> assertThat(subList, containsLongs(6, 7, 8)));
+		twice(() -> assertThat(list, containsLongs(1, 2, 6, 7, 8, 9, 10)));
+
+		subList.removeIf(x -> x % 2 == 0);
+		twice(() -> assertThat(subList, containsLongs(7)));
+		twice(() -> assertThat(list, containsLongs(1, 2, 7, 9, 10)));
+
+		subList.clear();
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(list, containsLongs(1, 2, 9, 10)));
 	}
 
 	@Test

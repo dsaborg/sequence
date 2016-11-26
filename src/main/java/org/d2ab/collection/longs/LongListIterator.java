@@ -92,6 +92,11 @@ public interface LongListIterator extends ListIterator<Long>, LongIterator {
 			}
 
 			@Override
+			public void remove() {
+				iterator.remove();
+			}
+
+			@Override
 			public boolean hasPrevious() {
 				throw new UnsupportedOperationException();
 			}

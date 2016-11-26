@@ -92,6 +92,11 @@ public interface CharListIterator extends ListIterator<Character>, CharIterator 
 			}
 
 			@Override
+			public void remove() {
+				iterator.remove();
+			}
+
+			@Override
 			public boolean hasPrevious() {
 				throw new UnsupportedOperationException();
 			}

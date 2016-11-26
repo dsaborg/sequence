@@ -18,6 +18,9 @@ package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.ints.LimitingIntIterator;
+import org.d2ab.iterator.ints.SkippingIntIterator;
+import org.d2ab.iterator.ints.UnaryIntIterator;
 
 import java.util.*;
 import java.util.function.IntUnaryOperator;
@@ -140,8 +143,8 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	@Override
-	default IntList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
+	default IntList subList(int from, int to) {
+		return new SubList(this, from, to);
 	}
 
 	@Override
@@ -286,5 +289,37 @@ public interface IntList extends List<Integer>, IntCollection {
 	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
+	}
+
+	class SubList implements IntList {
+		private final IntList list;
+
+		private int from;
+		private int to;
+
+		public SubList(IntList list, int from, int to) {
+			this.list = list;
+			this.from = from;
+			this.to = to;
+		}
+
+		public IntIterator iterator() {
+			return new UnaryIntIterator(new LimitingIntIterator(new SkippingIntIterator(list.iterator(), from), to - from)) {
+				@Override
+				public int nextInt() {
+					return iterator.nextInt();
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
+		}
 	}
 }

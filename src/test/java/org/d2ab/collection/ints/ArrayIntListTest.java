@@ -209,7 +209,33 @@ public class ArrayIntListTest {
 
 	@Test
 	public void subList() {
-		expecting(UnsupportedOperationException.class, () -> list.subList(1, 2));
+		IntList list = IntList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		IntList subList = list.subList(2, 8);
+		twice(() -> assertThat(subList, containsInts(3, 4, 5, 6, 7, 8)));
+
+		assertThat(subList.removeIntAt(1), is(4));
+		twice(() -> assertThat(subList, containsInts(3, 5, 6, 7, 8)));
+		twice(() -> assertThat(list, containsInts(1, 2, 3, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(subList.removeInt(5), is(true));
+		twice(() -> assertThat(subList, containsInts(3, 6, 7, 8)));
+		twice(() -> assertThat(list, containsInts(1, 2, 3, 6, 7, 8, 9, 10)));
+
+		IntIterator subListIterator = subList.iterator();
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.nextInt(), is(3));
+		subListIterator.remove();
+		twice(() -> assertThat(subList, containsInts(6, 7, 8)));
+		twice(() -> assertThat(list, containsInts(1, 2, 6, 7, 8, 9, 10)));
+
+		subList.removeIf(x -> x % 2 == 0);
+		twice(() -> assertThat(subList, containsInts(7)));
+		twice(() -> assertThat(list, containsInts(1, 2, 7, 9, 10)));
+
+		subList.clear();
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(list, containsInts(1, 2, 9, 10)));
 	}
 
 	@Test

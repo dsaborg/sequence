@@ -18,6 +18,9 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.doubles.LimitingDoubleIterator;
+import org.d2ab.iterator.doubles.SkippingDoubleIterator;
+import org.d2ab.iterator.doubles.UnaryDoubleIterator;
 
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
@@ -140,8 +143,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	@Override
-	default DoubleList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
+	default DoubleList subList(int from, int to) {
+		return new SubList(this, from, to);
 	}
 
 	@Override
@@ -306,5 +309,37 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	@Override
 	default Spliterator.OfDouble spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
+	}
+
+	class SubList implements DoubleList {
+		private final DoubleList list;
+
+		private int from;
+		private int to;
+
+		public SubList(DoubleList list, int from, int to) {
+			this.list = list;
+			this.from = from;
+			this.to = to;
+		}
+
+		public DoubleIterator iterator() {
+			return new UnaryDoubleIterator(new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
+				@Override
+				public double nextDouble() {
+					return iterator.nextDouble();
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
+		}
 	}
 }

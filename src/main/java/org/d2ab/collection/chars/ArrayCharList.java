@@ -93,11 +93,6 @@ public class ArrayCharList implements CharList {
 	}
 
 	@Override
-	public CharList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void sortChars() {
 		Arrays.sort(contents, 0, size);
 	}

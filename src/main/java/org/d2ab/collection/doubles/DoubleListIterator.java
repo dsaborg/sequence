@@ -92,6 +92,11 @@ public interface DoubleListIterator extends ListIterator<Double>, DoubleIterator
 			}
 
 			@Override
+			public void remove() {
+				iterator.remove();
+			}
+
+			@Override
 			public boolean hasPrevious() {
 				throw new UnsupportedOperationException();
 			}

@@ -94,11 +94,6 @@ public class ArrayLongList implements LongList {
 	}
 
 	@Override
-	public LongList subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void sortLongs() {
 		Arrays.sort(contents, 0, size);
 	}
