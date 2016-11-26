@@ -17,7 +17,6 @@
 package org.d2ab.collection;
 
 import org.d2ab.iterator.longs.LongIterator;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.*;
@@ -257,12 +256,12 @@ public class SparseBitSetTest {
 
 		assertThat(bitSet1, is(not(equalTo(bitSet2))));
 		assertThat(bitSet2, is(not(equalTo(bitSet1))));
-		assertThat(bitSet1.hashCode(), is(CoreMatchers.not(bitSet2.hashCode())));
+		assertThat(bitSet1.hashCode(), is(not(bitSet2.hashCode())));
 
 		bitSet1.clear(73);
 		assertThat(bitSet1, is(equalTo(bitSet2)));
 		assertThat(bitSet2, is(equalTo(bitSet1)));
-		assertThat(bitSet1.hashCode(), CoreMatchers.is(bitSet2.hashCode()));
+		assertThat(bitSet1.hashCode(), is(bitSet2.hashCode()));
 
 		Set<Long> hashSet = new HashSet<>(asList(0L, 17L, 32L));
 		assertThat(bitSet1, is(equalTo(hashSet)));

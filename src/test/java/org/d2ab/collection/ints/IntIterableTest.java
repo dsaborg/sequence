@@ -16,7 +16,6 @@
 
 package org.d2ab.collection.ints;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +59,7 @@ public class IntIterableTest {
 	@Test
 	public void readAlreadyBegun() throws IOException {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
-		assertThat(inputStream.read(), CoreMatchers.is(1));
+		assertThat(inputStream.read(), is(1));
 
 		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);
 		assertThat(iterable, containsInts(2, 3, 4, 5));
@@ -70,7 +69,7 @@ public class IntIterableTest {
 	@Test
 	public void readWithMark() throws IOException {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
-		assertThat(inputStream.read(), CoreMatchers.is(1));
+		assertThat(inputStream.read(), is(1));
 		inputStream.mark(0);
 
 		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);

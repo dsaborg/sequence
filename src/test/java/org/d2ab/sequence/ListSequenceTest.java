@@ -2,9 +2,14 @@ package org.d2ab.sequence;
 
 import org.junit.Test;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import static org.hamcrest.Matchers.*;
+import static java.util.Arrays.asList;
+import static org.d2ab.test.Tests.twice;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class ListSequenceTest {
@@ -37,19 +42,32 @@ public class ListSequenceTest {
 
 	@Test
 	public void subList() {
-		ListSequence<Integer> listSequence = new ListSequence<>();
-		listSequence.add(1);
-		listSequence.add(2);
-		listSequence.add(3);
-		listSequence.add(4);
-		listSequence.add(5);
+		Sequence<Integer> listSequence = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 
-		List<Integer> subList = listSequence.subList(1, 4);
-		assertThat(subList, contains(2, 3, 4));
+		Sequence<Integer> subList = listSequence.subList(2, 8);
+		twice(() -> assertThat(subList, contains(3, 4, 5, 6, 7, 8)));
+
+		assertThat(subList.remove(1), is(4));
+		twice(() -> assertThat(subList, contains(3, 5, 6, 7, 8)));
+		twice(() -> assertThat(listSequence, contains(1, 2, 3, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(subList.remove((Integer) 5), is(true));
+		twice(() -> assertThat(subList, contains(3, 6, 7, 8)));
+		twice(() -> assertThat(listSequence, contains(1, 2, 3, 6, 7, 8, 9, 10)));
+
+		Iterator<Integer> subListIterator = subList.iterator();
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.next(), is(3));
+		subListIterator.remove();
+		twice(() -> assertThat(subList, contains(6, 7, 8)));
+		twice(() -> assertThat(listSequence, contains(1, 2, 6, 7, 8, 9, 10)));
+
+		subList.removeIf(x -> x % 2 == 0);
+		twice(() -> assertThat(subList, contains(7)));
+		twice(() -> assertThat(listSequence, contains(1, 2, 7, 9, 10)));
 
 		subList.clear();
-		assertThat(subList, is(emptyIterable()));
-
-		assertThat(listSequence, contains(1, 5));
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(listSequence, contains(1, 2, 9, 10)));
 	}
 }

@@ -16,7 +16,6 @@
 
 package org.d2ab.collection.chars;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class CharIterableTest {
 	@Test
 	public void readWithMark() throws IOException {
 		Reader reader = new StringReader("abcde");
-		assertThat((char) reader.read(), CoreMatchers.is('a'));
+		assertThat((char) reader.read(), is('a'));
 
 		reader.mark(0);
 
@@ -63,7 +62,7 @@ public class CharIterableTest {
 	@Test
 	public void readAlreadyBegun() throws IOException {
 		Reader reader = new StringReader("abcde");
-		assertThat((char) reader.read(), CoreMatchers.is('a'));
+		assertThat((char) reader.read(), is('a'));
 
 		CharIterable iterable = CharIterable.read(reader);
 		assertThat(iterable, containsChars('b', 'c', 'd', 'e'));

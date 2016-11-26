@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -1561,7 +1563,7 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 
 		CharSeq charSeq = _12345.toChars((k, v) -> (char) (v + 'a' - 1));
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
@@ -1588,7 +1590,7 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 
 		DoubleSequence doubleSequence = _12345.toDoubles((k, v) -> v + 1);
-		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(2.0, 3.0, 4.0, 5.0, 6.0)));
 	}
 
 	@Test
@@ -1597,7 +1599,7 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 
 		CharSeq charSeq = _12345.toChars(e -> (char) (e.getValue() + 'a' - 1));
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
@@ -1624,7 +1626,7 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 
 		DoubleSequence doubleSequence = _12345.toDoubles(e -> e.getValue() + 1);
-		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(2.0, 3.0, 4.0, 5.0, 6.0)));
 	}
 
 	@Test

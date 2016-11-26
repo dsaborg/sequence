@@ -18,7 +18,6 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -103,12 +102,12 @@ public class SortedListDoubleSetTest {
 	public void testEqualsHashCode() {
 		SortedListDoubleSet set2 = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(CoreMatchers.not(set2.hashCode())));
+		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
 		set2.removeDoubleExactly(17);
 
 		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), CoreMatchers.is(set2.hashCode()));
+		assertThat(set.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test

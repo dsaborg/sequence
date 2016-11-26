@@ -19,7 +19,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.ints.ArrayIntList;
 import org.d2ab.iterator.chars.CharIterator;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -103,14 +102,14 @@ public class BitCharSetTest {
 
 	@Test
 	public void testEqualsHashCode() {
-		BitCharSet intSet2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
-		assertThat(set, is(not(equalTo(intSet2))));
-		assertThat(set.hashCode(), is(CoreMatchers.not(intSet2.hashCode())));
+		BitCharSet charSet2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
+		assertThat(set, is(not(equalTo(charSet2))));
+		assertThat(set.hashCode(), is(not(charSet2.hashCode())));
 
-		intSet2.removeChar('q');
+		charSet2.removeChar('q');
 
-		assertThat(set, is(equalTo(intSet2)));
-		assertThat(set.hashCode(), CoreMatchers.is(intSet2.hashCode()));
+		assertThat(set, is(equalTo(charSet2)));
+		assertThat(set.hashCode(), is(charSet2.hashCode()));
 	}
 
 	@Test
@@ -154,7 +153,8 @@ public class BitCharSetTest {
 
 	@Test
 	public void parallelIntStream() {
-		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt,
+		                                             ArrayIntList::addAllInts),
 		           is(emptyIterable()));
 
 		assertThat(set.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),

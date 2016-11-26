@@ -18,7 +18,6 @@ package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.ints.IntIterator;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -103,12 +102,12 @@ public class BitIntSetTest {
 	public void testEqualsHashCode() {
 		BitIntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(CoreMatchers.not(set2.hashCode())));
+		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
 		set2.removeInt(17);
 
 		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), CoreMatchers.is(set2.hashCode()));
+		assertThat(set.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test
