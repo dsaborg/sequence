@@ -318,6 +318,10 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		private int to;
 
 		public SubList(DoubleList list, int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > list.size())
+				throw new ArrayIndexOutOfBoundsException(to);
 			this.list = list;
 			this.from = from;
 			this.to = to;

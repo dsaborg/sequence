@@ -298,6 +298,10 @@ public interface IntList extends List<Integer>, IntCollection {
 		private int to;
 
 		public SubList(IntList list, int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > list.size())
+				throw new ArrayIndexOutOfBoundsException(to);
 			this.list = list;
 			this.from = from;
 			this.to = to;

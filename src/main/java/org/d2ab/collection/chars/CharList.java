@@ -298,6 +298,10 @@ public interface CharList extends List<Character>, CharCollection {
 		private int to;
 
 		public SubList(CharList list, int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > list.size())
+				throw new ArrayIndexOutOfBoundsException(to);
 			this.list = list;
 			this.from = from;
 			this.to = to;

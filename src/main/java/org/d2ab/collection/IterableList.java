@@ -206,19 +206,23 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 	}
 
 	class SubList<T> implements IterableList<T> {
-		private final IterableList<T> iterableList;
+		private final List<T> list;
 
 		private int from;
 		private int to;
 
-		public SubList(IterableList<T> iterableList, int from, int to) {
-			this.iterableList = iterableList;
+		public SubList(List<T> list, int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > list.size())
+				throw new ArrayIndexOutOfBoundsException(to);
+			this.list = list;
 			this.from = from;
 			this.to = to;
 		}
 
 		public Iterator<T> iterator() {
-			return new UnaryIterator<T>(new LimitingIterator<>(new SkippingIterator<>(iterableList.iterator(), from), to - from)) {
+			return new UnaryIterator<T>(new LimitingIterator<>(new SkippingIterator<>(list.iterator(), from), to - from)) {
 				@Override
 				public T next() {
 					return iterator.next();
