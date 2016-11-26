@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Collections.singletonList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -893,6 +894,37 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void subList() {
+		Sequence<Integer> sequence = newSequence(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		Sequence<Integer> subList = sequence.subList(2, 8);
+		twice(() -> assertThat(subList, contains(3, 4, 5, 6, 7, 8)));
+
+		assertThat(subList.remove(1), is(4));
+		twice(() -> assertThat(subList, contains(3, 5, 6, 7, 8)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(subList.remove((Integer) 5), is(true));
+		twice(() -> assertThat(subList, contains(3, 6, 7, 8)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 6, 7, 8, 9, 10)));
+
+		Iterator<Integer> subListIterator = subList.iterator();
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.next(), is(3));
+		subListIterator.remove();
+		twice(() -> assertThat(subList, contains(6, 7, 8)));
+		twice(() -> assertThat(sequence, contains(1, 2, 6, 7, 8, 9, 10)));
+
+		subList.removeIf(x -> x % 2 == 0);
+		twice(() -> assertThat(subList, contains(7)));
+		twice(() -> assertThat(sequence, contains(1, 2, 7, 9, 10)));
+
+		subList.clear();
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(sequence, contains(1, 2, 9, 10)));
+	}
+
+	@Test
 	public void untilTerminal() {
 		Sequence<Integer> untilEmpty = empty.until(5);
 		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
@@ -1731,19 +1763,19 @@ public class SequenceTest {
 
 		AtomicInteger index = new AtomicInteger();
 		Sequence<Integer> peekOne = _1.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(1)));
 
 		Sequence<Integer> peekTwo = _12.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(1, 2)));
 
 		Sequence<Integer> peek = _12345.peekIndexed((i, x) -> {
-			assertThat(i, is((int) (index.get() + 1)));
+			assertThat(i, is(index.get() + 1));
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, contains(1, 2, 3, 4, 5)));
@@ -2197,7 +2229,7 @@ public class SequenceTest {
 
 	@Test
 	public void removeAllAfterAppend() {
-		Sequence<Integer> appended = _1.append(new ArrayList<>(Arrays.asList(2)));
+		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
 		appended.clear();
 
 		twice(() -> assertThat(appended, is(emptyIterable())));

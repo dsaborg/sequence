@@ -85,8 +85,8 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Sequence<T> subList(int fromIndex, int toIndex) {
-		return new ListSequence<>(list.subList(fromIndex, toIndex));
+	public Sequence<T> subList(int from, int to) {
+		return new ListSequence<>(list.subList(from, to));
 	}
 
 	@Override

@@ -16,8 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.ForwardListIterator;
-import org.d2ab.iterator.Iterators;
+import org.d2ab.iterator.*;
 
 import java.util.*;
 
@@ -202,7 +201,30 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 	}
 
 	@Override
-	default List<T> subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException();
+	default List<T> subList(int from, int to) {
+		return new SubList<>(this, from, to);
+	}
+
+	class SubList<T> implements IterableList<T> {
+		private final IterableList<T> iterableList;
+
+		private int from;
+		private int to;
+
+		public SubList(IterableList<T> iterableList, int from, int to) {
+			this.iterableList = iterableList;
+			this.from = from;
+			this.to = to;
+		}
+
+		public Iterator<T> iterator() {
+			return new DelegatingIterator<T, Iterator<T>, T>(new LimitingIterator<>(new SkippingIterator<>(iterableList.iterator(), from), to - from)) {
+				@Override
+				public void remove() {
+					super.remove();
+					to--;
+				}
+			};
+		}
 	}
 }

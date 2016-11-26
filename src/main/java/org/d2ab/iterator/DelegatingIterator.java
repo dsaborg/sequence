@@ -34,6 +34,11 @@ public abstract class DelegatingIterator<T, I extends Iterator<? extends T>, U> 
 	}
 
 	@Override
+	public U next() {
+		return (U) iterator.next();
+	}
+
+	@Override
 	public void remove() {
 		iterator.remove();
 	}

@@ -430,6 +430,10 @@ public interface Sequence<T> extends IterableList<T> {
 		return recurse(f.apply(seed), f.compose(g)::apply);
 	}
 
+	default Sequence<T> subList(int from, int to) {
+		return Sequence.from(new IterableList.SubList<>(this, from, to));
+	}
+
 	/**
 	 * Terminate this {@code Sequence} just before the given element is encountered, not including the element in the
 	 * {@code Sequence}.
