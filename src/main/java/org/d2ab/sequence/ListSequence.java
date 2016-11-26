@@ -85,6 +85,11 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Sequence<T> subList(int fromIndex, int toIndex) {
+		return new ListSequence<>(list.subList(fromIndex, toIndex));
+	}
+
+	@Override
 	public ListIterator<T> listIterator(int index) {
 		return list.listIterator(index);
 	}
