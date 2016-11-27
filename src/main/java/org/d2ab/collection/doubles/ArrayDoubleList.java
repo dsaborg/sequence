@@ -20,6 +20,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
@@ -155,6 +156,11 @@ public class ArrayDoubleList implements DoubleList {
 	@Override
 	public int binarySearchExactly(double x) {
 		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
+	public DoubleList subList(int from, int to) {
+		return new SubList(from, to);
 	}
 
 	@Override
@@ -380,26 +386,40 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	private class ListIter implements DoubleListIterator {
-		protected int nextIndex;
-		protected int currentIndex;
-		protected boolean addOrRemove;
-		protected boolean nextOrPrevious;
+		private int nextIndex;
+		private int currentIndex;
+		private final int from;
+		private int to;
+		private boolean addOrRemove;
+		private boolean nextOrPrevious;
 
 		private ListIter(int index) {
+			this(index, 0, size);
+		}
+
+		private ListIter(int index, int from, int to) {
+			if (index < 0)
+				throw new ArrayIndexOutOfBoundsException(index);
+			if (index > to - from)
+				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
+			this.from = from;
+			this.to = to;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return nextIndex < size;
+			return nextIndex < to - from;
 		}
 
 		@Override
 		public double nextDouble() {
+			if (!hasNext())
+				throw new NoSuchElementException();
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return contents[currentIndex = nextIndex++];
+			return contents[(currentIndex = nextIndex++) + from];
 		}
 
 		@Override
@@ -409,9 +429,11 @@ public class ArrayDoubleList implements DoubleList {
 
 		@Override
 		public double previousDouble() {
+			if (!hasPrevious())
+				throw new NoSuchElementException();
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return contents[currentIndex = --nextIndex];
+			return contents[(currentIndex = --nextIndex) + from];
 		}
 
 		@Override
@@ -431,8 +453,9 @@ public class ArrayDoubleList implements DoubleList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextDouble() or previousDouble() not called");
 
-			uncheckedRemove(nextIndex = currentIndex--);
+			uncheckedRemove((nextIndex = currentIndex--) + from);
 			addOrRemove = true;
+			to--;
 		}
 
 		@Override
@@ -442,13 +465,54 @@ public class ArrayDoubleList implements DoubleList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextDouble() or previousDouble() not called");
 
-			contents[currentIndex] = x;
+			contents[currentIndex + from] = x;
 		}
 
 		@Override
 		public void add(double x) {
-			uncheckedAdd(currentIndex = nextIndex++, x);
+			uncheckedAdd((currentIndex = nextIndex++) + from, x);
 			addOrRemove = true;
+			to++;
+		}
+	}
+
+	private class SubList implements DoubleList {
+		private int from;
+		private int to;
+
+		public SubList(int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > size)
+				throw new ArrayIndexOutOfBoundsException(to);
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public DoubleIterator iterator() {
+			return listIterator();
+		}
+
+		@Override
+		public DoubleListIterator listIterator(int index) {
+			return new ArrayDoubleList.ListIter(index, from, to) {
+				@Override
+				public void add(double x) {
+					super.add(x);
+					ArrayDoubleList.SubList.this.to++;
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					ArrayDoubleList.SubList.this.to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
 		}
 	}
 }

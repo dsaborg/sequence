@@ -237,6 +237,10 @@ public class ArrayLongListTest {
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(list, containsLongs(1, 2, 9, 10)));
+
+		subList.addLong(17);
+		twice(() -> assertThat(subList, containsLongs(17)));
+		twice(() -> assertThat(list, containsLongs(1, 2, 17, 9, 10)));
 	}
 
 	@Test

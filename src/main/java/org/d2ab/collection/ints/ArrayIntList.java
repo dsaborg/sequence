@@ -145,7 +145,7 @@ public class ArrayIntList implements IntList {
 	@Override
 	public IntListIterator listIterator(int index) {
 		rangeCheckForAdd(index);
-		return new ListIter(index, 0, size);
+		return new ListIter(index);
 	}
 
 	@Override
@@ -392,6 +392,10 @@ public class ArrayIntList implements IntList {
 		private int to;
 		private boolean addOrRemove;
 		private boolean nextOrPrevious;
+
+		public ListIter(int index) {
+			this(index, 0, size);
+		}
 
 		private ListIter(int index, int from, int to) {
 			if (index < 0)

@@ -238,6 +238,10 @@ public class ArrayCharListTest {
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(list, containsChars('a', 'b', 'i', 'j')));
+
+		subList.addChar('q');
+		twice(() -> assertThat(subList, containsChars('q')));
+		twice(() -> assertThat(list, containsChars('a', 'b', 'q', 'i', 'j')));
 	}
 
 	@Test

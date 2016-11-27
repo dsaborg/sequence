@@ -20,6 +20,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.LongConsumer;
 import java.util.function.LongPredicate;
@@ -155,6 +156,11 @@ public class ArrayLongList implements LongList {
 	@Override
 	public int binarySearch(long x) {
 		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
+	public LongList subList(int from, int to) {
+		return new SubList(from, to);
 	}
 
 	@Override
@@ -380,26 +386,40 @@ public class ArrayLongList implements LongList {
 	}
 
 	private class ListIter implements LongListIterator {
-		protected int nextIndex;
-		protected int currentIndex;
-		protected boolean addOrRemove;
-		protected boolean nextOrPrevious;
+		private int nextIndex;
+		private int currentIndex;
+		private final int from;
+		private int to;
+		private boolean addOrRemove;
+		private boolean nextOrPrevious;
 
-		private ListIter(int index) {
+		public ListIter(int index) {
+			this(index, 0, size);
+		}
+
+		private ListIter(int index, int from, int to) {
+			if (index < 0)
+				throw new ArrayIndexOutOfBoundsException(index);
+			if (index > to - from)
+				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
+			this.from = from;
+			this.to = to;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return nextIndex < size;
+			return nextIndex < to - from;
 		}
 
 		@Override
 		public long nextLong() {
+			if (!hasNext())
+				throw new NoSuchElementException();
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return contents[currentIndex = nextIndex++];
+			return contents[(currentIndex = nextIndex++) + from];
 		}
 
 		@Override
@@ -409,9 +429,11 @@ public class ArrayLongList implements LongList {
 
 		@Override
 		public long previousLong() {
+			if (!hasPrevious())
+				throw new NoSuchElementException();
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return contents[currentIndex = --nextIndex];
+			return contents[(currentIndex = --nextIndex) + from];
 		}
 
 		@Override
@@ -431,8 +453,9 @@ public class ArrayLongList implements LongList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextLong() or previousLong() not called");
 
-			uncheckedRemove(nextIndex = currentIndex--);
+			uncheckedRemove((nextIndex = currentIndex--) + from);
 			addOrRemove = true;
+			to--;
 		}
 
 		@Override
@@ -442,13 +465,54 @@ public class ArrayLongList implements LongList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextLong() or previousLong() not called");
 
-			contents[currentIndex] = x;
+			contents[currentIndex + from] = x;
 		}
 
 		@Override
 		public void add(long x) {
-			uncheckedAdd(currentIndex = nextIndex++, x);
+			uncheckedAdd((currentIndex = nextIndex++) + from, x);
 			addOrRemove = true;
+			to++;
+		}
+	}
+
+	private class SubList implements LongList {
+		private int from;
+		private int to;
+
+		public SubList(int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > size)
+				throw new ArrayIndexOutOfBoundsException(to);
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public LongIterator iterator() {
+			return listIterator();
+		}
+
+		@Override
+		public LongListIterator listIterator(int index) {
+			return new ArrayLongList.ListIter(index, from, to) {
+				@Override
+				public void add(long x) {
+					super.add(x);
+					ArrayLongList.SubList.this.to++;
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					ArrayLongList.SubList.this.to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
 		}
 	}
 }

@@ -236,6 +236,10 @@ public class ArrayDoubleListTest {
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(list, containsDoubles(1, 2, 9, 10)));
+
+		subList.addDouble(17);
+		twice(() -> assertThat(subList, containsDoubles(17)));
+		twice(() -> assertThat(list, containsDoubles(1, 2, 17, 9, 10)));
 	}
 
 	@Test

@@ -23,6 +23,7 @@ import org.d2ab.function.CharUnaryOperator;
 import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing the
@@ -154,6 +155,11 @@ public class ArrayCharList implements CharList {
 	@Override
 	public int binarySearch(char x) {
 		return Arrays.binarySearch(contents, 0, size, x);
+	}
+
+	@Override
+	public CharList subList(int from, int to) {
+		return new SubList(from, to);
 	}
 
 	@Override
@@ -374,26 +380,40 @@ public class ArrayCharList implements CharList {
 	}
 
 	private class ListIter implements CharListIterator {
-		protected int nextIndex;
-		protected int currentIndex;
-		protected boolean addOrRemove;
-		protected boolean nextOrPrevious;
+		private int nextIndex;
+		private int currentIndex;
+		private final int from;
+		private int to;
+		private boolean addOrRemove;
+		private boolean nextOrPrevious;
 
-		private ListIter(int index) {
+		public ListIter(int index) {
+			this(index, 0, size);
+		}
+
+		private ListIter(int index, int from, int to) {
+			if (index < 0)
+				throw new ArrayIndexOutOfBoundsException(index);
+			if (index > to - from)
+				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
+			this.from = from;
+			this.to = to;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return nextIndex < size;
+			return nextIndex < to - from;
 		}
 
 		@Override
 		public char nextChar() {
+			if (!hasNext())
+				throw new NoSuchElementException();
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return contents[currentIndex = nextIndex++];
+			return contents[(currentIndex = nextIndex++) + from];
 		}
 
 		@Override
@@ -403,9 +423,11 @@ public class ArrayCharList implements CharList {
 
 		@Override
 		public char previousChar() {
+			if (!hasPrevious())
+				throw new NoSuchElementException();
 			addOrRemove = false;
 			nextOrPrevious = true;
-			return contents[currentIndex = --nextIndex];
+			return contents[(currentIndex = --nextIndex) + from];
 		}
 
 		@Override
@@ -425,8 +447,9 @@ public class ArrayCharList implements CharList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextChar() or previousChar() not called");
 
-			uncheckedRemove(nextIndex = currentIndex--);
+			uncheckedRemove((nextIndex = currentIndex--) + from);
 			addOrRemove = true;
+			to--;
 		}
 
 		@Override
@@ -436,13 +459,54 @@ public class ArrayCharList implements CharList {
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextChar() or previousChar() not called");
 
-			contents[currentIndex] = x;
+			contents[currentIndex + from] = x;
 		}
 
 		@Override
 		public void add(char x) {
-			uncheckedAdd(currentIndex = nextIndex++, x);
+			uncheckedAdd((currentIndex = nextIndex++) + from, x);
 			addOrRemove = true;
+			to++;
+		}
+	}
+
+	private class SubList implements CharList {
+		private int from;
+		private int to;
+
+		public SubList(int from, int to) {
+			if (from < 0)
+				throw new ArrayIndexOutOfBoundsException(from);
+			if (to > size)
+				throw new ArrayIndexOutOfBoundsException(to);
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public CharIterator iterator() {
+			return listIterator();
+		}
+
+		@Override
+		public CharListIterator listIterator(int index) {
+			return new ArrayCharList.ListIter(index, from, to) {
+				@Override
+				public void add(char x) {
+					super.add(x);
+					ArrayCharList.SubList.this.to++;
+				}
+
+				@Override
+				public void remove() {
+					super.remove();
+					ArrayCharList.SubList.this.to--;
+				}
+			};
+		}
+
+		public int size() {
+			return to - from;
 		}
 	}
 }
