@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator.longs;
 
-import org.d2ab.collection.longs.ArrayLongList;
 import org.d2ab.collection.longs.LongList;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.LongSequence;
@@ -46,7 +45,7 @@ public class SplittingLongIterator extends DelegatingIterator<Long, LongIterator
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		LongList buffer = new ArrayLongList();
+		LongList buffer = LongList.create();
 		while (iterator.hasNext()) {
 			long next = iterator.nextLong();
 			if (predicate.test(next))

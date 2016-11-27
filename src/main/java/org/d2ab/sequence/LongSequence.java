@@ -838,7 +838,7 @@ public interface LongSequence extends LongList {
 	 * Collect the elements in this {@code LongSequence} into an {@link LongList}.
 	 */
 	default LongList toList() {
-		return toList(ArrayLongList::new);
+		return toList(LongList::create);
 	}
 
 	/**

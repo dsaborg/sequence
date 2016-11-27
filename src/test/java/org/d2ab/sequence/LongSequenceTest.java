@@ -612,16 +612,16 @@ public class LongSequenceTest {
 	@Test
 	public void toCollection() {
 		twice(() -> {
-			LongList deque = _12345.toCollection(ArrayLongList::new);
-			assertThat(deque, instanceOf(ArrayLongList.class));
-			assertThat(deque, containsLongs(1, 2, 3, 4, 5));
+			LongList list = _12345.toCollection(LongList::create);
+			assertThat(list, instanceOf(ArrayLongList.class));
+			assertThat(list, containsLongs(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void collectIntoLongCollection() {
 		twice(() -> {
-			LongList list = new ArrayLongList();
+			LongList list = LongList.create();
 			LongList result = _12345.collectInto(list);
 
 			assertThat(result, is(sameInstance(list)));
@@ -640,7 +640,7 @@ public class LongSequenceTest {
 	@Test
 	public void collectIntoContainer() {
 		twice(() -> {
-			LongList list = new ArrayLongList();
+			LongList list = LongList.create();
 			LongList result = _12345.collectInto(list, LongList::addLong);
 
 			assertThat(result, is(sameInstance(list)));

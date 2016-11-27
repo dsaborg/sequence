@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.collection.chars.ArrayCharList;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.function.CharBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
@@ -52,7 +51,7 @@ public class PredicatePartitioningCharIterator extends DelegatingIterator<Charac
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		CharList buffer = new ArrayCharList();
+		CharList buffer = CharList.create();
 		do {
 			buffer.addChar(next);
 

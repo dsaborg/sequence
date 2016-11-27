@@ -33,14 +33,68 @@ public class ArrayDoubleList implements DoubleList {
 	private double[] contents;
 	private int size;
 
-	public static ArrayDoubleList of(double... contents) {
-		return new ArrayDoubleList(contents);
+	/**
+	 * @return a new mutable {@code ArrayDoubleList} initialized with a copy of the given contents.
+	 *
+	 * @deprecated Use {@link #create(double...)} instead.
+	 */
+	@Deprecated
+	public static ArrayDoubleList of(double... xs) {
+		return create(xs);
 	}
 
+	/**
+	 * @return a new empty mutable {@code ArrayDoubleList}.
+	 *
+	 * @see #withCapacity(int)
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayDoubleList create() {
+		return new ArrayDoubleList();
+	}
+
+	/**
+	 * @return a new mutable {@code ArrayDoubleList} initialized with a copy of the given contents.
+	 *
+	 * @see #ArrayDoubleList(double[])
+	 * @see #ArrayDoubleList(DoubleCollection)
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayDoubleList create(double... xs) {
+		return new ArrayDoubleList(xs);
+	}
+
+	/**
+	 * @return a new mutable {@code ArrayDoubleList} with the given initial capacity.
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayDoubleList withCapacity(int capacity) {
+		return new ArrayDoubleList(capacity);
+	}
+
+	/**
+	 * Create a new mutable {@code ArrayDoubleList}.
+	 *
+	 * @since 2.0
+	 *
+	 * @deprecated Use {@link #create()} instead.
+	 */
+	@Deprecated
 	public ArrayDoubleList() {
 		this(10);
 	}
 
+	/**
+	 * Create a new mutable {@code ArrayDoubleList} with the given initial capacity.
+	 *
+	 * @since 2.0
+	 *
+	 * @deprecated Use {@link #withCapacity(int)} instead.
+	 */
+	@Deprecated
 	public ArrayDoubleList(int capacity) {
 		this.contents = new double[capacity];
 	}
@@ -50,16 +104,9 @@ public class ArrayDoubleList implements DoubleList {
 		addAllDoubles(xs);
 	}
 
-	/**
-	 * Private to avoid conflict with standard int-taking capacity constructor.
-	 * Use {@link #of(double...)} for public access.
-	 *
-	 * @see #ArrayDoubleList(int)
-	 * @see #of(double...)
-	 */
-	private ArrayDoubleList(double... contents) {
-		this.contents = Arrays.copyOf(contents, contents.length);
-		this.size = contents.length;
+	public ArrayDoubleList(double[] xs) {
+		this.contents = Arrays.copyOf(xs, xs.length);
+		this.size = xs.length;
 	}
 
 	@Override

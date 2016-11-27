@@ -26,7 +26,7 @@ import java.util.Set;
  * An implementation of {@link DoubleSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
  */
 public class SortedListDoubleSet implements DoubleSortedSet {
-	private final DoubleList values = new ArrayDoubleList();
+	private final DoubleList values = DoubleList.create();
 
 	public SortedListDoubleSet(double... xs) {
 		addAllDoubles(xs);

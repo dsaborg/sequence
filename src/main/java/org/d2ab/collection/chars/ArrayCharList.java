@@ -32,14 +32,69 @@ public class ArrayCharList implements CharList {
 	private char[] contents;
 	private int size;
 
-	public static ArrayCharList of(char... contents) {
-		return new ArrayCharList(contents);
+	/**
+	 * @return a new mutable {@code ArrayCharList} initialized with a copy of the given contents.
+	 *
+	 * @deprecated Use {@link #create(char...)} instead.
+	 */
+	@Deprecated
+	public static ArrayCharList of(char... xs) {
+		return create(xs);
 	}
 
+	/**
+	 * @return a new empty mutable {@code ArrayCharList}.
+	 *
+	 * @see #ArrayCharList()
+	 * @see #withCapacity(int)
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayCharList create() {
+		return new ArrayCharList();
+	}
+
+	/**
+	 * @return a new mutable {@code ArrayCharList} initialized with a copy of the given contents.
+	 *
+	 * @see #ArrayCharList(char[])
+	 * @see #ArrayCharList(CharCollection)
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayCharList create(char... xs) {
+		return new ArrayCharList(xs);
+	}
+
+	/**
+	 * @return a new mutable {@code ArrayCharList} with the given initial capacity.
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayCharList withCapacity(int capacity) {
+		return new ArrayCharList(capacity);
+	}
+
+	/**
+	 * Create a new mutable {@code ArrayCharList}.
+	 *
+	 * @since 2.0
+	 *
+	 * @deprecated Use {@link #create()} instead.
+	 */
+	@Deprecated
 	public ArrayCharList() {
 		this(10);
 	}
 
+	/**
+	 * Create a new mutable {@code ArrayCharList} with the given initial capacity.
+	 *
+	 * @since 2.0
+	 *
+	 * @deprecated Use {@link #withCapacity(int)} instead.
+	 */
+	@Deprecated
 	public ArrayCharList(int capacity) {
 		this.contents = new char[capacity];
 	}
@@ -49,16 +104,9 @@ public class ArrayCharList implements CharList {
 		addAllChars(xs);
 	}
 
-	/**
-	 * Private to avoid conflict with standard int-taking capacity constructor.
-	 * Use {@link #of(char...)} for public access.
-	 *
-	 * @see #ArrayCharList(int)
-	 * @see #of(char...)
-	 */
-	private ArrayCharList(char... contents) {
-		this.contents = Arrays.copyOf(contents, contents.length);
-		this.size = contents.length;
+	public ArrayCharList(char[] xs) {
+		this.contents = Arrays.copyOf(xs, xs.length);
+		this.size = xs.length;
 	}
 
 	@Override

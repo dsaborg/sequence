@@ -657,16 +657,16 @@ public class IntSequenceTest {
 	@Test
 	public void toCollection() {
 		twice(() -> {
-			IntList deque = _12345.toCollection(ArrayIntList::new);
-			assertThat(deque, instanceOf(ArrayIntList.class));
-			assertThat(deque, containsInts(1, 2, 3, 4, 5));
+			IntList list = _12345.toCollection(IntList::create);
+			assertThat(list, instanceOf(ArrayIntList.class));
+			assertThat(list, containsInts(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void collectIntoIntCollection() {
 		twice(() -> {
-			IntList list = new ArrayIntList();
+			IntList list = IntList.create();
 			IntList result = _12345.collectInto(list);
 
 			assertThat(result, is(sameInstance(list)));
@@ -685,7 +685,7 @@ public class IntSequenceTest {
 	@Test
 	public void collectIntoContainer() {
 		twice(() -> {
-			IntList list = new ArrayIntList();
+			IntList list = IntList.create();
 			IntList result = _12345.collectInto(list, IntList::addInt);
 
 			assertThat(result, is(sameInstance(list)));

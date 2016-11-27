@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.collection.ints.ArrayIntList;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.IntSequence;
@@ -46,7 +45,7 @@ public class SplittingIntIterator extends DelegatingIterator<Integer, IntIterato
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		IntList buffer = new ArrayIntList();
+		IntList buffer = IntList.create();
 		while (iterator.hasNext()) {
 			int next = iterator.nextInt();
 			if (predicate.test(next))

@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.ArrayDoubleList;
 import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.function.DoubleBiPredicate;
 import org.d2ab.iterator.DelegatingIterator;
@@ -53,7 +52,7 @@ public class PredicatePartitioningDoubleIterator extends DelegatingIterator<Doub
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		DoubleList buffer = new ArrayDoubleList();
+		DoubleList buffer = DoubleList.create();
 		do {
 			buffer.addDouble(next);
 

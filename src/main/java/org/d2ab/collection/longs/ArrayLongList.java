@@ -33,14 +33,68 @@ public class ArrayLongList implements LongList {
 	private long[] contents;
 	private int size;
 
-	public static ArrayLongList of(long... contents) {
-		return new ArrayLongList(contents);
+	/**
+	 * @return a new mutable {@code ArrayLongList} initialized with a copy of the given contents.
+	 *
+	 * @deprecated Use {@link #create(long...)} instead.
+	 */
+	@Deprecated
+	public static ArrayLongList of(long... xs) {
+		return create(xs);
 	}
 
+	/**
+	 * @return a new empty mutable {@code ArrayLongList}.
+	 *
+	 * @see #withCapacity(int)
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayLongList create() {
+		return new ArrayLongList();
+	}
+
+	/**
+	 * @return a new mutable {@code ArrayLongList} initialized with a copy of the given contents.
+	 *
+	 * @see #ArrayLongList(long[])
+	 * @see #ArrayLongList(LongCollection)
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayLongList create(long... xs) {
+		return new ArrayLongList(xs);
+	}
+
+	/**
+	 * @return a new mutable {@code ArrayLongList} with the given initial capacity.
+	 *
+	 * @since 2.1
+	 */
+	public static ArrayLongList withCapacity(int capacity) {
+		return new ArrayLongList(capacity);
+	}
+
+	/**
+	 * Create a new mutable {@code ArrayLongList}.
+	 *
+	 * @since 2.0
+	 *
+	 * @deprecated Use {@link #create()} instead.
+	 */
+	@Deprecated
 	public ArrayLongList() {
 		this(10);
 	}
 
+	/**
+	 * Create a new mutable {@code ArrayLongList} with the given initial capacity.
+	 *
+	 * @since 2.0
+	 *
+	 * @deprecated Use {@link #withCapacity(int)} instead.
+	 */
+	@Deprecated
 	public ArrayLongList(int capacity) {
 		this.contents = new long[capacity];
 	}
@@ -50,16 +104,9 @@ public class ArrayLongList implements LongList {
 		addAllLongs(xs);
 	}
 
-	/**
-	 * Private to avoid conflict with standard int-taking capacity constructor.
-	 * Use {@link #of(long...)} for public access.
-	 *
-	 * @see #ArrayLongList(int)
-	 * @see #of(long...)
-	 */
-	private ArrayLongList(long... contents) {
-		this.contents = Arrays.copyOf(contents, contents.length);
-		this.size = contents.length;
+	public ArrayLongList(long[] xs) {
+		this.contents = Arrays.copyOf(xs, xs.length);
+		this.size = xs.length;
 	}
 
 	@Override

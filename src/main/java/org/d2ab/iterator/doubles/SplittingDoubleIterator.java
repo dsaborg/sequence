@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.ArrayDoubleList;
 import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.iterator.DelegatingIterator;
 import org.d2ab.sequence.DoubleSequence;
@@ -46,7 +45,7 @@ public class SplittingDoubleIterator extends DelegatingIterator<Double, DoubleIt
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		DoubleList buffer = new ArrayDoubleList();
+		DoubleList buffer = DoubleList.create();
 		while (iterator.hasNext()) {
 			double next = iterator.nextDouble();
 			if (predicate.test(next))

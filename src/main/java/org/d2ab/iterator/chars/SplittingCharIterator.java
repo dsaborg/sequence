@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.collection.chars.ArrayCharList;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.function.CharPredicate;
 import org.d2ab.iterator.DelegatingIterator;
@@ -46,7 +45,7 @@ public class SplittingCharIterator extends DelegatingIterator<Character, CharIte
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		CharList buffer = new ArrayCharList();
+		CharList buffer = CharList.create();
 		while (iterator.hasNext()) {
 			char next = iterator.nextChar();
 			if (predicate.test(next))

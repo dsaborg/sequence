@@ -32,8 +32,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayLongListTest {
-	private final LongList empty = new ArrayLongList();
-	private final LongList list = ArrayLongList.of(1, 2, 3, 4, 5);
+	private final ArrayLongList empty = ArrayLongList.create();
+	private final ArrayLongList list = ArrayLongList.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -210,7 +210,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void subList() {
-		LongList list = LongList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		LongList list = LongList.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		LongList subList = list.subList(2, 8);
 		twice(() -> assertThat(subList, containsLongs(3, 4, 5, 6, 7, 8)));
@@ -241,21 +241,19 @@ public class ArrayLongListTest {
 
 	@Test
 	public void longStream() {
-		assertThat(empty.longStream().collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		assertThat(empty.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           is(emptyIterable()));
 
-		assertThat(list.longStream().collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		assertThat(list.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           containsLongs(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void parallelLongStream() {
-		assertThat(empty.parallelLongStream()
-		                .collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		assertThat(empty.parallelLongStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           is(emptyIterable()));
 
-		assertThat(list.parallelLongStream()
-		               .collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		assertThat(list.parallelLongStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           containsLongs(1, 2, 3, 4, 5));
 	}
 
@@ -393,10 +391,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addAllLongsCollection() {
-		empty.addAllLongs(ArrayLongList.of(1, 2, 3));
+		empty.addAllLongs(ArrayLongList.create(1, 2, 3));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongs(ArrayLongList.of(6, 7, 8));
+		list.addAllLongs(ArrayLongList.create(6, 7, 8));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -420,7 +418,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addAllLongAtCollection() {
-		empty.addAllLongsAt(0, ArrayLongList.of(1, 2, 3));
+		empty.addAllLongsAt(0, ArrayLongList.create(1, 2, 3));
 		assertThat(empty, containsLongs(1, 2, 3));
 
 		list.addAllLongsAt(2, 17, 18, 19);
@@ -503,10 +501,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void containsAllLongsCollection() {
-		assertThat(empty.containsAllLongs(ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAllLongs(ArrayLongList.create(17, 18, 19)), is(false));
 
-		assertThat(list.containsAllLongs(ArrayLongList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAllLongs(ArrayLongList.of(1, 2, 3)), is(true));
+		assertThat(list.containsAllLongs(ArrayLongList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAllLongs(ArrayLongList.create(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -519,10 +517,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void containsAnyLongsCollection() {
-		assertThat(empty.containsAnyLongs(ArrayLongList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAnyLongs(ArrayLongList.create(17, 18, 19)), is(false));
 
-		assertThat(list.containsAnyLongs(ArrayLongList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAnyLongs(ArrayLongList.of(1, 17, 3)), is(true));
+		assertThat(list.containsAnyLongs(ArrayLongList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAnyLongs(ArrayLongList.create(1, 17, 3)), is(true));
 	}
 
 	@Test
@@ -547,11 +545,11 @@ public class ArrayLongListTest {
 
 	@Test
 	public void removeAllLongsCollection() {
-		assertThat(empty.removeAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.removeAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllLongs(ArrayLongList.of(17, 18, 19)), is(false));
-		assertThat(list.removeAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.removeAllLongs(ArrayLongList.create(17, 18, 19)), is(false));
+		assertThat(list.removeAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(4, 5));
 	}
 
@@ -595,10 +593,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void retainAllLongsCollection() {
-		assertThat(empty.retainAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.retainAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllLongs(ArrayLongList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.retainAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(1, 2, 3));
 	}
 

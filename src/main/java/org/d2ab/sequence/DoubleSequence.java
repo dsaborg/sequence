@@ -688,7 +688,7 @@ public interface DoubleSequence extends DoubleList {
 	 * Collect the elements in this {@code DoubleSequence} into an {@link DoubleList}.
 	 */
 	default DoubleList toList() {
-		return toList(ArrayDoubleList::new);
+		return toList(DoubleList::create);
 	}
 
 	/**

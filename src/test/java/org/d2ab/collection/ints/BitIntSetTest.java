@@ -121,10 +121,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void addAllIntCollection() {
-		assertThat(empty.addAllInts(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
+		assertThat(empty.addAllInts(IntList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(set.addAllInts(org.d2ab.collection.ints.IntList.of(3, 4, 5, 6, 7)), is(true));
+		assertThat(set.addAllInts(IntList.create(3, 4, 5, 6, 7)), is(true));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -142,19 +142,19 @@ public class BitIntSetTest {
 
 	@Test
 	public void intStream() {
-		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(set.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(set.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
 	public void parallelIntStream() {
-		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(set.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(set.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
@@ -200,10 +200,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void removeAllIntCollection() {
-		assertThat(empty.removeAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(false));
+		assertThat(empty.removeAll(IntList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
+		assertThat(set.removeAll(IntList.create(1, 2, 3)), is(true));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
@@ -218,10 +218,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void retainAllIntCollection() {
-		assertThat(empty.retainAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(false));
+		assertThat(empty.retainAll(IntList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
+		assertThat(set.retainAll(IntList.create(1, 2, 3)), is(true));
 		assertThat(set, containsInts(1, 2, 3));
 	}
 
@@ -243,9 +243,9 @@ public class BitIntSetTest {
 
 	@Test
 	public void containsAllIntCollection() {
-		assertThat(empty.containsAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(false));
-		assertThat(set.containsAll(org.d2ab.collection.ints.IntList.of(1, 2, 3)), is(true));
-		assertThat(set.containsAll(IntList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(IntList.create(1, 2, 3)), is(false));
+		assertThat(set.containsAll(IntList.create(1, 2, 3)), is(true));
+		assertThat(set.containsAll(IntList.create(1, 2, 3, 17)), is(false));
 	}
 
 	@Test

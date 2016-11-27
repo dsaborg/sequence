@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.chars;
 
-import org.d2ab.collection.ints.ArrayIntList;
+import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
 
@@ -33,8 +33,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayCharListTest {
-	private final ArrayCharList empty = new ArrayCharList();
-	private final ArrayCharList list = ArrayCharList.of('a', 'b', 'c', 'd', 'e');
+	private final ArrayCharList empty = ArrayCharList.create();
+	private final ArrayCharList list = ArrayCharList.create('a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void size() {
@@ -211,7 +211,7 @@ public class ArrayCharListTest {
 
 	@Test
 	public void subList() {
-		CharList list = CharList.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
+		CharList list = CharList.create('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
 
 		CharList subList = list.subList(2, 8);
 		twice(() -> assertThat(subList, containsChars('c', 'd', 'e', 'f', 'g', 'h')));
@@ -242,20 +242,19 @@ public class ArrayCharListTest {
 
 	@Test
 	public void intStream() {
-		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(list.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(list.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void parallelIntStream() {
-		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt,
-		                                             ArrayIntList::addAllInts),
+		assertThat(empty.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(list.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(list.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts('a', 'b', 'c', 'd', 'e'));
 	}
 
@@ -393,10 +392,10 @@ public class ArrayCharListTest {
 
 	@Test
 	public void addAllCharsCollection() {
-		empty.addAllChars(ArrayCharList.of('a', 'b', 'c'));
+		empty.addAllChars(ArrayCharList.create('a', 'b', 'c'));
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
-		list.addAllChars(ArrayCharList.of('f', 'g', 'h'));
+		list.addAllChars(ArrayCharList.create('f', 'g', 'h'));
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
@@ -420,7 +419,7 @@ public class ArrayCharListTest {
 
 	@Test
 	public void addAllCharAtCollection() {
-		empty.addAllCharsAt(0, ArrayCharList.of('a', 'b', 'c'));
+		empty.addAllCharsAt(0, ArrayCharList.create('a', 'b', 'c'));
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		list.addAllCharsAt(2, 'q', 'r', 's');
@@ -503,10 +502,10 @@ public class ArrayCharListTest {
 
 	@Test
 	public void containsAllCharsCollection() {
-		assertThat(empty.containsAllChars(ArrayCharList.of('q', 'r', 's')), is(false));
+		assertThat(empty.containsAllChars(ArrayCharList.create('q', 'r', 's')), is(false));
 
-		assertThat(list.containsAllChars(ArrayCharList.of('q', 'r', 's')), is(false));
-		assertThat(list.containsAllChars(ArrayCharList.of('a', 'b', 'c')), is(true));
+		assertThat(list.containsAllChars(ArrayCharList.create('q', 'r', 's')), is(false));
+		assertThat(list.containsAllChars(ArrayCharList.create('a', 'b', 'c')), is(true));
 	}
 
 	@Test
@@ -519,10 +518,10 @@ public class ArrayCharListTest {
 
 	@Test
 	public void containsAnyCharsCollection() {
-		assertThat(empty.containsAnyChars(ArrayCharList.of('q', 'r', 's')), is(false));
+		assertThat(empty.containsAnyChars(ArrayCharList.create('q', 'r', 's')), is(false));
 
-		assertThat(list.containsAnyChars(ArrayCharList.of('q', 'r', 's')), is(false));
-		assertThat(list.containsAnyChars(ArrayCharList.of('a', 'q', 'c')), is(true));
+		assertThat(list.containsAnyChars(ArrayCharList.create('q', 'r', 's')), is(false));
+		assertThat(list.containsAnyChars(ArrayCharList.create('a', 'q', 'c')), is(true));
 	}
 
 	@Test
@@ -547,11 +546,11 @@ public class ArrayCharListTest {
 
 	@Test
 	public void removeAllCharsCollection() {
-		assertThat(empty.removeAllChars(ArrayCharList.of('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.removeAllChars(ArrayCharList.create('a', 'b', 'c', 'q')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllChars(ArrayCharList.of('q', 'r', 's')), is(false));
-		assertThat(list.removeAllChars(ArrayCharList.of('a', 'b', 'c', 'q')), is(true));
+		assertThat(list.removeAllChars(ArrayCharList.create('q', 'r', 's')), is(false));
+		assertThat(list.removeAllChars(ArrayCharList.create('a', 'b', 'c', 'q')), is(true));
 		assertThat(list, containsChars('d', 'e'));
 	}
 
@@ -595,10 +594,10 @@ public class ArrayCharListTest {
 
 	@Test
 	public void retainAllCharsCollection() {
-		assertThat(empty.retainAllChars(ArrayCharList.of('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.retainAllChars(ArrayCharList.create('a', 'b', 'c', 'q')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllChars(ArrayCharList.of('a', 'b', 'c', 'q')), is(true));
+		assertThat(list.retainAllChars(ArrayCharList.create('a', 'b', 'c', 'q')), is(true));
 		assertThat(list, containsChars('a', 'b', 'c'));
 	}
 

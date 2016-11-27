@@ -841,7 +841,7 @@ public interface IntSequence extends IntList {
 	 * Collect the elements in this {@code IntSequence} into an {@link IntList}.
 	 */
 	default IntList toList() {
-		return toList(ArrayIntList::new);
+		return toList(IntList::create);
 	}
 
 	/**

@@ -32,17 +32,38 @@ import java.util.function.UnaryOperator;
  */
 public interface CharList extends List<Character>, CharCollection {
 	/**
-	 * @return an {@code CharList} of the given elements.
+	 * @return a new mutable {@code CharList} with a copy of the given elements.
+	 *
+	 * @deprecated Use {@link #create(char...)} instead.
 	 */
+	@Deprecated
 	static CharList of(char... xs) {
-		return ArrayCharList.of(xs);
+		return create(xs);
+	}
+
+	/**
+	 * @return a new empty mutable {@code CharList}.
+	 *
+	 * @since 2.1
+	 */
+	static CharList create() {
+		return ArrayCharList.create();
+	}
+
+	/**
+	 * @return a new mutable {@code CharList} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static CharList create(char... xs) {
+		return ArrayCharList.create(xs);
 	}
 
 	/**
 	 * @return an {@code CharList} initialized with the members of the given {@link CharIterator}.
 	 */
 	static CharList copy(CharIterator iterator) {
-		CharList copy = new ArrayCharList();
+		CharList copy = create();
 		while (iterator.hasNext())
 			copy.addChar(iterator.nextChar());
 		return copy;

@@ -32,17 +32,38 @@ import java.util.function.UnaryOperator;
  */
 public interface DoubleList extends List<Double>, DoubleCollection {
 	/**
-	 * @return a {@code DoubleList} of the given elements.
+	 * @return a new mutable {@code DoubleList} with a copy of the given elements.
+	 *
+	 * @deprecated Use {@link #create(double...)} instead.
 	 */
+	@Deprecated
 	static DoubleList of(double... xs) {
-		return ArrayDoubleList.of(xs);
+		return create(xs);
+	}
+
+	/**
+	 * @return a new empty mutable {@code DoubleList}.
+	 *
+	 * @since 2.1
+	 */
+	static DoubleList create() {
+		return ArrayDoubleList.create();
+	}
+
+	/**
+	 * @return a new mutable {@code DoubleList} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static DoubleList create(double... xs) {
+		return ArrayDoubleList.create(xs);
 	}
 
 	/**
 	 * @return a {@code DoubleList} initialized with the members of the given {@link PrimitiveIterator.OfDouble}.
 	 */
 	static DoubleList copy(PrimitiveIterator.OfDouble iterator) {
-		DoubleList copy = new ArrayDoubleList();
+		DoubleList copy = create();
 		while (iterator.hasNext())
 			copy.addDouble(iterator.nextDouble());
 		return copy;

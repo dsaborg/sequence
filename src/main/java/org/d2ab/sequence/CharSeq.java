@@ -746,7 +746,7 @@ public interface CharSeq extends CharList {
 	 * Collect the elements in this {@code CharSeq} into an {@link CharList}.
 	 */
 	default CharList toList() {
-		return toList(ArrayCharList::new);
+		return toList(CharList::create);
 	}
 
 	/**

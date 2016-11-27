@@ -32,17 +32,38 @@ import java.util.function.UnaryOperator;
  */
 public interface LongList extends List<Long>, LongCollection {
 	/**
-	 * @return a {@code LongList} of the given elements.
+	 * @return a new mutable {@code LongList} with a copy of the given elements.
+	 *
+	 * @deprecated Use {@link #create(long...)} instead.
 	 */
+	@Deprecated
 	static LongList of(long... xs) {
-		return ArrayLongList.of(xs);
+		return create(xs);
+	}
+
+	/**
+	 * @return a new empty mutable {@code LongList}.
+	 *
+	 * @since 2.1
+	 */
+	static LongList create() {
+		return ArrayLongList.create();
+	}
+
+	/**
+	 * @return a new mutable {@code LongList} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static LongList create(long... xs) {
+		return ArrayLongList.create(xs);
 	}
 
 	/**
 	 * @return a {@code LongList} initialized with the members of the given {@link PrimitiveIterator.OfLong}.
 	 */
 	static LongList copy(PrimitiveIterator.OfLong iterator) {
-		LongList copy = new ArrayLongList();
+		LongList copy = create();
 		while (iterator.hasNext())
 			copy.addLong(iterator.nextLong());
 		return copy;

@@ -31,8 +31,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayIntListTest {
-	private final org.d2ab.collection.ints.ArrayIntList empty = new org.d2ab.collection.ints.ArrayIntList();
-	private final org.d2ab.collection.ints.ArrayIntList list = org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3, 4, 5);
+	private final ArrayIntList empty = ArrayIntList.create();
+	private final ArrayIntList list = ArrayIntList.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -209,7 +209,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void subList() {
-		IntList list = IntList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		IntList list = IntList.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		IntList subList = list.subList(2, 8);
 		twice(() -> assertThat(subList, containsInts(3, 4, 5, 6, 7, 8)));
@@ -236,23 +236,27 @@ public class ArrayIntListTest {
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(list, containsInts(1, 2, 9, 10)));
+
+		subList.addInt(17);
+		twice(() -> assertThat(subList, containsInts(17)));
+		twice(() -> assertThat(list, containsInts(1, 2, 17, 9, 10)));
 	}
 
 	@Test
 	public void intStream() {
-		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(list.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(list.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void parallelIntStream() {
-		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(list.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(list.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts(1, 2, 3, 4, 5));
 	}
 
@@ -390,10 +394,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addAllIntsCollection() {
-		empty.addAllInts(org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3));
+		empty.addAllInts(ArrayIntList.create(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllInts(org.d2ab.collection.ints.ArrayIntList.of(6, 7, 8));
+		list.addAllInts(ArrayIntList.create(6, 7, 8));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -417,7 +421,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addAllIntAtCollection() {
-		empty.addAllIntsAt(0, org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3));
+		empty.addAllIntsAt(0, ArrayIntList.create(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
 		list.addAllIntsAt(2, 17, 18, 19);
@@ -500,10 +504,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void containsAllIntsCollection() {
-		assertThat(empty.containsAllInts(org.d2ab.collection.ints.ArrayIntList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAllInts(ArrayIntList.create(17, 18, 19)), is(false));
 
-		assertThat(list.containsAllInts(org.d2ab.collection.ints.ArrayIntList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAllInts(org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3)), is(true));
+		assertThat(list.containsAllInts(ArrayIntList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAllInts(ArrayIntList.create(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -516,10 +520,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void containsAnyIntsCollection() {
-		assertThat(empty.containsAnyInts(org.d2ab.collection.ints.ArrayIntList.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAnyInts(ArrayIntList.create(17, 18, 19)), is(false));
 
-		assertThat(list.containsAnyInts(org.d2ab.collection.ints.ArrayIntList.of(17, 18, 19)), is(false));
-		assertThat(list.containsAnyInts(org.d2ab.collection.ints.ArrayIntList.of(1, 17, 3)), is(true));
+		assertThat(list.containsAnyInts(ArrayIntList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAnyInts(ArrayIntList.create(1, 17, 3)), is(true));
 	}
 
 	@Test
@@ -544,11 +548,11 @@ public class ArrayIntListTest {
 
 	@Test
 	public void removeAllIntsCollection() {
-		assertThat(empty.removeAllInts(org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.removeAllInts(ArrayIntList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllInts(org.d2ab.collection.ints.ArrayIntList.of(17, 18, 19)), is(false));
-		assertThat(list.removeAllInts(org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.removeAllInts(ArrayIntList.create(17, 18, 19)), is(false));
+		assertThat(list.removeAllInts(ArrayIntList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsInts(4, 5));
 	}
 
@@ -592,10 +596,10 @@ public class ArrayIntListTest {
 
 	@Test
 	public void retainAllIntsCollection() {
-		assertThat(empty.retainAllInts(org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.retainAllInts(ArrayIntList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllInts(org.d2ab.collection.ints.ArrayIntList.of(1, 2, 3, 17)), is(true));
+		assertThat(list.retainAllInts(ArrayIntList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsInts(1, 2, 3));
 	}
 

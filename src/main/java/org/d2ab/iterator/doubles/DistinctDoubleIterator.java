@@ -16,13 +16,12 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.ArrayDoubleList;
 import org.d2ab.collection.doubles.DoubleList;
 
 import java.util.NoSuchElementException;
 
 public class DistinctDoubleIterator extends UnaryDoubleIterator {
-	private final DoubleList seen = new ArrayDoubleList();
+	private final DoubleList seen = DoubleList.create();
 	private final double precision;
 
 	private double next;

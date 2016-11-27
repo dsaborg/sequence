@@ -121,10 +121,10 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void addAllDoubleCollection() {
-		assertThat(empty.addAllDoubles(DoubleList.of(1, 2, 3)), is(true));
+		assertThat(empty.addAllDoubles(DoubleList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
-		assertThat(set.addAllDoubles(DoubleList.of(3, 4, 5, 6, 7)), is(true));
+		assertThat(set.addAllDoubles(DoubleList.create(3, 4, 5, 6, 7)), is(true));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -143,21 +143,21 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void doubleStream() {
-		assertThat(empty.doubleStream().collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
-		assertThat(set.doubleStream().collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
 		           containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
 	public void parallelDoubleStream() {
 		assertThat(empty.parallelDoubleStream()
-		                .collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		                .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
 		assertThat(set.parallelDoubleStream()
-		              .collect(ArrayDoubleList::new, ArrayDoubleList::addDouble, ArrayDoubleList::addAllDoubles),
+		              .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
 		           containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
@@ -203,10 +203,10 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void removeAllDoubleCollection() {
-		assertThat(empty.removeAll(DoubleList.of(1, 2, 3)), is(false));
+		assertThat(empty.removeAll(DoubleList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(DoubleList.of(1, 2, 3)), is(true));
+		assertThat(set.removeAll(DoubleList.create(1, 2, 3)), is(true));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 4));
 	}
 
@@ -221,10 +221,10 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void retainAllDoubleCollection() {
-		assertThat(empty.retainAll(DoubleList.of(1, 2, 3)), is(false));
+		assertThat(empty.retainAll(DoubleList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(DoubleList.of(1, 2, 3)), is(true));
+		assertThat(set.retainAll(DoubleList.create(1, 2, 3)), is(true));
 		assertThat(set, containsDoubles(1, 2, 3));
 	}
 
@@ -246,9 +246,9 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void containsAllDoubleCollection() {
-		assertThat(empty.containsAll(DoubleList.of(1, 2, 3)), is(false));
-		assertThat(set.containsAll(DoubleList.of(1, 2, 3)), is(true));
-		assertThat(set.containsAll(DoubleList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(DoubleList.create(1, 2, 3)), is(false));
+		assertThat(set.containsAll(DoubleList.create(1, 2, 3)), is(true));
+		assertThat(set.containsAll(DoubleList.create(1, 2, 3, 17)), is(false));
 	}
 
 	@Test

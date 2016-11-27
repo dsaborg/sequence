@@ -32,17 +32,38 @@ import java.util.function.UnaryOperator;
  */
 public interface IntList extends List<Integer>, IntCollection {
 	/**
-	 * @return an {@code IntList} of the given elements.
+	 * @return a new mutable {@code IntList} with a copy of the given elements.
+	 *
+	 * @deprecated Use {@link #create(int...)} instead.
 	 */
+	@Deprecated
 	static IntList of(int... xs) {
-		return ArrayIntList.of(xs);
+		return create(xs);
+	}
+
+	/**
+	 * @return a new empty mutable {@code IntList}.
+	 *
+	 * @since 2.1
+	 */
+	static IntList create() {
+		return ArrayIntList.create();
+	}
+
+	/**
+	 * @return a new mutable {@code IntList} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static IntList create(int... xs) {
+		return ArrayIntList.create(xs);
 	}
 
 	/**
 	 * @return an {@code IntList} initialized with the members of the given {@link PrimitiveIterator.OfInt}.
 	 */
 	static IntList copy(PrimitiveIterator.OfInt iterator) {
-		IntList copy = new ArrayIntList();
+		IntList copy = create();
 		while (iterator.hasNext())
 			copy.addInt(iterator.nextInt());
 		return copy;
@@ -294,8 +315,8 @@ public interface IntList extends List<Integer>, IntCollection {
 	class SubList implements IntList {
 		private final IntList list;
 
-		private int from;
-		private int to;
+		protected int from;
+		protected int to;
 
 		public SubList(IntList list, int from, int to) {
 			if (from < 0)

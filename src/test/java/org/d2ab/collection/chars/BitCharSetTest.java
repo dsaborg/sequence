@@ -17,7 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.collection.ints.ArrayIntList;
+import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
 
@@ -123,10 +123,10 @@ public class BitCharSetTest {
 
 	@Test
 	public void addAllCharCollection() {
-		assertThat(empty.addAllChars(CharList.of('a', 'b', 'c')), is(true));
+		assertThat(empty.addAllChars(CharList.create('a', 'b', 'c')), is(true));
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
-		assertThat(set.addAllChars(CharList.of('c', 'd', 'e', 'f', 'g')), is(true));
+		assertThat(set.addAllChars(CharList.create('c', 'd', 'e', 'f', 'g')), is(true));
 		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g'));
 	}
 
@@ -144,20 +144,19 @@ public class BitCharSetTest {
 
 	@Test
 	public void intStream() {
-		assertThat(empty.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(set.intStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(set.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void parallelIntStream() {
-		assertThat(empty.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt,
-		                                             ArrayIntList::addAllInts),
+		assertThat(empty.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
 
-		assertThat(set.parallelIntStream().collect(ArrayIntList::new, ArrayIntList::addInt, ArrayIntList::addAllInts),
+		assertThat(set.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts('a', 'b', 'c', 'd', 'e'));
 	}
 
@@ -203,10 +202,10 @@ public class BitCharSetTest {
 
 	@Test
 	public void removeAllCharCollection() {
-		assertThat(empty.removeAll(CharList.of('a', 'b', 'c')), is(false));
+		assertThat(empty.removeAll(CharList.create('a', 'b', 'c')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(CharList.of('a', 'b', 'c')), is(true));
+		assertThat(set.removeAll(CharList.create('a', 'b', 'c')), is(true));
 		assertThat(set, containsChars('d', 'e'));
 	}
 
@@ -221,10 +220,10 @@ public class BitCharSetTest {
 
 	@Test
 	public void retainAllCharCollection() {
-		assertThat(empty.retainAll(CharList.of('a', 'b', 'c')), is(false));
+		assertThat(empty.retainAll(CharList.create('a', 'b', 'c')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(CharList.of('a', 'b', 'c')), is(true));
+		assertThat(set.retainAll(CharList.create('a', 'b', 'c')), is(true));
 		assertThat(set, containsChars('a', 'b', 'c'));
 	}
 
@@ -246,9 +245,9 @@ public class BitCharSetTest {
 
 	@Test
 	public void containsAllCharCollection() {
-		assertThat(empty.containsAll(CharList.of('a', 'b', 'c')), is(false));
-		assertThat(set.containsAll(CharList.of('a', 'b', 'c')), is(true));
-		assertThat(set.containsAll(CharList.of('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.containsAll(CharList.create('a', 'b', 'c')), is(false));
+		assertThat(set.containsAll(CharList.create('a', 'b', 'c')), is(true));
+		assertThat(set.containsAll(CharList.create('a', 'b', 'c', 'q')), is(false));
 	}
 
 	@Test

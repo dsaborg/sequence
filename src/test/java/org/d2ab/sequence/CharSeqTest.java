@@ -657,16 +657,16 @@ public class CharSeqTest {
 	@Test
 	public void toCollection() {
 		twice(() -> {
-			CharList deque = abcde.toCollection(ArrayCharList::new);
-			assertThat(deque, instanceOf(ArrayCharList.class));
-			assertThat(deque, containsChars('a', 'b', 'c', 'd', 'e'));
+			CharList list = abcde.toCollection(CharList::create);
+			assertThat(list, instanceOf(ArrayCharList.class));
+			assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
 		});
 	}
 
 	@Test
 	public void collectIntoCharCollection() {
 		twice(() -> {
-			CharList list = new ArrayCharList();
+			CharList list = CharList.create();
 			CharList result = abcde.collectInto(list);
 
 			assertThat(result, is(sameInstance(list)));
@@ -685,7 +685,7 @@ public class CharSeqTest {
 	@Test
 	public void collectIntoContainer() {
 		twice(() -> {
-			CharList list = new ArrayCharList();
+			CharList list = CharList.create();
 			CharList result = abcde.collectInto(list, CharList::addChar);
 
 			assertThat(result, is(sameInstance(list)));

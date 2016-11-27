@@ -207,8 +207,8 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 
 	class SubList<T> implements IterableList<T> {
 		private final List<T> list;
+		private final int from;
 
-		private int from;
 		private int to;
 
 		public SubList(List<T> list, int from, int to) {

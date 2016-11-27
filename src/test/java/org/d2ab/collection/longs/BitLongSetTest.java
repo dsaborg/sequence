@@ -121,10 +121,10 @@ public class BitLongSetTest {
 
 	@Test
 	public void addAllLongCollection() {
-		assertThat(empty.addAllLongs(LongList.of(1, 2, 3)), is(true));
+		assertThat(empty.addAllLongs(LongList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		assertThat(set.addAllLongs(LongList.of(3, 4, 5, 6, 7)), is(true));
+		assertThat(set.addAllLongs(LongList.create(3, 4, 5, 6, 7)), is(true));
 		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -143,21 +143,21 @@ public class BitLongSetTest {
 
 	@Test
 	public void longStream() {
-		assertThat(empty.longStream().collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		assertThat(empty.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           is(emptyIterable()));
 
-		assertThat(set.longStream().collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		assertThat(set.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
 	public void parallelLongStream() {
 		assertThat(empty.parallelLongStream()
-		                .collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		                .collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           is(emptyIterable()));
 
 		assertThat(set.parallelLongStream()
-		              .collect(ArrayLongList::new, ArrayLongList::addLong, ArrayLongList::addAllLongs),
+		              .collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
@@ -203,10 +203,10 @@ public class BitLongSetTest {
 
 	@Test
 	public void removeAllLongCollection() {
-		assertThat(empty.removeAll(LongList.of(1, 2, 3)), is(false));
+		assertThat(empty.removeAll(LongList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(LongList.of(1, 2, 3)), is(true));
+		assertThat(set.removeAll(LongList.create(1, 2, 3)), is(true));
 		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 4));
 	}
 
@@ -221,10 +221,10 @@ public class BitLongSetTest {
 
 	@Test
 	public void retainAllLongCollection() {
-		assertThat(empty.retainAll(LongList.of(1, 2, 3)), is(false));
+		assertThat(empty.retainAll(LongList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(LongList.of(1, 2, 3)), is(true));
+		assertThat(set.retainAll(LongList.create(1, 2, 3)), is(true));
 		assertThat(set, containsLongs(1, 2, 3));
 	}
 
@@ -246,9 +246,9 @@ public class BitLongSetTest {
 
 	@Test
 	public void containsAllLongCollection() {
-		assertThat(empty.containsAll(LongList.of(1, 2, 3)), is(false));
-		assertThat(set.containsAll(LongList.of(1, 2, 3)), is(true));
-		assertThat(set.containsAll(LongList.of(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(LongList.create(1, 2, 3)), is(false));
+		assertThat(set.containsAll(LongList.create(1, 2, 3)), is(true));
+		assertThat(set.containsAll(LongList.create(1, 2, 3, 17)), is(false));
 	}
 
 	@Test

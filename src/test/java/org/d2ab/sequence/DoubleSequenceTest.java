@@ -652,16 +652,16 @@ public class DoubleSequenceTest {
 	@Test
 	public void toCollection() {
 		twice(() -> {
-			DoubleList deque = _12345.toCollection(ArrayDoubleList::new);
-			assertThat(deque, instanceOf(ArrayDoubleList.class));
-			assertThat(deque, containsDoubles(1, 2, 3, 4, 5));
+			DoubleList list = _12345.toCollection(DoubleList::create);
+			assertThat(list, instanceOf(ArrayDoubleList.class));
+			assertThat(list, containsDoubles(1, 2, 3, 4, 5));
 		});
 	}
 
 	@Test
 	public void collectIntoDoubleCollection() {
 		twice(() -> {
-			DoubleList list = new ArrayDoubleList();
+			DoubleList list = DoubleList.create();
 			DoubleList result = _12345.collectInto(list);
 
 			assertThat(result, is(sameInstance(list)));
@@ -680,7 +680,7 @@ public class DoubleSequenceTest {
 	@Test
 	public void collectIntoContainer() {
 		twice(() -> {
-			DoubleList list = new ArrayDoubleList();
+			DoubleList list = DoubleList.create();
 			DoubleList result = _12345.collectInto(list, DoubleList::addDouble);
 
 			assertThat(result, is(sameInstance(list)));
