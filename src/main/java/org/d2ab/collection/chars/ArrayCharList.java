@@ -43,9 +43,12 @@ public class ArrayCharList implements CharList {
 	}
 
 	/**
+	 * Create a new empty mutable {@code ArrayCharList}. When possible, it's preferred to use
+	 * {@link CharList#create()} instead.
+	 *
 	 * @return a new empty mutable {@code ArrayCharList}.
 	 *
-	 * @see #ArrayCharList()
+	 * @see CharList#create()
 	 * @see #withCapacity(int)
 	 *
 	 * @since 2.1
@@ -55,9 +58,12 @@ public class ArrayCharList implements CharList {
 	}
 
 	/**
+	 * Create a new mutable {@code ArrayCharList} initialized with a copy of the given contents. When possible, it's
+	 * preferred to use {@link CharList#create(char...)} instead.
+	 *
 	 * @return a new mutable {@code ArrayCharList} initialized with a copy of the given contents.
 	 *
-	 * @see #ArrayCharList(char[])
+	 * @see CharList#create(char...)
 	 * @see #ArrayCharList(CharCollection)
 	 *
 	 * @since 2.1

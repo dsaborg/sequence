@@ -44,8 +44,12 @@ public class ArrayLongList implements LongList {
 	}
 
 	/**
+	 * Create a new empty mutable {@code ArrayLongList}. When possible, it's preferred to use {@link LongList#create()}
+	 * instead.
+	 *
 	 * @return a new empty mutable {@code ArrayLongList}.
 	 *
+	 * @see LongList#create()
 	 * @see #withCapacity(int)
 	 *
 	 * @since 2.1
@@ -55,9 +59,12 @@ public class ArrayLongList implements LongList {
 	}
 
 	/**
+	 * Create a new mutable {@code ArrayLongList} initialized with a copy of the given contents. When possible, it's
+	 * preferred to use {@link LongList#create(long...)} instead.
+	 *
 	 * @return a new mutable {@code ArrayLongList} initialized with a copy of the given contents.
 	 *
-	 * @see #ArrayLongList(long[])
+	 * @see LongList#create(long...)
 	 * @see #ArrayLongList(LongCollection)
 	 *
 	 * @since 2.1

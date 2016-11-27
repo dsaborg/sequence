@@ -45,8 +45,12 @@ public class ArrayIntList implements IntList {
 	}
 
 	/**
+	 * Create a new empty mutable {@code ArrayIntList}. When possible, it's preferred to use {@link IntList#create()}
+	 * instead.
+	 *
 	 * @return a new empty mutable {@code ArrayIntList}.
 	 *
+	 * @see IntList#create()
 	 * @see #withCapacity(int)
 	 *
 	 * @since 2.1
@@ -56,9 +60,12 @@ public class ArrayIntList implements IntList {
 	}
 
 	/**
+	 * Create a new mutable {@code ArrayIntList} initialized with a copy of the given contents. When possible, it's
+	 * preferred to use {@link IntList#create(int...)} instead.
+	 *
 	 * @return a new mutable {@code ArrayIntList} initialized with a copy of the given contents.
 	 *
-	 * @see #ArrayIntList(int[])
+	 * @see IntList#create(int...)
 	 * @see #ArrayIntList(IntCollection)
 	 *
 	 * @since 2.1

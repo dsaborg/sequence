@@ -44,8 +44,12 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	/**
+	 * Create a new empty mutable {@code ArrayDoubleList}. When possible, it's preferred to use
+	 * {@link DoubleList#create()} instead.
+	 *
 	 * @return a new empty mutable {@code ArrayDoubleList}.
 	 *
+	 * @see DoubleList#create()
 	 * @see #withCapacity(int)
 	 *
 	 * @since 2.1
@@ -55,9 +59,12 @@ public class ArrayDoubleList implements DoubleList {
 	}
 
 	/**
+	 * Create a new mutable {@code ArrayDoubleList} initialized with a copy of the given contents. When possible, it's
+	 * preferred to use {@link DoubleList#create(double...)} instead.
+	 *
 	 * @return a new mutable {@code ArrayDoubleList} initialized with a copy of the given contents.
 	 *
-	 * @see #ArrayDoubleList(double[])
+	 * @see DoubleList#create(double...)
 	 * @see #ArrayDoubleList(DoubleCollection)
 	 *
 	 * @since 2.1
