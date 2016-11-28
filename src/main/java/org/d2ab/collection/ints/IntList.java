@@ -17,7 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
-import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.DelegatingUnaryIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.iterator.ints.LimitingIntIterator;
 import org.d2ab.iterator.ints.SkippingIntIterator;
@@ -329,7 +329,7 @@ public interface IntList extends List<Integer>, IntCollection {
 		}
 
 		public IntIterator iterator() {
-			return new DelegatingIntIterator(new LimitingIntIterator(new SkippingIntIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryIntIterator(new LimitingIntIterator(new SkippingIntIterator(list.iterator(), from), to - from)) {
 				@Override
 				public int nextInt() {
 					return iterator.nextInt();

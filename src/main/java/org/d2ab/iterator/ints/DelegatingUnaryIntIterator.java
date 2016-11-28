@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.doubles;
+package org.d2ab.iterator.ints;
 
 /**
- * A {@link DoubleIterator} that delegates to another {@link DoubleIterator}.
+ * An {@link IntIterator} that delegates to another {@link IntIterator}.
  */
-public abstract class DelegatingDoubleIterator extends DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
-	protected DelegatingDoubleIterator(DoubleIterator iterator) {
+public abstract class DelegatingUnaryIntIterator extends DelegatingTransformingIntIterator<Integer, IntIterator> {
+	protected DelegatingUnaryIntIterator(IntIterator iterator) {
 		super(iterator);
 	}
 }

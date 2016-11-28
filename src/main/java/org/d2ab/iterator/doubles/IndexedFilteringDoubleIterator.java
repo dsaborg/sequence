@@ -20,7 +20,7 @@ import org.d2ab.function.DoubleIntPredicate;
 
 import java.util.NoSuchElementException;
 
-public class IndexedFilteringDoubleIterator extends DelegatingDoubleIterator {
+public class IndexedFilteringDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final DoubleIntPredicate predicate;
 	private int index;
 

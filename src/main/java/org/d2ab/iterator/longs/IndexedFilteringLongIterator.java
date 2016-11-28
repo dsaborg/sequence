@@ -20,7 +20,7 @@ import org.d2ab.function.LongIntPredicate;
 
 import java.util.NoSuchElementException;
 
-public class IndexedFilteringLongIterator extends DelegatingLongIterator {
+public class IndexedFilteringLongIterator extends DelegatingUnaryLongIterator {
 	private final LongIntPredicate predicate;
 	private int index;
 

@@ -644,7 +644,7 @@ public interface IntSequence extends IntList {
 	 * mapper} function.
 	 */
 	default IntSequence map(IntUnaryOperator mapper) {
-		return () -> new DelegatingIntIterator(iterator()) {
+		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextInt());
@@ -659,7 +659,7 @@ public interface IntSequence extends IntList {
 	 * @since 1.2
 	 */
 	default IntSequence mapIndexed(IntBinaryOperator mapper) {
-		return () -> new DelegatingIntIterator(iterator()) {
+		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			private int index;
 
 			@Override
@@ -1107,7 +1107,7 @@ public interface IntSequence extends IntList {
 	 * Allow the given {@link IntConsumer} to see each element in this {@code IntSequence} as it is traversed.
 	 */
 	default IntSequence peek(IntConsumer action) {
-		return () -> new DelegatingIntIterator(iterator()) {
+		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
 				int next = iterator.nextInt();
@@ -1124,7 +1124,7 @@ public interface IntSequence extends IntList {
 	 * @since 1.2.2
 	 */
 	default IntSequence peekIndexed(IntBiConsumer action) {
-		return () -> new DelegatingIntIterator(iterator()) {
+		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			private int index;
 
 			@Override

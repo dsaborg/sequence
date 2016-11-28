@@ -18,7 +18,7 @@ package org.d2ab.iterator.longs;
 
 import java.util.NoSuchElementException;
 
-public class SteppingLongIterator extends DelegatingLongIterator {
+public class SteppingLongIterator extends DelegatingUnaryLongIterator {
 	private final int step;
 
 	private boolean hasNext;

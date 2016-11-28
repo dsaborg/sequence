@@ -17,7 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Collectionz;
-import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.iterator.longs.DelegatingUnaryLongIterator;
 import org.d2ab.iterator.longs.LimitingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.iterator.longs.SkippingLongIterator;
@@ -329,7 +329,7 @@ public interface LongList extends List<Long>, LongCollection {
 		}
 
 		public LongIterator iterator() {
-			return new DelegatingLongIterator(new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryLongIterator(new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
 				@Override
 				public long nextLong() {
 					return iterator.nextLong();

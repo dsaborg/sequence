@@ -18,7 +18,7 @@ package org.d2ab.iterator.doubles;
 
 import java.util.NoSuchElementException;
 
-public class SteppingDoubleIterator extends DelegatingDoubleIterator {
+public class SteppingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final int step;
 
 	private boolean hasNext;

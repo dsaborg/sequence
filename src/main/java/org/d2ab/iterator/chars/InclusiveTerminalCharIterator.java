@@ -20,7 +20,7 @@ import org.d2ab.function.CharPredicate;
 
 import java.util.NoSuchElementException;
 
-public class InclusiveTerminalCharIterator extends DelegatingCharIterator {
+public class InclusiveTerminalCharIterator extends DelegatingUnaryCharIterator {
 	private final CharPredicate terminal;
 
 	private char previous;

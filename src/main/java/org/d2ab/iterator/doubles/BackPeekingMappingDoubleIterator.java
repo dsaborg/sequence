@@ -21,7 +21,7 @@ import java.util.function.DoubleBinaryOperator;
 /**
  * An iterator over doubles that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingMappingDoubleIterator extends DelegatingDoubleIterator {
+public class BackPeekingMappingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final double firstPrevious;
 	private final DoubleBinaryOperator mapper;
 	private boolean hasPrevious;

@@ -19,7 +19,7 @@ package org.d2ab.iterator.longs;
 import java.util.NoSuchElementException;
 import java.util.function.LongPredicate;
 
-public class ExclusiveStartingLongIterator extends DelegatingLongIterator {
+public class ExclusiveStartingLongIterator extends DelegatingUnaryLongIterator {
 	private final LongPredicate predicate;
 
 	private boolean started;

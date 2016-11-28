@@ -545,7 +545,7 @@ public interface CharSeq extends CharList {
 	 * {@code mapper} function.
 	 */
 	default CharSeq map(CharUnaryOperator mapper) {
-		return () -> new DelegatingCharIterator(iterator()) {
+		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextChar());
@@ -560,7 +560,7 @@ public interface CharSeq extends CharList {
 	 * @since 1.2
 	 */
 	default CharSeq mapIndexed(CharIntToCharFunction mapper) {
-		return () -> new DelegatingCharIterator(iterator()) {
+		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			private int index;
 
 			@Override
@@ -1011,7 +1011,7 @@ public interface CharSeq extends CharList {
 	 * Allow the given {@link CharConsumer} to see each element in this {@code CharSeq} as it is traversed.
 	 */
 	default CharSeq peek(CharConsumer action) {
-		return () -> new DelegatingCharIterator(iterator()) {
+		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			@Override
 			public char nextChar() {
 				char next = iterator.nextChar();
@@ -1028,7 +1028,7 @@ public interface CharSeq extends CharList {
 	 * @since 1.2.2
 	 */
 	default CharSeq peekIndexed(CharIntConsumer action) {
-		return () -> new DelegatingCharIterator(iterator()) {
+		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			private int index;
 
 			@Override

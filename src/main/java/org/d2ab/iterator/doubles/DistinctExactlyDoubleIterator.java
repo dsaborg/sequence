@@ -21,7 +21,7 @@ import org.d2ab.collection.doubles.RawDoubleSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctExactlyDoubleIterator extends DelegatingDoubleIterator {
+public class DistinctExactlyDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final DoubleSet seen = new RawDoubleSet();
 
 	private double next;

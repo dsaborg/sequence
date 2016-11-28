@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * {@link DoubleIterator} to terminate by providing an empty {@link DoubleIterator}. If the {@link DoubleIterable} never
  * returns an empty {@link DoubleIterator}, this {@link DoubleIterator} will never terminate.
  */
-public class RepeatingDoubleIterator extends DelegatingDoubleIterator {
+public class RepeatingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final DoubleIterable iterable;
 	private int times;
 

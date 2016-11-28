@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingCharIterator extends DelegatingCharIterator {
+public class ChainingCharIterator extends DelegatingUnaryCharIterator {
 	private final Iterator<CharIterable> iterables;
 
 	public ChainingCharIterator(CharIterable... iterables) {

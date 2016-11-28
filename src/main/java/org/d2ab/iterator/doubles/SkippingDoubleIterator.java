@@ -18,7 +18,7 @@ package org.d2ab.iterator.doubles;
 
 import java.util.NoSuchElementException;
 
-public class SkippingDoubleIterator extends DelegatingDoubleIterator {
+public class SkippingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final int skip;
 
 	private boolean skipped;

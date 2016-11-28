@@ -19,8 +19,8 @@ package org.d2ab.iterator.chars;
 /**
  * A {@link CharIterator} that delegates to another {@link CharIterator}.
  */
-public abstract class DelegatingCharIterator extends DelegatingTransformingCharIterator<Character, CharIterator> {
-	protected DelegatingCharIterator(CharIterator iterator) {
+public abstract class DelegatingUnaryCharIterator extends DelegatingTransformingCharIterator<Character, CharIterator> {
+	protected DelegatingUnaryCharIterator(CharIterator iterator) {
 		super(iterator);
 	}
 }

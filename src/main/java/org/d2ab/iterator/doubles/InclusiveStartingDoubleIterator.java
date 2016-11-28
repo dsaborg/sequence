@@ -21,7 +21,7 @@ import org.d2ab.collection.doubles.DoubleComparator;
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
 
-public class InclusiveStartingDoubleIterator extends DelegatingDoubleIterator {
+public class InclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final DoublePredicate predicate;
 
 	private boolean started;

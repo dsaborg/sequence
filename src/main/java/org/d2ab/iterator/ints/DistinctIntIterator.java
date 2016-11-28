@@ -21,7 +21,7 @@ import org.d2ab.collection.ints.IntSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctIntIterator extends DelegatingIntIterator {
+public class DistinctIntIterator extends DelegatingUnaryIntIterator {
 	private final IntSet seen = new BitIntSet();
 
 	private int next;

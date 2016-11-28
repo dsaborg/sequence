@@ -19,8 +19,8 @@ package org.d2ab.iterator.longs;
 /**
  * A {@link LongIterator} that delegates to another {@link LongIterator}.
  */
-public abstract class DelegatingLongIterator extends DelegatingTransformingLongIterator<Long, LongIterator> {
-	protected DelegatingLongIterator(LongIterator iterator) {
+public abstract class DelegatingUnaryLongIterator extends DelegatingTransformingLongIterator<Long, LongIterator> {
+	protected DelegatingUnaryLongIterator(LongIterator iterator) {
 		super(iterator);
 	}
 }

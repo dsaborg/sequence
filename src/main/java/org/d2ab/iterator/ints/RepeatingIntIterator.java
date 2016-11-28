@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * {@link IntIterator} to terminate by providing an empty {@link IntIterator}. If the {@link IntIterable} never
  * returns an empty {@link IntIterator}, this {@link IntIterator} will never terminate.
  */
-public class RepeatingIntIterator extends DelegatingIntIterator {
+public class RepeatingIntIterator extends DelegatingUnaryIntIterator {
 	private final IntIterable iterable;
 	private int times;
 

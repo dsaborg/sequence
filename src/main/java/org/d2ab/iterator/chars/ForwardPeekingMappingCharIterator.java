@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 /**
  * An iterator over chars that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingMappingCharIterator extends DelegatingCharIterator {
+public class ForwardPeekingMappingCharIterator extends DelegatingUnaryCharIterator {
 	private final char lastNext;
 	private final CharBinaryOperator mapper;
 

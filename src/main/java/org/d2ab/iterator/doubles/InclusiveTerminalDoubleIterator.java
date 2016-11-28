@@ -21,7 +21,7 @@ import org.d2ab.collection.doubles.DoubleComparator;
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
 
-public class InclusiveTerminalDoubleIterator extends DelegatingDoubleIterator {
+public class InclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final DoublePredicate terminal;
 
 	private double previous;

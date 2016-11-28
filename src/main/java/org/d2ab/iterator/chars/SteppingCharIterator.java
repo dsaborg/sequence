@@ -18,7 +18,7 @@ package org.d2ab.iterator.chars;
 
 import java.util.NoSuchElementException;
 
-public class SteppingCharIterator extends DelegatingCharIterator {
+public class SteppingCharIterator extends DelegatingUnaryCharIterator {
 	private final int step;
 
 	private boolean hasNext;
