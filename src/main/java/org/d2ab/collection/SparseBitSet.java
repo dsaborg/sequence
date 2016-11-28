@@ -28,8 +28,8 @@ import java.util.NoSuchElementException;
  * A sparse bit set for storing occurrences of bits where a large amount of the stored bits are expected to be zero.
  * This implementation uses a simplistic indexing scheme which provides {@code log(n)} performance for accessing
  * individual bits. Memory usage is roughly proportional to {@link #bitCount}. The bit set can set any bit between
- * {@code 0} and {@link Long#MAX_VALUE}, inclusive. However, the maximum number of 64-bit words in use is limited by
- * the int length limit of arrays.
+ * {@code 0} and {@link Long#MAX_VALUE}, inclusive. However, the maximum number of sparse 64-bit words in use by the
+ * set bits in the bit set is limited by the int length limit of arrays.
  */
 public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	private long[] words;

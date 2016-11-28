@@ -312,6 +312,48 @@ public interface CharList extends List<Character>, CharCollection {
 		return Spliterators.spliterator(intIterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 
+	/**
+	 * Base class for {@link CharList} implementations.
+	 */
+	abstract class Base extends CharCollection.Base implements CharList {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof List))
+				return false;
+
+			CharListIterator it = listIterator();
+			if (o instanceof CharList) {
+				CharListIterator that = ((CharList) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					if (it.nextChar() != that.nextChar())
+						return false;
+				}
+				return !that.hasNext();
+			} else {
+				ListIterator<?> that = ((List<?>) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					char x = it.nextChar();
+					Object y = that.next();
+					if (!(y instanceof Character && x == (Character) y))
+						return false;
+				}
+				return !that.hasNext();
+			}
+		}
+
+		public int hashCode() {
+			int hashCode = 1;
+			for (CharIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode = 31 * hashCode + Character.hashCode(iterator.nextChar());
+			return hashCode;
+		}
+	}
+
 	class SubList implements CharList {
 		private final CharList list;
 

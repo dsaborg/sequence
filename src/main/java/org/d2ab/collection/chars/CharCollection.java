@@ -17,6 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -117,5 +118,28 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	@Override
 	default Spliterator.OfInt intSpliterator() {
 		return Spliterators.spliterator(intIterator(), size(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * Base class for {@link CharCollection} implementations.
+	 */
+	abstract class Base implements CharCollection {
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
+			builder.append("[");
+
+			boolean started = false;
+			for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+				if (started)
+					builder.append(", ");
+				else
+					started = true;
+				builder.append(iterator.nextChar());
+			}
+
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 }

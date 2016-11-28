@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayCharList implements CharList {
+public class ArrayCharList extends CharList.Base implements CharList {
 	private char[] contents;
 	private int size;
 
