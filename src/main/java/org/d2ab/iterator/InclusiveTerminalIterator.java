@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class InclusiveTerminalIterator<T> extends ReferenceIterator<T> {
+public class InclusiveTerminalIterator<T> extends DelegatingUnaryIterator<T> {
 	private final Predicate<? super T> terminalPredicate;
 
 	private T previous;
@@ -38,7 +38,7 @@ public class InclusiveTerminalIterator<T> extends ReferenceIterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() && (!hasPrevious || !terminalPredicate.test(previous));
+		return iterator.hasNext() && !(hasPrevious && terminalPredicate.test(previous));
 	}
 
 	@Override

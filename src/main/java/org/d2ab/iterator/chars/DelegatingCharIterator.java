@@ -16,16 +16,11 @@
 
 package org.d2ab.iterator.chars;
 
-import org.d2ab.iterator.DelegatingIterator;
-
-import java.util.Iterator;
-
 /**
- * A superclass for delegating {@link CharIterator}s.
+ * A {@link CharIterator} that delegates to another {@link CharIterator}.
  */
-public abstract class DelegatingCharIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Character>
-		implements CharIterator {
-	public DelegatingCharIterator(I iterator) {
+public abstract class DelegatingCharIterator extends DelegatingTransformingCharIterator<Character, CharIterator> {
+	protected DelegatingCharIterator(CharIterator iterator) {
 		super(iterator);
 	}
 }

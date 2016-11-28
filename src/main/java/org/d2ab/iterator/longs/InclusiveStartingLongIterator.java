@@ -19,7 +19,7 @@ package org.d2ab.iterator.longs;
 import java.util.NoSuchElementException;
 import java.util.function.LongPredicate;
 
-public class InclusiveStartingLongIterator extends UnaryLongIterator {
+public class InclusiveStartingLongIterator extends DelegatingLongIterator {
 	private final LongPredicate predicate;
 
 	private boolean started;
@@ -60,5 +60,10 @@ public class InclusiveStartingLongIterator extends UnaryLongIterator {
 		if (hasNext)
 			next = iterator.nextLong();
 		return result;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

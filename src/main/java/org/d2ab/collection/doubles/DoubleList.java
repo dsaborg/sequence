@@ -17,10 +17,10 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.doubles.LimitingDoubleIterator;
 import org.d2ab.iterator.doubles.SkippingDoubleIterator;
-import org.d2ab.iterator.doubles.UnaryDoubleIterator;
 
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
@@ -349,7 +349,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		}
 
 		public DoubleIterator iterator() {
-			return new UnaryDoubleIterator(new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
+			return new DelegatingDoubleIterator(new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
 				@Override
 				public double nextDouble() {
 					return iterator.nextDouble();

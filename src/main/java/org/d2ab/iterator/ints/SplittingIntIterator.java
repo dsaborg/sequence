@@ -17,7 +17,7 @@
 package org.d2ab.iterator.ints;
 
 import org.d2ab.collection.ints.IntList;
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.DelegatingTransformingIterator;
 import org.d2ab.sequence.IntSequence;
 
 import java.util.Iterator;
@@ -28,7 +28,7 @@ import java.util.function.IntPredicate;
  * An {@link Iterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class SplittingIntIterator extends DelegatingIterator<Integer, IntIterator, IntSequence> {
+public class SplittingIntIterator extends DelegatingTransformingIterator<Integer, IntIterator, IntSequence> {
 	private final IntPredicate predicate;
 
 	public SplittingIntIterator(IntIterator iterator, int element) {

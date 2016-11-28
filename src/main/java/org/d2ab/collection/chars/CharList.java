@@ -19,9 +19,9 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Collectionz;
 import org.d2ab.function.CharUnaryOperator;
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.DelegatingCharIterator;
 import org.d2ab.iterator.chars.LimitingCharIterator;
 import org.d2ab.iterator.chars.SkippingCharIterator;
-import org.d2ab.iterator.chars.UnaryCharIterator;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -329,7 +329,7 @@ public interface CharList extends List<Character>, CharCollection {
 		}
 
 		public CharIterator iterator() {
-			return new UnaryCharIterator(new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
+			return new DelegatingCharIterator(new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
 				@Override
 				public char nextChar() {
 					return iterator.nextChar();

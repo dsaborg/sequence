@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * {@link CharIterator} to terminate by providing an empty {@link CharIterator}. If the {@link CharIterable} never
  * returns an empty {@link CharIterator}, this {@link CharIterator} will never terminate.
  */
-public class RepeatingCharIterator extends UnaryCharIterator {
+public class RepeatingCharIterator extends DelegatingCharIterator {
 	private final CharIterable iterable;
 	private int times;
 

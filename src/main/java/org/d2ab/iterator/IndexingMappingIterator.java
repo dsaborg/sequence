@@ -23,7 +23,7 @@ import java.util.Iterator;
 /**
  * An iterator mapping elements with the index of the current element.
  */
-public class IndexingMappingIterator<T, U> extends DelegatingReferenceIterator<T, U> {
+public class IndexingMappingIterator<T, U> extends DelegatingMappingIterator<T, U> {
 	private final ObjIntFunction<? super T, ? extends U> mapper;
 	private int index;
 

@@ -22,7 +22,7 @@ import java.util.*;
  * An {@link Iterator} that iterates over the elements of another {@link Iterator} in reverse order, by creating a
  * buffer over the elements in the {@link Iterator} and reversing the order of iteration.
  */
-public class ReverseIterator<T> extends ReferenceIterator<T> {
+public class ReverseIterator<T> extends DelegatingUnaryIterator<T> {
 	private ListIterator<? extends T> listIterator;
 
 	public ReverseIterator(Iterator<T> iterator) {

@@ -19,7 +19,7 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
 
-public class FilteringIntIterator extends UnaryIntIterator {
+public class FilteringIntIterator extends DelegatingIntIterator {
 	private final IntPredicate predicate;
 
 	private int next;

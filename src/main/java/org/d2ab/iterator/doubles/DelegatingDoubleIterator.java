@@ -16,16 +16,11 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.iterator.DelegatingIterator;
-
-import java.util.Iterator;
-
 /**
- * A superclass for delegating {@link DoubleIterator}s.
+ * A {@link DoubleIterator} that delegates to another {@link DoubleIterator}.
  */
-public abstract class DelegatingDoubleIterator<T, I extends Iterator<T>> extends DelegatingIterator<T, I, Double>
-		implements DoubleIterator {
-	public DelegatingDoubleIterator(I iterator) {
+public abstract class DelegatingDoubleIterator extends DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
+	protected DelegatingDoubleIterator(DoubleIterator iterator) {
 		super(iterator);
 	}
 }

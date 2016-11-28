@@ -19,7 +19,7 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
 
-public class ExclusiveStartingIntIterator extends UnaryIntIterator {
+public class ExclusiveStartingIntIterator extends DelegatingIntIterator {
 	private final IntPredicate predicate;
 
 	private boolean started;

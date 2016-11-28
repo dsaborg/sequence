@@ -21,7 +21,7 @@ import java.util.function.LongBinaryOperator;
 /**
  * An iterator over longs that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingMappingLongIterator extends UnaryLongIterator {
+public class BackPeekingMappingLongIterator extends DelegatingLongIterator {
 	private final long firstPrevious;
 	private final LongBinaryOperator mapper;
 

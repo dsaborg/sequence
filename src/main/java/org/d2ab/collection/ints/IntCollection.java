@@ -17,6 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -28,6 +29,23 @@ import java.util.function.Predicate;
  * methods with corresponding {@code int}-valued methods.
  */
 public interface IntCollection extends Collection<Integer>, IntIterable {
+	static String toString(IntCollection xs) {
+		StringBuilder builder = new StringBuilder(xs.size() * 5); // heuristic
+		builder.append("[");
+
+		boolean started = false;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (started)
+				builder.append(", ");
+			else
+				started = true;
+			builder.append(iterator.nextInt());
+		}
+
+		builder.append("]");
+		return builder.toString();
+	}
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;

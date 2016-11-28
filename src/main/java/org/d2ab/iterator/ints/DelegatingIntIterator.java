@@ -16,17 +16,11 @@
 
 package org.d2ab.iterator.ints;
 
-import org.d2ab.iterator.DelegatingIterator;
-
-import java.util.Iterator;
-
 /**
- * A superclass for delegating {@link IntIterator}s.
+ * An {@link IntIterator} that delegates to another {@link IntIterator}.
  */
-public abstract class DelegatingIntIterator<T, I extends Iterator<? extends T>>
-		extends DelegatingIterator<T, I, Integer>
-		implements IntIterator {
-	public DelegatingIntIterator(I iterator) {
+public abstract class DelegatingIntIterator extends DelegatingTransformingIntIterator<Integer, IntIterator> {
+	protected DelegatingIntIterator(IntIterator iterator) {
 		super(iterator);
 	}
 }

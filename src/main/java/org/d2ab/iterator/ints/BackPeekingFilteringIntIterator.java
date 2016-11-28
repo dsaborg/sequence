@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 /**
  * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public class BackPeekingFilteringIntIterator extends DelegatingIntIterator<Integer, IntIterator> {
+public class BackPeekingFilteringIntIterator extends DelegatingTransformingIntIterator<Integer, IntIterator> {
 	private final IntBiPredicate predicate;
 
 	private int next;

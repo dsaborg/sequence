@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.doubles;
+package org.d2ab.iterator.ints;
+
+import org.d2ab.iterator.DelegatingTransformingIterator;
+
+import java.util.Iterator;
 
 /**
- * A {@link DoubleIterator} that converts doubles to other doubles.
+ * A superclass for delegating {@link IntIterator}s.
  */
-public abstract class UnaryDoubleIterator extends DelegatingDoubleIterator<Double, DoubleIterator> {
-	protected UnaryDoubleIterator(DoubleIterator iterator) {
+public abstract class DelegatingTransformingIntIterator<T, I extends Iterator<? extends T>>
+		extends DelegatingTransformingIterator<T, I, Integer>
+		implements IntIterator {
+	public DelegatingTransformingIntIterator(I iterator) {
 		super(iterator);
 	}
 }

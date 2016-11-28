@@ -44,7 +44,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(Iterator<Character> iterator) {
-		return new DelegatingCharIterator<Character, Iterator<Character>>(iterator) {
+		return new DelegatingTransformingCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override
 			public char nextChar() {
 				return iterator.next();
@@ -53,7 +53,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static <T> CharIterator from(final Iterator<T> iterator, final ToCharFunction<? super T> mapper) {
-		return new DelegatingCharIterator<T, Iterator<T>>(iterator) {
+		return new DelegatingTransformingCharIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.next());
@@ -62,7 +62,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfInt iterator) {
-		return new DelegatingCharIterator<Integer, OfInt>(iterator) {
+		return new DelegatingTransformingCharIterator<Integer, OfInt>(iterator) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextInt();
@@ -71,7 +71,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfInt iterator, IntToCharFunction mapper) {
-		return new DelegatingCharIterator<Integer, OfInt>(iterator) {
+		return new DelegatingTransformingCharIterator<Integer, OfInt>(iterator) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextInt());
@@ -80,7 +80,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfLong iterator) {
-		return new DelegatingCharIterator<Long, OfLong>(iterator) {
+		return new DelegatingTransformingCharIterator<Long, OfLong>(iterator) {
 			@Override
 			public char nextChar() {
 				return (char) iterator.nextLong();
@@ -89,7 +89,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(PrimitiveIterator.OfLong iterator, LongToCharFunction mapper) {
-		return new DelegatingCharIterator<Long, OfLong>(iterator) {
+		return new DelegatingTransformingCharIterator<Long, OfLong>(iterator) {
 			@Override
 			public char nextChar() {
 				return mapper.applyAsChar(iterator.nextLong());

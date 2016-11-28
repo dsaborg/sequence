@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Iterables;
 import org.d2ab.collection.longs.*;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.longs.DelegatingLongIterator;
+import org.d2ab.iterator.longs.DelegatingTransformingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
@@ -1141,7 +1141,7 @@ public class LongSequenceTest {
 				List<Long> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Long> iterator = subList.iterator();
-				return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
+				return new DelegatingTransformingLongIterator<Long, Iterator<Long>>(iterator) {
 					@Override
 					public long nextLong() {
 						return iterator.next();
@@ -1175,7 +1175,7 @@ public class LongSequenceTest {
 				List<Long> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Long> iterator = subList.iterator();
-				return new DelegatingLongIterator<Long, Iterator<Long>>(iterator) {
+				return new DelegatingTransformingLongIterator<Long, Iterator<Long>>(iterator) {
 					@Override
 					public long nextLong() {
 						return iterator.next();

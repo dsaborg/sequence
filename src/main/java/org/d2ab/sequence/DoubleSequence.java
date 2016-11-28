@@ -470,7 +470,7 @@ public interface DoubleSequence extends DoubleList {
 	 * {@code mapper} function.
 	 */
 	default DoubleSequence map(DoubleUnaryOperator mapper) {
-		return () -> new UnaryDoubleIterator(iterator()) {
+		return () -> new DelegatingDoubleIterator(iterator()) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.nextDouble());
@@ -485,7 +485,7 @@ public interface DoubleSequence extends DoubleList {
 	 * @since 1.2
 	 */
 	default DoubleSequence mapIndexed(DoubleIntToDoubleFunction mapper) {
-		return () -> new UnaryDoubleIterator(iterator()) {
+		return () -> new DelegatingDoubleIterator(iterator()) {
 			private int index;
 
 			@Override
@@ -950,7 +950,7 @@ public interface DoubleSequence extends DoubleList {
 	 * Allow the given {@link DoubleConsumer} to see each element in this {@code DoubleSequence} as it is traversed.
 	 */
 	default DoubleSequence peek(DoubleConsumer action) {
-		return () -> new UnaryDoubleIterator(iterator()) {
+		return () -> new DelegatingDoubleIterator(iterator()) {
 			@Override
 			public double nextDouble() {
 				double next = iterator.nextDouble();
@@ -967,7 +967,7 @@ public interface DoubleSequence extends DoubleList {
 	 * @since 1.2.2
 	 */
 	default DoubleSequence peekIndexed(DoubleIntConsumer action) {
-		return () -> new UnaryDoubleIterator(iterator()) {
+		return () -> new DelegatingDoubleIterator(iterator()) {
 			private int index;
 
 			@Override

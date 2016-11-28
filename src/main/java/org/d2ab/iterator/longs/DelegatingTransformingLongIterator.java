@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator;
+package org.d2ab.iterator.longs;
+
+import org.d2ab.iterator.DelegatingTransformingIterator;
 
 import java.util.Iterator;
 
 /**
- * A base class for {@link Iterator}s that iterate over object references, as opposed to primitive values, and
- * delegate to another iterator for its source values.
+ * A superclass for delegating {@link LongIterator}s.
  */
-public abstract class DelegatingReferenceIterator<T, U> extends DelegatingIterator<T, Iterator<T>, U> {
-	protected DelegatingReferenceIterator(Iterator<T> iterator) {
+public abstract class DelegatingTransformingLongIterator<T, I extends Iterator<T>> extends DelegatingTransformingIterator<T, I, Long>
+		implements LongIterator {
+	protected DelegatingTransformingLongIterator(I iterator) {
 		super(iterator);
 	}
 }

@@ -18,7 +18,7 @@ package org.d2ab.iterator.chars;
 
 import java.util.NoSuchElementException;
 
-public class SkippingCharIterator extends UnaryCharIterator {
+public class SkippingCharIterator extends DelegatingCharIterator {
 	private final int skip;
 
 	private boolean skipped;

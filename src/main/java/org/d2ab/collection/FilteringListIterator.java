@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.DelegatingTransformingIterator;
 
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -30,7 +30,8 @@ import static org.d2ab.collection.FilteringListIterator.State.*;
  *
  * @since 1.2
  */
-public class FilteringListIterator<T> extends DelegatingIterator<T, ListIterator<T>, T> implements ListIterator<T> {
+public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, ListIterator<T>, T>
+		implements ListIterator<T> {
 	private final Predicate<? super T> predicate;
 
 	private State state = State.INIT;

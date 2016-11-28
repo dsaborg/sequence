@@ -59,7 +59,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		if (iterator instanceof PrimitiveIterator.OfInt)
 			return from((PrimitiveIterator.OfInt) iterator);
 
-		return new DelegatingIntIterator<Integer, Iterator<? extends Integer>>(iterator) {
+		return new DelegatingTransformingIntIterator<Integer, Iterator<? extends Integer>>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.next();
@@ -71,7 +71,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		if (iterator instanceof IntIterator)
 			return (IntIterator) iterator;
 
-		return new DelegatingIntIterator<Integer, OfInt>(iterator) {
+		return new DelegatingTransformingIntIterator<Integer, OfInt>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.nextInt();
@@ -80,7 +80,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(PrimitiveIterator.OfDouble iterator) {
-		return new DelegatingIntIterator<Double, OfDouble>(iterator) {
+		return new DelegatingTransformingIntIterator<Double, OfDouble>(iterator) {
 			@Override
 			public int nextInt() {
 				return (int) iterator.nextDouble();
@@ -89,7 +89,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(PrimitiveIterator.OfDouble iterator, DoubleToIntFunction mapper) {
-		return new DelegatingIntIterator<Double, OfDouble>(iterator) {
+		return new DelegatingTransformingIntIterator<Double, OfDouble>(iterator) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextDouble());
@@ -98,7 +98,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(CharIterator iterator) {
-		return new DelegatingIntIterator<Character, CharIterator>(iterator) {
+		return new DelegatingTransformingIntIterator<Character, CharIterator>(iterator) {
 			@Override
 			public int nextInt() {
 				return iterator.nextChar();
@@ -107,7 +107,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(CharIterator iterator, CharToIntFunction mapper) {
-		return new DelegatingIntIterator<Character, CharIterator>(iterator) {
+		return new DelegatingTransformingIntIterator<Character, CharIterator>(iterator) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextChar());
@@ -116,7 +116,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(PrimitiveIterator.OfLong iterator) {
-		return new DelegatingIntIterator<Long, OfLong>(iterator) {
+		return new DelegatingTransformingIntIterator<Long, OfLong>(iterator) {
 			@Override
 			public int nextInt() {
 				return (int) iterator.nextLong();
@@ -125,7 +125,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static IntIterator from(PrimitiveIterator.OfLong iterator, LongToIntFunction mapper) {
-		return new DelegatingIntIterator<Long, OfLong>(iterator) {
+		return new DelegatingTransformingIntIterator<Long, OfLong>(iterator) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.nextLong());
@@ -134,7 +134,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	}
 
 	static <T> IntIterator from(final Iterator<T> iterator, final ToIntFunction<? super T> mapper) {
-		return new DelegatingIntIterator<T, Iterator<T>>(iterator) {
+		return new DelegatingTransformingIntIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.next());

@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Iterables;
 import org.d2ab.collection.ints.*;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.DelegatingTransformingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
@@ -548,26 +548,46 @@ public class IntSequenceTest {
 
 	@Test
 	public void untilTerminal() {
-		IntSequence until = IntSequence.recurse(1, x -> x + 1).until(7);
+		IntSequence until = IntSequence.positive().until(7);
 		twice(() -> assertThat(until, containsInts(1, 2, 3, 4, 5, 6)));
-	}
-
-	@Test
-	public void endingAtTerminal() {
-		IntSequence endingAt = IntSequence.recurse(1, x -> x + 1).endingAt(7);
-		twice(() -> assertThat(endingAt, containsInts(1, 2, 3, 4, 5, 6, 7)));
 	}
 
 	@Test
 	public void untilPredicate() {
-		IntSequence until = IntSequence.recurse(1, x -> x + 1).until(i -> i == 7);
+		IntSequence until = IntSequence.positive().until(i -> i == 7);
 		twice(() -> assertThat(until, containsInts(1, 2, 3, 4, 5, 6)));
 	}
 
 	@Test
-	public void endingAtPredicate() {
-		IntSequence endingAt = IntSequence.recurse(1, x -> x + 1).endingAt(i -> i == 7);
+	public void untilRemoval() {
+		IntSequence sequence = IntSequence.from(IntList.create(1, 2, 3, 4, 5));
+		IntSequence until3 = sequence.until(3);
+
+		until3.clear();
+		assertThat(until3, is(emptyIterable()));
+		assertThat(sequence, containsInts(3, 4, 5));
+	}
+
+	@Test
+	public void endingAtTerminal() {
+		IntSequence endingAt = IntSequence.positive().endingAt(7);
 		twice(() -> assertThat(endingAt, containsInts(1, 2, 3, 4, 5, 6, 7)));
+	}
+
+	@Test
+	public void endingAtPredicate() {
+		IntSequence endingAt = IntSequence.positive().endingAt(i -> i == 7);
+		twice(() -> assertThat(endingAt, containsInts(1, 2, 3, 4, 5, 6, 7)));
+	}
+
+	@Test
+	public void endingAtRemoval() {
+		IntSequence sequence = IntSequence.from(IntList.create(1, 2, 3, 4, 5));
+		IntSequence endingAt3 = sequence.endingAt(3);
+
+		endingAt3.clear();
+		assertThat(endingAt3, containsInts(4, 5));
+		assertThat(sequence, containsInts(4, 5));
 	}
 
 	@Test
@@ -595,6 +615,16 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void startingAfterRemoval() {
+		IntSequence sequence = IntSequence.from(IntList.create(1, 2, 3, 4, 5));
+		IntSequence startingAfter3 = sequence.startingAfter(3);
+
+		startingAfter3.clear();
+		assertThat(startingAfter3, is(emptyIterable()));
+		assertThat(sequence, containsInts(1, 2, 3));
+	}
+
+	@Test
 	public void startingFrom() {
 		IntSequence startingEmpty = empty.startingFrom(5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
@@ -616,6 +646,16 @@ public class IntSequenceTest {
 
 		IntSequence noStart = _12345.startingFrom(i -> i == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromRemoval() {
+		IntSequence sequence = IntSequence.from(IntList.create(1, 2, 3, 4, 5));
+		IntSequence startingFrom3 = sequence.startingFrom(3);
+
+		startingFrom3.clear();
+		assertThat(startingFrom3, is(emptyIterable()));
+		assertThat(sequence, containsInts(1, 2));
 	}
 
 	@Test
@@ -1149,7 +1189,7 @@ public class IntSequenceTest {
 				List<Integer> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Integer> iterator = subList.iterator();
-				return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
+				return new DelegatingTransformingIntIterator<Integer, Iterator<Integer>>(iterator) {
 					@Override
 					public int nextInt() {
 						return iterator.next();
@@ -1183,7 +1223,7 @@ public class IntSequenceTest {
 				List<Integer> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Integer> iterator = subList.iterator();
-				return new DelegatingIntIterator<Integer, Iterator<Integer>>(iterator) {
+				return new DelegatingTransformingIntIterator<Integer, Iterator<Integer>>(iterator) {
 					@Override
 					public int nextInt() {
 						return iterator.next();

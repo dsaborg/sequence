@@ -627,7 +627,7 @@ public interface LongSequence extends LongList {
 	 * {@code mapper} function.
 	 */
 	default LongSequence map(LongUnaryOperator mapper) {
-		return () -> new UnaryLongIterator(iterator()) {
+		return () -> new DelegatingLongIterator(iterator()) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.nextLong());
@@ -642,7 +642,7 @@ public interface LongSequence extends LongList {
 	 * @since 1.2
 	 */
 	default LongSequence mapIndexed(LongIntToLongFunction mapper) {
-		return () -> new UnaryLongIterator(iterator()) {
+		return () -> new DelegatingLongIterator(iterator()) {
 			private int index;
 
 			@Override
@@ -1092,7 +1092,7 @@ public interface LongSequence extends LongList {
 	 * Allow the given {@link LongConsumer} to see each element in this {@code LongSequence} as it is traversed.
 	 */
 	default LongSequence peek(LongConsumer action) {
-		return () -> new UnaryLongIterator(iterator()) {
+		return () -> new DelegatingLongIterator(iterator()) {
 			@Override
 			public long nextLong() {
 				long next = iterator.nextLong();
@@ -1109,7 +1109,7 @@ public interface LongSequence extends LongList {
 	 * @since 1.2.2
 	 */
 	default LongSequence peekIndexed(LongIntConsumer action) {
-		return () -> new UnaryLongIterator(iterator()) {
+		return () -> new DelegatingLongIterator(iterator()) {
 			private int index;
 
 			@Override

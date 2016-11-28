@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 public class KeyFlatteningEntryIterator<K, V, KK>
-		extends DelegatingReferenceIterator<Map.Entry<K, V>, Map.Entry<KK, V>> {
+		extends DelegatingMappingIterator<Map.Entry<K, V>, Map.Entry<KK, V>> {
 	private final Function<? super Map.Entry<K, V>, ? extends Iterable<KK>> mapper;
 
 	private Iterator<KK> keyIterator = Iterators.empty();

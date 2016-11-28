@@ -20,7 +20,7 @@ import org.d2ab.function.CharPredicate;
 
 import java.util.NoSuchElementException;
 
-public class InclusiveTerminalCharIterator extends UnaryCharIterator {
+public class InclusiveTerminalCharIterator extends DelegatingCharIterator {
 	private final CharPredicate terminal;
 
 	private char previous;
@@ -36,16 +36,16 @@ public class InclusiveTerminalCharIterator extends UnaryCharIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() && !(hasPrevious && terminal.test(previous));
+	}
+
+	@Override
 	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
 		return previous = iterator.next();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
 	}
 }

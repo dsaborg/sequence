@@ -19,7 +19,7 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
 
-public class ExclusiveTerminalIntIterator extends UnaryIntIterator {
+public class ExclusiveTerminalIntIterator extends DelegatingIntIterator {
 	private final IntPredicate terminal;
 
 	private int next;

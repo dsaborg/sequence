@@ -23,7 +23,7 @@ import java.util.Optional;
 /**
  * An {@link Iterator} that delimits the items of another {@link Iterator} with a delimiter object.
  */
-public class DelimitingIterator<U, V> extends ReferenceIterator<U> {
+public class DelimitingIterator<U, V> extends DelegatingUnaryIterator<U> {
 	private Optional<? extends V> prefix;
 	private Optional<? extends V> delimiter;
 	private Optional<? extends V> suffix;

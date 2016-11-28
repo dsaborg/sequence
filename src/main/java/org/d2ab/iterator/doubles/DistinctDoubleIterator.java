@@ -20,7 +20,7 @@ import org.d2ab.collection.doubles.DoubleList;
 
 import java.util.NoSuchElementException;
 
-public class DistinctDoubleIterator extends UnaryDoubleIterator {
+public class DistinctDoubleIterator extends DelegatingDoubleIterator {
 	private final DoubleList seen = DoubleList.create();
 	private final double precision;
 

@@ -19,7 +19,7 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
 
-public class InclusiveTerminalIntIterator extends UnaryIntIterator {
+public class InclusiveTerminalIntIterator extends DelegatingIntIterator {
 	private final IntPredicate terminal;
 
 	private int previous;
@@ -36,7 +36,7 @@ public class InclusiveTerminalIntIterator extends UnaryIntIterator {
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
+		return iterator.hasNext() && !(hasPrevious && terminal.test(previous));
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import java.util.function.IntBinaryOperator;
 /**
  * An iterator over ints that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingMappingIntIterator extends UnaryIntIterator {
+public class BackPeekingMappingIntIterator extends DelegatingIntIterator {
 	private final int firstPrevious;
 	private final IntBinaryOperator mapper;
 	private boolean hasPrevious;

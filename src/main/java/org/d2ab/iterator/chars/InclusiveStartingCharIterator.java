@@ -20,7 +20,7 @@ import org.d2ab.function.CharPredicate;
 
 import java.util.NoSuchElementException;
 
-public class InclusiveStartingCharIterator extends UnaryCharIterator {
+public class InclusiveStartingCharIterator extends DelegatingCharIterator {
 	private final CharPredicate predicate;
 
 	private boolean started;
@@ -61,5 +61,10 @@ public class InclusiveStartingCharIterator extends UnaryCharIterator {
 		if (hasNext)
 			next = iterator.nextChar();
 		return result;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

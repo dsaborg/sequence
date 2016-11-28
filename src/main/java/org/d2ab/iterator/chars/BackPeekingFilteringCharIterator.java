@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 /**
  * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public class BackPeekingFilteringCharIterator extends DelegatingCharIterator<Character, CharIterator> {
+public class BackPeekingFilteringCharIterator extends DelegatingTransformingCharIterator<Character, CharIterator> {
 	private final CharBiPredicate predicate;
 
 	private char next;

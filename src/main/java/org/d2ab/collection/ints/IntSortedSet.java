@@ -16,6 +16,8 @@
 
 package org.d2ab.collection.ints;
 
+import org.d2ab.iterator.ints.ExclusiveTerminalIntIterator;
+import org.d2ab.iterator.ints.InclusiveStartingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.SortedSet;
@@ -32,30 +34,70 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 	}
 
 	@Override
-	default IntSortedSet subSet(Integer fromElement, Integer toElement) {
-		return subSet((int) fromElement, (int) toElement);
+	default IntSortedSet subSet(Integer from, Integer to) {
+		return subSet((int) from, (int) to);
 	}
 
-	default IntSortedSet subSet(int fromElement, int toElement) {
-		throw new UnsupportedOperationException();
+	default IntSortedSet subSet(int from, int to) {
+		return new SubSet(this) {
+			@Override
+			public IntIterator iterator() {
+				return untilExcluded(fromIncluded(IntSortedSet.this.iterator()));
+			}
+
+			@Override
+			protected boolean included(int x) {
+				return x >= from && x < to;
+			}
+		};
 	}
 
 	@Override
-	default IntSortedSet headSet(Integer toElement) {
-		return headSet((int) toElement);
+	default IntSortedSet headSet(Integer to) {
+		return headSet((int) to);
 	}
 
-	default IntSortedSet headSet(int toElement) {
-		throw new UnsupportedOperationException();
+	default IntSortedSet headSet(int to) {
+		return new SubSet(this) {
+			@Override
+			public IntIterator iterator() {
+				return untilExcluded(IntSortedSet.this.iterator());
+			}
+
+			@Override
+			public int firstInt() {
+				return IntSortedSet.this.firstInt();
+			}
+
+			@Override
+			protected boolean included(int x) {
+				return x < to;
+			}
+		};
 	}
 
 	@Override
-	default IntSortedSet tailSet(Integer fromElement) {
-		return tailSet((int) fromElement);
+	default IntSortedSet tailSet(Integer from) {
+		return tailSet((int) from);
 	}
 
-	default IntSortedSet tailSet(int fromElement) {
-		throw new UnsupportedOperationException();
+	default IntSortedSet tailSet(int from) {
+		return new SubSet(this) {
+			@Override
+			public IntIterator iterator() {
+				return fromIncluded(IntSortedSet.this.iterator());
+			}
+
+			@Override
+			public int lastInt() {
+				return IntSortedSet.this.lastInt();
+			}
+
+			@Override
+			protected boolean included(int x) {
+				return x >= from;
+			}
+		};
 	}
 
 	@Override
@@ -86,5 +128,63 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 		return Spliterators.spliterator(iterator(), size(),
 		                                Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SORTED |
 		                                Spliterator.NONNULL);
+	}
+
+	abstract class SubSet implements IntSortedSet {
+		private IntSortedSet set;
+
+		public SubSet(IntSortedSet set) {
+			this.set = set;
+		}
+
+		@Override
+		public int size() {
+			return iterator().count();
+		}
+
+		@Override
+		public String toString() {
+			return IntCollection.toString(this);
+		}
+
+		public boolean equals(Object o) {
+			return IntSet.equals(this, o);
+		}
+
+		public int hashCode() {
+			return IntSet.hashCode(this);
+		}
+
+		@Override
+		public boolean containsInt(int x) {
+			return included(x) && set.containsInt(x);
+		}
+
+		@Override
+		public boolean removeInt(int x) {
+			return included(x) && set.removeInt(x);
+		}
+
+		@Override
+		public boolean addInt(int x) {
+			if (excluded(x))
+				throw new IllegalArgumentException(String.valueOf(x));
+
+			return set.addInt(x);
+		}
+
+		protected IntIterator untilExcluded(IntIterator iterator) {
+			return new ExclusiveTerminalIntIterator(iterator, this::excluded);
+		}
+
+		protected IntIterator fromIncluded(IntIterator iterator) {
+			return new InclusiveStartingIntIterator(iterator, this::included);
+		}
+
+		protected abstract boolean included(int x);
+
+		protected boolean excluded(int x) {
+			return !included(x);
+		}
 	}
 }

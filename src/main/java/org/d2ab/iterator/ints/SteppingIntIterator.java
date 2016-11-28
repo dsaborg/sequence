@@ -18,7 +18,7 @@ package org.d2ab.iterator.ints;
 
 import java.util.NoSuchElementException;
 
-public class SteppingIntIterator extends UnaryIntIterator {
+public class SteppingIntIterator extends DelegatingIntIterator {
 	private final int step;
 
 	private boolean hasNext;

@@ -21,7 +21,7 @@ import org.d2ab.collection.chars.CharSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctCharIterator extends UnaryCharIterator {
+public class DistinctCharIterator extends DelegatingCharIterator {
 	private final CharSet seen = new BitCharSet();
 
 	private char next;

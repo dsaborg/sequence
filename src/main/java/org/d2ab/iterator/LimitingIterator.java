@@ -19,7 +19,7 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LimitingIterator<T> extends ReferenceIterator<T> {
+public class LimitingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final int limit;
 	private int count;
 

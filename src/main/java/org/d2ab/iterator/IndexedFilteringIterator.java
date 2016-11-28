@@ -21,7 +21,7 @@ import org.d2ab.function.ObjIntPredicate;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class IndexedFilteringIterator<T> extends ReferenceIterator<T> {
+public class IndexedFilteringIterator<T> extends DelegatingUnaryIterator<T> {
 	private final ObjIntPredicate<? super T> predicate;
 
 	private T next;

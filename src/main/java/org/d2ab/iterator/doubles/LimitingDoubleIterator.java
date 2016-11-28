@@ -18,7 +18,7 @@ package org.d2ab.iterator.doubles;
 
 import java.util.NoSuchElementException;
 
-public class LimitingDoubleIterator extends UnaryDoubleIterator {
+public class LimitingDoubleIterator extends DelegatingDoubleIterator {
 	private final int limit;
 	private int count;
 

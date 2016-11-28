@@ -20,7 +20,8 @@ import org.d2ab.function.DoubleBiPredicate;
 
 import java.util.NoSuchElementException;
 
-public class ForwardPeekingFilteringDoubleIterator extends DelegatingDoubleIterator<Double, DoubleIterator> {
+public class ForwardPeekingFilteringDoubleIterator extends
+                                                   DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
 	private double lastNext;
 	private final DoubleBiPredicate predicate;
 

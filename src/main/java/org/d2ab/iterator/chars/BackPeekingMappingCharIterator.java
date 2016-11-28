@@ -21,7 +21,7 @@ import org.d2ab.function.CharBinaryOperator;
 /**
  * An iterator over chars that also maps each element by looking at the current AND the previous element.
  */
-public class BackPeekingMappingCharIterator extends UnaryCharIterator {
+public class BackPeekingMappingCharIterator extends DelegatingCharIterator {
 	private final char firstPrevious;
 	private final CharBinaryOperator mapper;
 	private int previous = -1;

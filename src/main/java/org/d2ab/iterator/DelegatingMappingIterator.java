@@ -19,22 +19,10 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 
 /**
- * An {@link Iterator} that delegates to another {@link Iterator} of a specified type.
+ * An {@link Iterator}s that delegates to the same type of {@link Iterator} but maps the values to a different type.
  */
-public abstract class DelegatingIterator<T, I extends Iterator<? extends T>, U> implements Iterator<U> {
-	protected I iterator;
-
-	protected DelegatingIterator(I iterator) {
-		this.iterator = iterator;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
-
-	@Override
-	public void remove() {
-		iterator.remove();
+public abstract class DelegatingMappingIterator<T, U> extends DelegatingTransformingIterator<T, Iterator<T>, U> {
+	protected DelegatingMappingIterator(Iterator<T> iterator) {
+		super(iterator);
 	}
 }

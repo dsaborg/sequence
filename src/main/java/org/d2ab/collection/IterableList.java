@@ -222,7 +222,7 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 		}
 
 		public Iterator<T> iterator() {
-			return new UnaryIterator<T>(new LimitingIterator<>(new SkippingIterator<>(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryIterator<T>(new LimitingIterator<>(new SkippingIterator<>(list.iterator(), from), to - from)) {
 				@Override
 				public T next() {
 					return iterator.next();

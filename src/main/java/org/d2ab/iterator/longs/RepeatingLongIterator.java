@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * {@link LongIterator} to terminate by providing an empty {@link LongIterator}. If the {@link LongIterable} never
  * returns an empty {@link LongIterator}, this {@link LongIterator} will never terminate.
  */
-public class RepeatingLongIterator extends UnaryLongIterator {
+public class RepeatingLongIterator extends DelegatingLongIterator {
 	private final LongIterable iterable;
 	private int times;
 

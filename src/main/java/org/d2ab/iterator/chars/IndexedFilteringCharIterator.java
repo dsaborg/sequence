@@ -20,7 +20,7 @@ import org.d2ab.function.CharIntPredicate;
 
 import java.util.NoSuchElementException;
 
-public class IndexedFilteringCharIterator extends UnaryCharIterator {
+public class IndexedFilteringCharIterator extends DelegatingCharIterator {
 	private final CharIntPredicate predicate;
 	private int index;
 

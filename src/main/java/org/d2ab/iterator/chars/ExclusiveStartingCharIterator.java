@@ -20,7 +20,7 @@ import org.d2ab.function.CharPredicate;
 
 import java.util.NoSuchElementException;
 
-public class ExclusiveStartingCharIterator extends UnaryCharIterator {
+public class ExclusiveStartingCharIterator extends DelegatingCharIterator {
 	private final CharPredicate predicate;
 
 	private boolean started;

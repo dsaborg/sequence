@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 /**
  * Base class for iterators that map the next element by also peeking at the previous element.
  */
-public class BackPeekingFilteringDoubleIterator extends DelegatingDoubleIterator<Double, DoubleIterator> {
+public class BackPeekingFilteringDoubleIterator extends DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
 	private final DoubleBiPredicate predicate;
 
 	private double next;

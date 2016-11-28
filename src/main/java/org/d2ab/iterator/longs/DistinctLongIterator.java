@@ -21,7 +21,7 @@ import org.d2ab.collection.longs.LongSet;
 
 import java.util.NoSuchElementException;
 
-public class DistinctLongIterator extends UnaryLongIterator {
+public class DistinctLongIterator extends DelegatingLongIterator {
 	private final LongSet seen = new BitLongSet();
 
 	private long next;

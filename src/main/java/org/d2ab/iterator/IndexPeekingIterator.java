@@ -19,7 +19,7 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.function.ObjIntConsumer;
 
-public class IndexPeekingIterator<T> extends ReferenceIterator<T> {
+public class IndexPeekingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final ObjIntConsumer<? super T> action;
 	private int index;
 

@@ -17,11 +17,10 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.SparseBitSet;
-import org.d2ab.iterator.ints.DelegatingIntIterator;
+import org.d2ab.iterator.ints.DelegatingTransformingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.PrimitiveIterator;
-import java.util.Set;
 
 /**
  * An implementation of {@link IntSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
@@ -40,7 +39,7 @@ public class BitIntSet implements IntSortedSet {
 
 	@Override
 	public IntIterator iterator() {
-		return new DelegatingIntIterator<Long, PrimitiveIterator.OfLong>(values.iterator()) {
+		return new DelegatingTransformingIntIterator<Long, PrimitiveIterator.OfLong>(values.iterator()) {
 			@Override
 			public int nextInt() {
 				return (int) (iterator.nextLong() + Integer.MIN_VALUE);
@@ -85,36 +84,14 @@ public class BitIntSet implements IntSortedSet {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(size() * 5); // heuristic
-		builder.append("[");
-
-		boolean started = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (started)
-				builder.append(", ");
-			else
-				started = true;
-			builder.append(iterator.nextInt());
-		}
-
-		builder.append("]");
-		return builder.toString();
+		return IntCollection.toString(this);
 	}
 
 	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof Set))
-			return false;
-
-		Set<?> that = (Set<?>) o;
-		return size() == that.size() && containsAll(that);
+		return IntSet.equals(this, o);
 	}
 
 	public int hashCode() {
-		int hashCode = 0;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); )
-			hashCode += Integer.hashCode(iterator.nextInt());
-		return hashCode;
+		return IntSet.hashCode(this);
 	}
 }

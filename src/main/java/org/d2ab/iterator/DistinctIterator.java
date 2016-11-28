@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class DistinctIterator<T> extends ReferenceIterator<T> {
+public class DistinctIterator<T> extends DelegatingUnaryIterator<T> {
 	private Set<T> seen = new HashSet<>();
 
 	private T next;

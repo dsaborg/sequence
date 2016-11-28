@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.longs;
+package org.d2ab.iterator;
+
+import java.util.Iterator;
 
 /**
- * A {@link LongIterator} that converts longs to other longs.
+ * An {@link Iterator} that delegates to another {@link Iterator} of the same type.
  */
-public abstract class UnaryLongIterator extends DelegatingLongIterator<Long, LongIterator> {
-	protected UnaryLongIterator(LongIterator iterator) {
+public abstract class DelegatingUnaryIterator<T> extends DelegatingMappingIterator<T, T> {
+	protected DelegatingUnaryIterator(Iterator<T> iterator) {
 		super(iterator);
 	}
 }

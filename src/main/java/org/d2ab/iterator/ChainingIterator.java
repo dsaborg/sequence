@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 
-public class ChainingIterator<T> extends ReferenceIterator<T> {
+public class ChainingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final Iterator<? extends Iterable<? extends T>> iterables;
 
 	@SafeVarargs

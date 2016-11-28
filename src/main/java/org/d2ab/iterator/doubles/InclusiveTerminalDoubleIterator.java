@@ -21,7 +21,7 @@ import org.d2ab.collection.doubles.DoubleComparator;
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
 
-public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
+public class InclusiveTerminalDoubleIterator extends DelegatingDoubleIterator {
 	private final DoublePredicate terminal;
 
 	private double previous;
@@ -37,16 +37,16 @@ public class InclusiveTerminalDoubleIterator extends UnaryDoubleIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() && !(hasPrevious && terminal.test(previous));
+	}
+
+	@Override
 	public double nextDouble() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
 		return previous = iterator.next();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
 	}
 }

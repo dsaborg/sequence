@@ -18,7 +18,7 @@ package org.d2ab.iterator.ints;
 
 import java.util.NoSuchElementException;
 
-public class SkippingIntIterator extends UnaryIntIterator {
+public class SkippingIntIterator extends DelegatingIntIterator {
 	private final int skip;
 
 	private boolean skipped;

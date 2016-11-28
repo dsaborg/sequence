@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -49,12 +50,6 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 public class SequenceTest {
 	private final Function<Object[], Sequence<?>> generator;
-
-	@SuppressWarnings("unchecked")
-	@SafeVarargs
-	private final <T> Sequence<T> newSequence(T... ts) {
-		return (Sequence<T>) generator.apply(ts);
-	}
 
 	private final Sequence<Integer> empty;
 	private final Sequence<Integer> _1;
@@ -92,17 +87,24 @@ public class SequenceTest {
 	public static Object[][] parameters() {
 		return new Object[][]{
 				{"Sequence",
-				 (Function<Object[], Sequence<?>>) is -> standardSequence(is)},
+				 (Function<Object[], Sequence<?>>) is -> newStandardSequence(is)},
 				{"ListSequence",
-				 (Function<Object[], Sequence<?>>) is -> listSequence(is)},
+				 (Function<Object[], Sequence<?>>) is -> newListSequence(is)},
 				{"ChainedListSequence",
-				 (Function<Object[], Sequence<?>>) is -> chainedListSequence(is)},
+				 (Function<Object[], Sequence<?>>) is -> newChainedListSequence(is)},
 				};
 	}
 
-	public static Sequence<?> chainedListSequence(Object... is) {
-		List<List<Object>> lists = new ArrayList<>();
-		List<Object> current = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	private final <T> Sequence<T> newSequence(T... ts) {
+		return (Sequence<T>) generator.apply(ts);
+	}
+
+	@SafeVarargs
+	public static <T> Sequence<T> newChainedListSequence(T... is) {
+		List<List<T>> lists = new ArrayList<>();
+		List<T> current = new ArrayList<>();
 		for (int i = 0; i < is.length; i++) {
 			current.add(is[i]);
 			if (i % 3 == 0) {
@@ -114,12 +116,14 @@ public class SequenceTest {
 		return ListSequence.concat(lists);
 	}
 
-	public static Sequence<Object> listSequence(Object... is) {
-		return ListSequence.from(new ArrayList<>(Arrays.asList(is)));
+	@SafeVarargs
+	public static <T> Sequence<T> newListSequence(T... is) {
+		return ListSequence.from(new ArrayList<>(asList(is)));
 	}
 
-	public static Sequence<Object> standardSequence(Object... is) {
-		return Sequence.from(new ArrayDeque<>(Arrays.asList(is)));
+	@SafeVarargs
+	public static <T> Sequence<T> newStandardSequence(T... is) {
+		return Sequence.from(new ArrayDeque<>(asList(is)));
 	}
 
 	@Test
@@ -273,8 +277,8 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfLists() {
-		Sequence<Integer> sequenceFromIterables = Sequence.concat(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6),
-		                                                          Arrays.asList(7, 8, 9));
+		Sequence<Integer> sequenceFromIterables = Sequence.concat(asList(1, 2, 3), asList(4, 5, 6),
+		                                                          asList(7, 8, 9));
 
 		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
@@ -298,7 +302,7 @@ public class SequenceTest {
 	@Test
 	public void concatIterableOfLists() {
 		Sequence<Integer> sequenceFromIterables =
-				Sequence.concat(Iterables.of(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6), Arrays.asList(7, 8, 9)));
+				Sequence.concat(Iterables.of(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9)));
 
 		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
@@ -312,7 +316,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheCollection() {
-		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list);
 		list.set(0, 17);
 
@@ -324,7 +328,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list::iterator);
 		list.set(0, 17);
 
@@ -336,7 +340,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list.iterator());
 		list.set(0, 17);
 
@@ -348,7 +352,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list.stream());
 		list.set(0, 17);
 
@@ -963,6 +967,15 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void untilRemoval() {
+		Sequence<Integer> until5 = _123456789.until(5);
+
+		until5.clear();
+		assertThat(until5, is(emptyIterable()));
+		assertThat(_123456789, contains(5, 6, 7, 8, 9));
+	}
+
+	@Test
 	public void endingAtTerminal() {
 		Sequence<Integer> endingEmpty = empty.endingAt(5);
 		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
@@ -999,6 +1012,15 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void endingAtRemoval() {
+		Sequence<Integer> endingAt5 = _123456789.endingAt(5);
+
+		endingAt5.clear();
+		assertThat(endingAt5, contains(6, 7, 8, 9));
+		assertThat(_123456789, contains(6, 7, 8, 9));
+	}
+
+	@Test
 	public void startingAfter() {
 		Sequence<Integer> startingEmpty = empty.startingAfter(5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
@@ -1023,6 +1045,15 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void startingAfterRemoval() {
+		Sequence<Integer> startingAfter5 = _123456789.startingAfter(5);
+
+		startingAfter5.clear();
+		assertThat(startingAfter5, is(emptyIterable()));
+		assertThat(_123456789, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
 	public void startingFrom() {
 		Sequence<Integer> startingEmpty = empty.startingFrom(5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
@@ -1032,6 +1063,15 @@ public class SequenceTest {
 
 		Sequence<Integer> noStart = _12345.startingFrom(10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromRemoval() {
+		Sequence<Integer> startingFrom5 = _123456789.startingFrom(5);
+
+		startingFrom5.clear();
+		assertThat(startingFrom5, is(emptyIterable()));
+		assertThat(_123456789, contains(1, 2, 3, 4));
 	}
 
 	@Test
@@ -2119,7 +2159,7 @@ public class SequenceTest {
 		twice(() -> assertThat(repeatThree, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = Arrays.asList(1, 2, 3);
+			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -2147,7 +2187,7 @@ public class SequenceTest {
 		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
 
 		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = Arrays.asList(1, 2, 3);
+			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -2177,7 +2217,7 @@ public class SequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.generate(queue::poll);
 
 		assertThat(sequence, beginsWith(1, 2, 3, 4, 5, null));
@@ -2187,7 +2227,7 @@ public class SequenceTest {
 	@Test
 	public void multiGenerate() {
 		Sequence<Integer> sequence = Sequence.multiGenerate(() -> {
-			Queue<Integer> queue = new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5));
+			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 			return queue::poll;
 		});
 

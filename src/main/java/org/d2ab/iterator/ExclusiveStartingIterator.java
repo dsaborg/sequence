@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class ExclusiveStartingIterator<T> extends ReferenceIterator<T> {
+public class ExclusiveStartingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final Predicate<? super T> predicate;
 
 	private boolean started;

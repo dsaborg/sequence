@@ -20,7 +20,7 @@ import org.d2ab.function.IntBiPredicate;
 
 import java.util.NoSuchElementException;
 
-public class IndexedFilteringIntIterator extends UnaryIntIterator {
+public class IndexedFilteringIntIterator extends DelegatingIntIterator {
 	private final IntBiPredicate predicate;
 	private int index;
 

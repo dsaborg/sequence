@@ -17,6 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.Collection;
 import java.util.Set;
@@ -27,6 +28,23 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code int} values.
  */
 public interface IntSet extends Set<Integer>, IntCollection {
+	static boolean equals(IntSet xs, Object o) {
+		if (o == xs)
+			return true;
+		if (!(o instanceof Set))
+			return false;
+
+		Set<?> that = (Set<?>) o;
+		return xs.size() == that.size() && xs.containsAll(that);
+	}
+
+	static int hashCode(IntSet xs) {
+		int hashCode = 0;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); )
+			hashCode += Integer.hashCode(iterator.nextInt());
+		return hashCode;
+	}
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;

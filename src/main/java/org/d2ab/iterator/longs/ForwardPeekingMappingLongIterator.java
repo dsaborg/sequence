@@ -22,7 +22,7 @@ import java.util.function.LongBinaryOperator;
 /**
  * An iterator over ints that also maps each element by looking at the current AND the next element.
  */
-public class ForwardPeekingMappingLongIterator extends UnaryLongIterator {
+public class ForwardPeekingMappingLongIterator extends DelegatingLongIterator {
 	private final long lastNext;
 	private final LongBinaryOperator mapper;
 

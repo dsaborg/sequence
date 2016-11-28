@@ -18,7 +18,7 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.longs.BitLongSet;
 import org.d2ab.collection.longs.LongSet;
-import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
+import org.d2ab.iterator.doubles.DelegatingTransformingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.PrimitiveIterator;
@@ -41,7 +41,7 @@ public class RawDoubleSet implements DoubleSet {
 
 	@Override
 	public DoubleIterator iterator() {
-		return new DelegatingDoubleIterator<Long, PrimitiveIterator.OfLong>(values.iterator()) {
+		return new DelegatingTransformingDoubleIterator<Long, PrimitiveIterator.OfLong>(values.iterator()) {
 			@Override
 			public double nextDouble() {
 				return Double.longBitsToDouble(iterator.nextLong());

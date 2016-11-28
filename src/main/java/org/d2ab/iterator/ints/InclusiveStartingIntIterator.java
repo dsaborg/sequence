@@ -19,12 +19,13 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 import java.util.function.IntPredicate;
 
-public class InclusiveStartingIntIterator extends UnaryIntIterator {
+public class InclusiveStartingIntIterator extends DelegatingIntIterator {
 	private final IntPredicate predicate;
 
 	private boolean started;
-	private int next;
-	private boolean hasNext;
+	private int first;
+	private boolean firstFound;
+	private boolean firstEmitted;
 
 	public InclusiveStartingIntIterator(IntIterator iterator, int element) {
 		this(iterator, i -> i == element);
@@ -38,16 +39,21 @@ public class InclusiveStartingIntIterator extends UnaryIntIterator {
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			while (iterator.hasNext()) {
-				next = iterator.nextInt();
-				if (predicate.test(next)) {
-					hasNext = true;
-					break;
+			while (iterator.hasNext() && !firstFound) {
+				int candidateFirst = iterator.nextInt();
+				if (predicate.test(candidateFirst)) {
+					firstFound = true;
+					first = candidateFirst;
 				}
 			}
 			started = true;
+			return firstFound;
+		} else {
+			if (!firstEmitted)
+				return firstFound;
+			else
+				return iterator.hasNext();
 		}
-		return hasNext;
 	}
 
 	@Override
@@ -55,10 +61,11 @@ public class InclusiveStartingIntIterator extends UnaryIntIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int result = next;
-		hasNext = iterator.hasNext();
-		if (hasNext)
-			next = iterator.nextInt();
-		return result;
+		if (!firstEmitted) {
+			firstEmitted = true;
+			return first;
+		} else {
+			return iterator.nextInt();
+		}
 	}
 }

@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.chars;
+package org.d2ab.iterator;
+
+import java.util.Iterator;
 
 /**
- * A {@link CharIterator} that converts chars to other chars.
+ * An {@link Iterator} that delegates to another {@link Iterator} of a different value type as well as transforming the
+ * type of the {@link Iterator} represented.
  */
-public abstract class UnaryCharIterator extends DelegatingCharIterator<Character, CharIterator> {
-	protected UnaryCharIterator(CharIterator iterator) {
-		super(iterator);
+public abstract class DelegatingTransformingIterator<T, I extends Iterator<? extends T>, U> implements Iterator<U> {
+	protected I iterator;
+
+	protected DelegatingTransformingIterator(I iterator) {
+		this.iterator = iterator;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return iterator.hasNext();
+	}
+
+	@Override
+	public void remove() {
+		iterator.remove();
 	}
 }

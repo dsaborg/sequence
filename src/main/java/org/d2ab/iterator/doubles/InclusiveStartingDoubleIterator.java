@@ -21,7 +21,7 @@ import org.d2ab.collection.doubles.DoubleComparator;
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
 
-public class InclusiveStartingDoubleIterator extends UnaryDoubleIterator {
+public class InclusiveStartingDoubleIterator extends DelegatingDoubleIterator {
 	private final DoublePredicate predicate;
 
 	private boolean started;
@@ -62,5 +62,10 @@ public class InclusiveStartingDoubleIterator extends UnaryDoubleIterator {
 		if (hasNext)
 			next = iterator.nextDouble();
 		return result;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -18,7 +18,7 @@ package org.d2ab.iterator.longs;
 
 import java.util.NoSuchElementException;
 
-public class LimitingLongIterator extends UnaryLongIterator {
+public class LimitingLongIterator extends DelegatingLongIterator {
 	private final int limit;
 
 	private int count;

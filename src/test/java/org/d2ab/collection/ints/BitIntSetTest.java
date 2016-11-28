@@ -20,12 +20,11 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.*;
@@ -100,14 +99,197 @@ public class BitIntSetTest {
 
 	@Test
 	public void testEqualsHashCode() {
-		BitIntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
-		set2.removeInt(17);
+		set2.remove(17);
 
 		assertThat(set, is(equalTo(set2)));
 		assertThat(set.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void subSet() {
+		IntSortedSet subSet = set.subSet(-3, 3);
+		assertThat(subSet, containsInts(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(subSet.firstInt(), is(-3));
+		assertThat(subSet.lastInt(), is(2));
+		assertThat(subSet.containsInt(1), is(true));
+		assertThat(subSet.containsInt(3), is(false));
+		assertThat(subSet.toString(), is("[-3, -2, -1, 0, 1, 2]"));
+		Set<Integer> set2 = new HashSet<>(asList(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet, is(equalTo(set2)));
+		assertThat(subSet.hashCode(), is(set2.hashCode()));
+
+		assertThat(subSet.removeInt(0), is(true));
+		assertThat(subSet, containsInts(-3, -2, -1, 1, 2));
+		assertThat(subSet.size(), is(5));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 1, 2, 3, 4));
+
+		assertThat(subSet.removeInt(0), is(false));
+		assertThat(subSet, containsInts(-3, -2, -1, 1, 2));
+		assertThat(subSet.size(), is(5));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 1, 2, 3, 4));
+
+		assertThat(subSet.addInt(0), is(true));
+		assertThat(subSet, containsInts(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(subSet.addInt(0), is(false));
+		assertThat(subSet, containsInts(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+
+		expecting(IllegalArgumentException.class, () -> subSet.add(-17));
+		assertThat(subSet, containsInts(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+	}
+
+	@Test
+	public void sparseSubSet() {
+		BitIntSet set = new BitIntSet(-5, -3, -1, 1, 3, 5);
+		IntSortedSet subSet = set.subSet(-2, 2);
+		assertThat(subSet, containsInts(-1, 1));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstInt(), is(-1));
+		assertThat(subSet.lastInt(), is(1));
+		assertThat(subSet.containsInt(1), is(true));
+		assertThat(subSet.containsInt(-3), is(false));
+		assertThat(subSet.toString(), is("[-1, 1]"));
+		Set<Integer> set2 = new HashSet<>(asList(-1, 1));
+		assertThat(subSet, is(equalTo(set2)));
+		assertThat(subSet.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void headSet() {
+		IntSortedSet headSet = set.headSet(0);
+		assertThat(headSet, containsInts(-5, -4, -3, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(headSet.firstInt(), is(-5));
+		assertThat(headSet.lastInt(), is(-1));
+		assertThat(headSet.containsInt(-3), is(true));
+		assertThat(headSet.containsInt(0), is(false));
+		assertThat(headSet.toString(), is("[-5, -4, -3, -2, -1]"));
+		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1));
+		assertThat(headSet, is(equalTo(set2)));
+		assertThat(headSet.hashCode(), is(set2.hashCode()));
+
+		assertThat(headSet.removeInt(-3), is(true));
+		assertThat(headSet, containsInts(-5, -4, -2, -1));
+		assertThat(headSet.size(), is(4));
+		assertThat(set, containsInts(-5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(headSet.removeInt(-3), is(false));
+		assertThat(headSet, containsInts(-5, -4, -2, -1));
+		assertThat(headSet.size(), is(4));
+		assertThat(set, containsInts(-5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(headSet.addInt(-17), is(true));
+		assertThat(headSet, containsInts(-17, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(set, containsInts(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(headSet.addInt(-17), is(false));
+		assertThat(headSet, containsInts(-17, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(set, containsInts(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		expecting(IllegalArgumentException.class, () -> headSet.add(17));
+		assertThat(headSet, containsInts(-17, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(set, containsInts(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(set.addInt(-6), is(true));
+		assertThat(headSet, containsInts(-17, -6, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(6));
+		assertThat(set, containsInts(-17, -6, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+	}
+
+	@Test
+	public void sparseHeadSet() {
+		BitIntSet set = new BitIntSet(-5, -3, -1, 1, 3, 5);
+		IntSortedSet headSet = set.headSet(0);
+		assertThat(headSet, containsInts(-5, -3, -1));
+		assertThat(headSet.size(), is(3));
+		assertThat(headSet.firstInt(), is(-5));
+		assertThat(headSet.lastInt(), is(-1));
+		assertThat(headSet.containsInt(-3), is(true));
+		assertThat(headSet.containsInt(1), is(false));
+		assertThat(headSet.toString(), is("[-5, -3, -1]"));
+		Set<Integer> set2 = new HashSet<>(asList(-5, -3, -1));
+		assertThat(headSet, is(equalTo(set2)));
+		assertThat(headSet.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void tailSet() {
+		IntSortedSet tailSet = set.tailSet(0);
+		assertThat(tailSet, containsInts(0, 1, 2, 3, 4));
+		assertThat(tailSet.size(), is(5));
+		assertThat(tailSet.firstInt(), is(0));
+		assertThat(tailSet.lastInt(), is(4));
+		assertThat(tailSet.containsInt(3), is(true));
+		assertThat(tailSet.containsInt(-1), is(false));
+		assertThat(tailSet.toString(), is("[0, 1, 2, 3, 4]"));
+		Set<Integer> set2 = new HashSet<>(asList(0, 1, 2, 3, 4));
+		assertThat(tailSet, is(equalTo(set2)));
+		assertThat(tailSet.hashCode(), is(set2.hashCode()));
+
+		assertThat(tailSet.removeInt(2), is(true));
+		assertThat(tailSet, containsInts(0, 1, 3, 4));
+		assertThat(tailSet.size(), is(4));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4));
+
+		assertThat(tailSet.removeInt(2), is(false));
+		assertThat(tailSet, containsInts(0, 1, 3, 4));
+		assertThat(tailSet.size(), is(4));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4));
+
+		assertThat(tailSet.addInt(17), is(true));
+		assertThat(tailSet, containsInts(0, 1, 3, 4, 17));
+		assertThat(tailSet.size(), is(5));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
+
+		assertThat(tailSet.addInt(17), is(false));
+		assertThat(tailSet, containsInts(0, 1, 3, 4, 17));
+		assertThat(tailSet.size(), is(5));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
+
+		expecting(IllegalArgumentException.class, () -> tailSet.add(-17));
+		assertThat(tailSet, containsInts(0, 1, 3, 4, 17));
+		assertThat(tailSet.size(), is(5));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
+
+		assertThat(set.addInt(5), is(true));
+		assertThat(tailSet, containsInts(0, 1, 3, 4, 5, 17));
+		assertThat(tailSet.size(), is(6));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4, 5, 17));
+
+		tailSet.clear();
+		assertThat(tailSet, is(emptyIterable()));
+		assertThat(tailSet.size(), is(0));
+		assertThat(set, containsInts(-5, -4, -3, -2, -1));
+	}
+
+	@Test
+	public void sparseTailSet() {
+		BitIntSet set = new BitIntSet(-5, -3, -1, 1, 3, 5);
+		IntSortedSet tailSet = set.tailSet(0);
+		assertThat(tailSet, containsInts(1, 3, 5));
+		assertThat(tailSet.size(), is(3));
+		assertThat(tailSet.firstInt(), is(1));
+		assertThat(tailSet.lastInt(), is(5));
+		assertThat(tailSet.containsInt(3), is(true));
+		assertThat(tailSet.containsInt(-1), is(false));
+		assertThat(tailSet.toString(), is("[1, 3, 5]"));
+		Set<Integer> set2 = new HashSet<>(asList(1, 3, 5));
+		assertThat(tailSet, is(equalTo(set2)));
+		assertThat(tailSet.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test
@@ -291,10 +473,10 @@ public class BitIntSetTest {
 
 	@Test
 	public void addAllBoxed() {
-		assertThat(empty.addAll(Arrays.asList(1, 2, 3)), is(true));
+		assertThat(empty.addAll(asList(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(set.addAll(Arrays.asList(3, 4, 5, 6, 7)), is(true));
+		assertThat(set.addAll(asList(3, 4, 5, 6, 7)), is(true));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -312,19 +494,19 @@ public class BitIntSetTest {
 
 	@Test
 	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1, 2, 3)), is(false));
+		assertThat(empty.removeAll(asList(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(Arrays.asList(1, 2, 3)), is(true));
+		assertThat(set.removeAll(asList(1, 2, 3)), is(true));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 4));
 	}
 
 	@Test
 	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1, 2, 3)), is(false));
+		assertThat(empty.retainAll(asList(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(Arrays.asList(1, 2, 3)), is(true));
+		assertThat(set.retainAll(asList(1, 2, 3)), is(true));
 		assertThat(set, containsInts(1, 2, 3));
 	}
 
@@ -339,9 +521,9 @@ public class BitIntSetTest {
 
 	@Test
 	public void containsIntCollection() {
-		assertThat(empty.containsAll(Arrays.asList(1, 2, 3)), is(false));
-		assertThat(set.containsAll(Arrays.asList(1, 2, 3)), is(true));
-		assertThat(set.containsAll(Arrays.asList(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
+		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
+		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));
 	}
 
 	@Test

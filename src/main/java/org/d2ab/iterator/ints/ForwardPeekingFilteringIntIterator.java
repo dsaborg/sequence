@@ -20,7 +20,7 @@ import org.d2ab.function.IntBiPredicate;
 
 import java.util.NoSuchElementException;
 
-public class ForwardPeekingFilteringIntIterator extends DelegatingIntIterator<Integer, IntIterator> {
+public class ForwardPeekingFilteringIntIterator extends DelegatingTransformingIntIterator<Integer, IntIterator> {
 	private int lastNext;
 	private final IntBiPredicate predicate;
 

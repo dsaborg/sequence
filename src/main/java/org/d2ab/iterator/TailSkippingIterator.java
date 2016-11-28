@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 /**
  * An iterator that skips a set number of steps at the end of another iterator.
  */
-public class TailSkippingIterator<T> extends ReferenceIterator<T> {
+public class TailSkippingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final int skip;
 
 	private boolean started;

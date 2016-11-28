@@ -18,7 +18,7 @@ package org.d2ab.iterator.chars;
 
 import java.util.NoSuchElementException;
 
-public class LimitingCharIterator extends UnaryCharIterator {
+public class LimitingCharIterator extends DelegatingCharIterator {
 	private final int limit;
 
 	private int count;

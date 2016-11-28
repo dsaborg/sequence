@@ -21,12 +21,13 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class InclusiveStartingIterator<T> extends ReferenceIterator<T> {
+public class InclusiveStartingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final Predicate<? super T> predicate;
 
 	private boolean started;
-	private T next;
-	private boolean hasNext;
+	private T first;
+	private boolean firstFound;
+	private boolean firstEmitted;
 
 	public InclusiveStartingIterator(Iterator<T> iterator, T element) {
 		this(iterator, o -> Objects.equals(o, element));
@@ -40,16 +41,21 @@ public class InclusiveStartingIterator<T> extends ReferenceIterator<T> {
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			while (iterator.hasNext()) {
-				next = iterator.next();
-				if (predicate.test(next)) {
-					hasNext = true;
-					break;
+			while (iterator.hasNext() && !firstFound) {
+				T candidateFirst = iterator.next();
+				if (predicate.test(candidateFirst)) {
+					firstFound = true;
+					first = candidateFirst;
 				}
 			}
 			started = true;
+			return firstFound;
+		} else {
+			if (!firstEmitted)
+				return firstFound;
+			else
+				return iterator.hasNext();
 		}
-		return hasNext;
 	}
 
 	@Override
@@ -57,10 +63,11 @@ public class InclusiveStartingIterator<T> extends ReferenceIterator<T> {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T result = next;
-		hasNext = iterator.hasNext();
-		if (hasNext)
-			next = iterator.next();
-		return result;
+		if (!firstEmitted) {
+			firstEmitted = true;
+			return first;
+		} else {
+			return iterator.next();
+		}
 	}
 }

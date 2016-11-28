@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-public class RightFlatteningPairIterator<L, R, RR> extends DelegatingReferenceIterator<Pair<L, R>, Pair<L, RR>> {
+public class RightFlatteningPairIterator<L, R, RR> extends DelegatingMappingIterator<Pair<L, R>, Pair<L, RR>> {
 	private final Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper;
 
 	private Iterator<RR> rightIterator = Iterators.empty();

@@ -19,7 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Iterables;
 import org.d2ab.collection.doubles.*;
 import org.d2ab.iterator.Iterators;
-import org.d2ab.iterator.doubles.DelegatingDoubleIterator;
+import org.d2ab.iterator.doubles.DelegatingTransformingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
@@ -1154,7 +1154,7 @@ public class DoubleSequenceTest {
 				List<Double> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Double> iterator = subList.iterator();
-				return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
+				return new DelegatingTransformingDoubleIterator<Double, Iterator<Double>>(iterator) {
 					@Override
 					public double nextDouble() {
 						return iterator.next();
@@ -1188,7 +1188,7 @@ public class DoubleSequenceTest {
 				List<Double> subList = list.subList(0, end);
 				end = end > 0 ? end - 1 : 0;
 				Iterator<Double> iterator = subList.iterator();
-				return new DelegatingDoubleIterator<Double, Iterator<Double>>(iterator) {
+				return new DelegatingTransformingDoubleIterator<Double, Iterator<Double>>(iterator) {
 					@Override
 					public double nextDouble() {
 						return iterator.next();

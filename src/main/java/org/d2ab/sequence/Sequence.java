@@ -1702,7 +1702,7 @@ public interface Sequence<T> extends IterableList<T> {
 	 * @return a {@link BiSequence} of this sequence paired up with the index of each element.
 	 */
 	default BiSequence<Integer, T> index() {
-		return () -> new DelegatingReferenceIterator<T, Pair<Integer, T>>(iterator()) {
+		return () -> new DelegatingMappingIterator<T, Pair<Integer, T>>(iterator()) {
 			private int index;
 
 			@Override

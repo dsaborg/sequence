@@ -19,7 +19,7 @@ package org.d2ab.iterator.longs;
 import java.util.NoSuchElementException;
 import java.util.function.LongPredicate;
 
-public class InclusiveTerminalLongIterator extends UnaryLongIterator {
+public class InclusiveTerminalLongIterator extends DelegatingLongIterator {
 	private final LongPredicate terminal;
 
 	private long previous;
@@ -35,16 +35,16 @@ public class InclusiveTerminalLongIterator extends UnaryLongIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		return iterator.hasNext() && !(hasPrevious && terminal.test(previous));
+	}
+
+	@Override
 	public long nextLong() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
 		return previous = iterator.next();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext() && (!hasPrevious || !terminal.test(previous));
 	}
 }

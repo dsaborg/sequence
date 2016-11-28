@@ -18,7 +18,7 @@ package org.d2ab.iterator.ints;
 
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.function.IntBiPredicate;
-import org.d2ab.iterator.DelegatingIterator;
+import org.d2ab.iterator.DelegatingTransformingIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.sequence.IntSequence;
 
@@ -28,7 +28,8 @@ import java.util.NoSuchElementException;
  * A {@link CharIterator} that can batch up another iterator by comparing two items in sequence and deciding whether
  * to split up in a batch on those items.
  */
-public class PredicatePartitioningIntIterator extends DelegatingIterator<Integer, IntIterator, IntSequence> {
+public class PredicatePartitioningIntIterator extends
+                                              DelegatingTransformingIterator<Integer, IntIterator, IntSequence> {
 	private final IntBiPredicate predicate;
 	private int next;
 	private boolean hasNext;
