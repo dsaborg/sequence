@@ -29,22 +29,6 @@ import java.util.function.Predicate;
  * methods with corresponding {@code int}-valued methods.
  */
 public interface IntCollection extends Collection<Integer>, IntIterable {
-	static String toString(IntCollection xs) {
-		StringBuilder builder = new StringBuilder(xs.size() * 5); // heuristic
-		builder.append("[");
-
-		boolean started = false;
-		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); ) {
-			if (started)
-				builder.append(", ");
-			else
-				started = true;
-			builder.append(iterator.nextInt());
-		}
-
-		builder.append("]");
-		return builder.toString();
-	}
 
 	@Override
 	default boolean isEmpty() {
@@ -135,5 +119,28 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * Base class for {@link IntCollection} implementations.
+	 */
+	abstract class Base implements IntCollection {
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
+			builder.append("[");
+
+			boolean started = false;
+			for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+				if (started)
+					builder.append(", ");
+				else
+					started = true;
+				builder.append(iterator.nextInt());
+			}
+
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 }

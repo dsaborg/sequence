@@ -30,7 +30,7 @@ import java.util.function.IntUnaryOperator;
  * An {@link IntList} backed by an int-array, supporting all {@link IntList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayIntList implements IntList {
+public class ArrayIntList extends IntList.Base implements IntList {
 	private int[] contents;
 	private int size;
 

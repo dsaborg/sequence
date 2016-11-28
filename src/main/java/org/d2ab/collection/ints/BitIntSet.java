@@ -25,7 +25,7 @@ import java.util.PrimitiveIterator;
 /**
  * An implementation of {@link IntSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
  */
-public class BitIntSet implements IntSortedSet {
+public class BitIntSet extends IntSet.Base implements IntSortedSet {
 	private final SparseBitSet values = new SparseBitSet();
 
 	public BitIntSet(int... xs) {
@@ -80,18 +80,5 @@ public class BitIntSet implements IntSortedSet {
 	@Override
 	public int lastInt() {
 		return (int) (values.lastLong() + Integer.MIN_VALUE);
-	}
-
-	@Override
-	public String toString() {
-		return IntCollection.toString(this);
-	}
-
-	public boolean equals(Object o) {
-		return IntSet.equals(this, o);
-	}
-
-	public int hashCode() {
-		return IntSet.hashCode(this);
 	}
 }

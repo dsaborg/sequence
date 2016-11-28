@@ -98,12 +98,24 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCode() {
+	public void testEqualsHashCodeAgainstSet() {
 		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
 		set2.remove(17);
+
+		assertThat(set, is(equalTo(set2)));
+		assertThat(set.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstIntSet() {
+		IntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		assertThat(set, is(not(equalTo(set2))));
+		assertThat(set.hashCode(), is(not(set2.hashCode())));
+
+		set2.removeInt(17);
 
 		assertThat(set, is(equalTo(set2)));
 		assertThat(set.hashCode(), is(set2.hashCode()));

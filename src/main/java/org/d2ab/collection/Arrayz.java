@@ -85,7 +85,7 @@ public class Arrayz {
 	/**
 	 * Reverse the given array in place.
 	 *
-	 * @return the given array.
+	 * @return the given array, reversed.
 	 */
 	public static Object[] reverse(Object... array) {
 		for (int i = 0; i < array.length / 2; i++)
@@ -96,7 +96,7 @@ public class Arrayz {
 	/**
 	 * Reverse the given array in place.
 	 *
-	 * @return the given array.
+	 * @return the given array, reversed.
 	 */
 	public static double[] reverse(double... array) {
 		for (int i = 0; i < array.length / 2; i++)
@@ -107,7 +107,7 @@ public class Arrayz {
 	/**
 	 * Reverse the given array in place.
 	 *
-	 * @return the given array.
+	 * @return the given array, reversed.
 	 */
 	public static int[] reverse(int... array) {
 		for (int i = 0; i < array.length / 2; i++)
@@ -118,7 +118,7 @@ public class Arrayz {
 	/**
 	 * Reverse the given array in place.
 	 *
-	 * @return the given array.
+	 * @return the given array, reversed.
 	 */
 	public static long[] reverse(long... array) {
 		for (int i = 0; i < array.length / 2; i++)
@@ -129,7 +129,7 @@ public class Arrayz {
 	/**
 	 * Reverse the given array in place.
 	 *
-	 * @return the given array.
+	 * @return the given array, reversed.
 	 */
 	public static char[] reverse(char... array) {
 		for (int i = 0; i < array.length / 2; i++)

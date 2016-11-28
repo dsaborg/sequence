@@ -130,7 +130,7 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class SubSet implements IntSortedSet {
+	abstract class SubSet extends IntSet.Base implements IntSortedSet {
 		private IntSortedSet set;
 
 		public SubSet(IntSortedSet set) {
@@ -140,19 +140,6 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 		@Override
 		public int size() {
 			return iterator().count();
-		}
-
-		@Override
-		public String toString() {
-			return IntCollection.toString(this);
-		}
-
-		public boolean equals(Object o) {
-			return IntSet.equals(this, o);
-		}
-
-		public int hashCode() {
-			return IntSet.hashCode(this);
 		}
 
 		@Override

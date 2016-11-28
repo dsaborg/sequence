@@ -16,16 +16,20 @@
 
 package org.d2ab.collection.ints;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
@@ -258,6 +262,44 @@ public class ArrayIntListTest {
 
 		assertThat(list.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void testToString() {
+		assertThat(empty.toString(), is("[]"));
+		assertThat(list.toString(), is("[1, 2, 3, 4, 5]"));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstList() {
+		List<Integer> list2 = new ArrayList<>(asList(1, 2, 3, 4, 5, 17));
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.remove((Integer) 17);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstIntList() {
+		IntList list2 = IntList.create(1, 2, 3, 4, 5, 17);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.removeInt(17);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
 	}
 
 	@Test

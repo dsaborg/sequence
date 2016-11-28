@@ -67,4 +67,24 @@ public class Lists {
 		list.sort(comparator);
 		return list;
 	}
+
+	/**
+	 * Swap the given items in the given {@link List}.
+	 */
+	public static <T> void swap(List<T> list, int i, int j) {
+		T temp = list.get(i);
+		list.set(i, list.get(j));
+		list.set(j, temp);
+	}
+
+	/**
+	 * Reverse the given {@link List} in place.
+	 *
+	 * @return the given {@link List}, reversed.
+	 */
+	public static <T> List<T> reverse(List<T> list) {
+		for (int i = 0; i < list.size() / 2; i++)
+			swap(list, i, list.size() - i - 1);
+		return list;
+	}
 }

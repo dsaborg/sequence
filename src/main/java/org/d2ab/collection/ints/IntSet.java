@@ -28,23 +28,6 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code int} values.
  */
 public interface IntSet extends Set<Integer>, IntCollection {
-	static boolean equals(IntSet xs, Object o) {
-		if (o == xs)
-			return true;
-		if (!(o instanceof Set))
-			return false;
-
-		Set<?> that = (Set<?>) o;
-		return xs.size() == that.size() && xs.containsAll(that);
-	}
-
-	static int hashCode(IntSet xs) {
-		int hashCode = 0;
-		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); )
-			hashCode += Integer.hashCode(iterator.nextInt());
-		return hashCode;
-	}
-
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -103,5 +86,27 @@ public interface IntSet extends Set<Integer>, IntCollection {
 	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT);
+	}
+
+	/**
+	 * Base class for {@link IntSet} implementations.
+	 */
+	abstract class Base extends IntCollection.Base implements IntSet {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Set))
+				return false;
+
+			Set<?> that = (Set<?>) o;
+			return size() == that.size() && containsAll(that);
+		}
+
+		public int hashCode() {
+			int hashCode = 0;
+			for (IntIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode += Integer.hashCode(iterator.nextInt());
+			return hashCode;
+		}
 	}
 }

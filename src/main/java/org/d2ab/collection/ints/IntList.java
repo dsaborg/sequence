@@ -312,6 +312,48 @@ public interface IntList extends List<Integer>, IntCollection {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 
+	/**
+	 * Base class for {@link IntList} implementations.
+	 */
+	abstract class Base extends IntCollection.Base implements IntList {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof List))
+				return false;
+
+			IntListIterator it = listIterator();
+			if (o instanceof IntList) {
+				IntListIterator that = ((IntList) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					if (it.nextInt() != that.nextInt())
+						return false;
+				}
+				return !that.hasNext();
+			} else {
+				ListIterator<?> that = ((List<?>) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					int x = it.nextInt();
+					Object y = that.next();
+					if (!(y instanceof Integer && x == (Integer) y))
+						return false;
+				}
+				return !that.hasNext();
+			}
+		}
+
+		public int hashCode() {
+			int hashCode = 1;
+			for (IntIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode = 31 * hashCode + Integer.hashCode(iterator.nextInt());
+			return hashCode;
+		}
+	}
+
 	class SubList implements IntList {
 		private final IntList list;
 
