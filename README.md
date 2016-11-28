@@ -22,7 +22,7 @@ Javadoc for the entire project is available at the [Sequence javadoc.io Page](ht
 ### News
 
 **2016-11-22:** Sequence v2.0 is released, now with Sequence implementing the List interface. Also adds primitive collection interfaces
-and classes for implementing List like interfaces on primitive Sequences. To upgrade, first upgrade to 1.3 and take note of deprecated
+and classes for implementing List-like interfaces on primitive Sequences. To upgrade, first upgrade to 1.3 and take note of deprecated
 methods, replacing them with corresponding method calls as per the javadoc. Then upgrade to 2.0, which should be compatible with
 non-deprecated methods in 1.3.
 
