@@ -30,13 +30,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class IntIterableTest {
-	private final org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	private final IntIterable iterable = IntIterable.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 	@Test
 	public void read() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 
-		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);
+		IntIterable iterable = IntIterable.read(inputStream);
 		twice(() -> assertThat(iterable, containsInts(1, 2, 3, 4, 5)));
 	}
 
@@ -44,7 +44,7 @@ public class IntIterableTest {
 	public void readEmpty() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 
-		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);
+		IntIterable iterable = IntIterable.read(inputStream);
 		twice(() -> assertThat(iterable, is(emptyIterable())));
 	}
 
@@ -52,7 +52,7 @@ public class IntIterableTest {
 	public void readNegatives() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{-1, -2, -3, -4, -5});
 
-		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);
+		IntIterable iterable = IntIterable.read(inputStream);
 		twice(() -> assertThat(iterable, containsInts(255, 254, 253, 252, 251)));
 	}
 
@@ -61,7 +61,7 @@ public class IntIterableTest {
 		InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 		assertThat(inputStream.read(), is(1));
 
-		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);
+		IntIterable iterable = IntIterable.read(inputStream);
 		assertThat(iterable, containsInts(2, 3, 4, 5));
 		assertThat(iterable, containsInts(1, 2, 3, 4, 5));
 	}
@@ -72,7 +72,7 @@ public class IntIterableTest {
 		assertThat(inputStream.read(), is(1));
 		inputStream.mark(0);
 
-		org.d2ab.collection.ints.IntIterable iterable = org.d2ab.collection.ints.IntIterable.read(inputStream);
+		IntIterable iterable = IntIterable.read(inputStream);
 		twice(() -> assertThat(iterable, containsInts(2, 3, 4, 5)));
 	}
 
@@ -97,7 +97,7 @@ public class IntIterableTest {
 
 	@Test
 	public void asInputStreamIntsOutOfBounds() throws Exception {
-		InputStream inputStream = org.d2ab.collection.ints.IntIterable.of(1, 256, -1, 2).asInputStream();
+		InputStream inputStream = IntIterable.of(1, 256, -1, 2).asInputStream();
 
 		assertThat(inputStream.read(), is(1));
 		try {

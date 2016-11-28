@@ -20,9 +20,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -99,8 +97,20 @@ public class SortedListDoubleSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCode() {
-		SortedListDoubleSet set2 = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+	public void testEqualsHashCodeAgainstSet() {
+		Set<Double> set2 = new HashSet<>(Arrays.asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		assertThat(set, is(not(equalTo(set2))));
+		assertThat(set.hashCode(), is(not(set2.hashCode())));
+
+		set2.remove(17.0);
+
+		assertThat(set, is(equalTo(set2)));
+		assertThat(set.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstDoubleSet() {
+		DoubleSet set2 = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 

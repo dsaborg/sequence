@@ -30,7 +30,7 @@ import java.util.function.DoubleUnaryOperator;
  * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayDoubleList implements DoubleList {
+public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	private double[] contents;
 	private int size;
 

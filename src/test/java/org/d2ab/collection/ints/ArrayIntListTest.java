@@ -73,7 +73,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void listIteratorEmpty() {
-		org.d2ab.collection.ints.IntListIterator emptyIterator = empty.listIterator();
+		IntListIterator emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
@@ -84,7 +84,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void listIterator() {
-		org.d2ab.collection.ints.IntListIterator listIterator = list.listIterator();
+		IntListIterator listIterator = list.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(false));
@@ -136,7 +136,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		org.d2ab.collection.ints.IntListIterator listIterator = list.listIterator();
+		IntListIterator listIterator = list.listIterator();
 
 		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
@@ -175,7 +175,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void listIteratorRemove() {
-		org.d2ab.collection.ints.IntListIterator listIterator = list.listIterator();
+		IntListIterator listIterator = list.listIterator();
 
 		int i = 0;
 		while (listIterator.hasNext()) {

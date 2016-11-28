@@ -25,16 +25,16 @@ import java.util.Collection;
 import static java.util.Arrays.asList;
 
 /**
- * A {@link org.d2ab.collection.longs.LongIterable} that can chain together several {@link org.d2ab.collection.longs.LongIterable}s into one unbroken sequence.
+ * A {@link LongIterable} that can chain together several {@link LongIterable}s into one unbroken sequence.
  */
-public class ChainingLongIterable implements org.d2ab.collection.longs.LongIterable {
-	private final Collection<org.d2ab.collection.longs.LongIterable> iterables = new ArrayList<>();
+public class ChainingLongIterable implements LongIterable {
+	private final Collection<LongIterable> iterables = new ArrayList<>();
 
-	public ChainingLongIterable(org.d2ab.collection.longs.LongIterable... iterables) {
+	public ChainingLongIterable(LongIterable... iterables) {
 		asList(iterables).forEach(this.iterables::add);
 	}
 
-	public ChainingLongIterable append(org.d2ab.collection.longs.LongIterable iterable) {
+	public ChainingLongIterable append(LongIterable iterable) {
 		iterables.add(iterable);
 		return this;
 	}

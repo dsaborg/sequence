@@ -21,9 +21,12 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -97,7 +100,19 @@ public class RawDoubleSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCode() {
+	public void testEqualsHashCodeAgainstSet() {
+		Set<Double> set2 = new HashSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		assertThat(set, is(not(equalTo(set2))));
+		assertThat(set.hashCode(), is(not(set2.hashCode())));
+
+		set2.remove(17.0);
+
+		assertThat(set, is(equalTo(set2)));
+		assertThat(set.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstDoubleSet() {
 		RawDoubleSet set2 = new RawDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
@@ -278,28 +293,28 @@ public class RawDoubleSetTest {
 
 	@Test
 	public void addAllBoxed() {
-		assertThat(empty.addAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(empty.addAll(asList(1.0, 2.0, 3.0)), is(true));
 		assertThat(empty, containsInAnyOrder(1.0, 2.0, 3.0));
 
-		assertThat(set.addAll(Arrays.asList(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
+		assertThat(set.addAll(asList(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
 		assertThat(set, containsInAnyOrder(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0));
 	}
 
 	@Test
 	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(empty.removeAll(asList(1.0, 2.0, 3.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.removeAll(asList(1.0, 2.0, 3.0)), is(true));
 		assertThat(set, containsInAnyOrder(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 4.0));
 	}
 
 	@Test
 	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(empty.retainAll(asList(1.0, 2.0, 3.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.retainAll(asList(1.0, 2.0, 3.0)), is(true));
 		assertThat(set, containsInAnyOrder(1.0, 2.0, 3.0));
 	}
 
@@ -314,9 +329,9 @@ public class RawDoubleSetTest {
 
 	@Test
 	public void containsDoubleCollection() {
-		assertThat(empty.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.containsAll(asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(set.containsAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.containsAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
 	}
 
 	@Test

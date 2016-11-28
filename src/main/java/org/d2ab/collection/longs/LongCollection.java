@@ -17,6 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -117,5 +118,28 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	@Override
 	default Spliterator.OfLong spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * Base class for {@link LongCollection} implementations.
+	 */
+	abstract class Base implements LongCollection {
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
+			builder.append("[");
+
+			boolean started = false;
+			for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
+				if (started)
+					builder.append(", ");
+				else
+					started = true;
+				builder.append(iterator.nextLong());
+			}
+
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 }

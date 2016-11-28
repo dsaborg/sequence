@@ -17,6 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -117,5 +118,28 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	@Override
 	default Spliterator.OfDouble spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
+	}
+
+	/**
+	 * Base class for {@link DoubleCollection} implementations.
+	 */
+	abstract class Base implements DoubleCollection {
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
+			builder.append("[");
+
+			boolean started = false;
+			for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+				if (started)
+					builder.append(", ");
+				else
+					started = true;
+				builder.append(iterator.nextDouble());
+			}
+
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 }

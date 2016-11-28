@@ -17,6 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.Collection;
 import java.util.Set;
@@ -85,5 +86,27 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 	@Override
 	default Spliterator.OfDouble spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT);
+	}
+
+	/**
+	 * Base class for {@link DoubleSet} implementations.
+	 */
+	abstract class Base extends DoubleCollection.Base implements DoubleSet {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Set))
+				return false;
+
+			Set<?> that = (Set<?>) o;
+			return size() == that.size() && containsAll(that);
+		}
+
+		public int hashCode() {
+			int hashCode = 0;
+			for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode += Double.hashCode(iterator.nextDouble());
+			return hashCode;
+		}
 	}
 }

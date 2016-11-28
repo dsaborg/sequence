@@ -20,12 +20,11 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.*;
@@ -99,7 +98,19 @@ public class BitLongSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCode() {
+	public void testEqualsHashCodeAgainstSet() {
+		Set<Long> set2 = new HashSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, 17L));
+		assertThat(set, is(not(equalTo(set2))));
+		assertThat(set.hashCode(), is(not(set2.hashCode())));
+
+		set2.remove(17L);
+
+		assertThat(set, is(equalTo(set2)));
+		assertThat(set.hashCode(), is(set2.hashCode()));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstLongSet() {
 		BitLongSet set2 = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
@@ -294,10 +305,10 @@ public class BitLongSetTest {
 
 	@Test
 	public void addAllBoxed() {
-		assertThat(empty.addAll(Arrays.asList(1L, 2L, 3L)), is(true));
+		assertThat(empty.addAll(asList(1L, 2L, 3L)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		assertThat(set.addAll(Arrays.asList(3L, 4L, 5L, 6L, 7L)), is(true));
+		assertThat(set.addAll(asList(3L, 4L, 5L, 6L, 7L)), is(true));
 		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
 	}
 
@@ -315,19 +326,19 @@ public class BitLongSetTest {
 
 	@Test
 	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1L, 2L, 3L)), is(false));
+		assertThat(empty.removeAll(asList(1L, 2L, 3L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(Arrays.asList(1L, 2L, 3L)), is(true));
+		assertThat(set.removeAll(asList(1L, 2L, 3L)), is(true));
 		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 4));
 	}
 
 	@Test
 	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1L, 2L, 3L)), is(false));
+		assertThat(empty.retainAll(asList(1L, 2L, 3L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(Arrays.asList(1L, 2L, 3L)), is(true));
+		assertThat(set.retainAll(asList(1L, 2L, 3L)), is(true));
 		assertThat(set, containsLongs(1, 2, 3));
 	}
 
@@ -342,9 +353,9 @@ public class BitLongSetTest {
 
 	@Test
 	public void containsLongCollection() {
-		assertThat(empty.containsAll(Arrays.asList(1L, 2L, 3L)), is(false));
-		assertThat(set.containsAll(Arrays.asList(1L, 2L, 3L)), is(true));
-		assertThat(set.containsAll(Arrays.asList(1L, 2L, 3L, 17L)), is(false));
+		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
+		assertThat(set.containsAll(asList(1L, 2L, 3L)), is(true));
+		assertThat(set.containsAll(asList(1L, 2L, 3L, 17L)), is(false));
 	}
 
 	@Test

@@ -16,12 +16,13 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.longs.LongSet;
+import org.d2ab.collection.longs.LongSortedSet;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * A sparse bit set for storing occurrences of bits where a large amount of the stored bits are expected to be zero.
@@ -30,7 +31,7 @@ import java.util.Set;
  * {@code 0} and {@link Long#MAX_VALUE}, inclusive. However, the maximum number of 64-bit words in use is limited by
  * the int length limit of arrays.
  */
-public class SparseBitSet implements org.d2ab.collection.longs.LongSortedSet {
+public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	private long[] words;
 	private long[] indices;
 	private int size;
@@ -338,23 +339,6 @@ public class SparseBitSet implements org.d2ab.collection.longs.LongSortedSet {
 
 		builder.append("}");
 		return builder.toString();
-	}
-
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof Set))
-			return false;
-
-		Set<?> that = (Set<?>) o;
-		return size() == that.size() && containsAll(that);
-	}
-
-	public int hashCode() {
-		int hashCode = 0;
-		for (LongIterator iterator = iterator(); iterator.hasNext(); )
-			hashCode += Long.hashCode(iterator.nextLong());
-		return hashCode;
 	}
 
 	private int findWord(long i) {

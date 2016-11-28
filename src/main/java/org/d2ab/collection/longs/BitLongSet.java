@@ -20,13 +20,11 @@ import org.d2ab.collection.SparseBitSet;
 import org.d2ab.iterator.longs.ChainingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
-import java.util.Set;
-
 /**
  * An implementation of {@link LongSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
  * This {@link LongSortedSet} covers all values between {@link Long#MIN_VALUE} and {@link Long#MAX_VALUE} inclusive.
  */
-public class BitLongSet implements LongSortedSet {
+public class BitLongSet extends LongSet.Base implements LongSortedSet {
 	private final SparseBitSet positives = new SparseBitSet();
 	private final SparseBitSet negatives = new SparseBitSet();
 
@@ -83,41 +81,5 @@ public class BitLongSet implements LongSortedSet {
 			return positives.get(x);
 		else
 			return negatives.get(-(x + 1));
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder(size() * 5); // heuristic
-		builder.append("[");
-
-		boolean started = false;
-		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (started)
-				builder.append(", ");
-			else
-				started = true;
-			builder.append(iterator.nextLong());
-		}
-
-		builder.append("]");
-		return builder.toString();
-	}
-
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof Set))
-			return false;
-
-		Set<?> that = (Set<?>) o;
-		return size() == that.size() && containsAll(that);
-	}
-
-	public int hashCode() {
-		int hashCode = 0;
-		LongIterator iterator = iterator();
-		while (iterator.hasNext())
-			hashCode += Long.hashCode(iterator.nextLong());
-		return hashCode;
 	}
 }

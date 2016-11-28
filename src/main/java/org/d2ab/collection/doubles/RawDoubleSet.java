@@ -22,12 +22,11 @@ import org.d2ab.iterator.doubles.DelegatingTransformingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.PrimitiveIterator;
-import java.util.Set;
 
 /**
  * An implementation of {@link DoubleSet} backed by a {@link BitLongSet}s for raw double values.
  */
-public class RawDoubleSet implements DoubleSet {
+public class RawDoubleSet extends DoubleSet.Base implements DoubleSet {
 	private final LongSet values = new BitLongSet();
 
 	public RawDoubleSet(double... xs) {
@@ -72,40 +71,5 @@ public class RawDoubleSet implements DoubleSet {
 	@Override
 	public boolean containsDoubleExactly(double x) {
 		return values.containsLong(Double.doubleToLongBits(x));
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder(size() * 5); // heuristic
-		builder.append("[");
-
-		boolean started = false;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (started)
-				builder.append(", ");
-			else
-				started = true;
-			builder.append(iterator.nextDouble());
-		}
-
-		builder.append("]");
-		return builder.toString();
-	}
-
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof Set))
-			return false;
-
-		Set<?> that = (Set<?>) o;
-		return size() == that.size() && containsAll(that);
-	}
-
-	public int hashCode() {
-		int hashCode = 0;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
-			hashCode += Double.hashCode(iterator.nextDouble());
-		return hashCode;
 	}
 }

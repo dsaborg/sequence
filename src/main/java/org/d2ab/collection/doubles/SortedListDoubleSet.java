@@ -20,12 +20,11 @@ import org.d2ab.collection.SparseBitSet;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * An implementation of {@link DoubleSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
  */
-public class SortedListDoubleSet implements DoubleSortedSet {
+public class SortedListDoubleSet extends DoubleSet.Base implements DoubleSortedSet {
 	private final DoubleList values = DoubleList.create();
 
 	public SortedListDoubleSet(double... xs) {
@@ -91,40 +90,5 @@ public class SortedListDoubleSet implements DoubleSortedSet {
 			throw new NoSuchElementException();
 
 		return values.get(values.size() - 1);
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder(size() * 5); // heuristic
-		builder.append("[");
-
-		boolean started = false;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (started)
-				builder.append(", ");
-			else
-				started = true;
-			builder.append(iterator.nextDouble());
-		}
-
-		builder.append("]");
-		return builder.toString();
-	}
-
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof Set))
-			return false;
-
-		Set<?> that = (Set<?>) o;
-		return size() == that.size() && containsAll(that);
-	}
-
-	public int hashCode() {
-		int hashCode = 0;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
-			hashCode += Double.hashCode(iterator.nextDouble());
-		return hashCode;
 	}
 }

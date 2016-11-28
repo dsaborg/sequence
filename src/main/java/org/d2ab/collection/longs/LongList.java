@@ -312,6 +312,48 @@ public interface LongList extends List<Long>, LongCollection {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 
+	/**
+	 * Base class for {@link LongList} implementations.
+	 */
+	abstract class Base extends LongCollection.Base implements LongList {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof List))
+				return false;
+
+			LongListIterator it = listIterator();
+			if (o instanceof LongList) {
+				LongListIterator that = ((LongList) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					if (it.nextLong() != that.nextLong())
+						return false;
+				}
+				return !that.hasNext();
+			} else {
+				ListIterator<?> that = ((List<?>) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					long x = it.nextLong();
+					Object y = that.next();
+					if (!(y instanceof Long && x == (Long) y))
+						return false;
+				}
+				return !that.hasNext();
+			}
+		}
+
+		public int hashCode() {
+			int hashCode = 1;
+			for (LongIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode = 31 * hashCode + Long.hashCode(iterator.nextLong());
+			return hashCode;
+		}
+	}
+
 	class SubList implements LongList {
 		private final LongList list;
 

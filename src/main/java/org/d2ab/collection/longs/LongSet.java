@@ -17,6 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
 import java.util.Set;
@@ -85,5 +86,27 @@ public interface LongSet extends Set<Long>, LongCollection {
 	@Override
 	default Spliterator.OfLong spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT | Spliterator.NONNULL);
+	}
+
+	/**
+	 * Base class for {@link LongSet} implementations.
+	 */
+	abstract class Base extends LongCollection.Base implements LongSet {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Set))
+				return false;
+
+			Set<?> that = (Set<?>) o;
+			return size() == that.size() && containsAll(that);
+		}
+
+		public int hashCode() {
+			int hashCode = 0;
+			for (LongIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode += Long.hashCode(iterator.nextLong());
+			return hashCode;
+		}
 	}
 }

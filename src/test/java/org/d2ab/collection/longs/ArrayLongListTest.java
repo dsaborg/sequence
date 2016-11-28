@@ -16,17 +16,21 @@
 
 package org.d2ab.collection.longs;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
@@ -70,7 +74,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void listIteratorEmpty() {
-		org.d2ab.collection.longs.LongListIterator emptyIterator = empty.listIterator();
+		LongListIterator emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
@@ -81,7 +85,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void listIterator() {
-		org.d2ab.collection.longs.LongListIterator listIterator = list.listIterator();
+		LongListIterator listIterator = list.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(false));
@@ -133,7 +137,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		org.d2ab.collection.longs.LongListIterator listIterator = list.listIterator();
+		LongListIterator listIterator = list.listIterator();
 
 		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
@@ -172,7 +176,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void listIteratorRemove() {
-		org.d2ab.collection.longs.LongListIterator listIterator = list.listIterator();
+		LongListIterator listIterator = list.listIterator();
 
 		int i = 0;
 		while (listIterator.hasNext()) {
@@ -259,6 +263,44 @@ public class ArrayLongListTest {
 
 		assertThat(list.parallelLongStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           containsLongs(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void testToString() {
+		assertThat(empty.toString(), is("[]"));
+		assertThat(list.toString(), is("[1, 2, 3, 4, 5]"));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstList() {
+		List<Long> list2 = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L, 17L));
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.remove(17L);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstLongList() {
+		LongList list2 = LongList.create(1, 2, 3, 4, 5, 17);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.removeLong(17);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
 	}
 
 	@Test

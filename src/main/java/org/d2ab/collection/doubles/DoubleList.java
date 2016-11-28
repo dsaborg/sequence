@@ -332,6 +332,48 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
 
+	/**
+	 * Base class for {@link DoubleList} implementations.
+	 */
+	abstract class Base extends DoubleCollection.Base implements DoubleList {
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof List))
+				return false;
+
+			DoubleListIterator it = listIterator();
+			if (o instanceof DoubleList) {
+				DoubleListIterator that = ((DoubleList) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					if (it.nextDouble() != that.nextDouble())
+						return false;
+				}
+				return !that.hasNext();
+			} else {
+				ListIterator<?> that = ((List<?>) o).listIterator();
+				while (it.hasNext()) {
+					if (!that.hasNext())
+						return false;
+					double x = it.nextDouble();
+					Object y = that.next();
+					if (!(y instanceof Double && x == (Double) y))
+						return false;
+				}
+				return !that.hasNext();
+			}
+		}
+
+		public int hashCode() {
+			int hashCode = 1;
+			for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+				hashCode = 31 * hashCode + Double.hashCode(iterator.nextDouble());
+			return hashCode;
+		}
+	}
+
 	class SubList implements DoubleList {
 		private final DoubleList list;
 

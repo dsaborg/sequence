@@ -16,16 +16,20 @@
 
 package org.d2ab.collection.doubles;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
@@ -260,6 +264,44 @@ public class ArrayDoubleListTest {
 		assertThat(list.parallelDoubleStream()
 		               .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
 		           containsDoubles(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void testToString() {
+		assertThat(empty.toString(), is("[]"));
+		assertThat(list.toString(), is("[1.0, 2.0, 3.0, 4.0, 5.0]"));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstList() {
+		List<Double> list2 = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.remove(17.0);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstDoubleList() {
+		DoubleList list2 = DoubleList.create(1, 2, 3, 4, 5, 17);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.removeDoubleExactly(17);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
 	}
 
 	@Test

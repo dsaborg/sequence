@@ -30,7 +30,7 @@ import java.util.function.LongUnaryOperator;
  * A {@link LongList} backed by a long-array, supporting all {@link LongList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayLongList implements LongList {
+public class ArrayLongList extends LongList.Base implements LongList {
 	private long[] contents;
 	private int size;
 
