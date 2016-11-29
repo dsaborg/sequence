@@ -59,7 +59,7 @@ public class RawDoubleSet extends DoubleSet.Base implements DoubleSet {
 	}
 
 	@Override
-	public boolean addDouble(double x) {
+	public boolean addDoubleExactly(double x) {
 		return values.addLong(Double.doubleToLongBits(x));
 	}
 

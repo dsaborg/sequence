@@ -47,7 +47,7 @@ public class DistinctExactlyDoubleIterator extends DelegatingUnaryDoubleIterator
 
 		while (!hasNext && iterator.hasNext()) {
 			double maybeNext = iterator.nextDouble();
-			if (hasNext = seen.addDouble(maybeNext))
+			if (hasNext = seen.addDoubleExactly(maybeNext))
 				next = maybeNext;
 		}
 

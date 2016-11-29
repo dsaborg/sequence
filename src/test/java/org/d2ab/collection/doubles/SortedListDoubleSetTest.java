@@ -64,11 +64,32 @@ public class SortedListDoubleSetTest {
 	}
 
 	@Test
-	public void addDouble() {
-		empty.addDouble(17);
+	public void addDoubleExactly() {
+		assertThat(empty.addDoubleExactly(17), is(true));
 		assertThat(empty, containsDoubles(17));
 
-		set.addDouble(17);
+		assertThat(empty.addDoubleExactly(17), is(false));
+		assertThat(empty, containsDoubles(17));
+
+		assertThat(set.addDoubleExactly(17), is(true));
+		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+
+		assertThat(set.addDoubleExactly(17), is(false));
+		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+	}
+
+	@Test
+	public void addDouble() {
+		assertThat(empty.addDouble(17, 0.5), is(true));
+		assertThat(empty, containsDoubles(17));
+
+		assertThat(empty.addDouble(17.1, 0.5), is(false));
+		assertThat(empty, containsDoubles(17));
+
+		assertThat(set.addDouble(17, 0.5), is(true));
+		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+
+		assertThat(set.addDouble(17.1, 0.5), is(false));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 	}
 
@@ -146,17 +167,17 @@ public class SortedListDoubleSetTest {
 		assertThat(subSet.size(), is(5));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 1, 2, 3, 4));
 
-		assertThat(subSet.addDouble(0), is(true));
+		assertThat(subSet.addDoubleExactly(0), is(true));
 		assertThat(subSet, containsDoubles(-3, -2, -1, 0, 1, 2));
 		assertThat(subSet.size(), is(6));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 
-		assertThat(subSet.addDouble(0), is(false));
+		assertThat(subSet.addDoubleExactly(0), is(false));
 		assertThat(subSet, containsDoubles(-3, -2, -1, 0, 1, 2));
 		assertThat(subSet.size(), is(6));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 
-		expecting(IllegalArgumentException.class, () -> subSet.addDouble(-17));
+		expecting(IllegalArgumentException.class, () -> subSet.addDoubleExactly(-17));
 		assertThat(subSet, containsDoubles(-3, -2, -1, 0, 1, 2));
 		assertThat(subSet.size(), is(6));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
@@ -204,6 +225,12 @@ public class SortedListDoubleSetTest {
 		assertThat(subSet.removeDouble(-3.2, 0.5), is(false));
 		assertThat(subSet, containsDoubles(-1));
 		assertThat(set, containsDoubles(-5, -3, -1, 3, 5));
+
+		assertThat(subSet.addDouble(1.2, 0.5), is(true));
+		assertThat(subSet.addDouble(1.25, 0.5), is(false));
+		expecting(IllegalArgumentException.class, () -> subSet.addDouble(1.3, 0.5));
+		assertThat(subSet, containsDoubles(-1, 1.2));
+		assertThat(set, containsDoubles(-5, -3, -1, 1.2, 3, 5));
 	}
 
 	@Test
@@ -231,22 +258,22 @@ public class SortedListDoubleSetTest {
 		assertThat(headSet.size(), is(4));
 		assertThat(set, containsDoubles(-5, -4, -2, -1, 0, 1, 2, 3, 4));
 
-		assertThat(headSet.addDouble(-17), is(true));
+		assertThat(headSet.addDoubleExactly(-17), is(true));
 		assertThat(headSet, containsDoubles(-17, -5, -4, -2, -1));
 		assertThat(headSet.size(), is(5));
 		assertThat(set, containsDoubles(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
 
-		assertThat(headSet.addDouble(-17), is(false));
+		assertThat(headSet.addDoubleExactly(-17), is(false));
 		assertThat(headSet, containsDoubles(-17, -5, -4, -2, -1));
 		assertThat(headSet.size(), is(5));
 		assertThat(set, containsDoubles(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
 
-		expecting(IllegalArgumentException.class, () -> headSet.addDouble(17));
+		expecting(IllegalArgumentException.class, () -> headSet.addDoubleExactly(17));
 		assertThat(headSet, containsDoubles(-17, -5, -4, -2, -1));
 		assertThat(headSet.size(), is(5));
 		assertThat(set, containsDoubles(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
 
-		assertThat(set.addDouble(-6), is(true));
+		assertThat(set.addDoubleExactly(-6), is(true));
 		assertThat(headSet, containsDoubles(-17, -6, -5, -4, -2, -1));
 		assertThat(headSet.size(), is(6));
 		assertThat(set, containsDoubles(-17, -6, -5, -4, -2, -1, 0, 1, 2, 3, 4));
@@ -277,7 +304,7 @@ public class SortedListDoubleSetTest {
 	@Test
 	public void headSet() {
 		SortedListDoubleSet set = new SortedListDoubleSet(-5, -3, -1, 1, 3, 5);
-		DoubleSortedSet headSet = set.headSet(-0.8, 0.5);
+		DoubleSortedSet headSet = set.headSet(-1.2, 0.5);
 		assertThat(headSet, containsDoubles(-5, -3, -1));
 		assertThat(headSet.size(), is(3));
 		assertThat(headSet.firstDouble(), is(-5.0));
@@ -294,6 +321,12 @@ public class SortedListDoubleSetTest {
 		assertThat(headSet.removeDouble(1.2, 0.5), is(false));
 		assertThat(headSet, containsDoubles(-5, -1));
 		assertThat(set, containsDoubles(-5, -1, 1, 3, 5));
+
+		assertThat(headSet.addDouble(-3.2, 0.5), is(true));
+		assertThat(headSet.addDouble(-3.25, 0.5), is(false));
+		expecting(IllegalArgumentException.class, () -> headSet.addDouble(-0.7, 0.5));
+		assertThat(headSet, containsDoubles(-5, -3.2, -1));
+		assertThat(set, containsDoubles(-5, -3.2, -1, 1, 3, 5));
 	}
 
 	@Test
@@ -321,22 +354,22 @@ public class SortedListDoubleSetTest {
 		assertThat(tailSet.size(), is(4));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 3, 4));
 
-		assertThat(tailSet.addDouble(17), is(true));
+		assertThat(tailSet.addDoubleExactly(17), is(true));
 		assertThat(tailSet, containsDoubles(0, 1, 3, 4, 17));
 		assertThat(tailSet.size(), is(5));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
 
-		assertThat(tailSet.addDouble(17), is(false));
+		assertThat(tailSet.addDoubleExactly(17), is(false));
 		assertThat(tailSet, containsDoubles(0, 1, 3, 4, 17));
 		assertThat(tailSet.size(), is(5));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
 
-		expecting(IllegalArgumentException.class, () -> tailSet.addDouble(-17));
+		expecting(IllegalArgumentException.class, () -> tailSet.addDoubleExactly(-17));
 		assertThat(tailSet, containsDoubles(0, 1, 3, 4, 17));
 		assertThat(tailSet.size(), is(5));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
 
-		assertThat(set.addDouble(5), is(true));
+		assertThat(set.addDoubleExactly(5), is(true));
 		assertThat(tailSet, containsDoubles(0, 1, 3, 4, 5, 17));
 		assertThat(tailSet.size(), is(6));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 3, 4, 5, 17));
@@ -384,6 +417,12 @@ public class SortedListDoubleSetTest {
 		assertThat(tailSet.removeDouble(-1.2, 0.5), is(false));
 		assertThat(tailSet, containsDoubles(1, 5));
 		assertThat(set, containsDoubles(-5, -3, -1, 1, 5));
+
+		assertThat(tailSet.addDouble(3.2, 0.5), is(true));
+		assertThat(tailSet.addDouble(3.25, 0.5), is(false));
+		expecting(IllegalArgumentException.class, () -> tailSet.addDouble(0.69, 0.5));
+		assertThat(tailSet, containsDoubles(1, 3.2, 5));
+		assertThat(set, containsDoubles(-5, -3, -1, 1, 3.2, 5));
 	}
 
 	@Test
@@ -419,21 +458,21 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void doubleStream() {
-		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
-		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
 	public void parallelDoubleStream() {
 		assertThat(empty.parallelDoubleStream()
-		                .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
 		assertThat(set.parallelDoubleStream()
-		              .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		              .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
@@ -637,9 +676,9 @@ public class SortedListDoubleSetTest {
 	@Test
 	public void boundaries() {
 		SortedListDoubleSet intSet = new SortedListDoubleSet();
-		assertThat(intSet.addDouble(0), is(true));
-		assertThat(intSet.addDouble(Double.MIN_VALUE), is(true));
-		assertThat(intSet.addDouble(Double.MAX_VALUE), is(true));
+		assertThat(intSet.addDoubleExactly(0), is(true));
+		assertThat(intSet.addDoubleExactly(Double.MIN_VALUE), is(true));
+		assertThat(intSet.addDoubleExactly(Double.MAX_VALUE), is(true));
 
 		assertThat(intSet, containsDoubles(0, Double.MIN_VALUE, Double.MAX_VALUE));
 
@@ -668,11 +707,11 @@ public class SortedListDoubleSetTest {
 
 		// Adding
 		for (double randomValue : randomValues)
-			assertThat(empty.addDouble(randomValue), is(true));
+			assertThat(empty.addDoubleExactly(randomValue), is(true));
 		assertThat(empty.size(), is(randomValues.length));
 
 		for (double randomValue : randomValues)
-			assertThat(empty.addDouble(randomValue), is(false));
+			assertThat(empty.addDoubleExactly(randomValue), is(false));
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks

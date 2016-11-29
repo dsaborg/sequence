@@ -55,7 +55,7 @@ public class PredicatePartitioningDoubleIterator extends
 
 		DoubleList buffer = DoubleList.create();
 		do {
-			buffer.addDouble(next);
+			buffer.addDoubleExactly(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)

@@ -681,7 +681,7 @@ public class DoubleSequenceTest {
 	public void collectIntoContainer() {
 		twice(() -> {
 			DoubleList list = DoubleList.create();
-			DoubleList result = _12345.collectInto(list, DoubleList::addDouble);
+			DoubleList result = _12345.collectInto(list, DoubleList::addDoubleExactly);
 
 			assertThat(result, is(sameInstance(list)));
 			assertThat(result, containsDoubles(1, 2, 3, 4, 5));

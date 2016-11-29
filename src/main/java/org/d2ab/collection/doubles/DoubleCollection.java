@@ -57,11 +57,33 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	}
 
 	@Override
-	default boolean add(Double l) {
-		return addDouble(l);
+	default boolean add(Double x) {
+		return addDoubleExactly(x);
 	}
 
-	default boolean addDouble(double l) {
+	/**
+	 * @see #addDoubleExactly(double)
+	 * @since 2.0
+	 * @deprecated Use {@link #addDoubleExactly(double)} instead.
+	 */
+	@Deprecated
+	default boolean addDouble(double x) {
+		return addDoubleExactly(x);
+	}
+
+	/**
+	 * @see #addDouble(double, double)
+	 * @since 2.1
+	 */
+	default boolean addDoubleExactly(double x) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * @see #addDoubleExactly(double)
+	 * @since 2.1
+	 */
+	default boolean addDouble(double x, double precision) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -83,7 +105,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	default boolean addAllDoubles(double... xs) {
 		boolean changed = false;
 		for (double x : xs)
-			changed |= addDouble(x);
+			changed |= addDoubleExactly(x);
 		return changed;
 	}
 
@@ -91,7 +113,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 		if (c.isEmpty())
 			return false;
 
-		c.forEachDouble(this::addDouble);
+		c.forEachDouble(this::addDoubleExactly);
 		return true;
 	}
 

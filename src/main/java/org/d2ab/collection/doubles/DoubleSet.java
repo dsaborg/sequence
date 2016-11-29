@@ -40,7 +40,12 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 
 	@Override
 	default boolean add(Double x) {
-		return addDouble(x);
+		return addDoubleExactly(x);
+	}
+
+	@Override
+	default boolean addDouble(double x, double precision) {
+		return !containsDouble(x, precision) && addDoubleExactly(x);
 	}
 
 	@Override

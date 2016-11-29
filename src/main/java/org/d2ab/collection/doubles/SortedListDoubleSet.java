@@ -52,7 +52,7 @@ public class SortedListDoubleSet extends DoubleSet.Base implements DoubleSortedS
 	}
 
 	@Override
-	public boolean addDouble(double x) {
+	public boolean addDoubleExactly(double x) {
 		int index = values.binarySearchExactly(x);
 		if (index >= 0)
 			return false;

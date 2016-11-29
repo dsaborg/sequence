@@ -215,11 +215,19 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 		}
 
 		@Override
-		public boolean addDouble(double x) {
+		public boolean addDoubleExactly(double x) {
 			if (excluded(x))
 				throw new IllegalArgumentException(String.valueOf(x));
 
-			return set.addDouble(x);
+			return set.addDoubleExactly(x);
+		}
+
+		@Override
+		public boolean addDouble(double x, double precision) {
+			if (excluded(x))
+				throw new IllegalArgumentException(String.valueOf(x));
+
+			return set.addDouble(x, precision);
 		}
 
 		protected DoubleIterator untilExcluded(DoubleIterator iterator) {

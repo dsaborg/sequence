@@ -221,10 +221,15 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	}
 
 	@Override
-	public boolean addDouble(double x) {
+	public boolean addDoubleExactly(double x) {
 		growIfNecessaryBy(1);
 		contents[size++] = x;
 		return true;
+	}
+
+	@Override
+	public boolean addDouble(double x, double precision) {
+		return addDoubleExactly(x);
 	}
 
 	@Override
@@ -252,7 +257,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 
 			return true;
 		} else {
-			xs.forEachDouble(this::addDouble);
+			xs.forEachDouble(this::addDoubleExactly);
 			return true;
 		}
 	}

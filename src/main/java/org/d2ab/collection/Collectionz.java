@@ -179,7 +179,7 @@ public class Collectionz {
 		if (c.isEmpty())
 			return false;
 
-		c.forEach(xs::addDouble);
+		c.forEach(xs::addDoubleExactly);
 		return true;
 	}
 

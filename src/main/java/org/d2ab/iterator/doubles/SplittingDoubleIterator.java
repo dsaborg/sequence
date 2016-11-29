@@ -50,7 +50,7 @@ public class SplittingDoubleIterator extends DelegatingTransformingIterator<Doub
 			double next = iterator.nextDouble();
 			if (predicate.test(next))
 				break;
-			buffer.addDouble(next);
+			buffer.addDoubleExactly(next);
 		}
 
 		return DoubleSequence.from(buffer);

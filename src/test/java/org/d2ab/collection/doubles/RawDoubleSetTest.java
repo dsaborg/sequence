@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -66,12 +67,33 @@ public class RawDoubleSetTest {
 	}
 
 	@Test
-	public void addDouble() {
-		empty.addDouble(17);
-		assertThat(empty, containsInAnyOrder(17.0));
+	public void addDoubleExactly() {
+		assertThat(empty.addDoubleExactly(17), is(true));
+		assertThat(empty, containsDoubles(17));
 
-		set.addDouble(17);
-		assertThat(set, containsInAnyOrder(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		assertThat(empty.addDoubleExactly(17), is(false));
+		assertThat(empty, containsDoubles(17));
+
+		assertThat(set.addDoubleExactly(17), is(true));
+		assertThat(set, containsDoubles(-1, -2, -3, -4, -5, 0, 1, 2, 3, 4, 17));
+
+		assertThat(set.addDoubleExactly(17), is(false));
+		assertThat(set, containsDoubles(-1, -2, -3, -4, -5, 0, 1, 2, 3, 4, 17));
+	}
+
+	@Test
+	public void addDouble() {
+		assertThat(empty.addDouble(17, 0.5), is(true));
+		assertThat(empty, containsDoubles(17));
+
+		assertThat(empty.addDouble(17.1, 0.5), is(false));
+		assertThat(empty, containsDoubles(17));
+
+		assertThat(set.addDouble(17, 0.5), is(true));
+		assertThat(set, containsDoubles(-1, -2, -3, -4, -5, 0, 1, 2, 3, 4, 17));
+
+		assertThat(set.addDouble(17.1, 0.5), is(false));
+		assertThat(set, containsDoubles(-1, -2, -3, -4, -5, 0, 1, 2, 3, 4, 17));
 	}
 
 	@Test
@@ -158,22 +180,22 @@ public class RawDoubleSetTest {
 	@Test
 	public void doubleStream() {
 		assertThat(empty.doubleStream()
-		                .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
 		assertThat(set.doubleStream()
-		              .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		              .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsInAnyOrder(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
 	public void parallelDoubleStream() {
 		assertThat(empty.parallelDoubleStream()
-		                .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
 		assertThat(set.parallelDoubleStream()
-		              .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		              .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsInAnyOrder(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
@@ -346,9 +368,9 @@ public class RawDoubleSetTest {
 	@Test
 	public void boundaries() {
 		RawDoubleSet intSet = new RawDoubleSet();
-		assertThat(intSet.addDouble(Double.MIN_VALUE), is(true));
-		assertThat(intSet.addDouble(0), is(true));
-		assertThat(intSet.addDouble(Double.MAX_VALUE), is(true));
+		assertThat(intSet.addDoubleExactly(Double.MIN_VALUE), is(true));
+		assertThat(intSet.addDoubleExactly(0), is(true));
+		assertThat(intSet.addDoubleExactly(Double.MAX_VALUE), is(true));
 
 		assertThat(intSet, containsInAnyOrder(Double.MIN_VALUE, 0.0, Double.MAX_VALUE));
 
@@ -377,11 +399,11 @@ public class RawDoubleSetTest {
 
 		// Adding
 		for (double randomValue : randomValues)
-			assertThat(empty.addDouble(randomValue), is(true));
+			assertThat(empty.addDoubleExactly(randomValue), is(true));
 		assertThat(empty.size(), is(randomValues.length));
 
 		for (double randomValue : randomValues)
-			assertThat(empty.addDouble(randomValue), is(false));
+			assertThat(empty.addDoubleExactly(randomValue), is(false));
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks

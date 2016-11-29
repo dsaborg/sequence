@@ -49,7 +49,7 @@ public class DistinctDoubleIterator extends DelegatingUnaryDoubleIterator {
 		while (!hasNext && iterator.hasNext()) {
 			double maybeNext = iterator.nextDouble();
 			if (hasNext = !seen.containsDouble(maybeNext, precision)) {
-				seen.addDouble(maybeNext);
+				seen.addDoubleExactly(maybeNext);
 				next = maybeNext;
 			}
 		}

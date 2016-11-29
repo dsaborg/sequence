@@ -241,28 +241,28 @@ public class ArrayDoubleListTest {
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(list, containsDoubles(1, 2, 9, 10)));
 
-		subList.addDouble(17);
+		subList.addDoubleExactly(17);
 		twice(() -> assertThat(subList, containsDoubles(17)));
 		twice(() -> assertThat(list, containsDoubles(1, 2, 17, 9, 10)));
 	}
 
 	@Test
 	public void doubleStream() {
-		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
-		assertThat(list.doubleStream().collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		assertThat(list.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsDoubles(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void parallelDoubleStream() {
 		assertThat(empty.parallelDoubleStream()
-		                .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
 		assertThat(list.parallelDoubleStream()
-		               .collect(DoubleList::create, DoubleList::addDouble, DoubleList::addAllDoubles),
+		               .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsDoubles(1, 2, 3, 4, 5));
 	}
 
@@ -403,10 +403,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void addDouble() {
-		empty.addDouble(17);
+		empty.addDoubleExactly(17);
 		assertThat(empty, containsDoubles(17));
 
-		list.addDouble(17);
+		list.addDoubleExactly(17);
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 17));
 	}
 

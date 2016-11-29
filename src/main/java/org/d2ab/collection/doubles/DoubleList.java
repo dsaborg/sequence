@@ -65,7 +65,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	static DoubleList copy(PrimitiveIterator.OfDouble iterator) {
 		DoubleList copy = create();
 		while (iterator.hasNext())
-			copy.addDouble(iterator.nextDouble());
+			copy.addDoubleExactly(iterator.nextDouble());
 		return copy;
 	}
 
@@ -100,7 +100,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean add(Double x) {
-		return addDouble(x);
+		return addDoubleExactly(x);
 	}
 
 	@Override
@@ -172,14 +172,19 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	default boolean addAll(Collection<? extends Double> c) {
 		boolean modified = false;
 		for (double x : c)
-			modified |= addDouble(x);
+			modified |= addDoubleExactly(x);
 		return modified;
 	}
 
 	@Override
-	default boolean addDouble(double x) {
+	default boolean addDoubleExactly(double x) {
 		listIterator(size()).add(x);
 		return true;
+	}
+
+	@Override
+	default boolean addDouble(double x, double precision) {
+		return addDoubleExactly(x);
 	}
 
 	@Override
