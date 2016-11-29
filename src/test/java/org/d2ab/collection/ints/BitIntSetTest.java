@@ -131,9 +131,10 @@ public class BitIntSetTest {
 		assertThat(subSet.containsInt(1), is(true));
 		assertThat(subSet.containsInt(3), is(false));
 		assertThat(subSet.toString(), is("[-3, -2, -1, 0, 1, 2]"));
-		Set<Integer> set2 = new HashSet<>(asList(-3, -2, -1, 0, 1, 2));
-		assertThat(subSet, is(equalTo(set2)));
-		assertThat(subSet.hashCode(), is(set2.hashCode()));
+
+		Set<Integer> equivalentSet = new HashSet<>(asList(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet, is(equalTo(equivalentSet)));
+		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
 		assertThat(subSet.removeInt(0), is(true));
 		assertThat(subSet, containsInts(-3, -2, -1, 1, 2));
@@ -155,10 +156,15 @@ public class BitIntSetTest {
 		assertThat(subSet.size(), is(6));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 
-		expecting(IllegalArgumentException.class, () -> subSet.add(-17));
+		expecting(IllegalArgumentException.class, () -> subSet.addInt(-17));
 		assertThat(subSet, containsInts(-3, -2, -1, 0, 1, 2));
 		assertThat(subSet.size(), is(6));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+
+		subSet.clear();
+		assertThat(subSet, is(emptyIterable()));
+		assertThat(subSet.size(), is(0));
+		assertThat(set, containsInts(-5, -4, 3, 4));
 	}
 
 	@Test
@@ -172,9 +178,10 @@ public class BitIntSetTest {
 		assertThat(subSet.containsInt(1), is(true));
 		assertThat(subSet.containsInt(-3), is(false));
 		assertThat(subSet.toString(), is("[-1, 1]"));
-		Set<Integer> set2 = new HashSet<>(asList(-1, 1));
-		assertThat(subSet, is(equalTo(set2)));
-		assertThat(subSet.hashCode(), is(set2.hashCode()));
+
+		Set<Integer> equivalentSet = new HashSet<>(asList(-1, 1));
+		assertThat(subSet, is(equalTo(equivalentSet)));
+		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
 
 	@Test
@@ -187,9 +194,10 @@ public class BitIntSetTest {
 		assertThat(headSet.containsInt(-3), is(true));
 		assertThat(headSet.containsInt(0), is(false));
 		assertThat(headSet.toString(), is("[-5, -4, -3, -2, -1]"));
-		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1));
-		assertThat(headSet, is(equalTo(set2)));
-		assertThat(headSet.hashCode(), is(set2.hashCode()));
+
+		Set<Integer> equivalentSet = new HashSet<>(asList(-5, -4, -3, -2, -1));
+		assertThat(headSet, is(equalTo(equivalentSet)));
+		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
 		assertThat(headSet.removeInt(-3), is(true));
 		assertThat(headSet, containsInts(-5, -4, -2, -1));
@@ -211,7 +219,7 @@ public class BitIntSetTest {
 		assertThat(headSet.size(), is(5));
 		assertThat(set, containsInts(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
 
-		expecting(IllegalArgumentException.class, () -> headSet.add(17));
+		expecting(IllegalArgumentException.class, () -> headSet.addInt(17));
 		assertThat(headSet, containsInts(-17, -5, -4, -2, -1));
 		assertThat(headSet.size(), is(5));
 		assertThat(set, containsInts(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
@@ -220,6 +228,11 @@ public class BitIntSetTest {
 		assertThat(headSet, containsInts(-17, -6, -5, -4, -2, -1));
 		assertThat(headSet.size(), is(6));
 		assertThat(set, containsInts(-17, -6, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		headSet.clear();
+		assertThat(headSet, is(emptyIterable()));
+		assertThat(headSet.size(), is(0));
+		assertThat(set, containsInts(0, 1, 2, 3, 4));
 	}
 
 	@Test
@@ -233,9 +246,10 @@ public class BitIntSetTest {
 		assertThat(headSet.containsInt(-3), is(true));
 		assertThat(headSet.containsInt(1), is(false));
 		assertThat(headSet.toString(), is("[-5, -3, -1]"));
-		Set<Integer> set2 = new HashSet<>(asList(-5, -3, -1));
-		assertThat(headSet, is(equalTo(set2)));
-		assertThat(headSet.hashCode(), is(set2.hashCode()));
+
+		Set<Integer> equivalentSet = new HashSet<>(asList(-5, -3, -1));
+		assertThat(headSet, is(equalTo(equivalentSet)));
+		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
 
 	@Test
@@ -248,9 +262,10 @@ public class BitIntSetTest {
 		assertThat(tailSet.containsInt(3), is(true));
 		assertThat(tailSet.containsInt(-1), is(false));
 		assertThat(tailSet.toString(), is("[0, 1, 2, 3, 4]"));
-		Set<Integer> set2 = new HashSet<>(asList(0, 1, 2, 3, 4));
-		assertThat(tailSet, is(equalTo(set2)));
-		assertThat(tailSet.hashCode(), is(set2.hashCode()));
+
+		Set<Integer> equivalentSet = new HashSet<>(asList(0, 1, 2, 3, 4));
+		assertThat(tailSet, is(equalTo(equivalentSet)));
+		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
 		assertThat(tailSet.removeInt(2), is(true));
 		assertThat(tailSet, containsInts(0, 1, 3, 4));
@@ -272,7 +287,7 @@ public class BitIntSetTest {
 		assertThat(tailSet.size(), is(5));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
 
-		expecting(IllegalArgumentException.class, () -> tailSet.add(-17));
+		expecting(IllegalArgumentException.class, () -> tailSet.addInt(-17));
 		assertThat(tailSet, containsInts(0, 1, 3, 4, 17));
 		assertThat(tailSet.size(), is(5));
 		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
@@ -299,9 +314,10 @@ public class BitIntSetTest {
 		assertThat(tailSet.containsInt(3), is(true));
 		assertThat(tailSet.containsInt(-1), is(false));
 		assertThat(tailSet.toString(), is("[1, 3, 5]"));
-		Set<Integer> set2 = new HashSet<>(asList(1, 3, 5));
-		assertThat(tailSet, is(equalTo(set2)));
-		assertThat(tailSet.hashCode(), is(set2.hashCode()));
+
+		Set<Integer> equivalentSet = new HashSet<>(asList(1, 3, 5));
+		assertThat(tailSet, is(equalTo(equivalentSet)));
+		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
 
 	@Test

@@ -124,6 +124,200 @@ public class BitCharSetTest {
 	}
 
 	@Test
+	public void subSet() {
+		CharSortedSet subSet = set.subSet('b', 'e');
+		assertThat(subSet, containsChars('b', 'c', 'd'));
+		assertThat(subSet.size(), is(3));
+		assertThat(subSet.firstChar(), is('b'));
+		assertThat(subSet.lastChar(), is('d'));
+		assertThat(subSet.containsChar('b'), is(true));
+		assertThat(subSet.containsChar('e'), is(false));
+		assertThat(subSet.toString(), is("[b, c, d]"));
+
+		Set<Character> equivalentSet = new HashSet<>(asList('b', 'c', 'd'));
+		assertThat(subSet, is(equalTo(equivalentSet)));
+		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(subSet.removeChar('b'), is(true));
+		assertThat(subSet, containsChars('c', 'd'));
+		assertThat(subSet.size(), is(2));
+		assertThat(set, containsChars('a', 'c', 'd', 'e'));
+
+		assertThat(subSet.removeChar('b'), is(false));
+		assertThat(subSet, containsChars('c', 'd'));
+		assertThat(subSet.size(), is(2));
+		assertThat(set, containsChars('a', 'c', 'd', 'e'));
+
+		assertThat(subSet.addChar('b'), is(true));
+		assertThat(subSet, containsChars('b', 'c', 'd'));
+		assertThat(subSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(subSet.addChar('b'), is(false));
+		assertThat(subSet, containsChars('b', 'c', 'd'));
+		assertThat(subSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		expecting(IllegalArgumentException.class, () -> subSet.addChar('f'));
+		assertThat(subSet, containsChars('b', 'c', 'd'));
+		assertThat(subSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		subSet.clear();
+		assertThat(subSet, is(emptyIterable()));
+		assertThat(subSet.size(), is(0));
+		assertThat(set, containsChars('a', 'e'));
+	}
+
+	@Test
+	public void sparseSubSet() {
+		BitCharSet set = new BitCharSet('b', 'd', 'f', 'h');
+		CharSortedSet subSet = set.subSet('c', 'g');
+		assertThat(subSet, containsChars('d', 'f'));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstChar(), is('d'));
+		assertThat(subSet.lastChar(), is('f'));
+		assertThat(subSet.containsChar('d'), is(true));
+		assertThat(subSet.containsChar('h'), is(false));
+		assertThat(subSet.toString(), is("[d, f]"));
+
+		Set<Character> equivalentSet = new HashSet<>(asList('d', 'f'));
+		assertThat(subSet, is(equalTo(equivalentSet)));
+		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
+	public void headSet() {
+		CharSortedSet headSet = set.headSet('d');
+		assertThat(headSet, containsChars('a', 'b', 'c'));
+		assertThat(headSet.size(), is(3));
+		assertThat(headSet.firstChar(), is('a'));
+		assertThat(headSet.lastChar(), is('c'));
+		assertThat(headSet.containsChar('b'), is(true));
+		assertThat(headSet.containsChar('d'), is(false));
+		assertThat(headSet.toString(), is("[a, b, c]"));
+
+		Set<Character> equivalentSet = new HashSet<>(asList('a', 'b', 'c'));
+		assertThat(headSet, is(equalTo(equivalentSet)));
+		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(headSet.removeChar('b'), is(true));
+		assertThat(headSet, containsChars('a', 'c'));
+		assertThat(headSet.size(), is(2));
+		assertThat(set, containsChars('a', 'c', 'd', 'e'));
+
+		assertThat(headSet.removeChar('b'), is(false));
+		assertThat(headSet, containsChars('a', 'c'));
+		assertThat(headSet.size(), is(2));
+		assertThat(set, containsChars('a', 'c', 'd', 'e'));
+
+		assertThat(headSet.addChar('b'), is(true));
+		assertThat(headSet, containsChars('a', 'b', 'c'));
+		assertThat(headSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(headSet.addChar('b'), is(false));
+		assertThat(headSet, containsChars('a', 'b', 'c'));
+		assertThat(headSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		expecting(IllegalArgumentException.class, () -> headSet.addChar('q'));
+		assertThat(headSet, containsChars('a', 'b', 'c'));
+		assertThat(headSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		headSet.clear();
+		assertThat(headSet, is(emptyIterable()));
+		assertThat(headSet.size(), is(0));
+		assertThat(set, containsChars('d', 'e'));
+	}
+
+	@Test
+	public void sparseHeadSet() {
+		BitCharSet set = new BitCharSet('b', 'd', 'f', 'h');
+		CharSortedSet headSet = set.headSet('e');
+		assertThat(headSet, containsChars('b', 'd'));
+		assertThat(headSet.size(), is(2));
+		assertThat(headSet.firstChar(), is('b'));
+		assertThat(headSet.lastChar(), is('d'));
+		assertThat(headSet.containsChar('b'), is(true));
+		assertThat(headSet.containsChar('f'), is(false));
+		assertThat(headSet.toString(), is("[b, d]"));
+
+		Set<Character> equivalentSet = new HashSet<>(asList('b', 'd'));
+		assertThat(headSet, is(equalTo(equivalentSet)));
+		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
+	public void tailSet() {
+		CharSortedSet tailSet = set.tailSet('c');
+		assertThat(tailSet, containsChars('c', 'd', 'e'));
+		assertThat(tailSet.size(), is(3));
+		assertThat(tailSet.firstChar(), is('c'));
+		assertThat(tailSet.lastChar(), is('e'));
+		assertThat(tailSet.containsChar('d'), is(true));
+		assertThat(tailSet.containsChar('a'), is(false));
+		assertThat(tailSet.toString(), is("[c, d, e]"));
+
+		Set<Character> equivalentSet = new HashSet<>(asList('c', 'd', 'e'));
+		assertThat(tailSet, is(equalTo(equivalentSet)));
+		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(tailSet.removeChar('d'), is(true));
+		assertThat(tailSet, containsChars('c', 'e'));
+		assertThat(tailSet.size(), is(2));
+		assertThat(set, containsChars('a', 'b', 'c', 'e'));
+
+		assertThat(tailSet.removeChar('d'), is(false));
+		assertThat(tailSet, containsChars('c', 'e'));
+		assertThat(tailSet.size(), is(2));
+		assertThat(set, containsChars('a', 'b', 'c', 'e'));
+
+		assertThat(tailSet.addChar('q'), is(true));
+		assertThat(tailSet, containsChars('c', 'e', 'q'));
+		assertThat(tailSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'e', 'q'));
+
+		assertThat(tailSet.addChar('q'), is(false));
+		assertThat(tailSet, containsChars('c', 'e', 'q'));
+		assertThat(tailSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'e', 'q'));
+
+		expecting(IllegalArgumentException.class, () -> tailSet.addChar('a'));
+		assertThat(tailSet, containsChars('c', 'e', 'q'));
+		assertThat(tailSet.size(), is(3));
+		assertThat(set, containsChars('a', 'b', 'c', 'e', 'q'));
+
+		assertThat(set.addChar('d'), is(true));
+		assertThat(tailSet, containsChars('c', 'd', 'e', 'q'));
+		assertThat(tailSet.size(), is(4));
+		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e', 'q'));
+
+		tailSet.clear();
+		assertThat(tailSet, is(emptyIterable()));
+		assertThat(tailSet.size(), is(0));
+		assertThat(set, containsChars('a', 'b'));
+	}
+
+	@Test
+	public void sparseTailSet() {
+		BitCharSet set = new BitCharSet('b', 'd', 'f', 'h');
+		CharSortedSet tailSet = set.tailSet('e');
+		assertThat(tailSet, containsChars('f', 'h'));
+		assertThat(tailSet.size(), is(2));
+		assertThat(tailSet.firstChar(), is('f'));
+		assertThat(tailSet.lastChar(), is('h'));
+		assertThat(tailSet.containsChar('f'), is(true));
+		assertThat(tailSet.containsChar('d'), is(false));
+		assertThat(tailSet.toString(), is("[f, h]"));
+
+		Set<Character> equivalentSet = new HashSet<>(asList('f', 'h'));
+		assertThat(tailSet, is(equalTo(equivalentSet)));
+		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
 	public void addAllCharArray() {
 		assertThat(empty.addAllChars('a', 'b', 'c'), is(true));
 		assertThat(empty, containsChars('a', 'b', 'c'));

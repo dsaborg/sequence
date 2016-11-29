@@ -24,11 +24,12 @@ public class InclusiveStartingCharIterator extends DelegatingUnaryCharIterator {
 	private final CharPredicate predicate;
 
 	private boolean started;
-	private char next;
-	private boolean hasNext;
+	private char first;
+	private boolean firstFound;
+	private boolean firstEmitted;
 
 	public InclusiveStartingCharIterator(CharIterator iterator, char element) {
-		this(iterator, c -> c == element);
+		this(iterator, i -> i == element);
 	}
 
 	public InclusiveStartingCharIterator(CharIterator iterator, CharPredicate predicate) {
@@ -39,16 +40,21 @@ public class InclusiveStartingCharIterator extends DelegatingUnaryCharIterator {
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			while (iterator.hasNext()) {
-				next = iterator.nextChar();
-				if (predicate.test(next)) {
-					hasNext = true;
-					break;
+			while (iterator.hasNext() && !firstFound) {
+				char candidateFirst = iterator.nextChar();
+				if (predicate.test(candidateFirst)) {
+					firstFound = true;
+					first = candidateFirst;
 				}
 			}
 			started = true;
+			return firstFound;
+		} else {
+			if (!firstEmitted)
+				return firstFound;
+			else
+				return iterator.hasNext();
 		}
-		return hasNext;
 	}
 
 	@Override
@@ -56,15 +62,11 @@ public class InclusiveStartingCharIterator extends DelegatingUnaryCharIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		char result = next;
-		hasNext = iterator.hasNext();
-		if (hasNext)
-			next = iterator.nextChar();
-		return result;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		if (!firstEmitted) {
+			firstEmitted = true;
+			return first;
+		} else {
+			return iterator.nextChar();
+		}
 	}
 }

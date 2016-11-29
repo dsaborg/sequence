@@ -60,6 +60,21 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 		this.indices = new long[capacity];
 	}
 
+	@Override
+	public boolean addLong(long x) {
+		return set(x);
+	}
+
+	@Override
+	public boolean containsLong(long x) {
+		return get(x);
+	}
+
+	@Override
+	public boolean removeLong(long x) {
+		return clear(x);
+	}
+
 	/**
 	 * Set the bit at index {@code i}.
 	 *

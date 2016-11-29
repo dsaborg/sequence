@@ -24,22 +24,30 @@ import java.util.Comparator;
 @FunctionalInterface
 public interface DoubleComparator extends Comparator<Double> {
 	@Override
-	default int compare(Double d1, Double d2) {
-		return compareDoubles(d1, d2);
+	default int compare(Double l, Double r) {
+		return compareDoubles(l, r);
 	}
 
-	int compareDoubles(double d1, double d2);
+	int compareDoubles(double l, double r);
 
 	static DoubleComparator withPrecision(double precision) {
-		return (d1, d2) -> {
-			if (equals(d1, d2, precision))
+		return (l, r) -> {
+			if (equals(l, r, precision))
 				return 0;
 
-			return Double.compare(d1, d2);
+			return Double.compare(l, r);
 		};
 	}
 
-	static boolean equals(double d1, double d2, double precision) {
-		return Math.abs(d1 - d2) <= precision;
+	static boolean equals(double l, double r, double precision) {
+		return Math.abs(l - r) <= precision;
+	}
+
+	static boolean ge(double l, double r, double precision) {
+		return l - r >= -precision;
+	}
+
+	static boolean lt(double l, double r, double precision) {
+		return l - r < precision;
 	}
 }

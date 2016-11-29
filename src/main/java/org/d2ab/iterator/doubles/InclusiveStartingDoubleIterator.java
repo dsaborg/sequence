@@ -25,8 +25,9 @@ public class InclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterat
 	private final DoublePredicate predicate;
 
 	private boolean started;
-	private double next;
-	private boolean hasNext;
+	private double first;
+	private boolean firstFound;
+	private boolean firstEmitted;
 
 	public InclusiveStartingDoubleIterator(DoubleIterator iterator, double element, double accuracy) {
 		this(iterator, d -> DoubleComparator.equals(d, element, accuracy));
@@ -40,16 +41,21 @@ public class InclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterat
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			while (iterator.hasNext()) {
-				next = iterator.nextDouble();
-				if (predicate.test(next)) {
-					hasNext = true;
-					break;
+			while (iterator.hasNext() && !firstFound) {
+				double candidateFirst = iterator.nextDouble();
+				if (predicate.test(candidateFirst)) {
+					firstFound = true;
+					first = candidateFirst;
 				}
 			}
 			started = true;
+			return firstFound;
+		} else {
+			if (!firstEmitted)
+				return firstFound;
+			else
+				return iterator.hasNext();
 		}
-		return hasNext;
 	}
 
 	@Override
@@ -57,15 +63,11 @@ public class InclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterat
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		double result = next;
-		hasNext = iterator.hasNext();
-		if (hasNext)
-			next = iterator.nextDouble();
-		return result;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		if (!firstEmitted) {
+			firstEmitted = true;
+			return first;
+		} else {
+			return iterator.nextDouble();
+		}
 	}
 }

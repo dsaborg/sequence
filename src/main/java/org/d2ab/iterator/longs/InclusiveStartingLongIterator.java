@@ -23,11 +23,12 @@ public class InclusiveStartingLongIterator extends DelegatingUnaryLongIterator {
 	private final LongPredicate predicate;
 
 	private boolean started;
-	private long next;
-	private boolean hasNext;
+	private long first;
+	private boolean firstFound;
+	private boolean firstEmitted;
 
 	public InclusiveStartingLongIterator(LongIterator iterator, long element) {
-		this(iterator, l -> l == element);
+		this(iterator, i -> i == element);
 	}
 
 	public InclusiveStartingLongIterator(LongIterator iterator, LongPredicate predicate) {
@@ -38,16 +39,21 @@ public class InclusiveStartingLongIterator extends DelegatingUnaryLongIterator {
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			while (iterator.hasNext()) {
-				next = iterator.nextLong();
-				if (predicate.test(next)) {
-					hasNext = true;
-					break;
+			while (iterator.hasNext() && !firstFound) {
+				long candidateFirst = iterator.nextLong();
+				if (predicate.test(candidateFirst)) {
+					firstFound = true;
+					first = candidateFirst;
 				}
 			}
 			started = true;
+			return firstFound;
+		} else {
+			if (!firstEmitted)
+				return firstFound;
+			else
+				return iterator.hasNext();
 		}
-		return hasNext;
 	}
 
 	@Override
@@ -55,15 +61,11 @@ public class InclusiveStartingLongIterator extends DelegatingUnaryLongIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		long result = next;
-		hasNext = iterator.hasNext();
-		if (hasNext)
-			next = iterator.nextLong();
-		return result;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		if (!firstEmitted) {
+			firstEmitted = true;
+			return first;
+		} else {
+			return iterator.nextLong();
+		}
 	}
 }

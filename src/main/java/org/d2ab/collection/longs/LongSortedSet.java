@@ -16,6 +16,8 @@
 
 package org.d2ab.collection.longs;
 
+import org.d2ab.iterator.longs.ExclusiveTerminalLongIterator;
+import org.d2ab.iterator.longs.InclusiveStartingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.SortedSet;
@@ -32,30 +34,70 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 	}
 
 	@Override
-	default LongSortedSet subSet(Long fromElement, Long toElement) {
-		return subSet((long) fromElement, (long) toElement);
+	default LongSortedSet subSet(Long from, Long to) {
+		return subSet((long) from, (long) to);
 	}
 
-	default LongSortedSet subSet(long fromElement, long toElement) {
-		throw new UnsupportedOperationException();
+	default LongSortedSet subSet(long from, long to) {
+		return new LongSortedSet.SubSet(this) {
+			@Override
+			public LongIterator iterator() {
+				return untilExcluded(fromIncluded(LongSortedSet.this.iterator()));
+			}
+
+			@Override
+			protected boolean included(long x) {
+				return x >= from && x < to;
+			}
+		};
 	}
 
 	@Override
-	default LongSortedSet headSet(Long toElement) {
-		return headSet((long) toElement);
+	default LongSortedSet headSet(Long to) {
+		return headSet((long) to);
 	}
 
-	default LongSortedSet headSet(long toElement) {
-		throw new UnsupportedOperationException();
+	default LongSortedSet headSet(long to) {
+		return new LongSortedSet.SubSet(this) {
+			@Override
+			public LongIterator iterator() {
+				return untilExcluded(LongSortedSet.this.iterator());
+			}
+
+			@Override
+			public long firstLong() {
+				return LongSortedSet.this.firstLong();
+			}
+
+			@Override
+			protected boolean included(long x) {
+				return x < to;
+			}
+		};
 	}
 
 	@Override
-	default LongSortedSet tailSet(Long fromElement) {
-		return tailSet((long) fromElement);
+	default LongSortedSet tailSet(Long from) {
+		return tailSet((long) from);
 	}
 
-	default LongSortedSet tailSet(long fromElement) {
-		throw new UnsupportedOperationException();
+	default LongSortedSet tailSet(long from) {
+		return new LongSortedSet.SubSet(this) {
+			@Override
+			public LongIterator iterator() {
+				return fromIncluded(LongSortedSet.this.iterator());
+			}
+
+			@Override
+			public long lastLong() {
+				return LongSortedSet.this.lastLong();
+			}
+
+			@Override
+			protected boolean included(long x) {
+				return x >= from;
+			}
+		};
 	}
 
 	@Override
@@ -86,5 +128,50 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 		return Spliterators.spliterator(iterator(), size(),
 		                                Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SORTED |
 		                                Spliterator.NONNULL);
+	}
+
+	abstract class SubSet extends LongSet.Base implements LongSortedSet {
+		private LongSortedSet set;
+
+		public SubSet(LongSortedSet set) {
+			this.set = set;
+		}
+
+		@Override
+		public int size() {
+			return iterator().count();
+		}
+
+		@Override
+		public boolean containsLong(long x) {
+			return included(x) && set.containsLong(x);
+		}
+
+		@Override
+		public boolean removeLong(long x) {
+			return included(x) && set.removeLong(x);
+		}
+
+		@Override
+		public boolean addLong(long x) {
+			if (excluded(x))
+				throw new IllegalArgumentException(String.valueOf(x));
+
+			return set.addLong(x);
+		}
+
+		protected LongIterator untilExcluded(LongIterator iterator) {
+			return new ExclusiveTerminalLongIterator(iterator, this::excluded);
+		}
+
+		protected LongIterator fromIncluded(LongIterator iterator) {
+			return new InclusiveStartingLongIterator(iterator, this::included);
+		}
+
+		protected abstract boolean included(long x);
+
+		protected boolean excluded(long x) {
+			return !included(x);
+		}
 	}
 }

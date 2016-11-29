@@ -17,6 +17,8 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.ExclusiveTerminalCharIterator;
+import org.d2ab.iterator.chars.InclusiveStartingCharIterator;
 
 import java.util.SortedSet;
 import java.util.Spliterator;
@@ -32,30 +34,70 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 	}
 
 	@Override
-	default CharSortedSet subSet(Character fromElement, Character toElement) {
-		return subSet((char) fromElement, (char) toElement);
+	default CharSortedSet subSet(Character from, Character to) {
+		return subSet((char) from, (char) to);
 	}
 
-	default CharSortedSet subSet(char fromElement, char toElement) {
-		throw new UnsupportedOperationException();
+	default CharSortedSet subSet(char from, char to) {
+		return new SubSet(this) {
+			@Override
+			public CharIterator iterator() {
+				return untilExcluded(fromIncluded(CharSortedSet.this.iterator()));
+			}
+
+			@Override
+			protected boolean included(char x) {
+				return x >= from && x < to;
+			}
+		};
 	}
 
 	@Override
-	default CharSortedSet headSet(Character toElement) {
-		return headSet((char) toElement);
+	default CharSortedSet headSet(Character to) {
+		return headSet((char) to);
 	}
 
-	default CharSortedSet headSet(char toElement) {
-		throw new UnsupportedOperationException();
+	default CharSortedSet headSet(char to) {
+		return new SubSet(this) {
+			@Override
+			public CharIterator iterator() {
+				return untilExcluded(CharSortedSet.this.iterator());
+			}
+
+			@Override
+			public char firstChar() {
+				return CharSortedSet.this.firstChar();
+			}
+
+			@Override
+			protected boolean included(char x) {
+				return x < to;
+			}
+		};
 	}
 
 	@Override
-	default CharSortedSet tailSet(Character fromElement) {
-		return tailSet((char) fromElement);
+	default CharSortedSet tailSet(Character from) {
+		return tailSet((char) from);
 	}
 
-	default CharSortedSet tailSet(char fromElement) {
-		throw new UnsupportedOperationException();
+	default CharSortedSet tailSet(char from) {
+		return new SubSet(this) {
+			@Override
+			public CharIterator iterator() {
+				return fromIncluded(CharSortedSet.this.iterator());
+			}
+
+			@Override
+			public char lastChar() {
+				return CharSortedSet.this.lastChar();
+			}
+
+			@Override
+			protected boolean included(char x) {
+				return x >= from;
+			}
+		};
 	}
 
 	@Override
@@ -86,5 +128,50 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 		return Spliterators.spliterator(intIterator(), size(),
 		                                Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SORTED |
 		                                Spliterator.NONNULL);
+	}
+
+	abstract class SubSet extends CharSet.Base implements CharSortedSet {
+		private CharSortedSet set;
+
+		public SubSet(CharSortedSet set) {
+			this.set = set;
+		}
+
+		@Override
+		public int size() {
+			return iterator().count();
+		}
+
+		@Override
+		public boolean containsChar(char x) {
+			return included(x) && set.containsChar(x);
+		}
+
+		@Override
+		public boolean removeChar(char x) {
+			return included(x) && set.removeChar(x);
+		}
+
+		@Override
+		public boolean addChar(char x) {
+			if (excluded(x))
+				throw new IllegalArgumentException(String.valueOf(x));
+
+			return set.addChar(x);
+		}
+
+		protected CharIterator untilExcluded(CharIterator iterator) {
+			return new ExclusiveTerminalCharIterator(iterator, this::excluded);
+		}
+
+		protected CharIterator fromIncluded(CharIterator iterator) {
+			return new InclusiveStartingCharIterator(iterator, this::included);
+		}
+
+		protected abstract boolean included(char x);
+
+		protected boolean excluded(char x) {
+			return !included(x);
+		}
 	}
 }

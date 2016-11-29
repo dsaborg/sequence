@@ -122,6 +122,205 @@ public class BitLongSetTest {
 	}
 
 	@Test
+	public void subSet() {
+		LongSortedSet subSet = set.subSet(-3, 3);
+		assertThat(subSet, containsLongs(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(subSet.firstLong(), is(-3L));
+		assertThat(subSet.lastLong(), is(2L));
+		assertThat(subSet.containsLong(1), is(true));
+		assertThat(subSet.containsLong(3), is(false));
+		assertThat(subSet.toString(), is("[-3, -2, -1, 0, 1, 2]"));
+
+		Set<Long> equivalentSet = new HashSet<>(asList(-3L, -2L, -1L, 0L, 1L, 2L));
+		assertThat(subSet, is(equalTo(equivalentSet)));
+		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(subSet.removeLong(0), is(true));
+		assertThat(subSet, containsLongs(-3, -2, -1, 1, 2));
+		assertThat(subSet.size(), is(5));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 1, 2, 3, 4));
+
+		assertThat(subSet.removeLong(0), is(false));
+		assertThat(subSet, containsLongs(-3, -2, -1, 1, 2));
+		assertThat(subSet.size(), is(5));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 1, 2, 3, 4));
+
+		assertThat(subSet.addLong(0), is(true));
+		assertThat(subSet, containsLongs(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(subSet.addLong(0), is(false));
+		assertThat(subSet, containsLongs(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+
+		expecting(IllegalArgumentException.class, () -> subSet.addLong(-17));
+		assertThat(subSet, containsLongs(-3, -2, -1, 0, 1, 2));
+		assertThat(subSet.size(), is(6));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+
+		subSet.clear();
+		assertThat(subSet, is(emptyIterable()));
+		assertThat(subSet.size(), is(0));
+		assertThat(set, containsLongs(-5, -4, 3, 4));
+	}
+
+	@Test
+	public void sparseSubSet() {
+		BitLongSet set = new BitLongSet(-5, -3, -1, 1, 3, 5);
+		LongSortedSet subSet = set.subSet(-2, 2);
+		assertThat(subSet, containsLongs(-1, 1));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstLong(), is(-1L));
+		assertThat(subSet.lastLong(), is(1L));
+		assertThat(subSet.containsLong(1), is(true));
+		assertThat(subSet.containsLong(-3), is(false));
+		assertThat(subSet.toString(), is("[-1, 1]"));
+
+		Set<Long> equivalentSet = new HashSet<>(asList(-1L, 1L));
+		assertThat(subSet, is(equalTo(equivalentSet)));
+		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
+	public void headSet() {
+		LongSortedSet headSet = set.headSet(0);
+		assertThat(headSet, containsLongs(-5, -4, -3, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(headSet.firstLong(), is(-5L));
+		assertThat(headSet.lastLong(), is(-1L));
+		assertThat(headSet.containsLong(-3), is(true));
+		assertThat(headSet.containsLong(0), is(false));
+		assertThat(headSet.toString(), is("[-5, -4, -3, -2, -1]"));
+
+		Set<Long> equivalentSet = new HashSet<>(asList(-5L, -4L, -3L, -2L, -1L));
+		assertThat(headSet, is(equalTo(equivalentSet)));
+		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(headSet.removeLong(-3), is(true));
+		assertThat(headSet, containsLongs(-5, -4, -2, -1));
+		assertThat(headSet.size(), is(4));
+		assertThat(set, containsLongs(-5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(headSet.removeLong(-3), is(false));
+		assertThat(headSet, containsLongs(-5, -4, -2, -1));
+		assertThat(headSet.size(), is(4));
+		assertThat(set, containsLongs(-5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(headSet.addLong(-17), is(true));
+		assertThat(headSet, containsLongs(-17, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(set, containsLongs(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(headSet.addLong(-17), is(false));
+		assertThat(headSet, containsLongs(-17, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(set, containsLongs(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		expecting(IllegalArgumentException.class, () -> headSet.addLong(17));
+		assertThat(headSet, containsLongs(-17, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(5));
+		assertThat(set, containsLongs(-17, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		assertThat(set.addLong(-6), is(true));
+		assertThat(headSet, containsLongs(-17, -6, -5, -4, -2, -1));
+		assertThat(headSet.size(), is(6));
+		assertThat(set, containsLongs(-17, -6, -5, -4, -2, -1, 0, 1, 2, 3, 4));
+
+		headSet.clear();
+		assertThat(headSet, is(emptyIterable()));
+		assertThat(headSet.size(), is(0));
+		assertThat(set, containsLongs(0, 1, 2, 3, 4));
+	}
+
+	@Test
+	public void sparseHeadSet() {
+		BitLongSet set = new BitLongSet(-5, -3, -1, 1, 3, 5);
+		LongSortedSet headSet = set.headSet(0);
+		assertThat(headSet, containsLongs(-5, -3, -1));
+		assertThat(headSet.size(), is(3));
+		assertThat(headSet.firstLong(), is(-5L));
+		assertThat(headSet.lastLong(), is(-1L));
+		assertThat(headSet.containsLong(-3), is(true));
+		assertThat(headSet.containsLong(1), is(false));
+		assertThat(headSet.toString(), is("[-5, -3, -1]"));
+
+		Set<Long> equivalentSet = new HashSet<>(asList(-5L, -3L, -1L));
+		assertThat(headSet, is(equalTo(equivalentSet)));
+		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
+	public void tailSet() {
+		LongSortedSet tailSet = set.tailSet(0);
+		assertThat(tailSet, containsLongs(0, 1, 2, 3, 4));
+		assertThat(tailSet.size(), is(5));
+		assertThat(tailSet.firstLong(), is(0L));
+		assertThat(tailSet.lastLong(), is(4L));
+		assertThat(tailSet.containsLong(3), is(true));
+		assertThat(tailSet.containsLong(-1), is(false));
+		assertThat(tailSet.toString(), is("[0, 1, 2, 3, 4]"));
+
+		Set<Long> equivalentSet = new HashSet<>(asList(0L, 1L, 2L, 3L, 4L));
+		assertThat(tailSet, is(equalTo(equivalentSet)));
+		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(tailSet.removeLong(2), is(true));
+		assertThat(tailSet, containsLongs(0, 1, 3, 4));
+		assertThat(tailSet.size(), is(4));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 3, 4));
+
+		assertThat(tailSet.removeLong(2), is(false));
+		assertThat(tailSet, containsLongs(0, 1, 3, 4));
+		assertThat(tailSet.size(), is(4));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 3, 4));
+
+		assertThat(tailSet.addLong(17), is(true));
+		assertThat(tailSet, containsLongs(0, 1, 3, 4, 17));
+		assertThat(tailSet.size(), is(5));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
+
+		assertThat(tailSet.addLong(17), is(false));
+		assertThat(tailSet, containsLongs(0, 1, 3, 4, 17));
+		assertThat(tailSet.size(), is(5));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
+
+		expecting(IllegalArgumentException.class, () -> tailSet.addLong(-17));
+		assertThat(tailSet, containsLongs(0, 1, 3, 4, 17));
+		assertThat(tailSet.size(), is(5));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 3, 4, 17));
+
+		assertThat(set.addLong(5), is(true));
+		assertThat(tailSet, containsLongs(0, 1, 3, 4, 5, 17));
+		assertThat(tailSet.size(), is(6));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 3, 4, 5, 17));
+
+		tailSet.clear();
+		assertThat(tailSet, is(emptyIterable()));
+		assertThat(tailSet.size(), is(0));
+		assertThat(set, containsLongs(-5, -4, -3, -2, -1));
+	}
+
+	@Test
+	public void sparseTailSet() {
+		BitLongSet set = new BitLongSet(-5, -3, -1, 1, 3, 5);
+		LongSortedSet tailSet = set.tailSet(0);
+		assertThat(tailSet, containsLongs(1, 3, 5));
+		assertThat(tailSet.size(), is(3));
+		assertThat(tailSet.firstLong(), is(1L));
+		assertThat(tailSet.lastLong(), is(5L));
+		assertThat(tailSet.containsLong(3), is(true));
+		assertThat(tailSet.containsLong(-1), is(false));
+		assertThat(tailSet.toString(), is("[1, 3, 5]"));
+
+		Set<Long> equivalentSet = new HashSet<>(asList(1L, 3L, 5L));
+		assertThat(tailSet, is(equalTo(equivalentSet)));
+		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
 	public void addAllLongArray() {
 		assertThat(empty.addAllLongs(1, 2, 3), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));

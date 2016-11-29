@@ -17,6 +17,8 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.doubles.ExclusiveTerminalDoubleIterator;
+import org.d2ab.iterator.doubles.InclusiveStartingDoubleIterator;
 
 import java.util.SortedSet;
 import java.util.Spliterator;
@@ -32,30 +34,122 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 	}
 
 	@Override
-	default DoubleSortedSet subSet(Double fromElement, Double toElement) {
-		return subSet((double) fromElement, (double) toElement);
+	default DoubleSortedSet subSet(Double from, Double to) {
+		return subSetExactly((double) from, (double) to);
 	}
 
-	default DoubleSortedSet subSet(double fromElement, double toElement) {
-		throw new UnsupportedOperationException();
+	default DoubleSortedSet subSetExactly(double from, double to) {
+		return new DoubleSortedSet.SubSet(this) {
+			@Override
+			public DoubleIterator iterator() {
+				return untilExcluded(fromIncluded(DoubleSortedSet.this.iterator()));
+			}
+
+			@Override
+			protected boolean included(double x) {
+				return x >= from && x < to;
+			}
+		};
+	}
+
+	default DoubleSortedSet subSet(double from, double to, double precision) {
+		return new DoubleSortedSet.SubSet(this) {
+			@Override
+			public DoubleIterator iterator() {
+				return untilExcluded(fromIncluded(DoubleSortedSet.this.iterator()));
+			}
+
+			@Override
+			protected boolean included(double x) {
+				return DoubleComparator.ge(x, from, precision) && DoubleComparator.lt(x, to, precision);
+			}
+		};
 	}
 
 	@Override
-	default DoubleSortedSet headSet(Double toElement) {
-		return headSet((double) toElement);
+	default DoubleSortedSet headSet(Double to) {
+		return headSetExactly((double) to);
 	}
 
-	default DoubleSortedSet headSet(double toElement) {
-		throw new UnsupportedOperationException();
+	default DoubleSortedSet headSetExactly(double to) {
+		return new DoubleSortedSet.SubSet(this) {
+			@Override
+			public DoubleIterator iterator() {
+				return untilExcluded(DoubleSortedSet.this.iterator());
+			}
+
+			@Override
+			public double firstDouble() {
+				return DoubleSortedSet.this.firstDouble();
+			}
+
+			@Override
+			protected boolean included(double x) {
+				return x < to;
+			}
+		};
+	}
+
+	default DoubleSortedSet headSet(double to, double precision) {
+		return new DoubleSortedSet.SubSet(this) {
+			@Override
+			public DoubleIterator iterator() {
+				return untilExcluded(DoubleSortedSet.this.iterator());
+			}
+
+			@Override
+			public double firstDouble() {
+				return DoubleSortedSet.this.firstDouble();
+			}
+
+			@Override
+			protected boolean included(double x) {
+				return DoubleComparator.lt(x, to, precision);
+			}
+		};
 	}
 
 	@Override
-	default DoubleSortedSet tailSet(Double fromElement) {
-		return tailSet((double) fromElement);
+	default DoubleSortedSet tailSet(Double from) {
+		return tailSetExactly((double) from);
 	}
 
-	default DoubleSortedSet tailSet(double fromElement) {
-		throw new UnsupportedOperationException();
+	default DoubleSortedSet tailSetExactly(double from) {
+		return new DoubleSortedSet.SubSet(this) {
+			@Override
+			public DoubleIterator iterator() {
+				return fromIncluded(DoubleSortedSet.this.iterator());
+			}
+
+			@Override
+			public double lastDouble() {
+				return DoubleSortedSet.this.lastDouble();
+			}
+
+			@Override
+			protected boolean included(double x) {
+				return x >= from;
+			}
+		};
+	}
+
+	default DoubleSortedSet tailSet(double from, double precision) {
+		return new DoubleSortedSet.SubSet(this) {
+			@Override
+			public DoubleIterator iterator() {
+				return fromIncluded(DoubleSortedSet.this.iterator());
+			}
+
+			@Override
+			public double lastDouble() {
+				return DoubleSortedSet.this.lastDouble();
+			}
+
+			@Override
+			protected boolean included(double x) {
+				return DoubleComparator.ge(x, from, precision);
+			}
+		};
 	}
 
 	@Override
@@ -86,5 +180,60 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 		return Spliterators.spliterator(iterator(), size(),
 		                                Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SORTED |
 		                                Spliterator.NONNULL);
+	}
+
+	abstract class SubSet extends DoubleSet.Base implements DoubleSortedSet {
+		private DoubleSortedSet set;
+
+		public SubSet(DoubleSortedSet set) {
+			this.set = set;
+		}
+
+		@Override
+		public int size() {
+			return iterator().count();
+		}
+
+		@Override
+		public boolean containsDoubleExactly(double x) {
+			return included(x) && set.containsDoubleExactly(x);
+		}
+
+		@Override
+		public boolean containsDouble(double x, double precision) {
+			return included(x) && set.containsDouble(x, precision);
+		}
+
+		@Override
+		public boolean removeDoubleExactly(double x) {
+			return included(x) && set.removeDoubleExactly(x);
+		}
+
+		@Override
+		public boolean removeDouble(double x, double precision) {
+			return included(x) && set.removeDouble(x, precision);
+		}
+
+		@Override
+		public boolean addDouble(double x) {
+			if (excluded(x))
+				throw new IllegalArgumentException(String.valueOf(x));
+
+			return set.addDouble(x);
+		}
+
+		protected DoubleIterator untilExcluded(DoubleIterator iterator) {
+			return new ExclusiveTerminalDoubleIterator(iterator, this::excluded);
+		}
+
+		protected DoubleIterator fromIncluded(DoubleIterator iterator) {
+			return new InclusiveStartingDoubleIterator(iterator, this::included);
+		}
+
+		protected abstract boolean included(double x);
+
+		protected boolean excluded(double x) {
+			return !included(x);
+		}
 	}
 }
