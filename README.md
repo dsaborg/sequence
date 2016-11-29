@@ -325,7 +325,9 @@ assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
                                         instanceOf(IllegalArgumentException.class),
                                         instanceOf(NullPointerException.class)));
 
-exceptionAndCauses.last(IllegalArgumentException.class).ifPresent(Throwable::printStackTrace);
+StringBuilder builder = new StringBuilder();
+exceptionAndCauses.last(IllegalArgumentException.class).ifPresent(builder::append);
+assertThat(builder.toString(), is("java.lang.IllegalArgumentException: java.lang.NullPointerException"));
 ```
 
 ```Java
