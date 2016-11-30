@@ -172,6 +172,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	public void replaceAllDoubles(DoubleUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsDouble(contents[i]);
+		modCount++;
 	}
 
 	@Override
