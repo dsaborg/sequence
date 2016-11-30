@@ -21,7 +21,7 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -209,6 +209,17 @@ public class ArrayDoubleListTest {
 		assertThat(i, is(0));
 
 		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
+	public void iteratorFailFast() {
+		DoubleIterator it1 = list.iterator();
+		list.addDoubleExactly(17);
+		expecting(ConcurrentModificationException.class, it1::next);
+
+		DoubleIterator it2 = list.iterator();
+		list.removeDoubleExactly(17);
+		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
 	@Test
@@ -436,10 +447,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void addAllBoxed() {
-		empty.addAll(Arrays.asList(1.0, 2.0, 3.0));
+		empty.addAll(asList(1.0, 2.0, 3.0));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
-		list.addAll(Arrays.asList(6.0, 7.0, 8.0));
+		list.addAll(asList(6.0, 7.0, 8.0));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -453,7 +464,7 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void addAllDoublesCollection() {
+	public void addAllDoublesDoubleList() {
 		empty.addAllDoubles(ArrayDoubleList.create(1, 2, 3));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
@@ -462,11 +473,20 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void addAllAtBoxed() {
-		empty.addAll(0, Arrays.asList(1.0, 2.0, 3.0));
+	public void addAllDoublesDoubleCollection() {
+		empty.addAllDoubles(new SortedListDoubleSet(1, 2, 3));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
-		list.addAll(2, Arrays.asList(17.0, 18.0, 19.0));
+		list.addAllDoubles(new SortedListDoubleSet(6, 7, 8));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllAtBoxed() {
+		empty.addAll(0, asList(1.0, 2.0, 3.0));
+		assertThat(empty, containsDoubles(1, 2, 3));
+
+		list.addAll(2, asList(17.0, 18.0, 19.0));
 		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
@@ -480,11 +500,20 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void addAllDoubleAtCollection() {
+	public void addAllDoublesAtDoubleCollection() {
+		empty.addAllDoublesAt(0, new SortedListDoubleSet(1, 2, 3));
+		assertThat(empty, containsDoubles(1, 2, 3));
+
+		list.addAllDoublesAt(2, new SortedListDoubleSet(17, 18, 19));
+		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
+	}
+
+	@Test
+	public void addAllDoublesAtArrayDoubleList() {
 		empty.addAllDoublesAt(0, ArrayDoubleList.create(1, 2, 3));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
-		list.addAllDoublesAt(2, 17, 18, 19);
+		list.addAllDoublesAt(2, ArrayDoubleList.create(17, 18, 19));
 		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
@@ -566,10 +595,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void containsAllBoxed() {
-		assertThat(empty.containsAll(Arrays.asList(17.0, 18.0, 19.0, new Object())), is(false));
+		assertThat(empty.containsAll(asList(17.0, 18.0, 19.0, new Object())), is(false));
 
-		assertThat(list.containsAll(Arrays.asList(17.0, 18.0, 19.0, new Object())), is(false));
-		assertThat(list.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(list.containsAll(asList(17.0, 18.0, 19.0, new Object())), is(false));
+		assertThat(list.containsAll(asList(1.0, 2.0, 3.0)), is(true));
 	}
 
 	@Test
@@ -638,11 +667,11 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.removeAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(Arrays.asList(17.0, 18.0, 19.0)), is(false));
-		assertThat(list.removeAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(true));
+		assertThat(list.removeAll(asList(17.0, 18.0, 19.0)), is(false));
+		assertThat(list.removeAll(asList(1.0, 2.0, 3.0, 17.0)), is(true));
 		assertThat(list, containsDoubles(4, 5));
 	}
 
@@ -708,10 +737,10 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.retainAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(true));
+		assertThat(list.retainAll(asList(1.0, 2.0, 3.0, 17.0)), is(true));
 		assertThat(list, containsDoubles(1, 2, 3));
 	}
 
