@@ -27,7 +27,7 @@ public class ExclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterat
 	private boolean started;
 
 	public ExclusiveStartingDoubleIterator(DoubleIterator iterator, double element, double accuracy) {
-		this(iterator, d -> DoubleComparator.equals(d, element, accuracy));
+		this(iterator, d -> DoubleComparator.eq(d, element, accuracy));
 	}
 
 	public ExclusiveStartingDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {

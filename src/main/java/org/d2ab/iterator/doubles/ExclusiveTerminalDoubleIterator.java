@@ -28,7 +28,7 @@ public class ExclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterat
 	private boolean hasNext;
 
 	public ExclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal, double accuracy) {
-		this(iterator, d -> DoubleComparator.equals(d, terminal, accuracy));
+		this(iterator, d -> DoubleComparator.eq(d, terminal, accuracy));
 	}
 
 	public ExclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {

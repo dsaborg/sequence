@@ -151,7 +151,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	 */
 	default boolean contains(double d, double precision) {
 		while (hasNext())
-			if (DoubleComparator.equals(nextDouble(), d, precision))
+			if (DoubleComparator.eq(nextDouble(), d, precision))
 				return true;
 
 		return false;

@@ -30,7 +30,7 @@ public class InclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterat
 	private boolean firstEmitted;
 
 	public InclusiveStartingDoubleIterator(DoubleIterator iterator, double element, double accuracy) {
-		this(iterator, d -> DoubleComparator.equals(d, element, accuracy));
+		this(iterator, d -> DoubleComparator.eq(d, element, accuracy));
 	}
 
 	public InclusiveStartingDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {

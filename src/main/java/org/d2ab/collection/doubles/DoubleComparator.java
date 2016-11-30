@@ -32,14 +32,14 @@ public interface DoubleComparator extends Comparator<Double> {
 
 	static DoubleComparator withPrecision(double precision) {
 		return (l, r) -> {
-			if (equals(l, r, precision))
+			if (eq(l, r, precision))
 				return 0;
 
 			return Double.compare(l, r);
 		};
 	}
 
-	static boolean equals(double l, double r, double precision) {
+	static boolean eq(double l, double r, double precision) {
 		return Math.abs(l - r) <= precision;
 	}
 

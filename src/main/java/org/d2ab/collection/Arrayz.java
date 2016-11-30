@@ -192,7 +192,7 @@ public class Arrayz {
 	 */
 	public static boolean contains(double[] items, double target, double precision) {
 		for (double item : items)
-			if (DoubleComparator.equals(item, target, precision))
+			if (DoubleComparator.eq(item, target, precision))
 				return true;
 		return false;
 	}

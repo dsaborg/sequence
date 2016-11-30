@@ -28,7 +28,7 @@ public class InclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterat
 	private boolean hasPrevious;
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal, double accuracy) {
-		this(iterator, d -> DoubleComparator.equals(d, terminal, accuracy));
+		this(iterator, d -> DoubleComparator.eq(d, terminal, accuracy));
 	}
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {

@@ -27,6 +27,8 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
 import java.util.function.DoubleUnaryOperator;
 
+import static org.d2ab.collection.doubles.DoubleComparator.eq;
+
 /**
  * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or replacing the
  * underlying array.
@@ -245,6 +247,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 
 		growIfNecessaryBy(xs.length);
 		System.arraycopy(xs, 0, contents, size, xs.length);
+
 		size += xs.length;
 		modCount++;
 		return true;
@@ -279,6 +282,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		growIfNecessaryBy(xs.length);
 		System.arraycopy(contents, index, contents, index + xs.length, size - index);
 		System.arraycopy(xs, 0, contents, index, xs.length);
+
 		size += xs.length;
 		modCount++;
 		return true;
@@ -305,25 +309,28 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 
 		size += xsSize;
 		modCount++;
-
 		return true;
 	}
 
 	@Override
-	public boolean containsAllDoublesExactly(double... xs) {
-		for (double x : xs)
-			if (!containsDoubleExactly(x))
-				return false;
+	public boolean removeDouble(double x, double precision) {
+		for (int i = 0; i < size; i++)
+			if (eq(contents[i], x, precision)) {
+				uncheckedRemove(i);
+				modCount++;
+				return true;
+			}
 
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean removeDoubleExactly(double x) {
 		for (int i = 0; i < size; i++)
 			if (contents[i] == x) {
+				uncheckedRemove(i);
 				modCount++;
-				return uncheckedRemove(i);
+				return true;
 			}
 
 		return false;
@@ -339,11 +346,39 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	}
 
 	@Override
+	public boolean removeAllDoubles(double[] xs, double precision) {
+		boolean modified = false;
+		for (int i = 0; i < size; i++)
+			if (Arrayz.contains(xs, contents[i], precision)) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+		if (modified)
+			modCount++;
+		return modified;
+	}
+
+	@Override
 	public boolean removeAllDoublesExactly(double... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (Arrayz.containsExactly(xs, contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (Arrayz.containsExactly(xs, contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+		if (modified)
+			modCount++;
+		return modified;
+	}
+
+	@Override
+	public boolean retainAllDoubles(double[] xs, double precision) {
+		boolean modified = false;
+		for (int i = 0; i < size; i++)
+			if (!Arrayz.contains(xs, contents[i], precision)) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
 		if (modified)
 			modCount++;
 		return modified;
@@ -353,8 +388,10 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	public boolean retainAllDoublesExactly(double... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (!Arrayz.containsExactly(xs, contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (!Arrayz.containsExactly(xs, contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
 		if (modified)
 			modCount++;
 		return modified;
@@ -364,8 +401,10 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	public boolean removeDoublesIf(DoublePredicate filter) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (filter.test(contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (filter.test(contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
 		if (modified)
 			modCount++;
 		return modified;
@@ -387,16 +426,14 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		}
 	}
 
-	private boolean uncheckedAdd(int index, double x) {
+	private void uncheckedAdd(int index, double x) {
 		growIfNecessaryBy(1);
 		System.arraycopy(contents, index, contents, index + 1, size++ - index);
 		contents[index] = x;
-		return true;
 	}
 
-	private boolean uncheckedRemove(int index) {
+	private void uncheckedRemove(int index) {
 		System.arraycopy(contents, index + 1, contents, index, size-- - index - 1);
-		return true;
 	}
 
 	private void rangeCheck(int index) {

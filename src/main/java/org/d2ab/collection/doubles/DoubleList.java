@@ -293,7 +293,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.equals(iterator.nextDouble(), x, precision))
+			if (DoubleComparator.eq(iterator.nextDouble(), x, precision))
 				lastIndex = index;
 
 		return lastIndex;
@@ -316,7 +316,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	default int indexOfDouble(double x, double precision) {
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.equals(iterator.next(), x, precision))
+			if (DoubleComparator.eq(iterator.next(), x, precision))
 				return index;
 
 		return -1;

@@ -32,6 +32,7 @@ import java.util.stream.StreamSupport;
 import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.contains;
 import static org.d2ab.collection.Arrayz.containsExactly;
+import static org.d2ab.collection.doubles.DoubleComparator.eq;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
@@ -125,7 +126,7 @@ public interface DoubleIterable extends Iterable<Double> {
 
 	default boolean removeDouble(double x, double precision) {
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
-			if (DoubleComparator.equals(iterator.nextDouble(), x, precision)) {
+			if (eq(iterator.nextDouble(), x, precision)) {
 				iterator.remove();
 				return true;
 			}
