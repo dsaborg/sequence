@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -211,6 +212,17 @@ public class ArrayCharListTest {
 		assertThat(i, is(0));
 
 		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
+	public void iteratorFailFast() {
+		CharIterator it1 = list.iterator();
+		list.addChar('q');
+		expecting(ConcurrentModificationException.class, it1::next);
+
+		CharIterator it2 = list.iterator();
+		list.removeChar('q');
+		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
 	@Test
@@ -437,11 +449,20 @@ public class ArrayCharListTest {
 	}
 
 	@Test
-	public void addAllCharsCollection() {
+	public void addAllCharsCharCollection() {
 		empty.addAllChars(ArrayCharList.create('a', 'b', 'c'));
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		list.addAllChars(ArrayCharList.create('f', 'g', 'h'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+	}
+
+	@Test
+	public void addAllCharsArrayCharList() {
+		empty.addAllChars(new BitCharSet('a', 'b', 'c'));
+		assertThat(empty, containsChars('a', 'b', 'c'));
+
+		list.addAllChars(new BitCharSet('f', 'g', 'h'));
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
@@ -464,11 +485,20 @@ public class ArrayCharListTest {
 	}
 
 	@Test
-	public void addAllCharAtCollection() {
+	public void addAllCharsAtCharCollection() {
+		empty.addAllCharsAt(0, new BitCharSet('a', 'b', 'c'));
+		assertThat(empty, containsChars('a', 'b', 'c'));
+
+		list.addAllCharsAt(2, new BitCharSet('q', 'r', 's'));
+		assertThat(list, containsChars('a', 'b', 'q', 'r', 's', 'c', 'd', 'e'));
+	}
+
+	@Test
+	public void addAllCharsAtArrayCharList() {
 		empty.addAllCharsAt(0, ArrayCharList.create('a', 'b', 'c'));
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
-		list.addAllCharsAt(2, 'q', 'r', 's');
+		list.addAllCharsAt(2, ArrayCharList.create('q', 'r', 's'));
 		assertThat(list, containsChars('a', 'b', 'q', 'r', 's', 'c', 'd', 'e'));
 	}
 

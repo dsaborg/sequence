@@ -20,6 +20,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.LongConsumer;
@@ -33,6 +34,8 @@ import java.util.function.LongUnaryOperator;
 public class ArrayLongList extends LongList.Base implements LongList {
 	private long[] contents;
 	private int size;
+
+	private int modCount;
 
 	/**
 	 * @return a new mutable {@code ArrayLongList} initialized with a copy of the given contents.
@@ -167,6 +170,8 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	public void replaceAllLongs(LongUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsLong(contents[i]);
+
+		modCount++;
 	}
 
 	@Override
@@ -187,6 +192,8 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	public void addLongAt(int index, long x) {
 		rangeCheckForAdd(index);
 		uncheckedAdd(index, x);
+
+		modCount++;
 	}
 
 	@Override
@@ -194,6 +201,8 @@ public class ArrayLongList extends LongList.Base implements LongList {
 		rangeCheck(index);
 		long previous = contents[index];
 		uncheckedRemove(index);
+
+		modCount++;
 		return previous;
 	}
 
@@ -224,6 +233,8 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	public boolean addLong(long x) {
 		growIfNecessaryBy(1);
 		contents[size++] = x;
+
+		modCount++;
 		return true;
 	}
 
@@ -235,26 +246,22 @@ public class ArrayLongList extends LongList.Base implements LongList {
 		growIfNecessaryBy(xs.length);
 		System.arraycopy(xs, 0, contents, size, xs.length);
 		size += xs.length;
+
+		modCount++;
 		return true;
 	}
 
 	@Override
 	public boolean addAllLongs(LongCollection xs) {
-		if (xs.isEmpty())
+		int xsSize = xs.size();
+		if (xsSize == 0)
 			return false;
 
-		if (xs instanceof ArrayLongList) {
-			ArrayLongList axs = (ArrayLongList) xs;
+		growIfNecessaryBy(xsSize);
+		uncheckedAdd(size, xs, xsSize);
 
-			growIfNecessaryBy(axs.size);
-			System.arraycopy(axs.contents, 0, contents, size, axs.size);
-			size += axs.size;
-
-			return true;
-		} else {
-			xs.forEachLong(this::addLong);
-			return true;
-		}
+		modCount++;
+		return true;
 	}
 
 	@Override
@@ -267,29 +274,23 @@ public class ArrayLongList extends LongList.Base implements LongList {
 		System.arraycopy(contents, index, contents, index + xs.length, size - index);
 		System.arraycopy(xs, 0, contents, index, xs.length);
 		size += xs.length;
+
+		modCount++;
 		return true;
 	}
 
 	@Override
 	public boolean addAllLongsAt(int index, LongCollection xs) {
-		if (xs.size() == 0)
+		int xsSize = xs.size();
+		if (xsSize == 0)
 			return false;
 
 		rangeCheckForAdd(index);
-		growIfNecessaryBy(xs.size());
-		System.arraycopy(contents, index, contents, index + xs.size(), size - index);
+		growIfNecessaryBy(xsSize);
+		System.arraycopy(contents, index, contents, index + xsSize, size - index);
+		uncheckedAdd(index, xs, xsSize);
 
-		if (xs instanceof ArrayLongList) {
-			ArrayLongList il = (ArrayLongList) xs;
-			System.arraycopy(il.contents, 0, contents, index, il.size);
-		} else {
-			LongIterator iterator = xs.iterator();
-			for (int i = index; i < xs.size(); i++)
-				contents[i] = iterator.nextLong();
-		}
-
-		size += xs.size();
-
+		modCount++;
 		return true;
 	}
 
@@ -305,8 +306,11 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	@Override
 	public boolean removeLong(long x) {
 		for (int i = 0; i < size; i++)
-			if (contents[i] == x)
-				return uncheckedRemove(i);
+			if (contents[i] == x) {
+				uncheckedRemove(i);
+				modCount++;
+				return true;
+			}
 
 		return false;
 	}
@@ -324,8 +328,13 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	public boolean removeAllLongs(long... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (Arrayz.contains(xs, contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (Arrayz.contains(xs, contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+
+		if (modified)
+			modCount++;
 		return modified;
 	}
 
@@ -333,8 +342,13 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	public boolean retainAllLongs(long... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (!Arrayz.contains(xs, contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (!Arrayz.contains(xs, contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+
+		if (modified)
+			modCount++;
 		return modified;
 	}
 
@@ -342,8 +356,13 @@ public class ArrayLongList extends LongList.Base implements LongList {
 	public boolean removeLongsIf(LongPredicate filter) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (filter.test(contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (filter.test(contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+
+		if (modified)
+			modCount++;
 		return modified;
 	}
 
@@ -363,16 +382,25 @@ public class ArrayLongList extends LongList.Base implements LongList {
 		}
 	}
 
-	private boolean uncheckedAdd(int index, long x) {
+	private void uncheckedAdd(int index, long x) {
 		growIfNecessaryBy(1);
 		System.arraycopy(contents, index, contents, index + 1, size++ - index);
 		contents[index] = x;
-		return true;
 	}
 
-	private boolean uncheckedRemove(int index) {
+	protected void uncheckedAdd(int index, LongIterable xs, int xsSize) {
+		if (xs instanceof ArrayLongList) {
+			System.arraycopy(((ArrayLongList) xs).contents, 0, contents, index, xsSize);
+		} else {
+			LongIterator iterator = xs.iterator();
+			for (int i = 0; i < xsSize; i++)
+				contents[i + index] = iterator.nextLong();
+		}
+		size += xsSize;
+	}
+
+	private void uncheckedRemove(int index) {
 		System.arraycopy(contents, index + 1, contents, index, size-- - index - 1);
-		return true;
 	}
 
 	private void rangeCheck(int index) {
@@ -392,6 +420,8 @@ public class ArrayLongList extends LongList.Base implements LongList {
 		private int to;
 		private boolean addOrRemove;
 		private boolean nextOrPrevious;
+
+		private int expectedModCount = modCount;
 
 		public ListIter(int index) {
 			this(index, 0, size);
@@ -415,6 +445,7 @@ public class ArrayLongList extends LongList.Base implements LongList {
 
 		@Override
 		public long nextLong() {
+			checkForCoModification();
 			if (!hasNext())
 				throw new NoSuchElementException();
 			addOrRemove = false;
@@ -429,6 +460,7 @@ public class ArrayLongList extends LongList.Base implements LongList {
 
 		@Override
 		public long previousLong() {
+			checkForCoModification();
 			if (!hasPrevious())
 				throw new NoSuchElementException();
 			addOrRemove = false;
@@ -448,31 +480,48 @@ public class ArrayLongList extends LongList.Base implements LongList {
 
 		@Override
 		public void remove() {
+			checkForCoModification();
 			if (addOrRemove)
 				throw new IllegalStateException("add() or remove() called");
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextLong() or previousLong() not called");
 
 			uncheckedRemove((nextIndex = currentIndex--) + from);
+
 			addOrRemove = true;
 			to--;
+			modCount++;
+			expectedModCount++;
 		}
 
 		@Override
 		public void set(long x) {
+			checkForCoModification();
 			if (addOrRemove)
 				throw new IllegalStateException("add() or remove() called");
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextLong() or previousLong() not called");
 
 			contents[currentIndex + from] = x;
+
+			modCount++;
+			expectedModCount++;
 		}
 
 		@Override
 		public void add(long x) {
+			checkForCoModification();
 			uncheckedAdd((currentIndex = nextIndex++) + from, x);
+
 			addOrRemove = true;
 			to++;
+			modCount++;
+			expectedModCount++;
+		}
+
+		private void checkForCoModification() {
+			if (modCount != expectedModCount)
+				throw new ConcurrentModificationException();
 		}
 	}
 

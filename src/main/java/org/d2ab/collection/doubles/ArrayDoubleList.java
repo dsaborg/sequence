@@ -172,6 +172,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	public void replaceAllDoubles(DoubleUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsDouble(contents[i]);
+
 		modCount++;
 	}
 
@@ -186,6 +187,8 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		rangeCheck(index);
 		double previous = contents[index];
 		contents[index] = x;
+
+		modCount++;
 		return previous;
 	}
 
@@ -193,6 +196,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	public void addDoubleAt(int index, double x) {
 		rangeCheckForAdd(index);
 		uncheckedAdd(index, x);
+
 		modCount++;
 	}
 
@@ -201,6 +205,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		rangeCheck(index);
 		double previous = contents[index];
 		uncheckedRemove(index);
+
 		modCount++;
 		return previous;
 	}
@@ -232,6 +237,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 	public boolean addDoubleExactly(double x) {
 		growIfNecessaryBy(1);
 		contents[size++] = x;
+
 		modCount++;
 		return true;
 	}
@@ -248,8 +254,8 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 
 		growIfNecessaryBy(xs.length);
 		System.arraycopy(xs, 0, contents, size, xs.length);
-
 		size += xs.length;
+
 		modCount++;
 		return true;
 	}
@@ -261,15 +267,9 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 			return false;
 
 		growIfNecessaryBy(xsSize);
-		if (xs instanceof ArrayDoubleList) {
-			System.arraycopy(((ArrayDoubleList) xs).contents, 0, contents, size, xsSize);
-		} else {
-			DoubleIterator iterator = xs.iterator();
-			for (int i = 0; i < xsSize; i++)
-				contents[i + size] = iterator.nextDouble();
-		}
-
+		uncheckedAdd(size, xs, xsSize);
 		size += xsSize;
+
 		modCount++;
 		return true;
 	}
@@ -283,8 +283,8 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		growIfNecessaryBy(xs.length);
 		System.arraycopy(contents, index, contents, index + xs.length, size - index);
 		System.arraycopy(xs, 0, contents, index, xs.length);
-
 		size += xs.length;
+
 		modCount++;
 		return true;
 	}
@@ -298,17 +298,9 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		rangeCheckForAdd(index);
 		growIfNecessaryBy(xsSize);
 		System.arraycopy(contents, index, contents, index + xsSize, size - index);
-
-		if (xs instanceof ArrayDoubleList) {
-			ArrayDoubleList list = (ArrayDoubleList) xs;
-			System.arraycopy(list.contents, 0, contents, index, xsSize);
-		} else {
-			DoubleIterator iterator = xs.iterator();
-			for (int i = 0; i < xsSize; i++)
-				contents[i + index] = iterator.nextDouble();
-		}
-
+		uncheckedAdd(index, xs, xsSize);
 		size += xsSize;
+
 		modCount++;
 		return true;
 	}
@@ -354,6 +346,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				uncheckedRemove(i--);
 				modified = true;
 			}
+
 		if (modified)
 			modCount++;
 		return modified;
@@ -367,6 +360,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				uncheckedRemove(i--);
 				modified = true;
 			}
+
 		if (modified)
 			modCount++;
 		return modified;
@@ -380,6 +374,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				uncheckedRemove(i--);
 				modified = true;
 			}
+
 		if (modified)
 			modCount++;
 		return modified;
@@ -393,6 +388,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				uncheckedRemove(i--);
 				modified = true;
 			}
+
 		if (modified)
 			modCount++;
 		return modified;
@@ -406,6 +402,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				uncheckedRemove(i--);
 				modified = true;
 			}
+
 		if (modified)
 			modCount++;
 		return modified;
@@ -433,6 +430,16 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		contents[index] = x;
 	}
 
+	protected void uncheckedAdd(int index, DoubleIterable xs, int xsSize) {
+		if (xs instanceof ArrayDoubleList) {
+			System.arraycopy(((ArrayDoubleList) xs).contents, 0, contents, index, xsSize);
+		} else {
+			DoubleIterator iterator = xs.iterator();
+			for (int i = 0; i < xsSize; i++)
+				contents[i + index] = iterator.nextDouble();
+		}
+	}
+
 	private void uncheckedRemove(int index) {
 		System.arraycopy(contents, index + 1, contents, index, size-- - index - 1);
 	}
@@ -454,6 +461,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 		private int to;
 		private boolean addOrRemove;
 		private boolean nextOrPrevious;
+
 		private int expectedModCount = modCount;
 
 		private ListIter(int index) {
@@ -520,6 +528,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				throw new IllegalStateException("nextDouble() or previousDouble() not called");
 
 			uncheckedRemove((nextIndex = currentIndex--) + from);
+
 			addOrRemove = true;
 			to--;
 			modCount++;
@@ -535,12 +544,16 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
 				throw new IllegalStateException("nextDouble() or previousDouble() not called");
 
 			contents[currentIndex + from] = x;
+
+			modCount++;
+			expectedModCount++;
 		}
 
 		@Override
 		public void add(double x) {
 			checkForCoModification();
 			uncheckedAdd((currentIndex = nextIndex++) + from, x);
+
 			addOrRemove = true;
 			to++;
 			modCount++;

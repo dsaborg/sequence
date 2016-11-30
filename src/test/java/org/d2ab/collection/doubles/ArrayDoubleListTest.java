@@ -464,20 +464,20 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void addAllDoublesDoubleList() {
-		empty.addAllDoubles(ArrayDoubleList.create(1, 2, 3));
-		assertThat(empty, containsDoubles(1, 2, 3));
-
-		list.addAllDoubles(ArrayDoubleList.create(6, 7, 8));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
-	}
-
-	@Test
 	public void addAllDoublesDoubleCollection() {
 		empty.addAllDoubles(new SortedListDoubleSet(1, 2, 3));
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		list.addAllDoubles(new SortedListDoubleSet(6, 7, 8));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllDoublesArrayDoubleList() {
+		empty.addAllDoubles(ArrayDoubleList.create(1, 2, 3));
+		assertThat(empty, containsDoubles(1, 2, 3));
+
+		list.addAllDoubles(ArrayDoubleList.create(6, 7, 8));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 

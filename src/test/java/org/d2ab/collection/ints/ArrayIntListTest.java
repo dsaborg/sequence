@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -209,6 +210,17 @@ public class ArrayIntListTest {
 		assertThat(i, is(0));
 
 		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
+	public void iteratorFailFast() {
+		IntIterator it1 = list.iterator();
+		list.addInt(17);
+		expecting(ConcurrentModificationException.class, it1::next);
+
+		IntIterator it2 = list.iterator();
+		list.removeInt(17);
+		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
 	@Test
@@ -435,11 +447,20 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void addAllIntsCollection() {
+	public void addAllIntsArrayIntList() {
 		empty.addAllInts(ArrayIntList.create(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
 		list.addAllInts(ArrayIntList.create(6, 7, 8));
+		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllIntsIntCollection() {
+		empty.addAllInts(new BitIntSet(1, 2, 3));
+		assertThat(empty, containsInts(1, 2, 3));
+
+		list.addAllInts(new BitIntSet(6, 7, 8));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -462,11 +483,20 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void addAllIntAtCollection() {
+	public void addAllIntsAtArrayIntList() {
 		empty.addAllIntsAt(0, ArrayIntList.create(1, 2, 3));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllIntsAt(2, 17, 18, 19);
+		list.addAllIntsAt(2, ArrayIntList.create(17, 18, 19));
+		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
+	}
+
+	@Test
+	public void addAllIntsAtIntCollection() {
+		empty.addAllIntsAt(0, new BitIntSet(1, 2, 3));
+		assertThat(empty, containsInts(1, 2, 3));
+
+		list.addAllIntsAt(2, new BitIntSet(17, 18, 19));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 

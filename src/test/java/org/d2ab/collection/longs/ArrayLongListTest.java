@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -210,6 +211,17 @@ public class ArrayLongListTest {
 		assertThat(i, is(0));
 
 		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
+	public void iteratorFailFast() {
+		LongIterator it1 = list.iterator();
+		list.addLong(17);
+		expecting(ConcurrentModificationException.class, it1::next);
+
+		LongIterator it2 = list.iterator();
+		list.removeLong(17);
+		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
 	@Test
@@ -436,7 +448,16 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void addAllLongsCollection() {
+	public void addAllLongsLongCollection() {
+		empty.addAllLongs(new BitLongSet(1, 2, 3));
+		assertThat(empty, containsLongs(1, 2, 3));
+
+		list.addAllLongs(new BitLongSet(6, 7, 8));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllLongsArrayLongList() {
 		empty.addAllLongs(ArrayLongList.create(1, 2, 3));
 		assertThat(empty, containsLongs(1, 2, 3));
 
@@ -463,11 +484,20 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void addAllLongAtCollection() {
+	public void addAllLongsAtLongCollection() {
+		empty.addAllLongsAt(0, new BitLongSet(1, 2, 3));
+		assertThat(empty, containsLongs(1, 2, 3));
+
+		list.addAllLongsAt(2, new BitLongSet(17, 18, 19));
+		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
+	}
+
+	@Test
+	public void addAllLongsAtArrayLongList() {
 		empty.addAllLongsAt(0, ArrayLongList.create(1, 2, 3));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongsAt(2, 17, 18, 19);
+		list.addAllLongsAt(2, ArrayLongList.create(17, 18, 19));
 		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 

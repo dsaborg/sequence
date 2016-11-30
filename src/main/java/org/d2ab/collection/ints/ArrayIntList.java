@@ -20,6 +20,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.IntConsumer;
@@ -33,6 +34,8 @@ import java.util.function.IntUnaryOperator;
 public class ArrayIntList extends IntList.Base implements IntList {
 	private int[] contents;
 	private int size;
+
+	private int modCount;
 
 	/**
 	 * @return a new mutable {@code ArrayIntList} initialized with a copy of the given contents.
@@ -52,7 +55,6 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	 *
 	 * @see IntList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayIntList create() {
@@ -67,7 +69,6 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	 *
 	 * @see IntList#create(int...)
 	 * @see #ArrayIntList(IntCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayIntList create(int... xs) {
@@ -87,7 +88,6 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	 * Create a new mutable {@code ArrayIntList}.
 	 *
 	 * @since 2.0
-	 *
 	 * @deprecated Use {@link #create()} instead.
 	 */
 	@Deprecated
@@ -99,7 +99,6 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	 * Create a new mutable {@code ArrayIntList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
 	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
 	@Deprecated
@@ -167,6 +166,8 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	public void replaceAllInts(IntUnaryOperator operator) {
 		for (int i = 0; i < size; i++)
 			contents[i] = operator.applyAsInt(contents[i]);
+
+		modCount++;
 	}
 
 	@Override
@@ -180,6 +181,8 @@ public class ArrayIntList extends IntList.Base implements IntList {
 		rangeCheck(index);
 		int previous = contents[index];
 		contents[index] = x;
+
+		modCount++;
 		return previous;
 	}
 
@@ -187,6 +190,8 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	public void addIntAt(int index, int x) {
 		rangeCheckForAdd(index);
 		uncheckedAdd(index, x);
+
+		modCount++;
 	}
 
 	@Override
@@ -194,6 +199,8 @@ public class ArrayIntList extends IntList.Base implements IntList {
 		rangeCheck(index);
 		int previous = contents[index];
 		uncheckedRemove(index);
+
+		modCount++;
 		return previous;
 	}
 
@@ -224,6 +231,8 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	public boolean addInt(int x) {
 		growIfNecessaryBy(1);
 		contents[size++] = x;
+
+		modCount++;
 		return true;
 	}
 
@@ -235,26 +244,22 @@ public class ArrayIntList extends IntList.Base implements IntList {
 		growIfNecessaryBy(xs.length);
 		System.arraycopy(xs, 0, contents, size, xs.length);
 		size += xs.length;
+
+		modCount++;
 		return true;
 	}
 
 	@Override
 	public boolean addAllInts(IntCollection xs) {
-		if (xs.isEmpty())
+		int xsSize = xs.size();
+		if (xsSize == 0)
 			return false;
 
-		if (xs instanceof ArrayIntList) {
-			ArrayIntList axs = (ArrayIntList) xs;
+		growIfNecessaryBy(xsSize);
+		uncheckedAdd(size, xs, xsSize);
 
-			growIfNecessaryBy(axs.size);
-			System.arraycopy(axs.contents, 0, contents, size, axs.size);
-			size += axs.size;
-
-			return true;
-		} else {
-			xs.forEachInt(this::addInt);
-			return true;
-		}
+		modCount++;
+		return true;
 	}
 
 	@Override
@@ -267,29 +272,23 @@ public class ArrayIntList extends IntList.Base implements IntList {
 		System.arraycopy(contents, index, contents, index + xs.length, size - index);
 		System.arraycopy(xs, 0, contents, index, xs.length);
 		size += xs.length;
+
+		modCount++;
 		return true;
 	}
 
 	@Override
 	public boolean addAllIntsAt(int index, IntCollection xs) {
-		if (xs.isEmpty())
+		int xsSize = xs.size();
+		if (xsSize == 0)
 			return false;
 
 		rangeCheckForAdd(index);
-		growIfNecessaryBy(xs.size());
-		System.arraycopy(contents, index, contents, index + xs.size(), size - index);
+		growIfNecessaryBy(xsSize);
+		System.arraycopy(contents, index, contents, index + xsSize, size - index);
+		uncheckedAdd(index, xs, xsSize);
 
-		if (xs instanceof ArrayIntList) {
-			ArrayIntList il = (ArrayIntList) xs;
-			System.arraycopy(il.contents, 0, contents, index, il.size);
-		} else {
-			IntIterator iterator = xs.iterator();
-			for (int i = index; i < xs.size(); i++)
-				contents[i] = iterator.nextInt();
-		}
-
-		size += xs.size();
-
+		modCount++;
 		return true;
 	}
 
@@ -305,8 +304,11 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	@Override
 	public boolean removeInt(int x) {
 		for (int i = 0; i < size; i++)
-			if (contents[i] == x)
-				return uncheckedRemove(i);
+			if (contents[i] == x) {
+				uncheckedRemove(i);
+				modCount++;
+				return true;
+			}
 
 		return false;
 	}
@@ -324,8 +326,13 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	public boolean removeAllInts(int... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (Arrayz.contains(xs, contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (Arrayz.contains(xs, contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+
+		if (modified)
+			modCount++;
 		return modified;
 	}
 
@@ -333,8 +340,13 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	public boolean retainAllInts(int... xs) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (!Arrayz.contains(xs, contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (!Arrayz.contains(xs, contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+
+		if (modified)
+			modCount++;
 		return modified;
 	}
 
@@ -342,8 +354,13 @@ public class ArrayIntList extends IntList.Base implements IntList {
 	public boolean removeIntsIf(IntPredicate filter) {
 		boolean modified = false;
 		for (int i = 0; i < size; i++)
-			if (filter.test(contents[i]))
-				modified |= uncheckedRemove(i--);
+			if (filter.test(contents[i])) {
+				uncheckedRemove(i--);
+				modified = true;
+			}
+
+		if (modified)
+			modCount++;
 		return modified;
 	}
 
@@ -363,16 +380,25 @@ public class ArrayIntList extends IntList.Base implements IntList {
 		}
 	}
 
-	private boolean uncheckedAdd(int index, int x) {
+	private void uncheckedAdd(int index, int x) {
 		growIfNecessaryBy(1);
 		System.arraycopy(contents, index, contents, index + 1, size++ - index);
 		contents[index] = x;
-		return true;
 	}
 
-	private boolean uncheckedRemove(int index) {
+	protected void uncheckedAdd(int index, IntIterable xs, int xsSize) {
+		if (xs instanceof ArrayIntList) {
+			System.arraycopy(((ArrayIntList) xs).contents, 0, contents, index, xsSize);
+		} else {
+			IntIterator iterator = xs.iterator();
+			for (int i = 0; i < xsSize; i++)
+				contents[i + index] = iterator.nextInt();
+		}
+		size += xsSize;
+	}
+
+	private void uncheckedRemove(int index) {
 		System.arraycopy(contents, index + 1, contents, index, size-- - index - 1);
-		return true;
 	}
 
 	private void rangeCheck(int index) {
@@ -392,6 +418,8 @@ public class ArrayIntList extends IntList.Base implements IntList {
 		private int to;
 		private boolean addOrRemove;
 		private boolean nextOrPrevious;
+
+		private int expectedModCount = modCount;
 
 		public ListIter(int index) {
 			this(index, 0, size);
@@ -415,6 +443,7 @@ public class ArrayIntList extends IntList.Base implements IntList {
 
 		@Override
 		public int nextInt() {
+			checkForCoModification();
 			if (!hasNext())
 				throw new NoSuchElementException();
 			addOrRemove = false;
@@ -429,6 +458,7 @@ public class ArrayIntList extends IntList.Base implements IntList {
 
 		@Override
 		public int previousInt() {
+			checkForCoModification();
 			if (!hasPrevious())
 				throw new NoSuchElementException();
 			addOrRemove = false;
@@ -448,31 +478,48 @@ public class ArrayIntList extends IntList.Base implements IntList {
 
 		@Override
 		public void remove() {
+			checkForCoModification();
 			if (addOrRemove)
 				throw new IllegalStateException("add() or remove() called");
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextInt() or previousInt() not called");
 
 			uncheckedRemove((nextIndex = currentIndex--) + from);
+
 			addOrRemove = true;
 			to--;
+			modCount++;
+			expectedModCount++;
 		}
 
 		@Override
 		public void set(int x) {
+			checkForCoModification();
 			if (addOrRemove)
 				throw new IllegalStateException("add() or remove() called");
 			if (!nextOrPrevious)
 				throw new IllegalStateException("nextInt() or previousInt() not called");
 
 			contents[currentIndex + from] = x;
+
+			modCount++;
+			expectedModCount++;
 		}
 
 		@Override
 		public void add(int x) {
+			checkForCoModification();
 			uncheckedAdd((currentIndex = nextIndex++) + from, x);
+
 			addOrRemove = true;
 			to++;
+			modCount++;
+			expectedModCount++;
+		}
+
+		private void checkForCoModification() {
+			if (modCount != expectedModCount)
+				throw new ConcurrentModificationException();
 		}
 	}
 
