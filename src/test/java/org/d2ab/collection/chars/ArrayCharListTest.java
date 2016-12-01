@@ -218,11 +218,11 @@ public class ArrayCharListTest {
 	public void iteratorFailFast() {
 		CharIterator it1 = list.iterator();
 		list.addChar('q');
-		expecting(ConcurrentModificationException.class, it1::next);
+		expecting(ConcurrentModificationException.class, it1::nextChar);
 
 		CharIterator it2 = list.iterator();
 		list.removeChar('q');
-		expecting(ConcurrentModificationException.class, it2::next);
+		expecting(ConcurrentModificationException.class, it2::nextChar);
 	}
 
 	@Test

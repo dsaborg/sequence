@@ -216,11 +216,11 @@ public class ArrayIntListTest {
 	public void iteratorFailFast() {
 		IntIterator it1 = list.iterator();
 		list.addInt(17);
-		expecting(ConcurrentModificationException.class, it1::next);
+		expecting(ConcurrentModificationException.class, it1::nextInt);
 
 		IntIterator it2 = list.iterator();
 		list.removeInt(17);
-		expecting(ConcurrentModificationException.class, it2::next);
+		expecting(ConcurrentModificationException.class, it2::nextInt);
 	}
 
 	@Test

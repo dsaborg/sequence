@@ -215,11 +215,11 @@ public class ArrayDoubleListTest {
 	public void iteratorFailFast() {
 		DoubleIterator it1 = list.iterator();
 		list.addDoubleExactly(17);
-		expecting(ConcurrentModificationException.class, it1::next);
+		expecting(ConcurrentModificationException.class, it1::nextDouble);
 
 		DoubleIterator it2 = list.iterator();
 		list.removeDoubleExactly(17);
-		expecting(ConcurrentModificationException.class, it2::next);
+		expecting(ConcurrentModificationException.class, it2::nextDouble);
 	}
 
 	@Test

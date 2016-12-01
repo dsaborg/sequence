@@ -20,6 +20,8 @@ import org.d2ab.collection.SparseBitSet;
 import org.d2ab.iterator.longs.ChainingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
+import java.util.ConcurrentModificationException;
+
 /**
  * An implementation of {@link LongSortedSet} backed by two {@link SparseBitSet}s for positive and negative values.
  * This {@link LongSortedSet} covers all values between {@link Long#MIN_VALUE} and {@link Long#MAX_VALUE} inclusive.
@@ -27,6 +29,8 @@ import org.d2ab.iterator.longs.LongIterator;
 public class BitLongSet extends LongSet.Base implements LongSortedSet {
 	private final SparseBitSet positives = new SparseBitSet();
 	private final SparseBitSet negatives = new SparseBitSet();
+
+	private int modCount;
 
 	public BitLongSet(long... xs) {
 		addAllLongs(xs);
@@ -44,8 +48,29 @@ public class BitLongSet extends LongSet.Base implements LongSortedSet {
 
 	@Override
 	public LongIterator iterator() {
-		return new ChainingLongIterator(() -> LongIterator.from(negatives.descendingIterator(), n -> -n - 1),
-		                                () -> LongIterator.from(positives.iterator()));
+		return new ChainingLongIterator(() -> LongIterator.from(negatives.descendingIterator(), n -> -(n + 1)),
+		                                () -> LongIterator.from(positives.iterator())) {
+			int expectedModCount = modCount;
+
+			@Override
+			public long nextLong() {
+				checkForCoModification();
+				return super.nextLong();
+			}
+
+			@Override
+			public void remove() {
+				checkForCoModification();
+				super.remove();
+				modCount++;
+				expectedModCount++;
+			}
+
+			private void checkForCoModification() {
+				if (modCount != expectedModCount)
+					throw new ConcurrentModificationException();
+			}
+		};
 	}
 
 	@Override
@@ -57,10 +82,12 @@ public class BitLongSet extends LongSet.Base implements LongSortedSet {
 	public void clear() {
 		positives.clear();
 		negatives.clear();
+		modCount++;
 	}
 
 	@Override
 	public boolean addLong(long x) {
+		modCount++;
 		if (x >= 0)
 			return positives.set(x);
 		else
@@ -69,6 +96,7 @@ public class BitLongSet extends LongSet.Base implements LongSortedSet {
 
 	@Override
 	public boolean removeLong(long x) {
+		modCount++;
 		if (x >= 0)
 			return positives.clear(x);
 		else

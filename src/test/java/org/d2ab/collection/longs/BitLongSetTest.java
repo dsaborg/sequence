@@ -49,6 +49,32 @@ public class BitLongSetTest {
 	}
 
 	@Test
+	public void iteratorFailFastPositives() {
+		LongIterator it1 = set.iterator();
+		assertThat(it1.hasNext(), is(true));
+		assertThat(set.addLong(17), is(true));
+		expecting(ConcurrentModificationException.class, it1::nextLong);
+
+		LongIterator it2 = set.iterator();
+		assertThat(it2.hasNext(), is(true));
+		assertThat(set.removeLong(17), is(true));
+		expecting(ConcurrentModificationException.class, it2::nextLong);
+	}
+
+	@Test
+	public void iteratorFailFastNegatives() {
+		LongIterator it1 = set.iterator();
+		assertThat(it1.hasNext(), is(true));
+		assertThat(set.addLong(-17), is(true));
+		expecting(ConcurrentModificationException.class, it1::nextLong);
+
+		LongIterator it2 = set.iterator();
+		assertThat(it2.hasNext(), is(true));
+		assertThat(set.removeLong(-17), is(true));
+		expecting(ConcurrentModificationException.class, it2::nextLong);
+	}
+
+	@Test
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
 		assertThat(set.isEmpty(), is(false));
@@ -570,22 +596,22 @@ public class BitLongSetTest {
 
 	@Test
 	public void boundaries() {
-		BitLongSet intSet = new BitLongSet();
-		assertThat(intSet.addLong(Long.MIN_VALUE), is(true));
-		assertThat(intSet.addLong(0), is(true));
-		assertThat(intSet.addLong(Long.MAX_VALUE), is(true));
+		BitLongSet set = new BitLongSet();
+		assertThat(set.addLong(Long.MIN_VALUE), is(true));
+		assertThat(set.addLong(0), is(true));
+		assertThat(set.addLong(Long.MAX_VALUE), is(true));
 
-		assertThat(intSet, containsLongs(Long.MIN_VALUE, 0, Long.MAX_VALUE));
+		assertThat(set, containsLongs(Long.MIN_VALUE, 0, Long.MAX_VALUE));
 
-		assertThat(intSet.containsLong(Long.MIN_VALUE), is(true));
-		assertThat(intSet.containsLong(0), is(true));
-		assertThat(intSet.containsLong(Long.MAX_VALUE), is(true));
+		assertThat(set.containsLong(Long.MIN_VALUE), is(true));
+		assertThat(set.containsLong(0), is(true));
+		assertThat(set.containsLong(Long.MAX_VALUE), is(true));
 
-		assertThat(intSet.removeLong(Long.MIN_VALUE), is(true));
-		assertThat(intSet.removeLong(0), is(true));
-		assertThat(intSet.removeLong(Long.MAX_VALUE), is(true));
+		assertThat(set.removeLong(Long.MIN_VALUE), is(true));
+		assertThat(set.removeLong(0), is(true));
+		assertThat(set.removeLong(Long.MAX_VALUE), is(true));
 
-		assertThat(intSet, is(emptyIterable()));
+		assertThat(set, is(emptyIterable()));
 	}
 
 	@Test

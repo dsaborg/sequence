@@ -22,6 +22,7 @@ import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
 /**
@@ -35,6 +36,8 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	private long[] words;
 	private long[] indices;
 	private int size;
+
+	private int modCount;
 
 	/**
 	 * Construct a {@code SparseBitSet}.
@@ -88,13 +91,17 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 		int wordIndex = findWord(i);
 		if (wordIndex < 0) {
 			insert(i, -(wordIndex + 1));
+			modCount++;
 			return true;
 		}
 
 		long bit = 1L << (i & 63);
-		boolean wasClear = (words[wordIndex] & bit) == 0;
+		if ((words[wordIndex] & bit) != 0)
+			return false;
+
 		words[wordIndex] |= bit;
-		return wasClear;
+		modCount++;
+		return true;
 	}
 
 	/**
@@ -112,9 +119,12 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 			return false;
 
 		long bitIndex = i & 63;
-		boolean wasSet = (words[wordIndex] & 1L << bitIndex) != 0;
+		if ((words[wordIndex] & 1L << bitIndex) == 0)
+			return false;
+
 		removeBit(wordIndex, bitIndex);
-		return wasSet;
+		modCount++;
+		return true;
 	}
 
 	/**
@@ -182,6 +192,7 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 			indices[i] = 0;
 		}
 		size = 0;
+		modCount++;
 	}
 
 	@Override
@@ -218,54 +229,19 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	 */
 	@Override
 	public LongIterator iterator() {
-		return new LongIterator() {
-			private int wordIndex = 0;
-			private int bitIndex = 0;
-			private int lastWordIndex = -1;
-			private int lastBitIndex = -1;
-
+		return new Iter(0, 0) {
 			@Override
-			public boolean hasNext() {
-				// find next set bit
-				while (wordIndex < size && (words[wordIndex] & (1L << bitIndex)) == 0)
-					step();
-
+			protected boolean inRange() {
 				return wordIndex < size;
 			}
 
-			private void step() {
+			@Override
+			protected void step() {
 				bitIndex++;
-				if (bitIndex == 64) {
-					bitIndex = 0;
+				if (bitIndex > 63 - startingBit) {
+					bitIndex = startingBit;
 					wordIndex++;
 				}
-			}
-
-			@Override
-			public long nextLong() {
-				if (!hasNext())
-					throw new NoSuchElementException();
-
-				lastWordIndex = wordIndex;
-				lastBitIndex = bitIndex;
-				long next = (indices[wordIndex] << 6) + bitIndex;
-				step();
-				return next;
-			}
-
-			@Override
-			public void remove() {
-				if (lastWordIndex < 0)
-					throw new IllegalStateException("Cannot remove before call to nextLong or after call to remove");
-
-				int previousSize = size;
-				removeBit(lastWordIndex, lastBitIndex);
-				if (size < previousSize) {
-					wordIndex = lastWordIndex;
-					bitIndex = 0;
-				}
-				lastWordIndex = -1;
-				lastBitIndex = -1;
 			}
 		};
 	}
@@ -275,54 +251,19 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	 * All {@link LongIterator} methods are constant time. {@link LongIterator#remove()} is supported.
 	 */
 	public LongIterator descendingIterator() {
-		return new LongIterator() {
-			private int wordIndex = size - 1;
-			private int bitIndex = 63;
-			private int lastWordIndex = -1;
-			private int lastBitIndex = -1;
-
+		return new Iter(size - 1, 63) {
 			@Override
-			public boolean hasNext() {
-				// find next set bit
-				while (wordIndex >= 0 && (words[wordIndex] & (1L << bitIndex)) == 0)
-					step();
-
+			protected boolean inRange() {
 				return wordIndex >= 0;
 			}
 
-			private void step() {
+			@Override
+			protected void step() {
 				bitIndex--;
-				if (bitIndex < 0) {
-					bitIndex = 63;
+				if (bitIndex < 63 - startingBit) {
+					bitIndex = startingBit;
 					wordIndex--;
 				}
-			}
-
-			@Override
-			public long nextLong() {
-				if (!hasNext())
-					throw new NoSuchElementException();
-
-				lastWordIndex = wordIndex;
-				lastBitIndex = bitIndex;
-				long next = (indices[wordIndex] << 6) + bitIndex;
-				step();
-				return next;
-			}
-
-			@Override
-			public void remove() {
-				if (lastWordIndex < 0)
-					throw new IllegalStateException("Cannot remove before call to nextLong or after call to remove");
-
-				long previousSize = size;
-				removeBit(lastWordIndex, lastBitIndex);
-				if (size < previousSize) {
-					wordIndex = lastWordIndex;
-					bitIndex = 63;
-				}
-				lastWordIndex = -1;
-				lastBitIndex = -1;
 			}
 		};
 	}
@@ -356,19 +297,19 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 		return builder.toString();
 	}
 
-	private int findWord(long i) {
-		return Arrays.binarySearch(indices, 0, size, i >> 6);
+	private int findWord(long x) {
+		return Arrays.binarySearch(indices, 0, size, x >> 6);
 	}
 
-	private void insert(long i, int insertionPoint) {
+	private void insert(long x, int insertionPoint) {
 		if (words.length == size) {
 			words = Arrays.copyOf(words, words.length + (words.length >> 1));
 			indices = Arrays.copyOf(indices, indices.length + (words.length >> 1));
 		}
 		System.arraycopy(words, insertionPoint, words, insertionPoint + 1, size - insertionPoint);
 		System.arraycopy(indices, insertionPoint, indices, insertionPoint + 1, size - insertionPoint);
-		words[insertionPoint] = 1L << (i & 63);
-		indices[insertionPoint] = i >> 6;
+		words[insertionPoint] = 1L << (x & 63);
+		indices[insertionPoint] = x >> 6;
 		size++;
 	}
 
@@ -384,5 +325,70 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 		words[size - 1] = 0;
 		indices[size - 1] = 0;
 		size--;
+	}
+
+	private abstract class Iter implements LongIterator {
+		protected int wordIndex;
+		protected int bitIndex;
+		protected int lastWordIndex = -1;
+		protected int lastBitIndex = -1;
+		protected int startingBit;
+
+		protected int expectedModCount = modCount;
+
+		protected Iter(int wordIndex, int bitIndex) {
+			this.wordIndex = wordIndex;
+			this.bitIndex = bitIndex;
+			startingBit = bitIndex;
+		}
+
+		@Override
+		public boolean hasNext() {
+			// find next set bit
+			while (inRange() && (words[wordIndex] & (1L << bitIndex)) == 0)
+				step();
+
+			return inRange();
+		}
+
+		@Override
+		public long nextLong() {
+			checkForCoModification();
+			if (!hasNext())
+				throw new NoSuchElementException();
+
+			lastWordIndex = wordIndex;
+			lastBitIndex = bitIndex;
+			long next = (indices[wordIndex] << 6) + bitIndex;
+			step();
+			return next;
+		}
+
+		@Override
+		public void remove() {
+			checkForCoModification();
+			if (lastWordIndex < 0)
+				throw new IllegalStateException("Cannot remove before call to nextLong or after call to remove");
+
+			long previousSize = size;
+			removeBit(lastWordIndex, lastBitIndex);
+			if (size < previousSize) {
+				wordIndex = lastWordIndex;
+				bitIndex = startingBit;
+			}
+			lastWordIndex = -1;
+			lastBitIndex = -1;
+			modCount++;
+			expectedModCount++;
+		}
+
+		protected abstract boolean inRange();
+
+		protected abstract void step();
+
+		protected void checkForCoModification() {
+			if (modCount != expectedModCount)
+				throw new ConcurrentModificationException();
+		}
 	}
 }

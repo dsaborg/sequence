@@ -217,11 +217,11 @@ public class ArrayLongListTest {
 	public void iteratorFailFast() {
 		LongIterator it1 = list.iterator();
 		list.addLong(17);
-		expecting(ConcurrentModificationException.class, it1::next);
+		expecting(ConcurrentModificationException.class, it1::nextLong);
 
 		LongIterator it2 = list.iterator();
 		list.removeLong(17);
-		expecting(ConcurrentModificationException.class, it2::next);
+		expecting(ConcurrentModificationException.class, it2::nextLong);
 	}
 
 	@Test

@@ -186,6 +186,17 @@ public class SparseBitSetTest {
 	}
 
 	@Test
+	public void iteratorFailFast() {
+		LongIterator it1 = set.iterator();
+		set.addLong(5);
+		expecting(ConcurrentModificationException.class, it1::nextLong);
+
+		LongIterator it2 = set.iterator();
+		set.removeLong(5);
+		expecting(ConcurrentModificationException.class, it2::nextLong);
+	}
+
+	@Test
 	public void descendingIterator() {
 		LongIterator iterator = set.descendingIterator();
 		assertThat(iterator.hasNext(), is(true));
@@ -220,7 +231,7 @@ public class SparseBitSetTest {
 	}
 
 	@Test
-	public void descendingRemove() {
+	public void descendingIteratorRemove() {
 		LongIterator iterator = set.descendingIterator();
 
 		expecting(IllegalStateException.class, iterator::remove);
@@ -233,6 +244,17 @@ public class SparseBitSetTest {
 		expecting(IllegalStateException.class, iterator::remove);
 
 		assertThat(set.bitCount(), is(0L));
+	}
+
+	@Test
+	public void descendingIteratorFailFast() {
+		LongIterator it1 = set.descendingIterator();
+		set.addLong(5);
+		expecting(ConcurrentModificationException.class, it1::nextLong);
+
+		LongIterator it2 = set.descendingIterator();
+		set.removeLong(5);
+		expecting(ConcurrentModificationException.class, it2::nextLong);
 	}
 
 	@Test

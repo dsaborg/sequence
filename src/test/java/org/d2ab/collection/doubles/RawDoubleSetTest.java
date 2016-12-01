@@ -20,14 +20,12 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -49,6 +47,17 @@ public class RawDoubleSetTest {
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
 		assertThat(set, containsInAnyOrder(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
+	}
+
+	@Test
+	public void iteratorFailFast() {
+		DoubleIterator it1 = set.iterator();
+		set.addDoubleExactly(17);
+		expecting(ConcurrentModificationException.class, it1::nextDouble);
+
+		DoubleIterator it2 = set.iterator();
+		set.removeDoubleExactly(17);
+		expecting(ConcurrentModificationException.class, it2::nextDouble);
 	}
 
 	@Test

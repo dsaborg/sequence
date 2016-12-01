@@ -51,6 +51,17 @@ public class BitCharSetTest {
 	}
 
 	@Test
+	public void iteratorFailFast() {
+		CharIterator it1 = set.iterator();
+		set.addChar('q');
+		expecting(ConcurrentModificationException.class, it1::nextChar);
+
+		CharIterator it2 = set.iterator();
+		set.removeChar('q');
+		expecting(ConcurrentModificationException.class, it2::nextChar);
+	}
+
+	@Test
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
 		assertThat(set.isEmpty(), is(false));

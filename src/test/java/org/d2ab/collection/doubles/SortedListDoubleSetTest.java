@@ -49,6 +49,17 @@ public class SortedListDoubleSetTest {
 	}
 
 	@Test
+	public void iteratorFailFast() {
+		DoubleIterator it1 = set.iterator();
+		set.addDoubleExactly(17);
+		expecting(ConcurrentModificationException.class, it1::nextDouble);
+
+		DoubleIterator it2 = set.iterator();
+		set.removeDoubleExactly(17);
+		expecting(ConcurrentModificationException.class, it2::nextDouble);
+	}
+
+	@Test
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
 		assertThat(set.isEmpty(), is(false));

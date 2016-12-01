@@ -49,6 +49,17 @@ public class BitIntSetTest {
 	}
 
 	@Test
+	public void iteratorFailFast() {
+		IntIterator it1 = set.iterator();
+		set.addInt(17);
+		expecting(ConcurrentModificationException.class, it1::nextInt);
+
+		IntIterator it2 = set.iterator();
+		set.removeInt(17);
+		expecting(ConcurrentModificationException.class, it2::nextInt);
+	}
+
+	@Test
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
 		assertThat(set.isEmpty(), is(false));
