@@ -86,6 +86,9 @@ public interface Sequence<T> extends IterableList<T> {
 		if (iterable instanceof List)
 			return ListSequence.from((List<T>) iterable);
 
+		if (iterable instanceof Collection)
+			return CollectionSequence.from((Collection<T>) iterable);
+
 		return iterable::iterator;
 	}
 
@@ -102,9 +105,12 @@ public interface Sequence<T> extends IterableList<T> {
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	static <T> Sequence<T> concat(Iterable<T>... iterables) {
-		Sequence<Iterable<T>> iterableSequence = Sequence.of(iterables);
-		if (iterableSequence.all(List.class))
-			return ListSequence.concat(iterableSequence.map(iterable -> (List<T>) iterable).toList());
+		Sequence<Iterable<T>> iterableAsSequence = Sequence.of(iterables);
+		if (iterableAsSequence.all(List.class))
+			return ListSequence.concat(iterableAsSequence.map(iterable -> (List<T>) iterable).toList());
+
+		if (iterableAsSequence.all(Collection.class))
+			return CollectionSequence.concat(iterableAsSequence.map(iterable -> (Collection<T>) iterable).toList());
 
 		return new ChainingIterable<>(iterables)::iterator;
 	}
@@ -120,9 +126,12 @@ public interface Sequence<T> extends IterableList<T> {
 	 * @since 1.1.1
 	 */
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
-		Sequence<Iterable<T>> iterableSequence = Sequence.from(iterables);
-		if (iterableSequence.all(List.class))
-			return ListSequence.concat(iterableSequence.map(iterable -> (List<T>) iterable).toList());
+		Sequence<Iterable<T>> iterableAsSequence = Sequence.from(iterables);
+		if (iterableAsSequence.all(List.class))
+			return ListSequence.concat(iterableAsSequence.map(iterable -> (List<T>) iterable).toList());
+
+		if (iterableAsSequence.all(Collection.class))
+			return CollectionSequence.concat(iterableAsSequence.map(iterable -> (Collection<T>) iterable).toList());
 
 		return ChainingIterable.<T>flatten(iterables)::iterator;
 	}

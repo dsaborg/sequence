@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
 
+import static org.d2ab.iterator.Iterators.skip;
+
 /**
  * A {@link List} that provides a filtered view of another {@link List}. All operations are supported except variations
  * of {@link List#add}.
@@ -46,14 +48,14 @@ public class FilteredList<T> extends AbstractSequentialList<T> {
 	@Override
 	public ListIterator<T> listIterator(int index) {
 		ListIterator<T> listIterator = new FilteringListIterator<>(list.listIterator(), predicate);
-		while (index-- > 0)
-			listIterator.next();
+		if (skip(listIterator, index) != index)
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		return listIterator;
 	}
 
 	@Override
 	public int size() {
-		return (int) Iterators.count(iterator());
+		return Iterators.count(iterator());
 	}
 
 	@Override
@@ -74,10 +76,5 @@ public class FilteredList<T> extends AbstractSequentialList<T> {
 	@Override
 	public boolean addAll(int index, Collection<? extends T> c) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		return list.remove(o);
 	}
 }

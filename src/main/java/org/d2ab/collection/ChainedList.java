@@ -89,6 +89,9 @@ public class ChainedList<T> extends AbstractList<T> {
 
 	@Override
 	public void add(int index, T element) {
+		if (index == 0 && lists.isEmpty())
+			lists.add(new ArrayList<>());
+
 		for (List<T> list : lists) {
 			if (index <= list.size()) {
 				list.add(index, element);
@@ -96,6 +99,7 @@ public class ChainedList<T> extends AbstractList<T> {
 			}
 			index -= list.size();
 		}
+
 		throw new IndexOutOfBoundsException();
 	}
 
@@ -106,16 +110,21 @@ public class ChainedList<T> extends AbstractList<T> {
 				return list.remove(index);
 			index -= list.size();
 		}
+
 		throw new IndexOutOfBoundsException();
 	}
 
 	@Override
 	public boolean addAll(int index, Collection<? extends T> c) {
+		if (index == 0 && lists.isEmpty())
+			lists.add(new ArrayList<>());
+
 		for (List<T> list : lists) {
 			if (index <= list.size())
 				return list.addAll(index, c);
 			index -= list.size();
 		}
+
 		throw new IndexOutOfBoundsException();
 	}
 

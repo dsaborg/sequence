@@ -23,12 +23,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ChainedListTest {
+	private List<Integer> chainedTotallyEmpty = ChainedList.from(new ArrayList<List<Integer>>());
+
 	private List<Integer> firstEmpty = new ArrayList<>();
 	private List<Integer> secondEmpty = new LinkedList<>();
 	private List<Integer> thirdEmpty = new ArrayList<>();
@@ -43,18 +46,22 @@ public class ChainedListTest {
 
 	@Test
 	public void size() {
+		assertThat(chainedTotallyEmpty.size(), is(0));
 		assertThat(chainedEmpty.size(), is(0));
 		assertThat(chained.size(), is(10));
 	}
 
 	@Test
 	public void isEmpty() {
+		assertThat(chainedTotallyEmpty.isEmpty(), is(true));
 		assertThat(chainedEmpty.isEmpty(), is(true));
 		assertThat(chained.isEmpty(), is(false));
 	}
 
 	@Test
 	public void containsElement() {
+		assertThat(chainedTotallyEmpty.contains(17), is(false));
+
 		assertThat(chainedEmpty.contains(17), is(false));
 
 		for (int i = 1; i <= 10; i++)
@@ -65,6 +72,8 @@ public class ChainedListTest {
 
 	@Test
 	public void iterator() {
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		assertThat(chainedEmpty, is(emptyIterable()));
 
 		assertThat(chained, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
@@ -88,6 +97,8 @@ public class ChainedListTest {
 
 	@Test
 	public void toArray() {
+		assertThat(chainedTotallyEmpty.toArray(), is(emptyArray()));
+
 		assertThat(chainedEmpty.toArray(), is(emptyArray()));
 
 		assertThat(chained.toArray(), is(arrayContaining(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
@@ -95,6 +106,8 @@ public class ChainedListTest {
 
 	@Test
 	public void toArrayOfType() {
+		assertThat(chainedTotallyEmpty.toArray(new Integer[0]), is(emptyArray()));
+
 		assertThat(chainedEmpty.toArray(new Integer[0]), is(emptyArray()));
 
 		assertThat(chained.toArray(new Integer[10]), is(arrayContaining(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
@@ -102,6 +115,9 @@ public class ChainedListTest {
 
 	@Test
 	public void add() {
+		chainedTotallyEmpty.add(17);
+		assertThat(chainedTotallyEmpty, contains(17));
+
 		chainedEmpty.add(17);
 		assertThat(chainedEmpty, contains(17));
 		assertThat(firstEmpty, contains(17));
@@ -138,6 +154,8 @@ public class ChainedListTest {
 
 	@Test
 	public void remove() {
+		assertThat(chainedTotallyEmpty.remove((Integer) 17), is(false));
+
 		assertThat(chainedEmpty.remove((Integer) 17), is(false));
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -159,6 +177,8 @@ public class ChainedListTest {
 
 	@Test
 	public void containsAll() {
+		assertThat(chainedTotallyEmpty.containsAll(asList(17, 18)), is(false));
+
 		assertThat(chainedEmpty.containsAll(asList(17, 18)), is(false));
 
 		assertThat(chained.containsAll(asList(2, 3, 4)), is(true));
@@ -167,6 +187,9 @@ public class ChainedListTest {
 
 	@Test
 	public void addAll() {
+		chainedTotallyEmpty.addAll(asList(1, 2));
+		assertThat(chainedTotallyEmpty, contains(1, 2));
+
 		chainedEmpty.addAll(asList(1, 2));
 		assertThat(chainedEmpty, contains(1, 2));
 		assertThat(firstEmpty, contains(1, 2));
@@ -182,6 +205,9 @@ public class ChainedListTest {
 
 	@Test
 	public void addAllAtIndex() {
+		chainedTotallyEmpty.addAll(0, asList(1, 2));
+		assertThat(chainedTotallyEmpty, contains(1, 2));
+
 		chainedEmpty.addAll(0, asList(1, 2));
 		assertThat(chainedEmpty, contains(1, 2));
 		assertThat(firstEmpty, contains(1, 2));
@@ -203,13 +229,16 @@ public class ChainedListTest {
 
 	@Test
 	public void removeAll() {
+		assertThat(chainedTotallyEmpty.removeAll(asList(1, 2)), is(false));
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		assertThat(chainedEmpty.removeAll(asList(1, 2)), is(false));
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
 		assertThat(secondEmpty, is(emptyIterable()));
 		assertThat(thirdEmpty, is(emptyIterable()));
 
-		assertThat(chained.removeAll(asList()), is(false));
+		assertThat(chained.removeAll(emptyList()), is(false));
 		assertThat(chained, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 		assertThat(first, contains(1, 2, 3));
 		assertThat(second, contains(4, 5, 6));
@@ -224,6 +253,9 @@ public class ChainedListTest {
 
 	@Test
 	public void retainAll() {
+		assertThat(chainedTotallyEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		assertThat(chainedEmpty.retainAll(asList(1, 2)), is(false));
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -239,6 +271,9 @@ public class ChainedListTest {
 
 	@Test
 	public void replaceAll() {
+		chainedTotallyEmpty.replaceAll(x -> x + 1);
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		chainedEmpty.replaceAll(x -> x + 1);
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -254,6 +289,9 @@ public class ChainedListTest {
 
 	@Test
 	public void sort() {
+		chainedTotallyEmpty.sort(Comparator.reverseOrder());
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		chainedEmpty.sort(Comparator.reverseOrder());
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -269,6 +307,9 @@ public class ChainedListTest {
 
 	@Test
 	public void clear() {
+		chainedTotallyEmpty.clear();
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		chainedEmpty.clear();
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -284,7 +325,10 @@ public class ChainedListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(chainedEmpty.equals(asList()), is(true));
+		assertThat(chainedTotallyEmpty.equals(emptyList()), is(true));
+		assertThat(chainedTotallyEmpty.equals(asList(1, 2)), is(false));
+
+		assertThat(chainedEmpty.equals(emptyList()), is(true));
 		assertThat(chainedEmpty.equals(asList(1, 2)), is(false));
 
 		assertThat(chained.equals(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)), is(true));
@@ -293,6 +337,8 @@ public class ChainedListTest {
 
 	@Test
 	public void testHashCode() {
+		assertThat(chainedTotallyEmpty.hashCode(), is(1));
+
 		assertThat(chainedEmpty.hashCode(), is(1));
 
 		assertThat(chained.hashCode(), is(-975991962));
@@ -324,6 +370,9 @@ public class ChainedListTest {
 
 	@Test
 	public void addAtIndex() {
+		chainedTotallyEmpty.add(0, 17);
+		assertThat(chainedTotallyEmpty, contains(17));
+
 		chainedEmpty.add(0, 17);
 		assertThat(chainedEmpty, contains(17));
 		assertThat(firstEmpty, contains(17));
@@ -348,6 +397,8 @@ public class ChainedListTest {
 
 	@Test
 	public void indexOf() {
+		assertThat(chainedTotallyEmpty.indexOf(17), is(-1));
+
 		assertThat(chainedEmpty.indexOf(17), is(-1));
 
 		assertThat(chained.indexOf(3), is(2));
@@ -357,6 +408,8 @@ public class ChainedListTest {
 
 	@Test
 	public void lastIndexOf() {
+		assertThat(chainedTotallyEmpty.lastIndexOf(17), is(-1));
+
 		assertThat(chainedEmpty.lastIndexOf(17), is(-1));
 
 		assertThat(chained.lastIndexOf(3), is(2));
@@ -367,6 +420,12 @@ public class ChainedListTest {
 
 	@Test
 	public void listIteratorEmpty() {
+		ListIterator<Integer> totallyEmptyIterator = chainedTotallyEmpty.listIterator();
+		assertThat(totallyEmptyIterator.hasNext(), is(false));
+		assertThat(totallyEmptyIterator.hasPrevious(), is(false));
+		assertThat(totallyEmptyIterator.nextIndex(), is(0));
+		assertThat(totallyEmptyIterator.previousIndex(), is(-1));
+
 		ListIterator<Integer> emptyIterator = chainedEmpty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(false));
@@ -534,8 +593,20 @@ public class ChainedListTest {
 
 	@Test
 	public void subList() {
+		List<Integer> totallyEmptySubList = chainedTotallyEmpty.subList(0, 0);
+		assertThat(totallyEmptySubList, is(emptyIterable()));
+		totallyEmptySubList.add(17);
+		assertThat(totallyEmptySubList, contains(17));
+		assertThat(chainedTotallyEmpty, contains(17));
+
 		List<Integer> emptySubList = chainedEmpty.subList(0, 0);
 		assertThat(emptySubList, is(emptyIterable()));
+		emptySubList.add(17);
+		assertThat(emptySubList, contains(17));
+		assertThat(chainedEmpty, contains(17));
+		assertThat(firstEmpty, contains(17));
+		assertThat(secondEmpty, is(emptyIterable()));
+		assertThat(thirdEmpty, is(emptyIterable()));
 
 		List<Integer> filteredSubList = chained.subList(2, 8);
 		assertThat(filteredSubList, contains(3, 4, 5, 6, 7, 8));
@@ -543,6 +614,8 @@ public class ChainedListTest {
 
 	@Test
 	public void stream() {
+		assertThat(chainedTotallyEmpty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
 		assertThat(chainedEmpty.stream().collect(Collectors.toList()), is(emptyIterable()));
 
 		assertThat(chained.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
@@ -550,6 +623,8 @@ public class ChainedListTest {
 
 	@Test
 	public void parallelStream() {
+		assertThat(chainedTotallyEmpty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
+
 		assertThat(chainedEmpty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
 
 		assertThat(chained.parallelStream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
@@ -557,6 +632,9 @@ public class ChainedListTest {
 
 	@Test
 	public void removeIf() {
+		chainedTotallyEmpty.removeIf(x -> x.equals(2) || x.equals(5));
+		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+
 		chainedEmpty.removeIf(x -> x.equals(2) || x.equals(5));
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -572,6 +650,10 @@ public class ChainedListTest {
 
 	@Test
 	public void forEach() {
+		chainedTotallyEmpty.forEach(x -> {
+			throw new IllegalStateException("Should not get called");
+		});
+
 		chainedEmpty.forEach(x -> {
 			throw new IllegalStateException("Should not get called");
 		});

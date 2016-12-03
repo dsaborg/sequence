@@ -92,6 +92,8 @@ public class SequenceTest {
 				 (Function<Object[], Sequence<?>>) is -> newListSequence(is)},
 				{"ChainedListSequence",
 				 (Function<Object[], Sequence<?>>) is -> newChainedListSequence(is)},
+				{"CollectionSequence",
+				 (Function<Object[], Sequence<?>>) is -> newCollectionSequence(is)},
 				};
 	}
 
@@ -119,6 +121,11 @@ public class SequenceTest {
 	@SafeVarargs
 	public static <T> Sequence<T> newListSequence(T... is) {
 		return ListSequence.from(new ArrayList<>(asList(is)));
+	}
+
+	@SafeVarargs
+	public static <T> Sequence<T> newCollectionSequence(T... is) {
+		return CollectionSequence.from(new ArrayDeque<>(asList(is)));
 	}
 
 	@SafeVarargs
@@ -276,11 +283,20 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void concatArrayOfLists() {
-		Sequence<Integer> sequenceFromIterables = Sequence.concat(asList(1, 2, 3), asList(4, 5, 6),
-		                                                          asList(7, 8, 9));
+	public void concatArrayOfCollections() {
+		Sequence<Integer> sequenceFromCollections = Sequence.concat(new ArrayDeque<>(asList(1, 2, 3)),
+		                                                            new ArrayDeque<>(asList(4, 5, 6)),
+		                                                            new ArrayDeque<>(asList(7, 8, 9)));
 
-		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequenceFromCollections, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
+	public void concatArrayOfLists() {
+		Sequence<Integer> sequenceFromLists = Sequence.concat(asList(1, 2, 3), asList(4, 5, 6),
+		                                                      asList(7, 8, 9));
+
+		twice(() -> assertThat(sequenceFromLists, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
@@ -300,11 +316,20 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void concatIterableOfCollections() {
+		Sequence<Integer> sequenceFromCollections =
+				Sequence.concat(Iterables.of(new ArrayDeque<>(asList(1, 2, 3)), new ArrayDeque<>(asList(4, 5, 6)),
+				                             new ArrayDeque<>(asList(7, 8, 9))));
+
+		twice(() -> assertThat(sequenceFromCollections, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
 	public void concatIterableOfLists() {
-		Sequence<Integer> sequenceFromIterables =
+		Sequence<Integer> sequenceFromLists =
 				Sequence.concat(Iterables.of(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9)));
 
-		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequenceFromLists, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test

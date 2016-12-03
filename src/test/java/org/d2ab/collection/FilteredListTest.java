@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -104,13 +105,17 @@ public class FilteredListTest {
 	public void remove() {
 		assertThat(filteredEmpty.remove((Integer) 17), is(false));
 
-		assertThat(filtered.remove((Integer) 2), is(true));
-		assertThat(filtered, contains(1, 3, 5, 7, 9));
-		assertThat(original, contains(1, 3, 4, 5, 6, 7, 8, 9, 10));
+		assertThat(filtered.remove((Integer) 1), is(true));
+		assertThat(filtered, contains(3, 5, 7, 9));
+		assertThat(original, contains(2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(filtered.remove((Integer) 2), is(false));
+		assertThat(filtered, contains(3, 5, 7, 9));
+		assertThat(original, contains(2, 3, 4, 5, 6, 7, 8, 9, 10));
 
 		assertThat(filtered.remove((Integer) 17), is(false));
-		assertThat(filtered, contains(1, 3, 5, 7, 9));
-		assertThat(original, contains(1, 3, 4, 5, 6, 7, 8, 9, 10));
+		assertThat(filtered, contains(3, 5, 7, 9));
+		assertThat(original, contains(2, 3, 4, 5, 6, 7, 8, 9, 10));
 	}
 
 	@Test
@@ -146,7 +151,7 @@ public class FilteredListTest {
 		assertThat(filteredEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(filtered.removeAll(asList()), is(false));
+		assertThat(filtered.removeAll(emptyList()), is(false));
 		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
 		assertThat(filtered.removeAll(asList(1, 2, 3, 4, 5)), is(true));
@@ -204,7 +209,7 @@ public class FilteredListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(filteredEmpty.equals(asList()), is(true));
+		assertThat(filteredEmpty.equals(emptyList()), is(true));
 		assertThat(filteredEmpty.equals(asList(1, 3)), is(false));
 
 		assertThat(filtered.equals(asList(1, 3, 5, 7, 9)), is(true));
