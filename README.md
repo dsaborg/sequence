@@ -114,7 +114,7 @@ To install in maven, use the maven central dependency:
 <dependency>
   <groupId>org.d2ab</groupId>
   <artifactId>sequence</artifactId>
-  <version>[2.0,3.0)</version>
+  <version>[2.1,3.0)</version>
 </dependency>
 ```
 
@@ -128,7 +128,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.d2ab:sequence:[2.0,3.0)'
+    compile 'org.d2ab:sequence:[2.1,3.0)'
 }
 ```
 
