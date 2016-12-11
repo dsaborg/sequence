@@ -94,6 +94,7 @@ public interface LongListIterator extends ListIterator<Long>, LongIterator {
 			@Override
 			public void remove() {
 				iterator.remove();
+				cursor--;
 			}
 
 			@Override

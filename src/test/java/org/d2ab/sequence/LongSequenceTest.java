@@ -21,6 +21,7 @@ import org.d2ab.collection.longs.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.longs.DelegatingTransformingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.test.StrictLongIterable;
 import org.junit.Test;
 
 import java.util.*;
@@ -1478,41 +1479,5 @@ public class LongSequenceTest {
 		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5), is(true));
 		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5, 17), is(true));
 		assertThat(_12345.containsAnyLongs(17, 18, 19), is(false));
-	}
-
-	@FunctionalInterface
-	private interface StrictLongIterable extends LongIterable {
-		static LongIterable from(LongIterable iterable) {
-			return () -> StrictLongIterator.from(iterable.iterator());
-		}
-
-		static LongIterable of(long... values) {
-			return () -> StrictLongIterator.of(values);
-		}
-	}
-
-	private interface StrictLongIterator extends LongIterator {
-		static LongIterator from(LongIterator iterator) {
-			return new LongIterator() {
-				@Override
-				public boolean hasNext() {
-					return iterator.hasNext();
-				}
-
-				@Override
-				public long nextLong() {
-					return iterator.nextLong();
-				}
-
-				@Override
-				public Long next() {
-					throw new UnsupportedOperationException();
-				}
-			};
-		}
-
-		static LongIterator of(long... values) {
-			return from(LongIterator.of(values));
-		}
 	}
 }

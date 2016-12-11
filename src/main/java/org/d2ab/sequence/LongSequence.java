@@ -912,7 +912,7 @@ public interface LongSequence extends LongCollection {
 	 * @since 2.1
 	 */
 	default LongList asList() {
-		return new LongList() {
+		return new LongList.Base() {
 			@Override
 			public LongIterator iterator() {
 				return LongSequence.this.iterator();

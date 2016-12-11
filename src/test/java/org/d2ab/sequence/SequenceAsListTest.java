@@ -241,6 +241,12 @@ public class SequenceAsListTest {
 	}
 
 	@Test
+	public void testToString() {
+		assertThat(emptyList.toString(), is("[]"));
+		assertThat(list.toString(), is("[1, 2, 3, 4, 5, 1, 2, 3, 4, 5]"));
+	}
+
+	@Test
 	public void get() {
 		assertThat(list.get(0), is(1));
 		assertThat(list.get(2), is(3));
