@@ -23,6 +23,7 @@ import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.DelegatingTransformingCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.test.StrictCharIterable;
 import org.d2ab.util.OptionalChar;
 import org.junit.Test;
 
@@ -1416,41 +1417,5 @@ public class CharSeqTest {
 		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e'), is(true));
 		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e', 'p'), is(true));
 		assertThat(abcde.containsAnyChars('p', 'q', 'r'), is(false));
-	}
-
-	@FunctionalInterface
-	private interface StrictCharIterable extends CharIterable {
-		static CharIterable from(CharIterable iterable) {
-			return () -> StrictCharIterator.from(iterable.iterator());
-		}
-
-		static CharIterable of(char... values) {
-			return () -> StrictCharIterator.of(values);
-		}
-	}
-
-	private interface StrictCharIterator extends CharIterator {
-		static CharIterator from(CharIterator iterator) {
-			return new CharIterator() {
-				@Override
-				public boolean hasNext() {
-					return iterator.hasNext();
-				}
-
-				@Override
-				public char nextChar() {
-					return iterator.nextChar();
-				}
-
-				@Override
-				public Character next() {
-					throw new UnsupportedOperationException();
-				}
-			};
-		}
-
-		static CharIterator of(char... values) {
-			return from(CharIterator.of(values));
-		}
 	}
 }

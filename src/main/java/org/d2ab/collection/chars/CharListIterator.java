@@ -94,6 +94,7 @@ public interface CharListIterator extends ListIterator<Character>, CharIterator 
 			@Override
 			public void remove() {
 				iterator.remove();
+				cursor--;
 			}
 
 			@Override

@@ -816,7 +816,7 @@ public interface CharSeq extends CharCollection {
 	 * @since 2.1
 	 */
 	default CharList asList() {
-		return new CharList() {
+		return new CharList.Base() {
 			@Override
 			public CharIterator iterator() {
 				return CharSeq.this.iterator();
