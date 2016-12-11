@@ -28,6 +28,24 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code int} values.
  */
 public interface IntSortedSet extends SortedSet<Integer>, IntSet {
+	/**
+	 * @return a new empty mutable {@code IntSortedSet}.
+	 *
+	 * @since 2.1
+	 */
+	static IntSortedSet create() {
+		return new BitIntSet();
+	}
+
+	/**
+	 * @return a new mutable {@code IntSortedSet} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static IntSortedSet create(int... xs) {
+		return new BitIntSet(xs);
+	}
+
 	@Override
 	default IntComparator comparator() {
 		return null;

@@ -28,6 +28,24 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code double} values.
  */
 public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
+	/**
+	 * @return a new empty mutable {@code DoubleSortedSet}.
+	 *
+	 * @since 2.1
+	 */
+	static DoubleSortedSet create() {
+		return new SortedListDoubleSet();
+	}
+
+	/**
+	 * @return a new mutable {@code DoubleSortedSet} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static DoubleSortedSet create(double... xs) {
+		return new SortedListDoubleSet(xs);
+	}
+
 	@Override
 	default DoubleComparator comparator() {
 		return null;

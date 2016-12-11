@@ -28,6 +28,24 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code long} values.
  */
 public interface LongSortedSet extends SortedSet<Long>, LongSet {
+	/**
+	 * @return a new empty mutable {@code LongSortedSet}.
+	 *
+	 * @since 2.1
+	 */
+	static LongSortedSet create() {
+		return new BitLongSet();
+	}
+
+	/**
+	 * @return a new mutable {@code LongSortedSet} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static LongSortedSet create(long... xs) {
+		return new BitLongSet(xs);
+	}
+
 	@Override
 	default LongComparator comparator() {
 		return null;

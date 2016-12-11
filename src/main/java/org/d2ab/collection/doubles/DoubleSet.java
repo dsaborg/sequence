@@ -28,6 +28,24 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code double} values.
  */
 public interface DoubleSet extends Set<Double>, DoubleCollection {
+	/**
+	 * @return a new empty mutable {@code DoubleSet}.
+	 *
+	 * @since 2.1
+	 */
+	static DoubleSet create() {
+		return new RawDoubleSet();
+	}
+
+	/**
+	 * @return a new mutable {@code DoubleSet} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static DoubleSet create(double... xs) {
+		return new RawDoubleSet(xs);
+	}
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;

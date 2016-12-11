@@ -28,6 +28,24 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code char} values.
  */
 public interface CharSortedSet extends SortedSet<Character>, CharSet {
+	/**
+	 * @return a new empty mutable {@code CharSortedSet}.
+	 *
+	 * @since 2.1
+	 */
+	static CharSortedSet create() {
+		return new BitCharSet();
+	}
+
+	/**
+	 * @return a new mutable {@code CharSortedSet} with a copy of the given elements.
+	 *
+	 * @since 2.1
+	 */
+	static CharSortedSet create(char... xs) {
+		return new BitCharSet(xs);
+	}
+
 	@Override
 	default CharComparator comparator() {
 		return null;
