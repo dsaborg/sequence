@@ -118,7 +118,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void addDouble() {
+	public void addDoubleExactly() {
 		expecting(UnsupportedOperationException.class, () -> emptyList.addDoubleExactly(1));
 		assertThat(emptyList, is(emptyIterable()));
 		assertThat(empty, is(emptyIterable()));
@@ -129,7 +129,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void removeDouble() {
+	public void removeDoubleExactly() {
 		assertThat(emptyList.removeDoubleExactly(17), is(false));
 
 		assertThat(list.removeDoubleExactly(2), is(true));
@@ -142,7 +142,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void containsAllDoubles() {
+	public void containsAllDoublesExactly() {
 		assertThat(emptyList.containsAllDoublesExactly(DoubleList.create(2, 3)), is(false));
 
 		assertThat(list.containsAllDoublesExactly(DoubleList.create(2, 3)), is(true));
@@ -177,7 +177,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void removeAllDoubles() {
+	public void removeAllDoublesExactly() {
 		assertThat(emptyList.removeAllDoublesExactly(DoubleList.create(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 
@@ -187,7 +187,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void retainAllDoubles() {
+	public void retainAllDoublesExactly() {
 		assertThat(emptyList.retainAllDoublesExactly(DoubleList.create(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 
@@ -271,7 +271,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void indexOfDouble() {
+	public void indexOfDoubleExactly() {
 		assertThat(emptyList.indexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.indexOfDoubleExactly(1), is(0));
@@ -280,7 +280,7 @@ public class DoubleSequenceAsListTest {
 	}
 
 	@Test
-	public void lastIndexOfDouble() {
+	public void lastIndexOfDoubleExactly() {
 		assertThat(emptyList.lastIndexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.lastIndexOfDoubleExactly(1), is(5));

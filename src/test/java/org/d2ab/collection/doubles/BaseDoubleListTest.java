@@ -268,7 +268,7 @@ public class BaseDoubleListTest {
 	}
 
 	@Test
-	public void indexOfDouble() {
+	public void indexOfDoubleExactly() {
 		assertThat(empty.indexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.indexOfDoubleExactly(1), is(0));
@@ -277,7 +277,7 @@ public class BaseDoubleListTest {
 	}
 
 	@Test
-	public void lastIndexOfDouble() {
+	public void lastIndexOfDoubleExactly() {
 		assertThat(empty.lastIndexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.lastIndexOfDoubleExactly(1), is(5));

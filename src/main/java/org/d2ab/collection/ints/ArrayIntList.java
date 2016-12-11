@@ -85,9 +85,7 @@ public class ArrayIntList extends IntList.Base implements IntList, RandomAccess 
 	 * Create a new mutable {@code ArrayIntList}.
 	 *
 	 * @since 2.0
-	 * @deprecated Use {@link #create()} instead.
 	 */
-	@Deprecated
 	public ArrayIntList() {
 		this(10);
 	}

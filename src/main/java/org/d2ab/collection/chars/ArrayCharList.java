@@ -90,10 +90,7 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	 * Create a new mutable {@code ArrayCharList}.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #create()} instead.
 	 */
-	@Deprecated
 	public ArrayCharList() {
 		this(10);
 	}

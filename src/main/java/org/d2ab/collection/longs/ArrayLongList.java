@@ -87,10 +87,7 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 	 * Create a new mutable {@code ArrayLongList}.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #create()} instead.
 	 */
-	@Deprecated
 	public ArrayLongList() {
 		this(10);
 	}

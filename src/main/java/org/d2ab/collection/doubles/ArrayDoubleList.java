@@ -89,10 +89,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 	 * Create a new mutable {@code ArrayDoubleList}.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #create()} instead.
 	 */
-	@Deprecated
 	public ArrayDoubleList() {
 		this(10);
 	}
