@@ -19,17 +19,17 @@ package org.d2ab.collection;
 import java.util.*;
 
 /**
- * A list that is a reverse view over a backing list.
+ * A {@link List} that presents a reverse view over a backing {@link List}.
  */
 public class ReverseList<T> extends AbstractList<T> {
 	private List<T> original;
 
-	private ReverseList(List<T> original) {
-		this.original = original;
-	}
-
 	public static <T> List<T> from(List<T> original) {
 		return new ReverseList<>(original);
+	}
+
+	public ReverseList(List<T> original) {
+		this.original = original;
 	}
 
 	@Override
@@ -169,6 +169,6 @@ public class ReverseList<T> extends AbstractList<T> {
 
 	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
-		return ReverseList.from(original.subList(original.size() - toIndex, original.size() - fromIndex));
+		return new ReverseList<>(original.subList(original.size() - toIndex, original.size() - fromIndex));
 	}
 }

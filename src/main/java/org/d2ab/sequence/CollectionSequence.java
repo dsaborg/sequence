@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.ChainedCollection;
+import org.d2ab.collection.Collectionz;
 import org.d2ab.collection.FilteredCollection;
 import org.d2ab.collection.MappedCollection;
 
@@ -122,6 +123,10 @@ public class CollectionSequence<T> implements Sequence<T> {
 	@Override
 	public boolean contains(Object item) {
 		return collection.contains(item);
+	}
+
+	public List<T> asList() {
+		return Collectionz.asList(collection);
 	}
 
 	@Override

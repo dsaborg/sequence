@@ -23,16 +23,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class IterableListTest {
+public class CollectionListTest {
 	private final Deque<Integer> originalEmpty = new ArrayDeque<>();
-	private final List<Integer> listEmpty = new IterableList<>(originalEmpty);
+	private final List<Integer> listEmpty = new CollectionList<>(originalEmpty);
 
 	private final Deque<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
-	private final List<Integer> list = new IterableList<>(original);
+	private final List<Integer> list = new CollectionList<>(original);
 
 	@Test
 	public void size() {
@@ -89,11 +90,11 @@ public class IterableListTest {
 
 	@Test
 	public void add() {
-		expecting(UnsupportedOperationException.class, () -> listEmpty.add(3));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(listEmpty.add(3), is(true));
+		assertThat(originalEmpty, contains(3));
 
-		expecting(UnsupportedOperationException.class, () -> list.add(3));
-		assertThat(original, contains(1, 2, 3, 4, 5));
+		assertThat(list.add(3), is(true));
+		assertThat(original, contains(1, 2, 3, 4, 5, 3));
 	}
 
 	@Test
@@ -119,11 +120,11 @@ public class IterableListTest {
 
 	@Test
 	public void addAll() {
-		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(asList(1, 3)));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(listEmpty.addAll(asList(1, 3)), is(true));
+		assertThat(originalEmpty, contains(1, 3));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 3)));
-		assertThat(original, contains(1, 2, 3, 4, 5));
+		assertThat(list.addAll(asList(1, 3)), is(true));
+		assertThat(original, contains(1, 2, 3, 4, 5, 1, 3));
 	}
 
 	@Test
@@ -141,7 +142,7 @@ public class IterableListTest {
 		assertThat(listEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList()), is(false));
+		assertThat(list.removeAll(emptyList()), is(false));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 
 		assertThat(list.removeAll(asList(1, 2, 3)), is(true));

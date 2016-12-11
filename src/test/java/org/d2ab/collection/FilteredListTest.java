@@ -34,10 +34,11 @@ public class FilteredListTest {
 	private final Predicate<Integer> predicate = e -> e % 2 == 1;
 
 	private final List<Integer> originalEmpty = new ArrayList<>();
-	private final List<Integer> filteredEmpty = FilteredList.from(originalEmpty, predicate);
+	private final List<Integer> filteredEmpty = new FilteredList<>(originalEmpty,
+	                                                               (Predicate<? super Integer>) predicate);
 
 	private final List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-	private final List<Integer> filtered = FilteredList.from(original, predicate);
+	private final List<Integer> filtered = new FilteredList<>(original, (Predicate<? super Integer>) predicate);
 
 	@Test
 	public void size() {

@@ -42,7 +42,7 @@ import static java.util.function.BinaryOperator.minBy;
  * the list of elements.
  */
 @FunctionalInterface
-public interface Sequence<T> extends IterableList<T> {
+public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * Create an empty {@code Sequence} with no items.
 	 *
@@ -437,10 +437,6 @@ public interface Sequence<T> extends IterableList<T> {
 	 */
 	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
 		return recurse(f.apply(seed), f.compose(g)::apply);
-	}
-
-	default Sequence<T> subList(int from, int to) {
-		return Sequence.from(new IterableList.SubList<>(this, from, to));
 	}
 
 	/**
@@ -1060,11 +1056,9 @@ public interface Sequence<T> extends IterableList<T> {
 	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
 	 *
 	 * @since 1.2
-	 * @deprecated Use the sequence directly as a {@link List} instead.
 	 */
-	@Deprecated
 	default List<T> asList() {
-		return this;
+		return Iterables.asList(this);
 	}
 
 	/**

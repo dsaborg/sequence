@@ -43,7 +43,7 @@ import static org.d2ab.sequence.SequenceFunctions.*;
  * transforming and collating the list of {@link Entry} elements.
  */
 @FunctionalInterface
-public interface EntrySequence<K, V> extends IterableList<Entry<K, V>> {
+public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
 	 *

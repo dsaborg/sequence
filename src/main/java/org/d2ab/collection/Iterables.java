@@ -171,7 +171,10 @@ public class Iterables {
 	 * @since 1.2
 	 */
 	public static <T> List<T> asList(Iterable<T> iterable) {
-		return IterableList.from(iterable);
+		if (iterable instanceof List)
+			return (List<T>) iterable;
+
+		return new IterableList<>(iterable);
 	}
 
 	/**

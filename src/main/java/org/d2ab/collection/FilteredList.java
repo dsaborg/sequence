@@ -36,13 +36,13 @@ public class FilteredList<T> extends AbstractSequentialList<T> {
 	private final List<T> list;
 	private final Predicate<? super T> predicate;
 
-	private FilteredList(List<T> list, Predicate<? super T> predicate) {
-		this.list = list;
-		this.predicate = predicate;
-	}
-
 	public static <T> List<T> from(List<T> list, Predicate<? super T> predicate) {
 		return new FilteredList<>(list, predicate);
+	}
+
+	public FilteredList(List<T> list, Predicate<? super T> predicate) {
+		this.list = list;
+		this.predicate = predicate;
 	}
 
 	@Override

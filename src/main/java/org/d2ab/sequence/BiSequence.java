@@ -42,7 +42,7 @@ import static org.d2ab.sequence.SequenceFunctions.*;
  * collating the list of {@link Pair}s.
  */
 @FunctionalInterface
-public interface BiSequence<L, R> extends IterableList<Pair<L, R>> {
+public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * Create an empty {@code BiSequence} with no items.
 	 *

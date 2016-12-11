@@ -25,6 +25,8 @@ import org.d2ab.collection.longs.LongCollection;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.RandomAccess;
 
 /**
  * Utility methods for {@link Collection} instances.
@@ -195,5 +197,17 @@ public class Collectionz {
 			return xs.removeAllDoublesExactly((DoubleCollection) c);
 
 		return xs.removeDoublesIf(c::contains);
+	}
+
+	/**
+	 * @return a {@link List} view of the given {@link Collection}, reflecting changes to the underlying
+	 * {@link Collection}. If a {@link List} is given it is returned unchanged. The list does not implement
+	 * {@link RandomAccess}, and is best accessed in sequence.
+	 */
+	public static <T> List<T> asList(Collection<T> collection) {
+		if (collection instanceof List)
+			return (List<T>) collection;
+
+		return new CollectionList<>(collection);
 	}
 }

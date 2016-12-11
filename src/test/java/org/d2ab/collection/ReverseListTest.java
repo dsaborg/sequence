@@ -29,10 +29,10 @@ import static org.junit.Assert.assertThat;
 
 public class ReverseListTest {
 	private final List<Integer> originalEmpty = new ArrayList<>();
-	private final List<Integer> reverseEmpty = ReverseList.from(originalEmpty);
+	private final List<Integer> reverseEmpty = new ReverseList<>(originalEmpty);
 
 	private final List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4, 5));
-	private final List<Integer> reverse = ReverseList.from(original);
+	private final List<Integer> reverse = new ReverseList<>(original);
 
 	@Test
 	public void size() {

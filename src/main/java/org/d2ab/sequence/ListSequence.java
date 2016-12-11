@@ -34,39 +34,42 @@ import static java.util.Collections.singletonList;
  * way due to the {@link List} backing. This class should normally not be used directly as e.g.
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
-public class ListSequence<T> implements Sequence<T> {
+public class ListSequence<T> extends AbstractSequentialList<T> implements Sequence<T> {
 	private List<T> list;
 
-	public static <T> Sequence<T> empty() {
+	public static <T> ListSequence<T> empty() {
 		return from(emptyList());
 	}
 
-	public static <T> Sequence<T> of(T item) {
+	public static <T> ListSequence<T> of(T item) {
 		return from(singletonList(item));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Sequence<T> of(T... items) {
+	public static <T> ListSequence<T> of(T... items) {
 		return from(Arrays.asList(items));
 	}
 
-	public static <T> Sequence<T> from(List<T> list) {
+	public static <T> ListSequence<T> from(List<T> list) {
 		return new ListSequence<>(list);
 	}
 
-	public static <T> Sequence<T> concat(List<T>... lists) {
+	@SafeVarargs
+	public static <T> ListSequence<T> concat(List<T>... lists) {
 		return from(ChainedList.from(lists));
 	}
 
-	public static <T> Sequence<T> concat(List<List<T>> lists) {
+	public static <T> ListSequence<T> concat(List<List<T>> lists) {
 		return from(ChainedList.from(lists));
 	}
+
+	public static <T> ListSequence<T> withCapacity(int capacity) { return new ListSequence<>(capacity); }
 
 	public ListSequence() {
 		this(new ArrayList<>());
 	}
 
-	public ListSequence(int capacity) {
+	private ListSequence(int capacity) {
 		this(new ArrayList<>(capacity));
 	}
 
@@ -85,13 +88,18 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Sequence<T> subList(int from, int to) {
+	public ListIterator<T> listIterator(int index) {
+		return list.listIterator(index);
+	}
+
+	@Override
+	public ListSequence<T> subList(int from, int to) {
 		return new ListSequence<>(list.subList(from, to));
 	}
 
 	@Override
-	public ListIterator<T> listIterator(int index) {
-		return list.listIterator(index);
+	public List<T> asList() {
+		return list;
 	}
 
 	@Override
@@ -148,12 +156,12 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public Sequence<T> reverse() {
-		return from(ReverseList.from(list));
+		return from(new ReverseList<>(list));
 	}
 
 	@Override
 	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return from(FilteredList.from(list, predicate));
+		return from(new FilteredList<>(list, predicate));
 	}
 
 	@Override

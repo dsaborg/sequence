@@ -925,37 +925,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void subList() {
-		Sequence<Integer> sequence = newSequence(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-		Sequence<Integer> subList = sequence.subList(2, 8);
-		twice(() -> assertThat(subList, contains(3, 4, 5, 6, 7, 8)));
-
-		assertThat(subList.remove(1), is(4));
-		twice(() -> assertThat(subList, contains(3, 5, 6, 7, 8)));
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 5, 6, 7, 8, 9, 10)));
-
-		assertThat(subList.remove((Integer) 5), is(true));
-		twice(() -> assertThat(subList, contains(3, 6, 7, 8)));
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 6, 7, 8, 9, 10)));
-
-		Iterator<Integer> subListIterator = subList.iterator();
-		assertThat(subListIterator.hasNext(), is(true));
-		assertThat(subListIterator.next(), is(3));
-		subListIterator.remove();
-		twice(() -> assertThat(subList, contains(6, 7, 8)));
-		twice(() -> assertThat(sequence, contains(1, 2, 6, 7, 8, 9, 10)));
-
-		subList.removeIf(x -> x % 2 == 0);
-		twice(() -> assertThat(subList, contains(7)));
-		twice(() -> assertThat(sequence, contains(1, 2, 7, 9, 10)));
-
-		subList.clear();
-		twice(() -> assertThat(subList, is(emptyIterable())));
-		twice(() -> assertThat(sequence, contains(1, 2, 9, 10)));
-	}
-
-	@Test
 	public void untilTerminal() {
 		Sequence<Integer> untilEmpty = empty.until(5);
 		twice(() -> assertThat(untilEmpty, is(emptyIterable())));

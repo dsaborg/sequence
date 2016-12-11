@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ListSequenceTest {
@@ -42,9 +42,9 @@ public class ListSequenceTest {
 
 	@Test
 	public void subList() {
-		Sequence<Integer> listSequence = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+		ListSequence<Integer> listSequence = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 
-		Sequence<Integer> subList = listSequence.subList(2, 8);
+		ListSequence<Integer> subList = listSequence.subList(2, 8);
 		twice(() -> assertThat(subList, contains(3, 4, 5, 6, 7, 8)));
 
 		assertThat(subList.remove(1), is(4));
@@ -69,5 +69,12 @@ public class ListSequenceTest {
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(listSequence, contains(1, 2, 9, 10)));
+	}
+
+	@Test
+	public void testAsList() {
+		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		ListSequence listSequence = ListSequence.from(list);
+		assertThat(listSequence.asList(), is(sameInstance(list)));
 	}
 }
