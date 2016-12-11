@@ -241,7 +241,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	default long setLong(int index, long x) {
 		LongListIterator listIterator = listIterator(index);
-		long previous = listIterator.next();
+		long previous = listIterator.nextLong();
 		listIterator.set(x);
 		return previous;
 	}
@@ -262,7 +262,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	default long removeLongAt(int index) {
 		LongListIterator listIterator = listIterator(index);
-		long previous = listIterator.next();
+		long previous = listIterator.nextLong();
 		listIterator.remove();
 		return previous;
 	}
@@ -291,7 +291,7 @@ public interface LongList extends List<Long>, LongCollection {
 	default int indexOfLong(long x) {
 		int index = 0;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (iterator.next() == x)
+			if (iterator.nextLong() == x)
 				return index;
 
 		return -1;

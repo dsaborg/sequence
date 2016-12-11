@@ -27,10 +27,7 @@ import org.d2ab.util.OptionalChar;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.PrimitiveIterator;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -42,7 +39,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of characters.
  */
 @FunctionalInterface
-public interface CharSeq extends CharList {
+public interface CharSeq extends CharCollection {
 	/**
 	 * Create an empty {@code CharSeq} with no characters.
 	 */
@@ -809,6 +806,27 @@ public interface CharSeq extends CharList {
 	default <C> C collectInto(C result, ObjCharConsumer<? super C> adder) {
 		forEachChar(x -> adder.accept(result, x));
 		return result;
+	}
+
+	/**
+	 * @return a {@link CharList} view of this {@code CharSeq}, which is updated in real time as the backing
+	 * store of the {@code CharSeq} changes. The list does not implement {@link RandomAccess} and is best
+	 * accessed in sequence.
+	 *
+	 * @since 2.1
+	 */
+	default CharList asList() {
+		return new CharList() {
+			@Override
+			public CharIterator iterator() {
+				return CharSeq.this.iterator();
+			}
+
+			@Override
+			public int size() {
+				return CharSeq.this.size();
+			}
+		};
 	}
 
 	/**

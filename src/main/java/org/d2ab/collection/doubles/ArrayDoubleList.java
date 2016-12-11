@@ -19,10 +19,7 @@ package org.d2ab.collection.doubles;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
 import java.util.function.DoubleUnaryOperator;
@@ -33,7 +30,7 @@ import static org.d2ab.collection.doubles.DoubleComparator.eq;
  * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayDoubleList extends DoubleList.Base implements DoubleList {
+public class ArrayDoubleList extends DoubleList.Base implements DoubleList, RandomAccess {
 	private double[] contents;
 	private int size;
 

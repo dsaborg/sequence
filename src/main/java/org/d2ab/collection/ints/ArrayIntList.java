@@ -19,10 +19,7 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.ints.IntIterator;
 
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
@@ -31,7 +28,7 @@ import java.util.function.IntUnaryOperator;
  * An {@link IntList} backed by an int-array, supporting all {@link IntList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayIntList extends IntList.Base implements IntList {
+public class ArrayIntList extends IntList.Base implements IntList, RandomAccess {
 	private int[] contents;
 	private int size;
 

@@ -291,7 +291,7 @@ public interface IntList extends List<Integer>, IntCollection {
 	default int indexOfInt(int x) {
 		int index = 0;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (iterator.next() == x)
+			if (iterator.nextInt() == x)
 				return index;
 
 		return -1;

@@ -21,6 +21,8 @@ import org.d2ab.collection.ints.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.DelegatingTransformingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.test.StrictIntIterable;
+import org.d2ab.test.StrictIntIterator;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -1525,41 +1527,5 @@ public class IntSequenceTest {
 		assertThat(_12345.containsAnyInts(1, 2, 3, 4, 5), is(true));
 		assertThat(_12345.containsAnyInts(1, 2, 3, 4, 5, 17), is(true));
 		assertThat(_12345.containsAnyInts(17, 18, 19), is(false));
-	}
-
-	@FunctionalInterface
-	private interface StrictIntIterable extends IntIterable {
-		static IntIterable from(IntIterable iterable) {
-			return () -> StrictIntIterator.from(iterable.iterator());
-		}
-
-		static IntIterable of(int... values) {
-			return () -> StrictIntIterator.of(values);
-		}
-	}
-
-	private interface StrictIntIterator extends IntIterator {
-		static IntIterator from(IntIterator iterator) {
-			return new IntIterator() {
-				@Override
-				public boolean hasNext() {
-					return iterator.hasNext();
-				}
-
-				@Override
-				public int nextInt() {
-					return iterator.nextInt();
-				}
-
-				@Override
-				public Integer next() {
-					throw new UnsupportedOperationException();
-				}
-			};
-		}
-
-		static IntIterator of(int... values) {
-			return from(IntIterator.of(values));
-		}
 	}
 }

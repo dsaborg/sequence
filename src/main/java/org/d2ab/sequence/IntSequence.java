@@ -42,7 +42,7 @@ import static java.util.Collections.emptyIterator;
  * transforming and collating the list of ints.
  */
 @FunctionalInterface
-public interface IntSequence extends IntList {
+public interface IntSequence extends IntCollection {
 	/**
 	 * Create empty {@code IntSequence} with no contents.
 	 */
@@ -904,6 +904,27 @@ public interface IntSequence extends IntList {
 	default <C> C collectInto(C result, ObjIntConsumer<? super C> adder) {
 		forEachInt(x -> adder.accept(result, x));
 		return result;
+	}
+
+	/**
+	 * @return an {@link IntList} view of this {@code IntSequence}, which is updated in real time as the backing store
+	 * of the {@code IntSequence} changes. The list does not implement {@link RandomAccess} and is best accessed in
+	 * sequence.
+	 *
+	 * @since 2.1
+	 */
+	default IntList asList() {
+		return new IntList.Base() {
+			@Override
+			public IntIterator iterator() {
+				return IntSequence.this.iterator();
+			}
+
+			@Override
+			public int size() {
+				return IntSequence.this.size();
+			}
+		};
 	}
 
 	/**

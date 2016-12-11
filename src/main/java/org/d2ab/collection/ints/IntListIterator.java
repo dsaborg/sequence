@@ -94,6 +94,7 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 			@Override
 			public void remove() {
 				iterator.remove();
+				cursor--;
 			}
 
 			@Override

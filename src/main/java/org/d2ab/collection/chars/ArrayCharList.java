@@ -25,12 +25,13 @@ import org.d2ab.iterator.chars.CharIterator;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 
 /**
  * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayCharList extends CharList.Base implements CharList {
+public class ArrayCharList extends CharList.Base implements CharList, RandomAccess {
 	private char[] contents;
 	private int size;
 

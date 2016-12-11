@@ -246,7 +246,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	default double setDouble(int index, double x) {
 		DoubleListIterator listIterator = listIterator(index);
-		double previous = listIterator.next();
+		double previous = listIterator.nextDouble();
 		listIterator.set(x);
 		return previous;
 	}
@@ -267,7 +267,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	default double removeDoubleAt(int index) {
 		DoubleListIterator listIterator = listIterator(index);
-		double previous = listIterator.next();
+		double previous = listIterator.nextDouble();
 		listIterator.remove();
 		return previous;
 	}
@@ -307,7 +307,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	default int indexOfDoubleExactly(double x) {
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (iterator.next() == x)
+			if (iterator.nextDouble() == x)
 				return index;
 
 		return -1;
@@ -316,7 +316,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	default int indexOfDouble(double x, double precision) {
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.eq(iterator.next(), x, precision))
+			if (DoubleComparator.eq(iterator.nextDouble(), x, precision))
 				return index;
 
 		return -1;

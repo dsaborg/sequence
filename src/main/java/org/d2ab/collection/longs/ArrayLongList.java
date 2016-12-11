@@ -19,10 +19,7 @@ package org.d2ab.collection.longs;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
 
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.LongConsumer;
 import java.util.function.LongPredicate;
 import java.util.function.LongUnaryOperator;
@@ -31,7 +28,7 @@ import java.util.function.LongUnaryOperator;
  * A {@link LongList} backed by a long-array, supporting all {@link LongList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayLongList extends LongList.Base implements LongList {
+public class ArrayLongList extends LongList.Base implements LongList, RandomAccess {
 	private long[] contents;
 	private int size;
 
