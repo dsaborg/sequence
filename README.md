@@ -21,10 +21,14 @@ Javadoc for the entire project is available at the [Sequence javadoc.io Page](ht
 
 ### News
 
-**2016-11-22:** Sequence v2.0 is released, now with Sequence implementing the List interface. Also adds primitive collection interfaces
-and classes for implementing List-like interfaces on primitive Sequences. To upgrade, first upgrade to 1.3 and take note of deprecated
-methods, replacing them with corresponding method calls as per the javadoc. Then upgrade to 2.0, which should be compatible with
-non-deprecated methods in 1.3.
+**2016-12-11:** Sequence v2.1 is released, with Sequence backtracking from implementing the List interface to implementing just
+Collection, due to the general inability to fulfill List's equals and hashCode contract. It is still possible to get a full-fledged
+List view of a Sequence through Sequence#asList(). Also improves primitive collections with fail-fast iteration.
+
+**2016-11-22:** Sequence v2.0 is released, now with Sequence implementing the List interface. *NOTE: Using Sequences as List has
+been deprecated in 2.1 in favor of using Sequence#asList()*. Also adds primitive collection interfaces and classes for implementing
+List-like interfaces on primitive Sequences. To upgrade, first upgrade to 1.3 and take note of deprecated methods, replacing them
+with corresponding method calls as per the javadoc. Then upgrade to 2.0, which should be compatible with non-deprecated methods in 1.3.
 
 **2016-11-21:** Sequence v1.3 is released, as a transitional release to prepare for 2.0. To prepare for upgrading to 2.0,
 upgrade to 1.3 and take note of deprecated methods, replacing them with corresponding method calls as per the javadoc.
