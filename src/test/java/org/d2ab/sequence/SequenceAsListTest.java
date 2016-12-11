@@ -236,8 +236,8 @@ public class SequenceAsListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(1));
-		assertThat(list.hashCode(), is(-980763487));
+		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
+		assertThat(list.hashCode(), is(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5).hashCode()));
 	}
 
 	@Test

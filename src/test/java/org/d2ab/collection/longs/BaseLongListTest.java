@@ -228,7 +228,7 @@ public class BaseLongListTest {
 	@Test
 	public void testEquals() {
 		assertThat(empty.equals(emptyList()), is(true));
-		assertThat(empty.equals(asList(1, 2)), is(false));
+		assertThat(empty.equals(asList(1L, 2L)), is(false));
 
 		assertThat(list.equals(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L)), is(true));
 		assertThat(list.equals(asList(5L, 4L, 3L, 2L, 1L, 5L, 4L, 3L, 2L, 1L)), is(false));
@@ -236,8 +236,8 @@ public class BaseLongListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(empty.hashCode(), is(1));
-		assertThat(list.hashCode(), is(-980763487));
+		assertThat(empty.hashCode(), is(emptyList().hashCode()));
+		assertThat(list.hashCode(), is(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L).hashCode()));
 	}
 
 	@Test
@@ -350,13 +350,13 @@ public class BaseLongListTest {
 	public void listIteratorRemoveAll() {
 		LongIterator iterator = list.iterator();
 
-		long i = 0;
+		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.nextLong(), is(i % 5 + 1));
+			assertThat(iterator.nextLong(), is((long) (i % 5 + 1)));
 			iterator.remove();
 			i++;
 		}
-		assertThat(i, is(10L));
+		assertThat(i, is(10));
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -365,9 +365,9 @@ public class BaseLongListTest {
 	public void listIteratorRemove() {
 		LongListIterator listIterator = list.listIterator();
 
-		long i = 0;
+		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextLong(), is(i % 5 + 1));
+			assertThat(listIterator.nextLong(), is((long) (i % 5 + 1)));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -375,7 +375,7 @@ public class BaseLongListTest {
 			assertThat(listIterator.previousIndex(), is(-1));
 			i++;
 		}
-		assertThat(i, is(10L));
+		assertThat(i, is(10));
 
 		assertThat(list, is(emptyIterable()));
 	}

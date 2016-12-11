@@ -94,6 +94,7 @@ public interface DoubleListIterator extends ListIterator<Double>, DoubleIterator
 			@Override
 			public void remove() {
 				iterator.remove();
+				cursor--;
 			}
 
 			@Override

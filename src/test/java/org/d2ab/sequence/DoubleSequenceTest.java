@@ -21,6 +21,7 @@ import org.d2ab.collection.doubles.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingTransformingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.test.StrictDoubleIterable;
 import org.junit.Test;
 
 import java.util.*;
@@ -1500,41 +1501,5 @@ public class DoubleSequenceTest {
 		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
 		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(true));
 		assertThat(_12345.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
-	}
-
-	@FunctionalInterface
-	private interface StrictDoubleIterable extends DoubleIterable {
-		static DoubleIterable from(DoubleIterable iterable) {
-			return () -> StrictDoubleIterator.from(iterable.iterator());
-		}
-
-		static DoubleIterable of(double... values) {
-			return () -> StrictDoubleIterator.of(values);
-		}
-	}
-
-	private interface StrictDoubleIterator extends DoubleIterator {
-		static DoubleIterator from(DoubleIterator iterator) {
-			return new DoubleIterator() {
-				@Override
-				public boolean hasNext() {
-					return iterator.hasNext();
-				}
-
-				@Override
-				public double nextDouble() {
-					return iterator.nextDouble();
-				}
-
-				@Override
-				public Double next() {
-					throw new UnsupportedOperationException();
-				}
-			};
-		}
-
-		static DoubleIterator of(double... values) {
-			return from(DoubleIterator.of(values));
-		}
 	}
 }

@@ -237,8 +237,8 @@ public class IntSequenceAsListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(1));
-		assertThat(list.hashCode(), is(-980763487));
+		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
+		assertThat(list.hashCode(), is(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5).hashCode()));
 	}
 
 	@Test
@@ -413,8 +413,8 @@ public class IntSequenceAsListTest {
 			throw new IllegalStateException("Should not get called");
 		});
 
-		AtomicInteger value = new AtomicInteger(0);
-		list.forEachInt(x -> assertThat(x, is(value.getAndIncrement() % 5 + 1)));
-		assertThat(value.get(), is(10));
+		AtomicInteger i = new AtomicInteger(0);
+		list.forEachInt(x -> assertThat(x, is(i.getAndIncrement() % 5 + 1)));
+		assertThat(i.get(), is(10));
 	}
 }

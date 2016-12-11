@@ -24,7 +24,6 @@ import org.d2ab.test.StrictLongIterable;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -230,7 +229,7 @@ public class LongSequenceAsListTest {
 	@Test
 	public void testEquals() {
 		assertThat(emptyList.equals(emptyList()), is(true));
-		assertThat(emptyList.equals(asList(1, 2)), is(false));
+		assertThat(emptyList.equals(asList(1L, 2L)), is(false));
 
 		assertThat(list.equals(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L)), is(true));
 		assertThat(list.equals(asList(5L, 4L, 3L, 2L, 1L, 5L, 4L, 3L, 2L, 1L)), is(false));
@@ -238,8 +237,8 @@ public class LongSequenceAsListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(1));
-		assertThat(list.hashCode(), is(-980763487));
+		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
+		assertThat(list.hashCode(), is(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L).hashCode()));
 	}
 
 	@Test
@@ -355,13 +354,13 @@ public class LongSequenceAsListTest {
 	public void listIteratorRemoveAll() {
 		LongIterator iterator = list.iterator();
 
-		long i = 0;
+		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.nextLong(), is(i % 5 + 1));
+			assertThat(iterator.nextLong(), is((long) (i % 5 + 1)));
 			iterator.remove();
 			i++;
 		}
-		assertThat(i, is(10L));
+		assertThat(i, is(10));
 
 		assertThat(list, is(emptyIterable()));
 		assertThat(sequence, is(emptyIterable()));
@@ -371,9 +370,9 @@ public class LongSequenceAsListTest {
 	public void listIteratorRemove() {
 		LongListIterator listIterator = list.listIterator();
 
-		long i = 0;
+		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextLong(), is(i % 5 + 1));
+			assertThat(listIterator.nextLong(), is((long) (i % 5 + 1)));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -381,7 +380,7 @@ public class LongSequenceAsListTest {
 			assertThat(listIterator.previousIndex(), is(-1));
 			i++;
 		}
-		assertThat(i, is(10L));
+		assertThat(i, is(10));
 
 		assertThat(list, is(emptyIterable()));
 		assertThat(sequence, is(emptyIterable()));
@@ -414,8 +413,8 @@ public class LongSequenceAsListTest {
 			throw new IllegalStateException("Should not get called");
 		});
 
-		AtomicLong value = new AtomicLong(0);
-		list.forEachLong(x -> assertThat(x, is(value.getAndIncrement() % 5 + 1)));
-		assertThat(value.get(), is(10L));
+		AtomicInteger i = new AtomicInteger(0);
+		list.forEachLong(x -> assertThat(x, is((long) (i.getAndIncrement() % 5 + 1))));
+		assertThat(i.get(), is(10));
 	}
 }

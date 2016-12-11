@@ -235,8 +235,8 @@ public class BaseIntListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(empty.hashCode(), is(1));
-		assertThat(list.hashCode(), is(-980763487));
+		assertThat(empty.hashCode(), is(emptyList().hashCode()));
+		assertThat(list.hashCode(), is(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5).hashCode()));
 	}
 
 	@Test

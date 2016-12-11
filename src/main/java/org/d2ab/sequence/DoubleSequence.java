@@ -760,7 +760,7 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 2.1
 	 */
 	default DoubleList asList() {
-		return new DoubleList() {
+		return new DoubleList.Base() {
 			@Override
 			public DoubleIterator iterator() {
 				return DoubleSequence.this.iterator();
