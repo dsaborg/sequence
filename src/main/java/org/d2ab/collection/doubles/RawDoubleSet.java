@@ -29,6 +29,9 @@ import java.util.PrimitiveIterator;
 public class RawDoubleSet extends DoubleSet.Base implements DoubleSet {
 	private final LongSet values = new BitLongSet();
 
+	public RawDoubleSet() {
+	}
+
 	public RawDoubleSet(double... xs) {
 		addAllDoubles(xs);
 	}

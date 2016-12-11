@@ -27,6 +27,9 @@ import java.util.NoSuchElementException;
 public class SortedListDoubleSet extends DoubleSet.Base implements DoubleSortedSet {
 	private final DoubleList values = DoubleList.create();
 
+	public SortedListDoubleSet() {
+	}
+
 	public SortedListDoubleSet(double... xs) {
 		addAllDoubles(xs);
 	}

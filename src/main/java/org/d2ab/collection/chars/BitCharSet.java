@@ -27,6 +27,9 @@ import java.util.Set;
 public class BitCharSet implements CharSortedSet {
 	private final SparseBitSet values = new SparseBitSet();
 
+	public BitCharSet() {
+	}
+
 	public BitCharSet(char... xs) {
 		addAllChars(xs);
 	}

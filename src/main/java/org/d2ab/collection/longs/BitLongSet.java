@@ -32,6 +32,9 @@ public class BitLongSet extends LongSet.Base implements LongSortedSet {
 
 	private int modCount;
 
+	public BitLongSet() {
+	}
+
 	public BitLongSet(long... xs) {
 		addAllLongs(xs);
 	}

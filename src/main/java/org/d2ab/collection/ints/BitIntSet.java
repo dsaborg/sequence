@@ -28,6 +28,9 @@ import java.util.PrimitiveIterator;
 public class BitIntSet extends IntSet.Base implements IntSortedSet {
 	private final SparseBitSet values = new SparseBitSet();
 
+	public BitIntSet() {
+	}
+
 	public BitIntSet(int... xs) {
 		addAllInts(xs);
 	}
