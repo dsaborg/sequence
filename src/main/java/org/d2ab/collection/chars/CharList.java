@@ -18,10 +18,7 @@ package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.function.CharUnaryOperator;
-import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.chars.DelegatingUnaryCharIterator;
-import org.d2ab.iterator.chars.LimitingCharIterator;
-import org.d2ab.iterator.chars.SkippingCharIterator;
+import org.d2ab.iterator.chars.*;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -32,13 +29,21 @@ import java.util.function.UnaryOperator;
  */
 public interface CharList extends List<Character>, CharCollection {
 	/**
-	 * @return a new mutable {@code CharList} with a copy of the given elements.
-	 *
-	 * @deprecated Use {@link #create(char...)} instead.
+	 * Returns an immutable {@code CharList} of the given elements. The returned {@code CharList}'s
+	 * {@link CharListIterator} supports forward iteration only.
 	 */
-	@Deprecated
 	static CharList of(char... xs) {
-		return create(xs);
+		return new CharList.Base() {
+			@Override
+			public CharIterator iterator() {
+				return new ArrayCharIterator(xs);
+			}
+
+			@Override
+			public int size() {
+				return xs.length;
+			}
+		};
 	}
 
 	/**

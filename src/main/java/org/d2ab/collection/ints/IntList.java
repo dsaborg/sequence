@@ -17,10 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
-import org.d2ab.iterator.ints.DelegatingUnaryIntIterator;
-import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.iterator.ints.LimitingIntIterator;
-import org.d2ab.iterator.ints.SkippingIntIterator;
+import org.d2ab.iterator.ints.*;
 
 import java.util.*;
 import java.util.function.IntUnaryOperator;
@@ -32,13 +29,21 @@ import java.util.function.UnaryOperator;
  */
 public interface IntList extends List<Integer>, IntCollection {
 	/**
-	 * @return a new mutable {@code IntList} with a copy of the given elements.
-	 *
-	 * @deprecated Use {@link #create(int...)} instead.
+	 * Returns an immutable {@code IntList} of the given elements. The returned {@code IntList}'s
+	 * {@link IntListIterator} supports forward iteration only.
 	 */
-	@Deprecated
 	static IntList of(int... xs) {
-		return create(xs);
+		return new Base() {
+			@Override
+			public IntIterator iterator() {
+				return new ArrayIntIterator(xs);
+			}
+
+			@Override
+			public int size() {
+				return xs.length;
+			}
+		};
 	}
 
 	/**
@@ -371,7 +376,8 @@ public interface IntList extends List<Integer>, IntCollection {
 		}
 
 		public IntIterator iterator() {
-			return new DelegatingUnaryIntIterator(new LimitingIntIterator(new SkippingIntIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryIntIterator(
+					new LimitingIntIterator(new SkippingIntIterator(list.iterator(), from), to - from)) {
 				@Override
 				public int nextInt() {
 					return iterator.nextInt();

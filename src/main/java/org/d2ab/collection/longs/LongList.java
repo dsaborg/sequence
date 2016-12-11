@@ -17,10 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Collectionz;
-import org.d2ab.iterator.longs.DelegatingUnaryLongIterator;
-import org.d2ab.iterator.longs.LimitingLongIterator;
-import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.iterator.longs.SkippingLongIterator;
+import org.d2ab.iterator.longs.*;
 
 import java.util.*;
 import java.util.function.LongUnaryOperator;
@@ -32,13 +29,21 @@ import java.util.function.UnaryOperator;
  */
 public interface LongList extends List<Long>, LongCollection {
 	/**
-	 * @return a new mutable {@code LongList} with a copy of the given elements.
-	 *
-	 * @deprecated Use {@link #create(long...)} instead.
+	 * Returns an immutable {@code LongList} of the given elements. The returned {@code LongList}'s
+	 * {@link LongListIterator} supports forward iteration only.
 	 */
-	@Deprecated
 	static LongList of(long... xs) {
-		return create(xs);
+		return new LongList.Base() {
+			@Override
+			public LongIterator iterator() {
+				return new ArrayLongIterator(xs);
+			}
+
+			@Override
+			public int size() {
+				return xs.length;
+			}
+		};
 	}
 
 	/**

@@ -17,7 +17,6 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterator;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,55 +31,34 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class BaseDoubleListTest {
-	private final DoubleList backingEmpty = DoubleList.create();
-	private final DoubleList empty = new DoubleList.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return StrictDoubleIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-	};
-
-	private final DoubleList backingList = DoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
-	private final DoubleList list = new DoubleList.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return StrictDoubleIterator.from(backingList.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingList.size();
-		}
-	};
+public class DoubleListOfTest {
+	private final DoubleList empty = DoubleList.of();
+	private final DoubleList list = DoubleList.of(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
 
 	@Test
 	public void subList() {
 		DoubleList subList = list.subList(2, 8);
 		twice(() -> assertThat(subList, containsDoubles(3, 4, 5, 1, 2, 3)));
 
-		assertThat(subList.removeDoubleAt(1), is(4.0));
-		twice(() -> assertThat(subList, containsDoubles(3, 5, 1, 2, 3)));
+		expecting(UnsupportedOperationException.class, () -> subList.removeDoubleAt(1));
+		twice(() -> assertThat(subList, containsDoubles(3, 4, 5, 1, 2, 3)));
 
-		assertThat(subList.removeDoubleExactly(5), is(true));
-		twice(() -> assertThat(subList, containsDoubles(3, 1, 2, 3)));
+		expecting(UnsupportedOperationException.class, () -> subList.removeDoubleExactly(5));
+		twice(() -> assertThat(subList, containsDoubles(3, 4, 5, 1, 2, 3)));
 
 		DoubleIterator subListIterator = subList.iterator();
 		assertThat(subListIterator.hasNext(), is(true));
 		assertThat(subListIterator.nextDouble(), is(3.0));
-		subListIterator.remove();
-		twice(() -> assertThat(subList, containsDoubles(1, 2, 3)));
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.nextDouble(), is(4.0));
+		expecting(UnsupportedOperationException.class, subListIterator::remove);
+		twice(() -> assertThat(subList, containsDoubles(3, 4, 5, 1, 2, 3)));
 
-		subList.removeDoublesIf(x -> x % 2 == 0);
-		twice(() -> assertThat(subList, containsDoubles(1, 3)));
+		expecting(UnsupportedOperationException.class, () -> subList.removeDoublesIf(x -> x % 2 == 0));
+		twice(() -> assertThat(subList, containsDoubles(3, 4, 5, 1, 2, 3)));
 
-		subList.clear();
-		twice(() -> assertThat(subList, is(emptyIterable())));
+		expecting(UnsupportedOperationException.class, subList::clear);
+		twice(() -> assertThat(subList, containsDoubles(3, 4, 5, 1, 2, 3)));
 	}
 
 	@Test
@@ -112,13 +90,13 @@ public class BaseDoubleListTest {
 	@Test
 	public void iteratorRemove() {
 		DoubleIterator iterator = list.iterator();
-		iterator.nextDouble();
-		iterator.nextDouble();
-		iterator.remove();
-		iterator.nextDouble();
-		iterator.remove();
+		assertThat(iterator.nextDouble(), is(1.0));
+		assertThat(iterator.nextDouble(), is(2.0));
+		expecting(UnsupportedOperationException.class, iterator::remove);
+		assertThat(iterator.nextDouble(), is(3.0));
+		expecting(UnsupportedOperationException.class, iterator::remove);
 
-		assertThat(list, containsDoubles(1, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -128,7 +106,7 @@ public class BaseDoubleListTest {
 	}
 
 	@Test
-	public void addDoubleExactly() {
+	public void addDouble() {
 		expecting(UnsupportedOperationException.class, () -> empty.addDoubleExactly(1));
 		assertThat(empty, is(emptyIterable()));
 
@@ -140,11 +118,11 @@ public class BaseDoubleListTest {
 	public void removeDoubleExactly() {
 		assertThat(empty.removeDoubleExactly(17), is(false));
 
-		assertThat(list.removeDoubleExactly(2), is(true));
-		assertThat(list, containsDoubles(1, 3, 4, 5, 1, 2, 3, 4, 5));
+		expecting(UnsupportedOperationException.class, () -> list.removeDoubleExactly(2));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 
 		assertThat(list.removeDoubleExactly(17), is(false));
-		assertThat(list, containsDoubles(1, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -184,8 +162,8 @@ public class BaseDoubleListTest {
 		assertThat(empty.removeAllDoublesExactly(DoubleList.create(1, 2)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllDoublesExactly(DoubleList.create(1, 2, 5)), is(true));
-		assertThat(list, containsDoubles(3, 4, 3, 4));
+		expecting(UnsupportedOperationException.class, () -> list.removeAllDoublesExactly(DoubleList.create(1, 2, 5)));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -193,8 +171,8 @@ public class BaseDoubleListTest {
 		assertThat(empty.retainAllDoublesExactly(DoubleList.create(1, 2)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllDoublesExactly(DoubleList.create(1, 2, 3)), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 1, 2, 3));
+		expecting(UnsupportedOperationException.class, () -> list.retainAllDoublesExactly(DoubleList.create(1, 2, 3)));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -220,8 +198,8 @@ public class BaseDoubleListTest {
 		empty.clear();
 		assertThat(empty, is(emptyIterable()));
 
-		list.clear();
-		assertThat(list, is(emptyIterable()));
+		expecting(UnsupportedOperationException.class, list::clear);
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -346,40 +324,6 @@ public class BaseDoubleListTest {
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
-		DoubleIterator iterator = list.iterator();
-
-		int i = 0;
-		while (iterator.hasNext()) {
-			assertThat(iterator.nextDouble(), is((double) (i % 5 + 1)));
-			iterator.remove();
-			i++;
-		}
-		assertThat(i, is(10));
-
-		assertThat(list, is(emptyIterable()));
-	}
-
-	@Test
-	public void listIteratorRemove() {
-		DoubleListIterator listIterator = list.listIterator();
-
-		int i = 0;
-		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextDouble(), is((double) (i % 5 + 1)));
-			assertThat(listIterator.nextIndex(), is(1));
-			assertThat(listIterator.previousIndex(), is(0));
-			listIterator.remove();
-			assertThat(listIterator.nextIndex(), is(0));
-			assertThat(listIterator.previousIndex(), is(-1));
-			i++;
-		}
-		assertThat(i, is(10));
-
-		assertThat(list, is(emptyIterable()));
-	}
-
-	@Test
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.stream().collect(Collectors.toList()),
@@ -398,8 +342,8 @@ public class BaseDoubleListTest {
 		empty.removeDoublesIf(x -> x == 1);
 		assertThat(empty, is(emptyIterable()));
 
-		list.removeDoublesIf(x -> x == 1);
-		assertThat(list, containsDoubles(2, 3, 4, 5, 2, 3, 4, 5));
+		expecting(UnsupportedOperationException.class, () -> list.removeDoublesIf(x -> x == 1));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test

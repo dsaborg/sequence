@@ -17,10 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
-import org.d2ab.iterator.doubles.DelegatingUnaryDoubleIterator;
-import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.iterator.doubles.LimitingDoubleIterator;
-import org.d2ab.iterator.doubles.SkippingDoubleIterator;
+import org.d2ab.iterator.doubles.*;
 
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
@@ -32,13 +29,21 @@ import java.util.function.UnaryOperator;
  */
 public interface DoubleList extends List<Double>, DoubleCollection {
 	/**
-	 * @return a new mutable {@code DoubleList} with a copy of the given elements.
-	 *
-	 * @deprecated Use {@link #create(double...)} instead.
+	 * Returns an immutable {@code DoubleList} of the given elements. The returned {@code DoubleList}'s
+	 * {@link DoubleListIterator} supports forward iteration only.
 	 */
-	@Deprecated
 	static DoubleList of(double... xs) {
-		return create(xs);
+		return new DoubleList.Base() {
+			@Override
+			public DoubleIterator iterator() {
+				return new ArrayDoubleIterator(xs);
+			}
+
+			@Override
+			public int size() {
+				return xs.length;
+			}
+		};
 	}
 
 	/**
