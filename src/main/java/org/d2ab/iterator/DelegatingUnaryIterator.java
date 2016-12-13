@@ -22,7 +22,7 @@ import java.util.Iterator;
  * An {@link Iterator} that delegates to another {@link Iterator} of the same type.
  */
 public abstract class DelegatingUnaryIterator<T> extends DelegatingMappingIterator<T, T> {
-	protected DelegatingUnaryIterator(Iterator<T> iterator) {
+	protected DelegatingUnaryIterator(Iterator<? extends T> iterator) {
 		super(iterator);
 	}
 }

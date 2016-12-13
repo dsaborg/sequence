@@ -440,6 +440,13 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * @return an immutable view of this {@code Sequence}.
+	 */
+	default Sequence<T> immutable() {
+		return () -> new ImmutableIterator<>(iterator());
+	}
+
+	/**
 	 * Terminate this {@code Sequence} just before the given element is encountered, not including the element in the
 	 * {@code Sequence}.
 	 *

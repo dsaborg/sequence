@@ -2341,4 +2341,24 @@ public class SequenceTest {
 		assertThat(_12345.containsAny(Iterables.of(1, 2, 3, 4, 5, 17)), is(true));
 		assertThat(_12345.containsAny(Iterables.of(17, 18, 19)), is(false));
 	}
+
+	@Test
+	public void immutable() {
+		Sequence<Integer> emptyImmutable = empty.immutable();
+		twice(() -> assertThat(emptyImmutable, is(emptyIterable())));
+
+		Sequence<Integer> fiveImmutable = _12345.immutable();
+		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
+
+		Iterator<Integer> iterator = fiveImmutable.iterator();
+		iterator.next();
+		expecting(UnsupportedOperationException.class, iterator::remove);
+		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
+
+		expecting(UnsupportedOperationException.class, () -> fiveImmutable.add(17));
+		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
+
+		expecting(UnsupportedOperationException.class, () -> fiveImmutable.remove(3));
+		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
+	}
 }
