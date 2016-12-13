@@ -95,11 +95,21 @@ public class FilteredCollectionTest {
 
 	@Test
 	public void add() {
-		expecting(UnsupportedOperationException.class, () -> filteredEmpty.add(3));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(filteredEmpty.add(3), is(true));
+		assertThat(filteredEmpty, contains(3));
+		assertThat(originalEmpty, contains(3));
 
-		expecting(UnsupportedOperationException.class, () -> filtered.add(3));
-		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.add(4));
+		assertThat(filteredEmpty, contains(3));
+		assertThat(originalEmpty, contains(3));
+
+		assertThat(filtered.add(17), is(true));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 17));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17));
+
+		expecting(IllegalArgumentException.class, () -> filtered.add(18));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 17));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17));
 	}
 
 	@Test
@@ -130,11 +140,21 @@ public class FilteredCollectionTest {
 
 	@Test
 	public void addAll() {
-		expecting(UnsupportedOperationException.class, () -> filteredEmpty.addAll(asList(1, 3)));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(filteredEmpty.addAll(asList(1, 3)), is(true));
+		assertThat(filteredEmpty, contains(1, 3));
+		assertThat(originalEmpty, contains(1, 3));
 
-		expecting(UnsupportedOperationException.class, () -> filtered.addAll(asList(1, 3)));
-		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(asList(1, 2)));
+		assertThat(filteredEmpty, contains(1, 3, 1));
+		assertThat(originalEmpty, contains(1, 3, 1));
+
+		assertThat(filtered.addAll(asList(1, 3)), is(true));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 1, 3));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3));
+
+		expecting(IllegalArgumentException.class, () -> filtered.addAll(asList(1, 2)));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 1, 3, 1));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3, 1));
 	}
 
 	@Test

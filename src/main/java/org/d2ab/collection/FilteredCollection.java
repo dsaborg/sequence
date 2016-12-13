@@ -52,4 +52,12 @@ public class FilteredCollection<T> extends AbstractCollection<T> {
 	public int size() {
 		return Iterators.count(iterator());
 	}
+
+	@Override
+	public boolean add(T t) {
+		if (!predicate.test(t))
+			throw new IllegalArgumentException(String.valueOf(t));
+
+		return collection.add(t);
+	}
 }

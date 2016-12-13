@@ -26,13 +26,17 @@ public class ListSequenceTest {
 
 	@Test
 	public void remove() {
-		listSequence.remove(3);
+		assertThat(listSequence.remove(3), is(true));
+		assertThat(listSequence, contains(1, 2, 4, 5));
+
+		assertThat(listSequence.remove(17), is(false));
 		assertThat(listSequence, contains(1, 2, 4, 5));
 	}
 
 	@Test
 	public void containsInteger() {
 		assertThat(listSequence.contains(3), is(true));
+		assertThat(listSequence.contains(17), is(false));
 	}
 
 	@Test
