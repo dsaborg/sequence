@@ -24,16 +24,20 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class CollectionSequenceAsListTest {
-	private final Sequence<Integer> empty = CollectionSequence.from(new ArrayDeque<>());
+public class ChainedListSequenceAsListTest {
+	private final ArrayList<Integer> emptyBackingList1 = new ArrayList<>();
+	private final ArrayList<Integer> emptyBackingList2 = new ArrayList<>();
+	private final Sequence<Integer> empty = ListSequence.concat(emptyBackingList1, emptyBackingList2);
 	private final List<Integer> emptyList = empty.asList();
 
-	private final Sequence<Integer> sequence = CollectionSequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	private final ArrayList<Integer> backingList1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+	private final ArrayList<Integer> backingList2 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+	private final Sequence<Integer> sequence = ListSequence.concat(backingList1,
+	                                                               backingList2);
 	private final List<Integer> list = sequence.asList();
 
 	@Test
@@ -102,6 +106,8 @@ public class CollectionSequenceAsListTest {
 
 		assertThat(list, contains(1, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(backingList1, contains(1, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -122,11 +128,15 @@ public class CollectionSequenceAsListTest {
 		assertThat(emptyList.add(2), is(true));
 		assertThat(emptyList, contains(1, 2));
 		assertThat(empty, contains(1, 2));
+		assertThat(emptyBackingList1, contains(1, 2));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		assertThat(list.add(6), is(true));
 		assertThat(list.add(7), is(true));
 		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7));
+		assertThat(backingList1, contains(1, 2, 3, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5, 6, 7));
 	}
 
 	@Test
@@ -136,10 +146,14 @@ public class CollectionSequenceAsListTest {
 		assertThat(list.remove((Integer) 2), is(true));
 		assertThat(list, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(backingList1, contains(1, 3, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5));
 
 		assertThat(list.remove((Integer) 17), is(false));
 		assertThat(list, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(backingList1, contains(1, 3, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -154,77 +168,109 @@ public class CollectionSequenceAsListTest {
 	public void addAll() {
 		assertThat(emptyList.addAll(emptyList()), is(false));
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		assertThat(emptyList.addAll(asList(1, 2)), is(true));
 		assertThat(emptyList, contains(1, 2));
 		assertThat(empty, contains(1, 2));
+		assertThat(emptyBackingList1, contains(1, 2));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		assertThat(list.addAll(asList(6, 7, 8)), is(true));
 		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(backingList1, contains(1, 2, 3, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllAtIndex() {
 		assertThat(emptyList.addAll(0, emptyList()), is(false));
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAll(0, asList(1, 2)));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyList.addAll(0, asList(1, 2)), is(true));
+		assertThat(emptyList, contains(1, 2));
+		assertThat(emptyBackingList1, contains(1, 2));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(2, asList(17, 18, 19)));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list.addAll(2, asList(17, 18, 19)), is(true));
+		assertThat(list, contains(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(backingList1, contains(1, 2, 17, 18, 19, 3, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void removeAll() {
 		assertThat(emptyList.removeAll(asList(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		assertThat(list.removeAll(asList(1, 2, 5)), is(true));
 		assertThat(list, contains(3, 4, 3, 4));
 		assertThat(sequence, contains(3, 4, 3, 4));
+		assertThat(backingList1, contains(3, 4));
+		assertThat(backingList2, contains(3, 4));
 	}
 
 	@Test
 	public void retainAll() {
 		assertThat(emptyList.retainAll(asList(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		assertThat(list.retainAll(asList(1, 2, 3)), is(true));
 		assertThat(list, contains(1, 2, 3, 1, 2, 3));
 		assertThat(sequence, contains(1, 2, 3, 1, 2, 3));
+		assertThat(backingList1, contains(1, 2, 3));
+		assertThat(backingList2, contains(1, 2, 3));
 	}
 
 	@Test
 	public void replaceAll() {
 		emptyList.replaceAll(x -> x + 1);
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.replaceAll(x -> x + 1));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		list.replaceAll(x -> x + 1);
+		assertThat(list, contains(2, 3, 4, 5, 6, 2, 3, 4, 5, 6));
+		assertThat(sequence, contains(2, 3, 4, 5, 6, 2, 3, 4, 5, 6));
+		assertThat(backingList1, contains(2, 3, 4, 5, 6));
+		assertThat(backingList2, contains(2, 3, 4, 5, 6));
 	}
 
 	@Test
 	public void sort() {
 		emptyList.sort(Comparator.naturalOrder());
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.sort(Comparator.naturalOrder()));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		list.sort(Comparator.naturalOrder());
+		assertThat(list, contains(1, 1, 2, 2, 3, 3, 4, 4, 5, 5));
+		assertThat(sequence, contains(1, 1, 2, 2, 3, 3, 4, 4, 5, 5));
+		assertThat(backingList1, contains(1, 1, 2, 2, 3));
+		assertThat(backingList2, contains(3, 4, 4, 5, 5));
 	}
 
 	@Test
 	public void clear() {
 		emptyList.clear();
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		list.clear();
 		assertThat(list, is(emptyIterable()));
 		assertThat(sequence, is(emptyIterable()));
+		assertThat(backingList1, is(emptyIterable()));
+		assertThat(backingList2, is(emptyIterable()));
 	}
 
 	@Test
@@ -254,16 +300,20 @@ public class CollectionSequenceAsListTest {
 
 	@Test
 	public void set() {
-		expecting(UnsupportedOperationException.class, () -> list.set(2, 17));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		list.set(2, 17);
+		assertThat(list, contains(1, 2, 17, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 17, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(backingList1, contains(1, 2, 17, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void addAtIndex() {
-		expecting(UnsupportedOperationException.class, () -> list.add(0, 17));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		list.add(0, 17);
+		assertThat(list, contains(17, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(sequence, contains(17, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(backingList1, contains(17, 1, 2, 3, 4, 5));
+		assertThat(backingList2, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -288,16 +338,18 @@ public class CollectionSequenceAsListTest {
 	public void listIteratorEmpty() {
 		ListIterator<Integer> emptyIterator = emptyList.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
-		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
+		emptyIterator.add(17);
 		assertThat(emptyIterator.hasNext(), is(false));
-		assertThat(emptyIterator.nextIndex(), is(0));
-		assertThat(emptyIterator.previousIndex(), is(-1));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
 
-		assertThat(emptyList, is(emptyIterable()));
-		assertThat(empty, is(emptyIterable()));
+		assertThat(emptyList, contains(17));
+		assertThat(empty, contains(17));
 	}
 
 	@Test
@@ -314,20 +366,20 @@ public class CollectionSequenceAsListTest {
 		assertThat(listIterator.previousIndex(), is(0));
 		assertThat(listIterator.next(), is(2));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.next(), is(3));
-
-		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
+		listIterator.add(17);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
+		assertThat(listIterator.next(), is(3));
+
+		listIterator.set(18);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
 		assertThat(listIterator.next(), is(4));
 
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list, contains(1, 2, 17, 18, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 17, 18, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -360,6 +412,8 @@ public class CollectionSequenceAsListTest {
 
 		assertThat(list, is(emptyIterable()));
 		assertThat(sequence, is(emptyIterable()));
+		assertThat(backingList1, is(emptyIterable()));
+		assertThat(backingList2, is(emptyIterable()));
 	}
 
 	@Test
@@ -380,6 +434,8 @@ public class CollectionSequenceAsListTest {
 
 		assertThat(list, is(emptyIterable()));
 		assertThat(sequence, is(emptyIterable()));
+		assertThat(backingList1, is(emptyIterable()));
+		assertThat(backingList2, is(emptyIterable()));
 	}
 
 	@Test
@@ -398,9 +454,13 @@ public class CollectionSequenceAsListTest {
 	public void removeIf() {
 		emptyList.removeIf(x -> x == 1);
 		assertThat(emptyList, is(emptyIterable()));
+		assertThat(emptyBackingList1, is(emptyIterable()));
+		assertThat(emptyBackingList2, is(emptyIterable()));
 
 		list.removeIf(x -> x == 1);
 		assertThat(list, contains(2, 3, 4, 5, 2, 3, 4, 5));
+		assertThat(backingList1, contains(2, 3, 4, 5));
+		assertThat(backingList2, contains(2, 3, 4, 5));
 	}
 
 	@Test

@@ -9,39 +9,39 @@ import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-public class ListSequenceTest {
-	private final List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
-	private final Sequence<Integer> sequence = ListSequence.from(list);
-	private final Sequence<Integer> odds = sequence.filter(x -> x % 2 == 1);
+public class ChainedListSequenceTest {
+	private final List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
+	private final List<Integer> list2 = new ArrayList<>(asList(4, 5));
+	private final Sequence<Integer> listSequence = ListSequence.concat(list1, list2);
+	private final Sequence<Integer> odds = listSequence.filter(x -> x % 2 == 1);
 
 	@Test
 	public void add() {
-		sequence.add(17);
+		listSequence.add(17);
 
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 17));
+		assertThat(listSequence, contains(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
 	public void remove() {
-		assertThat(sequence.remove(3), is(true));
-		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(listSequence.remove(3), is(true));
+		assertThat(listSequence, contains(1, 2, 4, 5));
 
-		assertThat(sequence.remove(17), is(false));
-		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(listSequence.remove(17), is(false));
+		assertThat(listSequence, contains(1, 2, 4, 5));
 	}
 
 	@Test
 	public void containsInteger() {
-		assertThat(sequence.contains(3), is(true));
-		assertThat(sequence.contains(17), is(false));
+		assertThat(listSequence.contains(3), is(true));
+		assertThat(listSequence.contains(17), is(false));
 	}
 
 	@Test
 	public void testAsList() {
-		assertThat(sequence.asList(), is(sameInstance(list)));
+		assertThat(listSequence.asList(), contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class ListSequenceTest {
 		expecting(IllegalArgumentException.class, () -> odds.add(18));
 
 		assertThat(odds, contains(1, 3, 5, 17));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 17));
+		assertThat(listSequence, contains(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class ListSequenceTest {
 		assertThat(odds.remove(4), is(false));
 
 		assertThat(odds, contains(1, 5));
-		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(listSequence, contains(1, 2, 4, 5));
 	}
 
 	@Test
