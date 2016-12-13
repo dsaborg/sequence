@@ -275,8 +275,9 @@ See also:
 
 #### Updating
 
-`Sequences` have full support for updating the underlying collection where possible, both through `Iterator#remove()`
-and by modifying the underlying collection directly in between iterations.
+`Sequences` have full support for updating the underlying collection where possible, through `Iterator#remove()`, by
+modifying the underlying collection directly (in between iterations), and by using `Collection` methods directly on
+the `Sequence` itself.
 
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
@@ -289,11 +290,16 @@ assertThat(list, contains(2, 4));
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-Sequence<Integer> sequence = Sequence.from(list).filter(x -> x % 2 == 0);
-assertThat(sequence, contains(2, 4));
+Sequence<Integer> evens = Sequence.from(list).filter(x -> x % 2 == 0);
+assertThat(evens, contains(2, 4));
 
-list.add(6);
-assertThat(sequence, contains(2, 4, 6));
+evens.add(6);
+assertThat(evens, contains(2, 4, 6));
+assertThat(list, contains(1, 2, 3, 4, 5, 6));
+
+expecting(IllegalArgumentException.class, () -> evens.add(7)); // cannot add filtered out item to sequence
+assertThat(evens, contains(2, 4, 6));
+assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 
 See also:
