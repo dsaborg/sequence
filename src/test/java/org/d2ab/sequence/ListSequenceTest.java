@@ -3,78 +3,64 @@ package org.d2ab.sequence;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 public class ListSequenceTest {
+	private final List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+	private final Sequence<Integer> listSequence = ListSequence.from(list);
+	private final Sequence<Integer> odds = listSequence.filter(x -> x % 2 == 1);
+
 	@Test
 	public void add() {
-		ListSequence<Integer> listSequence = new ListSequence<>();
 		listSequence.add(17);
 
-		assertThat(listSequence, contains(17));
+		assertThat(listSequence, contains(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
 	public void remove() {
-		ListSequence<Integer> listSequence = new ListSequence<>();
-		listSequence.add(17);
-
-		assertThat(listSequence, contains(17));
-
-		listSequence.remove((Integer) 17);
-		assertThat(listSequence, is(emptyIterable()));
+		listSequence.remove(3);
+		assertThat(listSequence, contains(1, 2, 4, 5));
 	}
 
 	@Test
 	public void containsInteger() {
-		ListSequence<Integer> listSequence = new ListSequence<>();
-		listSequence.add(17);
-
-		assertThat(listSequence.contains(17), is(true));
-	}
-
-	@Test
-	public void subList() {
-		ListSequence<Integer> listSequence = ListSequence.from(new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
-
-		ListSequence<Integer> subList = listSequence.subList(2, 8);
-		twice(() -> assertThat(subList, contains(3, 4, 5, 6, 7, 8)));
-
-		assertThat(subList.remove(1), is(4));
-		twice(() -> assertThat(subList, contains(3, 5, 6, 7, 8)));
-		twice(() -> assertThat(listSequence, contains(1, 2, 3, 5, 6, 7, 8, 9, 10)));
-
-		assertThat(subList.remove((Integer) 5), is(true));
-		twice(() -> assertThat(subList, contains(3, 6, 7, 8)));
-		twice(() -> assertThat(listSequence, contains(1, 2, 3, 6, 7, 8, 9, 10)));
-
-		Iterator<Integer> subListIterator = subList.iterator();
-		assertThat(subListIterator.hasNext(), is(true));
-		assertThat(subListIterator.next(), is(3));
-		subListIterator.remove();
-		twice(() -> assertThat(subList, contains(6, 7, 8)));
-		twice(() -> assertThat(listSequence, contains(1, 2, 6, 7, 8, 9, 10)));
-
-		subList.removeIf(x -> x % 2 == 0);
-		twice(() -> assertThat(subList, contains(7)));
-		twice(() -> assertThat(listSequence, contains(1, 2, 7, 9, 10)));
-
-		subList.clear();
-		twice(() -> assertThat(subList, is(emptyIterable())));
-		twice(() -> assertThat(listSequence, contains(1, 2, 9, 10)));
+		assertThat(listSequence.contains(3), is(true));
 	}
 
 	@Test
 	public void testAsList() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
-		ListSequence listSequence = ListSequence.from(list);
 		assertThat(listSequence.asList(), is(sameInstance(list)));
+	}
+
+	@Test
+	public void filterAdd() {
+		odds.add(17);
+		expecting(IllegalArgumentException.class, () -> odds.add(18));
+
+		assertThat(odds, contains(1, 3, 5, 17));
+		assertThat(listSequence, contains(1, 2, 3, 4, 5, 17));
+	}
+
+	@Test
+	public void filterRemove() {
+		assertThat(odds.remove(3), is(true));
+		assertThat(odds.remove(4), is(false));
+
+		assertThat(odds, contains(1, 5));
+		assertThat(listSequence, contains(1, 2, 4, 5));
+	}
+
+	@Test
+	public void filterContains() {
+		assertThat(odds.contains(3), is(true));
+		assertThat(odds.contains(4), is(false));
 	}
 }

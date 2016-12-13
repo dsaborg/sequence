@@ -22,6 +22,7 @@ import org.d2ab.collection.MappedList;
 import org.d2ab.collection.ReverseList;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -34,37 +35,104 @@ import static java.util.Collections.singletonList;
  * way due to the {@link List} backing. This class should normally not be used directly as e.g.
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
-public class ListSequence<T> extends AbstractSequentialList<T> implements Sequence<T> {
+public class ListSequence<T> implements Sequence<T> {
 	private List<T> list;
 
-	public static <T> ListSequence<T> empty() {
+	/**
+	 * @return an immutable empty {@code ListSequence}.
+	 */
+	public static <T> Sequence<T> empty() {
 		return from(emptyList());
 	}
 
-	public static <T> ListSequence<T> of(T item) {
+	/**
+	 * @return an immutable {@code ListSequence} of the given element.
+	 */
+	public static <T> Sequence<T> of(T item) {
 		return from(singletonList(item));
 	}
 
+	/**
+	 * @return an immutable {@code ListSequence} of the given elements.
+	 */
 	@SuppressWarnings("unchecked")
-	public static <T> ListSequence<T> of(T... items) {
+	public static <T> Sequence<T> of(T... items) {
 		return from(Arrays.asList(items));
 	}
 
-	public static <T> ListSequence<T> from(List<T> list) {
+	/**
+	 * @return a {@code ListSequence} backed by the given {@link List}. Updates to the backing list is reflected
+	 * in the returned {@link ListSequence}.
+	 */
+	public static <T> Sequence<T> from(List<T> list) {
 		return new ListSequence<>(list);
 	}
 
+	/**
+	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s.
+	 * Updates to the backing lists is reflected in the returned {@link ListSequence}.
+	 */
 	@SafeVarargs
-	public static <T> ListSequence<T> concat(List<T>... lists) {
+	public static <T> Sequence<T> concat(List<T>... lists) {
 		return from(ChainedList.from(lists));
 	}
 
-	public static <T> ListSequence<T> concat(List<List<T>> lists) {
+	/**
+	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s.
+	 * Updates to the backing lists is reflected in the returned {@link ListSequence}.
+	 */
+	public static <T> Sequence<T> concat(List<List<T>> lists) {
 		return from(ChainedList.from(lists));
 	}
 
-	public static <T> ListSequence<T> withCapacity(int capacity) { return new ListSequence<>(capacity); }
+	/**
+	 * @return a new empty mutable {@code ListSequence} with the given initial capacity.
+	 */
+	public static <T> Sequence<T> withCapacity(int capacity) {
+		return new ListSequence<>(capacity);
+	}
 
+	/**
+	 * @return a new mutable {@code ListSequence} initialized with the elements in the given {@link Collection}.
+	 */
+	public static <T> Sequence<T> create(Collection<? extends T> c) {
+		ListSequence<T> result = new ListSequence<>(c.size());
+		result.addAll(c);
+		return result;
+	}
+
+	/**
+	 * @return a new mutable {@code ListSequence} initialized with the elements in the given {@link Iterable}.
+	 */
+	public static <T> Sequence<T> create(Iterable<? extends T> iterable) {
+		ListSequence<T> result = new ListSequence<>();
+		iterable.forEach(result::add);
+		return result;
+	}
+
+	/**
+	 * @return a new mutable {@code ListSequence} initialized with the remaining elements in the given
+	 * {@link Iterator}.
+	 */
+	public static <T> Sequence<T> create(Iterator<? extends T> iterator) {
+		ListSequence<T> result = new ListSequence<>();
+		iterator.forEachRemaining(result::add);
+		return result;
+	}
+
+	/**
+	 * @return a new mutable {@code ListSequence} initialized with the given elements.
+	 */
+	@SafeVarargs
+	public static <T> Sequence<T> create(T... ts) {
+		ListSequence<T> result = new ListSequence<>(ts.length);
+		result.addAll(Arrays.asList(ts));
+		return result;
+	}
+
+	/**
+	 * Create a new empty mutable {@code ListSequence}.
+	 */
 	public ListSequence() {
 		this(new ArrayList<>());
 	}
@@ -80,21 +148,6 @@ public class ListSequence<T> extends AbstractSequentialList<T> implements Sequen
 	@Override
 	public Iterator<T> iterator() {
 		return list.iterator();
-	}
-
-	@Override
-	public ListIterator<T> listIterator() {
-		return list.listIterator();
-	}
-
-	@Override
-	public ListIterator<T> listIterator(int index) {
-		return list.listIterator(index);
-	}
-
-	@Override
-	public ListSequence<T> subList(int from, int to) {
-		return new ListSequence<>(list.subList(from, to));
 	}
 
 	@Override
@@ -124,11 +177,6 @@ public class ListSequence<T> extends AbstractSequentialList<T> implements Sequen
 	}
 
 	@Override
-	public Stream<T> stream() {
-		return list.stream();
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return list.isEmpty();
 	}
@@ -136,6 +184,71 @@ public class ListSequence<T> extends AbstractSequentialList<T> implements Sequen
 	@Override
 	public boolean contains(Object item) {
 		return list.contains(item);
+	}
+
+	@Override
+	public boolean add(T t) {
+		return list.add(t);
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends T> c) {
+		return list.addAll(c);
+	}
+
+	@Override
+	public boolean removeIf(Predicate<? super T> filter) {
+		return list.removeIf(filter);
+	}
+
+	@Override
+	public Object[] toArray() {
+		return list.toArray();
+	}
+
+	@Override
+	public <T1> T1[] toArray(T1[] a) {
+		return list.toArray(a);
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		return list.remove(o);
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		return list.containsAll(c);
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		return list.removeAll(c);
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		return list.retainAll(c);
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return list.stream();
+	}
+
+	@Override
+	public Stream<T> parallelStream() {
+		return list.parallelStream();
+	}
+
+	@Override
+	public void forEach(Consumer<? super T> action) {
+		list.forEach(action);
+	}
+
+	@Override
+	public Spliterator<T> spliterator() {
+		return list.spliterator();
 	}
 
 	@Override
@@ -174,7 +287,7 @@ public class ListSequence<T> extends AbstractSequentialList<T> implements Sequen
 	public Sequence<T> append(Iterable<T> iterable) {
 		if (iterable instanceof List)
 			return from(ChainedList.from(list, (List<T>) iterable));
-		
+
 		return Sequence.concat(this, iterable);
 	}
 

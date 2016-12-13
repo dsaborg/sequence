@@ -95,11 +95,21 @@ public class FilteredListTest {
 
 	@Test
 	public void add() {
-		expecting(UnsupportedOperationException.class, () -> filteredEmpty.add(3));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(filteredEmpty.add(3), is(true));
+		assertThat(filteredEmpty, contains(3));
+		assertThat(originalEmpty, contains(3));
 
-		expecting(UnsupportedOperationException.class, () -> filtered.add(3));
-		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.add(2));
+		assertThat(filteredEmpty, contains(3));
+		assertThat(originalEmpty, contains(3));
+
+		assertThat(filtered.add(3), is(true));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 3));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 3));
+
+		expecting(IllegalArgumentException.class, () -> filtered.add(2));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 3));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 3));
 	}
 
 	@Test
@@ -130,20 +140,40 @@ public class FilteredListTest {
 
 	@Test
 	public void addAll() {
-		expecting(UnsupportedOperationException.class, () -> filteredEmpty.addAll(asList(1, 3)));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(filteredEmpty.addAll(asList(1, 3)), is(true));
+		assertThat(filteredEmpty, contains(1, 3));
+		assertThat(originalEmpty, contains(1, 3));
 
-		expecting(UnsupportedOperationException.class, () -> filtered.addAll(asList(1, 3)));
-		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(asList(1, 2)));
+		assertThat(filteredEmpty, contains(1, 3, 1));
+		assertThat(originalEmpty, contains(1, 3, 1));
+
+		assertThat(filtered.addAll(asList(1, 3)), is(true));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 1, 3));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3));
+
+		expecting(IllegalArgumentException.class, () -> filtered.addAll(asList(1, 2)));
+		assertThat(filtered, contains(1, 3, 5, 7, 9, 1, 3, 1));
+		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3, 1));
 	}
 
 	@Test
 	public void addAllAtIndex() {
-		expecting(UnsupportedOperationException.class, () -> filteredEmpty.addAll(0, asList(1, 3)));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(filteredEmpty.addAll(0, asList(1, 3)), is(true));
+		assertThat(filteredEmpty, contains(1, 3));
+		assertThat(originalEmpty, contains(1, 3));
 
-		expecting(UnsupportedOperationException.class, () -> filtered.addAll(0, asList(1, 3)));
-		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(0, asList(5, 2)));
+		assertThat(filteredEmpty, contains(5, 1, 3));
+		assertThat(originalEmpty, contains(5, 1, 3));
+
+		assertThat(filtered.addAll(0, asList(1, 3)), is(true));
+		assertThat(filtered, contains(1, 3, 1, 3, 5, 7, 9));
+		assertThat(original, contains(1, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		expecting(IllegalArgumentException.class, () -> filtered.addAll(0, asList(5, 2)));
+		assertThat(filtered, contains(5, 1, 3, 1, 3, 5, 7, 9));
+		assertThat(original, contains(5, 1, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 	}
 
 	@Test
@@ -243,11 +273,21 @@ public class FilteredListTest {
 
 	@Test
 	public void addAtIndex() {
-		expecting(UnsupportedOperationException.class, () -> filteredEmpty.add(0, 3));
-		assertThat(originalEmpty, is(emptyIterable()));
+		filteredEmpty.add(0, 3);
+		assertThat(filteredEmpty, contains(3));
+		assertThat(originalEmpty, contains(3));
 
-		expecting(UnsupportedOperationException.class, () -> filtered.add(0, 3));
-		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.add(0, 4));
+		assertThat(filteredEmpty, contains(3));
+		assertThat(originalEmpty, contains(3));
+
+		filtered.add(0, 3);
+		assertThat(filtered, contains(3, 1, 3, 5, 7, 9));
+		assertThat(original, contains(3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		expecting(IllegalArgumentException.class, () -> filtered.add(0, 4));
+		assertThat(filtered, contains(3, 1, 3, 5, 7, 9));
+		assertThat(original, contains(3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 	}
 
 	@Test
@@ -273,12 +313,27 @@ public class FilteredListTest {
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
-		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
+		emptyIterator.add(17);
+		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
+		assertThat(emptyIterator.previous(), is(17));
 
-		expecting(IllegalStateException.class, () -> emptyIterator.set(17));
+		emptyIterator.set(19);
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(false));
+		assertThat(emptyIterator.nextIndex(), is(0));
+		assertThat(emptyIterator.previousIndex(), is(-1));
+		assertThat(emptyIterator.next(), is(19));
 
-		assertThat(filteredEmpty, is(emptyIterable()));
-		assertThat(originalEmpty, is(emptyIterable()));
+		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
+
+		assertThat(filteredEmpty, contains(19));
+		assertThat(originalEmpty, contains(19));
 	}
 
 	@Test
@@ -322,15 +377,17 @@ public class FilteredListTest {
 		assertThat(listIterator.previousIndex(), is(0));
 		assertThat(listIterator.next(), is(17));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
+		expecting(IllegalArgumentException.class, () -> listIterator.add(18));
+
+		listIterator.add(19);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 		assertThat(listIterator.next(), is(5));
 
-		assertThat(filtered, contains(1, 17, 5, 7, 9));
-		assertThat(original, contains(1, 2, 17, 4, 5, 6, 7, 8, 9, 10));
+		assertThat(filtered, contains(1, 17, 19, 5, 7, 9));
+		assertThat(original, contains(1, 2, 17, 19, 4, 5, 6, 7, 8, 9, 10));
 	}
 
 	@Test

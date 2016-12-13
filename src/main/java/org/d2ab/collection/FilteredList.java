@@ -19,7 +19,6 @@ package org.d2ab.collection;
 import org.d2ab.iterator.Iterators;
 
 import java.util.AbstractSequentialList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
@@ -60,21 +59,9 @@ public class FilteredList<T> extends AbstractSequentialList<T> {
 
 	@Override
 	public boolean add(T t) {
-		throw new UnsupportedOperationException();
-	}
+		if (!predicate.test(t))
+			throw new IllegalArgumentException(String.valueOf(t));
 
-	@Override
-	public boolean addAll(Collection<? extends T> c) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void add(int index, T element) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean addAll(int index, Collection<? extends T> c) {
-		throw new UnsupportedOperationException();
+		return list.add(t);
 	}
 }

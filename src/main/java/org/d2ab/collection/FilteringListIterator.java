@@ -138,13 +138,18 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 			throw new IllegalStateException("Next or previous not called");
 
 		if (!predicate.test(t))
-			throw new IllegalArgumentException("Invalid element: " + t);
+			throw new IllegalArgumentException(String.valueOf(t));
 
 		iterator.set(t);
 	}
 
 	@Override
 	public void add(T t) {
-		throw new UnsupportedOperationException();
+		if (!predicate.test(t))
+			throw new IllegalArgumentException(String.valueOf(t));
+
+		iterator.add(t);
+
+		cursor++;
 	}
 }
