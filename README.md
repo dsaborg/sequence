@@ -302,9 +302,6 @@ assertThat(evens, contains(2, 4, 6));
 assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 
-See also:
-[Sequence#clear()](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#clear--)
-
 #### Streams
 
 `Sequences` interoperate beautifully with `Stream`, through the `once(Stream)` and `.stream()` methods.
