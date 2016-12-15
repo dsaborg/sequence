@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
-import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -114,16 +113,11 @@ public class SequenceDocumentationTest {
 	public void updatingCollection() {
 		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-		Sequence<Integer> evens = Sequence.from(list).filter(x -> x % 2 == 0);
-		assertThat(evens, contains(2, 4));
+		Sequence<Integer> sequence = Sequence.from(list).filter(x -> x % 2 == 0);
+		assertThat(sequence, contains(2, 4));
 
-		evens.add(6);
-		assertThat(evens, contains(2, 4, 6));
-		assertThat(list, contains(1, 2, 3, 4, 5, 6));
-
-		expecting(IllegalArgumentException.class, () -> evens.add(7)); // cannot add filtered out item to sequence
-		assertThat(evens, contains(2, 4, 6));
-		assertThat(list, contains(1, 2, 3, 4, 5, 6));
+		list.add(6);
+		assertThat(sequence, contains(2, 4, 6));
 	}
 
 	@SuppressWarnings("SpellCheckingInspection")
