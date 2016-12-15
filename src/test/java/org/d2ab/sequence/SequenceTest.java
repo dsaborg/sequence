@@ -276,67 +276,144 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfIterables() {
-		Sequence<Integer> sequenceFromIterables = Sequence.concat(Iterables.of(1, 2, 3), Iterables.of(4, 5, 6),
-		                                                          Iterables.of(7, 8, 9));
+		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(list1::iterator, list2::iterator, list3::iterator);
 
-		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		list1.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 17, 4, 5, 6, 7, 8, 9)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void concatArrayOfCollections() {
-		Sequence<Integer> sequenceFromCollections = Sequence.concat(new ArrayDeque<>(asList(1, 2, 3)),
-		                                                            new ArrayDeque<>(asList(4, 5, 6)),
-		                                                            new ArrayDeque<>(asList(7, 8, 9)));
+		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
+		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
+		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(collection1, collection2, collection3);
 
-		twice(() -> assertThat(sequenceFromCollections, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		collection1.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 17, 4, 5, 6, 7, 8, 9)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void concatArrayOfLists() {
-		Sequence<Integer> sequenceFromLists = Sequence.concat(asList(1, 2, 3), asList(4, 5, 6),
-		                                                      asList(7, 8, 9));
+		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(list1, list2, list3);
 
-		twice(() -> assertThat(sequenceFromLists, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		list1.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 17, 4, 5, 6, 7, 8, 9)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void concatArrayOfNoIterables() {
-		Sequence<Integer> sequenceFromNoIterables = Sequence.concat();
+		Sequence<Integer> sequence = Sequence.concat();
 
-		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
 	public void concatIterableOfIterables() {
-		Sequence<Integer> sequenceFromIterables = Sequence.concat(Iterables.of(Iterables.of(1, 2, 3),
-		                                                                       Iterables.of(4, 5, 6),
-		                                                                       Iterables.of(7, 8, 9)));
+		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(Iterables.of(list1::iterator, list2::iterator, list3::iterator));
 
-		twice(() -> assertThat(sequenceFromIterables, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		list1.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 17, 4, 5, 6, 7, 8, 9)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void concatIterableOfCollections() {
-		Sequence<Integer> sequenceFromCollections =
-				Sequence.concat(Iterables.of(new ArrayDeque<>(asList(1, 2, 3)), new ArrayDeque<>(asList(4, 5, 6)),
-				                             new ArrayDeque<>(asList(7, 8, 9))));
+		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
+		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
+		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(Iterables.of(collection1, collection2, collection3));
 
-		twice(() -> assertThat(sequenceFromCollections, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		collection1.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 17, 4, 5, 6, 7, 8, 9)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void concatIterableOfLists() {
-		Sequence<Integer> sequenceFromLists =
-				Sequence.concat(Iterables.of(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9)));
+		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(Iterables.of(list1, list2, list3));
 
-		twice(() -> assertThat(sequenceFromLists, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		list1.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 17, 4, 5, 6, 7, 8, 9)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
+	public void concatListOfLists() {
+		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(asList(list1, list2, list3));
+
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 17)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
+	public void concatCollectionOfCollections() {
+		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
+		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
+		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		Sequence<Integer> sequence = Sequence.concat(new ArrayDeque<>(asList(collection1, collection2, collection3)));
+
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 17)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void concatIterableOfNoIterables() {
-		Sequence<Integer> sequenceFromNoIterables = Sequence.concat(Iterables.of());
+		Sequence<Integer> sequence = Sequence.concat(Iterables.empty());
 
-		twice(() -> assertThat(sequenceFromNoIterables, is(emptyIterable())));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
