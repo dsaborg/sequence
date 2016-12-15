@@ -29,10 +29,10 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class CollectionListTest {
-	private final Deque<Integer> originalEmpty = new ArrayDeque<>();
+	private final Collection<Integer> originalEmpty = new ArrayDeque<>();
 	private final List<Integer> listEmpty = new CollectionList<>(originalEmpty);
 
-	private final Deque<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+	private final Collection<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 	private final List<Integer> list = new CollectionList<>(original);
 
 	@Test
@@ -90,11 +90,11 @@ public class CollectionListTest {
 
 	@Test
 	public void add() {
-		assertThat(listEmpty.add(3), is(true));
-		assertThat(originalEmpty, contains(3));
+		expecting(UnsupportedOperationException.class, () -> listEmpty.add(3));
+		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.add(3), is(true));
-		assertThat(original, contains(1, 2, 3, 4, 5, 3));
+		expecting(UnsupportedOperationException.class, () -> list.add(3));
+		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -120,11 +120,11 @@ public class CollectionListTest {
 
 	@Test
 	public void addAll() {
-		assertThat(listEmpty.addAll(asList(1, 3)), is(true));
-		assertThat(originalEmpty, contains(1, 3));
+		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(asList(1, 3)));
+		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.addAll(asList(1, 3)), is(true));
-		assertThat(original, contains(1, 2, 3, 4, 5, 1, 3));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 3)));
+		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test

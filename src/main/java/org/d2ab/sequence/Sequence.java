@@ -612,6 +612,16 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Cast the values in this {@code Sequence} to the given {@link Class}.
+	 *
+	 * @see #map(Function)
+	 */
+	default <U> Sequence<U> cast(Class<U> clazz) {
+		//noinspection unchecked
+		return (Sequence<U>) this;
+	}
+
+	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 * In addition to the current element, the mapper has access to the index of each element.
 	 *
@@ -1061,6 +1071,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * @return a {@link List} view of this {@code Sequence}, which is updated in real time as the backing store of the
 	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 * The list supports {@link List#add(Object)} only if the {@code Sequence} is backed by a list itself, otherwise
+	 * it supports removal only.
 	 *
 	 * @since 1.2
 	 */

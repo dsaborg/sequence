@@ -857,6 +857,21 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void cast() {
+		Sequence<Number> mappedEmpty = empty.cast(Number.class);
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		Sequence<Number> oneMapped = _1.cast(Number.class);
+		twice(() -> assertThat(oneMapped, contains(1)));
+
+		Sequence<Number> twoMapped = _12.cast(Number.class);
+		twice(() -> assertThat(twoMapped, contains(1, 2)));
+
+		Sequence<Number> fiveMapped = _12345.cast(Number.class);
+		twice(() -> assertThat(fiveMapped, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void peekBack() {
 		AtomicInteger value = new AtomicInteger();
 		Sequence<Integer> peekBack = _12345.peekBack((p, n) -> {
