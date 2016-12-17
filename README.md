@@ -90,7 +90,7 @@ instead of a black box pipeline, and is built for convenience and compatibility 
 for programmers wanting to perform common data processing tasks on moderately sized collections. If you need parallel
 iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
-The `Sequence` library is protected by over 2500 tests for your safety.
+The `Sequence` library is protected by over 3000 tests for your safety.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
