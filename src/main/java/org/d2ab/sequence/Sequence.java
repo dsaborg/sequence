@@ -439,6 +439,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 		return recurse(f.apply(seed), f.compose(g)::apply);
 	}
 
+	@Override
+	default Spliterator<T> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
 	/**
 	 * Terminate this {@code Sequence} just before the given element is encountered, not including the element in the
 	 * {@code Sequence}.

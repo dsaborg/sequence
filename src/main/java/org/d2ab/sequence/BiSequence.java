@@ -305,6 +305,11 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 		return recurse(f.apply(leftSeed, rightSeed), f1.compose(g1)::apply);
 	}
 
+	@Override
+	default Spliterator<Pair<L, R>> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
 	/**
 	 * Map the pairs in this {@code BiSequence} to another set of pairs specified by the given {@code mapper}
 	 * function.

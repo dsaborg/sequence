@@ -310,6 +310,11 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 		return recurse(f.apply(keySeed, valueSeed), f1.compose(g1)::apply);
 	}
 
+	@Override
+	default Spliterator<Entry<K, V>> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
 	/**
 	 * Map the entries in this {@code EntrySequence} to another set of entries specified by the given {@code mapper}
 	 * function.

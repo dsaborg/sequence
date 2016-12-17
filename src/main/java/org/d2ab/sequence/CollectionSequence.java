@@ -80,6 +80,11 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Spliterator<T> spliterator() {
+		return Spliterators.spliterator(this, 0);
+	}
+
+	@Override
 	public List<T> toList() {
 		return new ArrayList<>(collection);
 	}

@@ -93,6 +93,11 @@ public class ListSequence<T> extends AbstractSequentialList<T> implements Sequen
 	}
 
 	@Override
+	public Spliterator<T> spliterator() {
+		return Spliterators.spliterator(this, 0);
+	}
+
+	@Override
 	public ListSequence<T> subList(int from, int to) {
 		return new ListSequence<>(list.subList(from, to));
 	}

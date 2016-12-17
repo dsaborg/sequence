@@ -54,6 +54,11 @@ public class IterableList<T> extends AbstractSequentialList<T> {
 	}
 
 	@Override
+	public Spliterator<T> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	@Override
 	public void forEach(Consumer<? super T> action) {
 		iterable.forEach(action);
 	}
