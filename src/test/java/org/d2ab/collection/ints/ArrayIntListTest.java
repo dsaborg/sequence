@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -705,7 +706,7 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void forEachLong() {
+	public void forEachInt() {
 		empty.forEachInt(x -> {
 			throw new IllegalStateException("should not get called");
 		});
@@ -713,5 +714,12 @@ public class ArrayIntListTest {
 		AtomicInteger value = new AtomicInteger(1);
 		list.forEachInt(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(6));
+	}
+
+	@Test
+	public void asChars() {
+		assertThat(empty.asChars(), is(emptyIterable()));
+
+		assertThat(ArrayIntList.create('a', 'b', 'c', 'd', 'e').asChars(), containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 }

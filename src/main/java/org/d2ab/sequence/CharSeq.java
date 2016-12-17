@@ -999,6 +999,26 @@ public interface CharSeq extends CharCollection {
 	}
 
 	/**
+	 * @return an unsized {@link Spliterator} for this {@code CharSeq}.
+	 *
+	 * @since 2.2
+	 */
+	@Override
+	default Spliterator<Character> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	/**
+	 * @return an unsized {@link Spliterator.OfInt} for this {@code CharSeq}.
+	 *
+	 * @since 2.2
+	 */
+	@Override
+	default Spliterator.OfInt intSpliterator() {
+		return Spliterators.spliteratorUnknownSize(IntIterator.from(iterator()), 0);
+	}
+
+	/**
 	 * @return true if all characters in this {@code CharSeq} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(CharPredicate predicate) {

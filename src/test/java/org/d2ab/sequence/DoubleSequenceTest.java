@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.DoubleBinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -462,13 +463,13 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void includingArray() {
-		DoubleSequence emptyIncluding = empty.including(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		DoubleSequence emptyIncluding = empty.including(new double[]{1.1, 2.9, 5.1, 17.1}, 0.5);
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
 
-		DoubleSequence including = _12345.including(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		DoubleSequence including = _12345.including(new double[]{1.1, 2.9, 5.1, 17.1}, 0.5);
 		twice(() -> assertThat(including, containsDoubles(1, 3, 5)));
 
-		DoubleSequence includingAll = _12345.including(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5);
+		DoubleSequence includingAll = _12345.including(new double[]{1.1, 1.9, 3.1, 3.9, 5.1, 17.1}, 0.5);
 		twice(() -> assertThat(includingAll, containsDoubles(1, 2, 3, 4, 5)));
 
 		DoubleSequence includingNone = _12345.including(new double[0], 0.5);
@@ -492,13 +493,13 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void excludingArray() {
-		DoubleSequence emptyExcluding = empty.excluding(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		DoubleSequence emptyExcluding = empty.excluding(new double[]{1.1, 2.9, 5.1, 17.1}, 0.5);
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
 
-		DoubleSequence excluding = _12345.excluding(new double[] { 1.1, 2.9, 5.1, 17.1 }, 0.5);
+		DoubleSequence excluding = _12345.excluding(new double[]{1.1, 2.9, 5.1, 17.1}, 0.5);
 		twice(() -> assertThat(excluding, containsDoubles(2, 4)));
 
-		DoubleSequence excludingAll = _12345.excluding(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5);
+		DoubleSequence excludingAll = _12345.excluding(new double[]{1.1, 1.9, 3.1, 3.9, 5.1, 17.1}, 0.5);
 		twice(() -> assertThat(excludingAll, is(emptyIterable())));
 
 		DoubleSequence excludingNone = _12345.excluding(new double[0], 0.5);
@@ -818,7 +819,8 @@ public class DoubleSequenceTest {
 		DoubleSequence oneDistinct = oneRandom.distinct(0.5);
 		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
 
-		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17.15, 17.3)).distinct(0.2);
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17.15, 17.3))
+		                                                     .distinct(0.2);
 		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17, 17.3)));
 
 		DoubleSequence nineDistinct = nineRandom.distinct(0.5);
@@ -952,6 +954,60 @@ public class DoubleSequenceTest {
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsDoubles(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void stream() {
+		DoubleSequence empty = DoubleSequence.empty();
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+
+		DoubleSequence sequence = DoubleSequence.of(1, 2, 3, 4, 5);
+		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains(1.0, 2.0, 3.0, 4.0, 5.0)));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		DoubleSequence empty = DoubleSequence.once(DoubleIterator.of());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		DoubleSequence sequence = DoubleSequence.once(DoubleIterator.of(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), contains(1.0, 2.0, 3.0, 4.0, 5.0));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
+	public void doubleStream() {
+		twice(() -> assertThat(
+				empty.doubleStream()
+				     .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+				is(emptyIterable())));
+
+		twice(() -> assertThat(
+				_12345.doubleStream()
+				      .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+				containsDoubles(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void doubleStreamFromOnce() {
+		DoubleSequence empty = DoubleSequence.once(DoubleIterator.of());
+		assertThat(empty.doubleStream()
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		           is(emptyIterable()));
+		assertThat(empty.doubleStream()
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		           is(emptyIterable()));
+
+		DoubleSequence sequence = DoubleSequence.once(DoubleIterator.of(1, 2, 3, 4, 5));
+		assertThat(
+				sequence.doubleStream()
+				        .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+				containsDoubles(1, 2, 3, 4, 5));
+		assertThat(
+				sequence.doubleStream()
+				        .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+				is(emptyIterable()));
 	}
 
 	@Test
@@ -1480,26 +1536,26 @@ public class DoubleSequenceTest {
 	@Test
 	public void containsAllDoubles() {
 		assertThat(empty.containsAllDoubles(new double[0], 0.5), is(true));
-		assertThat(empty.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(empty.containsAllDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
 
 		assertThat(_12345.containsAllDoubles(new double[0], 0.5), is(true));
-		assertThat(_12345.containsAllDoubles(new double[] { 1.1 }, 0.5), is(true));
-		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 3.1, 5.1 }, 0.5), is(true));
-		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
-		assertThat(_12345.containsAllDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(false));
-		assertThat(_12345.containsAllDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(_12345.containsAllDoubles(new double[]{1.1}, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[]{1.1, 3.1, 5.1}, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[]{1.1, 1.9, 3.1, 3.9, 5.1}, 0.5), is(true));
+		assertThat(_12345.containsAllDoubles(new double[]{1.1, 1.9, 3.1, 3.9, 5.1, 17.1}, 0.5), is(false));
+		assertThat(_12345.containsAllDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
 	}
 
 	@Test
 	public void containsAnyDoubles() {
 		assertThat(empty.containsAnyDoubles(new double[0], 0.5), is(false));
-		assertThat(empty.containsAnyDoubles(new double[] { 17.1, 17.9, 18.1 }, 0.5), is(false));
+		assertThat(empty.containsAnyDoubles(new double[]{17.1, 17.9, 18.1}, 0.5), is(false));
 
 		assertThat(_12345.containsAnyDoubles(new double[0], 0.5), is(false));
-		assertThat(_12345.containsAnyDoubles(new double[] { 1.1 }, 0.5), is(true));
-		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 3.1, 5.1 }, 0.5), is(true));
-		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1 }, 0.5), is(true));
-		assertThat(_12345.containsAnyDoubles(new double[] { 1.1, 1.9, 3.1, 3.9, 5.1, 17.1 }, 0.5), is(true));
-		assertThat(_12345.containsAnyDoubles(new double[] { 17.1, 17.9, 19.1 }, 0.5), is(false));
+		assertThat(_12345.containsAnyDoubles(new double[]{1.1}, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[]{1.1, 3.1, 5.1}, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[]{1.1, 1.9, 3.1, 3.9, 5.1}, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[]{1.1, 1.9, 3.1, 3.9, 5.1, 17.1}, 0.5), is(true));
+		assertThat(_12345.containsAnyDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
 	}
 }
