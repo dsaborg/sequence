@@ -219,7 +219,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	default int setInt(int index, int x) {
 		IntListIterator listIterator = listIterator(index);
-		int previous = listIterator.next();
+		int previous = listIterator.nextInt();
 		listIterator.set(x);
 		return previous;
 	}
@@ -240,7 +240,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	default int removeIntAt(int index) {
 		IntListIterator listIterator = listIterator(index);
-		int previous = listIterator.next();
+		int previous = listIterator.nextInt();
 		listIterator.remove();
 		return previous;
 	}

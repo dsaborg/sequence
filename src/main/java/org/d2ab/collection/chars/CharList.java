@@ -217,7 +217,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	default char setChar(int index, char x) {
 		CharListIterator listIterator = listIterator(index);
-		char previous = listIterator.next();
+		char previous = listIterator.nextChar();
 		listIterator.set(x);
 		return previous;
 	}
@@ -238,7 +238,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	default char removeCharAt(int index) {
 		CharListIterator listIterator = listIterator(index);
-		char previous = listIterator.next();
+		char previous = listIterator.nextChar();
 		listIterator.remove();
 		return previous;
 	}
@@ -267,7 +267,7 @@ public interface CharList extends List<Character>, CharCollection {
 	default int indexOfChar(char x) {
 		int index = 0;
 		for (CharIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (iterator.next() == x)
+			if (iterator.nextChar() == x)
 				return index;
 
 		return -1;
