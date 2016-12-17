@@ -17,7 +17,9 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.chars.CharIterable;
 import org.d2ab.iterator.IterationException;
+import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.InputStreamIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
@@ -227,5 +229,9 @@ public interface IntIterable extends Iterable<Integer> {
 			}
 		}
 		return changed;
+	}
+
+	default CharIterable asChars() {
+		return () -> CharIterator.from(iterator());
 	}
 }

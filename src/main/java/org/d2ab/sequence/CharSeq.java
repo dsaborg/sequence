@@ -27,10 +27,7 @@ import org.d2ab.util.OptionalChar;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.PrimitiveIterator;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -978,6 +975,26 @@ public interface CharSeq extends CharList {
 	 */
 	default int size() {
 		return iterator().count();
+	}
+
+	/**
+	 * @return an unsized {@link Spliterator} for this {@code CharSeq}.
+	 *
+	 * @since 2.2
+	 */
+	@Override
+	default Spliterator<Character> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	/**
+	 * @return an unsized {@link Spliterator.OfInt} for this {@code CharSeq}.
+	 *
+	 * @since 2.2
+	 */
+	@Override
+	default Spliterator.OfInt intSpliterator() {
+		return Spliterators.spliteratorUnknownSize(IntIterator.from(iterator()), 0);
 	}
 
 	/**

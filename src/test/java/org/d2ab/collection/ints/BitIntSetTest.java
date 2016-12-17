@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.*;
@@ -354,6 +355,13 @@ public class BitIntSetTest {
 		AtomicInteger value = new AtomicInteger(-5);
 		set.forEach(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(5));
+	}
+
+	@Test
+	public void asChars() {
+		assertThat(empty.asChars(), is(emptyIterable()));
+
+		assertThat(new BitIntSet('a', 'b', 'c', 'd', 'e').asChars(), containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

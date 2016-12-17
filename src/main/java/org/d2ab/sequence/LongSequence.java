@@ -1062,6 +1062,16 @@ public interface LongSequence extends LongList {
 	}
 
 	/**
+	 * @return an unsized {@link Spliterator.OfLong} for this {@code LongSequence}.
+	 *
+	 * @since 2.2
+	 */
+	@Override
+	default Spliterator.OfLong spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	/**
 	 * @return true if all longs in this {@code LongSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(LongPredicate predicate) {

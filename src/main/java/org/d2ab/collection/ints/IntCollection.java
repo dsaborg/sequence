@@ -17,6 +17,8 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.chars.CharCollection;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -117,5 +119,20 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.NONNULL);
+	}
+
+	@Override
+	default CharCollection asChars() {
+		return new CharCollection() {
+			@Override
+			public CharIterator iterator() {
+				return CharIterator.from(IntCollection.this.iterator());
+			}
+
+			@Override
+			public int size() {
+				return IntCollection.this.size();
+			}
+		};
 	}
 }

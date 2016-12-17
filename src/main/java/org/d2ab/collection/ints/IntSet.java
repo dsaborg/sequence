@@ -17,6 +17,8 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.chars.CharSet;
+import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Collection;
 import java.util.Set;
@@ -85,5 +87,20 @@ public interface IntSet extends Set<Integer>, IntCollection {
 	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.DISTINCT);
+	}
+
+	@Override
+	default CharSet asChars() {
+		return new CharSet() {
+			@Override
+			public CharIterator iterator() {
+				return CharIterator.from(IntSet.this.iterator());
+			}
+
+			@Override
+			public int size() {
+				return IntSet.this.size();
+			}
+		};
 	}
 }

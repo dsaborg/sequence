@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntBinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -900,6 +901,50 @@ public class IntSequenceTest {
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void stream() {
+		IntSequence empty = IntSequence.empty();
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+
+		IntSequence sequence = IntSequence.of(1, 2, 3, 4, 5);
+		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		IntSequence empty = IntSequence.once(IntIterator.of());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		IntSequence sequence = IntSequence.once(IntIterator.of(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
+	public void intStream() {
+		twice(() -> assertThat(empty.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts),
+		                       is(emptyIterable())));
+
+		twice(() -> assertThat(_12345.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts),
+		                       containsInts(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void intStreamFromOnce() {
+		IntSequence empty = IntSequence.once(IntIterator.of());
+		assertThat(empty.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts),
+		           is(emptyIterable()));
+		assertThat(empty.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts),
+		           is(emptyIterable()));
+
+		IntSequence sequence = IntSequence.once(IntIterator.of(1, 2, 3, 4, 5));
+		assertThat(sequence.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts),
+		           containsInts(1, 2, 3, 4, 5));
+		assertThat(sequence.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts),
+		           is(emptyIterable()));
 	}
 
 	@Test
