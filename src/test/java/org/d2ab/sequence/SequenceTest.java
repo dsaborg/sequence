@@ -1759,6 +1759,17 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void streamFromOnce() {
+		Sequence<Integer> empty = Sequence.once(Iterators.empty());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		Sequence<Integer> sequence = Sequence.once(Iterators.of(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
 	public void delimit() {
 		Sequence<Object> delimitedEmpty = empty.delimit(", ");
 		twice(() -> assertThat(delimitedEmpty, is(emptyIterable())));

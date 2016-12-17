@@ -18,9 +18,7 @@ package org.d2ab.collection;
 
 import org.d2ab.iterator.Iterators;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A {@link Collection} view of an {@link Iterable}, requiring only {@link Iterable#iterator()} to be implemented in
@@ -115,5 +113,10 @@ public interface IterableCollection<T> extends Collection<T> {
 	@Override
 	default void clear() {
 		Iterables.removeAll(this);
+	}
+
+	@Override
+	default Spliterator<T> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
 	}
 }

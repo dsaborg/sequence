@@ -55,6 +55,11 @@ public interface IterableList<T> extends IterableCollection<T>, List<T> {
 	}
 
 	@Override
+	default Spliterator<T> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return Iterators.contains(iterator(), o);
 	}
