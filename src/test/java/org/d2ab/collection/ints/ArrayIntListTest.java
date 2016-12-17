@@ -720,6 +720,6 @@ public class ArrayIntListTest {
 	public void asChars() {
 		assertThat(empty.asChars(), is(emptyIterable()));
 
-		assertThat(ArrayIntList.create('a', 'b', 'c', 'd', 'e').asChars(), containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(IntList.of('a', 'b', 'c', 'd', 'e').asChars(), containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 }
