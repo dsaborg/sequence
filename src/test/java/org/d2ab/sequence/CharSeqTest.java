@@ -18,6 +18,8 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
 import org.d2ab.collection.chars.*;
+import org.d2ab.collection.ints.ArrayIntList;
+import org.d2ab.collection.ints.IntList;
 import org.d2ab.function.CharBinaryOperator;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
@@ -32,6 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -947,6 +950,52 @@ public class CharSeqTest {
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void stream() {
+		CharSeq empty = CharSeq.empty();
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+
+		CharSeq sequence = CharSeq.of('a', 'b', 'c', 'd', 'e');
+		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		CharSeq empty = CharSeq.once(CharIterator.of());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		CharSeq sequence = CharSeq.once(CharIterator.of('a', 'b', 'c', 'd', 'e'));
+		assertThat(sequence.stream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e'));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
+	public void intStream() {
+		twice(() -> assertThat(
+				empty.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts).asChars(),
+				is(emptyIterable())));
+
+		twice(() -> assertThat(
+				abcde.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts).asChars(),
+				containsChars('a', 'b', 'c', 'd', 'e')));
+	}
+
+	@Test
+	public void intStreamFromOnce() {
+		CharSeq empty = CharSeq.once(CharIterator.of());
+		assertThat(empty.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts).asChars(),
+		           is(emptyIterable()));
+		assertThat(empty.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts).asChars(),
+		           is(emptyIterable()));
+
+		CharSeq sequence = CharSeq.once(CharIterator.of('a', 'b', 'c', 'd', 'e'));
+		assertThat(sequence.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts).asChars(),
+		           containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(sequence.intStream().collect(ArrayIntList::new, IntList::addInt, IntList::addAllInts).asChars(),
+		           is(emptyIterable()));
 	}
 
 	@Test

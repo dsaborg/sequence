@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -897,6 +898,50 @@ public class LongSequenceTest {
 			assertThat(x, is(index.getAndIncrement()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, containsLongs(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void stream() {
+		LongSequence empty = LongSequence.empty();
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+
+		LongSequence sequence = LongSequence.of(1, 2, 3, 4, 5);
+		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		LongSequence empty = LongSequence.once(LongIterator.of());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		LongSequence sequence = LongSequence.once(LongIterator.of(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
+	public void longStream() {
+		twice(() -> assertThat(empty.longStream().collect(ArrayLongList::new, LongList::addLong, LongList::addAllLongs),
+		                       is(emptyIterable())));
+
+		twice(() -> assertThat(_12345.longStream().collect(ArrayLongList::new, LongList::addLong, LongList::addAllLongs),
+		                       containsLongs(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void longStreamFromOnce() {
+		LongSequence empty = LongSequence.once(LongIterator.of());
+		assertThat(empty.longStream().collect(ArrayLongList::new, LongList::addLong, LongList::addAllLongs),
+		           is(emptyIterable()));
+		assertThat(empty.longStream().collect(ArrayLongList::new, LongList::addLong, LongList::addAllLongs),
+		           is(emptyIterable()));
+
+		LongSequence sequence = LongSequence.once(LongIterator.of(1, 2, 3, 4, 5));
+		assertThat(sequence.longStream().collect(ArrayLongList::new, LongList::addLong, LongList::addAllLongs),
+		           containsLongs(1, 2, 3, 4, 5));
+		assertThat(sequence.longStream().collect(ArrayLongList::new, LongList::addLong, LongList::addAllLongs),
+		           is(emptyIterable()));
 	}
 
 	@Test

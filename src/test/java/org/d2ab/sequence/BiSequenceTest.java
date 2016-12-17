@@ -1514,6 +1514,31 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void stream() {
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		twice(() -> assertThat(_12345.stream().collect(Collectors.toList()),
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                Pair.of("5", 5))));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                        Pair.of("5", 5))));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		BiSequence<String, Integer> empty = BiSequence.once(Iterators.empty());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		BiSequence<String, Integer> sequence = BiSequence.once(
+				Iterators.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
+		assertThat(sequence.stream().collect(Collectors.toList()),
+		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
 	public void mapToChar() {
 		CharSeq emptyChars = empty.toChars((l, r) -> (char) (r + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));

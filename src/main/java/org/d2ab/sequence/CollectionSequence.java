@@ -172,6 +172,16 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Stream<T> parallelStream() {
+		return collection.parallelStream();
+	}
+
+	@Override
+	public Spliterator<T> spliterator() {
+		return collection.spliterator();
+	}
+
+	@Override
 	public boolean isEmpty() {
 		return collection.isEmpty();
 	}

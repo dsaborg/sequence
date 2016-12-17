@@ -941,6 +941,16 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
+	 * @return an unsized {@link Spliterator.OfDouble} for this {@code DoubleSequence}.
+	 *
+	 * @since 2.2
+	 */
+	@Override
+	default Spliterator.OfDouble spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	/**
 	 * @return true if all doubles in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(DoublePredicate predicate) {

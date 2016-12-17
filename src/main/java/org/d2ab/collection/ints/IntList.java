@@ -17,6 +17,8 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.chars.CharList;
+import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.*;
 
 import java.util.*;
@@ -246,7 +248,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	default int setInt(int index, int x) {
 		IntListIterator listIterator = listIterator(index);
-		int previous = listIterator.next();
+		int previous = listIterator.nextInt();
 		listIterator.set(x);
 		return previous;
 	}
@@ -267,7 +269,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	default int removeIntAt(int index) {
 		IntListIterator listIterator = listIterator(index);
-		int previous = listIterator.next();
+		int previous = listIterator.nextInt();
 		listIterator.remove();
 		return previous;
 	}
@@ -315,6 +317,21 @@ public interface IntList extends List<Integer>, IntCollection {
 	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
+	}
+
+	@Override
+	default CharList asChars() {
+		return new CharList() {
+			@Override
+			public CharIterator iterator() {
+				return CharIterator.from(IntList.this.iterator());
+			}
+
+			@Override
+			public int size() {
+				return IntList.this.size();
+			}
+		};
 	}
 
 	/**
