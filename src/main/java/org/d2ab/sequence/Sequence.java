@@ -587,6 +587,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 *
+	 * @see #biMap(Function, Function)
 	 * @see #mapIndexed(ObjIntFunction)
 	 * @see #mapBack(BiFunction)
 	 * @see #mapForward(BiFunction)
@@ -598,6 +599,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
+		return () -> new MappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} functions,
+	 * allowing for backwards mapping using {@code backMapper} so elements can be added to underlying
+	 * {@link Collection}s after being mapped.
+	 *
+	 * @see #map(Function)
+	 */
+	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 

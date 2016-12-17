@@ -865,6 +865,21 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void biMap() {
+		Sequence<String> mappedEmpty = empty.biMap(Object::toString, Integer::parseInt);
+		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+
+		Sequence<String> oneMapped = _1.biMap(Object::toString, Integer::parseInt);
+		twice(() -> assertThat(oneMapped, contains("1")));
+
+		Sequence<String> twoMapped = _12.biMap(Object::toString, Integer::parseInt);
+		twice(() -> assertThat(twoMapped, contains("1", "2")));
+
+		Sequence<String> fiveMapped = _12345.biMap(Object::toString, Integer::parseInt);
+		twice(() -> assertThat(fiveMapped, contains("1", "2", "3", "4", "5")));
+	}
+
+	@Test
 	public void mapWithIndex() {
 		Sequence<String> mappedEmpty = empty.map(Object::toString);
 		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));

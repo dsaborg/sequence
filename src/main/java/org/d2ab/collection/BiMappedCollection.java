@@ -16,36 +16,28 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.iterator.MappingIterator;
-
-import java.util.AbstractCollection;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.function.Function;
 
 /**
  * A {@link Collection} that presents a mapped view of another {@link Collection}.
  */
-public class MappedCollection<T, U> extends AbstractCollection<U> {
-	protected final Collection<T> collection;
-	private final Function<? super T, ? extends U> mapper;
+public class BiMappedCollection<T, U> extends MappedCollection<T, U> {
+	private final Function<? super U, ? extends T> backMapper;
 
-	public static <T, U> Collection<U> from(Collection<T> collection, Function<? super T, ? extends U> mapper) {
-		return new MappedCollection<>(collection, mapper);
+	public static <T, U> Collection<U> from(Collection<T> collection, Function<? super T, ? extends U> mapper,
+	                                        Function<? super U, ? extends T> backMapper) {
+		return new BiMappedCollection<>(collection, mapper, backMapper);
 	}
 
-	protected MappedCollection(Collection<T> collection, Function<? super T, ? extends U> mapper) {
-		this.collection = collection;
-		this.mapper = mapper;
-	}
-
-	@Override
-	public Iterator<U> iterator() {
-		return new MappingIterator<>(collection.iterator(), mapper);
+	private BiMappedCollection(Collection<T> collection, Function<? super T, ? extends U> mapper,
+	                           Function<? super U, ? extends T> backMapper) {
+		super(collection, mapper);
+		this.backMapper = backMapper;
 	}
 
 	@Override
-	public int size() {
-		return collection.size();
+	public boolean add(U u) {
+		return collection.add(backMapper.apply(u));
 	}
 }

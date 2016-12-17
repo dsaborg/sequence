@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.ChainedList;
-import org.d2ab.collection.FilteredList;
-import org.d2ab.collection.MappedList;
-import org.d2ab.collection.ReverseList;
+import org.d2ab.collection.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -280,6 +277,11 @@ public class ListSequence<T> implements Sequence<T> {
 	@Override
 	public <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
 		return from(MappedList.from(list, mapper));
+	}
+
+	@Override
+	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+		return from(BiMappedList.from(list, mapper, backMapper));
 	}
 
 	@SuppressWarnings("unchecked")

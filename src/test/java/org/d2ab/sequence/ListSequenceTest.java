@@ -16,6 +16,7 @@ public class ListSequenceTest {
 	private final List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
 	private final Sequence<Integer> sequence = ListSequence.from(list);
 	private final Sequence<Integer> odds = sequence.filter(x -> x % 2 == 1);
+	private final Sequence<String> strings = sequence.biMap(Object::toString, Integer::parseInt);
 
 	@Test
 	public void add() {
@@ -51,6 +52,7 @@ public class ListSequenceTest {
 
 		assertThat(odds, contains(1, 3, 5, 17));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 17));
+		assertThat(list, contains(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
@@ -60,11 +62,25 @@ public class ListSequenceTest {
 
 		assertThat(odds, contains(1, 5));
 		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(list, contains(1, 2, 4, 5));
 	}
 
 	@Test
 	public void filterContains() {
 		assertThat(odds.contains(3), is(true));
 		assertThat(odds.contains(4), is(false));
+	}
+
+	@Test
+	public void biMapAdd() {
+		strings.add("6");
+		assertThat(strings, contains("1", "2", "3", "4", "5", "6"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6));
+
+		expecting(NumberFormatException.class, () -> strings.add("foo"));
+		assertThat(strings, contains("1", "2", "3", "4", "5", "6"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6));
 	}
 }
