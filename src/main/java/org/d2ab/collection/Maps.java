@@ -68,6 +68,10 @@ public class Maps {
 		return new EntryIterator<>(entry);
 	}
 
+	public static <K, V> Comparator<? super Entry<? extends K, ? extends V>> entryComparator() {
+		return COMPARATOR;
+	}
+
 	public static class Builder<K, V> {
 		private Supplier<Map<K, V>> constructor;
 		private Map<K, V> map;

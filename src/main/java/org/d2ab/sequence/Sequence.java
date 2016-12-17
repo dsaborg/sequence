@@ -96,10 +96,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
 	 * the stream of items in the {@code Sequence}.
 	 *
+	 * @see #concat(Iterable)
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1.1
 	 */
 	@SuppressWarnings("unchecked")
@@ -112,28 +112,30 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (iterablesSequence.all(Collection.class))
 			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable).asList());
 
-		return new ChainingIterable<>(iterables)::iterator;
+		return ChainingIterable.concat(iterables)::iterator;
 	}
 
 	/**
 	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
 	 * the stream of items in the {@code Sequence}.
 	 *
+	 * @see #concat(Iterable[])
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1.1
 	 */
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
 		Sequence<Iterable<T>> iterablesSequence = Sequence.from(iterables);
 		if (iterablesSequence.all(List.class))
+			//noinspection unchecked
 			return ListSequence.concat(iterablesSequence.map(iterable -> (List<T>) iterable).asList());
 
 		if (iterablesSequence.all(Collection.class))
+			//noinspection unchecked
 			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable));
 
-		return ChainingIterable.<T>flatten(iterables)::iterator;
+		return new ChainingIterable<>(iterables)::iterator;
 	}
 
 	/**
@@ -147,7 +149,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Iterator<T> iterator) {
@@ -166,7 +167,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Stream<T> stream) {
@@ -179,7 +179,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterator)
 	 * @see #cache(Stream)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterable<T> iterable) {
@@ -192,7 +191,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
 	 * @see #once(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterator<T> iterator) {
@@ -205,7 +203,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Stream<T> stream) {
@@ -257,7 +254,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #ints()
 	 * @see #range(int, int)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Integer> intsFrom(int start) {
@@ -312,7 +308,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #longs()
 	 * @see #longsFromZero()
 	 * @see #range(long, long)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Long> longsFrom(long start) {
@@ -350,7 +345,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #chars()
 	 * @see #range(char, char)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Character> charsFrom(char start) {
@@ -548,7 +542,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingFrom(Object)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingAfter(T element) {
@@ -561,7 +554,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingFrom(Predicate)
 	 * @see #startingAfter(Object)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingFrom(T element) {
@@ -574,7 +566,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingAfter(Object)
 	 * @see #startingFrom(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingAfter(Predicate<? super T> predicate) {
@@ -587,7 +578,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingFrom(Object)
 	 * @see #startingAfter(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingFrom(Predicate<? super T> predicate) {
@@ -634,7 +624,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toInts(ToIntFunction)
 	 * @see #toLongs(ToLongFunction)
 	 * @see #toDoubles(ToDoubleFunction)
-	 *
 	 * @since 1.2
 	 */
 	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
@@ -744,7 +733,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 */
 	default Sequence<T> append(Iterable<T> iterable) {
-		return new ChainingIterable<>(this, iterable)::iterator;
+		return ChainingIterable.concat(this, iterable)::iterator;
 	}
 
 	/**
@@ -918,7 +907,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> flatten() {
-		return ChainingIterable.<U>flatten(this)::iterator;
+		return ChainingIterable.<U>concatAny(this)::iterator;
 	}
 
 	/**

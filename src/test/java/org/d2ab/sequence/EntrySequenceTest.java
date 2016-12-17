@@ -1558,6 +1558,34 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void stream() {
+		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		twice(() -> assertThat(_12345.stream().collect(Collectors.toList()),
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5))));
+		twice(() -> assertThat(_12345,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		EntrySequence<String, Integer> empty = EntrySequence.once(Iterators.empty());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		EntrySequence<String, Integer> sequence = EntrySequence.once(
+				Iterators.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+				             Maps.entry("5", 5)));
+		assertThat(sequence.stream().collect(Collectors.toList()),
+		           contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                    Maps.entry("5", 5)));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+	}
+
+	@Test
 	public void mapToChar() {
 		CharSeq emptyChars = empty.toChars((k, v) -> (char) (v + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));

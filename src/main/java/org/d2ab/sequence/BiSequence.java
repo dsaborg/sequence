@@ -506,9 +506,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function) {
-		ChainingIterable<Pair<LL, RR>> result = new ChainingIterable<>();
-		toSequence(function).forEach(result::append);
-		return result::iterator;
+		return new ChainingIterable<>(toSequence(function))::iterator;
 	}
 
 	/**
@@ -1113,7 +1111,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @return this {@code BiSequence} sorted according to the natural order.
 	 */
 	default BiSequence<L, R> sorted() {
-		return () -> Iterators.unmodifiable(Lists.sort(toList()));
+		return sorted(Pair.comparator());
 	}
 
 	/**
@@ -1218,17 +1216,15 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * <p>
 	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
 	 */
-	default BiSequence<L, R> append(Iterator<? extends Pair<L, R>> iterator) {
+	default BiSequence<L, R> append(Iterator<Pair<L, R>> iterator) {
 		return append(Iterables.once(iterator));
 	}
 
 	/**
 	 * Append the elements of the given {@link Iterable} to the end of this {@code BiSequence}.
 	 */
-	default BiSequence<L, R> append(Iterable<? extends Pair<L, R>> that) {
-		@SuppressWarnings("unchecked")
-		Iterable<Pair<L, R>> chainingSequence = new ChainingIterable<>(this, that);
-		return chainingSequence::iterator;
+	default BiSequence<L, R> append(Iterable<Pair<L, R>> that) {
+		return ChainingIterable.concat(this, that)::iterator;
 	}
 
 	/**
@@ -1242,8 +1238,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * Append the given pair to the end of this {@code BiSequence}.
 	 */
-	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> appendPair(L left, R right) {
+		//noinspection unchecked
 		return append(Pair.of(left, right));
 	}
 

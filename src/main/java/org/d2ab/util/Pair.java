@@ -325,6 +325,10 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 		return COMPARATOR.compare(this, that);
 	}
 
+	public static <L, R> Comparator<? super Pair<? extends L, ? extends R>> comparator() {
+		return COMPARATOR;
+	}
+
 	private class PairIterator<T> implements Iterator<T> {
 		int index;
 

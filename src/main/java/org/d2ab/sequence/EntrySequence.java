@@ -510,9 +510,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 */
 	default <KK, VV> EntrySequence<KK, VV> flatten(
 			Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>> mapper) {
-		ChainingIterable<Entry<KK, VV>> result = new ChainingIterable<>();
-		toSequence(mapper).forEach(result::append);
-		return result::iterator;
+		return new ChainingIterable<>(toSequence(mapper))::iterator;
 	}
 
 	/**
@@ -1111,10 +1109,14 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return this {@code EntrySequence} sorted according to the natural order.
+	 * @return this {@code EntrySequence} sorted according to the natural order of the key and value. Requires that
+	 * the key and value in this sequence implements {@link Comparable} or a {@link ClassCastException} will be thrown.
+	 *
+	 * @throws ClassCastException if the keys and values in this {@code EntrySequence} does not implement
+	 * {@link Comparable}.
 	 */
 	default EntrySequence<K, V> sorted() {
-		return () -> Iterators.unmodifiable(Lists.sort((List) toList()));
+		return sorted(Maps.entryComparator());
 	}
 
 	/**
@@ -1223,17 +1225,15 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * <p>
 	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
 	 */
-	default EntrySequence<K, V> append(Iterator<? extends Entry<K, V>> iterator) {
+	default EntrySequence<K, V> append(Iterator<Entry<K, V>> iterator) {
 		return append(Iterables.once(iterator));
 	}
 
 	/**
 	 * Append the elements of the given {@link Iterable} to the end of this {@code EntrySequence}.
 	 */
-	default EntrySequence<K, V> append(Iterable<? extends Entry<K, V>> that) {
-		@SuppressWarnings("unchecked")
-		Iterable<Entry<K, V>> chainingSequence = new ChainingIterable<>(this, that);
-		return chainingSequence::iterator;
+	default EntrySequence<K, V> append(Iterable<Entry<K, V>> that) {
+		return ChainingIterable.concat(this, that)::iterator;
 	}
 
 	/**

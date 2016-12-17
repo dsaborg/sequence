@@ -228,14 +228,12 @@ public class SequenceTest {
 	@Test
 	public void ofNone() {
 		Sequence<Integer> sequence = Sequence.of();
-
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
 	public void ofNulls() {
 		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
-
 		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
 	}
 
@@ -246,32 +244,31 @@ public class SequenceTest {
 
 	@Test
 	public void fromIterable() {
-		Sequence<Integer> sequenceFromIterable = Sequence.from(Iterables.of(1, 2, 3));
-
-		twice(() -> assertThat(sequenceFromIterable, contains(1, 2, 3)));
+		Sequence<Integer> sequence = Sequence.from(Iterables.of(1, 2, 3));
+		twice(() -> assertThat(sequence, contains(1, 2, 3)));
 	}
 
 	@Test
 	public void onceIterator() {
-		Sequence<Integer> sequenceFromStream = Sequence.once(Iterators.of(1, 2, 3));
+		Sequence<Integer> sequence = Sequence.once(Iterators.of(1, 2, 3));
 
-		assertThat(sequenceFromStream, contains(1, 2, 3));
-		assertThat(sequenceFromStream, is(emptyIterable()));
+		assertThat(sequence, contains(1, 2, 3));
+		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
 	public void onceStream() {
-		Sequence<Integer> sequenceFromStream = Sequence.once(Stream.of(1, 2, 3));
+		Sequence<Integer> sequence = Sequence.once(Stream.of(1, 2, 3));
 
-		assertThat(sequenceFromStream, contains(1, 2, 3));
-		assertThat(sequenceFromStream, is(emptyIterable()));
+		assertThat(sequence, contains(1, 2, 3));
+		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
 	public void onceEmptyStream() {
-		Sequence<Integer> sequenceFromStream = Sequence.once(Stream.of());
+		Sequence<Integer> sequence = Sequence.once(Stream.of());
 
-		twice(() -> assertThat(sequenceFromStream, is(emptyIterable())));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
@@ -279,8 +276,8 @@ public class SequenceTest {
 		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
 		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
 		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(list1::iterator, list2::iterator, list3::iterator);
 
+		Sequence<Integer> sequence = Sequence.concat(list1::iterator, list2::iterator, list3::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		list1.add(17);
@@ -295,8 +292,8 @@ public class SequenceTest {
 		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
 		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
 		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(collection1, collection2, collection3);
 
+		Sequence<Integer> sequence = Sequence.concat(collection1, collection2, collection3);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		collection1.add(17);
@@ -311,8 +308,8 @@ public class SequenceTest {
 		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
 		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
 		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(list1, list2, list3);
 
+		Sequence<Integer> sequence = Sequence.concat(list1, list2, list3);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		list1.add(17);
@@ -325,7 +322,6 @@ public class SequenceTest {
 	@Test
 	public void concatArrayOfNoIterables() {
 		Sequence<Integer> sequence = Sequence.concat();
-
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
@@ -334,8 +330,9 @@ public class SequenceTest {
 		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
 		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
 		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(Iterables.of(list1::iterator, list2::iterator, list3::iterator));
+		List<Iterable<Integer>> listList = new ArrayList<>(asList(list1::iterator, list2::iterator, list3::iterator));
 
+		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) listList::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		list1.add(17);
@@ -343,6 +340,9 @@ public class SequenceTest {
 
 		sequence.remove(17);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		listList.add(new ArrayList<>(asList(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 	}
 
 	@Test
@@ -350,8 +350,9 @@ public class SequenceTest {
 		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
 		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
 		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(Iterables.of(collection1, collection2, collection3));
+		Collection<Iterable<Integer>> collectionCollection = new ArrayDeque<>(asList(collection1, collection2, collection3));
 
+		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) collectionCollection::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		collection1.add(17);
@@ -359,6 +360,9 @@ public class SequenceTest {
 
 		sequence.remove(17);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		collectionCollection.add(new ArrayDeque<>(asList(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 	}
 
 	@Test
@@ -366,8 +370,9 @@ public class SequenceTest {
 		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
 		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
 		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(Iterables.of(list1, list2, list3));
+		List<Iterable<Integer>> listList = new ArrayList<>(asList(list1, list2, list3));
 
+		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) listList::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		list1.add(17);
@@ -375,6 +380,15 @@ public class SequenceTest {
 
 		sequence.remove(17);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		listList.add(new ArrayList<>(asList(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
+	}
+
+	@Test
+	public void concatIterableOfNoIterables() {
+		Sequence<Integer> sequence = Sequence.concat(Iterables.empty());
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
@@ -382,8 +396,9 @@ public class SequenceTest {
 		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
 		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
 		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(asList(list1, list2, list3));
+		List<Iterable<Integer>> listList = new ArrayList<>(asList(list1, list2, list3));
 
+		Sequence<Integer> sequence = Sequence.concat(listList);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		sequence.add(17);
@@ -391,15 +406,20 @@ public class SequenceTest {
 
 		sequence.remove(17);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		listList.add(new ArrayList<>(asList(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 	}
 
 	@Test
 	public void concatCollectionOfCollections() {
-		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
-		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
-		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
-		Sequence<Integer> sequence = Sequence.concat(new ArrayDeque<>(asList(collection1, collection2, collection3)));
+		Collection<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
+		Collection<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
+		Collection<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		Collection<Iterable<Integer>> collectionCollection = new ArrayDeque<>(
+				asList(collection1, collection2, collection3));
 
+		Sequence<Integer> sequence = Sequence.concat(collectionCollection);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 
 		sequence.add(17);
@@ -407,13 +427,9 @@ public class SequenceTest {
 
 		sequence.remove(17);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-	}
 
-	@Test
-	public void concatIterableOfNoIterables() {
-		Sequence<Integer> sequence = Sequence.concat(Iterables.empty());
-
-		twice(() -> assertThat(sequence, is(emptyIterable())));
+		collectionCollection.add(new ArrayDeque<>(asList(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 	}
 
 	@Test
@@ -1916,6 +1932,17 @@ public class SequenceTest {
 
 		twice(() -> assertThat(_12345.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void streamFromOnce() {
+		Sequence<Integer> empty = Sequence.once(Iterators.empty());
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+
+		Sequence<Integer> sequence = Sequence.once(Iterators.of(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5));
+		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
 	}
 
 	@Test

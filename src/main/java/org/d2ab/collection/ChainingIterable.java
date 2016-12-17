@@ -17,91 +17,38 @@
 package org.d2ab.collection;
 
 import org.d2ab.iterator.ChainingIterator;
+import org.d2ab.iterator.MappingIterator;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class ChainingIterable<T> implements Iterable<T> {
-	private final Collection<Iterable<? extends T>> iterables = new ArrayList<>();
+	private final Iterable<Iterable<T>> iterables;
 
-	public ChainingIterable() {
+	public ChainingIterable(Iterable<Iterable<T>> iterables) {
+		this.iterables = iterables;
 	}
 
-	public ChainingIterable(Iterable<? extends T> iterable) {
-		iterables.add(iterable);
+	public static <T> Iterable<T> empty() {
+		return new ChainingIterable<>(Iterables.empty());
 	}
 
 	@SafeVarargs
-	public ChainingIterable(Iterable<? extends T>... iterables) {
-		Arrayz.forEach(iterables, this.iterables::add);
+	public static <T> Iterable<T> concat(Iterable<T>... iterables) {
+		return new ChainingIterable<>(Iterables.of(iterables));
 	}
 
-	public static <U> Iterable<U> flatten(Iterable<?> containers) {
-		return new ChainingIterable<U>().flatAppend(containers);
+	public static <U> Iterable<U> concatAny(Iterable<?> containers) {
+		return flatten(containers, Iterables::from);
 	}
 
 	public static <T, U> Iterable<U> flatten(Iterable<? extends T> iterable,
 	                                         Function<? super T, ? extends Iterable<U>> mapper) {
-		ChainingIterable<U> result = new ChainingIterable<>();
-		iterable.forEach(each -> result.append(mapper.apply(each)));
-		return result;
-	}
-
-	public Iterable<T> flatAppend(Iterable<?> containers) {
-		for (Object each : containers)
-			flatAppend(each);
-		return this;
-	}
-
-	public Iterable<T> flatAppend(Object container) {
-		return append(Iterables.from(container));
-	}
-
-	@SuppressWarnings("unchecked")
-	public Iterable<T> append(T... objects) {
-		return append(Iterables.of(objects));
-	}
-
-	public Iterable<T> append(Iterable<T> iterable) {
-		iterables.add(iterable);
-		return this;
-	}
-
-	public Iterable<T> append(Iterator<T> iterator) {
-		return append(Iterables.once(iterator));
-	}
-
-	public Iterable<T> append(Stream<T> stream) {
-		return append(stream.iterator());
+		return new ChainingIterable<>(() -> new MappingIterator<>(iterable.iterator(), mapper));
 	}
 
 	@Override
 	public Iterator<T> iterator() {
 		return new ChainingIterator<>(iterables);
-	}
-
-	@Override
-	public int hashCode() {
-		return iterables.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if ((o == null) || (getClass() != o.getClass()))
-			return false;
-
-		ChainingIterable<?> that = (ChainingIterable<?>) o;
-
-		return iterables.equals(that.iterables);
-	}
-
-	@Override
-	public String toString() {
-		return "ChainingIterable" + iterables;
 	}
 }
