@@ -72,6 +72,18 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void fromArrayWithSize() {
+		IntSequence sequence = IntSequence.from(new int[]{1, 2, 3, 4, 5}, 3);
+		twice(() -> assertThat(sequence, containsInts(1, 2, 3)));
+	}
+
+	@Test
+	public void fromArrayWithOffsetAndSize() {
+		IntSequence sequence = IntSequence.from(new int[]{1, 2, 3, 4, 5}, 1, 3);
+		twice(() -> assertThat(sequence, containsInts(2, 3, 4)));
+	}
+
+	@Test
 	public void forLoop() {
 		twice(() -> {
 			for (int ignored : empty)
@@ -530,16 +542,16 @@ public class IntSequenceTest {
 
 	@Test
 	public void mapWithIndex() {
-		IntSequence emptyMapped = empty.mapIndexed((i, x) -> (int) (i + x));
+		IntSequence emptyMapped = empty.mapIndexed((i, x) -> i + x);
 		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
 
-		IntSequence oneMapped = _1.mapIndexed((i, x) -> (int) (i + x));
+		IntSequence oneMapped = _1.mapIndexed((i, x) -> i + x);
 		twice(() -> assertThat(oneMapped, containsInts(1)));
 
-		IntSequence twoMapped = _12.mapIndexed((i, x) -> (int) (i + x));
+		IntSequence twoMapped = _12.mapIndexed((i, x) -> i + x);
 		twice(() -> assertThat(twoMapped, containsInts(1, 3)));
 
-		IntSequence mapped = _12345.mapIndexed((i, x) -> (int) (i + x));
+		IntSequence mapped = _12345.mapIndexed((i, x) -> i + x);
 		twice(() -> assertThat(mapped, containsInts(1, 3, 5, 7, 9)));
 	}
 
@@ -807,6 +819,47 @@ public class IntSequenceTest {
 			assertThat(_12345.at(1), is(OptionalInt.of(2)));
 			assertThat(_12345.at(4), is(OptionalInt.of(5)));
 			assertThat(_12345.at(17), is(OptionalInt.empty()));
+		});
+	}
+
+	@Test
+	public void firstByPredicate() {
+		twice(() -> {
+			assertThat(empty.first(x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_1.first(x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_12.first(x -> x > 1), is(OptionalInt.of(2)));
+			assertThat(_12345.first(x -> x > 1), is(OptionalInt.of(2)));
+		});
+	}
+
+	@Test
+	public void lastByPredicate() {
+		twice(() -> {
+			assertThat(empty.last(x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_1.last(x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_12.last(x -> x > 1), is(OptionalInt.of(2)));
+			assertThat(_12345.last(x -> x > 1), is(OptionalInt.of(5)));
+		});
+	}
+
+	@Test
+	public void atByPredicate() {
+		twice(() -> {
+			assertThat(empty.at(0, x -> x > 1), is(OptionalInt.empty()));
+			assertThat(empty.at(17, x -> x > 1), is(OptionalInt.empty()));
+
+			assertThat(_1.at(0, x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_1.at(17, x -> x > 1), is(OptionalInt.empty()));
+
+			assertThat(_12.at(0, x -> x > 1), is(OptionalInt.of(2)));
+			assertThat(_12.at(1, x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_12.at(17, x -> x > 1), is(OptionalInt.empty()));
+
+			assertThat(_12345.at(0, x -> x > 1), is(OptionalInt.of(2)));
+			assertThat(_12345.at(1, x -> x > 1), is(OptionalInt.of(3)));
+			assertThat(_12345.at(3, x -> x > 1), is(OptionalInt.of(5)));
+			assertThat(_12345.at(4, x -> x > 1), is(OptionalInt.empty()));
+			assertThat(_12345.at(17, x -> x > 1), is(OptionalInt.empty()));
 		});
 	}
 
@@ -1154,6 +1207,8 @@ public class IntSequenceTest {
 
 		IntSequence crossingMinValue = IntSequence.range(Integer.MIN_VALUE + 3, Integer.MIN_VALUE, 2);
 		twice(() -> assertThat(crossingMinValue, containsInts(Integer.MIN_VALUE + 3, Integer.MIN_VALUE + 1)));
+
+		expecting(IllegalArgumentException.class, () -> IntSequence.range(1, 6, -1));
 	}
 
 	@Test

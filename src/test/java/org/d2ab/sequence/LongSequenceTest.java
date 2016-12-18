@@ -74,12 +74,24 @@ public class LongSequenceTest {
 
 	@Test
 	public void ofOne() {
-		twice(() -> assertThat(_1, containsLongs(1L)));
+		twice(() -> assertThat(_1, containsLongs(1)));
 	}
 
 	@Test
 	public void ofMany() {
-		twice(() -> assertThat(_123, containsLongs(1L, 2L, 3L)));
+		twice(() -> assertThat(_123, containsLongs(1, 2, 3)));
+	}
+
+	@Test
+	public void fromArrayWithSize() {
+		LongSequence sequence = LongSequence.from(new long[]{1, 2, 3, 4, 5}, 3);
+		twice(() -> assertThat(sequence, containsLongs(1, 2, 3)));
+	}
+
+	@Test
+	public void fromArrayWithOffsetAndSize() {
+		LongSequence sequence = LongSequence.from(new long[]{1, 2, 3, 4, 5}, 1, 3);
+		twice(() -> assertThat(sequence, containsLongs(2, 3, 4)));
 	}
 
 	@Test
@@ -346,6 +358,14 @@ public class LongSequenceTest {
 	@Test
 	public void appendIterator() {
 		LongSequence appended = _123.append(Iterators.of(4L, 5L, 6L)).append(Iterators.of(7L, 8L));
+
+		assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
+		assertThat(appended, containsLongs(1L, 2L, 3L));
+	}
+
+	@Test
+	public void appendLongStream() {
+		LongSequence appended = _123.append(LongStream.of(4L, 5L, 6L)).append(LongStream.of(7L, 8L));
 
 		assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
 		assertThat(appended, containsLongs(1L, 2L, 3L));
@@ -1107,6 +1127,8 @@ public class LongSequenceTest {
 
 		LongSequence crossingMinValue = LongSequence.range(Long.MIN_VALUE + 3, Long.MIN_VALUE, 2);
 		twice(() -> assertThat(crossingMinValue, containsLongs(Long.MIN_VALUE + 3, Long.MIN_VALUE + 1)));
+
+		expecting(IllegalArgumentException.class, () -> LongSequence.range(1, 6, -1));
 	}
 
 	@Test

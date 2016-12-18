@@ -32,6 +32,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
@@ -131,7 +132,13 @@ public class SequenceTest {
 
 	@SafeVarargs
 	public static <T> Sequence<T> newStandardSequence(T... is) {
-		return Sequence.from(new ArrayDeque<>(asList(is)));
+		return Sequence.from(new ArrayDeque<>(asList(is))::iterator);
+	}
+
+	@Test
+	public void ofNone() {
+		Sequence<Integer> sequence = Sequence.of();
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
@@ -147,92 +154,6 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void forLoop() {
-		twice(() -> {
-			for (int ignored : empty)
-				fail("Should not get called");
-		});
-
-		twice(() -> {
-			int expected = 1;
-			for (int i : _12345)
-				assertThat(i, is(expected++));
-		});
-	}
-
-	@Test
-	public void forEach() {
-		twice(() -> {
-			empty.forEach(i -> fail("Should not get called"));
-
-			AtomicInteger value = new AtomicInteger(1);
-			_1.forEach(i -> assertThat(i, is(value.getAndIncrement())));
-
-			value.set(1);
-			_12.forEach(i -> assertThat(i, is(value.getAndIncrement())));
-
-			value.set(1);
-			_12345.forEach(i -> assertThat(i, is(value.getAndIncrement())));
-		});
-	}
-
-	@Test
-	public void forEachIndexed() {
-		twice(() -> {
-			empty.forEachIndexed((e, i) -> fail("Should not get called"));
-
-			AtomicInteger value = new AtomicInteger(1);
-			AtomicInteger index = new AtomicInteger();
-			_1.forEachIndexed((e, i) -> {
-				assertThat(e, is(value.getAndIncrement()));
-				assertThat(i, is(index.getAndIncrement()));
-			});
-			assertThat(index.get(), is(1));
-
-			value.set(1);
-			index.set(0);
-			_12.forEachIndexed((e, i) -> {
-				assertThat(e, is(value.getAndIncrement()));
-				assertThat(i, is(index.getAndIncrement()));
-			});
-			assertThat(index.get(), is(2));
-
-			value.set(1);
-			index.set(0);
-			_12345.forEachIndexed((e, i) -> {
-				assertThat(e, is(value.getAndIncrement()));
-				assertThat(i, is(index.getAndIncrement()));
-			});
-			assertThat(index.get(), is(5));
-		});
-	}
-
-	@Test
-	public void iterator() {
-		twice(() -> {
-			Iterator iterator = _123.iterator();
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(1));
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(2));
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(3));
-
-			assertThat(iterator.hasNext(), is(false));
-			assertThat(iterator.hasNext(), is(false));
-		});
-	}
-
-	@Test
-	public void ofNone() {
-		Sequence<Integer> sequence = Sequence.of();
-		twice(() -> assertThat(sequence, is(emptyIterable())));
-	}
-
-	@Test
 	public void ofNulls() {
 		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
 		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
@@ -240,6 +161,12 @@ public class SequenceTest {
 
 	@Test
 	public void empty() {
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
+
+	@Test
+	public void factoryEmpty() {
+		Sequence<Integer> empty = Sequence.empty();
 		twice(() -> assertThat(empty, is(emptyIterable())));
 	}
 
@@ -480,6 +407,180 @@ public class SequenceTest {
 
 		cached.clear();
 		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void create() {
+		Sequence<Integer> sequence = Sequence.create();
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(17)));
+	}
+
+	@Test
+	public void withCapacity() {
+		Sequence<Integer> sequence = Sequence.withCapacity(1);
+		sequence.addAll(asList(1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void createOfNone() {
+		Sequence<Integer> sequence = Sequence.createOf();
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(17)));
+	}
+
+	@Test
+	public void createOfOne() {
+		Sequence<Integer> sequence = Sequence.createOf(1);
+		twice(() -> assertThat(sequence, contains(1)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 17)));
+	}
+
+	@Test
+	public void createOfMany() {
+		Sequence<Integer> sequence = Sequence.createOf(1, 2, 3, 4, 5);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17)));
+	}
+
+	@Test
+	public void createOfNulls() {
+		Sequence<Integer> sequence = Sequence.createOf(1, null, 2, 3, null);
+		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, null, 2, 3, null, 17)));
+	}
+
+	@Test
+	public void createFromCollectionAsIterable() {
+		Collection<Integer> backing = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Sequence<Integer> sequence = Sequence.createFrom((Iterable<Integer>) backing);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17)));
+		assertThat(backing, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void createFromIterable() {
+		Collection<Integer> backing = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Sequence<Integer> sequence = Sequence.createFrom(backing::iterator);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17)));
+		assertThat(backing, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void createFromCollection() {
+		Collection<Integer> backing = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Sequence<Integer> sequence = Sequence.createFrom(backing);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17)));
+		assertThat(backing, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void createFromIterator() {
+		Sequence<Integer> sequence = Sequence.createFrom(Iterators.of(1, 2, 3, 4, 5));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17)));
+	}
+
+	@Test
+	public void forLoop() {
+		twice(() -> {
+			for (int ignored : empty)
+				fail("Should not get called");
+		});
+
+		twice(() -> {
+			int expected = 1;
+			for (int i : _12345)
+				assertThat(i, is(expected++));
+		});
+	}
+
+	@Test
+	public void forEach() {
+		twice(() -> {
+			empty.forEach(i -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach(i -> assertThat(i, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12.forEach(i -> assertThat(i, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12345.forEach(i -> assertThat(i, is(value.getAndIncrement())));
+		});
+	}
+
+	@Test
+	public void forEachIndexed() {
+		twice(() -> {
+			empty.forEachIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			AtomicInteger index = new AtomicInteger();
+			_1.forEachIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(1));
+
+			value.set(1);
+			index.set(0);
+			_12.forEachIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(2));
+
+			value.set(1);
+			index.set(0);
+			_12345.forEachIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(5));
+		});
+	}
+
+	@Test
+	public void iterator() {
+		twice(() -> {
+			Iterator iterator = _123.iterator();
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(1));
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(2));
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(3));
+
+			assertThat(iterator.hasNext(), is(false));
+			assertThat(iterator.hasNext(), is(false));
+		});
 	}
 
 	@Test
@@ -1362,6 +1463,11 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void toArrayWithExistingArray() {
+		twice(() -> assertThat(_12345.toArray(new Integer[0]), arrayContaining(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void collector() {
 		twice(() -> assertThat(_12345.collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
 	}
@@ -1952,6 +2058,26 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void parallelStream() {
+		twice(() -> assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable())));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		twice(() -> assertThat(_12345.parallelStream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void spliterator() {
+		twice(() -> assertThat(StreamSupport.stream(empty.spliterator(), false).collect(Collectors.toList()),
+		                       is(emptyIterable())));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		twice(() -> assertThat(StreamSupport.stream(_12345.spliterator(), false).collect(Collectors.toList()),
+		                       contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void streamFromOnce() {
 		Sequence<Integer> empty = Sequence.once(Iterators.empty());
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
@@ -2510,42 +2636,6 @@ public class SequenceTest {
 
 		expecting(UnsupportedOperationException.class, () -> fiveImmutable.remove(3));
 		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
-	}
-
-	@Test
-	public void add() {
-		assertThat(empty.add(17), is(true));
-		twice(() -> assertThat(empty, contains(17)));
-
-		assertThat(_12345.add(17), is(true));
-		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17)));
-	}
-
-	@Test
-	public void addAllVarargs() {
-		assertThat(empty.addAll(17, 18), is(true));
-		twice(() -> assertThat(empty, contains(17, 18)));
-
-		assertThat(_12345.addAll(17, 18), is(true));
-		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17, 18)));
-	}
-
-	@Test
-	public void addAllIterable() {
-		assertThat(empty.addAll(Iterables.of(17, 18)), is(true));
-		twice(() -> assertThat(empty, contains(17, 18)));
-
-		assertThat(_12345.addAll(Iterables.of(17, 18)), is(true));
-		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17, 18)));
-	}
-
-	@Test
-	public void addAllCollection() {
-		assertThat(empty.addAll(asList(17, 18)), is(true));
-		twice(() -> assertThat(empty, contains(17, 18)));
-
-		assertThat(_12345.addAll(asList(17, 18)), is(true));
-		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17, 18)));
 	}
 
 	@Test

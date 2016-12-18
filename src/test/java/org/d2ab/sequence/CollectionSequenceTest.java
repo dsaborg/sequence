@@ -1,5 +1,6 @@
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Iterables;
 import org.junit.Test;
 
 import java.util.ArrayDeque;
@@ -7,22 +8,83 @@ import java.util.Collection;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class CollectionSequenceTest {
+	private final Collection<Integer> emptyCollection = new ArrayDeque<>();
+	private final Sequence<Integer> empty = CollectionSequence.from(emptyCollection);
+
 	private final Collection<Integer> collection = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 	private final Sequence<Integer> sequence = CollectionSequence.from(collection);
+
 	private final Sequence<Integer> odds = sequence.filter(x -> x % 2 == 1);
 	private final Sequence<String> strings = sequence.biMap(Object::toString, Integer::parseInt);
 	private final Sequence<String> oddStrings = odds.biMap(Object::toString, Integer::parseInt);
 
 	@Test
-	public void add() {
-		sequence.add(17);
+	public void empty() {
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
 
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 17));
+	@Test
+	public void concatCollectionOfCollections() {
+		Collection<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
+		Collection<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
+		Collection<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		Collection<Collection<Integer>> collectionCollection = new ArrayDeque<>(
+				asList(collection1, collection2, collection3));
+
+		Sequence<Integer> sequence = CollectionSequence.concat(collectionCollection);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 17)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		collectionCollection.add(new ArrayDeque<>(asList(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
+	}
+
+	@Test
+	public void add() {
+		assertThat(empty.add(17), is(true));
+		twice(() -> assertThat(empty, contains(17)));
+
+		assertThat(sequence.add(17), is(true));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17)));
+	}
+
+	@Test
+	public void addAllVarargs() {
+		assertThat(empty.addAll(17, 18), is(true));
+		twice(() -> assertThat(empty, contains(17, 18)));
+
+		assertThat(sequence.addAll(17, 18), is(true));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 18)));
+	}
+
+	@Test
+	public void addAllIterable() {
+		assertThat(empty.addAll(Iterables.of(17, 18)), is(true));
+		twice(() -> assertThat(empty, contains(17, 18)));
+
+		assertThat(sequence.addAll(Iterables.of(17, 18)), is(true));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 18)));
+	}
+
+	@Test
+	public void addAllCollection() {
+		assertThat(empty.addAll(asList(17, 18)), is(true));
+		twice(() -> assertThat(empty, contains(17, 18)));
+
+		assertThat(sequence.addAll(asList(17, 18)), is(true));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 18)));
 	}
 
 	@Test

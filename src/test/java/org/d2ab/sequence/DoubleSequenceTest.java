@@ -69,6 +69,18 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void fromArrayWithSize() {
+		DoubleSequence sequence = DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 3);
+		twice(() -> assertThat(sequence, containsDoubles(1, 2, 3)));
+	}
+
+	@Test
+	public void fromArrayWithOffsetAndSize() {
+		DoubleSequence sequence = DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 1, 3);
+		twice(() -> assertThat(sequence, containsDoubles(2, 3, 4)));
+	}
+
+	@Test
 	public void forLoop() {
 		twice(() -> {
 			for (double ignored : empty)
@@ -1072,6 +1084,7 @@ public class DoubleSequenceTest {
 	public void range() {
 		assertThat(DoubleSequence.range(1, 6, 1, 0.1), containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0, 6.0));
 		assertThat(DoubleSequence.range(6, 1, 1, 0.1), containsDoubles(6.0, 5.0, 4.0, 3.0, 2.0, 1.0));
+		expecting(IllegalArgumentException.class, () -> DoubleSequence.range(1, 6, -1, 0));
 	}
 
 	@Test

@@ -56,6 +56,22 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
+	 * Create an {@code DoubleSequence} with the given {@code doubles}, limited to the given size.
+	 */
+	static DoubleSequence from(double[] is, int size) {
+		return () -> DoubleIterator.from(is, size);
+	}
+
+	/**
+	 * Create an {@code DoubleSequence} with the given {@code doubles}, reading from the given offset and limited to
+	 * the
+	 * given size.
+	 */
+	static DoubleSequence from(double[] is, int offset, int size) {
+		return () -> DoubleIterator.from(is, offset, size);
+	}
+
+	/**
 	 * Create a {@code DoubleSequence} from a {@link DoubleIterable}.
 	 *
 	 * @see #cache(DoubleIterable)
@@ -234,6 +250,7 @@ public interface DoubleSequence extends DoubleCollection {
 	static DoubleSequence range(double start, double end, double step, double accuracy) {
 		if (step < 0)
 			throw new IllegalArgumentException("Require step to be >= 0");
+
 		return end > start ?
 		       recurse(start, d -> d + step).until(d -> d - accuracy >= end) :
 		       recurse(start, d -> d - step).until(d -> d + accuracy <= end);

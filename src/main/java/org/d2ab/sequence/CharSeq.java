@@ -55,6 +55,21 @@ public interface CharSeq extends CharCollection {
 	}
 
 	/**
+	 * Create an {@code CharSeq} with the given {@code chars}, limited to the given size.
+	 */
+	static CharSeq from(char[] cs, int size) {
+		return () -> CharIterator.from(cs, size);
+	}
+
+	/**
+	 * Create an {@code CharSeq} with the given {@code chars}, reading from the given offset and limited to the
+	 * given size.
+	 */
+	static CharSeq from(char[] is, int offset, int size) {
+		return () -> CharIterator.from(is, offset, size);
+	}
+
+	/**
 	 * Create a {@code CharSeq} from a {@link CharSequence}.
 	 */
 	static CharSeq from(CharSequence csq) {

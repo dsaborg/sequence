@@ -93,6 +93,18 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Create a {@code Sequence} of {@link Entry} key/value items from a {@link Map} of items. The resulting
+	 * {@code Sequence} can be mapped using {@link Pair} items, which implement {@link Entry} and can thus be
+	 * processed as part of the {@code Sequence}'s transformation steps.
+	 *
+	 * @see #of
+	 * @see #from(Iterable)
+	 */
+	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
+		return from(map.entrySet());
+	}
+
+	/**
 	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
 	 * the stream of items in the {@code Sequence}.
 	 *
@@ -207,15 +219,50 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} of {@link Entry} key/value items from a {@link Map} of items. The resulting
-	 * {@code Sequence} can be mapped using {@link Pair} items, which implement {@link Entry} and can thus be
-	 * processed as part of the {@code Sequence}'s transformation steps.
-	 *
-	 * @see #of
-	 * @see #from(Iterable)
+	 * @return a new empty mutable {@code Sequence}.
 	 */
-	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
-		return from(map.entrySet());
+	static <T> Sequence<T> create() {
+		return ListSequence.create();
+	}
+
+	/**
+	 * @return a new empty mutable {@code Sequence} with the given initial capacity.
+	 */
+	static <T> Sequence<T> withCapacity(int capacity) {
+		return ListSequence.withCapacity(capacity);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the given elements.
+	 */
+	@SafeVarargs
+	static <T> Sequence<T> createOf(T... ts) {
+		return ListSequence.createOf(ts);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the elements in the given {@link Collection}.
+	 */
+	static <T> Sequence<T> createFrom(Collection<? extends T> c) {
+		return ListSequence.createFrom(c);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the elements in the given {@link Iterable}.
+	 */
+	@SuppressWarnings("unchecked")
+	static <T> Sequence<T> createFrom(Iterable<? extends T> iterable) {
+		if (iterable instanceof Collection)
+			return createFrom((Collection<T>) iterable);
+
+		return ListSequence.createFrom(iterable);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the remaining elements in the given {@link Iterator}.
+	 */
+	static <T> Sequence<T> createFrom(Iterator<? extends T> iterator) {
+		return ListSequence.createFrom(iterator);
 	}
 
 	/**
@@ -1156,7 +1203,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * @return the first element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * {@link Optional}
+	 * if there are no matching elements in the {@code Sequence}.
 	 *
 	 * @since 1.2
 	 */

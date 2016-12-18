@@ -35,7 +35,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
-import static org.d2ab.sequence.SequenceFunctions.*;
 
 /**
  * An {@link Iterable} sequence of {@link Pair}s with {@link Stream}-like operations for refining, transforming and
@@ -303,6 +302,35 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 		Function<Pair<L, R>, Pair<LL, RR>> f1 = asPairFunction(f);
 		Function<Pair<LL, RR>, Pair<L, R>> g1 = asPairFunction(g);
 		return recurse(f.apply(leftSeed, rightSeed), f1.compose(g1)::apply);
+	}
+
+	/**
+	 * @return the given doubly bi-valued function converted to a pair-based binary operator.
+	 */
+	static <L, R> BinaryOperator<Pair<L, R>> asPairBinaryOperator(QuaternaryFunction<L, R, L, R, Pair<L, R>>
+			                                                              f) {
+		return (p1, p2) -> f.apply(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight());
+	}
+
+	/**
+	 * @return the given bi-valued function converted to a pair-based function.
+	 */
+	static <L, R, T> Function<Pair<L, R>, T> asPairFunction(BiFunction<? super L, ? super R, ? extends T> f) {
+		return p -> f.apply(p.getLeft(), p.getRight());
+	}
+
+	/**
+	 * @return the given bi-valued predicate converted to a pair-based predicate.
+	 */
+	static <L, R> Predicate<Pair<L, R>> asPairPredicate(BiPredicate<? super L, ? super R> predicate) {
+		return p -> predicate.test(p.getLeft(), p.getRight());
+	}
+
+	/**
+	 * @return the given bi-valued consumer converted to a pair-based consumer.
+	 */
+	static <L, R> Consumer<Pair<L, R>> asPairConsumer(BiConsumer<? super L, ? super R> action) {
+		return p -> action.accept(p.getLeft(), p.getRight());
 	}
 
 	/**

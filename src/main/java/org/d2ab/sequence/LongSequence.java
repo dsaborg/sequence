@@ -379,6 +379,7 @@ public interface LongSequence extends LongCollection {
 	static LongSequence range(long start, long end, long step) {
 		if (step < 0)
 			throw new IllegalArgumentException("Require step >= 0");
+
 		return end >= start ?
 		       recurse(start, x -> x + step).endingAt(x -> x + step > end || x > Long.MAX_VALUE - step) :
 		       recurse(start, x -> x - step).endingAt(x -> x - step < end || x < Long.MIN_VALUE + step);

@@ -36,7 +36,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
-import static org.d2ab.sequence.SequenceFunctions.*;
 
 /**
  * An {@link Iterable} sequence of {@link Entry} elements with {@link Stream}-like operations for refining,
@@ -307,6 +306,25 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 		Function<Entry<K, V>, Entry<KK, VV>> f1 = asEntryFunction(f);
 		Function<Entry<KK, VV>, Entry<K, V>> g1 = asEntryFunction(g);
 		return recurse(f.apply(keySeed, valueSeed), f1.compose(g1)::apply);
+	}
+
+	static <K, V> BinaryOperator<Entry<K, V>> asEntryBinaryOperator(
+			QuaternaryFunction<? super K, ? super V, ? super
+					K, ? super V, ? extends Entry<K, V>> f) {
+		return (e1, e2) -> f.apply(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue());
+	}
+
+	static <K, V, R> Function<Entry<K, V>, R> asEntryFunction(
+			BiFunction<? super K, ? super V, ? extends R> mapper) {
+		return entry -> mapper.apply(entry.getKey(), entry.getValue());
+	}
+
+	static <K, V> Predicate<Entry<K, V>> asEntryPredicate(BiPredicate<? super K, ? super V> predicate) {
+		return entry -> predicate.test(entry.getKey(), entry.getValue());
+	}
+
+	static <K, V> Consumer<Entry<K, V>> asEntryConsumer(BiConsumer<? super K, ? super V> action) {
+		return entry -> action.accept(entry.getKey(), entry.getValue());
 	}
 
 	/**

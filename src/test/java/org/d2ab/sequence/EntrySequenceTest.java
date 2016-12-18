@@ -39,8 +39,7 @@ import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
-import static org.d2ab.test.Tests.twice;
-import static org.d2ab.test.Tests.twiceIndexed;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -117,13 +116,15 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void ofPair() {
+	public void ofEntry() {
 		assertThat(EntrySequence.ofEntry("1", 1), contains(Maps.entry("1", 1)));
 	}
 
 	@Test
-	public void ofPairs() {
+	public void ofEntries() {
 		assertThat(EntrySequence.ofEntries("1", 1, "2", 2, "3", 3), contains(entries123));
+
+		expecting(IllegalArgumentException.class, () -> EntrySequence.ofEntries("1"));
 	}
 
 	@Test
@@ -371,6 +372,19 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> appended = _123.appendEntry("4", 4);
 		twice(() -> assertThat(appended, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
 		                                          Maps.entry("4", 4))));
+	}
+
+	@Test
+	public void appendStream() {
+		EntrySequence<String, Integer> appended = _123.append(Stream.of(Maps.entry("4", 4), Maps.entry("5", 5),
+		                                                                Maps.entry("6", 6)))
+		                                              .append(Stream.of(Maps.entry("7", 7), Maps.entry("8", 8)));
+
+		assertThat(appended,
+		           contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                    Maps.entry("5", 5),
+		                    Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8)));
+		assertThat(appended, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)));
 	}
 
 	@Test
@@ -918,6 +932,18 @@ public class EntrySequenceTest {
 			Deque<Entry<String, Integer>> deque = sequence.toCollection(ArrayDeque::new);
 			assertThat(deque, instanceOf(ArrayDeque.class));
 			assertThat(deque, contains(entries12345));
+		});
+	}
+
+	@Test
+	public void collectIntoCollection() {
+		twice(() -> {
+			Deque<Entry<String, Integer>> deque = new ArrayDeque<>();
+			Deque<Entry<String, Integer>> result = _12345.collectInto(deque);
+
+			assertThat(result, is(sameInstance(deque)));
+			assertThat(result, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+			                            Maps.entry("5", 5)));
 		});
 	}
 
@@ -1485,21 +1511,21 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is((int) index.get()));
+			assertThat(r, is(index.get()));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> peekTwo = _12.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is((int) index.get()));
+			assertThat(r, is(index.get()));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
 
 		EntrySequence<String, Integer> peek = _12345.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is((int) index.get()));
+			assertThat(r, is(index.get()));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
 		                                                       Maps.entry("3", 3), Maps.entry("4", 4),
@@ -1542,19 +1568,19 @@ public class EntrySequenceTest {
 		AtomicInteger index = new AtomicInteger();
 		EntrySequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Maps.entry(String.valueOf(index.get()), (int) index.get())));
+			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
 		});
 		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> peekTwo = _12.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Maps.entry(String.valueOf(index.get()), (int) index.get())));
+			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
 		});
 		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
 
 		EntrySequence<String, Integer> peek = _12345.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Maps.entry(String.valueOf(index.get()), (int) index.get())));
+			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
 		});
 		twiceIndexed(index, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
 		                                                       Maps.entry("3", 3), Maps.entry("4", 4),

@@ -22,20 +22,36 @@ import java.util.Iterator;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayDoubleIterator implements DoubleIterator {
-	private final double[] values;
+	private double[] array;
+	private int offset;
+	private int size;
 	private int index;
 
-	public ArrayDoubleIterator(double... values) {
-		this.values = values;
+	public ArrayDoubleIterator(double... array) {
+		this(array, array.length);
+	}
+
+	public ArrayDoubleIterator(double[] array, int size) {
+		this(array, 0, size);
+	}
+
+	public ArrayDoubleIterator(double[] array, int offset, int size) {
+		if (offset > array.length || offset < 0)
+			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
+		if (offset + size > array.length || size < 0)
+			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (array.length - offset));
+		this.array = array;
+		this.offset = offset;
+		this.size = size;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return index < values.length;
+		return index < size;
 	}
 
 	@Override
 	public double nextDouble() {
-		return values[index++];
+		return array[offset + index++];
 	}
 }

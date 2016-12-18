@@ -85,6 +85,18 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void fromArrayWithSize() {
+		CharSeq sequence = CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 3);
+		twice(() -> assertThat(sequence, containsChars('a', 'b', 'c')));
+	}
+
+	@Test
+	public void fromArrayWithOffsetAndSize() {
+		CharSeq sequence = CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 1, 3);
+		twice(() -> assertThat(sequence, containsChars('b', 'c', 'd')));
+	}
+
+	@Test
 	public void forLoop() {
 		twice(() -> {
 			for (int ignored : empty)
@@ -392,6 +404,14 @@ public class CharSeqTest {
 	@Test
 	public void appendIterator() {
 		CharSeq appended = abc.append(Iterators.of('d', 'e', 'f')).append(Iterators.of('g', 'h'));
+
+		assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(appended, containsChars('a', 'b', 'c'));
+	}
+
+	@Test
+	public void appendIntStream() {
+		CharSeq appended = abc.append(IntStream.of('d', 'e', 'f')).append(IntStream.of('g', 'h'));
 
 		assertThat(appended, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 		assertThat(appended, containsChars('a', 'b', 'c'));

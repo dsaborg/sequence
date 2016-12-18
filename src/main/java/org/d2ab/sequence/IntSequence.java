@@ -996,7 +996,8 @@ public interface IntSequence extends IntCollection {
 
 	/**
 	 * @return the {@code int} at the given index, or an empty {@link OptionalInt} if the {@code IntSequence} is
-	 * smaller than the index.
+	 * smaller
+	 * than the index.
 	 *
 	 * @since 1.2
 	 */

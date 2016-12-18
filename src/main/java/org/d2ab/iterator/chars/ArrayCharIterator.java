@@ -22,20 +22,36 @@ import java.util.Iterator;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayCharIterator implements CharIterator {
-	private final char[] values;
+	private char[] array;
+	private int offset;
+	private int size;
 	private int index;
 
-	public ArrayCharIterator(char... values) {
-		this.values = values;
+	public ArrayCharIterator(char... array) {
+		this(array, array.length);
+	}
+
+	public ArrayCharIterator(char[] array, int size) {
+		this(array, 0, size);
+	}
+
+	public ArrayCharIterator(char[] array, int offset, int size) {
+		if (offset > array.length || offset < 0)
+			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
+		if (offset + size > array.length || size < 0)
+			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (array.length - offset));
+		this.array = array;
+		this.offset = offset;
+		this.size = size;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return index < values.length;
+		return index < size;
 	}
 
 	@Override
 	public char nextChar() {
-		return values[index++];
+		return array[offset + index++];
 	}
 }

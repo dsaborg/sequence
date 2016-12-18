@@ -43,6 +43,14 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		return new ArrayCharIterator(chars);
 	}
 
+	static CharIterator from(char[] chars, int size) {
+		return new ArrayCharIterator(chars, size);
+	}
+
+	static CharIterator from(char[] chars, int offset, int size) {
+		return new ArrayCharIterator(chars, offset, size);
+	}
+
 	static CharIterator from(Iterator<Character> iterator) {
 		return new DelegatingTransformingCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override
