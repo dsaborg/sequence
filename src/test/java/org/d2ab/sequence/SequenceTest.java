@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -2377,19 +2378,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void iteratorRemove() {
-		Iterator<Integer> iterator = _12345.iterator();
-		iterator.next();
-		iterator.remove();
-		iterator.next();
-		iterator.next();
-		iterator.remove();
-
-		twice(() -> assertThat(_12345, contains(2, 4, 5)));
-	}
-
-	@Test
-	public void removeAllAfterFilter() {
+	public void filterClear() {
 		Sequence<Integer> filtered = _12345.filter(x -> x % 2 != 0);
 		filtered.clear();
 
@@ -2398,7 +2387,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void removeAllAfterAppend() {
+	public void appendClear() {
 		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
 		appended.clear();
 
@@ -2425,7 +2414,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void containsAll() {
+	public void containsAllVarargs() {
 		assertThat(empty.containsAll(), is(true));
 		assertThat(empty.containsAll(17, 18, 19), is(false));
 
@@ -2451,7 +2440,20 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void containsAny() {
+	public void containsAllCollection() {
+		assertThat(empty.containsAll(emptyList()), is(true));
+		assertThat(empty.containsAll(asList(17, 18, 19)), is(false));
+
+		assertThat(_12345.containsAll(emptyList()), is(true));
+		assertThat(_12345.containsAll(singletonList(1)), is(true));
+		assertThat(_12345.containsAll(asList(1, 3, 5)), is(true));
+		assertThat(_12345.containsAll(asList(1, 2, 3, 4, 5)), is(true));
+		assertThat(_12345.containsAll(asList(1, 2, 3, 4, 5, 17)), is(false));
+		assertThat(_12345.containsAll(asList(17, 18, 19)), is(false));
+	}
+
+	@Test
+	public void containsAnyVarargs() {
 		assertThat(empty.containsAny(), is(false));
 		assertThat(empty.containsAny(17, 18, 19), is(false));
 
@@ -2477,6 +2479,19 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void containsAnyCollection() {
+		assertThat(empty.containsAny(emptyList()), is(false));
+		assertThat(empty.containsAny(asList(17, 18, 19)), is(false));
+
+		assertThat(_12345.containsAny(emptyList()), is(false));
+		assertThat(_12345.containsAny(singletonList(1)), is(true));
+		assertThat(_12345.containsAny(asList(1, 3, 5)), is(true));
+		assertThat(_12345.containsAny(asList(1, 2, 3, 4, 5)), is(true));
+		assertThat(_12345.containsAny(asList(1, 2, 3, 4, 5, 17)), is(true));
+		assertThat(_12345.containsAny(asList(17, 18, 19)), is(false));
+	}
+
+	@Test
 	public void immutable() {
 		Sequence<Integer> emptyImmutable = empty.immutable();
 		twice(() -> assertThat(emptyImmutable, is(emptyIterable())));
@@ -2494,5 +2509,137 @@ public class SequenceTest {
 
 		expecting(UnsupportedOperationException.class, () -> fiveImmutable.remove(3));
 		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void add() {
+		assertThat(empty.add(17), is(true));
+		twice(() -> assertThat(empty, contains(17)));
+
+		assertThat(_12345.add(17), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17)));
+	}
+
+	@Test
+	public void addAllVarargs() {
+		assertThat(empty.addAll(17, 18), is(true));
+		twice(() -> assertThat(empty, contains(17, 18)));
+
+		assertThat(_12345.addAll(17, 18), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17, 18)));
+	}
+
+	@Test
+	public void addAllIterable() {
+		assertThat(empty.addAll(Iterables.of(17, 18)), is(true));
+		twice(() -> assertThat(empty, contains(17, 18)));
+
+		assertThat(_12345.addAll(Iterables.of(17, 18)), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17, 18)));
+	}
+
+	@Test
+	public void addAllCollection() {
+		assertThat(empty.addAll(asList(17, 18)), is(true));
+		twice(() -> assertThat(empty, contains(17, 18)));
+
+		assertThat(_12345.addAll(asList(17, 18)), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 3, 4, 5, 17, 18)));
+	}
+
+	@Test
+	public void iteratorRemove() {
+		Iterator<Integer> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(2, 4, 5)));
+	}
+
+	@Test
+	public void remove() {
+		assertThat(empty.remove(3), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.remove(3), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 4, 5)));
+
+		assertThat(_12345.remove(7), is(false));
+		twice(() -> assertThat(_12345, contains(1, 2, 4, 5)));
+	}
+
+	@Test
+	public void removeAllVarargs() {
+		assertThat(empty.removeAll(3, 4), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(3, 4, 7), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 5)));
+	}
+
+	@Test
+	public void removeAllIterable() {
+		assertThat(empty.removeAll(Iterables.of(3, 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Iterables.of(3, 4, 7)), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 5)));
+	}
+
+	@Test
+	public void removeAllCollection() {
+		assertThat(empty.removeAll(asList(3, 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(asList(3, 4, 7)), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 5)));
+	}
+
+	@Test
+	public void retainAllVarargs() {
+		assertThat(empty.retainAll(3, 4), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(3, 4, 7), is(true));
+		twice(() -> assertThat(_12345, contains(3, 4)));
+	}
+
+	@Test
+	public void retainAllIterable() {
+		assertThat(empty.retainAll(Iterables.of(3, 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Iterables.of(3, 4, 7)), is(true));
+		twice(() -> assertThat(_12345, contains(3, 4)));
+	}
+
+	@Test
+	public void retainAllCollection() {
+		assertThat(empty.retainAll(asList(3, 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(asList(3, 4, 7)), is(true));
+		twice(() -> assertThat(_12345, contains(3, 4)));
+	}
+
+	@Test
+	public void removeIf() {
+		assertThat(empty.removeIf(x -> x == 3), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeIf(x -> x == 3), is(true));
+		twice(() -> assertThat(_12345, contains(1, 2, 4, 5)));
+	}
+
+	@Test
+	public void retainIf() {
+		assertThat(empty.retainIf(x -> x == 3), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainIf(x -> x == 3), is(true));
+		twice(() -> assertThat(_12345, contains(3)));
 	}
 }

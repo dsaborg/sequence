@@ -128,11 +128,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
 		Sequence<Iterable<T>> iterablesSequence = Sequence.from(iterables);
 		if (iterablesSequence.all(List.class))
-			//noinspection unchecked
 			return ListSequence.concat(iterablesSequence.map(iterable -> (List<T>) iterable).asList());
 
 		if (iterablesSequence.all(Collection.class))
-			//noinspection unchecked
 			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable));
 
 		return new ChainingIterable<>(iterables)::iterator;
@@ -603,13 +601,15 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} functions,
+	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper}
+	 * functions,
 	 * allowing for backwards mapping using {@code backMapper} so elements can be added to underlying
 	 * {@link Collection}s after being mapped.
 	 *
 	 * @see #map(Function)
 	 */
-	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
+			backMapper) {
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
@@ -618,8 +618,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #map(Function)
 	 */
+	@SuppressWarnings({"unchecked", "unused"})
 	default <U> Sequence<U> cast(Class<U> clazz) {
-		//noinspection unchecked
 		return (Sequence<U>) this;
 	}
 
@@ -1733,46 +1733,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 				return Pair.of(index++, iterator.next());
 			}
 		};
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(T... items) {
-		return Iterables.containsAll(this, items);
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(Iterable<? extends T> items) {
-		return Iterables.containsAll(this, items);
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(T... items) {
-		return Iterables.containsAny(this, items);
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(Iterable<? extends T> items) {
-		return Iterables.containsAny(this, items);
 	}
 
 	/**

@@ -1496,47 +1496,11 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @since 1.2
 	 */
 	default boolean contains(K key, V value) {
-		return any((k, v) -> Objects.equals(key, k) && Objects.equals(value, v));
-	}
+		for (Entry<K, V> each : this)
+			if (Objects.equals(key, each.getKey()) && Objects.equals(value, each.getValue()))
+				return true;
 
-	/**
-	 * @return true if this {@code EntrySequence} contains all of the given entries, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(Entry<K, V>... entries) {
-		return Iterables.containsAll(this, entries);
-	}
-
-	/**
-	 * @return true if this {@code EntrySequence} contains any of the given entries, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(Entry<K, V>... entries) {
-		return Iterables.containsAny(this, entries);
-	}
-
-	/**
-	 * @return true if this {@code EntrySequence} contains all of the given entries, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(Iterable<? extends Entry<K, V>> entries) {
-		return Iterables.containsAll(this, entries);
-	}
-
-	/**
-	 * @return true if this {@code EntrySequence} contains any of the given entries, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(Iterable<? extends Entry<K, V>> entries) {
-		return Iterables.containsAny(this, entries);
+		return false;
 	}
 
 	/**

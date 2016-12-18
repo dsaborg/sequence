@@ -158,8 +158,7 @@ public class IsDoubleIterableContainingInOrder extends TypeSafeDiagnosingMatcher
     @SafeVarargs
     public static Matcher<DoubleIterable> containsDoubles(Matcher<? super Double>... itemMatchers) {
         // required for JDK 1.6
-        //noinspection RedundantTypeArguments
-        final List<Matcher<? super Double>> nullSafeWithExplicitTypeMatchers = NullSafety.<Double>nullSafe(itemMatchers);
+        final List<Matcher<? super Double>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
     	return containsDoubles(nullSafeWithExplicitTypeMatchers);
     }
 

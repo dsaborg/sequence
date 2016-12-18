@@ -17,7 +17,6 @@ public interface CharSpliterator extends Spliterator.OfPrimitive<Character, Char
 
 	@Override
 	default void forEachRemaining(CharConsumer action) {
-		//noinspection StatementWithEmptyBody
 		while (tryAdvance(action)) {
 			// keep going
 		}

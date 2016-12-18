@@ -140,8 +140,8 @@ public class Arrayz {
 	/**
 	 * @return true if the given array contains the given target object, false otherwise.
 	 */
-	public static <T> boolean contains(T[] elements, T target) {
-		for (T element : elements)
+	public static boolean contains(Object[] elements, Object target) {
+		for (Object element : elements)
 			if (Objects.equals(element, target))
 				return true;
 		return false;

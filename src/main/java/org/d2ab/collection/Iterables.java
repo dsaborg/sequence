@@ -22,6 +22,7 @@ import org.d2ab.util.Pair;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -42,23 +43,7 @@ public class Iterables {
 	 * @return an unmodifiable singleton {@link Iterable} containing the given object.
 	 */
 	public static <T> Iterable<T> of(T object) {
-		return () -> new Iterator<T>() {
-			private boolean used;
-
-			@Override
-			public boolean hasNext() {
-				return !used;
-			}
-
-			@Override
-			public T next() {
-				if (used)
-					throw new NoSuchElementException();
-
-				used = true;
-				return object;
-			}
-		};
+		return () -> new SingletonIterator<>(object);
 	}
 
 	/**
@@ -142,23 +127,86 @@ public class Iterables {
 	/**
 	 * Remove all elements in the given {@link Iterable} using {@link Iterator#remove()}.
 	 */
-	public static <T> void removeAll(Iterable<T> iterable) {
-		for (Iterator<T> iterator = iterable.iterator(); iterator.hasNext(); ) {
+	public static void clear(Iterable<?> iterable) {
+		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); ) {
 			iterator.next();
 			iterator.remove();
 		}
 	}
 
 	/**
+	 * Remove all elements in the given {@link Iterable} found among the given items, using {@link Iterator#remove()}.
+	 */
+	public static boolean removeAll(Iterable<?> iterable, Object... items) {
+		boolean modified = false;
+		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
+			if (Arrayz.contains(items, iterator.next())) {
+				iterator.remove();
+				modified = true;
+			}
+		return modified;
+	}
+
+	/**
+	 * Remove all elements in the given {@link Iterable} found in the second {@link Iterable},
+	 * using {@link Iterator#remove()}.
+	 */
+	public static boolean removeAll(Iterable<?> iterable, Iterable<?> items) {
+		boolean modified = false;
+		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
+			if (contains(items, iterator.next())) {
+				iterator.remove();
+				modified = true;
+			}
+		return modified;
+	}
+
+	/**
+	 * Remove all elements in the given {@link Iterable} found among the given items, using {@link Iterator#remove()}.
+	 */
+	public static boolean retainAll(Iterable<?> iterable, Object... items) {
+		boolean modified = false;
+		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
+			if (!Arrayz.contains(items, iterator.next())) {
+				iterator.remove();
+				modified = true;
+			}
+		return modified;
+	}
+
+	/**
+	 * Remove all elements in the given {@link Iterable} found in the second {@link Iterable},
+	 * using {@link Iterator#remove()}.
+	 */
+	public static boolean retainAll(Iterable<?> iterable, Iterable<?> items) {
+		boolean modified = false;
+		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
+			if (!contains(items, iterator.next())) {
+				iterator.remove();
+				modified = true;
+			}
+		return modified;
+	}
+
+	/**
 	 * @return the given {@link Iterable} collected into a {@link List}.
 	 */
 	public static <T> List<T> toList(Iterable<T> iterable) {
-		List<T> list = new ArrayList<>();
-		if (iterable instanceof Collection)
-			list.addAll((Collection<T>) iterable);
-		else
-			iterable.forEach(list::add);
-		return list;
+		if (iterable instanceof Collection) {
+			return new ArrayList<>((Collection<T>) iterable);
+		} else {
+			return collect(iterable, ArrayList::new);
+		}
+	}
+
+	/**
+	 * @return the given {@link Iterable} collected into a {@link Collection} of the type determined by the given
+	 * {@link Collection} constructor.
+	 */
+	public static <T, C extends Collection<T>> C collect(Iterable<T> iterable, Supplier<C> supplier) {
+		C collection = supplier.get();
+		iterable.forEach(collection::add);
+		return collection;
 	}
 
 	/**
@@ -218,7 +266,7 @@ public class Iterables {
 	 * @since 1.2
 	 */
 	@SafeVarargs
-	private static <T> boolean containsAll(Collection<? extends T> collection, T... items) {
+	private static <T> boolean containsAll(Collection<?> collection, T... items) {
 		for (T item : items)
 			if (!collection.contains(item))
 				return false;
@@ -231,12 +279,11 @@ public class Iterables {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> boolean containsAll(Iterable<? extends T> iterable, Iterable<? extends T> items) {
+	public static boolean containsAll(Iterable<?> iterable, Iterable<?> items) {
 		if (iterable instanceof Collection)
-			return containsAll((Collection<? extends T>) iterable, items);
+			return containsAll((Collection<?>) iterable, items);
 
-		for (T item : items)
+		for (Object item : items)
 			if (!contains(iterable, item))
 				return false;
 
@@ -248,12 +295,11 @@ public class Iterables {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
-	private static <T> boolean containsAll(Collection<? extends T> collection, Iterable<? extends T> items) {
+	private static boolean containsAll(Collection<?> collection, Iterable<?> items) {
 		if (items instanceof Collection)
-			return collection.containsAll((Collection<? extends T>) items);
+			return collection.containsAll((Collection<?>) items);
 
-		for (T item : items)
+		for (Object item : items)
 			if (!collection.contains(item))
 				return false;
 
@@ -265,13 +311,12 @@ public class Iterables {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	public static <T> boolean containsAny(Iterable<? extends T> iterable, T... items) {
+	public static <T> boolean containsAny(Iterable<?> iterable, T... items) {
 		if (iterable instanceof Collection)
-			return containsAny((Collection<? extends T>) iterable, items);
+			return containsAny((Collection<?>) iterable, items);
 
-		for (T each : iterable)
+		for (Object each : iterable)
 			if (Arrayz.contains(items, each))
 				return true;
 
@@ -284,8 +329,8 @@ public class Iterables {
 	 * @since 1.2
 	 */
 	@SafeVarargs
-	private static <T> boolean containsAny(Collection<? extends T> collection, T... items) {
-		for (T item : items)
+	private static <T> boolean containsAny(Collection<?> collection, T... items) {
+		for (Object item : items)
 			if (collection.contains(item))
 				return true;
 
@@ -297,12 +342,11 @@ public class Iterables {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> boolean containsAny(Iterable<? extends T> iterable, Iterable<? extends T> items) {
+	public static boolean containsAny(Iterable<?> iterable, Iterable<?> items) {
 		if (iterable instanceof Collection)
-			return containsAny((Collection<? extends T>) iterable, items);
+			return containsAny((Collection<?>) iterable, items);
 
-		for (T each : iterable)
+		for (Object each : iterable)
 			if (contains(items, each))
 				return true;
 
@@ -314,8 +358,8 @@ public class Iterables {
 	 *
 	 * @since 1.2
 	 */
-	public static <T> boolean containsAny(Collection<? extends T> collection, Iterable<? extends T> items) {
-		for (T item : items)
+	public static boolean containsAny(Collection<?> collection, Iterable<?> items) {
+		for (Object item : items)
 			if (collection.contains(item))
 				return true;
 
@@ -330,5 +374,28 @@ public class Iterables {
 			return ((Collection) iterable).size();
 
 		return Iterators.count(iterable.iterator());
+	}
+
+	private static class SingletonIterator<T> implements Iterator<T> {
+		private final T object;
+		private boolean used;
+
+		public SingletonIterator(T object) {
+			this.object = object;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !used;
+		}
+
+		@Override
+		public T next() {
+			if (used)
+				throw new NoSuchElementException();
+
+			used = true;
+			return object;
+		}
 	}
 }

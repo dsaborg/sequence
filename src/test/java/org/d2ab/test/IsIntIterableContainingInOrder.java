@@ -158,8 +158,7 @@ public class IsIntIterableContainingInOrder extends TypeSafeDiagnosingMatcher<In
     @SafeVarargs
     public static Matcher<IntIterable> containsInts(Matcher<? super Integer>... itemMatchers) {
         // required for JDK 1.6
-        //noinspection RedundantTypeArguments
-        final List<Matcher<? super Integer>> nullSafeWithExplicitTypeMatchers = NullSafety.<Integer>nullSafe(itemMatchers);
+        final List<Matcher<? super Integer>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
     	return containsInts(nullSafeWithExplicitTypeMatchers);
     }
 

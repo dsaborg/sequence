@@ -16,10 +16,9 @@
 
 package org.d2ab.collection;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 /**
  * Utility methods for {@link List}s.
@@ -86,5 +85,10 @@ public class Lists {
 		for (int i = 0; i < list.size() / 2; i++)
 			swap(list, i, list.size() - i - 1);
 		return list;
+	}
+
+	@SafeVarargs
+	public static <T> List<T> create(T... items) {
+		return new ArrayList<>(asList(items));
 	}
 }

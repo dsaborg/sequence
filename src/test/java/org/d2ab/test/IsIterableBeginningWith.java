@@ -147,8 +147,7 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
      */
     public static <E> Matcher<Iterable<? extends E>> beginsWith(Matcher<? super E>... itemMatchers) {
         // required for JDK 1.6
-        //noinspection RedundantTypeArguments
-        final List<Matcher<? super E>> nullSafeWithExplicitTypeMatchers = NullSafety.<E>nullSafe(itemMatchers);
+        final List<Matcher<? super E>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
     	return beginsWith(nullSafeWithExplicitTypeMatchers);
     }
 

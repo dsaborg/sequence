@@ -158,8 +158,7 @@ public class IsCharIterableContainingInOrder extends TypeSafeDiagnosingMatcher<C
     @SafeVarargs
     public static Matcher<CharIterable> containsChars(Matcher<? super Character>... itemMatchers) {
         // required for JDK 1.6
-        //noinspection RedundantTypeArguments
-        final List<Matcher<? super Character>> nullSafeWithExplicitTypeMatchers = NullSafety.<Character>nullSafe(itemMatchers);
+        final List<Matcher<? super Character>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
     	return containsChars(nullSafeWithExplicitTypeMatchers);
     }
 

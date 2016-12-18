@@ -19,6 +19,7 @@ package org.d2ab.collection;
 import org.d2ab.iterator.Iterators;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * A {@link Collection} view of an {@link Iterable}, requiring only {@link Iterable#iterator()} to be implemented in
@@ -66,7 +67,7 @@ public interface IterableCollection<T> extends Collection<T> {
 	}
 
 	@Override
-	default <T1> T1[] toArray(T1[] a) {
+	default <TT> TT[] toArray(TT[] a) {
 		return Iterators.toList(iterator()).toArray(a);
 	}
 
@@ -87,14 +88,103 @@ public interface IterableCollection<T> extends Collection<T> {
 		return false;
 	}
 
+	/**
+	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
+	 *
+	 * @since 2.2
+	 */
+	default boolean containsAll(Object... items) {
+		return Iterables.containsAll(this, items);
+	}
+
+	/**
+	 * @return true if this {@code Sequence} contains all of the items in the given {@link Iterable}, false otherwise.
+	 *
+	 * @since 2.2
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAll(Iterable<?> items) {
+		return Iterables.containsAll(this, items);
+	}
+
+	/**
+	 * @return true if this {@code Sequence} contains all of the items in the given {@link Collection}, false
+	 * otherwise.
+	 */
 	@Override
 	default boolean containsAll(Collection<?> c) {
 		for (Object o : c)
 			if (!contains(o))
 				return false;
+
 		return true;
 	}
 
+	/**
+	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
+	 */
+	default boolean containsAny(Object... items) {
+		return Iterables.containsAny(this, items);
+	}
+
+	/**
+	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean containsAny(Iterable<?> items) {
+		return Iterables.containsAny(this, items);
+	}
+
+	/**
+	 * @return true if this {@code Sequence} contains any of the items in the given {@link Collection}, false
+	 * otherwise.
+	 *
+	 * @since 2.2
+	 */
+	default boolean containsAny(Collection<?> c) {
+		for (Object o : c)
+			if (contains(o))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * Add all the items in the given array to this {@code Sequence}.
+	 *
+	 * @return true if any items were added to this {@code Sequence}.
+	 *
+	 * @since 2.2
+	 */
+	@SuppressWarnings("unchecked")
+	default boolean addAll(T... items) {
+		boolean modified = false;
+		for (T t : items)
+			modified |= add(t);
+		return modified;
+	}
+
+	/**
+	 * Add all the items in the given {@link Iterable} to this {@code Sequence}.
+	 *
+	 * @return true if any items were added to this {@code Sequence}.
+	 *
+	 * @since 2.2
+	 */
+	default boolean addAll(Iterable<? extends T> iterable) {
+		boolean modified = false;
+		for (T t : iterable)
+			modified |= add(t);
+		return modified;
+	}
+
+	/**
+	 * Add all the items in the given {@link Collection} to this {@link Collection}.
+	 *
+	 * @return true if any items were added to this {@link Collection}.
+	 *
+	 * @since 2.2
+	 */
 	@Override
 	default boolean addAll(Collection<? extends T> c) {
 		boolean modified = false;
@@ -103,19 +193,88 @@ public interface IterableCollection<T> extends Collection<T> {
 		return modified;
 	}
 
+	/**
+	 * Remove all of the given items that are present in this {@link Collection}.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 *
+	 * @since 2.2
+	 */
+	default boolean removeAll(Object... items) {
+		return Iterables.removeAll(this, items);
+	}
+
+	/**
+	 * Remove all the items in the given {@link Iterable} that are present in this {@link Collection}.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 *
+	 * @since 2.2
+	 */
+	default boolean removeAll(Iterable<?> items) {
+		return Iterables.removeAll(this, items);
+	}
+
+	/**
+	 * Remove all the items in the given {@link Collection} that are present in this {@link Collection}.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 */
 	@Override
 	default boolean removeAll(Collection<?> c) {
 		return removeIf(c::contains);
 	}
 
+	/**
+	 * Remove all items in this {@link Collection} that are not among the given items.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 *
+	 * @since 2.2
+	 */
+	default boolean retainAll(Object... items) {
+		return Iterables.retainAll(this, items);
+	}
+
+	/**
+	 * Remove all items in this {@link Collection} that are not among the items in the given {@link Iterable}.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 *
+	 * @since 2.2
+	 */
+	default boolean retainAll(Iterable<?> items) {
+		return Iterables.retainAll(this, items);
+	}
+
+	/**
+	 * Remove all items in this {@link Collection} that are not among the items in the given {@link Collection}.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 */
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return removeIf(o -> !c.contains(o));
+		return Iterables.retainAll(this, c);
+	}
+
+	/**
+	 * Remove all items in this {@link Collection} that do not match the given {@link Predicate}.
+	 *
+	 * @return true if any items were removed from this {@link Collection}.
+	 */
+	default boolean retainIf(Predicate<? super T> condition) {
+		boolean modified = false;
+		for (Iterator<T> iterator = this.iterator(); iterator.hasNext(); )
+			if (!condition.test(iterator.next())) {
+				iterator.remove();
+				modified = true;
+			}
+		return modified;
 	}
 
 	@Override
 	default void clear() {
-		Iterables.removeAll(this);
+		Iterables.clear(this);
 	}
 
 	@Override

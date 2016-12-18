@@ -158,8 +158,7 @@ public class IsLongIterableContainingInOrder extends TypeSafeDiagnosingMatcher<L
     @SafeVarargs
     public static Matcher<LongIterable> containsLongs(Matcher<? super Long>... itemMatchers) {
         // required for JDK 1.6
-        //noinspection RedundantTypeArguments
-        final List<Matcher<? super Long>> nullSafeWithExplicitTypeMatchers = NullSafety.<Long>nullSafe(itemMatchers);
+        final List<Matcher<? super Long>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
     	return containsLongs(nullSafeWithExplicitTypeMatchers);
     }
 

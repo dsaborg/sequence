@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterator.Iterators;
@@ -48,28 +49,31 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("unchecked")
 public class EntrySequenceTest {
 	private final EntrySequence<String, Integer> empty = EntrySequence.empty();
-	private final EntrySequence<String, Integer> _1 = EntrySequence.of(Maps.entry("1", 1));
-	private final EntrySequence<String, Integer> _12 = EntrySequence.of(Maps.entry("1", 1), Maps.entry("2", 2));
-	private final EntrySequence<String, Integer> _123 =
-			EntrySequence.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
-	private final EntrySequence<String, Integer> _1234 =
-			EntrySequence.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4));
-	private final EntrySequence<String, Integer> _12345 =
-			EntrySequence.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
-			                 Maps.entry("5", 5));
-	private final EntrySequence<String, Integer> _123456789 =
-			EntrySequence.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
-			                 Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
-			                 Maps.entry("9", 9));
-	private final EntrySequence<String, Integer> random1 = EntrySequence.of(Maps.entry("17", 17));
-	private final EntrySequence<String, Integer> random2 = EntrySequence.of(Maps.entry("17", 17), Maps.entry("32",
-	                                                                                                         32));
-	private final EntrySequence<String, Integer> random3 =
-			EntrySequence.of(Maps.entry("4", 4), Maps.entry("2", 2), Maps.entry("3", 3));
-	private final EntrySequence<String, Integer> random9 =
-			EntrySequence.of(Maps.entry("67", 67), Maps.entry("5", 5), Maps.entry("43", 43), Maps.entry("3", 3),
-			                 Maps.entry("5", 5), Maps.entry("7", 7), Maps.entry("24", 24), Maps.entry("5", 5),
-			                 Maps.entry("67", 67));
+
+	private final EntrySequence<String, Integer> _1 = EntrySequence.from(Lists.create(Maps.entry("1", 1)));
+	private final EntrySequence<String, Integer> _12 = EntrySequence.from(
+			Lists.create(Maps.entry("1", 1), Maps.entry("2", 2)));
+	private final EntrySequence<String, Integer> _123 = EntrySequence.from(
+			Lists.create(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)));
+	private final EntrySequence<String, Integer> _1234 = EntrySequence.from(
+			Lists.create(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4)));
+	private final EntrySequence<String, Integer> _12345 = EntrySequence.from(Lists.create(
+			Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5)));
+	private final EntrySequence<String, Integer> _123456789 = EntrySequence.from(
+			Lists.create(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+			             Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
+			             Maps.entry("9", 9)));
+
+	private final EntrySequence<String, Integer> random1 = EntrySequence.from(Lists.create(Maps.entry("17", 17)));
+	private final EntrySequence<String, Integer> random2 = EntrySequence.from(
+			Lists.create(Maps.entry("17", 17), Maps.entry("32", 32)));
+	private final EntrySequence<String, Integer> random3 = EntrySequence.from(
+			Lists.create(Maps.entry("4", 4), Maps.entry("2", 2), Maps.entry("3", 3)));
+	private final EntrySequence<String, Integer> random9 = EntrySequence.from(
+			Lists.create(Maps.entry("67", 67), Maps.entry("5", 5), Maps.entry("43", 43), Maps.entry("3", 3),
+			             Maps.entry("5", 5), Maps.entry("7", 7), Maps.entry("24", 24), Maps.entry("5", 5),
+			             Maps.entry("67", 67)));
+
 	private final Entry<String, Integer>[] entries123 =
 			new Entry[]{Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)};
 	private final Entry<String, Integer>[] entries12345 =
@@ -2024,5 +2028,106 @@ public class EntrySequenceTest {
 				             Maps.entry("5", 5), Maps.entry("17", 17))), is(true));
 		assertThat(_12345.containsAny(Iterables.of(Maps.entry("17", 17), Maps.entry("18", 18), Maps.entry("19", 19))),
 		           is(false));
+	}
+
+	@Test
+	public void iteratorRemove() {
+		Iterator<Entry<String, Integer>> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(Maps.entry("2", 2), Maps.entry("4", 4), Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void remove() {
+		assertThat(empty.remove(Maps.entry("3", 3)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.remove(Maps.entry("3", 3)), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
+
+		assertThat(_12345.remove(Maps.entry("7", 7)), is(false));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void removeAllVarargs() {
+		assertThat(empty.removeAll(Maps.entry("3", 3), Maps.entry("4", 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7)), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void removeAllIterable() {
+		assertThat(empty.removeAll(Iterables.of(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Iterables.of(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))),
+		           is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void removeAllCollection() {
+		assertThat(empty.removeAll(asList(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(asList(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void retainAllVarargs() {
+		assertThat(empty.retainAll(Maps.entry("3", 3), Maps.entry("4", 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7)), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3), Maps.entry("4", 4))));
+	}
+
+	@Test
+	public void retainAllIterable() {
+		assertThat(empty.retainAll(Iterables.of(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Iterables.of(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))),
+		           is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3), Maps.entry("4", 4))));
+	}
+
+	@Test
+	public void retainAllCollection() {
+		assertThat(empty.retainAll(asList(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(asList(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3), Maps.entry("4", 4))));
+	}
+
+	@Test
+	public void removeIf() {
+		assertThat(empty.removeIf(x -> x.equals(Maps.entry("3", 3))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeIf(x -> x.equals(Maps.entry("3", 3))), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
+	}
+
+	@Test
+	public void retainIf() {
+		assertThat(empty.retainIf(x -> x.equals(Maps.entry("3", 3))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainIf(x -> x.equals(Maps.entry("3", 3))), is(true));
+		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3))));
 	}
 }

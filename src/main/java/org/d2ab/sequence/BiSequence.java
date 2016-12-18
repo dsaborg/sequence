@@ -1238,8 +1238,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * Append the given pair to the end of this {@code BiSequence}.
 	 */
+	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> appendPair(L left, R right) {
-		//noinspection unchecked
 		return append(Pair.of(left, right));
 	}
 
@@ -1479,47 +1479,11 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default boolean contains(L left, R right) {
-		return any((l, r) -> Objects.equals(left, l) && Objects.equals(right, r));
-	}
+		for (Pair<L, R> each : this)
+			if (Objects.equals(left, each.getLeft()) && Objects.equals(right, each.getRight()))
+				return true;
 
-	/**
-	 * @return true if this {@code BiSequence} contains all of the given pairs, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(Pair<L, R>... pairs) {
-		return Iterables.containsAll(this, pairs);
-	}
-
-	/**
-	 * @return true if this {@code BiSequence} contains any of the given pairs, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(Pair<L, R>... pairs) {
-		return Iterables.containsAny(this, pairs);
-	}
-
-	/**
-	 * @return true if this {@code BiSequence} contains all of the given pairs, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(Iterable<? extends Pair<L, R>> pairs) {
-		return Iterables.containsAll(this, pairs);
-	}
-
-	/**
-	 * @return true if this {@code BiSequence} contains any of the given pairs, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(Iterable<? extends Pair<L, R>> pairs) {
-		return Iterables.containsAny(this, pairs);
+		return false;
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterator.Iterators;
@@ -45,23 +46,28 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("unchecked")
 public class BiSequenceTest {
 	private final BiSequence<String, Integer> empty = BiSequence.empty();
-	private final BiSequence<String, Integer> _1 = BiSequence.of(Pair.of("1", 1));
-	private final BiSequence<String, Integer> _12 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2));
-	private final BiSequence<String, Integer> _123 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
-	private final BiSequence<String, Integer> _1234 =
-			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4));
-	private final BiSequence<String, Integer> _12345 =
-			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5));
-	private final BiSequence<String, Integer> _123456789 =
-			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
-			              Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9));
-	private final BiSequence<String, Integer> random1 = BiSequence.of(Pair.of("17", 17));
-	private final BiSequence<String, Integer> random2 = BiSequence.of(Pair.of("17", 17), Pair.of("32", 32));
-	private final BiSequence<String, Integer> random3 =
-			BiSequence.of(Pair.of("4", 4), Pair.of("2", 2), Pair.of("3", 3));
-	private final BiSequence<String, Integer> random9 =
-			BiSequence.of(Pair.of("67", 67), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3), Pair.of("5", 5),
-			              Pair.of("7", 7), Pair.of("24", 24), Pair.of("5", 5), Pair.of("67", 67));
+
+	private final BiSequence<String, Integer> _1 = BiSequence.from(Lists.create(Pair.of("1", 1)));
+	private final BiSequence<String, Integer> _12 = BiSequence.from(Lists.create(Pair.of("1", 1), Pair.of("2", 2)));
+	private final BiSequence<String, Integer> _123 = BiSequence.from(
+			Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)));
+	private final BiSequence<String, Integer> _1234 = BiSequence.from(
+			Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+	private final BiSequence<String, Integer> _12345 = BiSequence.from(Lists.create(
+			Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
+	private final BiSequence<String, Integer> _123456789 = BiSequence.from(
+			Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+			             Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)));
+
+	private final BiSequence<String, Integer> random1 = BiSequence.from(Lists.create(Pair.of("17", 17)));
+	private final BiSequence<String, Integer> random2 = BiSequence.from(
+			Lists.create(Pair.of("17", 17), Pair.of("32", 32)));
+	private final BiSequence<String, Integer> random3 = BiSequence.from(
+			Lists.create(Pair.of("4", 4), Pair.of("2", 2), Pair.of("3", 3)));
+	private final BiSequence<String, Integer> random9 = BiSequence.from(
+			Lists.create(Pair.of("67", 67), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3), Pair.of("5", 5),
+			             Pair.of("7", 7), Pair.of("24", 24), Pair.of("5", 5), Pair.of("67", 67)));
+
 	private final Pair<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
 	private final Pair<String, Integer>[] entries12345 =
 			new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)};
@@ -239,7 +245,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Pair<String, Integer>> list = Lists.create(entries12345);
 		BiSequence<String, Integer> cached = BiSequence.cache(list::iterator);
 		list.set(0, Pair.of("17", 17));
 
@@ -251,7 +257,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Pair<String, Integer>> list = Lists.create(entries12345);
 		BiSequence<String, Integer> cached = BiSequence.cache(list.iterator());
 		list.set(0, Pair.of("17", 17));
 
@@ -263,7 +269,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Pair<String, Integer>> list = Lists.create(entries12345);
 		BiSequence<String, Integer> cached = BiSequence.cache(list.stream());
 		list.set(0, Pair.of("17", 17));
 
@@ -1857,8 +1863,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void clear() {
-		List<Pair<String, Integer>> original =
-				new ArrayList<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+		List<Pair<String, Integer>> original = Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                    Pair.of("4", 4));
 
 		BiSequence<String, Integer> filtered = BiSequence.from(original).filter((l, r) -> r % 2 != 0);
 		filtered.clear();
@@ -1957,5 +1963,101 @@ public class BiSequenceTest {
 		                                           Pair.of("5", 5), Pair.of("17", 17))), is(true));
 		assertThat(_12345.containsAny(Iterables.of(Pair.of("17", 17), Pair.of("18", 18), Pair.of("19", 19))),
 		           is(false));
+	}
+
+	@Test
+	public void iteratorRemove() {
+		Iterator<Pair<String, Integer>> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void remove() {
+		assertThat(empty.remove(Pair.of("3", 3)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.remove(Pair.of("3", 3)), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+
+		assertThat(_12345.remove(Pair.of("7", 7)), is(false));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void removeAllVarargs() {
+		assertThat(empty.removeAll(Pair.of("3", 3), Pair.of("4", 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7)), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void removeAllIterable() {
+		assertThat(empty.removeAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void removeAllCollection() {
+		assertThat(empty.removeAll(asList(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(asList(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void retainAllVarargs() {
+		assertThat(empty.retainAll(Pair.of("3", 3), Pair.of("4", 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7)), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4))));
+	}
+
+	@Test
+	public void retainAllIterable() {
+		assertThat(empty.retainAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4))));
+	}
+
+	@Test
+	public void retainAllCollection() {
+		assertThat(empty.retainAll(asList(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(asList(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4))));
+	}
+
+	@Test
+	public void removeIf() {
+		assertThat(empty.removeIf(x -> x.equals(Pair.of("3", 3))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeIf(x -> x.equals(Pair.of("3", 3))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void retainIf() {
+		assertThat(empty.retainIf(x -> x.equals(Pair.of("3", 3))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainIf(x -> x.equals(Pair.of("3", 3))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3))));
 	}
 }
