@@ -16,6 +16,7 @@ public class CollectionSequenceTest {
 	private final Sequence<Integer> sequence = CollectionSequence.from(collection);
 	private final Sequence<Integer> odds = sequence.filter(x -> x % 2 == 1);
 	private final Sequence<String> strings = sequence.biMap(Object::toString, Integer::parseInt);
+	private final Sequence<String> oddStrings = odds.biMap(Object::toString, Integer::parseInt);
 
 	@Test
 	public void add() {
@@ -76,6 +77,7 @@ public class CollectionSequenceTest {
 	public void filterContains() {
 		assertThat(odds.contains(3), is(true));
 		assertThat(odds.contains(4), is(false));
+		assertThat(odds.contains(17), is(false));
 	}
 
 	@Test
@@ -118,5 +120,48 @@ public class CollectionSequenceTest {
 	public void biMapContains() {
 		assertThat(strings.contains("3"), is(true));
 		assertThat(strings.contains("17"), is(false));
+	}
+
+	@Test
+	public void filterBiMapAdd() {
+		assertThat(oddStrings.add("7"), is(true));
+		assertThat(oddStrings, contains("1", "3", "5", "7"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 7));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 7));
+
+		expecting(NumberFormatException.class, () -> oddStrings.add("foo"));
+		assertThat(oddStrings, contains("1", "3", "5", "7"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 7));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 7));
+	}
+
+	@Test
+	public void filterBiMapAddAll() {
+		assertThat(oddStrings.addAll(asList("7", "9")), is(true));
+		assertThat(oddStrings, contains("1", "3", "5", "7", "9"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 7, 9));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 7, 9));
+
+		expecting(NumberFormatException.class, () -> oddStrings.addAll(asList("11", "foo")));
+		assertThat(oddStrings, contains("1", "3", "5", "7", "9", "11"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 7, 9, 11));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 7, 9, 11));
+	}
+
+	@Test
+	public void filterBiMapRemove() {
+		assertThat(oddStrings.remove("3"), is(true));
+		assertThat(oddStrings.remove("17"), is(false));
+
+		assertThat(oddStrings, contains("1", "5"));
+		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(collection, contains(1, 2, 4, 5));
+	}
+
+	@Test
+	public void filterBiMapContains() {
+		assertThat(oddStrings.contains("3"), is(true));
+		assertThat(oddStrings.contains("4"), is(false));
+		assertThat(oddStrings.contains("17"), is(false));
 	}
 }
