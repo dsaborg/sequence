@@ -41,12 +41,25 @@ public class CollectionSequenceTest {
 
 	@Test
 	public void filterAdd() {
-		odds.add(17);
+		assertThat(odds.add(17), is(true));
 		expecting(IllegalArgumentException.class, () -> odds.add(18));
 
 		assertThat(odds, contains(1, 3, 5, 17));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 17));
 		assertThat(collection, contains(1, 2, 3, 4, 5, 17));
+	}
+
+	@Test
+	public void filterAddAll() {
+		assertThat(odds.addAll(asList(17, 19)), is(true));
+		assertThat(odds, contains(1, 3, 5, 17, 19));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 19));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 17, 19));
+
+		expecting(IllegalArgumentException.class, () -> odds.addAll(asList(21, 22)));
+		assertThat(odds, contains(1, 3, 5, 17, 19, 21));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 19, 21));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 17, 19, 21));
 	}
 
 	@Test
@@ -67,7 +80,7 @@ public class CollectionSequenceTest {
 
 	@Test
 	public void biMapAdd() {
-		strings.add("6");
+		assertThat(strings.add("6"), is(true));
 		assertThat(strings, contains("1", "2", "3", "4", "5", "6"));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 		assertThat(collection, contains(1, 2, 3, 4, 5, 6));
@@ -76,5 +89,34 @@ public class CollectionSequenceTest {
 		assertThat(strings, contains("1", "2", "3", "4", "5", "6"));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 		assertThat(collection, contains(1, 2, 3, 4, 5, 6));
+	}
+
+	@Test
+	public void biMapAddAll() {
+		assertThat(strings.addAll(asList("6", "7")), is(true));
+		assertThat(strings, contains("1", "2", "3", "4", "5", "6", "7"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 6, 7));
+
+		expecting(NumberFormatException.class, () -> strings.addAll(asList("8", "foo")));
+		assertThat(strings, contains("1", "2", "3", "4", "5", "6", "7", "8"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void biMapRemove() {
+		assertThat(strings.remove("3"), is(true));
+		assertThat(strings.remove("17"), is(false));
+
+		assertThat(strings, contains("1", "2", "4", "5"));
+		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(collection, contains(1, 2, 4, 5));
+	}
+
+	@Test
+	public void biMapContains() {
+		assertThat(strings.contains("3"), is(true));
+		assertThat(strings.contains("17"), is(false));
 	}
 }

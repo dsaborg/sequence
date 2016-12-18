@@ -56,6 +56,19 @@ public class ListSequenceTest {
 	}
 
 	@Test
+	public void filterAddAll() {
+		assertThat(odds.addAll(asList(17, 19)), is(true));
+		assertThat(odds, contains(1, 3, 5, 17, 19));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 19));
+		assertThat(list, contains(1, 2, 3, 4, 5, 17, 19));
+
+		expecting(IllegalArgumentException.class, () -> odds.addAll(asList(21, 22)));
+		assertThat(odds, contains(1, 3, 5, 17, 19, 21));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 19, 21));
+		assertThat(list, contains(1, 2, 3, 4, 5, 17, 19, 21));
+	}
+
+	@Test
 	public void filterRemove() {
 		assertThat(odds.remove(3), is(true));
 		assertThat(odds.remove(4), is(false));
@@ -82,5 +95,34 @@ public class ListSequenceTest {
 		assertThat(strings, contains("1", "2", "3", "4", "5", "6"));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
 		assertThat(list, contains(1, 2, 3, 4, 5, 6));
+	}
+
+	@Test
+	public void biMapAddAll() {
+		assertThat(strings.addAll(asList("6", "7")), is(true));
+		assertThat(strings, contains("1", "2", "3", "4", "5", "6", "7"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6, 7));
+
+		expecting(NumberFormatException.class, () -> strings.addAll(asList("8", "foo")));
+		assertThat(strings, contains("1", "2", "3", "4", "5", "6", "7", "8"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void biMapRemove() {
+		assertThat(strings.remove("3"), is(true));
+		assertThat(strings.remove("17"), is(false));
+
+		assertThat(strings, contains("1", "2", "4", "5"));
+		assertThat(sequence, contains(1, 2, 4, 5));
+		assertThat(list, contains(1, 2, 4, 5));
+	}
+
+	@Test
+	public void biMapContains() {
+		assertThat(strings.contains("3"), is(true));
+		assertThat(strings.contains("17"), is(false));
 	}
 }

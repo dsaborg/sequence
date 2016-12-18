@@ -97,7 +97,10 @@ public interface IterableCollection<T> extends Collection<T> {
 
 	@Override
 	default boolean addAll(Collection<? extends T> c) {
-		throw new UnsupportedOperationException();
+		boolean modified = false;
+		for (T t : c)
+			modified |= add(t);
+		return modified;
 	}
 
 	@Override
