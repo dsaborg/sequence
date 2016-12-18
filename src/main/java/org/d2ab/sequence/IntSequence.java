@@ -822,7 +822,6 @@ public interface IntSequence extends IntCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default IntSequence including(int... elements) {
 		return filter(e -> Arrayz.contains(elements, e));
 	}
@@ -832,7 +831,6 @@ public interface IntSequence extends IntCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default IntSequence excluding(int... elements) {
 		return filter(e -> !Arrayz.contains(elements, e));
 	}

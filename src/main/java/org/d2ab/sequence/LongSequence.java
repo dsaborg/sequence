@@ -819,7 +819,6 @@ public interface LongSequence extends LongCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default LongSequence including(long... elements) {
 		return filter(e -> Arrayz.contains(elements, e));
 	}
@@ -829,7 +828,6 @@ public interface LongSequence extends LongCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default LongSequence excluding(long... elements) {
 		return filter(e -> !Arrayz.contains(elements, e));
 	}

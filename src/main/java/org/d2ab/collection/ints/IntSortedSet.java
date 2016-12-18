@@ -149,7 +149,7 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 	}
 
 	abstract class SubSet extends IntSet.Base implements IntSortedSet {
-		private IntSortedSet set;
+		private final IntSortedSet set;
 
 		public SubSet(IntSortedSet set) {
 			this.set = set;

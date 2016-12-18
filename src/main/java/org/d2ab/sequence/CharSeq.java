@@ -724,7 +724,6 @@ public interface CharSeq extends CharCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default CharSeq including(char... elements) {
 		return filter(e -> Arrayz.contains(elements, e));
 	}
@@ -734,7 +733,6 @@ public interface CharSeq extends CharCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default CharSeq excluding(char... elements) {
 		return filter(e -> !Arrayz.contains(elements, e));
 	}

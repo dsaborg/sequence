@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayIterator<T> implements Iterator<T> {
-	private T[] items;
+	private final T[] items;
 	private int index;
 
 	@SafeVarargs

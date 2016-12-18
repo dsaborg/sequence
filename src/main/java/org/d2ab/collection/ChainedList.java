@@ -48,7 +48,6 @@ public class ChainedList<T> extends AbstractList<T> {
 		return from(Arrays.asList(lists));
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> List<T> from(List<List<T>> lists) {
 		return new ChainedList<>(lists);
 	}

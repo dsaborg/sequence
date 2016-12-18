@@ -110,7 +110,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Character> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		CharListIterator listIterator = listIterator(index);

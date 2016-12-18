@@ -752,9 +752,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 */
 	default Entry<K, V>[] toArray(IntFunction<Entry<K, V>[]> constructor) {
 		List<Entry<K, V>> list = toList();
-		@SuppressWarnings("unchecked")
-		Entry<K, V>[] array = list.toArray(constructor.apply(list.size()));
-		return array;
+		return list.toArray(constructor.apply(list.size()));
 	}
 
 	/**
@@ -1000,7 +998,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * Window the elements of this {@code EntrySequence} into a {@link Sequence} of {@code EntrySequence}s of entrues,
+	 * Window the elements of this {@code EntrySequence} into a {@link Sequence} of {@code EntrySequence}s of entries,
 	 * each with the size of the given window. The first item in each sequence is the second item in the previous
 	 * sequence. The final sequence may be shorter than the window. This method is equivalent to
 	 * {@code window(window, 1)}.

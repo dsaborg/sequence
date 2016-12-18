@@ -26,7 +26,7 @@ public class WindowingCharIterator extends DelegatingTransformingIterator<Charac
 	private final int window;
 	private final int step;
 
-	private char[] partition;
+	private final char[] partition;
 	private int size;
 	private boolean started;
 

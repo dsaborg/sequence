@@ -22,7 +22,7 @@ import java.util.Iterator;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayDoubleIterator implements DoubleIterator {
-	private double[] values;
+	private final double[] values;
 	private int index;
 
 	public ArrayDoubleIterator(double... values) {

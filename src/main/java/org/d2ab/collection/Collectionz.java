@@ -51,7 +51,6 @@ public class Collectionz {
 		return a;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static boolean containsAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.containsAllInts((IntIterable) c);
@@ -88,7 +87,6 @@ public class Collectionz {
 		return xs.removeIntsIf(c::contains);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static boolean containsAll(LongCollection xs, Collection<?> c) {
 		if (c instanceof LongCollection)
 			return xs.containsAllLongs((LongCollection) c);
@@ -125,7 +123,6 @@ public class Collectionz {
 		return xs.removeLongsIf(c::contains);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static boolean containsAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.containsAllChars((CharIterable) c);
@@ -162,7 +159,6 @@ public class Collectionz {
 		return xs.removeCharsIf(c::contains);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static boolean containsAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
 			return xs.containsAllDoublesExactly((DoubleCollection) c);

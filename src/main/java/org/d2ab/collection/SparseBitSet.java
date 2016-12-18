@@ -332,7 +332,7 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 		protected int bitIndex;
 		protected int lastWordIndex = -1;
 		protected int lastBitIndex = -1;
-		protected int startingBit;
+		protected final int startingBit;
 
 		protected int expectedModCount = modCount;
 

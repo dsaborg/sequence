@@ -21,7 +21,7 @@ import org.d2ab.function.CharBiPredicate;
 import java.util.NoSuchElementException;
 
 public class ForwardPeekingFilteringCharIterator extends DelegatingTransformingCharIterator<Character, CharIterator> {
-	private char lastNext;
+	private final char lastNext;
 	private final CharBiPredicate predicate;
 
 	private char next;

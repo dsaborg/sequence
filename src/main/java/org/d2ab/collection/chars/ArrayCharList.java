@@ -31,7 +31,7 @@ import java.util.RandomAccess;
  * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayCharList extends CharList.Base implements CharList, RandomAccess {
+public class ArrayCharList extends CharList.Base implements RandomAccess {
 	private char[] contents;
 	private int size;
 
@@ -99,11 +99,8 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	 * Create a new mutable {@code ArrayCharList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayCharList(int capacity) {
+	private ArrayCharList(int capacity) {
 		this.contents = new char[capacity];
 	}
 

@@ -133,7 +133,7 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		};
 	}
 
-	static <T> IntIterator from(final Iterator<T> iterator, final ToIntFunction<? super T> mapper) {
+	static <T> IntIterator from(Iterator<T> iterator, ToIntFunction<? super T> mapper) {
 		return new DelegatingTransformingIntIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public int nextInt() {

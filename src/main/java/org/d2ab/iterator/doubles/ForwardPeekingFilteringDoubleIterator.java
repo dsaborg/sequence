@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 
 public class ForwardPeekingFilteringDoubleIterator extends
                                                    DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
-	private double lastNext;
+	private final double lastNext;
 	private final DoubleBiPredicate predicate;
 
 	private double next;

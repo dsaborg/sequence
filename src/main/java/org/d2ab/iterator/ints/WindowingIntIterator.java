@@ -26,7 +26,7 @@ public class WindowingIntIterator extends DelegatingTransformingIterator<Integer
 	private final int window;
 	private final int step;
 
-	private int[] partition;
+	private final int[] partition;
 	private int size;
 	private boolean started;
 

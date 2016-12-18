@@ -52,7 +52,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		};
 	}
 
-	static <T> CharIterator from(final Iterator<T> iterator, final ToCharFunction<? super T> mapper) {
+	static <T> CharIterator from(Iterator<T> iterator, ToCharFunction<? super T> mapper) {
 		return new DelegatingTransformingCharIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public char nextChar() {

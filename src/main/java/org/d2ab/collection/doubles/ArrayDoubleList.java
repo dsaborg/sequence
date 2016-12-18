@@ -30,7 +30,7 @@ import static org.d2ab.collection.doubles.DoubleComparator.eq;
  * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayDoubleList extends DoubleList.Base implements DoubleList, RandomAccess {
+public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	private double[] contents;
 	private int size;
 
@@ -98,11 +98,8 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 	 * Create a new mutable {@code ArrayDoubleList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayDoubleList(int capacity) {
+	private ArrayDoubleList(int capacity) {
 		this.contents = new double[capacity];
 	}
 

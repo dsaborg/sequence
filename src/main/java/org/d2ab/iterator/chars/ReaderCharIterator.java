@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * A {@link CharIterator} over the {@code chars} in a {@link Reader}.
  */
 public class ReaderCharIterator implements CharIterator {
-	private Reader reader;
+	private final Reader reader;
 	private int next;
 	private boolean hasNext;
 

@@ -18,6 +18,7 @@ apply plugin: 'java'
 apply plugin: 'java-library-distribution'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'distribution'
 
 version = '2.2.0-SNAPSHOT'
 group = 'org.d2ab'

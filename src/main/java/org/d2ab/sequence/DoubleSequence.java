@@ -646,7 +646,6 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence includingExactly(double... elements) {
 		return filter(e -> Arrayz.containsExactly(elements, e));
 	}
@@ -657,7 +656,6 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence including(double[] elements, double precision) {
 		return filter(e -> Arrayz.contains(elements, e, precision));
 	}
@@ -668,7 +666,6 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence excludingExactly(double... elements) {
 		return filter(e -> !Arrayz.containsExactly(elements, e));
 	}
@@ -679,7 +676,6 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence excluding(double[] elements, double precision) {
 		return filter(e -> !Arrayz.contains(elements, e, precision));
 	}

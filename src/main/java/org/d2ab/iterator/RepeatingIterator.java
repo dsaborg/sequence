@@ -41,9 +41,7 @@ public class RepeatingIterator<T> extends DelegatingUnaryIterator<T> {
 			if (times > 0)
 				times--;
 
-			@SuppressWarnings("unchecked")
-			Iterator<T> iterator = (Iterator<T>) iterable.iterator();
-			this.iterator = iterator;
+			this.iterator = iterable.iterator();
 		}
 		return iterator.hasNext();
 	}

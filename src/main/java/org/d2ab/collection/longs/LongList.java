@@ -110,7 +110,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Long> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		LongListIterator listIterator = listIterator(index);

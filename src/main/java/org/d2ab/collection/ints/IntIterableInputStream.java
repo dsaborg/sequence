@@ -21,6 +21,8 @@ import org.d2ab.iterator.ints.IntIterator;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static java.lang.Math.min;
+
 /**
  * An {@link InputStream} that reads {@code byte} values from an {@link IntIterable}. All methods are supported.
  * Values outside of the byte range {@code 0} - {@code 255} inclusive will result in an {@link IOException} being
@@ -82,10 +84,13 @@ public class IntIterableInputStream extends InputStream {
 
 		long skipped = 0;
 		while (n > Integer.MAX_VALUE) {
-			skipped += iterator.skip(Integer.MAX_VALUE);
-			n -= Integer.MAX_VALUE;
+			int skip = iterator.skip(Integer.MAX_VALUE);
+			if (skip == 0)
+				break;
+			skipped += skip;
+			n -= skip;
 		}
-		skipped += iterator.skip((int) n);
+		skipped += iterator.skip((int) min(n, Integer.MAX_VALUE));
 
 		position += skipped;
 
@@ -115,7 +120,9 @@ public class IntIterableInputStream extends InputStream {
 		iterator = iterable.iterator();
 
 		position = 0;
-		skip(mark);
+		long skipped = skip(mark);
+		if (skipped != mark)
+			throw new IllegalStateException("Failed to skip to mark: skipped " + skipped + " < mark " + mark);
 	}
 
 	@Override

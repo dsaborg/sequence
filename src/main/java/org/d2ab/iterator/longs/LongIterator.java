@@ -112,7 +112,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		};
 	}
 
-	static <T> LongIterator from(final Iterator<T> iterator, final ToLongFunction<? super T> mapper) {
+	static <T> LongIterator from(Iterator<T> iterator, ToLongFunction<? super T> mapper) {
 		return new DelegatingTransformingLongIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public long nextLong() {

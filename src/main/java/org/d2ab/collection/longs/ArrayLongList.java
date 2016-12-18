@@ -28,7 +28,7 @@ import java.util.function.LongUnaryOperator;
  * A {@link LongList} backed by a long-array, supporting all {@link LongList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayLongList extends LongList.Base implements LongList, RandomAccess {
+public class ArrayLongList extends LongList.Base implements RandomAccess {
 	private long[] contents;
 	private int size;
 
@@ -96,11 +96,8 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 	 * Create a new mutable {@code ArrayLongList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayLongList(int capacity) {
+	private ArrayLongList(int capacity) {
 		this.contents = new long[capacity];
 	}
 

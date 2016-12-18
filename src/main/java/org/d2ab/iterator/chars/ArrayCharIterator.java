@@ -22,7 +22,7 @@ import java.util.Iterator;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayCharIterator implements CharIterator {
-	private char[] values;
+	private final char[] values;
 	private int index;
 
 	public ArrayCharIterator(char... values) {

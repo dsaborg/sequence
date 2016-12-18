@@ -103,7 +103,7 @@ public class Iterators {
 	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfLong}, mapped to objects
 	 * using the given {@link LongFunction}.
 	 */
-	public static <T> Iterator<T> from(final PrimitiveIterator.OfLong iterator, final LongFunction<T> mapper) {
+	public static <T> Iterator<T> from(PrimitiveIterator.OfLong iterator, LongFunction<T> mapper) {
 		return new DelegatingTransformingIterator<Long, PrimitiveIterator.OfLong, T>(iterator) {
 			@Override
 			public T next() {
@@ -249,7 +249,6 @@ public class Iterators {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> boolean contains(Iterator<? extends T> iterator, T object) {
 		while (iterator.hasNext())
 			if (Objects.equals(object, iterator.next()))

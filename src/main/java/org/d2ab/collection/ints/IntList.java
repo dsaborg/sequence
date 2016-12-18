@@ -112,7 +112,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Integer> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		IntListIterator listIterator = listIterator(index);

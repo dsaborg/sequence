@@ -106,8 +106,8 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		};
 	}
 
-	static <T> DoubleIterator from(final Iterator<T> iterator,
-	                               final ToDoubleFunction<? super T> mapper) {
+	static <T> DoubleIterator from(Iterator<T> iterator,
+	                               ToDoubleFunction<? super T> mapper) {
 		return new DelegatingTransformingDoubleIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public double nextDouble() {

@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * A {@link CharIterator} over the {@code chars} in a {@link Reader}.
  */
 public class InputStreamIntIterator implements IntIterator {
-	private InputStream inputStream;
+	private final InputStream inputStream;
 	private int next;
 	private boolean hasNext;
 

@@ -30,7 +30,6 @@ import static org.d2ab.collection.Comparators.naturalOrderNullsFirst;
  * Utility methods for {@link Map} instances
  */
 public class Maps {
-	@SuppressWarnings("unchecked")
 	private static final Comparator<Entry> COMPARATOR =
 			comparing((Function<Entry, Object>) Entry::getKey, naturalOrderNullsFirst()).thenComparing(
 					(Function<Entry, Object>) Entry::getValue, naturalOrderNullsFirst());
@@ -73,7 +72,7 @@ public class Maps {
 	}
 
 	public static class Builder<K, V> {
-		private Supplier<Map<K, V>> constructor;
+		private final Supplier<Map<K, V>> constructor;
 		private Map<K, V> map;
 
 		private Builder(Supplier<Map<K, V>> constructor) {

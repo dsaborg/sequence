@@ -28,7 +28,7 @@ import java.util.function.IntUnaryOperator;
  * An {@link IntList} backed by an int-array, supporting all {@link IntList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayIntList extends IntList.Base implements IntList, RandomAccess {
+public class ArrayIntList extends IntList.Base implements RandomAccess {
 	private int[] contents;
 	private int size;
 
@@ -94,10 +94,8 @@ public class ArrayIntList extends IntList.Base implements IntList, RandomAccess 
 	 * Create a new mutable {@code ArrayIntList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayIntList(int capacity) {
+	private ArrayIntList(int capacity) {
 		this.contents = new int[capacity];
 	}
 

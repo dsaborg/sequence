@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class DistinctIterator<T> extends DelegatingUnaryIterator<T> {
-	private Set<T> seen = new HashSet<>();
+	private final Set<T> seen = new HashSet<>();
 
 	private T next;
 	private boolean hasNext;

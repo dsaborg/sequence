@@ -21,7 +21,7 @@ import org.d2ab.function.LongBiPredicate;
 import java.util.NoSuchElementException;
 
 public class ForwardPeekingFilteringLongIterator extends DelegatingTransformingLongIterator<Long, LongIterator> {
-	private long lastNext;
+	private final long lastNext;
 	private final LongBiPredicate predicate;
 
 	private long next;

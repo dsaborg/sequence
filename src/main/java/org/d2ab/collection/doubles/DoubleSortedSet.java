@@ -53,7 +53,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default DoubleSortedSet subSet(Double from, Double to) {
-		return subSetExactly((double) from, (double) to);
+		return subSetExactly(from, to);
 	}
 
 	default DoubleSortedSet subSetExactly(double from, double to) {
@@ -86,7 +86,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default DoubleSortedSet headSet(Double to) {
-		return headSetExactly((double) to);
+		return headSetExactly(to);
 	}
 
 	default DoubleSortedSet headSetExactly(double to) {
@@ -129,7 +129,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default DoubleSortedSet tailSet(Double from) {
-		return tailSetExactly((double) from);
+		return tailSetExactly(from);
 	}
 
 	default DoubleSortedSet tailSetExactly(double from) {
@@ -201,7 +201,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 	}
 
 	abstract class SubSet extends DoubleSet.Base implements DoubleSortedSet {
-		private DoubleSortedSet set;
+		private final DoubleSortedSet set;
 
 		public SubSet(DoubleSortedSet set) {
 			this.set = set;

@@ -52,7 +52,6 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 		return from(asList(collections));
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Collection<T> from(Collection<Collection<T>> collections) {
 		return new ChainedCollection<>(collections);
 	}

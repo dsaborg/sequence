@@ -34,12 +34,12 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 		implements ListIterator<T> {
 	private final Predicate<? super T> predicate;
 
-	private State state = State.INIT;
+	private State state = INIT;
 
 	private boolean hasCached;
 	private T cached;
 
-	private int cursor = 0;
+	private int cursor;
 
 	enum State {INIT, HAS_NEXT, NEXT, HAS_PREVIOUS, PREVIOUS}
 

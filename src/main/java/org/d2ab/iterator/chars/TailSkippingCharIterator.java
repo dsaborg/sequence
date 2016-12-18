@@ -52,7 +52,6 @@ public class TailSkippingCharIterator extends DelegatingUnaryCharIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		@SuppressWarnings("unchecked")
 		char next = buffer[position];
 		buffer[position++] = iterator.nextChar();
 		position = position % skip;

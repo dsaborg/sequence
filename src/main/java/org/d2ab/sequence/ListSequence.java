@@ -33,7 +33,7 @@ import static java.util.Collections.singletonList;
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
 public class ListSequence<T> implements Sequence<T> {
-	private List<T> list;
+	private final List<T> list;
 
 	/**
 	 * @return an immutable empty {@code ListSequence}.

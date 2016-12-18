@@ -149,7 +149,7 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 	}
 
 	abstract class SubSet extends LongSet.Base implements LongSortedSet {
-		private LongSortedSet set;
+		private final LongSortedSet set;
 
 		public SubSet(LongSortedSet set) {
 			this.set = set;

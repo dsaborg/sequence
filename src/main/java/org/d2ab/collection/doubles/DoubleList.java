@@ -110,7 +110,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Double> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		DoubleListIterator listIterator = listIterator(index);

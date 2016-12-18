@@ -102,7 +102,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #from(Iterable)
 	 * @since 1.1.1
 	 */
-	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	static <T> Sequence<T> concat(Iterable<T>... iterables) {
 		Sequence<Iterable<T>> iterablesSequence = Sequence.of(iterables);
@@ -618,7 +617,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #map(Function)
 	 */
-	@SuppressWarnings({"unchecked", "unused"})
+	@SuppressWarnings("unchecked")
 	default <U> Sequence<U> cast(Class<U> clazz) {
 		return (Sequence<U>) this;
 	}
@@ -928,9 +927,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
 		List<T> list = toList();
-		@SuppressWarnings("unchecked")
-		A[] array = list.toArray(constructor.apply(list.size()));
-		return array;
+		return list.toArray(constructor.apply(list.size()));
 	}
 
 	/**
@@ -985,8 +982,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
+	@SuppressWarnings("unchecked")
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
-		@SuppressWarnings("unchecked")
 		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
 		return entrySequence.collect(constructor, Maps::put);
 	}
@@ -1279,8 +1276,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Converts a {@code Sequence} of {@link Pair}s of items into a {@link BiSequence}. Note the sequence must be of
 	 * {@link Pair} or a {@link ClassCastException} will occur when traversal is attempted.
 	 */
+	@SuppressWarnings("unchecked")
 	default <L, R> BiSequence<L, R> toBiSequence() {
-		@SuppressWarnings("unchecked")
 		Sequence<Pair<L, R>> pairSequence = (Sequence<Pair<L, R>>) this;
 		return BiSequence.from(pairSequence);
 	}
@@ -1289,8 +1286,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Converts a {@code Sequence} of {@link Map.Entry} items into an {@link EntrySequence}. Note the sequence must be
 	 * of {@link Map.Entry} or a {@link ClassCastException} will occur when traversal is attempted.
 	 */
+	@SuppressWarnings("unchecked")
 	default <K, V> EntrySequence<K, V> toEntrySequence() {
-		@SuppressWarnings("unchecked")
 		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
 		return EntrySequence.from(entrySequence);
 	}

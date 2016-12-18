@@ -26,7 +26,7 @@ public class WindowingLongIterator extends DelegatingTransformingIterator<Long, 
 	private final int window;
 	private final int step;
 
-	private long[] partition;
+	private final long[] partition;
 	private int size;
 	private boolean started;
 

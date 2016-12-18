@@ -102,7 +102,6 @@ public interface IterableCollection<T> extends Collection<T> {
 	 *
 	 * @since 2.2
 	 */
-	@SuppressWarnings("unchecked")
 	default boolean containsAll(Iterable<?> items) {
 		return Iterables.containsAll(this, items);
 	}
@@ -130,7 +129,6 @@ public interface IterableCollection<T> extends Collection<T> {
 	/**
 	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
 	 */
-	@SuppressWarnings("unchecked")
 	default boolean containsAny(Iterable<?> items) {
 		return Iterables.containsAny(this, items);
 	}
@@ -264,7 +262,7 @@ public interface IterableCollection<T> extends Collection<T> {
 	 */
 	default boolean retainIf(Predicate<? super T> condition) {
 		boolean modified = false;
-		for (Iterator<T> iterator = this.iterator(); iterator.hasNext(); )
+		for (Iterator<T> iterator = iterator(); iterator.hasNext(); )
 			if (!condition.test(iterator.next())) {
 				iterator.remove();
 				modified = true;

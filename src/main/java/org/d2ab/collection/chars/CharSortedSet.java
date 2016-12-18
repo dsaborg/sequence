@@ -149,7 +149,7 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 	}
 
 	abstract class SubSet extends CharSet.Base implements CharSortedSet {
-		private CharSortedSet set;
+		private final CharSortedSet set;
 
 		public SubSet(CharSortedSet set) {
 			this.set = set;

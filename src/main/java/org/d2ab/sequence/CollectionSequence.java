@@ -32,7 +32,7 @@ import static java.util.Collections.singleton;
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
 public class CollectionSequence<T> implements Sequence<T> {
-	private Collection<T> collection;
+	private final Collection<T> collection;
 
 	/**
 	 * @return an immutable empty {@code CollectionSequence}.
@@ -68,6 +68,7 @@ public class CollectionSequence<T> implements Sequence<T> {
 	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s.
 	 * Updates to the backing collections is reflected in the returned {@link CollectionSequence}.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> Sequence<T> concat(Collection<T>... collections) {
 		return from(ChainedCollection.from(collections));
 	}
