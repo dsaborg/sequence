@@ -33,7 +33,8 @@ public class BiMappedCollectionTest {
 	private Collection<String> mapped = BiMappedCollection.from(original, Object::toString, Integer::parseInt);
 
 	private Collection<Integer> originalEmpty = new ArrayDeque<>();
-	private Collection<String> mappedEmpty = BiMappedCollection.from(originalEmpty, Object::toString, Integer::parseInt);
+	private Collection<String> mappedEmpty = BiMappedCollection.from(originalEmpty, Object::toString,
+	                                                                 Integer::parseInt);
 
 	@Test
 	public void size() {

@@ -52,7 +52,6 @@ public class ArrayLongList extends LongList.Base implements RandomAccess {
 	 *
 	 * @see LongList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayLongList create() {
@@ -67,7 +66,6 @@ public class ArrayLongList extends LongList.Base implements RandomAccess {
 	 *
 	 * @see LongList#create(long...)
 	 * @see #ArrayLongList(LongCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayLongList create(long... xs) {

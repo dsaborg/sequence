@@ -29,7 +29,8 @@ public class BackPeekingFilteringIterator<T> extends DelegatingUnaryIterator<T> 
 	private T next;
 	private boolean hasNext;
 
-	public BackPeekingFilteringIterator(Iterator<T> iterator, T replacement, BiPredicate<? super T, ? super T> predicate) {
+	public BackPeekingFilteringIterator(Iterator<T> iterator, T replacement,
+	                                    BiPredicate<? super T, ? super T> predicate) {
 		super(iterator);
 		this.next = replacement;
 		this.predicate = predicate;

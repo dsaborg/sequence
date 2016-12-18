@@ -57,16 +57,16 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	/**
-	 * @return a {@code CollectionSequence} backed by the given {@link Collection}. Updates to the backing collection
-	 * is reflected in the returned {@link CollectionSequence}.
+	 * @return a {@code CollectionSequence} backed by the given {@link Collection}. Updates to the backing
+	 * collection is reflected in the returned {@link CollectionSequence}.
 	 */
 	public static <T> Sequence<T> from(Collection<T> collection) {
 		return new CollectionSequence<>(collection);
 	}
 
 	/**
-	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s.
-	 * Updates to the backing collections is reflected in the returned {@link CollectionSequence}.
+	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s. Updates to
+	 * the backing collections is reflected in the returned {@link CollectionSequence}.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Sequence<T> concat(Collection<T>... collections) {
@@ -74,8 +74,8 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	/**
-	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s.
-	 * Updates to the backing collections is reflected in the returned {@link CollectionSequence}.
+	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s. Updates to
+	 * the backing collections is reflected in the returned {@link CollectionSequence}.
 	 */
 	public static <T> Sequence<T> concat(Collection<Collection<T>> collections) {
 		return from(ChainedCollection.from(collections));
@@ -107,8 +107,8 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	/**
-	 * @return a new mutable {@code CollectionSequence} initialized with the remaining elements in the given
-	 * {@link Iterator}.
+	 * @return a new mutable {@code CollectionSequence} initialized with the remaining elements in the given {@link
+	 * Iterator}.
 	 */
 	public static <T> Sequence<T> create(Iterator<? extends T> iterator) {
 		CollectionSequence<T> result = new CollectionSequence<>();
@@ -214,7 +214,8 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
+			backMapper) {
 		return from(BiMappedCollection.from(collection, mapper, backMapper));
 	}
 

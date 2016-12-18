@@ -401,7 +401,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		}
 
 		public DoubleIterator iterator() {
-			return new DelegatingUnaryDoubleIterator(new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryDoubleIterator(
+					new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
 				@Override
 				public double nextDouble() {
 					return iterator.nextDouble();

@@ -48,8 +48,7 @@ public class Lists {
 	 * A pass-through version of {@link List#sort(Comparator)} sorted using
 	 * {@link Comparator#naturalOrder()}.
 	 *
-	 * @return the given list sorted using {@link List#sort(Comparator)} with
-	 * {@link Comparator#naturalOrder()}.
+	 * @return the given list sorted using {@link List#sort(Comparator)} with {@link Comparator#naturalOrder()}.
 	 */
 	public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
 		return sort(list, Comparator.naturalOrder());
@@ -59,8 +58,7 @@ public class Lists {
 	 * A pass-through version of {@link List#sort(Comparator)} sorted using
 	 * {@link Comparator#naturalOrder()}.
 	 *
-	 * @return the given list sorted using {@link List#sort(Comparator)} with
-	 * {@link Comparator#naturalOrder()}.
+	 * @return the given list sorted using {@link List#sort(Comparator)} with {@link Comparator#naturalOrder()}.
 	 */
 	public static <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
 		list.sort(comparator);

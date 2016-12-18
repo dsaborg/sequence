@@ -903,9 +903,9 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return a {@link LongList} view of this {@code LongSequence}, which is updated in real time as the backing
-	 * store of the {@code LongSequence} changes. The list does not implement {@link RandomAccess} and is best
-	 * accessed in sequence.
+	 * @return a {@link LongList} view of this {@code LongSequence}, which is updated in real time as the backing store
+	 * of the {@code LongSequence} changes. The list does not implement {@link RandomAccess} and is best accessed in
+	 * sequence.
 	 *
 	 * @since 2.1
 	 */
@@ -970,16 +970,16 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the first long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
-	 * longs in the {@code LongSequence}.
+	 * @return the first long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no longs in
+	 * the {@code LongSequence}.
 	 */
 	default OptionalLong first() {
 		return at(0);
 	}
 
 	/**
-	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
-	 * longs in the {@code LongSequence}.
+	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no longs in the
+	 * {@code LongSequence}.
 	 */
 	default OptionalLong last() {
 		LongIterator iterator = iterator();
@@ -1010,8 +1010,8 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the first long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
+	 * @return the first long of those in this {@code LongSequence} matching the given predicate, or an empty {@link
+	 * OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
 	 * @see #at(int, LongPredicate)
@@ -1022,8 +1022,8 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the last long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
+	 * @return the last long of those in this {@code LongSequence} matching the given predicate, or an empty {@link
+	 * OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
 	 * @see #at(int, LongPredicate)
@@ -1034,8 +1034,8 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the {@code long} at the given index out of longs matching the given predicate, or an empty
-	 * {@link OptionalLong} if the matching {@code LongSequence} is smaller than the index.
+	 * @return the {@code long} at the given index out of longs matching the given predicate, or an empty {@link
+	 * OptionalLong} if the matching {@code LongSequence} is smaller than the index.
 	 *
 	 * @see #filter(LongPredicate)
 	 * @since 1.2

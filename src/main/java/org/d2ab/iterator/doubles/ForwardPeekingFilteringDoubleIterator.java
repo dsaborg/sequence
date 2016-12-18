@@ -31,7 +31,8 @@ public class ForwardPeekingFilteringDoubleIterator extends
 	private boolean hasFollowing;
 	private boolean started;
 
-	public ForwardPeekingFilteringDoubleIterator(DoubleIterator iterator, double lastNext, DoubleBiPredicate predicate) {
+	public ForwardPeekingFilteringDoubleIterator(DoubleIterator iterator, double lastNext,
+	                                             DoubleBiPredicate predicate) {
 		super(iterator);
 		this.lastNext = lastNext;
 		this.predicate = predicate;

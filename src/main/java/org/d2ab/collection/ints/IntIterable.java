@@ -131,9 +131,9 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	/**
-	 * @return this {@code IntIterable} as an {@link InputStream}. Mark and reset is supported, by re-traversing
-	 * the iterator to the mark position. Ints outside of the allowed range {@code 0} to {@code 255} will result in
-	 * an {@link IOException} being thrown during traversal.
+	 * @return this {@code IntIterable} as an {@link InputStream}. Mark and reset is supported, by re-traversing the
+	 * iterator to the mark position. Ints outside of the allowed range {@code 0} to {@code 255} will result in an
+	 * {@link IOException} being thrown during traversal.
 	 *
 	 * @since 1.2
 	 */

@@ -29,7 +29,8 @@ import java.util.NoSuchElementException;
  * to split up in a batch on those items.
  */
 public class PredicatePartitioningDoubleIterator extends
-                                                 DelegatingTransformingIterator<Double, DoubleIterator, DoubleSequence> {
+                                                 DelegatingTransformingIterator<Double, DoubleIterator,
+		                                                 DoubleSequence> {
 	private final DoubleBiPredicate predicate;
 	private double next;
 	private boolean hasNext;

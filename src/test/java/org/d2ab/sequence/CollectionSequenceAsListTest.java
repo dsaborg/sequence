@@ -33,7 +33,8 @@ public class CollectionSequenceAsListTest {
 	private final Sequence<Integer> empty = CollectionSequence.from(new ArrayDeque<>());
 	private final List<Integer> emptyList = empty.asList();
 
-	private final Sequence<Integer> sequence = CollectionSequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	private final Sequence<Integer> sequence = CollectionSequence.from(
+			new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
 	private final List<Integer> list = sequence.asList();
 
 	@Test

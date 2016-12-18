@@ -389,13 +389,16 @@ public class CharSeqAsListTest {
 	@Test
 	public void stream() {
 		assertThat(emptyList.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void parallelStream() {
-		assertThat(emptyList.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(emptyList.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           is(emptyIterable()));
+		assertThat(list.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

@@ -188,7 +188,8 @@ public class Arrayz {
 	}
 
 	/**
-	 * @return true if the given array contains the given target {@code double} within the given precision, false otherwise.
+	 * @return true if the given array contains the given target {@code double} within the given precision, false
+	 * otherwise.
 	 */
 	public static boolean contains(double[] items, double target, double precision) {
 		for (double item : items)

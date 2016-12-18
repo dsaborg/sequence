@@ -290,12 +290,11 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 *
 	 * @param f a mapper function for producing elements that are to be included in the sequence, the first being
 	 *          f(keySeed, valueSeed)
-	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence,
-	 *          applied to the first mapped element f(keySeed, valueSeed) to produce the second unmapped value
+	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence, applied
+	 *          to the first mapped element f(keySeed, valueSeed) to produce the second unmapped value
 	 *
-	 * @return an {@code EntrySequence} produced by recursively applying the given mapper and incrementer operations
-	 * to the
-	 * given seeds
+	 * @return an {@code EntrySequence} produced by recursively applying the given mapper and incrementer operations to
+	 * the given seeds
 	 *
 	 * @see #recurse(Entry, UnaryOperator)
 	 * @see #recurse(Object, Object, BiFunction)
@@ -474,8 +473,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return a {@link Sequence} of the {@link Entry} elements in this {@code EntrySequence} flattened into their
-	 * key and value components strung together.
+	 * @return a {@link Sequence} of the {@link Entry} elements in this {@code EntrySequence} flattened into their key
+	 * and value components strung together.
 	 */
 	default <T> Sequence<T> flatten() {
 		return toSequence().flatten();
@@ -921,8 +920,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the last entry of this {@code EntrySequence} or an empty {@link Optional} if there are no entries in
-	 * the {@code EntrySequence}.
+	 * @return the last entry of this {@code EntrySequence} or an empty {@link Optional} if there are no entries in the
+	 * {@code EntrySequence}.
 	 */
 	default Optional<Entry<K, V>> last() {
 		return Iterators.last(iterator());
@@ -937,8 +936,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the first entry of this {@code EntrySequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there are no matching entries in the {@code EntrySequence}.
+	 * @return the first entry of this {@code EntrySequence} that matches the given predicate, or an empty {@link
+	 * Optional} if there are no matching entries in the {@code EntrySequence}.
 	 *
 	 * @since 1.3
 	 */
@@ -947,9 +946,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the last entry of this {@code EntrySequence} the matches the given predicate, or an empty
-	 * {@link Optional}
-	 * if there are no matching entries in the {@code EntrySequence}.
+	 * @return the last entry of this {@code EntrySequence} the matches the given predicate, or an empty {@link
+	 * Optional} if there are no matching entries in the {@code EntrySequence}.
 	 *
 	 * @since 1.3
 	 */
@@ -958,8 +956,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the entry at the given index out of the entries matching the given predicate, or an empty
-	 * {@link Optional} if the {@code EntrySequence} of matching entries is smaller than the index.
+	 * @return the entry at the given index out of the entries matching the given predicate, or an empty {@link
+	 * Optional} if the {@code EntrySequence} of matching entries is smaller than the index.
 	 *
 	 * @since 1.3
 	 */
@@ -968,8 +966,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the first entry of this {@code EntrySequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there are no matching entries in the {@code EntrySequence}.
+	 * @return the first entry of this {@code EntrySequence} that matches the given predicate, or an empty {@link
+	 * Optional} if there are no matching entries in the {@code EntrySequence}.
 	 *
 	 * @since 1.3
 	 */
@@ -978,8 +976,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the last entry of this {@code EntrySequence} the matches the given predicate, or an empty
-	 * {@link Optional} if there are no matching entries in the {@code EntrySequence}.
+	 * @return the last entry of this {@code EntrySequence} the matches the given predicate, or an empty {@link
+	 * Optional} if there are no matching entries in the {@code EntrySequence}.
 	 *
 	 * @since 1.3
 	 */
@@ -988,8 +986,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return the entry at the given index out of the entries matching the given predicate, or an empty
-	 * {@link Optional} if the {@code EntrySequence} of matching entries is smaller than the index.
+	 * @return the entry at the given index out of the entries matching the given predicate, or an empty {@link
+	 * Optional} if the {@code EntrySequence} of matching entries is smaller than the index.
 	 *
 	 * @since 1.3
 	 */
@@ -1107,11 +1105,11 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return this {@code EntrySequence} sorted according to the natural order of the key and value. Requires that
-	 * the key and value in this sequence implements {@link Comparable} or a {@link ClassCastException} will be thrown.
+	 * @return this {@code EntrySequence} sorted according to the natural order of the key and value. Requires that the
+	 * key and value in this sequence implements {@link Comparable} or a {@link ClassCastException} will be thrown.
 	 *
-	 * @throws ClassCastException if the keys and values in this {@code EntrySequence} does not implement
-	 * {@link Comparable}.
+	 * @throws ClassCastException if the keys and values in this {@code EntrySequence} does not implement {@link
+	 *                            Comparable}.
 	 */
 	default EntrySequence<K, V> sorted() {
 		return sorted(Maps.entryComparator());
@@ -1298,7 +1296,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharBiFunction<? super K, ? super V> mapper) {
@@ -1316,7 +1313,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntBiFunction<? super K, ? super V> mapper) {
@@ -1334,7 +1330,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongBiFunction<? super K, ? super V> mapper) {
@@ -1352,7 +1347,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toLongs(ToLongBiFunction)
 	 * @see #map(BiFunction)
 	 * @see #flatten(BiFunction)
-	 *
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleBiFunction<? super K, ? super V> mapper) {
@@ -1370,7 +1364,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharFunction<? super Entry<K, V>> mapper) {
@@ -1388,7 +1381,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntFunction<? super Entry<K, V>> mapper) {
@@ -1406,7 +1398,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongFunction<? super Entry<K, V>> mapper) {
@@ -1424,7 +1415,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #map(Function)
 	 * @see #flatten(Function)
-	 *
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super Entry<K, V>> mapper) {

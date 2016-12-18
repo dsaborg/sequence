@@ -102,8 +102,8 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	/**
-	 * @return this {@code CharIterable} as a {@link Reader}. Mark and reset is supported, by re-traversing
-	 * the iterator to the mark position.
+	 * @return this {@code CharIterable} as a {@link Reader}. Mark and reset is supported, by re-traversing the
+	 * iterator to the mark position.
 	 *
 	 * @since 1.2
 	 */

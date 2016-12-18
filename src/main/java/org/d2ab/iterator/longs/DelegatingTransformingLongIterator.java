@@ -23,7 +23,8 @@ import java.util.Iterator;
 /**
  * A superclass for delegating {@link LongIterator}s.
  */
-public abstract class DelegatingTransformingLongIterator<T, I extends Iterator<T>> extends DelegatingTransformingIterator<T, I, Long>
+public abstract class DelegatingTransformingLongIterator<T, I extends Iterator<T>>
+		extends DelegatingTransformingIterator<T, I, Long>
 		implements LongIterator {
 	protected DelegatingTransformingLongIterator(I iterator) {
 		super(iterator);

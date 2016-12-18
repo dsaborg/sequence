@@ -27,8 +27,8 @@ import java.util.function.DoubleUnaryOperator;
 import static org.d2ab.collection.doubles.DoubleComparator.eq;
 
 /**
- * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or replacing the
- * underlying array.
+ * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or
+ * replacing the underlying array.
  */
 public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	private double[] contents;
@@ -54,7 +54,6 @@ public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	 *
 	 * @see DoubleList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayDoubleList create() {
@@ -69,7 +68,6 @@ public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	 *
 	 * @see DoubleList#create(double...)
 	 * @see #ArrayDoubleList(DoubleCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayDoubleList create(double... xs) {

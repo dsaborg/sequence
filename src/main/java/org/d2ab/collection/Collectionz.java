@@ -196,9 +196,9 @@ public class Collectionz {
 	}
 
 	/**
-	 * @return a {@link List} view of the given {@link Collection}, reflecting changes to the underlying
-	 * {@link Collection}. If a {@link List} is given it is returned unchanged. The list does not implement
-	 * {@link RandomAccess}, and is best accessed in sequence.
+	 * @return a {@link List} view of the given {@link Collection}, reflecting changes to the underlying {@link
+	 * Collection}. If a {@link List} is given it is returned unchanged. The list does not implement {@link
+	 * RandomAccess}, and is best accessed in sequence.
 	 */
 	public static <T> List<T> asList(Collection<T> collection) {
 		if (collection instanceof List)

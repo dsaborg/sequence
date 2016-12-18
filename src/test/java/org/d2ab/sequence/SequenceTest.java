@@ -351,7 +351,8 @@ public class SequenceTest {
 		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
 		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
 		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
-		Collection<Iterable<Integer>> collectionCollection = new ArrayDeque<>(asList(collection1, collection2, collection3));
+		Collection<Iterable<Integer>> collectionCollection = new ArrayDeque<>(
+				asList(collection1, collection2, collection3));
 
 		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) collectionCollection::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));

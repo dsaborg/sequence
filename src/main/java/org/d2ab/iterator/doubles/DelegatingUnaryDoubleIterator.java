@@ -19,7 +19,8 @@ package org.d2ab.iterator.doubles;
 /**
  * A {@link DoubleIterator} that delegates to another {@link DoubleIterator}.
  */
-public abstract class DelegatingUnaryDoubleIterator extends DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
+public abstract class DelegatingUnaryDoubleIterator
+		extends DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
 	protected DelegatingUnaryDoubleIterator(DoubleIterator iterator) {
 		super(iterator);
 	}

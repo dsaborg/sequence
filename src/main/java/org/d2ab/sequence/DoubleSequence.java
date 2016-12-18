@@ -641,8 +641,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
-	 * compared to the given precision.
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array, compared
+	 * to the given precision.
 	 *
 	 * @since 2.0
 	 */
@@ -651,8 +651,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
-	 * compared with the given precision.
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array, compared
+	 * with the given precision.
 	 *
 	 * @since 2.0
 	 */
@@ -869,8 +869,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return the last double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
+	 * @return the last double of those in this {@code DoubleSequence} matching the given predicate, or an empty {@link
+	 * OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
 	 * @see #at(int, DoublePredicate)
@@ -881,8 +881,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return the {@code double} at the given index out of doubles matching the given predicate, or an empty
-	 * {@link OptionalDouble} if the matching {@code DoubleSequence} is smaller than the index.
+	 * @return the {@code double} at the given index out of doubles matching the given predicate, or an empty {@link
+	 * OptionalDouble} if the matching {@code DoubleSequence} is smaller than the index.
 	 *
 	 * @see #filter(DoublePredicate)
 	 * @since 1.2
@@ -899,8 +899,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered,
-	 * compared to the given precision.
+	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered, compared to
+	 * the given precision.
 	 */
 	default DoubleSequence distinct(double precision) {
 		return () -> new DistinctDoubleIterator(iterator(), precision);

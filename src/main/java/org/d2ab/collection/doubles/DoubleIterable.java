@@ -192,8 +192,8 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	/**
-	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code DoubleIterable},
-	 * false otherwise.
+	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code
+	 * DoubleIterable}, false otherwise.
 	 */
 	default boolean containsAnyDoublesExactly(DoubleIterable xs) {
 		DoubleIterator iterator = iterator();
@@ -205,8 +205,8 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	/**
-	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given
-	 * {@code DoubleIterable} to the given precision, false otherwise.
+	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code
+	 * DoubleIterable} to the given precision, false otherwise.
 	 */
 	default boolean containsAnyDoubles(DoubleIterable xs, double precision) {
 		DoubleIterator iterator = iterator();

@@ -376,7 +376,8 @@ public interface LongList extends List<Long>, LongCollection {
 		}
 
 		public LongIterator iterator() {
-			return new DelegatingUnaryLongIterator(new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryLongIterator(
+					new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
 				@Override
 				public long nextLong() {
 					return iterator.nextLong();

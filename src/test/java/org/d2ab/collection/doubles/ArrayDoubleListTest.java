@@ -259,10 +259,12 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void doubleStream() {
-		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		assertThat(empty.doubleStream()
+		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
-		assertThat(list.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		assertThat(list.doubleStream()
+		               .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsDoubles(1, 2, 3, 4, 5));
 	}
 

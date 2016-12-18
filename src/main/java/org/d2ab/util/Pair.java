@@ -252,16 +252,16 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 	}
 
 	/**
-	 * @return the result of testing the given {@link Predicate}s on the "left" and "right" components of this
-	 * {@code Pair}.
+	 * @return the result of testing the given {@link Predicate}s on the "left" and "right" components of this {@code
+	 * Pair}.
 	 */
 	public boolean test(Predicate<? super L> leftPredicate, Predicate<? super R> rightPredicate) {
 		return leftPredicate.test(getLeft()) && rightPredicate.test(getRight());
 	}
 
 	/**
-	 * @return the result of testing the given {@link BiPredicate}s on the "left" and "right" components of this
-	 * {@code Pair}.
+	 * @return the result of testing the given {@link BiPredicate}s on the "left" and "right" components of this {@code
+	 * Pair}.
 	 */
 	public boolean test(BiPredicate<? super L, ? super R> predicate) {
 		return predicate.test(getLeft(), getRight());

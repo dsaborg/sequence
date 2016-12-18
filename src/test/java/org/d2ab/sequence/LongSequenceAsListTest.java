@@ -395,7 +395,8 @@ public class LongSequenceAsListTest {
 	@Test
 	public void parallelStream() {
 		assertThat(emptyList.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelStream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
+		assertThat(list.parallelStream().collect(Collectors.toList()),
+		           contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
 	}
 
 	@Test

@@ -58,16 +58,16 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	/**
-	 * @return a {@code ListSequence} backed by the given {@link List}. Updates to the backing list is reflected
-	 * in the returned {@link ListSequence}.
+	 * @return a {@code ListSequence} backed by the given {@link List}. Updates to the backing list is reflected in the
+	 * returned {@link ListSequence}.
 	 */
 	public static <T> Sequence<T> from(List<T> list) {
 		return new ListSequence<>(list);
 	}
 
 	/**
-	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s.
-	 * Updates to the backing lists is reflected in the returned {@link ListSequence}.
+	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s. Updates to the backing
+	 * lists is reflected in the returned {@link ListSequence}.
 	 */
 	@SafeVarargs
 	public static <T> Sequence<T> concat(List<T>... lists) {
@@ -75,8 +75,8 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	/**
-	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s.
-	 * Updates to the backing lists is reflected in the returned {@link ListSequence}.
+	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s. Updates to the backing
+	 * lists is reflected in the returned {@link ListSequence}.
 	 */
 	public static <T> Sequence<T> concat(List<List<T>> lists) {
 		return from(ChainedList.from(lists));
@@ -280,7 +280,8 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
+			backMapper) {
 		return from(BiMappedList.from(list, mapper, backMapper));
 	}
 

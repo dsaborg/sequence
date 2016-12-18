@@ -81,8 +81,8 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	/**
 	 * Set the bit at index {@code i}.
 	 *
-	 * @return {@code true} if this bit set changed as a result of setting the bit, i.e. the bit was clear,
-	 * {@code false} otherwise.
+	 * @return {@code true} if this bit set changed as a result of setting the bit, i.e. the bit was clear, {@code
+	 * false} otherwise.
 	 */
 	public boolean set(long i) {
 		if (i < 0)
@@ -107,8 +107,8 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	/**
 	 * Clear the bit at index {@code i}.
 	 *
-	 * @return {@code true} if this bit set changed as a result of setting the bit, i.e. the bit was set,
-	 * {@code false} otherwise.
+	 * @return {@code true} if this bit set changed as a result of setting the bit, i.e. the bit was set, {@code false}
+	 * otherwise.
 	 */
 	public boolean clear(long i) {
 		if (i < 0)
@@ -224,8 +224,8 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	}
 
 	/**
-	 * @return a {@link LongIterator} over the bits in this {@code SparseBitSet}, from lowest to highest.
-	 * All {@link LongIterator} methods are constant time. {@link LongIterator#remove()} is supported.
+	 * @return a {@link LongIterator} over the bits in this {@code SparseBitSet}, from lowest to highest. All {@link
+	 * LongIterator} methods are constant time. {@link LongIterator#remove()} is supported.
 	 */
 	@Override
 	public LongIterator iterator() {
@@ -269,8 +269,8 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 	}
 
 	/**
-	 * @return a string representation of this {@code BitSet} in the same format as {@link BitSet#toString()}, e.g.
-	 * the indices of all the set bits in ascending order surrounded by curly brackets {@code "{}"}.
+	 * @return a string representation of this {@code BitSet} in the same format as {@link BitSet#toString()}, e.g. the
+	 * indices of all the set bits in ascending order surrounded by curly brackets {@code "{}"}.
 	 */
 	@Override
 	public String toString() {

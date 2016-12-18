@@ -33,7 +33,8 @@ public class SequenceAsListTest {
 	private final Sequence<Integer> empty = Sequence.from(new ArrayDeque<Integer>()::iterator);
 	private final List<Integer> emptyList = empty.asList();
 
-	private final Sequence<Integer> sequence = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))::iterator);
+	private final Sequence<Integer> sequence = Sequence.from(
+			new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))::iterator);
 	private final List<Integer> list = sequence.asList();
 
 	@Test

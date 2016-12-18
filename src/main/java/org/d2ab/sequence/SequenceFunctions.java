@@ -32,7 +32,8 @@ public class SequenceFunctions {
 	/**
 	 * @return the given doubly bi-valued function converted to a pair-based binary operator.
 	 */
-	public static <L, R> BinaryOperator<Pair<L, R>> asPairBinaryOperator(QuaternaryFunction<L, R, L, R, Pair<L, R>> f) {
+	public static <L, R> BinaryOperator<Pair<L, R>> asPairBinaryOperator(QuaternaryFunction<L, R, L, R, Pair<L, R>>
+			                                                                     f) {
 		return (p1, p2) -> f.apply(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight());
 	}
 
@@ -57,12 +58,14 @@ public class SequenceFunctions {
 		return p -> action.accept(p.getLeft(), p.getRight());
 	}
 
-	public static <K, V> BinaryOperator<Map.Entry<K, V>> asEntryBinaryOperator(QuaternaryFunction<? super K, ? super V, ? super
-			K, ? super V, ? extends Map.Entry<K, V>> f) {
+	public static <K, V> BinaryOperator<Map.Entry<K, V>> asEntryBinaryOperator(
+			QuaternaryFunction<? super K, ? super V, ? super
+					K, ? super V, ? extends Map.Entry<K, V>> f) {
 		return (e1, e2) -> f.apply(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue());
 	}
 
-	public static <K, V, R> Function<Map.Entry<K, V>, R> asEntryFunction(BiFunction<? super K, ? super V, ? extends R> mapper) {
+	public static <K, V, R> Function<Map.Entry<K, V>, R> asEntryFunction(
+			BiFunction<? super K, ? super V, ? extends R> mapper) {
 		return entry -> mapper.apply(entry.getKey(), entry.getValue());
 	}
 

@@ -455,8 +455,8 @@ public interface IntSequence extends IntCollection {
 
 	/**
 	 * @return an {@code IntSequence} of random ints that never terminates. Each run of this {@code IntSequence}'s
-	 * {@link #iterator()} will produce a new random sequence of ints. This method is equivalent to
-	 * {@code random(Random::new)}.
+	 * {@link #iterator()} will produce a new random sequence of ints. This method is equivalent to {@code
+	 * random(Random::new)}.
 	 *
 	 * @see #random(Supplier)
 	 * @see Random#nextInt()
@@ -482,9 +482,9 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return an {@code IntSequence} of random ints between {@code 0}, inclusive, and the upper bound, exclusive,
-	 * that never terminates. Each run of this {@code IntSequence}'s {@link #iterator()} will produce a new random
-	 * sequence of ints. This method is equivalent to {@code random(Random::new, upper}.
+	 * @return an {@code IntSequence} of random ints between {@code 0}, inclusive, and the upper bound, exclusive, that
+	 * never terminates. Each run of this {@code IntSequence}'s {@link #iterator()} will produce a new random sequence
+	 * of ints. This method is equivalent to {@code random(Random::new, upper}.
 	 *
 	 * @see #random(Supplier, int)
 	 * @see Random#nextInt(int)
@@ -495,9 +495,9 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return an {@code IntSequence} of random ints between {@code 0}, inclusive, and the upper bound, exclusive,
-	 * that never terminates. The given supplier is used to produce the instance of {@link Random} that is used, one
-	 * for each new {@link #iterator()}.
+	 * @return an {@code IntSequence} of random ints between {@code 0}, inclusive, and the upper bound, exclusive, that
+	 * never terminates. The given supplier is used to produce the instance of {@link Random} that is used, one for
+	 * each new {@link #iterator()}.
 	 *
 	 * @see #random(int)
 	 * @see Random#nextInt(int)
@@ -971,16 +971,16 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return the first int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no
-	 * ints in the {@code IntSequence}.
+	 * @return the first int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no ints in the
+	 * {@code IntSequence}.
 	 */
 	default OptionalInt first() {
 		return at(0);
 	}
 
 	/**
-	 * @return the last int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no
-	 * ints in the {@code IntSequence}.
+	 * @return the last int of this {@code IntSequence} or an empty {@link OptionalInt} if there are no ints in the
+	 * {@code IntSequence}.
 	 */
 	default OptionalInt last() {
 		IntIterator iterator = iterator();
@@ -1011,8 +1011,8 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return the first int of those in this {@code IntSequence} matching the given predicate, or an empty
-	 * {@link OptionalInt} if there are no matching ints in the {@code IntSequence}.
+	 * @return the first int of those in this {@code IntSequence} matching the given predicate, or an empty {@link
+	 * OptionalInt} if there are no matching ints in the {@code IntSequence}.
 	 *
 	 * @see #filter(IntPredicate)
 	 * @see #at(int, IntPredicate)
@@ -1023,8 +1023,8 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return the last int of those in this {@code IntSequence} matching the given predicate, or an empty
-	 * {@link OptionalInt} if there are no matching ints in the {@code IntSequence}.
+	 * @return the last int of those in this {@code IntSequence} matching the given predicate, or an empty {@link
+	 * OptionalInt} if there are no matching ints in the {@code IntSequence}.
 	 *
 	 * @see #filter(IntPredicate)
 	 * @see #at(int, IntPredicate)
@@ -1035,8 +1035,8 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return the {@code int} at the given index out of ints matching the given predicate, or an empty
-	 * {@link OptionalInt} if the matching {@code IntSequence} is smaller than the index.
+	 * @return the {@code int} at the given index out of ints matching the given predicate, or an empty {@link
+	 * OptionalInt} if the matching {@code IntSequence} is smaller than the index.
 	 *
 	 * @see #filter(IntPredicate)
 	 * @since 1.2

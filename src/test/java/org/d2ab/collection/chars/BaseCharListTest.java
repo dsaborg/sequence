@@ -382,13 +382,16 @@ public class BaseCharListTest {
 	@Test
 	public void stream() {
 		assertThat(empty.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void parallelStream() {
-		assertThat(empty.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(empty.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           is(emptyIterable()));
+		assertThat(list.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

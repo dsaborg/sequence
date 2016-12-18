@@ -181,8 +181,8 @@ public class Iterators {
 	}
 
 	/**
-	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no
-	 * elements in the {@link Iterator}.
+	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no elements in
+	 * the {@link Iterator}.
 	 */
 	public static <T> Optional<T> last(Iterator<? extends T> iterator) {
 		if (!iterator.hasNext())

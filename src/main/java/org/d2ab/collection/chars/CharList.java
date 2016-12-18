@@ -376,7 +376,8 @@ public interface CharList extends List<Character>, CharCollection {
 		}
 
 		public CharIterator iterator() {
-			return new DelegatingUnaryCharIterator(new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryCharIterator(
+					new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
 				@Override
 				public char nextChar() {
 					return iterator.nextChar();

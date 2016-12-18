@@ -28,8 +28,8 @@ import java.util.NoSuchElementException;
 import java.util.RandomAccess;
 
 /**
- * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing the
- * underlying array.
+ * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing
+ * the underlying array.
  */
 public class ArrayCharList extends CharList.Base implements RandomAccess {
 	private char[] contents;
@@ -55,7 +55,6 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	 *
 	 * @see CharList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayCharList create() {
@@ -70,7 +69,6 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	 *
 	 * @see CharList#create(char...)
 	 * @see #ArrayCharList(CharCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayCharList create(char... xs) {

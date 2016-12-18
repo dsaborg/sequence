@@ -427,7 +427,7 @@ public class SparseBitSetTest {
 		              "9223372036854775807]"));
 
 		Set<Long> equivalentSet = new HashSet<>(asList(1222L, 58723484L, 58723485L, 58723486L, Long.MAX_VALUE - 2,
-		                                      Long.MAX_VALUE - 1, Long.MAX_VALUE));
+		                                               Long.MAX_VALUE - 1, Long.MAX_VALUE));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 

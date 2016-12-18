@@ -457,7 +457,8 @@ public class SortedListDoubleSetTest {
 	@Test
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(set.stream().collect(Collectors.toList()), contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
+		assertThat(set.stream().collect(Collectors.toList()),
+		           contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
@@ -469,10 +470,12 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void doubleStream() {
-		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly,
+		                                        DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
-		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly,
+		                                      DoubleList::addAllDoubles),
 		           containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 

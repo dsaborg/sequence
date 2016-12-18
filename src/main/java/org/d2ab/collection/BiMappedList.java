@@ -26,7 +26,8 @@ public abstract class BiMappedList {
 	private BiMappedList() {
 	}
 
-	public static <T, U> List<U> from(List<T> list, Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+	public static <T, U> List<U> from(List<T> list, Function<? super T, ? extends U> mapper,
+	                                  Function<? super U, ? extends T> backMapper) {
 		if (list instanceof RandomAccess)
 			return new RandomAccessList<>(list, mapper, backMapper);
 		else
@@ -38,7 +39,8 @@ public abstract class BiMappedList {
 		private final Function<? super T, ? extends U> mapper;
 		private final Function<? super U, ? extends T> backMapper;
 
-		public RandomAccessList(List<T> list, Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+		public RandomAccessList(List<T> list, Function<? super T, ? extends U> mapper,
+		                        Function<? super U, ? extends T> backMapper) {
 			this.list = list;
 			this.mapper = mapper;
 			this.backMapper = backMapper;
@@ -75,7 +77,8 @@ public abstract class BiMappedList {
 		private final Function<? super T, ? extends U> mapper;
 		private final Function<? super U, ? extends T> backMapper;
 
-		public SequentialList(List<T> list, Function<? super T, ? extends U> mapper, Function<? super U, ? extends T> backMapper) {
+		public SequentialList(List<T> list, Function<? super T, ? extends U> mapper,
+		                      Function<? super U, ? extends T> backMapper) {
 			this.list = list;
 			this.mapper = mapper;
 			this.backMapper = backMapper;
