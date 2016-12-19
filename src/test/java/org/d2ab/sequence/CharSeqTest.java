@@ -1301,6 +1301,18 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void randomRangesWithSupplierInvalidState() {
+		CharSeq invalidRandom = CharSeq.random(() -> new Random(17) {
+			@Override
+			public int nextInt(int bound) {
+				return bound;
+			}
+		}, "0-9", "A-F");
+
+		expecting(IllegalStateException.class, () -> invalidRandom.iterator().nextChar());
+	}
+
+	@Test
 	public void mapBack() {
 		twice(() -> assertThat(abc.mapBack('_', (p, c) -> p), containsChars('_', 'a', 'b')));
 		twice(() -> assertThat(abc.mapBack('_', (p, c) -> c), containsChars('a', 'b', 'c')));
