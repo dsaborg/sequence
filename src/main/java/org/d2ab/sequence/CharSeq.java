@@ -427,6 +427,9 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	static CharSeq random(Supplier<? extends Random> randomSupplier, String... ranges) {
+		if (ranges.length == 0)
+			return empty();
+
 		int[] bounds = new int[ranges.length];
 		for (int i = 0; i < ranges.length; i++) {
 			String range = ranges[i];

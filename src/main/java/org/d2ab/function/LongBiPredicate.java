@@ -26,7 +26,7 @@ public interface LongBiPredicate {
 	/**
 	 * Test this predicate against the given two {@code long}s.
 	 */
-	boolean test(long c1, long c2);
+	boolean test(long x1, long x2);
 
 	/**
 	 * Negate this predicate, returning a predicate that always returns the opposite values.

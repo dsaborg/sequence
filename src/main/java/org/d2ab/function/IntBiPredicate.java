@@ -26,7 +26,7 @@ public interface IntBiPredicate {
 	/**
 	 * Test this predicate against the given two {@code int}s.
 	 */
-	boolean test(int c1, int c2);
+	boolean test(int x1, int x2);
 
 	/**
 	 * Negate this predicate, returning a predicate that always returns the opposite values.

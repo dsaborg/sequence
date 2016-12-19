@@ -1301,6 +1301,20 @@ public class CharSeqTest {
 	}
 
 	@Test
+	public void randomRangesEmpty() {
+		CharSeq random = CharSeq.random();
+
+		twice(() -> assertThat(random, is(emptyIterable())));
+	}
+
+	@Test
+	public void randomRangesEmptyWithSupplier() {
+		CharSeq random = CharSeq.random(() -> new Random(17));
+
+		twice(() -> assertThat(random, is(emptyIterable())));
+	}
+
+	@Test
 	public void randomRangesWithSupplierInvalidState() {
 		CharSeq invalidRandom = CharSeq.random(() -> new Random(17) {
 			@Override
