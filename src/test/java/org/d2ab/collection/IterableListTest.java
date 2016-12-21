@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -141,7 +142,7 @@ public class IterableListTest {
 		assertThat(listEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList()), is(false));
+		assertThat(list.removeAll(emptyList()), is(false));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 
 		assertThat(list.removeAll(asList(1, 2, 3)), is(true));
@@ -234,6 +235,8 @@ public class IterableListTest {
 
 	@Test
 	public void listIteratorEmpty() {
+		expecting(IndexOutOfBoundsException.class, () -> listEmpty.listIterator(1));
+
 		ListIterator<Integer> emptyIterator = listEmpty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
@@ -248,6 +251,8 @@ public class IterableListTest {
 
 	@Test
 	public void listIterator() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
+
 		ListIterator<Integer> listIterator = list.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));

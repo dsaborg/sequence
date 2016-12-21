@@ -981,6 +981,17 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void flattenStreams() {
+		Sequence<Stream<Integer>> sequence = newSequence(Stream.of(1, 2), Stream.of(3, 4), Stream.of(5, 6));
+
+		Sequence<Integer> flattened = sequence.flatten();
+		assertThat(flattened, contains(1, 2, 3, 4, 5, 6));
+
+		Iterator<Integer> iterator = flattened.iterator();
+		expecting(IllegalStateException.class, iterator::next);
+	}
+
+	@Test
 	public void flattenArrays() {
 		Sequence<Integer[]> sequence = newSequence(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
@@ -1005,6 +1016,12 @@ public class SequenceTest {
 
 		Sequence<Object> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
+	}
+
+	@Test
+	public void flattenInvalid() {
+		Iterator<Object> iterator = _12345.flatten().iterator();
+		expecting(ClassCastException.class, iterator::next);
 	}
 
 	@Test
@@ -2612,10 +2629,14 @@ public class SequenceTest {
 	public void containsAllIterable() {
 		assertThat(empty.containsAll(Iterables.of()), is(true));
 		assertThat(empty.containsAll(Iterables.of(17, 18, 19)), is(false));
+		assertThat(empty.containsAll((Iterable<?>) emptyList()), is(true));
+		assertThat(empty.containsAll((Iterable<?>) asList(17, 18, 19)), is(false));
 
 		assertThat(_12345.containsAll(Iterables.of()), is(true));
+		assertThat(_12345.containsAll((Iterable<?>) emptyList()), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1)), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1, 3, 5)), is(true));
+		assertThat(_12345.containsAll((Iterable<?>) asList(1, 3, 5)), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1, 2, 3, 4, 5)), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1, 2, 3, 4, 5, 17)), is(false));
 		assertThat(_12345.containsAll(Iterables.of(17, 18, 19)), is(false));

@@ -307,11 +307,15 @@ public class FilteredListTest {
 
 	@Test
 	public void listIteratorEmpty() {
+		expecting(IndexOutOfBoundsException.class, () -> filteredEmpty.listIterator(1));
+
 		ListIterator<Integer> emptyIterator = filteredEmpty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(NoSuchElementException.class, emptyIterator::previous);
 
 		emptyIterator.add(17);
 		assertThat(emptyIterator.hasNext(), is(false));
@@ -338,6 +342,8 @@ public class FilteredListTest {
 
 	@Test
 	public void listIterator() {
+		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(11));
+
 		ListIterator<Integer> listIterator = filtered.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));
@@ -392,10 +398,9 @@ public class FilteredListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		ListIterator<Integer> listIterator = filtered.listIterator();
-
-		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
+			ListIterator<Integer> listIterator = filtered.listIterator();
+			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.next(), is(i.get() * 2 + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -403,6 +408,7 @@ public class FilteredListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(5));
+			expecting(NoSuchElementException.class, listIterator::next);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
@@ -411,6 +417,7 @@ public class FilteredListTest {
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previous);
 		});
 	}
 
@@ -425,6 +432,7 @@ public class FilteredListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, iterator::next);
 
 		assertThat(filtered, is(emptyIterable()));
 		assertThat(original, contains(2, 4, 6, 8, 10));
@@ -445,6 +453,7 @@ public class FilteredListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, listIterator::next);
 
 		assertThat(filtered, is(emptyIterable()));
 		assertThat(original, contains(2, 4, 6, 8, 10));

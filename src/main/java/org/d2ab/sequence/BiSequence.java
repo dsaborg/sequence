@@ -31,7 +31,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
@@ -77,7 +76,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> of(Pair<L, R>... items) {
-		return from(asList(items));
+		return from(Arrays.asList(items));
 	}
 
 	/**
@@ -874,6 +873,18 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	}
 
 	/**
+	 * @return a {@link List} view of this {@code BiSequence}, which is updated in real time as the backing store of
+	 * the
+	 * {@code BiSequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 * The list does not support {@link List#add}, only removal through {@link Iterator#remove}.
+	 *
+	 * @since 2.2
+	 */
+	default List<Pair<L, R>> asList() {
+		return Iterables.asList(this);
+	}
+
+	/**
 	 * Join this {@code BiSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
@@ -1190,7 +1201,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @return true if no elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(BiPredicate<? super L, ? super R> predicate) {
-		return !any(predicate);
+		return Iterables.none(this, asPairPredicate(predicate));
 	}
 
 	/**

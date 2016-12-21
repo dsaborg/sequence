@@ -664,7 +664,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #map(Function)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "unused"})
 	default <U> Sequence<U> cast(Class<U> clazz) {
 		return (Sequence<U>) this;
 	}
@@ -1116,8 +1116,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * @return a {@link List} view of this {@code Sequence}, which is updated in real time as the backing store of the
 	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence. The
-	 * list supports {@link List#add(Object)} only if the {@code Sequence} is backed by a list itself, otherwise it
-	 * supports removal only.
+	 * list supports {@link List#add} only if the {@code Sequence} is backed by a list itself, otherwise it supports
+	 * removal only.
 	 *
 	 * @since 1.2
 	 */
@@ -1495,7 +1495,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return true if no elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(Predicate<? super T> predicate) {
-		return !any(predicate);
+		return Iterables.none(this, predicate);
 	}
 
 	/**
@@ -1520,7 +1520,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default boolean none(Class<?> target) {
-		return !any(target);
+		return none(target::isInstance);
 	}
 
 	/**

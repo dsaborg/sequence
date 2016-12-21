@@ -103,7 +103,14 @@ public interface IterableCollection<T> extends Collection<T> {
 	 * @since 2.2
 	 */
 	default boolean containsAll(Iterable<?> items) {
-		return Iterables.containsAll(this, items);
+		if (items instanceof Collection)
+			return containsAll((Collection<?>) items);
+
+		for (Object item : items)
+			if (!contains(item))
+				return false;
+
+		return true;
 	}
 
 	/**
