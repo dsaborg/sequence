@@ -184,7 +184,8 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 
 	/**
 	 * @return a {@code Pair} where the "left" component is shifted to the "right" component and replaced with the
-	 * given value.
+	 * given
+	 * value.
 	 */
 	public <LL> Pair<LL, L> shiftRight(LL replacement) {
 		return new Pair<LL, L>() {
@@ -202,7 +203,8 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 
 	/**
 	 * @return a {@code Pair} where the "right" component is shifted to the "left" component and replaced with the
-	 * given value.
+	 * given
+	 * value.
 	 */
 	public <RR> Pair<R, RR> shiftLeft(RR replacement) {
 		return new Pair<R, RR>() {
@@ -245,7 +247,8 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 
 	/**
 	 * @return a the result of applying the given {@link BiFunction} to the "left" and "right" components of this
-	 * {@code Pair}.
+	 * {@code
+	 * Pair}.
 	 */
 	public <T> T apply(BiFunction<? super L, ? super R, ? extends T> function) {
 		return function.apply(getLeft(), getRight());
@@ -309,14 +312,10 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 		return String.valueOf(o);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "MethodDoesntCallSuperMethod"})
 	@Override
 	public Pair<L, R> clone() {
-		try {
-			return (Pair<L, R>) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException(e);
-		}
+		return Pair.of(getLeft(), getRight()); // To ensure that references to mutable Map.Entry aren't copied
 	}
 
 	@Override
@@ -342,15 +341,11 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 			if (!hasNext())
 				throw new NoSuchElementException();
 
-			switch (++index) {
-				case 1:
-					return (T) getLeft();
-				case 2:
-					return (T) getRight();
-				default:
-					// Can't happen due to above check
-					throw new IllegalStateException();
-			}
+			if (++index == 1)
+				return (T) getLeft();
+			else
+				return (T) getRight();
 		}
 	}
 }
+

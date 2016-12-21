@@ -17,13 +17,16 @@
 package org.d2ab.util;
 
 import org.d2ab.collection.Maps;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.d2ab.test.Tests.expecting;
@@ -156,8 +159,30 @@ public class PairTest {
 	}
 
 	@Test
-	public void clonePairFromEntry() {
+	public void clonePairFromMapsEntry() {
 		Pair<Integer, String> original = Pair.from(Maps.entry(1, "2"));
+		Pair<Integer, String> clone = original.clone();
+		assertThat(clone, is(equalTo(original)));
+	}
+
+	@Test
+	public void clonePairFromAnonymousEntry() {
+		Pair<Integer, String> original = Pair.from(new Entry<Integer, String>() {
+			@Override
+			public Integer getKey() {
+				return 1;
+			}
+
+			@Override
+			public String getValue() {
+				return "2";
+			}
+
+			@Override
+			public String setValue(String value) {
+				throw new UnsupportedOperationException();
+			}
+		});
 		Pair<Integer, String> clone = original.clone();
 		assertThat(clone, is(equalTo(original)));
 	}
@@ -249,5 +274,37 @@ public class PairTest {
 	@Test
 	public void withSecond() {
 		assertThat(pair.withRight("17"), Matchers.is(Pair.of(1, "17")));
+	}
+
+	@Test
+	public void apply() {
+		assertThat(pair.apply((x, y) -> Pair.of(x + 1, y + "0")), is(Pair.of(2, "20")));
+	}
+
+	@Test
+	public void test() {
+		assertThat(pair.test(x -> {
+			assertThat(x, is(1));
+			return true;
+		}, y -> {
+			assertThat(y, is("2"));
+			return true;
+		}), is(true));
+
+		assertThat(pair.test(x -> true, y -> true), is(true));
+		assertThat(pair.test(x -> true, y -> false), is(false));
+		assertThat(pair.test(x -> false, y -> true), is(false));
+		assertThat(pair.test(x -> false, y -> false), is(false));
+	}
+
+	@Test
+	public void iterator() {
+		Iterator<Integer> iterator = Pair.of(1, 2).iterator();
+		assertThat(iterator.hasNext(), CoreMatchers.is(true));
+		assertThat(iterator.next(), CoreMatchers.is(1));
+		assertThat(iterator.hasNext(), CoreMatchers.is(true));
+		assertThat(iterator.next(), CoreMatchers.is(2));
+		assertThat(iterator.hasNext(), CoreMatchers.is(false));
+		expecting(NoSuchElementException.class, iterator::next);
 	}
 }
