@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -671,17 +672,13 @@ public class BiSequenceTest {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twiceIndexed(index, 1, () -> {
-			assertThat(oneMapped, contains(Pair.of(1, "1")));
-		});
+		twiceIndexed(index, 1, () -> assertThat(oneMapped, contains(Pair.of(1, "1"))));
 
 		BiSequence<Integer, String> twoMapped = _12.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twiceIndexed(index, 2, () -> {
-			assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2")));
-		});
+		twiceIndexed(index, 2, () -> assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
 		BiSequence<Integer, String> fiveMapped = _12345.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
@@ -835,10 +832,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void toList() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			List<Pair<String, Integer>> list = sequence.toList();
+			List<Pair<String, Integer>> list = _12345.toList();
 			assertThat(list, instanceOf(ArrayList.class));
 			assertThat(list, contains(entries12345));
 		});
@@ -846,10 +841,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void toLinkedList() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			List<Pair<String, Integer>> list = sequence.toList(LinkedList::new);
+			List<Pair<String, Integer>> list = _12345.toList(LinkedList::new);
 			assertThat(list, instanceOf(LinkedList.class));
 			assertThat(list, contains(entries12345));
 		});
@@ -857,10 +850,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void toSet() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Set<Pair<String, Integer>> set = sequence.toSet();
+			Set<Pair<String, Integer>> set = _12345.toSet();
 			assertThat(set, instanceOf(HashSet.class));
 			assertThat(set, containsInAnyOrder(entries12345));
 		});
@@ -868,10 +859,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void toSortedSet() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			SortedSet<Pair<String, Integer>> sortedSet = sequence.toSortedSet();
+			SortedSet<Pair<String, Integer>> sortedSet = _12345.toSortedSet();
 			assertThat(sortedSet, instanceOf(TreeSet.class));
 			assertThat(sortedSet, contains(entries12345));
 		});
@@ -879,10 +868,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void toSetWithType() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Set<Pair<String, Integer>> set = sequence.toSet(LinkedHashSet::new);
+			Set<Pair<String, Integer>> set = _12345.toSet(LinkedHashSet::new);
 			assertThat(set, instanceOf(LinkedHashSet.class));
 			assertThat(set, contains(entries12345));
 		});
@@ -890,10 +877,8 @@ public class BiSequenceTest {
 
 	@Test
 	public void toCollection() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Deque<Pair<String, Integer>> deque = sequence.toCollection(ArrayDeque::new);
+			Deque<Pair<String, Integer>> deque = _12345.toCollection(ArrayDeque::new);
 			assertThat(deque, instanceOf(ArrayDeque.class));
 			assertThat(deque, contains(entries12345));
 		});
@@ -1499,19 +1484,16 @@ public class BiSequenceTest {
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
 		AtomicInteger value = new AtomicInteger(1);
-		BiSequence<String, Integer> peekOne = _1.peek(p -> {
-			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
-		});
+		BiSequence<String, Integer> peekOne = _1.peek(
+				p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
 		twiceIndexed(value, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> peekTwo = _12.peek(p -> {
-			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
-		});
+		BiSequence<String, Integer> peekTwo = _12.peek(
+				p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
 		twiceIndexed(value, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
 
-		BiSequence<String, Integer> peek = _12345.peek(p -> {
-			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
-		});
+		BiSequence<String, Integer> peek = _12345.peek(
+				p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
 		twiceIndexed(value, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
 		                                                       Pair.of("4", 4), Pair.of("5", 5))));
 	}
@@ -2084,5 +2066,11 @@ public class BiSequenceTest {
 
 		assertThat(_12345.retainIf(x -> x.equals(Pair.of("3", 3))), is(true));
 		twice(() -> assertThat(_12345, contains(Pair.of("3", 3))));
+	}
+
+	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(equalTo(emptyList())));
+		assertThat(_12345.asList(), is(equalTo(asList(entries12345))));
 	}
 }

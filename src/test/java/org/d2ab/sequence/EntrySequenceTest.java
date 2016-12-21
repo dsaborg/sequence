@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -700,17 +701,13 @@ public class EntrySequenceTest {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(v, k);
 		});
-		twiceIndexed(index, 1, () -> {
-			assertThat(oneMapped, contains(Maps.entry(1, "1")));
-		});
+		twiceIndexed(index, 1, () -> assertThat(oneMapped, contains(Maps.entry(1, "1"))));
 
 		EntrySequence<Integer, String> twoMapped = _12.mapIndexed((k, v, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(v, k);
 		});
-		twiceIndexed(index, 2, () -> {
-			assertThat(twoMapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2")));
-		});
+		twiceIndexed(index, 2, () -> assertThat(twoMapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2"))));
 
 		EntrySequence<Integer, String> fiveMapped = _12345.mapIndexed((k, v, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
@@ -871,10 +868,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toList() {
-		EntrySequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			List<Entry<String, Integer>> list = sequence.toList();
+			List<Entry<String, Integer>> list = _12345.toList();
 			assertThat(list, instanceOf(ArrayList.class));
 			assertThat(list, contains(entries12345));
 		});
@@ -882,10 +877,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toLinkedList() {
-		EntrySequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			List<Entry<String, Integer>> list = sequence.toList(LinkedList::new);
+			List<Entry<String, Integer>> list = _12345.toList(LinkedList::new);
 			assertThat(list, instanceOf(LinkedList.class));
 			assertThat(list, contains(entries12345));
 		});
@@ -893,10 +886,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toSet() {
-		EntrySequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Set<Entry<String, Integer>> set = sequence.toSet();
+			Set<Entry<String, Integer>> set = _12345.toSet();
 			assertThat(set, instanceOf(HashSet.class));
 			assertThat(set, containsInAnyOrder(entries12345));
 		});
@@ -904,10 +895,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toSortedSet() {
-		EntrySequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			SortedSet<Entry<String, Integer>> sortedSet = sequence.toSortedSet();
+			SortedSet<Entry<String, Integer>> sortedSet = _12345.toSortedSet();
 			assertThat(sortedSet, instanceOf(TreeSet.class));
 			assertThat(sortedSet, contains(entries12345));
 		});
@@ -915,10 +904,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toSetWithType() {
-		EntrySequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Set<Entry<String, Integer>> set = sequence.toSet(LinkedHashSet::new);
+			Set<Entry<String, Integer>> set = _12345.toSet(LinkedHashSet::new);
 			assertThat(set, instanceOf(LinkedHashSet.class));
 			assertThat(set, contains(entries12345));
 		});
@@ -926,10 +913,8 @@ public class EntrySequenceTest {
 
 	@Test
 	public void toCollection() {
-		EntrySequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Deque<Entry<String, Integer>> deque = sequence.toCollection(ArrayDeque::new);
+			Deque<Entry<String, Integer>> deque = _12345.toCollection(ArrayDeque::new);
 			assertThat(deque, instanceOf(ArrayDeque.class));
 			assertThat(deque, contains(entries12345));
 		});
@@ -1540,19 +1525,16 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
 
 		AtomicInteger value = new AtomicInteger(1);
-		EntrySequence<String, Integer> peekOne = _1.peek(p -> {
-			assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement())));
-		});
+		EntrySequence<String, Integer> peekOne = _1.peek(
+				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
 		twiceIndexed(value, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> peekTwo = _12.peek(p -> {
-			assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement())));
-		});
+		EntrySequence<String, Integer> peekTwo = _12.peek(
+				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
 		twiceIndexed(value, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
 
-		EntrySequence<String, Integer> peek = _12345.peek(p -> {
-			assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement())));
-		});
+		EntrySequence<String, Integer> peek = _12345.peek(
+				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
 		twiceIndexed(value, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
 		                                                       Maps.entry("3", 3), Maps.entry("4", 4),
 		                                                       Maps.entry("5", 5))));
@@ -2155,5 +2137,11 @@ public class EntrySequenceTest {
 
 		assertThat(_12345.retainIf(x -> x.equals(Maps.entry("3", 3))), is(true));
 		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3))));
+	}
+
+	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(equalTo(emptyList())));
+		assertThat(_12345.asList(), is(equalTo(asList(entries12345))));
 	}
 }
