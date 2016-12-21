@@ -28,6 +28,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code char} values.
  */
 public interface CharList extends List<Character>, CharCollection {
+	// TODO: Extract out relevant parts to IterableCharList
+
 	/**
 	 * Returns an immutable {@code CharList} of the given elements. The returned {@code CharList}'s
 	 * {@link CharListIterator} supports forward iteration only.
@@ -175,10 +177,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Character> c) {
-		boolean modified = false;
-		for (char x : c)
-			modified |= addChar(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -236,7 +235,11 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	default char getChar(int index) {
-		return listIterator(index).nextChar();
+		CharListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextChar();
 	}
 
 	@Override

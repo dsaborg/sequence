@@ -29,6 +29,8 @@ import java.util.function.Predicate;
  * methods with corresponding {@code char}-valued methods.
  */
 public interface CharCollection extends Collection<Character>, CharIterable {
+	// TODO: Extract out relevant parts to IterableCharCollection
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;

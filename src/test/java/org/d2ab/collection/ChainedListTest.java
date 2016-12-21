@@ -30,19 +30,19 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ChainedListTest {
-	private List<Integer> chainedTotallyEmpty = ChainedList.from(new ArrayList<List<Integer>>());
+	private List<Integer> chainedTotallyEmpty = ChainedList.concat(new ArrayList<List<Integer>>());
 
 	private List<Integer> firstEmpty = new ArrayList<>();
 	private List<Integer> secondEmpty = new LinkedList<>();
 	private List<Integer> thirdEmpty = new ArrayList<>();
 	@SuppressWarnings("unchecked")
-	private List<Integer> chainedEmpty = ChainedList.from(firstEmpty, secondEmpty, thirdEmpty);
+	private List<Integer> chainedEmpty = ChainedList.concat(firstEmpty, secondEmpty, thirdEmpty);
 
 	private List<Integer> first = new ArrayList<>(asList(1, 2, 3));
 	private List<Integer> second = new LinkedList<>(asList(4, 5, 6));
 	private List<Integer> third = new ArrayList<>(asList(7, 8, 9, 10));
 	@SuppressWarnings("unchecked")
-	private List<Integer> chained = ChainedList.from(first, second, third);
+	private List<Integer> chained = ChainedList.concat(first, second, third);
 
 	@Test
 	public void size() {
@@ -73,8 +73,10 @@ public class ChainedListTest {
 	@Test
 	public void iterator() {
 		assertThat(chainedTotallyEmpty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> chainedTotallyEmpty.iterator().next());
 
 		assertThat(chainedEmpty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> chainedEmpty.iterator().next());
 
 		assertThat(chained, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 	}
@@ -225,6 +227,12 @@ public class ChainedListTest {
 		assertThat(first, contains(1, 2, 3, 17, 18));
 		assertThat(second, contains(4, 19, 20, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10));
+
+		expecting(IndexOutOfBoundsException.class, () -> chained.addAll(15, asList(21, 22)));
+		assertThat(chained, contains(1, 2, 3, 17, 18, 4, 19, 20, 5, 6, 7, 8, 9, 10));
+		assertThat(first, contains(1, 2, 3, 17, 18));
+		assertThat(second, contains(4, 19, 20, 5, 6));
+		assertThat(third, contains(7, 8, 9, 10));
 	}
 
 	@Test
@@ -351,17 +359,24 @@ public class ChainedListTest {
 		assertThat(chained.get(4), is(5));
 		assertThat(chained.get(7), is(8));
 		assertThat(chained.get(9), is(10));
+		expecting(IndexOutOfBoundsException.class, () -> chained.get(10));
 	}
 
 	@Test
 	public void set() {
-		chained.set(2, 17);
+		assertThat(chained.set(2, 17), is(3));
 		assertThat(chained, contains(1, 2, 17, 4, 5, 6, 7, 8, 9, 10));
 		assertThat(first, contains(1, 2, 17));
 		assertThat(second, contains(4, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10));
 
-		chained.set(4, 18);
+		assertThat(chained.set(4, 18), is(5));
+		assertThat(chained, contains(1, 2, 17, 4, 18, 6, 7, 8, 9, 10));
+		assertThat(first, contains(1, 2, 17));
+		assertThat(second, contains(4, 18, 6));
+		assertThat(third, contains(7, 8, 9, 10));
+
+		expecting(IndexOutOfBoundsException.class, () -> chained.set(10, 19));
 		assertThat(chained, contains(1, 2, 17, 4, 18, 6, 7, 8, 9, 10));
 		assertThat(first, contains(1, 2, 17));
 		assertThat(second, contains(4, 18, 6));
@@ -390,6 +405,11 @@ public class ChainedListTest {
 		assertThat(third, contains(7, 8, 9, 10));
 
 		chained.add(6, 19);
+		assertThat(first, contains(1, 2, 17, 3, 18));
+		assertThat(second, contains(4, 19, 5, 6));
+		assertThat(third, contains(7, 8, 9, 10));
+
+		expecting(IndexOutOfBoundsException.class, () -> chained.add(14, 21));
 		assertThat(first, contains(1, 2, 17, 3, 18));
 		assertThat(second, contains(4, 19, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10));
@@ -425,12 +445,14 @@ public class ChainedListTest {
 		assertThat(totallyEmptyIterator.hasPrevious(), is(false));
 		assertThat(totallyEmptyIterator.nextIndex(), is(0));
 		assertThat(totallyEmptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, totallyEmptyIterator::next);
 
 		ListIterator<Integer> emptyIterator = chainedEmpty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
 
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
@@ -518,6 +540,7 @@ public class ChainedListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(10));
+			expecting(NoSuchElementException.class, listIterator::next);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
@@ -526,6 +549,7 @@ public class ChainedListTest {
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previous);
 		});
 	}
 

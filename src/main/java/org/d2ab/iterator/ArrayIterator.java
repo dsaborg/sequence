@@ -16,7 +16,6 @@
 
 package org.d2ab.iterator;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -30,30 +29,6 @@ public class ArrayIterator<T> implements Iterator<T> {
 	@SafeVarargs
 	public ArrayIterator(T... items) {
 		this.items = items;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = Arrays.hashCode(items);
-		result = 31 * result + index;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-
-		ArrayIterator<?> that = (ArrayIterator<?>) o;
-
-		return index == that.index && Arrays.equals(items, that.items);
-	}
-
-	@Override
-	public String toString() {
-		return "ArrayIterator(" + Arrays.toString(items) + '@' + index + ')';
 	}
 
 	@Override

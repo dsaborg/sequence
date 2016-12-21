@@ -31,6 +31,7 @@ import java.util.function.Predicate;
  * methods with corresponding {@code int}-valued methods.
  */
 public interface IntCollection extends Collection<Integer>, IntIterable {
+	// TODO: Extract out relevant parts to IterableIntCollection
 
 	@Override
 	default boolean isEmpty() {

@@ -46,7 +46,7 @@ public class CollectionSequence<T> implements Sequence<T> {
 	 * backing collections is reflected in the returned {@link CollectionSequence}.
 	 */
 	static <T> Sequence<T> concat(Collection<Collection<T>> collections) {
-		return from(ChainedCollection.from(collections));
+		return from(ChainedCollection.concat(collections));
 	}
 
 	private CollectionSequence(Collection<T> collection) {
@@ -138,7 +138,7 @@ public class CollectionSequence<T> implements Sequence<T> {
 	@Override
 	public Sequence<T> append(Iterable<T> iterable) {
 		if (iterable instanceof Collection)
-			return from(ChainedCollection.from(collection, (Collection<T>) iterable));
+			return from(ChainedCollection.concat(collection, (Collection<T>) iterable));
 
 		return Sequence.concat(this, iterable);
 	}

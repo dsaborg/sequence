@@ -28,6 +28,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code double} values.
  */
 public interface DoubleList extends List<Double>, DoubleCollection {
+	// TODO: Extract out relevant parts to IterableDoubleList
+
 	/**
 	 * Returns an immutable {@code DoubleList} of the given elements. The returned {@code DoubleList}'s
 	 * {@link DoubleListIterator} supports forward iteration only.
@@ -175,10 +177,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
-		boolean modified = false;
-		for (double x : c)
-			modified |= addDoubleExactly(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -241,7 +240,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	default double getDouble(int index) {
-		return listIterator(index).nextDouble();
+		DoubleListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextDouble();
 	}
 
 	@Override

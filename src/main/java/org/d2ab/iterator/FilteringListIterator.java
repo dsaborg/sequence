@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection;
-
-import org.d2ab.iterator.DelegatingTransformingIterator;
+package org.d2ab.iterator;
 
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-import static org.d2ab.collection.FilteringListIterator.State.*;
+import static org.d2ab.iterator.FilteringListIterator.State.*;
 
 /**
  * A {@link ListIterator} that provides a filtered view of another {@link ListIterator}. All operations are supported

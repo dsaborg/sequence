@@ -75,7 +75,10 @@ public interface CharListIterator extends ListIterator<Character>, CharIterator 
 	}
 
 	static CharListIterator forwardOnly(CharIterator iterator, int index) {
-		iterator.skip(index);
+		int skipped = iterator.skip(index);
+		if (skipped != index)
+			throw new IndexOutOfBoundsException("index: " + index + " size: " + skipped);
+
 		return new CharListIterator() {
 			int cursor = index;
 

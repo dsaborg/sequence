@@ -31,12 +31,9 @@ import java.util.RandomAccess;
 /**
  * Utility methods for {@link Collection} instances.
  */
-public class Collectionz {
-	private Collectionz() {
-	}
-
+public interface Collectionz {
 	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Collection<?> collection, T[] a) {
+	static <T> T[] toArray(Collection<?> collection, T[] a) {
 		int size = collection.size();
 		if (a.length < size)
 			a = Arrays.copyOf(a, size);
@@ -51,7 +48,7 @@ public class Collectionz {
 		return a;
 	}
 
-	public static boolean containsAll(IntCollection xs, Collection<?> c) {
+	static boolean containsAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.containsAllInts((IntIterable) c);
 
@@ -62,7 +59,7 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean addAll(IntCollection xs, Collection<? extends Integer> c) {
+	static boolean addAll(IntCollection xs, Collection<? extends Integer> c) {
 		if (c instanceof IntCollection)
 			return xs.addAllInts((IntCollection) c);
 
@@ -73,21 +70,21 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean retainAll(IntCollection xs, Collection<?> c) {
+	static boolean retainAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.retainAllInts((IntIterable) c);
 
 		return xs.removeIntsIf(x -> !c.contains(x));
 	}
 
-	public static boolean removeAll(IntCollection xs, Collection<?> c) {
+	static boolean removeAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.removeAllInts((IntIterable) c);
 
 		return xs.removeIntsIf(c::contains);
 	}
 
-	public static boolean containsAll(LongCollection xs, Collection<?> c) {
+	static boolean containsAll(LongCollection xs, Collection<?> c) {
 		if (c instanceof LongCollection)
 			return xs.containsAllLongs((LongCollection) c);
 
@@ -98,7 +95,7 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean addAll(LongCollection xs, Collection<? extends Long> c) {
+	static boolean addAll(LongCollection xs, Collection<? extends Long> c) {
 		if (c instanceof LongCollection)
 			return xs.addAllLongs((LongCollection) c);
 
@@ -109,21 +106,21 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean retainAll(LongCollection xs, Collection<?> c) {
+	static boolean retainAll(LongCollection xs, Collection<?> c) {
 		if (c instanceof LongCollection)
 			return xs.retainAllLongs((LongCollection) c);
 
 		return xs.removeLongsIf(x -> !c.contains(x));
 	}
 
-	public static boolean removeAll(LongCollection xs, Collection<?> c) {
+	static boolean removeAll(LongCollection xs, Collection<?> c) {
 		if (c instanceof LongCollection)
 			return xs.removeAllLongs((LongCollection) c);
 
 		return xs.removeLongsIf(c::contains);
 	}
 
-	public static boolean containsAll(CharCollection xs, Collection<?> c) {
+	static boolean containsAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.containsAllChars((CharIterable) c);
 
@@ -134,7 +131,7 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean addAll(CharCollection xs, Collection<? extends Character> c) {
+	static boolean addAll(CharCollection xs, Collection<? extends Character> c) {
 		if (c instanceof CharCollection)
 			return xs.addAllChars((CharCollection) c);
 
@@ -145,21 +142,21 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean retainAll(CharCollection xs, Collection<?> c) {
+	static boolean retainAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.retainAllChars((CharIterable) c);
 
 		return xs.removeCharsIf(x -> !c.contains(x));
 	}
 
-	public static boolean removeAll(CharCollection xs, Collection<?> c) {
+	static boolean removeAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.removeAllChars((CharIterable) c);
 
 		return xs.removeCharsIf(c::contains);
 	}
 
-	public static boolean containsAll(DoubleCollection xs, Collection<?> c) {
+	static boolean containsAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
 			return xs.containsAllDoublesExactly((DoubleCollection) c);
 
@@ -170,7 +167,7 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean addAll(DoubleCollection xs, Collection<? extends Double> c) {
+	static boolean addAll(DoubleCollection xs, Collection<? extends Double> c) {
 		if (c instanceof DoubleCollection)
 			return xs.addAllDoubles((DoubleCollection) c);
 
@@ -181,14 +178,14 @@ public class Collectionz {
 		return true;
 	}
 
-	public static boolean retainAll(DoubleCollection xs, Collection<?> c) {
+	static boolean retainAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
 			return xs.retainAllDoublesExactly((DoubleCollection) c);
 
 		return xs.removeDoublesIf(x -> !c.contains(x));
 	}
 
-	public static boolean removeAll(DoubleCollection xs, Collection<?> c) {
+	static boolean removeAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
 			return xs.removeAllDoublesExactly((DoubleCollection) c);
 
@@ -200,7 +197,7 @@ public class Collectionz {
 	 * Collection}. If a {@link List} is given it is returned unchanged. The list does not implement {@link
 	 * RandomAccess}, and is best accessed in sequence.
 	 */
-	public static <T> List<T> asList(Collection<T> collection) {
+	static <T> List<T> asList(Collection<T> collection) {
 		if (collection instanceof List)
 			return (List<T>) collection;
 

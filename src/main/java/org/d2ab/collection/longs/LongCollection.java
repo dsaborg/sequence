@@ -29,6 +29,8 @@ import java.util.function.Predicate;
  * methods with corresponding {@code long}-valued methods.
  */
 public interface LongCollection extends Collection<Long>, LongIterable {
+	// TODO: Extract out relevant parts to IterableLongCollection
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;

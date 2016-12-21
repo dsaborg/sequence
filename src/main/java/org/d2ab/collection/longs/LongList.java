@@ -28,6 +28,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code long} values.
  */
 public interface LongList extends List<Long>, LongCollection {
+	// TODO: Extract out relevant parts to IterableLongList
+
 	/**
 	 * Returns an immutable {@code LongList} of the given elements. The returned {@code LongList}'s
 	 * {@link LongListIterator} supports forward iteration only.
@@ -175,10 +177,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Long> c) {
-		boolean modified = false;
-		for (long x : c)
-			modified |= addLong(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -236,7 +235,11 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	default long getLong(int index) {
-		return listIterator(index).nextLong();
+		LongListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextLong();
 	}
 
 	@Override

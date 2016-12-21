@@ -30,6 +30,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code int} values.
  */
 public interface IntList extends List<Integer>, IntCollection {
+	// TODO: Extract out relevant parts to IterableIntList
+
 	/**
 	 * Returns an immutable {@code IntList} of the given elements. The returned {@code IntList}'s
 	 * {@link IntListIterator} supports forward iteration only.
@@ -177,10 +179,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
-		boolean modified = false;
-		for (int x : c)
-			modified |= addInt(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -238,7 +237,11 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	default int getInt(int index) {
-		return listIterator(index).nextInt();
+		IntListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextInt();
 	}
 
 	@Override

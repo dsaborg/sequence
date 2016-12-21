@@ -20,6 +20,7 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.test.StrictDoubleIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -106,6 +107,8 @@ public class BaseDoubleListTest {
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> empty.iterator().nextDouble());
+
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
@@ -247,12 +250,16 @@ public class BaseDoubleListTest {
 
 	@Test
 	public void getDouble() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(0));
+
 		assertThat(list.getDouble(0), is(1.0));
 		assertThat(list.getDouble(2), is(3.0));
 		assertThat(list.getDouble(4), is(5.0));
 		assertThat(list.getDouble(5), is(1.0));
 		assertThat(list.getDouble(7), is(3.0));
 		assertThat(list.getDouble(9), is(5.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(11));
 	}
 
 	@Test
@@ -274,6 +281,7 @@ public class BaseDoubleListTest {
 		assertThat(list.indexOfDoubleExactly(1), is(0));
 		assertThat(list.indexOfDoubleExactly(3), is(2));
 		assertThat(list.indexOfDoubleExactly(5), is(4));
+		assertThat(list.indexOfDoubleExactly(17), is(-1));
 	}
 
 	@Test
@@ -283,6 +291,7 @@ public class BaseDoubleListTest {
 		assertThat(list.lastIndexOfDoubleExactly(1), is(5));
 		assertThat(list.lastIndexOfDoubleExactly(3), is(7));
 		assertThat(list.lastIndexOfDoubleExactly(5), is(9));
+		assertThat(list.lastIndexOfDoubleExactly(17), is(-1));
 	}
 
 	@Test
@@ -291,6 +300,8 @@ public class BaseDoubleListTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
 		assertThat(emptyIterator.hasNext(), is(false));
@@ -298,6 +309,7 @@ public class BaseDoubleListTest {
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
 		assertThat(empty, is(emptyIterable()));
+		expecting(IndexOutOfBoundsException.class, () -> empty.listIterator(1));
 	}
 
 	@Test
@@ -331,10 +343,9 @@ public class BaseDoubleListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		DoubleListIterator listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger(0);
 		twice(() -> {
+			DoubleListIterator listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger(0);
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.nextDouble(), is((double) (i.get() % 5 + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -342,11 +353,12 @@ public class BaseDoubleListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(10));
+			expecting(NoSuchElementException.class, listIterator::nextDouble);
 		});
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
+	public void iteratorRemoveAll() {
 		DoubleIterator iterator = list.iterator();
 
 		int i = 0;
@@ -356,12 +368,13 @@ public class BaseDoubleListTest {
 			i++;
 		}
 		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, iterator::nextDouble);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void listIteratorRemove() {
+	public void listIteratorRemoveAll() {
 		DoubleListIterator listIterator = list.listIterator();
 
 		int i = 0;
@@ -375,6 +388,7 @@ public class BaseDoubleListTest {
 			i++;
 		}
 		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, listIterator::nextDouble);
 
 		assertThat(list, is(emptyIterable()));
 	}

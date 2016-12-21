@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection;
+package org.d2ab.iterator;
 
 import java.util.Collections;
 import java.util.List;

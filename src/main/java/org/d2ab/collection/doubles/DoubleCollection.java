@@ -29,6 +29,8 @@ import java.util.function.Predicate;
  * methods with corresponding {@code double}-valued methods.
  */
 public interface DoubleCollection extends Collection<Double>, DoubleIterable {
+	// TODO: Extract out relevant parts to IterableDoubleCollection
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;

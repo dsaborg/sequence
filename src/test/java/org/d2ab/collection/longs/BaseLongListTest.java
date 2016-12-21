@@ -20,6 +20,7 @@ import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.test.StrictLongIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -99,14 +100,18 @@ public class BaseLongListTest {
 	@Test
 	public void containsLong() {
 		assertThat(empty.containsLong(2), is(false));
+
 		for (long i = 1; i < 5; i++)
 			assertThat(list.containsLong(i), is(true));
+
 		assertThat(list.containsLong(17), is(false));
 	}
 
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> empty.iterator().nextLong());
+
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
@@ -254,6 +259,8 @@ public class BaseLongListTest {
 		assertThat(list.getLong(5), is(1L));
 		assertThat(list.getLong(7), is(3L));
 		assertThat(list.getLong(9), is(5L));
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(11));
 	}
 
 	@Test
@@ -275,6 +282,7 @@ public class BaseLongListTest {
 		assertThat(list.indexOfLong(1), is(0));
 		assertThat(list.indexOfLong(3), is(2));
 		assertThat(list.indexOfLong(5), is(4));
+		assertThat(list.indexOfLong(17), is(-1));
 	}
 
 	@Test
@@ -284,6 +292,7 @@ public class BaseLongListTest {
 		assertThat(list.lastIndexOfLong(1), is(5));
 		assertThat(list.lastIndexOfLong(3), is(7));
 		assertThat(list.lastIndexOfLong(5), is(9));
+		assertThat(list.lastIndexOfLong(17), is(-1));
 	}
 
 	@Test
@@ -292,6 +301,8 @@ public class BaseLongListTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
 		assertThat(emptyIterator.hasNext(), is(false));
@@ -299,6 +310,7 @@ public class BaseLongListTest {
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
 		assertThat(empty, is(emptyIterable()));
+		expecting(IndexOutOfBoundsException.class, () -> empty.listIterator(1));
 	}
 
 	@Test
@@ -343,11 +355,12 @@ public class BaseLongListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(10));
+			expecting(NoSuchElementException.class, listIterator::nextLong);
 		});
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
+	public void iteratorRemoveAll() {
 		LongIterator iterator = list.iterator();
 
 		int i = 0;
@@ -362,7 +375,7 @@ public class BaseLongListTest {
 	}
 
 	@Test
-	public void listIteratorRemove() {
+	public void listIteratorRemoveAll() {
 		LongListIterator listIterator = list.listIterator();
 
 		int i = 0;

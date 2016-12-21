@@ -16,11 +16,10 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.ChainedListIterator;
 import org.d2ab.iterator.ChainingIterator;
 
 import java.util.*;
-
-import static java.util.Collections.singletonList;
 
 /**
  * A {@link List} of multiple {@link List}s strung together in a chain.
@@ -29,26 +28,11 @@ public class ChainedList<T> extends AbstractList<T> {
 	private final List<List<T>> lists;
 
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> empty() {
-		return from();
+	public static <T> List<T> concat(List<T>... lists) {
+		return concat(Arrays.asList(lists));
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> of(T item) {
-		return from(singletonList(item));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> of(T... items) {
-		return from(Arrays.asList(items));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> from(List<T>... lists) {
-		return from(Arrays.asList(lists));
-	}
-
-	public static <T> List<T> from(List<List<T>> lists) {
+	public static <T> List<T> concat(List<List<T>> lists) {
 		return new ChainedList<>(lists);
 	}
 

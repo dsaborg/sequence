@@ -20,6 +20,7 @@ import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.test.StrictIntIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -98,14 +99,18 @@ public class BaseIntListTest {
 	@Test
 	public void containsInt() {
 		assertThat(empty.containsInt(2), is(false));
+
 		for (int i = 1; i < 5; i++)
 			assertThat(list.containsInt(i), is(true));
+
 		assertThat(list.containsInt(17), is(false));
 	}
 
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> empty.iterator().nextInt());
+
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
@@ -246,13 +251,17 @@ public class BaseIntListTest {
 	}
 
 	@Test
-	public void get() {
-		assertThat(list.get(0), is(1));
-		assertThat(list.get(2), is(3));
-		assertThat(list.get(4), is(5));
-		assertThat(list.get(5), is(1));
-		assertThat(list.get(7), is(3));
-		assertThat(list.get(9), is(5));
+	public void getInt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(0));
+
+		assertThat(list.getInt(0), is(1));
+		assertThat(list.getInt(2), is(3));
+		assertThat(list.getInt(4), is(5));
+		assertThat(list.getInt(5), is(1));
+		assertThat(list.getInt(7), is(3));
+		assertThat(list.getInt(9), is(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(11));
 	}
 
 	@Test
@@ -274,6 +283,7 @@ public class BaseIntListTest {
 		assertThat(list.indexOfInt(1), is(0));
 		assertThat(list.indexOfInt(3), is(2));
 		assertThat(list.indexOfInt(5), is(4));
+		assertThat(list.indexOfInt(17), is(-1));
 	}
 
 	@Test
@@ -283,6 +293,7 @@ public class BaseIntListTest {
 		assertThat(list.lastIndexOfInt(1), is(5));
 		assertThat(list.lastIndexOfInt(3), is(7));
 		assertThat(list.lastIndexOfInt(5), is(9));
+		assertThat(list.lastIndexOfInt(17), is(-1));
 	}
 
 	@Test
@@ -291,6 +302,8 @@ public class BaseIntListTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
 		assertThat(emptyIterator.hasNext(), is(false));
@@ -298,6 +311,7 @@ public class BaseIntListTest {
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
 		assertThat(empty, is(emptyIterable()));
+		expecting(IndexOutOfBoundsException.class, () -> empty.listIterator(1));
 	}
 
 	@Test
@@ -331,10 +345,9 @@ public class BaseIntListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		IntListIterator listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger(0);
 		twice(() -> {
+			IntListIterator listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger(0);
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.nextInt(), is(i.get() % 5 + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -342,11 +355,12 @@ public class BaseIntListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(10));
+			expecting(NoSuchElementException.class, listIterator::nextInt);
 		});
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
+	public void iteratorRemoveAll() {
 		IntIterator iterator = list.iterator();
 
 		int i = 0;
@@ -356,12 +370,13 @@ public class BaseIntListTest {
 			i++;
 		}
 		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, iterator::nextInt);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void listIteratorRemove() {
+	public void listIteratorRemoveAll() {
 		IntListIterator listIterator = list.listIterator();
 
 		int i = 0;
@@ -375,6 +390,7 @@ public class BaseIntListTest {
 			i++;
 		}
 		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, listIterator::nextInt);
 
 		assertThat(list, is(emptyIterable()));
 	}

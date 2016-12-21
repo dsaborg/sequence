@@ -71,7 +71,7 @@ public class ListSequence<T> implements Sequence<T> {
 	 */
 	@SafeVarargs
 	static <T> Sequence<T> concat(List<T>... lists) {
-		return from(ChainedList.from(lists));
+		return from(ChainedList.concat(lists));
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class ListSequence<T> implements Sequence<T> {
 	 * lists is reflected in the returned {@link ListSequence}.
 	 */
 	static <T> Sequence<T> concat(List<List<T>> lists) {
-		return from(ChainedList.from(lists));
+		return from(ChainedList.concat(lists));
 	}
 
 	/**
@@ -278,7 +278,7 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return from(new FilteredList<>(list, predicate));
+		return from(FilteredList.from(list, predicate));
 	}
 
 	@Override
@@ -296,7 +296,7 @@ public class ListSequence<T> implements Sequence<T> {
 	@Override
 	public Sequence<T> append(Iterable<T> iterable) {
 		if (iterable instanceof List)
-			return from(ChainedList.from(list, (List<T>) iterable));
+			return from(ChainedList.concat(list, (List<T>) iterable));
 
 		return Sequence.concat(this, iterable);
 	}

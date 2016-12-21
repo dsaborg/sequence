@@ -22,11 +22,8 @@ import java.util.function.Function;
 /**
  * A {@link List} that presents a mapped view of another {@link List}.
  */
-public abstract class BiMappedList {
-	private BiMappedList() {
-	}
-
-	public static <T, U> List<U> from(List<T> list, Function<? super T, ? extends U> mapper,
+public interface BiMappedList {
+	static <T, U> List<U> from(List<T> list, Function<? super T, ? extends U> mapper,
 	                                  Function<? super U, ? extends T> backMapper) {
 		if (list instanceof RandomAccess)
 			return new RandomAccessList<>(list, mapper, backMapper);
@@ -34,7 +31,7 @@ public abstract class BiMappedList {
 			return new SequentialList<>(list, mapper, backMapper);
 	}
 
-	private static class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess {
+	class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess {
 		private final List<T> list;
 		private final Function<? super T, ? extends U> mapper;
 		private final Function<? super U, ? extends T> backMapper;
@@ -72,7 +69,7 @@ public abstract class BiMappedList {
 		}
 	}
 
-	private static class SequentialList<T, U> extends AbstractSequentialList<U> {
+	class SequentialList<T, U> extends AbstractSequentialList<U> {
 		private final List<T> list;
 		private final Function<? super T, ? extends U> mapper;
 		private final Function<? super U, ? extends T> backMapper;

@@ -20,6 +20,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.test.StrictCharIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -106,6 +107,8 @@ public class BaseCharListTest {
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> empty.iterator().nextChar());
+
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
@@ -247,12 +250,16 @@ public class BaseCharListTest {
 
 	@Test
 	public void getChar() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.getChar(0));
+
 		assertThat(list.getChar(0), is('a'));
 		assertThat(list.getChar(2), is('c'));
 		assertThat(list.getChar(4), is('e'));
 		assertThat(list.getChar(5), is('a'));
 		assertThat(list.getChar(7), is('c'));
 		assertThat(list.getChar(9), is('e'));
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(11));
 	}
 
 	@Test
@@ -274,6 +281,7 @@ public class BaseCharListTest {
 		assertThat(list.indexOfChar('a'), is(0));
 		assertThat(list.indexOfChar('c'), is(2));
 		assertThat(list.indexOfChar('e'), is(4));
+		assertThat(list.indexOfChar('q'), is(-1));
 	}
 
 	@Test
@@ -283,6 +291,7 @@ public class BaseCharListTest {
 		assertThat(list.lastIndexOfChar('a'), is(5));
 		assertThat(list.lastIndexOfChar('c'), is(7));
 		assertThat(list.lastIndexOfChar('e'), is(9));
+		assertThat(list.lastIndexOfChar('q'), is(-1));
 	}
 
 	@Test
@@ -291,6 +300,8 @@ public class BaseCharListTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add('q'));
 		assertThat(emptyIterator.hasNext(), is(false));
@@ -298,6 +309,7 @@ public class BaseCharListTest {
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
 		assertThat(empty, is(emptyIterable()));
+		expecting(IndexOutOfBoundsException.class, () -> empty.listIterator(1));
 	}
 
 	@Test
@@ -331,10 +343,9 @@ public class BaseCharListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		CharListIterator listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger(0);
 		twice(() -> {
+			CharListIterator listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger(0);
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.nextChar(), is((char) (i.get() % 5 + 'a')));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -342,11 +353,12 @@ public class BaseCharListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(10));
+			expecting(NoSuchElementException.class, listIterator::nextChar);
 		});
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
+	public void iteratorRemoveAll() {
 		CharIterator iterator = list.iterator();
 
 		int i = 0;
@@ -356,12 +368,13 @@ public class BaseCharListTest {
 			i++;
 		}
 		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, iterator::nextChar);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void listIteratorRemove() {
+	public void listIteratorRemoveAll() {
 		CharListIterator listIterator = list.listIterator();
 
 		int i = 0;
@@ -375,6 +388,7 @@ public class BaseCharListTest {
 			i++;
 		}
 		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, listIterator::nextChar);
 
 		assertThat(list, is(emptyIterable()));
 	}
