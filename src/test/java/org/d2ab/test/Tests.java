@@ -31,7 +31,7 @@ public class Tests {
 			action.run();
 			fail("Expected " + exceptionClass.getName());
 		} catch (Throwable t) {
-			if (!t.getClass().equals(exceptionClass))
+			if (!exceptionClass.isInstance(t))
 				throw t;
 		}
 	}

@@ -273,7 +273,7 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public Sequence<T> reverse() {
-		return from(new ReverseList<>(list));
+		return from(ReverseList.from(list));
 	}
 
 	@Override

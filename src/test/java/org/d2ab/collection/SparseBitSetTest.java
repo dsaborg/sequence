@@ -62,6 +62,10 @@ public class SparseBitSetTest {
 
 		assertThat(set.set(17, false), is(true));
 		assertThat(set.get(17), is(false));
+
+		expecting(IllegalArgumentException.class, () -> set.get(-1));
+		expecting(IllegalArgumentException.class, () -> set.clear(-1));
+		expecting(IllegalArgumentException.class, () -> set.set(-1, true));
 	}
 
 	@Test
@@ -167,6 +171,7 @@ public class SparseBitSetTest {
 		assertThat(iterator.hasNext(), is(true));
 		assertThat(iterator.next(), is(Long.MAX_VALUE));
 		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::next);
 	}
 
 	@Test
@@ -228,6 +233,7 @@ public class SparseBitSetTest {
 		assertThat(iterator.hasNext(), is(true));
 		assertThat(iterator.next(), is(0L));
 		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::next);
 	}
 
 	@Test

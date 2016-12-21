@@ -28,7 +28,7 @@ public class ReverseList<T> extends AbstractList<T> {
 		return new ReverseList<>(original);
 	}
 
-	public ReverseList(List<T> original) {
+	private ReverseList(List<T> original) {
 		this.original = original;
 	}
 

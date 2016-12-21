@@ -23,16 +23,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ReverseListTest {
 	private final List<Integer> originalEmpty = new ArrayList<>();
-	private final List<Integer> reverseEmpty = new ReverseList<>(originalEmpty);
+	private final List<Integer> reverseEmpty = ReverseList.from(originalEmpty);
 
 	private final List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4, 5));
-	private final List<Integer> reverse = new ReverseList<>(original);
+	private final List<Integer> reverse = ReverseList.from(original);
 
 	@Test
 	public void size() {
@@ -114,6 +116,24 @@ public class ReverseListTest {
 	}
 
 	@Test
+	public void removeAt() {
+		expecting(IndexOutOfBoundsException.class, () -> reverseEmpty.remove(0));
+		expecting(IndexOutOfBoundsException.class, () -> reverseEmpty.remove(17));
+
+		assertThat(reverse.remove(2), is(3));
+		assertThat(reverse, contains(5, 4, 2, 1));
+		assertThat(original, contains(1, 2, 4, 5));
+
+		expecting(IndexOutOfBoundsException.class, () -> reverse.remove(5));
+		assertThat(reverse, contains(5, 4, 2, 1));
+		assertThat(original, contains(1, 2, 4, 5));
+
+		expecting(IndexOutOfBoundsException.class, () -> reverse.remove(17));
+		assertThat(reverse, contains(5, 4, 2, 1));
+		assertThat(original, contains(1, 2, 4, 5));
+	}
+
+	@Test
 	public void containsAll() {
 		assertThat(reverseEmpty.containsAll(asList(2, 3)), is(false));
 
@@ -123,7 +143,7 @@ public class ReverseListTest {
 
 	@Test
 	public void addAll() {
-		assertThat(reverseEmpty.addAll(asList()), is(false));
+		assertThat(reverseEmpty.addAll(emptyList()), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 
 		assertThat(reverseEmpty.addAll(asList(1, 2)), is(true));
@@ -137,7 +157,7 @@ public class ReverseListTest {
 
 	@Test
 	public void addAllAtIndex() {
-		assertThat(reverseEmpty.addAll(0, asList()), is(false));
+		assertThat(reverseEmpty.addAll(0, emptyList()), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 
 		assertThat(reverseEmpty.addAll(0, asList(1, 2)), is(true));
@@ -205,7 +225,7 @@ public class ReverseListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(reverseEmpty.equals(asList()), is(true));
+		assertThat(reverseEmpty.equals(emptyList()), is(true));
 		assertThat(reverseEmpty.equals(asList(1, 2)), is(false));
 
 		assertThat(reverse.equals(asList(5, 4, 3, 2, 1)), is(true));
