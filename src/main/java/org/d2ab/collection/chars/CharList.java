@@ -157,13 +157,9 @@ public interface CharList extends List<Character>, CharCollection {
 		throw new UnsupportedOperationException();
 	}
 
-	default void sortChars(CharComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	default void sort(Comparator<? super Character> c) {
-		sortChars(c::compare);
+		throw new UnsupportedOperationException();
 	}
 
 	default int binarySearch(char x) {

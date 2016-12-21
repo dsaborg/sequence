@@ -32,7 +32,7 @@ import java.util.stream.StreamSupport;
 import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.contains;
 import static org.d2ab.collection.Arrayz.containsExactly;
-import static org.d2ab.collection.doubles.DoubleComparator.eq;
+import static org.d2ab.util.Doubles.eq;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {

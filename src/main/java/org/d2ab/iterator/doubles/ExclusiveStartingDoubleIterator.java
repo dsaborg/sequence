@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.DoubleComparator;
+import org.d2ab.util.Doubles;
 
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
@@ -27,7 +27,7 @@ public class ExclusiveStartingDoubleIterator extends DelegatingUnaryDoubleIterat
 	private boolean started;
 
 	public ExclusiveStartingDoubleIterator(DoubleIterator iterator, double element, double accuracy) {
-		this(iterator, d -> DoubleComparator.eq(d, element, accuracy));
+		this(iterator, d -> Doubles.eq(d, element, accuracy));
 	}
 
 	public ExclusiveStartingDoubleIterator(DoubleIterator iterator, DoublePredicate predicate) {

@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.doubles.DoubleComparator;
+import org.d2ab.util.Doubles;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -190,7 +190,7 @@ public interface Arrayz {
 	 */
 	static boolean contains(double[] items, double target, double precision) {
 		for (double item : items)
-			if (DoubleComparator.eq(item, target, precision))
+			if (Doubles.eq(item, target, precision))
 				return true;
 		return false;
 	}

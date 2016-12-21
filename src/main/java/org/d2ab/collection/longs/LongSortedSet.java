@@ -20,6 +20,7 @@ import org.d2ab.iterator.longs.ExclusiveTerminalLongIterator;
 import org.d2ab.iterator.longs.InclusiveStartingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,7 +48,7 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 	}
 
 	@Override
-	default LongComparator comparator() {
+	default Comparator<Long> comparator() {
 		return null;
 	}
 

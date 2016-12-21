@@ -20,6 +20,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ExclusiveTerminalCharIterator;
 import org.d2ab.iterator.chars.InclusiveStartingCharIterator;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,7 +48,7 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 	}
 
 	@Override
-	default CharComparator comparator() {
+	default Comparator<Character> comparator() {
 		return null;
 	}
 

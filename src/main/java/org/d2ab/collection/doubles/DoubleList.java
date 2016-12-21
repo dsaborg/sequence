@@ -18,6 +18,7 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.doubles.*;
+import org.d2ab.util.Doubles;
 
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
@@ -157,17 +158,13 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		throw new UnsupportedOperationException();
 	}
 
-	default void sortDoubles(DoubleComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	default int binarySearchExactly(double x) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	default void sort(Comparator<? super Double> c) {
-		sortDoubles(c::compare);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -301,7 +298,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.eq(iterator.nextDouble(), x, precision))
+			if (Doubles.eq(iterator.nextDouble(), x, precision))
 				lastIndex = index;
 
 		return lastIndex;
@@ -324,7 +321,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	default int indexOfDouble(double x, double precision) {
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.eq(iterator.nextDouble(), x, precision))
+			if (Doubles.eq(iterator.nextDouble(), x, precision))
 				return index;
 
 		return -1;

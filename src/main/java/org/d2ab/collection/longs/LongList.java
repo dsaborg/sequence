@@ -157,13 +157,9 @@ public interface LongList extends List<Long>, LongCollection {
 		throw new UnsupportedOperationException();
 	}
 
-	default void sortLongs(LongComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	default void sort(Comparator<? super Long> c) {
-		sortLongs(c::compare);
+		throw new UnsupportedOperationException();
 	}
 
 	default int binarySearch(long x) {

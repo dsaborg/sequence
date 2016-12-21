@@ -20,6 +20,7 @@ import org.d2ab.iterator.ints.ExclusiveTerminalIntIterator;
 import org.d2ab.iterator.ints.InclusiveStartingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,7 +48,7 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 	}
 
 	@Override
-	default IntComparator comparator() {
+	default Comparator<Integer> comparator() {
 		return null;
 	}
 

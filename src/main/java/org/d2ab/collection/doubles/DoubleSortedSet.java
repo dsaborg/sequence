@@ -19,7 +19,9 @@ package org.d2ab.collection.doubles;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.doubles.ExclusiveTerminalDoubleIterator;
 import org.d2ab.iterator.doubles.InclusiveStartingDoubleIterator;
+import org.d2ab.util.Doubles;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,7 +49,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 	}
 
 	@Override
-	default DoubleComparator comparator() {
+	default Comparator<Double> comparator() {
 		return null;
 	}
 
@@ -79,7 +81,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 			@Override
 			protected boolean included(double x) {
-				return DoubleComparator.ge(x, from, precision) && DoubleComparator.lt(x, to, precision);
+				return Doubles.ge(x, from, precision) && Doubles.lt(x, to, precision);
 			}
 		};
 	}
@@ -122,7 +124,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 			@Override
 			protected boolean included(double x) {
-				return DoubleComparator.lt(x, to, precision);
+				return Doubles.lt(x, to, precision);
 			}
 		};
 	}
@@ -165,7 +167,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 			@Override
 			protected boolean included(double x) {
-				return DoubleComparator.ge(x, from, precision);
+				return Doubles.ge(x, from, precision);
 			}
 		};
 	}

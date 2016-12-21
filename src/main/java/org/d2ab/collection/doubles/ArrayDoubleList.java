@@ -24,7 +24,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
 import java.util.function.DoubleUnaryOperator;
 
-import static org.d2ab.collection.doubles.DoubleComparator.eq;
+import static org.d2ab.util.Doubles.eq;
 
 /**
  * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or

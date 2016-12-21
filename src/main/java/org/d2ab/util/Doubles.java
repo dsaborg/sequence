@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.chars;
+package org.d2ab.util;
 
-import java.util.Comparator;
-
-/**
- * A primitive specialization of {@link Comparator} for {@code char} values.
- */
-@FunctionalInterface
-public interface CharComparator extends Comparator<Character> {
-	@Override
-	default int compare(Character x1, Character x2) {
-		return compare((char) x1, (char) x2);
+public interface Doubles {
+	static boolean eq(double l, double r, double precision) {
+		return Math.abs(l - r) <= precision;
 	}
 
-	int compare(char x1, char x2);
+	static boolean ge(double l, double r, double precision) {
+		return l - r >= -precision;
+	}
+
+	static boolean lt(double l, double r, double precision) {
+		return l - r < precision;
+	}
 }
