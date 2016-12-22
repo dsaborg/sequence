@@ -38,16 +38,6 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	private int modCount;
 
 	/**
-	 * @return a new mutable {@code ArrayCharList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(char...)} instead.
-	 */
-	@Deprecated
-	public static ArrayCharList of(char... xs) {
-		return create(xs);
-	}
-
-	/**
 	 * Create a new empty mutable {@code ArrayCharList}. When possible, it's preferred to use
 	 * {@link CharList#create()} instead.
 	 *

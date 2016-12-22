@@ -37,16 +37,6 @@ public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	private int modCount;
 
 	/**
-	 * @return a new mutable {@code ArrayDoubleList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(double...)} instead.
-	 */
-	@Deprecated
-	public static ArrayDoubleList of(double... xs) {
-		return create(xs);
-	}
-
-	/**
 	 * Create a new empty mutable {@code ArrayDoubleList}. When possible, it's preferred to use
 	 * {@link DoubleList#create()} instead.
 	 *

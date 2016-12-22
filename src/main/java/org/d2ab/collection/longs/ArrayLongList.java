@@ -35,16 +35,6 @@ public class ArrayLongList extends LongList.Base implements RandomAccess {
 	private int modCount;
 
 	/**
-	 * @return a new mutable {@code ArrayLongList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(long...)} instead.
-	 */
-	@Deprecated
-	public static ArrayLongList of(long... xs) {
-		return create(xs);
-	}
-
-	/**
 	 * Create a new empty mutable {@code ArrayLongList}. When possible, it's preferred to use {@link LongList#create()}
 	 * instead.
 	 *

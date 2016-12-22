@@ -35,16 +35,6 @@ public class ArrayIntList extends IntList.Base implements RandomAccess {
 	private int modCount;
 
 	/**
-	 * @return a new mutable {@code ArrayIntList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(int...)} instead.
-	 */
-	@Deprecated
-	public static ArrayIntList of(int... xs) {
-		return create(xs);
-	}
-
-	/**
 	 * Create a new empty mutable {@code ArrayIntList}. When possible, it's preferred to use {@link IntList#create()}
 	 * instead.
 	 *
