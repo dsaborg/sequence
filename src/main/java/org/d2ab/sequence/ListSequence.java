@@ -24,8 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 
 /**
  * A {@link Sequence} backed by a {@link List}. Implements certain operations on {@link Sequence} in a more performant
@@ -54,7 +53,7 @@ public class ListSequence<T> implements Sequence<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	static <T> Sequence<T> of(T... items) {
-		return from(Arrays.asList(items));
+		return from(unmodifiableList(Arrays.asList(items)));
 	}
 
 	/**

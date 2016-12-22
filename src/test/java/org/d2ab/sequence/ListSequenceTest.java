@@ -25,9 +25,35 @@ public class ListSequenceTest {
 	private final Sequence<String> oddStrings = odds.biMap(Object::toString, Integer::parseInt);
 
 	@Test
+	public void empty() {
+		Sequence<Integer> sequence = ListSequence.empty();
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void emptyImmutable() {
+		List<Integer> list = ListSequence.<Integer>empty().asList();
+		expecting(UnsupportedOperationException.class, () -> list.add(1));
+		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.remove(0));
+	}
+
+	@Test
 	public void ofNone() {
 		Sequence<Integer> sequence = ListSequence.of();
 		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void ofNoneImmutable() {
+		List<Integer> list = ListSequence.<Integer>of().asList();
+		expecting(UnsupportedOperationException.class, () -> list.add(1));
+		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.remove(0));
 	}
 
 	@Test
@@ -37,9 +63,31 @@ public class ListSequenceTest {
 	}
 
 	@Test
+	public void ofOneImmutable() {
+		List<Integer> list = ListSequence.of(1).asList();
+		expecting(UnsupportedOperationException.class, () -> list.add(2));
+		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(2, 3)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.remove(0));
+		expecting(UnsupportedOperationException.class, () -> list.set(0, 17));
+	}
+
+	@Test
 	public void ofMany() {
 		Sequence<Integer> sequence = ListSequence.of(1, 2, 3, 4, 5);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void ofManyImmutable() {
+		List<Integer> list = ListSequence.of(1, 2, 3, 4, 5).asList();
+		expecting(UnsupportedOperationException.class, () -> list.add(6));
+		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(6, 7)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.remove(0));
+		expecting(UnsupportedOperationException.class, () -> list.set(0, 17));
 	}
 
 	@Test
@@ -49,14 +97,8 @@ public class ListSequenceTest {
 	}
 
 	@Test
-	public void empty() {
+	public void fromEmpty() {
 		twice(() -> assertThat(empty, is(emptyIterable())));
-	}
-
-	@Test
-	public void factoryEmpty() {
-		Sequence<Integer> sequence = ListSequence.empty();
-		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
 
 	@Test
