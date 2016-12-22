@@ -76,7 +76,7 @@ public class ArrayIntList extends IntList.Base implements RandomAccess {
 	 *
 	 * @since 2.0
 	 */
-	public ArrayIntList() {
+	private ArrayIntList() {
 		this(10);
 	}
 

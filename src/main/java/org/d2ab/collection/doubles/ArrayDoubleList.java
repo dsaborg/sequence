@@ -78,7 +78,7 @@ public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	 *
 	 * @since 2.0
 	 */
-	public ArrayDoubleList() {
+	private ArrayDoubleList() {
 		this(10);
 	}
 

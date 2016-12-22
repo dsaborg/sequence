@@ -76,7 +76,7 @@ public class ArrayLongList extends LongList.Base implements RandomAccess {
 	 *
 	 * @since 2.0
 	 */
-	public ArrayLongList() {
+	private ArrayLongList() {
 		this(10);
 	}
 

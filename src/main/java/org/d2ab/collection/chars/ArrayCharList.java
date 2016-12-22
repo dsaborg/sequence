@@ -79,7 +79,7 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	 *
 	 * @since 2.0
 	 */
-	public ArrayCharList() {
+	private ArrayCharList() {
 		this(10);
 	}
 
