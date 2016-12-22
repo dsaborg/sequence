@@ -119,6 +119,23 @@ public class SparseBitSetTest {
 	}
 
 	@Test
+	public void sizeOverIntegerMaxInt() {
+		assertThat(new SparseBitSet() {
+			@Override
+			public long bitCount() {
+				return Integer.MAX_VALUE;
+			}
+		}.size(), is(Integer.MAX_VALUE));
+
+		expecting(IllegalStateException.class, () -> new SparseBitSet() {
+			@Override
+			public long bitCount() {
+				return Integer.MAX_VALUE + 1L;
+			}
+		}.size());
+	}
+
+	@Test
 	public void clear() {
 		empty.clear();
 		assertThat(empty.bitCount(), is(0L));
