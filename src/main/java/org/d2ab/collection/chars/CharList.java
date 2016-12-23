@@ -31,6 +31,13 @@ public interface CharList extends List<Character>, CharCollection {
 	// TODO: Extract out relevant parts to IterableCharList
 
 	/**
+	 * @return an empty immutable {@code CharList}.
+	 */
+	static CharList empty() {
+		return of();
+	}
+
+	/**
 	 * Returns an immutable {@code CharList} of the given elements. The returned {@code CharList}'s
 	 * {@link CharListIterator} supports forward iteration only.
 	 */
@@ -153,12 +160,12 @@ public interface CharList extends List<Character>, CharCollection {
 			listIterator.set(operator.applyAsChar(listIterator.nextChar()));
 	}
 
-	default void sortChars() {
+	@Override
+	default void sort(Comparator<? super Character> c) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	default void sort(Comparator<? super Character> c) {
+	default void sortChars() {
 		throw new UnsupportedOperationException();
 	}
 

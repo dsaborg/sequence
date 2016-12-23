@@ -134,6 +134,11 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	}
 
 	@Override
+	public CharList subList(int from, int to) {
+		return new SubList(from, to);
+	}
+
+	@Override
 	public void sortChars() {
 		Arrays.sort(contents, 0, size);
 	}
@@ -141,11 +146,6 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	@Override
 	public int binarySearch(char x) {
 		return Arrays.binarySearch(contents, 0, size, x);
-	}
-
-	@Override
-	public CharList subList(int from, int to) {
-		return new SubList(from, to);
 	}
 
 	@Override
@@ -402,15 +402,11 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 
 		private int expectedModCount = modCount;
 
-		public ListIter(int index) {
+		private ListIter(int index) {
 			this(index, 0, size);
 		}
 
 		private ListIter(int index, int from, int to) {
-			if (index < 0)
-				throw new ArrayIndexOutOfBoundsException(index);
-			if (index > to - from)
-				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
 			this.from = from;
@@ -508,7 +504,7 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 		private int from;
 		private int to;
 
-		public SubList(int from, int to) {
+		private SubList(int from, int to) {
 			if (from < 0)
 				throw new ArrayIndexOutOfBoundsException(from);
 			if (to > size)
@@ -524,7 +520,7 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 
 		@Override
 		public CharListIterator listIterator(int index) {
-			return new ArrayCharList.ListIter(index, from, to) {
+			return new ListIter(index, from, to) {
 				@Override
 				public void add(char x) {
 					super.add(x);
