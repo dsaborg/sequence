@@ -182,10 +182,9 @@ public class ArrayCharListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		CharListIterator listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
+			CharListIterator listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.nextChar(), is((char) (i.get() + 'a')));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -193,6 +192,7 @@ public class ArrayCharListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(5));
+			expecting(NoSuchElementException.class, listIterator::nextChar);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
@@ -201,6 +201,7 @@ public class ArrayCharListTest {
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previousChar);
 		});
 	}
 
@@ -215,6 +216,7 @@ public class ArrayCharListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, iterator::nextChar);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -234,6 +236,7 @@ public class ArrayCharListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, listIterator::nextChar);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -253,6 +256,7 @@ public class ArrayCharListTest {
 			assertThat(listIterator.previousIndex(), is(i - 1));
 		}
 		assertThat(i, is(0));
+		expecting(NoSuchElementException.class, listIterator::previousChar);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -273,7 +277,7 @@ public class ArrayCharListTest {
 		CharList list = CharList.create('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
 
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
-		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 12));
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
 
 		CharList subList = list.subList(2, 8);
 		twice(() -> assertThat(subList, containsChars('c', 'd', 'e', 'f', 'g', 'h')));
