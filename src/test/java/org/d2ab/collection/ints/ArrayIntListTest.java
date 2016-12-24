@@ -17,17 +17,18 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Lists;
+import org.d2ab.collection.doubles.ArrayDoubleList;
+import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -39,6 +40,15 @@ import static org.junit.Assert.assertThat;
 public class ArrayIntListTest {
 	private final ArrayIntList empty = ArrayIntList.create();
 	private final ArrayIntList list = ArrayIntList.create(1, 2, 3, 4, 5);
+
+	@Test
+	public void withCapacity() {
+		IntList list = ArrayIntList.withCapacity(3);
+		twice(() -> assertThat(list, is(emptyIterable())));
+
+		list.addAllInts(1, 2, 3, 4, 5);
+		twice(() -> assertThat(list, containsInts(1, 2, 3, 4, 5)));
+	}
 
 	@Test
 	public void size() {
@@ -88,60 +98,93 @@ public class ArrayIntListTest {
 	public void listIterator() {
 		IntListIterator listIterator = list.listIterator();
 
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(32));
+		expecting(NoSuchElementException.class, listIterator::previousInt);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.nextInt(), is(1));
 
+		listIterator.add(33);
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(34));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextInt(), is(2));
 
+		assertThat(listIterator.previousInt(), is(33));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.set(35);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.remove();
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		assertThat(listIterator.nextInt(), is(1));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
+		assertThat(listIterator.nextInt(), is(2));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.nextInt(), is(3));
 
+		assertThat(listIterator.nextInt(), is(3));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.previousInt(), is(3));
 
+		assertThat(listIterator.previousInt(), is(3));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.previousInt(), is(2));
 
+		assertThat(listIterator.previousInt(), is(2));
 		listIterator.set(17);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextInt(), is(17));
 
+		assertThat(listIterator.nextInt(), is(17));
 		listIterator.add(18);
 		listIterator.add(19);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
+
 		assertThat(listIterator.nextInt(), is(3));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(5));
+		assertThat(listIterator.previousIndex(), is(4));
 
 		assertThat(list, containsInts(1, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void exhaustiveListIterator() {
-		IntListIterator listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
+			IntListIterator listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.nextInt(), is(i.get() + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -149,6 +192,7 @@ public class ArrayIntListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(5));
+			expecting(NoSuchElementException.class, listIterator::nextInt);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
@@ -157,6 +201,7 @@ public class ArrayIntListTest {
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previousInt);
 		});
 	}
 
@@ -171,6 +216,7 @@ public class ArrayIntListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, iterator::nextInt);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -190,6 +236,7 @@ public class ArrayIntListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, listIterator::nextInt);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -209,6 +256,7 @@ public class ArrayIntListTest {
 			assertThat(listIterator.previousIndex(), is(i - 1));
 		}
 		assertThat(i, is(0));
+		expecting(NoSuchElementException.class, listIterator::previousInt);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -227,6 +275,9 @@ public class ArrayIntListTest {
 	@Test
 	public void subList() {
 		IntList list = IntList.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
 
 		IntList subList = list.subList(2, 8);
 		twice(() -> assertThat(subList, containsInts(3, 4, 5, 6, 7, 8)));
@@ -257,6 +308,27 @@ public class ArrayIntListTest {
 		subList.addInt(17);
 		twice(() -> assertThat(subList, containsInts(17)));
 		twice(() -> assertThat(list, containsInts(1, 2, 17, 9, 10)));
+	}
+
+	@Test
+	public void sortInts() {
+		IntList list = ArrayIntList.create(32, 17, 5, 7, 19, 22);
+		list.sortInts();
+		assertThat(list, containsInts(5, 7, 17, 19, 22, 32));
+	}
+
+	@Test
+	public void binarySearch() {
+		IntList list = ArrayIntList.create(1, 3, 5, 6, 7, 8, 32);
+		assertThat(list.binarySearch(1), is(0));
+		assertThat(list.binarySearch(5), is(2));
+		assertThat(list.binarySearch(7), is(4));
+		assertThat(list.binarySearch(32), is(6));
+		assertThat(list.binarySearch(0), is(-1));
+		assertThat(list.binarySearch(2), is(-2));
+		assertThat(list.binarySearch(4), is(-3));
+		assertThat(list.binarySearch(31), is(-7));
+		assertThat(list.binarySearch(33), is(-8));
 	}
 
 	@Test
@@ -389,19 +461,19 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addBoxed() {
-		empty.add(17);
+		assertThat(empty.add(17), is(true));
 		assertThat(empty, containsInts(17));
 
-		list.add(17);
+		assertThat(list.add(17), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
 	public void addInt() {
-		empty.addInt(17);
+		assertThat(empty.addInt(17), is(true));
 		assertThat(empty, containsInts(17));
 
-		list.addInt(17);
+		assertThat(list.addInt(17), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 17));
 	}
 
@@ -431,73 +503,97 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addAllBoxed() {
-		empty.addAll(Arrays.asList(1, 2, 3));
+		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(Arrays.asList(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAll(Arrays.asList(6, 7, 8));
+		assertThat(list.addAll(Arrays.asList(6, 7, 8)), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllIntsArray() {
-		empty.addAllInts(1, 2, 3);
+		assertThat(empty.addAllInts(), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllInts(1, 2, 3), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllInts(6, 7, 8);
+		assertThat(list.addAllInts(6, 7, 8), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllIntsArrayIntList() {
-		empty.addAllInts(ArrayIntList.create(1, 2, 3));
+		assertThat(empty.addAllInts(ArrayIntList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllInts(ArrayIntList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllInts(ArrayIntList.create(6, 7, 8));
+		assertThat(list.addAllInts(ArrayIntList.create(6, 7, 8)), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllIntsIntCollection() {
-		empty.addAllInts(new BitIntSet(1, 2, 3));
+		assertThat(empty.addAllInts(new BitIntSet()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllInts(new BitIntSet(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllInts(new BitIntSet(6, 7, 8));
+		assertThat(list.addAllInts(new BitIntSet(6, 7, 8)), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllAtBoxed() {
-		empty.addAll(0, Arrays.asList(1, 2, 3));
+		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(0, Arrays.asList(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAll(2, Arrays.asList(17, 18, 19));
+		assertThat(list.addAll(2, Arrays.asList(17, 18, 19)), is(true));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllIntsAtAtArray() {
-		empty.addAllIntsAt(0, 1, 2, 3);
+		assertThat(empty.addAllIntsAt(0), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllIntsAt(0, 1, 2, 3), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllIntsAt(2, 17, 18, 19);
+		assertThat(list.addAllIntsAt(2, 17, 18, 19), is(true));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllIntsAtArrayIntList() {
-		empty.addAllIntsAt(0, ArrayIntList.create(1, 2, 3));
+		assertThat(empty.addAllIntsAt(0, ArrayIntList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllIntsAt(0, ArrayIntList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllIntsAt(2, ArrayIntList.create(17, 18, 19));
+		assertThat(list.addAllIntsAt(2, ArrayIntList.create(17, 18, 19)), is(true));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllIntsAtIntCollection() {
-		empty.addAllIntsAt(0, new BitIntSet(1, 2, 3));
+		assertThat(empty.addAllIntsAt(0, new BitIntSet()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllIntsAt(0, new BitIntSet(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		list.addAllIntsAt(2, new BitIntSet(17, 18, 19));
+		assertThat(list.addAllIntsAt(2, new BitIntSet(17, 18, 19)), is(true));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
