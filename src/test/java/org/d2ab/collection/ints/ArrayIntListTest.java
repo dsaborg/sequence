@@ -42,15 +42,6 @@ public class ArrayIntListTest {
 	private final ArrayIntList list = ArrayIntList.create(1, 2, 3, 4, 5);
 
 	@Test
-	public void withCapacity() {
-		IntList list = ArrayIntList.withCapacity(3);
-		twice(() -> assertThat(list, is(emptyIterable())));
-
-		list.addAllInts(1, 2, 3, 4, 5);
-		twice(() -> assertThat(list, containsInts(1, 2, 3, 4, 5)));
-	}
-
-	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
 		assertThat(list.size(), is(5));
