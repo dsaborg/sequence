@@ -43,6 +43,23 @@ public class BitLongSetTest {
 	}
 
 	@Test
+	public void bigSize() {
+		assertThat(new BitLongSet() {
+			@Override
+			protected long bitCount() {
+				return Integer.MAX_VALUE;
+			}
+		}.size(), is(Integer.MAX_VALUE));
+
+		expecting(IllegalStateException.class, () -> new BitLongSet() {
+			@Override
+			protected long bitCount() {
+				return Integer.MAX_VALUE + 1L;
+			}
+		}.size());
+	}
+
+	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
 		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));

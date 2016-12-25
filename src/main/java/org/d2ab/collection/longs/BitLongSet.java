@@ -41,12 +41,17 @@ public class BitLongSet extends LongSet.Base implements LongSortedSet {
 
 	@Override
 	public int size() {
-		long bitCount = positives.bitCount() + negatives.bitCount();
+		long bitCount = bitCount();
 
 		if (bitCount > Integer.MAX_VALUE)
 			throw new IllegalStateException("size > Integer.MAX_VALUE: " + bitCount);
 
 		return (int) bitCount;
+	}
+
+	// for tests
+	protected long bitCount() {
+		return positives.bitCount() + negatives.bitCount();
 	}
 
 	@Override
