@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class BaseLongListBoxingTest {
+public class LongListBaseBoxingTest {
 	private final LongList backingEmpty = LongList.create();
 	private final List<Long> empty = new LongList.Base() {
 		@Override
