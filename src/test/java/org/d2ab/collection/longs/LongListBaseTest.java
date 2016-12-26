@@ -18,6 +18,8 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.test.StrictLongIterator;
+import org.d2ab.test.StrictLongListIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -34,17 +36,28 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class ArrayLongListTest {
-	private final ArrayLongList empty = ArrayLongList.create();
-	private final ArrayLongList list = ArrayLongList.create(1, 2, 3, 4, 5);
+public class LongListBaseTest {
+	private final LongList empty = createLongList();
+	private final LongList list = createLongList(1, 2, 3, 4, 5);
 
-	@Test
-	public void withCapacity() {
-		LongList list = ArrayLongList.withCapacity(3);
-		twice(() -> assertThat(list, is(emptyIterable())));
+	private static LongList createLongList(long... items) {
+		LongList backing = LongList.create(items);
+		return new LongList.Base() {
+			@Override
+			public LongIterator iterator() {
+				return StrictLongIterator.from(backing.iterator());
+			}
 
-		list.addAllLongs(1, 2, 3, 4, 5);
-		twice(() -> assertThat(list, containsLongs(1, 2, 3, 4, 5)));
+			@Override
+			public LongListIterator listIterator(int index) {
+				return StrictLongListIterator.from(backing.listIterator(index));
+			}
+
+			@Override
+			public int size() {
+				return backing.size();
+			}
+		};
 	}
 
 	@Test
@@ -87,10 +100,42 @@ public class ArrayLongListTest {
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
-		expecting(NoSuchElementException.class, emptyIterator::nextLong);
-		expecting(NoSuchElementException.class, emptyIterator::previousLong);
 
-		assertThat(empty, is(emptyIterable()));
+		emptyIterator.add(17);
+		emptyIterator.add(18);
+		expecting(IllegalStateException.class, () -> emptyIterator.set(19));
+		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(2));
+		assertThat(emptyIterator.previousIndex(), is(1));
+
+		assertThat(emptyIterator.previousLong(), is(18L));
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
+
+		emptyIterator.remove();
+		expecting(IllegalStateException.class, () -> emptyIterator.set(19));
+		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
+
+		assertThat(emptyIterator.previousLong(), is(17L));
+		emptyIterator.set(19);
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(false));
+		assertThat(emptyIterator.nextIndex(), is(0));
+		assertThat(emptyIterator.previousIndex(), is(-1));
+
+		expecting(NoSuchElementException.class, emptyIterator::previousLong);
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(false));
+		assertThat(emptyIterator.nextIndex(), is(0));
+		assertThat(emptyIterator.previousIndex(), is(-1));
+
+		assertThat(empty, containsLongs(19));
 	}
 
 	@Test
@@ -269,7 +314,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void subList() {
-		LongList list = LongList.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		LongList list = createLongList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
@@ -301,30 +346,21 @@ public class ArrayLongListTest {
 		twice(() -> assertThat(subList, is(emptyIterable())));
 		twice(() -> assertThat(list, containsLongs(1, 2, 9, 10)));
 
-		subList.addLong(17);
-		twice(() -> assertThat(subList, containsLongs(17)));
-		twice(() -> assertThat(list, containsLongs(1, 2, 17, 9, 10)));
+		expecting(UnsupportedOperationException.class, () -> subList.addLong(17));
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(list, containsLongs(1, 2, 9, 10)));
 	}
 
 	@Test
 	public void sortLongs() {
-		LongList list = ArrayLongList.create(32, 17, 5, 7, 19, 22);
-		list.sortLongs();
-		assertThat(list, containsLongs(5, 7, 17, 19, 22, 32));
+		Lists.reverse(list);
+		expecting(UnsupportedOperationException.class, list::sortLongs);
+		assertThat(list, containsLongs(5, 4, 3, 2, 1));
 	}
 
 	@Test
 	public void binarySearch() {
-		LongList list = ArrayLongList.create(1, 3, 5, 6, 7, 8, 32);
-		assertThat(list.binarySearch(1), is(0));
-		assertThat(list.binarySearch(5), is(2));
-		assertThat(list.binarySearch(7), is(4));
-		assertThat(list.binarySearch(32), is(6));
-		assertThat(list.binarySearch(0), is(-1));
-		assertThat(list.binarySearch(2), is(-2));
-		assertThat(list.binarySearch(4), is(-3));
-		assertThat(list.binarySearch(31), is(-7));
-		assertThat(list.binarySearch(33), is(-8));
+		expecting(UnsupportedOperationException.class, () -> list.binarySearch(1));
 	}
 
 	@Test
@@ -353,6 +389,12 @@ public class ArrayLongListTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstList() {
+		assertThat(list, is(equalTo(list)));
+		assertThat(list, is(not(equalTo(null))));
+		assertThat(list, is(not(equalTo(new Object()))));
+		assertThat(list, is(not(equalTo(new TreeSet<>(asList(1L, 2L, 3L, 4L, 5L))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1L, 2L, 3L, 4L))))));
+
 		List<Long> list2 = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L, 17L));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
@@ -369,6 +411,8 @@ public class ArrayLongListTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstLongList() {
+		assertThat(list, is(not(equalTo(LongList.create(1, 2, 3, 4)))));
+
 		LongList list2 = LongList.create(1, 2, 3, 4, 5, 17);
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
@@ -761,10 +805,10 @@ public class ArrayLongListTest {
 
 	@Test
 	public void retainAllLongsCollection() {
-		assertThat(empty.retainAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(false));
+		assertThat(empty.retainAllLongs(LongList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(true));
+		assertThat(list.retainAllLongs(LongList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(1, 2, 3));
 	}
 

@@ -116,7 +116,8 @@ public interface LongList extends List<Long>, LongCollection {
 			return false;
 
 		LongListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (long x : c)
+			listIterator.add(x);
 
 		return true;
 	}
@@ -137,7 +138,7 @@ public interface LongList extends List<Long>, LongCollection {
 			return false;
 
 		LongListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachLong(listIterator::add);
 
 		return true;
 	}

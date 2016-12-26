@@ -19,6 +19,7 @@ package org.d2ab.collection.longs;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -270,11 +271,15 @@ public class LongListOfTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::nextLong);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousLong);
 
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::nextLong);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousLong);
 
 		assertThat(empty, is(emptyIterable()));
 	}

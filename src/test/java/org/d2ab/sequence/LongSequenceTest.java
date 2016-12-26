@@ -185,6 +185,13 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void fromLongIterableAsIterable() {
+		LongSequence sequence = LongSequence.from((Iterable<Long>) LongIterable.of(1, 2, 3, 4, 5));
+
+		twice(() -> assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
 	public void fromIterable() {
 		LongSequence sequence = LongSequence.from(Iterables.of(1L, 2L, 3L, 4L, 5L));
 

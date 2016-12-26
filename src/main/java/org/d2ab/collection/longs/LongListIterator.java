@@ -24,6 +24,10 @@ import java.util.ListIterator;
  * A {@link ListIterator} over a sequence of {@code long} values.
  */
 public interface LongListIterator extends ListIterator<Long>, LongIterator {
+	static LongListIterator of(long... xs) {
+		return new ArrayLongListIterator(xs);
+	}
+
 	@Override
 	boolean hasNext();
 

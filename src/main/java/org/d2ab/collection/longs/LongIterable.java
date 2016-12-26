@@ -30,16 +30,10 @@ import java.util.function.LongPredicate;
 import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
-
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
-	}
-
-	static LongIterable from(Long... longs) {
-		return from(asList(longs));
 	}
 
 	static LongIterable from(Iterable<Long> iterable) {
