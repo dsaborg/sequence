@@ -39,7 +39,7 @@ public class ExclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterat
 	@Override
 	public boolean hasNext() {
 		if (!hasNext && iterator.hasNext()) {
-			next = iterator.next();
+			next = iterator.nextDouble();
 			hasNext = true;
 		}
 		return hasNext && !terminal.test(next);

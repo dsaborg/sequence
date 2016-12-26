@@ -35,20 +35,20 @@ public class ExclusiveTerminalIntIterator extends DelegatingUnaryIntIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		if (!hasNext && iterator.hasNext()) {
+			next = iterator.nextInt();
+			hasNext = true;
+		}
+		return hasNext && !terminal.test(next);
+	}
+
+	@Override
 	public int nextInt() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasNext = false;
 		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!hasNext && iterator.hasNext()) {
-			next = iterator.next();
-			hasNext = true;
-		}
-		return hasNext && !terminal.test(next);
 	}
 }

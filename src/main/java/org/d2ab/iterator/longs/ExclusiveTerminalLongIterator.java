@@ -35,20 +35,20 @@ public class ExclusiveTerminalLongIterator extends DelegatingUnaryLongIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		if (!hasNext && iterator.hasNext()) {
+			next = iterator.nextLong();
+			hasNext = true;
+		}
+		return hasNext && !terminal.test(next);
+	}
+
+	@Override
 	public long nextLong() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasNext = false;
 		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!hasNext && iterator.hasNext()) {
-			next = iterator.next();
-			hasNext = true;
-		}
-		return hasNext && !terminal.test(next);
 	}
 }
