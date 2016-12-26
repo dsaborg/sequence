@@ -149,6 +149,9 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 		                                Spliterator.NONNULL);
 	}
 
+	abstract class Base extends LongSet.Base implements LongSortedSet {
+	}
+
 	abstract class SubSet extends LongSet.Base implements LongSortedSet {
 		private final LongSortedSet set;
 

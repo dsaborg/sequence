@@ -18,6 +18,7 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.test.StrictLongIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -32,31 +33,53 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
-public class BitLongSetTest {
-	private final BitLongSet empty = new BitLongSet();
-	private final BitLongSet set = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+public class LongSortedSetBaseTest {
+	private final LongSet backingEmpty = new BitLongSet();
+	private final LongSortedSet empty = new LongSortedSet.Base() {
+		@Override
+		public LongIterator iterator() {
+			return StrictLongIterator.from(backingEmpty.iterator());
+		}
+
+		@Override
+		public int size() {
+			return backingEmpty.size();
+		}
+
+		@Override
+		public boolean addLong(long x) {
+			return backingEmpty.addLong(x);
+		}
+	};
+
+	private final LongSet backing = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+	private final LongSortedSet set = new LongSortedSet.Base() {
+		@Override
+		public LongIterator iterator() {
+			return StrictLongIterator.from(backing.iterator());
+		}
+
+		@Override
+		public int size() {
+			return backing.size();
+		}
+
+		@Override
+		public boolean addLong(long x) {
+			return backing.addLong(x);
+		}
+	};
+
+	@Test
+	public void create() {
+		assertThat(LongSortedSet.create(), is(emptyIterable()));
+		assertThat(LongSortedSet.create(-2, -1, 0, 1), containsLongs(-2, -1, 0, 1));
+	}
 
 	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
 		assertThat(set.size(), is(10));
-	}
-
-	@Test
-	public void bigSize() {
-		assertThat(new BitLongSet() {
-			@Override
-			protected long bitCount() {
-				return Integer.MAX_VALUE;
-			}
-		}.size(), is(Integer.MAX_VALUE));
-
-		expecting(IllegalStateException.class, () -> new BitLongSet() {
-			@Override
-			protected long bitCount() {
-				return Integer.MAX_VALUE + 1L;
-			}
-		}.size());
 	}
 
 	@Test
@@ -655,7 +678,7 @@ public class BitLongSetTest {
 
 	@Test
 	public void fuzz() {
-		long[] randomValues = new long[10000];
+		long[] randomValues = new long[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			long randomValue;
