@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class BaseDoubleListTest {
+public class DoubleListTest {
 	private final DoubleList backingEmpty = DoubleList.create();
 	private final DoubleList empty = new DoubleList.Base() {
 		@Override

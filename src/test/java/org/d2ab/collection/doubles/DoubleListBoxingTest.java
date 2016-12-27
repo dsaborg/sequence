@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.chars;
+package org.d2ab.collection.doubles;
 
-import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -37,11 +37,11 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class CharListBaseBoxingTest {
-	private final CharList backingEmpty = CharList.create();
-	private final List<Character> empty = new CharList.Base() {
+public class DoubleListBoxingTest {
+	private final DoubleList backingEmpty = DoubleList.create();
+	private final List<Double> empty = new DoubleList.Base() {
 		@Override
-		public CharIterator iterator() {
+		public DoubleIterator iterator() {
 			return backingEmpty.iterator();
 		}
 
@@ -51,10 +51,10 @@ public class CharListBaseBoxingTest {
 		}
 	};
 
-	private final CharList backingList = CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e');
-	private final List<Character> list = new CharList.Base() {
+	private final DoubleList backingList = DoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
+	private final List<Double> list = new DoubleList.Base() {
 		@Override
-		public CharIterator iterator() {
+		public DoubleIterator iterator() {
 			return backingList.iterator();
 		}
 
@@ -66,23 +66,23 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void subList() {
-		List<Character> subList = list.subList(2, 8);
-		twice(() -> assertThat(subList, contains('c', 'd', 'e', 'a', 'b', 'c')));
+		List<Double> subList = list.subList(2, 8);
+		twice(() -> assertThat(subList, contains(3.0, 4.0, 5.0, 1.0, 2.0, 3.0)));
 
-		assertThat(subList.remove(1), is('d'));
-		twice(() -> assertThat(subList, contains('c', 'e', 'a', 'b', 'c')));
+		assertThat(subList.remove(1), is(4.0));
+		twice(() -> assertThat(subList, contains(3.0, 5.0, 1.0, 2.0, 3.0)));
 
-		assertThat(subList.remove((Character) 'e'), is(true));
-		twice(() -> assertThat(subList, contains('c', 'a', 'b', 'c')));
+		assertThat(subList.remove(5.0), is(true));
+		twice(() -> assertThat(subList, contains(3.0, 1.0, 2.0, 3.0)));
 
-		Iterator<Character> subListIterator = subList.iterator();
+		Iterator<Double> subListIterator = subList.iterator();
 		assertThat(subListIterator.hasNext(), is(true));
-		assertThat(subListIterator.next(), is('c'));
+		assertThat(subListIterator.next(), is(3.0));
 		subListIterator.remove();
-		twice(() -> assertThat(subList, contains('a', 'b', 'c')));
+		twice(() -> assertThat(subList, contains(1.0, 2.0, 3.0)));
 
 		subList.removeIf(x -> x % 2 == 0);
-		twice(() -> assertThat(subList, contains('a', 'c')));
+		twice(() -> assertThat(subList, contains(1.0, 3.0)));
 
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
@@ -102,12 +102,12 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void boxedContains() {
-		assertThat(empty.contains('b'), is(false));
+		assertThat(empty.contains(2), is(false));
 
-		for (char x = 'a'; x <= 'e'; x++)
-			assertThat(list.contains(x), is(true));
+		for (double i = 1; i < 5; i++)
+			assertThat(list.contains(i), is(true));
 
-		assertThat(list.contains('q'), is(false));
+		assertThat(list.contains(17), is(false));
 		assertThat(list.contains(new Object()), is(false));
 		assertThat(list.contains(null), is(false));
 	}
@@ -117,80 +117,78 @@ public class CharListBaseBoxingTest {
 		assertThat(empty, is(emptyIterable()));
 		expecting(NoSuchElementException.class, () -> empty.iterator().next());
 
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void iteratorRemove() {
-		Iterator<Character> iterator = list.iterator();
+		Iterator<Double> iterator = list.iterator();
 		iterator.next();
 		iterator.next();
 		iterator.remove();
 		iterator.next();
 		iterator.remove();
 
-		assertThat(list, contains('a', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list, contains(1.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void toArray() {
-		assertArrayEquals(new Character[0], empty.toArray());
-		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'}, list.toArray());
+		assertArrayEquals(new Double[0], empty.toArray());
+		assertArrayEquals(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0}, list.toArray());
 	}
 
 	@Test
 	public void toArrayEmptyTarget() {
-		Character[] emptyTarget = new Character[0];
+		Double[] emptyTarget = new Double[0];
 		assertThat(empty.toArray(emptyTarget), is(sameInstance(emptyTarget)));
-		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'},
-		                  list.toArray(new Character[0]));
+		assertArrayEquals(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0}, list.toArray(new Double[0]));
 	}
 
 	@Test
 	public void toArraySmallerTarget() {
-		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'},
-		                  list.toArray(new Character[9]));
+		assertArrayEquals(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0}, list.toArray(new Double[9]));
 	}
 
 	@Test
 	public void toArrayBiggerTarget() {
-		assertArrayEquals(new Character[]{null, 'q'}, empty.toArray(fill(new Character[2], 'q')));
-		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', null, 'q'},
-		                  list.toArray(fill(new Character[12], 'q')));
+		assertArrayEquals(new Double[]{null, 17.0}, empty.toArray(fill(new Double[2], 17.0)));
+		assertArrayEquals(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0, null, 17.0},
+		                  list.toArray(fill(new Double[12], 17.0)));
 	}
 
 	@Test
 	public void add() {
-		expecting(UnsupportedOperationException.class, () -> empty.add('a'));
+		expecting(UnsupportedOperationException.class, () -> empty.add(1.0));
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.add('f'));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		expecting(UnsupportedOperationException.class, () -> list.add(6.0));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void remove() {
-		assertThat(empty.remove((Character) 'q'), is(false));
+		assertThat(empty.remove(17.0), is(false));
 
-		assertThat(list.remove((Character) 'b'), is(true));
-		assertThat(list, contains('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list.remove(2.0), is(true));
+		assertThat(list, contains(1.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 
-		assertThat(list.remove((Character) 'q'), is(false));
-		assertThat(list, contains('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list.remove(17.0), is(false));
+		assertThat(list, contains(1.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 
 		assertThat(list.remove(new Object()), is(false));
-		assertThat(list, contains('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list, contains(1.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 
 		assertThat(list.remove(null), is(false));
-		assertThat(list, contains('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list, contains(1.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(asList('b', 'c')), is(false));
+		assertThat(empty.containsAll(asList(2.0, 3.0)), is(false));
 
-		assertThat(list.containsAll(asList('b', 'c')), is(true));
-		assertThat(list.containsAll(asList('b', 'q')), is(false));
+		assertThat(list.containsAll(asList(2.0, 3.0)), is(true));
+		assertThat(list.containsAll(asList(2.0, 17.0)), is(false));
 		assertThat(list.containsAll(singletonList(new Object())), is(false));
 		assertThat(list.containsAll(singletonList(null)), is(false));
 	}
@@ -200,14 +198,14 @@ public class CharListBaseBoxingTest {
 		assertThat(empty.addAll(emptyList()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(CharList.of()), is(false));
+		assertThat(empty.addAll(DoubleList.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> empty.addAll(asList('a', 'b')));
+		expecting(UnsupportedOperationException.class, () -> empty.addAll(asList(1.0, 2.0)));
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList('f', 'g', 'h')));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(6.0, 7.0, 8.0)));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
@@ -215,38 +213,38 @@ public class CharListBaseBoxingTest {
 		assertThat(empty.addAll(0, emptyList()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(0, CharList.of()), is(false));
+		assertThat(empty.addAll(0, DoubleList.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> empty.addAll(0, asList('a', 'b')));
+		expecting(UnsupportedOperationException.class, () -> empty.addAll(0, asList(1.0, 2.0)));
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(2, asList('q', 'p', 'r')));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(2, asList(17.0, 18.0, 19.0)));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(asList('a', 'b')), is(false));
+		assertThat(empty.removeAll(asList(1.0, 2.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList('a', 'b', 'e')), is(true));
-		assertThat(list, contains('c', 'd', 'c', 'd'));
+		assertThat(list.removeAll(asList(1.0, 2.0, 5.0)), is(true));
+		assertThat(list, contains(3.0, 4.0, 3.0, 4.0));
 
 		assertThat(list.removeAll(singletonList(new Object())), is(false));
-		assertThat(list, contains('c', 'd', 'c', 'd'));
+		assertThat(list, contains(3.0, 4.0, 3.0, 4.0));
 
 		assertThat(list.removeAll(singletonList(null)), is(false));
-		assertThat(list, contains('c', 'd', 'c', 'd'));
+		assertThat(list, contains(3.0, 4.0, 3.0, 4.0));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(asList('a', 'b')), is(false));
+		assertThat(empty.retainAll(asList(1.0, 2.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(asList('a', 'b', 'c')), is(true));
-		assertThat(list, contains('a', 'b', 'c', 'a', 'b', 'c'));
+		assertThat(list.retainAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(list, contains(1.0, 2.0, 3.0, 1.0, 2.0, 3.0));
 	}
 
 	@Test
@@ -263,11 +261,11 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void replaceAll() {
-		empty.replaceAll(x -> (char) (x + 1));
+		empty.replaceAll(x -> x + 1);
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.replaceAll(x -> (char) (x + 1)));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		expecting(UnsupportedOperationException.class, () -> list.replaceAll(x -> x + 1));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
@@ -276,7 +274,7 @@ public class CharListBaseBoxingTest {
 		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> list.sort(naturalOrder()));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
@@ -290,60 +288,60 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void get() {
-		assertThat(list.get(0), is('a'));
-		assertThat(list.get(2), is('c'));
-		assertThat(list.get(4), is('e'));
-		assertThat(list.get(5), is('a'));
-		assertThat(list.get(7), is('c'));
-		assertThat(list.get(9), is('e'));
+		assertThat(list.get(0), is(1.0));
+		assertThat(list.get(2), is(3.0));
+		assertThat(list.get(4), is(5.0));
+		assertThat(list.get(5), is(1.0));
+		assertThat(list.get(7), is(3.0));
+		assertThat(list.get(9), is(5.0));
 	}
 
 	@Test
 	public void set() {
-		expecting(UnsupportedOperationException.class, () -> list.set(2, 'q'));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		expecting(UnsupportedOperationException.class, () -> list.set(2, 17.0));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void addAt() {
-		expecting(UnsupportedOperationException.class, () -> list.add(0, 'q'));
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		expecting(UnsupportedOperationException.class, () -> list.add(0, 17.0));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void indexOf() {
-		assertThat(empty.indexOf('q'), is(-1));
+		assertThat(empty.indexOf(17), is(-1));
 
-		assertThat(list.indexOf('a'), is(0));
-		assertThat(list.indexOf('c'), is(2));
-		assertThat(list.indexOf('e'), is(4));
-		assertThat(list.indexOf('q'), is(-1));
+		assertThat(list.indexOf(1.0), is(0));
+		assertThat(list.indexOf(3.0), is(2));
+		assertThat(list.indexOf(5.0), is(4));
+		assertThat(list.indexOf(17.0), is(-1));
 		assertThat(list.indexOf(new Object()), is(-1));
 		assertThat(list.indexOf(null), is(-1));
 	}
 
 	@Test
 	public void lastIndexOf() {
-		assertThat(empty.lastIndexOf('q'), is(-1));
+		assertThat(empty.lastIndexOf(17.0), is(-1));
 
-		assertThat(list.lastIndexOf('a'), is(5));
-		assertThat(list.lastIndexOf('c'), is(7));
-		assertThat(list.lastIndexOf('e'), is(9));
-		assertThat(list.lastIndexOf('q'), is(-1));
+		assertThat(list.lastIndexOf(1.0), is(5));
+		assertThat(list.lastIndexOf(3.0), is(7));
+		assertThat(list.lastIndexOf(5.0), is(9));
+		assertThat(list.lastIndexOf(17.0), is(-1));
 		assertThat(list.lastIndexOf(new Object()), is(-1));
 		assertThat(list.lastIndexOf(null), is(-1));
 	}
 
 	@Test
 	public void listIteratorEmpty() {
-		ListIterator<Character> emptyIterator = empty.listIterator();
+		ListIterator<Double> emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 		expecting(NoSuchElementException.class, emptyIterator::next);
 		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 
-		expecting(UnsupportedOperationException.class, () -> emptyIterator.add('q'));
+		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17.0));
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
@@ -354,40 +352,40 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void listIterator() {
-		ListIterator<Character> listIterator = list.listIterator();
+		ListIterator<Double> listIterator = list.listIterator();
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.next(), is('a'));
+		assertThat(listIterator.next(), is(1.0));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.next(), is('b'));
+		assertThat(listIterator.next(), is(2.0));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.add('q'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(17.0));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.next(), is('c'));
+		assertThat(listIterator.next(), is(3.0));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.set('q'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(17.0));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.next(), is('d'));
+		assertThat(listIterator.next(), is(4.0));
 
-		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void exhaustiveListIterator() {
 		twice(() -> {
-			ListIterator<Character> listIterator = list.listIterator();
+			ListIterator<Double> listIterator = list.listIterator();
 			AtomicInteger i = new AtomicInteger(0);
 			while (listIterator.hasNext()) {
-				assertThat(listIterator.next(), is((char) (i.get() % 5 + 'a')));
+				assertThat(listIterator.next(), is((double) (i.get() % 5 + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
@@ -399,11 +397,11 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void listIteratorRemoveAll() {
-		Iterator<Character> iterator = list.iterator();
+		Iterator<Double> iterator = list.iterator();
 
 		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.next(), is((char) (i % 5 + 'a')));
+			assertThat(iterator.next(), is((double) (i % 5 + 1)));
 			iterator.remove();
 			i++;
 		}
@@ -415,11 +413,11 @@ public class CharListBaseBoxingTest {
 
 	@Test
 	public void listIteratorRemove() {
-		ListIterator<Character> listIterator = list.listIterator();
+		ListIterator<Double> listIterator = list.listIterator();
 
 		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.next(), is((char) (i % 5 + 'a')));
+			assertThat(listIterator.next(), is((double) (i % 5 + 1)));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -437,23 +435,23 @@ public class CharListBaseBoxingTest {
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.stream().collect(Collectors.toList()),
-		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		           contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void parallelStream() {
 		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.parallelStream().collect(Collectors.toList()),
-		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		           contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void removeIf() {
-		empty.removeIf(x -> x == 'a');
+		empty.removeIf(x -> x == 1);
 		assertThat(empty, is(emptyIterable()));
 
-		list.removeIf(x -> x == 'a');
-		assertThat(list, contains('b', 'c', 'd', 'e', 'b', 'c', 'd', 'e'));
+		list.removeIf(x -> x == 1);
+		assertThat(list, contains(2.0, 3.0, 4.0, 5.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
@@ -463,7 +461,7 @@ public class CharListBaseBoxingTest {
 		});
 
 		AtomicInteger i = new AtomicInteger(0);
-		list.forEach(x -> assertThat(x, is((char) (i.getAndIncrement() % 5 + 'a'))));
+		list.forEach(x -> assertThat(x, is((double) (i.getAndIncrement() % 5 + 1))));
 		assertThat(i.get(), is(10));
 	}
 }

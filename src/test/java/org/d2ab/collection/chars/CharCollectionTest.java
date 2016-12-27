@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class CharCollectionBaseTest {
+public class CharCollectionTest {
 	CharList backingEmpty = CharList.create();
 	CharCollection empty = new CharCollection.Base() {
 		@Override

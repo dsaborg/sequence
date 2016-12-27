@@ -31,13 +31,6 @@ public interface CharList extends List<Character>, CharCollection {
 	// TODO: Extract out relevant parts to IterableCharList
 
 	/**
-	 * @return an empty immutable {@code CharList}.
-	 */
-	static CharList empty() {
-		return of();
-	}
-
-	/**
 	 * Returns an immutable {@code CharList} of the given elements. The returned {@code CharList}'s
 	 * {@link CharListIterator} supports forward iteration only.
 	 */
@@ -123,7 +116,8 @@ public interface CharList extends List<Character>, CharCollection {
 			return false;
 
 		CharListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (char t : c)
+			listIterator.add(t);
 
 		return true;
 	}
@@ -144,7 +138,7 @@ public interface CharList extends List<Character>, CharCollection {
 			return false;
 
 		CharListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachChar(listIterator::add);
 
 		return true;
 	}

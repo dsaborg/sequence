@@ -118,7 +118,8 @@ public interface IntList extends List<Integer>, IntCollection {
 			return false;
 
 		IntListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (int t : c)
+			listIterator.add(t);
 
 		return true;
 	}
@@ -139,7 +140,7 @@ public interface IntList extends List<Integer>, IntCollection {
 			return false;
 
 		IntListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachInt(listIterator::add);
 
 		return true;
 	}

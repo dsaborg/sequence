@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongCollectionBaseTest {
+public class LongCollectionTest {
 	LongList backingEmpty = LongList.create();
 	LongCollection empty = new LongCollection.Base() {
 		@Override
@@ -340,17 +340,6 @@ public class LongCollectionBaseTest {
 		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
 		assertThat(collection.containsAll(asList(1L, 2L, 3L)), is(true));
 		assertThat(collection.containsAll(asList(1L, 2L, 3L, 17L)), is(false));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicLong value = new AtomicLong(1);
-		collection.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(6L));
 	}
 
 	@Test

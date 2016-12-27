@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongListBaseTest {
+public class LongListTest {
 	private final LongList empty = createLongList();
 	private final LongList list = createLongList(1, 2, 3, 4, 5);
 
@@ -828,17 +828,6 @@ public class LongListBaseTest {
 
 		list.replaceAllLongs(x -> x + 1);
 		assertThat(list, containsLongs(2, 3, 4, 5, 6));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicLong value = new AtomicLong(1);
-		list.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(6L));
 	}
 
 	@Test

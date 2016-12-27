@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class BaseIntListBoxingTest {
+public class IntListBoxingTest {
 	private final IntList backingEmpty = IntList.create();
 	private final List<Integer> empty = new IntList.Base() {
 		@Override

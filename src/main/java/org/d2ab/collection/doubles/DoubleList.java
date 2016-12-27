@@ -117,7 +117,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 			return false;
 
 		DoubleListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (double t : c)
+			listIterator.add(t);
 
 		return true;
 	}
@@ -138,7 +139,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 			return false;
 
 		DoubleListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachDouble(listIterator::add);
 
 		return true;
 	}
