@@ -24,6 +24,10 @@ import java.util.ListIterator;
  * A {@link ListIterator} over a sequence of {@code char} values.
  */
 public interface CharListIterator extends ListIterator<Character>, CharIterator {
+	static CharListIterator of(char... values) {
+		return new ArrayCharListIterator(values);
+	}
+
 	@Override
 	boolean hasNext();
 

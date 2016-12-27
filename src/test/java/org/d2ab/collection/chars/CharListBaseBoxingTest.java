@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class BaseCharListBoxingTest {
+public class CharListBaseBoxingTest {
 	private final CharList backingEmpty = CharList.create();
 	private final List<Character> empty = new CharList.Base() {
 		@Override

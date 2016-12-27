@@ -22,10 +22,10 @@ import java.util.Iterator;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayCharIterator implements CharIterator {
-	private char[] array;
-	private int offset;
+	protected char[] array;
+	protected int offset;
 	private int size;
-	private int index;
+	protected int index;
 
 	public ArrayCharIterator(char... array) {
 		this(array, array.length);

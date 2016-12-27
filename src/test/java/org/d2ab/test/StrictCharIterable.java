@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 
 @FunctionalInterface
 public interface StrictCharIterable extends CharIterable {
-	static CharIterable of(char... values) {
+	static StrictCharIterable of(char... values) {
 		return () -> StrictCharIterator.of(values);
 	}
 
-	static CharIterable from(CharIterable iterable) {
+	static StrictCharIterable from(CharIterable iterable) {
 		return () -> StrictCharIterator.from(iterable.iterator());
 	}
 

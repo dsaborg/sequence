@@ -2,32 +2,45 @@ package org.d2ab.test;
 
 import org.d2ab.iterator.chars.CharIterator;
 
-public interface StrictCharIterator extends CharIterator {
-	static CharIterator of(char... values) {
+import java.util.function.Consumer;
+
+public class StrictCharIterator implements CharIterator {
+	private CharIterator iterator;
+
+	public static CharIterator of(char... values) {
 		return from(CharIterator.of(values));
 	}
 
-	static CharIterator from(CharIterator iterator) {
-		return new CharIterator() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
+	public static CharIterator from(CharIterator iterator) {
+		return new StrictCharIterator(iterator);
+	}
 
-			@Override
-			public char nextChar() {
-				return iterator.nextChar();
-			}
+	public StrictCharIterator(CharIterator iterator) {
+		this.iterator = iterator;
+	}
 
-			@Override
-			public Character next() {
-				throw new UnsupportedOperationException();
-			}
+	@Override
+	public boolean hasNext() {
+		return iterator.hasNext();
+	}
 
-			@Override
-			public void remove() {
-				iterator.remove();
-			}
-		};
+	@Override
+	public char nextChar() {
+		return iterator.nextChar();
+	}
+
+	@Override
+	public Character next() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void remove() {
+		iterator.remove();
+	}
+
+	@Override
+	public void forEachRemaining(Consumer<? super Character> consumer) {
+		throw new UnsupportedOperationException();
 	}
 }
