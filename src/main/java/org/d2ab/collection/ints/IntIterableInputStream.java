@@ -86,7 +86,7 @@ public class IntIterableInputStream extends InputStream {
 		while (n > Integer.MAX_VALUE) {
 			int skip = iterator.skip(Integer.MAX_VALUE);
 			if (skip == 0)
-				break;
+				break; // fail-safe
 			skipped += skip;
 			n -= skip;
 		}

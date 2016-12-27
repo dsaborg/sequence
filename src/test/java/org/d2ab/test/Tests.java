@@ -23,16 +23,21 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class Tests {
+	@FunctionalInterface
+	public interface ThrowingRunnable {
+		void run() throws Throwable;
+	}
+
 	private Tests() {
 	}
 
-	public static void expecting(Class<? extends Throwable> exceptionClass, Runnable action) {
+	public static void expecting(Class<? extends Throwable> exceptionClass, ThrowingRunnable action) {
 		try {
 			action.run();
 			fail("Expected " + exceptionClass.getName());
 		} catch (Throwable t) {
 			if (!exceptionClass.isInstance(t))
-				throw t;
+				throw new AssertionError("Expected " + exceptionClass.getName() + " but got: " + t, t);
 		}
 	}
 

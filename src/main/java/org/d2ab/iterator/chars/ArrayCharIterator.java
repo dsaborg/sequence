@@ -17,6 +17,7 @@
 package org.d2ab.iterator.chars;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} over an array of items.
@@ -52,6 +53,9 @@ public class ArrayCharIterator implements CharIterator {
 
 	@Override
 	public char nextChar() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
 		return array[offset + index++];
 	}
 }

@@ -2,6 +2,8 @@ package org.d2ab.collection.chars;
 
 import org.d2ab.iterator.chars.ArrayCharIterator;
 
+import java.util.NoSuchElementException;
+
 public class ArrayCharListIterator extends ArrayCharIterator implements CharListIterator {
 	public ArrayCharListIterator(char... values) {
 		super(values);
@@ -14,6 +16,9 @@ public class ArrayCharListIterator extends ArrayCharIterator implements CharList
 
 	@Override
 	public char previousChar() {
+		if (!hasPrevious())
+			throw new NoSuchElementException();
+
 		return array[offset + --index];
 	}
 

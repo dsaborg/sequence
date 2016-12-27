@@ -21,6 +21,8 @@ import org.d2ab.iterator.chars.CharIterator;
 import java.io.IOException;
 import java.io.Reader;
 
+import static java.lang.Math.min;
+
 /**
  * A {@link Reader} that reads {@code char} values from a {@link CharIterable}. All methods are supported.
  */
@@ -76,10 +78,13 @@ public class CharIterableReader extends Reader {
 
 		long skipped = 0;
 		while (n > Integer.MAX_VALUE) {
-			skipped += iterator.skip(Integer.MAX_VALUE);
-			n -= Integer.MAX_VALUE;
+			int skip = iterator.skip(Integer.MAX_VALUE);
+			if (skip == 0)
+				break; // fail-safe
+			skipped += skip;
+			n -= skip;
 		}
-		skipped += iterator.skip((int) n);
+		skipped += iterator.skip((int) min(n, Integer.MAX_VALUE));
 
 		position += skipped;
 
@@ -112,12 +117,9 @@ public class CharIterableReader extends Reader {
 		iterator = iterable.iterator();
 		position = 0;
 
-		long skip = mark;
-		while (skip > Integer.MAX_VALUE) {
-			position += iterator.skip(Integer.MAX_VALUE);
-			skip -= Integer.MAX_VALUE;
-		}
-		position += iterator.skip((int) skip);
+		long skipped = skip(mark);
+		if (skipped != mark)
+			throw new IllegalStateException("Failed to skip to mark: skipped " + skipped + " < mark " + mark);
 	}
 
 	@Override

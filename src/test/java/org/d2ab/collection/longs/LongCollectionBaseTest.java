@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongCollectionTest {
+public class LongCollectionBaseTest {
 	LongList backingEmpty = LongList.create();
 	LongCollection empty = new LongCollection.Base() {
 		@Override
@@ -168,21 +168,21 @@ public class LongCollectionTest {
 	@Test
 	public void longStream() {
 		assertThat(empty.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
-				is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(collection.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
-				containsLongs(1, 2, 3, 4, 5));
+		           containsLongs(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void parallelLongStream() {
 		assertThat(empty.parallelLongStream()
-						.collect(LongList::create, LongList::addLong, LongList::addAllLongs),
-				is(emptyIterable()));
+		                .collect(LongList::create, LongList::addLong, LongList::addAllLongs),
+		           is(emptyIterable()));
 
 		assertThat(collection.parallelLongStream()
-						.collect(LongList::create, LongList::addLong, LongList::addAllLongs),
-				containsLongs(1, 2, 3, 4, 5));
+		                     .collect(LongList::create, LongList::addLong, LongList::addAllLongs),
+		           containsLongs(1, 2, 3, 4, 5));
 	}
 
 	@Test

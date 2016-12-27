@@ -34,8 +34,6 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
-
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
 	/**
@@ -70,10 +68,6 @@ public interface CharIterable extends Iterable<Character> {
 
 	static CharIterable of(char... characters) {
 		return () -> new ArrayCharIterator(characters);
-	}
-
-	static CharIterable from(Character... characters) {
-		return from(asList(characters));
 	}
 
 	static CharIterable from(Iterable<Character> iterable) {
