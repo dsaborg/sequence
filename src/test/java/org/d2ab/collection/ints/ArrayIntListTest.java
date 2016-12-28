@@ -17,8 +17,6 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Lists;
-import org.d2ab.collection.doubles.ArrayDoubleList;
-import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
@@ -28,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
-import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -40,6 +37,15 @@ import static org.junit.Assert.assertThat;
 public class ArrayIntListTest {
 	private final ArrayIntList empty = ArrayIntList.create();
 	private final ArrayIntList list = ArrayIntList.create(1, 2, 3, 4, 5);
+
+	@Test
+	public void withCapacity() {
+		IntList list = ArrayIntList.withCapacity(3);
+		twice(() -> assertThat(list, is(emptyIterable())));
+
+		list.addAllInts(1, 2, 3, 4, 5);
+		twice(() -> assertThat(list, containsInts(1, 2, 3, 4, 5)));
+	}
 
 	@Test
 	public void size() {
