@@ -34,35 +34,8 @@ public class ChainingIntIterable implements IntIterable {
 		asList(iterables).forEach(this.iterables::add);
 	}
 
-	public ChainingIntIterable append(IntIterable iterable) {
-		iterables.add(iterable);
-		return this;
-	}
-
 	@Override
 	public IntIterator iterator() {
 		return new ChainingIntIterator(iterables);
-	}
-
-	@Override
-	public int hashCode() {
-		return iterables.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if ((o == null) || (getClass() != o.getClass()))
-			return false;
-
-		ChainingIntIterable that = (ChainingIntIterable) o;
-
-		return iterables.equals(that.iterables);
-	}
-
-	@Override
-	public String toString() {
-		return "ChainingIntIterable" + iterables;
 	}
 }

@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 
 @FunctionalInterface
 public interface StrictDoubleIterable extends DoubleIterable {
-	static DoubleIterable of(double... values) {
+	static StrictDoubleIterable of(double... values) {
 		return () -> StrictDoubleIterator.of(values);
 	}
 
-	static DoubleIterable from(DoubleIterable iterable) {
+	static StrictDoubleIterable from(DoubleIterable iterable) {
 		return () -> StrictDoubleIterator.from(iterable.iterator());
 	}
 

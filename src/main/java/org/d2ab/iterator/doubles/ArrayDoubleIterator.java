@@ -17,15 +17,16 @@
 package org.d2ab.iterator.doubles;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayDoubleIterator implements DoubleIterator {
-	private double[] array;
-	private int offset;
+	protected double[] array;
+	protected int offset;
 	private int size;
-	private int index;
+	protected int index;
 
 	public ArrayDoubleIterator(double... array) {
 		this(array, array.length);
@@ -52,6 +53,9 @@ public class ArrayDoubleIterator implements DoubleIterator {
 
 	@Override
 	public double nextDouble() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
 		return array[offset + index++];
 	}
 }

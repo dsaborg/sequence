@@ -29,7 +29,6 @@ import java.util.function.DoublePredicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.contains;
 import static org.d2ab.collection.Arrayz.containsExactly;
 import static org.d2ab.util.Doubles.eq;
@@ -38,10 +37,6 @@ import static org.d2ab.util.Doubles.eq;
 public interface DoubleIterable extends Iterable<Double> {
 	static DoubleIterable of(double... doubles) {
 		return () -> new ArrayDoubleIterator(doubles);
-	}
-
-	static DoubleIterable from(Double... doubles) {
-		return from(asList(doubles));
 	}
 
 	static DoubleIterable from(Iterable<Double> iterable) {

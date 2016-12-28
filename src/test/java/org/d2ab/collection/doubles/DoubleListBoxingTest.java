@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -108,7 +109,9 @@ public class DoubleListBoxingTest {
 			assertThat(list.contains(i), is(true));
 
 		assertThat(list.contains(17), is(false));
+
 		assertThat(list.contains(new Object()), is(false));
+
 		assertThat(list.contains(null), is(false));
 	}
 
@@ -158,7 +161,7 @@ public class DoubleListBoxingTest {
 	}
 
 	@Test
-	public void add() {
+	public void addAt() {
 		expecting(UnsupportedOperationException.class, () -> empty.add(1.0));
 		assertThat(empty, is(emptyIterable()));
 
@@ -194,7 +197,7 @@ public class DoubleListBoxingTest {
 	}
 
 	@Test
-	public void addAll() {
+	public void addAllAt() {
 		assertThat(empty.addAll(emptyList()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -209,7 +212,7 @@ public class DoubleListBoxingTest {
 	}
 
 	@Test
-	public void addAllAt() {
+	public void addAll() {
 		assertThat(empty.addAll(0, emptyList()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -255,7 +258,7 @@ public class DoubleListBoxingTest {
 
 	@Test
 	public void retainAllNull() {
-		assertThat(list.retainAll(singletonList(null)), is(true));
+		assertThat(list.retainAll(singletonList(new Object())), is(true));
 		assertThat(list, is(emptyIterable()));
 	}
 
@@ -294,6 +297,8 @@ public class DoubleListBoxingTest {
 		assertThat(list.get(5), is(1.0));
 		assertThat(list.get(7), is(3.0));
 		assertThat(list.get(9), is(5.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(11));
 	}
 
 	@Test
@@ -303,14 +308,14 @@ public class DoubleListBoxingTest {
 	}
 
 	@Test
-	public void addAt() {
+	public void add() {
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 17.0));
 		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void indexOf() {
-		assertThat(empty.indexOf(17), is(-1));
+		assertThat(empty.indexOf(17.0), is(-1));
 
 		assertThat(list.indexOf(1.0), is(0));
 		assertThat(list.indexOf(3.0), is(2));
@@ -381,9 +386,10 @@ public class DoubleListBoxingTest {
 
 	@Test
 	public void exhaustiveListIterator() {
+		ListIterator<Double> listIterator = list.listIterator();
+
+		AtomicInteger i = new AtomicInteger(0);
 		twice(() -> {
-			ListIterator<Double> listIterator = list.listIterator();
-			AtomicInteger i = new AtomicInteger(0);
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.next(), is((double) (i.get() % 5 + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -396,7 +402,7 @@ public class DoubleListBoxingTest {
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
+	public void iteratorRemoveAll() {
 		Iterator<Double> iterator = list.iterator();
 
 		int i = 0;
@@ -406,13 +412,12 @@ public class DoubleListBoxingTest {
 			i++;
 		}
 		assertThat(i, is(10));
-		expecting(NoSuchElementException.class, iterator::next);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void listIteratorRemove() {
+	public void listIteratorRemoveAll() {
 		ListIterator<Double> listIterator = list.listIterator();
 
 		int i = 0;
@@ -426,7 +431,6 @@ public class DoubleListBoxingTest {
 			i++;
 		}
 		assertThat(i, is(10));
-		expecting(NoSuchElementException.class, listIterator::next);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -434,8 +438,7 @@ public class DoubleListBoxingTest {
 	@Test
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.stream().collect(Collectors.toList()),
-		           contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
+		assertThat(list.stream().collect(Collectors.toList()), contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
@@ -460,8 +463,8 @@ public class DoubleListBoxingTest {
 			throw new IllegalStateException("Should not get called");
 		});
 
-		AtomicInteger i = new AtomicInteger(0);
-		list.forEach(x -> assertThat(x, is((double) (i.getAndIncrement() % 5 + 1))));
-		assertThat(i.get(), is(10));
+		AtomicLong value = new AtomicLong(0);
+		list.forEach(x -> assertThat(x, is((double) (value.getAndIncrement() % 5 + 1))));
+		assertThat(value.get(), is(10L));
 	}
 }

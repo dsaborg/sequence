@@ -24,6 +24,10 @@ import java.util.ListIterator;
  * A {@link ListIterator} over a sequence of {@code double} values.
  */
 public interface DoubleListIterator extends ListIterator<Double>, DoubleIterator {
+	static DoubleListIterator of(double... values) {
+		return new ArrayDoubleListIterator(values);
+	}
+
 	@Override
 	boolean hasNext();
 

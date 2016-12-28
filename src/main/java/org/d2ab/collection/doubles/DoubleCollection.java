@@ -64,16 +64,6 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	}
 
 	/**
-	 * @see #addDoubleExactly(double)
-	 * @since 2.0
-	 * @deprecated Use {@link #addDoubleExactly(double)} instead.
-	 */
-	@Deprecated
-	default boolean addDouble(double x) {
-		return addDoubleExactly(x);
-	}
-
-	/**
 	 * @see #addDouble(double, double)
 	 * @since 2.1
 	 */
