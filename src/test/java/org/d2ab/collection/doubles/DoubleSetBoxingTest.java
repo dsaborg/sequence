@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.longs;
+package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,11 +31,11 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongSetBoxingTest {
-	private final LongSet backingEmpty = new BitLongSet();
-	private final Set<Long> empty = new LongSet.Base() {
+public class DoubleSetBoxingTest {
+	private final DoubleSet backingEmpty = new SortedListDoubleSet();
+	private final Set<Double> empty = new DoubleSet.Base() {
 		@Override
-		public LongIterator iterator() {
+		public DoubleIterator iterator() {
 			return backingEmpty.iterator();
 		}
 
@@ -45,15 +45,15 @@ public class LongSetBoxingTest {
 		}
 
 		@Override
-		public boolean addLong(long x) {
-			return backingEmpty.addLong(x);
+		public boolean addDoubleExactly(double x) {
+			return backingEmpty.addDoubleExactly(x);
 		}
 	};
 
-	private final LongSet backing = new BitLongSet(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L);
-	private final Set<Long> set = new LongSet.Base() {
+	private final DoubleSet backing = new SortedListDoubleSet(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0);
+	private final Set<Double> set = new DoubleSet.Base() {
 		@Override
-		public LongIterator iterator() {
+		public DoubleIterator iterator() {
 			return backing.iterator();
 		}
 
@@ -63,40 +63,40 @@ public class LongSetBoxingTest {
 		}
 
 		@Override
-		public boolean addLong(long x) {
-			return backing.addLong(x);
+		public boolean addDoubleExactly(double x) {
+			return backing.addDoubleExactly(x);
 		}
 	};
 
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
-		assertThat(set, contains(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L));
+		assertThat(set, contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
 	public void iteratorFailFastPositives() {
-		Iterator<Long> it1 = set.iterator();
+		Iterator<Double> it1 = set.iterator();
 		assertThat(it1.hasNext(), is(true));
-		assertThat(set.add(17L), is(true));
+		assertThat(set.add(17.0), is(true));
 		expecting(ConcurrentModificationException.class, it1::next);
 
-		Iterator<Long> it2 = set.iterator();
+		Iterator<Double> it2 = set.iterator();
 		assertThat(it2.hasNext(), is(true));
-		assertThat(set.remove(17L), is(true));
+		assertThat(set.remove(17.0), is(true));
 		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
 	@Test
 	public void iteratorFailFastNegatives() {
-		Iterator<Long> it1 = set.iterator();
+		Iterator<Double> it1 = set.iterator();
 		assertThat(it1.hasNext(), is(true));
-		assertThat(set.add(-17L), is(true));
+		assertThat(set.add(-17.0), is(true));
 		expecting(ConcurrentModificationException.class, it1::next);
 
-		Iterator<Long> it2 = set.iterator();
+		Iterator<Double> it2 = set.iterator();
 		assertThat(it2.hasNext(), is(true));
-		assertThat(set.remove(-17L), is(true));
+		assertThat(set.remove(-17.0), is(true));
 		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
@@ -117,108 +117,111 @@ public class LongSetBoxingTest {
 
 	@Test
 	public void add() {
-		empty.add(17L);
-		assertThat(empty, contains(17L));
+		empty.add(17.0);
+		assertThat(empty, contains(17.0));
 
-		set.add(17L);
-		assertThat(set, contains(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, 17L));
+		set.add(17.0);
+		assertThat(set, contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
 	}
 
 	@Test
 	public void boxedContains() {
-		assertThat(empty.contains(17L), is(false));
+		assertThat(empty.contains(17.0), is(false));
 
-		assertThat(set.contains(17L), is(false));
-		for (long x = -5; x <= 4; x++)
+		assertThat(set.contains(17.0), is(false));
+		for (double x = -5; x <= 4; x++)
 			assertThat(set.contains(x), is(true));
 	}
 
 	@Test
 	public void remove() {
-		assertThat(empty.remove(17L), is(false));
+		assertThat(empty.remove(17.0), is(false));
 
-		assertThat(set.remove(17L), is(false));
-		for (long x = -5; x <= 4; x++)
+		assertThat(set.remove(17.0), is(false));
+		for (double x = -5; x <= 4; x++)
 			assertThat(set.remove(x), is(true));
 		assertThat(set.isEmpty(), is(true));
 	}
 
 	@Test
 	public void toArray() {
-		assertArrayEquals(new Long[0], empty.toArray());
-		assertArrayEquals(new Long[]{-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L}, set.toArray());
+		assertArrayEquals(new Double[0], empty.toArray());
+		assertArrayEquals(new Double[]{-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0}, set.toArray());
 	}
 
 	@Test
 	public void toArrayEmptyTarget() {
-		Long[] emptyTarget = new Long[0];
+		Double[] emptyTarget = new Double[0];
 		assertThat(empty.toArray(emptyTarget), is(sameInstance(emptyTarget)));
-		assertArrayEquals(new Long[]{-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L}, set.toArray(new Long[0]));
+		assertArrayEquals(new Double[]{-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0},
+		                  set.toArray(new Double[0]));
 	}
 
 	@Test
 	public void toArraySmallerTarget() {
-		assertArrayEquals(new Long[]{-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L}, set.toArray(new Long[9]));
+		assertArrayEquals(new Double[]{-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0},
+		                  set.toArray(new Double[9]));
 	}
 
 	@Test
 	public void toArrayBiggerTarget() {
-		assertArrayEquals(new Long[]{null, 17L}, empty.toArray(fill(new Long[2], 17L)));
-		assertArrayEquals(new Long[]{-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, null, 17L},
-		                  set.toArray(fill(new Long[12], 17L)));
+		assertArrayEquals(new Double[]{null, 17.0}, empty.toArray(fill(new Double[2], 17.0)));
+		assertArrayEquals(new Double[]{-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, null, 17.0},
+		                  set.toArray(fill(new Double[12], 17.0)));
 	}
 
 	@Test
-	public void addAllLongCollection() {
-		assertThat(empty.addAll(LongList.create(1, 2, 3)), is(true));
-		assertThat(empty, contains(1L, 2L, 3L));
+	public void addAllDoubleCollection() {
+		assertThat(empty.addAll(DoubleList.create(1, 2, 3)), is(true));
+		assertThat(empty, contains(1.0, 2.0, 3.0));
 
-		assertThat(set.addAll(LongList.create(3, 4, 5, 6, 7)), is(true));
-		assertThat(set, contains(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L));
+		assertThat(set.addAll(DoubleList.create(3, 4, 5, 6, 7)), is(true));
+		assertThat(set, contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0));
 	}
 
 	@Test
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(set.stream().collect(Collectors.toList()), contains(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L));
+		assertThat(set.stream().collect(Collectors.toList()),
+		           contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
 	public void parallelStream() {
 		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(set.parallelStream().collect(Collectors.toList()),
-		           contains(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L));
+		           contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
 	public void iteratorRemoveAll() {
-		Iterator<Long> iterator = set.iterator();
-		long value = -5;
+		Iterator<Double> iterator = set.iterator();
+		double value = -5;
 		while (iterator.hasNext()) {
 			assertThat(iterator.next(), is(value));
 			iterator.remove();
 			value++;
 		}
-		assertThat(value, is(5L));
+		assertThat(value, is(5.0));
 		assertThat(set, is(emptyIterable()));
 	}
 
 	@Test
-	public void removeAllLongCollection() {
-		assertThat(empty.removeAll(LongList.create(-2, -1, 0, 1)), is(false));
+	public void removeAllDoubleCollection() {
+		assertThat(empty.removeAll(DoubleList.create(-2, -1, 0, 1)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(LongList.create(-2, -1, 0, 1)), is(true));
-		assertThat(set, contains(-5L, -4L, -3L, 2L, 3L, 4L));
+		assertThat(set.removeAll(DoubleList.create(-2, -1, 0, 1)), is(true));
+		assertThat(set, contains(-5.0, -4.0, -3.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
-	public void retainAllLongCollection() {
-		assertThat(empty.retainAll(LongList.create(-2, -1, 0, 1)), is(false));
+	public void retainAllDoubleCollection() {
+		assertThat(empty.retainAll(DoubleList.create(-2, -1, 0, 1)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(LongList.create(-2, -1, 0, 1)), is(true));
-		assertThat(set, contains(-2L, -1L, 0L, 1L));
+		assertThat(set.retainAll(DoubleList.create(-2, -1, 0, 1)), is(true));
+		assertThat(set, contains(-2.0, -1.0, 0.0, 1.0));
 	}
 
 	@Test
@@ -227,14 +230,14 @@ public class LongSetBoxingTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(set.removeIf(x -> x >= -3 && x < 3), is(true));
-		assertThat(set, contains(-5L, -4L, 3L, 4L));
+		assertThat(set, contains(-5.0, -4.0, 3.0, 4.0));
 	}
 
 	@Test
-	public void containsAllLongCollection() {
-		assertThat(empty.containsAll(LongList.create(1, 2, 3)), is(false));
-		assertThat(set.containsAll(LongList.create(1, 2, 3)), is(true));
-		assertThat(set.containsAll(LongList.create(1, 2, 3, 17)), is(false));
+	public void containsAllDoubleCollection() {
+		assertThat(empty.containsAll(DoubleList.create(1, 2, 3)), is(false));
+		assertThat(set.containsAll(DoubleList.create(1, 2, 3)), is(true));
+		assertThat(set.containsAll(DoubleList.create(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -244,54 +247,54 @@ public class LongSetBoxingTest {
 		});
 
 		AtomicLong value = new AtomicLong(-5);
-		set.forEach(x -> assertThat(x, is(value.getAndIncrement())));
+		set.forEach(x -> assertThat(x, is((double) value.getAndIncrement())));
 		assertThat(value.get(), is(5L));
 	}
 
 	@Test
 	public void boundaries() {
-		assertThat(empty.add(Long.MIN_VALUE), is(true));
-		assertThat(empty.add(0L), is(true));
-		assertThat(empty.add(Long.MAX_VALUE), is(true));
+		assertThat(empty.add(Double.MIN_VALUE), is(true));
+		assertThat(empty.add(0.0), is(true));
+		assertThat(empty.add(Double.MAX_VALUE), is(true));
 
-		assertThat(empty, contains(Long.MIN_VALUE, 0L, Long.MAX_VALUE));
+		assertThat(empty, contains(0.0, Double.MIN_VALUE, Double.MAX_VALUE));
 
-		assertThat(empty.contains(Long.MIN_VALUE), is(true));
-		assertThat(empty.contains(0L), is(true));
-		assertThat(empty.contains(Long.MAX_VALUE), is(true));
+		assertThat(empty.contains(Double.MIN_VALUE), is(true));
+		assertThat(empty.contains(0.0), is(true));
+		assertThat(empty.contains(Double.MAX_VALUE), is(true));
 
-		assertThat(empty.remove(Long.MIN_VALUE), is(true));
-		assertThat(empty.remove(0L), is(true));
-		assertThat(empty.remove(Long.MAX_VALUE), is(true));
+		assertThat(empty.remove(Double.MIN_VALUE), is(true));
+		assertThat(empty.remove(0.0), is(true));
+		assertThat(empty.remove(Double.MAX_VALUE), is(true));
 
 		assertThat(empty, is(emptyIterable()));
 	}
 
 	@Test
 	public void fuzz() {
-		Long[] randomValues = new Long[1000];
+		Double[] randomValues = new Double[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
-			long randomValue;
+			double randomValue;
 			do
-				randomValue = random.nextLong();
+				randomValue = random.nextDouble();
 			while (Arrayz.contains(randomValues, randomValue));
 			randomValues[i] = randomValue;
 		}
 
 		// Adding
-		for (long randomValue : randomValues)
+		for (double randomValue : randomValues)
 			assertThat(empty.add(randomValue), is(true));
 		assertThat(empty.size(), is(randomValues.length));
 
-		for (long randomValue : randomValues)
+		for (double randomValue : randomValues)
 			assertThat(empty.add(randomValue), is(false));
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
 		assertThat(empty.containsAll(asList(randomValues)), is(true));
 
-		for (long randomValue : randomValues)
+		for (double randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));
 
 		// toString
@@ -303,12 +306,12 @@ public class LongSetBoxingTest {
 		assertThat(empty.toString(), is(expectedToString.toString()));
 
 		// Removing
-		for (long randomValue : randomValues)
+		for (double randomValue : randomValues)
 			assertThat(empty.remove(randomValue), is(true));
 		assertThat(empty.toString(), is("[]"));
 		assertThat(empty.size(), is(0));
 
-		for (long randomValue : randomValues)
+		for (double randomValue : randomValues)
 			assertThat(empty.remove(randomValue), is(false));
 	}
 }
