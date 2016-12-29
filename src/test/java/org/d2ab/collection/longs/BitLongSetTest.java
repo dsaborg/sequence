@@ -655,7 +655,7 @@ public class BitLongSetTest {
 
 	@Test
 	public void fuzz() {
-		long[] randomValues = new long[10000];
+		long[] randomValues = new long[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			long randomValue;

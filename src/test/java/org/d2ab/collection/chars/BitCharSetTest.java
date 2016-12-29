@@ -510,7 +510,7 @@ public class BitCharSetTest {
 
 	@Test
 	public void fuzz() {
-		char[] randomValues = new char[10000];
+		char[] randomValues = new char[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			char randomValue;

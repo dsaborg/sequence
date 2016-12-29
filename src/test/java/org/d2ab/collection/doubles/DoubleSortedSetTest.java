@@ -749,7 +749,7 @@ public class DoubleSortedSetTest {
 
 	@Test
 	public void fuzz() {
-		double[] randomValues = new double[10000];
+		double[] randomValues = new double[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			double randomValue;

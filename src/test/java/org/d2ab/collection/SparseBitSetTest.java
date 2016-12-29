@@ -504,7 +504,7 @@ public class SparseBitSetTest {
 
 	@Test
 	public void fuzz() {
-		long[] randomIndices = new long[10000];
+		long[] randomIndices = new long[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomIndices.length; i++) {
 			long randomIndex;

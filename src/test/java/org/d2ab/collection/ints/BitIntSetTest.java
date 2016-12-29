@@ -606,7 +606,7 @@ public class BitIntSetTest {
 
 	@Test
 	public void fuzz() {
-		int[] randomValues = new int[10000];
+		int[] randomValues = new int[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			int randomValue;
