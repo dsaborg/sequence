@@ -195,27 +195,13 @@ public interface Arrayz {
 		return false;
 	}
 
-	static Long[] fill(Long[] array, Long value) {
-		for (int i = 0; i < array.length; i++)
-			array[i] = value;
-		return array;
-	}
-
-	static Integer[] fill(Integer[] array, Integer value) {
-		for (int i = 0; i < array.length; i++)
-			array[i] = value;
-		return array;
-	}
-
-	static Double[] fill(Double[] array, Double value) {
-		for (int i = 0; i < array.length; i++)
-			array[i] = value;
-		return array;
-	}
-
-	static Character[] fill(Character[] array, Character value) {
-		for (int i = 0; i < array.length; i++)
-			array[i] = value;
+	/**
+	 * Fill the given array with the given value.
+	 *
+	 * @return the given array, for call chaining.
+	 */
+	static <T> T[] fill(T[] array, T value) {
+		Arrays.fill(array, value);
 		return array;
 	}
 }

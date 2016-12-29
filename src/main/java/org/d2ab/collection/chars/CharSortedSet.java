@@ -149,8 +149,7 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class Base extends CharSet.Base implements CharSortedSet {
-	}
+	abstract class Base extends CharSet.Base implements CharSortedSet {}
 
 	abstract class SubSet extends Base {
 		private final CharSortedSet set;

@@ -115,8 +115,13 @@ public interface IntSet extends Set<Integer>, IntCollection {
 			if (!(o instanceof Set))
 				return false;
 
-			Set<?> that = (Set<?>) o;
-			return size() == that.size() && containsAll(that);
+			if (o instanceof IntSet) {
+				IntSet that = (IntSet) o;
+				return size() == that.size() && containsAllInts(that);
+			} else {
+				Set<?> that = (Set<?>) o;
+				return size() == that.size() && containsAll(that);
+			}
 		}
 
 		public int hashCode() {

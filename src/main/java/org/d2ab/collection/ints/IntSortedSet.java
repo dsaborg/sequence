@@ -149,7 +149,9 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class SubSet extends IntSet.Base implements IntSortedSet {
+	abstract class Base extends IntSet.Base implements IntSortedSet {}
+
+	abstract class SubSet extends Base {
 		private final IntSortedSet set;
 
 		public SubSet(IntSortedSet set) {

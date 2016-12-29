@@ -166,8 +166,8 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean containsAllInts(IntIterable c) {
-		for (int x : c)
-			if (!containsInt(x))
+		for (IntIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsInt(iterator.nextInt()))
 				return false;
 
 		return true;
@@ -190,8 +190,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 * false otherwise.
 	 */
 	default boolean containsAnyInts(IntIterable xs) {
-		IntIterator iterator = iterator();
-		while (iterator.hasNext())
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (xs.containsInt(iterator.nextInt()))
 				return true;
 

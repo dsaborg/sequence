@@ -202,8 +202,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class Base extends DoubleSet.Base implements DoubleSortedSet {
-	}
+	abstract class Base extends DoubleSet.Base implements DoubleSortedSet {}
 
 	abstract class SubSet extends Base {
 		private final DoubleSortedSet set;
