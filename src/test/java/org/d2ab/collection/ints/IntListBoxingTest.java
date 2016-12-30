@@ -108,7 +108,9 @@ public class IntListBoxingTest {
 			assertThat(list.contains(i), is(true));
 
 		assertThat(list.contains(17), is(false));
+
 		assertThat(list.contains(new Object()), is(false));
+
 		assertThat(list.contains(null), is(false));
 	}
 
@@ -158,7 +160,7 @@ public class IntListBoxingTest {
 	}
 
 	@Test
-	public void add() {
+	public void addAt() {
 		expecting(UnsupportedOperationException.class, () -> empty.add(1));
 		assertThat(empty, is(emptyIterable()));
 
@@ -194,7 +196,7 @@ public class IntListBoxingTest {
 	}
 
 	@Test
-	public void addAll() {
+	public void addAllAt() {
 		assertThat(empty.addAll(emptyList()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -209,8 +211,11 @@ public class IntListBoxingTest {
 	}
 
 	@Test
-	public void addAllAt() {
+	public void addAll() {
 		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(0, IntList.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> empty.addAll(0, asList(1, 2)));
@@ -252,7 +257,7 @@ public class IntListBoxingTest {
 
 	@Test
 	public void retainAllNull() {
-		assertThat(list.retainAll(singletonList(null)), is(true));
+		assertThat(list.retainAll(singletonList(new Object())), is(true));
 		assertThat(list, is(emptyIterable()));
 	}
 
@@ -292,6 +297,7 @@ public class IntListBoxingTest {
 		assertThat(list.get(7), is(3));
 		assertThat(list.get(9), is(5));
 		expecting(IndexOutOfBoundsException.class, () -> list.get(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(11));
 	}
 
 	@Test
@@ -301,7 +307,7 @@ public class IntListBoxingTest {
 	}
 
 	@Test
-	public void addAt() {
+	public void add() {
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 17));
 		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
@@ -379,9 +385,10 @@ public class IntListBoxingTest {
 
 	@Test
 	public void exhaustiveListIterator() {
+		ListIterator<Integer> listIterator = list.listIterator();
+
+		AtomicInteger i = new AtomicInteger(0);
 		twice(() -> {
-			ListIterator<Integer> listIterator = list.listIterator();
-			AtomicInteger i = new AtomicInteger(0);
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.next(), is(i.get() % 5 + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -404,7 +411,6 @@ public class IntListBoxingTest {
 			i++;
 		}
 		assertThat(i, is(10));
-		expecting(NoSuchElementException.class, iterator::next);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -424,7 +430,6 @@ public class IntListBoxingTest {
 			i++;
 		}
 		assertThat(i, is(10));
-		expecting(NoSuchElementException.class, listIterator::next);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -438,7 +443,8 @@ public class IntListBoxingTest {
 	@Test
 	public void parallelStream() {
 		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelStream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list.parallelStream().collect(Collectors.toList()),
+		           contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test

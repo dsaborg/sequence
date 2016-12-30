@@ -17,15 +17,16 @@
 package org.d2ab.iterator.ints;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} over an array of items.
  */
 public class ArrayIntIterator implements IntIterator {
-	private int[] array;
-	private int offset;
+	protected int[] array;
+	protected int offset;
 	private int size;
-	private int index;
+	protected int index;
 
 	public ArrayIntIterator(int... array) {
 		this(array, array.length);
@@ -52,6 +53,9 @@ public class ArrayIntIterator implements IntIterator {
 
 	@Override
 	public int nextInt() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
 		return array[offset + index++];
 	}
 }

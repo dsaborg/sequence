@@ -24,6 +24,10 @@ import java.util.ListIterator;
  * A {@link ListIterator} over a sequence of {@code int} values.
  */
 public interface IntListIterator extends ListIterator<Integer>, IntIterator {
+	static IntListIterator of(int... xs) {
+		return new ArrayIntListIterator(xs);
+	}
+
 	@Override
 	boolean hasNext();
 

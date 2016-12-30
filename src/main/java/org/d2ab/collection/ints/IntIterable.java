@@ -36,16 +36,10 @@ import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
-
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
 	static IntIterable of(int... integers) {
 		return () -> new ArrayIntIterator(integers);
-	}
-
-	static IntIterable from(Integer... integers) {
-		return from(asList(integers));
 	}
 
 	static IntIterable from(Iterable<Integer> iterable) {
