@@ -946,6 +946,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
+	// TODO: Add flattenIterator, flattenArray, etc
 	default <U> Sequence<U> flatten(Function<? super T, ? extends Iterable<U>> mapper) {
 		return ChainingIterable.flatten(this, mapper)::iterator;
 	}

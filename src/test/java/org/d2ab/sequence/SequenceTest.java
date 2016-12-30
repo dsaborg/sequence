@@ -942,12 +942,14 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void flatMapIterables() {
-		Sequence<Iterable<Integer>> sequence = newSequence(
-				Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6));
-
 		Function<Iterable<Integer>, Iterable<Integer>> identity = Function.identity();
-		Sequence<Integer> flatMap = sequence.flatten(identity);
 
+		Sequence<Integer> emptyFlatMap = this.<Iterable<Integer>>newSequence().flatten(identity);
+		twice(() -> assertThat(emptyFlatMap, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlatMap.iterator().next());
+
+		Sequence<Integer> flatMap = newSequence(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))
+				.flatten(identity);
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
 
@@ -973,7 +975,7 @@ public class SequenceTest {
 	public void flatMapIterators() {
 		Sequence<Iterator<Integer>> sequence = newSequence(Iterators.of(1, 2), Iterators.of(3, 4), Iterators.of(5, 6));
 
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::once);
+		Sequence<Integer> flatMap = sequence.flatten(Iterables::once);
 
 		assertThat(flatMap, contains(1, 2, 3, 4, 5, 6));
 		assertThat(flatMap, is(emptyIterable()));
@@ -983,7 +985,7 @@ public class SequenceTest {
 	public void flatMapArrays() {
 		Sequence<Integer[]> sequence = newSequence(new Integer[]{1, 2}, new Integer[]{3, 4}, new Integer[]{5, 6});
 
-		Sequence<Integer> flatMap = sequence.flatten(Sequence::of);
+		Sequence<Integer> flatMap = sequence.flatten(Iterables::of);
 
 		twice(() -> assertThat(flatMap, contains(1, 2, 3, 4, 5, 6)));
 	}
@@ -991,9 +993,12 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void flattenIterables() {
+		Sequence<Integer> emptyFlattened = newSequence().flatten();
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
 		Sequence<Integer> flattened = newSequence(Iterables.of(1, 2), Iterables.of(3, 4), Iterables.of(5, 6))
 				.flatten();
-
 		twice(() -> assertThat(flattened, contains(1, 2, 3, 4, 5, 6)));
 	}
 
@@ -1903,7 +1908,7 @@ public class SequenceTest {
 		twice(() -> assertThat(_1234.batch(3), contains(contains(1, 2, 3), contains(4))));
 		twice(() -> assertThat(_12345.batch(3), contains(contains(1, 2, 3), contains(4, 5))));
 		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)
-		)));
+		                                                    )));
 	}
 
 	@SuppressWarnings("unchecked")
