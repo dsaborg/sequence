@@ -33,9 +33,11 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 	private final Predicate<? super T> predicate;
 
 	private State state = INIT;
+	private boolean nextOrPrevious;
+	private boolean addOrRemove;
 
-	private boolean hasCached;
-	private T cached;
+	private boolean hasNextOrPreviousCached;
+	private T cachedNextOrPrevious;
 
 	private int cursor;
 
@@ -48,22 +50,24 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 
 	@Override
 	public boolean hasNext() {
-		if (state == HAS_PREVIOUS && hasCached)
+		if (state == HAS_NEXT)
+			return hasNextOrPreviousCached;
+
+		if (state == HAS_PREVIOUS && hasNextOrPreviousCached)
 			iterator.next();
 
-		if (state == HAS_NEXT)
-			return hasCached;
+		hasNextOrPreviousCached = false;
+		while (iterator.hasNext()) {
+			T maybeNext = iterator.next();
+			if (predicate.test(maybeNext)) {
+				cachedNextOrPrevious = maybeNext;
+				hasNextOrPreviousCached = true;
+				break;
+			}
+		}
 
 		state = HAS_NEXT;
-
-		do {
-			hasCached = iterator.hasNext();
-			if (!hasCached)
-				return false;
-			cached = iterator.next();
-		} while (!predicate.test(cached));
-
-		return hasCached;
+		return hasNextOrPreviousCached;
 	}
 
 	@Override
@@ -72,30 +76,34 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 			throw new NoSuchElementException();
 
 		state = NEXT;
-
+		addOrRemove = false;
+		nextOrPrevious = true;
+		hasNextOrPreviousCached = false;
 		cursor++;
 
-		return cached;
+		return cachedNextOrPrevious;
 	}
 
 	@Override
 	public boolean hasPrevious() {
-		if (state == HAS_NEXT && hasCached)
+		if (state == HAS_PREVIOUS)
+			return hasNextOrPreviousCached;
+
+		if (state == HAS_NEXT && hasNextOrPreviousCached)
 			iterator.previous();
 
-		if (state == HAS_PREVIOUS)
-			return hasCached;
+		hasNextOrPreviousCached = false;
+		while (iterator.hasPrevious()) {
+			T maybePrevious = iterator.previous();
+			if (predicate.test(maybePrevious)) {
+				cachedNextOrPrevious = maybePrevious;
+				hasNextOrPreviousCached = true;
+				break;
+			}
+		}
 
 		state = HAS_PREVIOUS;
-
-		do {
-			hasCached = iterator.hasPrevious();
-			if (!hasCached)
-				return false;
-			cached = iterator.previous();
-		} while (!predicate.test(cached));
-
-		return hasCached;
+		return hasNextOrPreviousCached;
 	}
 
 	@Override
@@ -104,10 +112,12 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 			throw new NoSuchElementException();
 
 		state = PREVIOUS;
-
+		addOrRemove = false;
+		nextOrPrevious = true;
+		hasNextOrPreviousCached = false;
 		cursor--;
 
-		return cached;
+		return cachedNextOrPrevious;
 	}
 
 	@Override
@@ -122,18 +132,24 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 
 	@Override
 	public void remove() {
-		if (state != PREVIOUS && state != NEXT)
-			throw new IllegalStateException("Next or previous not called");
+		if (!nextOrPrevious)
+			throw new IllegalStateException("next or previous not called");
+		if (addOrRemove)
+			throw new IllegalStateException("add or remove called");
 
 		iterator.remove();
 		if (state == NEXT)
 			cursor--;
+
+		addOrRemove = true;
 	}
 
 	@Override
 	public void set(T t) {
-		if (state != PREVIOUS && state != NEXT)
-			throw new IllegalStateException("Next or previous not called");
+		if (!nextOrPrevious)
+			throw new IllegalStateException("next or previous not called");
+		if (addOrRemove)
+			throw new IllegalStateException("add or remove called");
 
 		if (!predicate.test(t))
 			throw new IllegalArgumentException(String.valueOf(t));
@@ -143,11 +159,15 @@ public class FilteringListIterator<T> extends DelegatingTransformingIterator<T, 
 
 	@Override
 	public void add(T t) {
+		if ((state == HAS_NEXT || state == HAS_PREVIOUS) && hasNextOrPreviousCached)
+			throw new IllegalStateException("cannot add immediately after hasNext or hasPrevious");
+
 		if (!predicate.test(t))
 			throw new IllegalArgumentException(String.valueOf(t));
 
 		iterator.add(t);
-
 		cursor++;
+
+		addOrRemove = true;
 	}
 }
