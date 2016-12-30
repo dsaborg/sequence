@@ -38,6 +38,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.reverseOrder;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -1051,7 +1052,7 @@ public class SequenceTest {
 	public void flattenPairs() {
 		Sequence<Pair<String, Integer>> sequence = newSequence(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 
-		Sequence<Object> flattened = sequence.flatten();
+		Sequence<?> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
 	}
 
@@ -1061,20 +1062,21 @@ public class SequenceTest {
 		Sequence<Entry<String, Integer>> sequence = newSequence(Maps.entry("1", 1), Maps.entry("2", 2),
 		                                                        Maps.entry("3", 3));
 
-		Sequence<Object> flattened = sequence.flatten();
+		Sequence<?> flattened = sequence.flatten();
 		twice(() -> assertThat(flattened, contains("1", 1, "2", 2, "3", 3)));
 	}
 
 	@Test
 	public void flattenInvalid() {
-		Iterator<Object> iterator = _12345.flatten().iterator();
+		Iterator<?> iterator = _12345.flatten().iterator();
 		expecting(ClassCastException.class, iterator::next);
 	}
 
 	@Test
 	public void map() {
-		Sequence<String> mappedEmpty = empty.map(Object::toString);
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		Sequence<String> emptyMapped = empty.map(Object::toString);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		Sequence<String> oneMapped = _1.map(Object::toString);
 		twice(() -> assertThat(oneMapped, contains("1")));
@@ -1088,8 +1090,9 @@ public class SequenceTest {
 
 	@Test
 	public void biMap() {
-		Sequence<String> mappedEmpty = empty.biMap(Object::toString, Integer::parseInt);
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		Sequence<String> emptyMapped = empty.biMap(Object::toString, Integer::parseInt);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		Sequence<String> oneMapped = _1.biMap(Object::toString, Integer::parseInt);
 		twice(() -> assertThat(oneMapped, contains("1")));
@@ -1103,8 +1106,9 @@ public class SequenceTest {
 
 	@Test
 	public void mapWithIndex() {
-		Sequence<String> mappedEmpty = empty.map(Object::toString);
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		Sequence<String> emptyMapped = empty.map(Object::toString);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
 		Sequence<String> oneMapped = _1.mapIndexed((e, i) -> {
@@ -1152,57 +1156,86 @@ public class SequenceTest {
 
 	@Test
 	public void mapBack() {
-		Sequence<Integer> mapBackPrevious = _12345.mapBack((p, n) -> p);
-		twice(() -> assertThat(mapBackPrevious, contains(null, 1, 2, 3, 4)));
+		Sequence<Integer> emptyMappedBack = empty.mapBack((p, c) -> {
+			throw new IllegalStateException("should not get called");
+		});
+		twice(() -> assertThat(emptyMappedBack, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMappedBack.iterator().next());
 
-		Sequence<Integer> mapBack = _12345.mapBack((p, n) -> n);
-		twice(() -> assertThat(mapBack, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveMappedBackToPrevious = _12345.mapBack((p, c) -> p);
+		twice(() -> assertThat(fiveMappedBackToPrevious, contains(null, 1, 2, 3, 4)));
+
+		Sequence<Integer> fiveMappedBackToCurrent = _12345.mapBack((p, c) -> c);
+		twice(() -> assertThat(fiveMappedBackToCurrent, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapForward() {
-		Sequence<Integer> mapForward = _12345.mapForward((c, n) -> c);
-		twice(() -> assertThat(mapForward, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> emptyMappedForward = empty.mapForward((c, n) -> {
+			throw new IllegalStateException("should not get called");
+		});
+		twice(() -> assertThat(emptyMappedForward, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMappedForward.iterator().next());
 
-		Sequence<Integer> mapForwardNext = _12345.mapForward((c, n) -> n);
-		twice(() -> assertThat(mapForwardNext, contains(2, 3, 4, 5, null)));
+		Sequence<Integer> fiveMappedForwardToCurrent = _12345.mapForward((c, n) -> c);
+		twice(() -> assertThat(fiveMappedForwardToCurrent, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> fiveMappedForwardToNext = _12345.mapForward((c, n) -> n);
+		twice(() -> assertThat(fiveMappedForwardToNext, contains(2, 3, 4, 5, null)));
 	}
 
 	@Test
 	public void mapBackWithReplacement() {
-		Sequence<Integer> mapBackPrevious = _12345.mapBack(117, (p, n) -> p);
-		twice(() -> assertThat(mapBackPrevious, contains(117, 1, 2, 3, 4)));
+		Sequence<Integer> emptyMappedBack = empty.mapBack(117, (p, n) -> {
+			throw new IllegalStateException("should not get called");
+		});
+		twice(() -> assertThat(emptyMappedBack, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMappedBack.iterator().next());
 
-		Sequence<Integer> mapBack = _12345.mapBack(117, (p, n) -> n);
-		twice(() -> assertThat(mapBack, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveMappedBackToPrevious = _12345.mapBack(117, (p, n) -> p);
+		twice(() -> assertThat(fiveMappedBackToPrevious, contains(117, 1, 2, 3, 4)));
+
+		Sequence<Integer> fiveMappedBackToCurrent = _12345.mapBack(117, (p, n) -> n);
+		twice(() -> assertThat(fiveMappedBackToCurrent, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void mapForwardWithReplacement() {
-		Sequence<Integer> mapForward = _12345.mapForward(117, (c, n) -> c);
-		twice(() -> assertThat(mapForward, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> emptyMappedForward = empty.mapForward(117, (c, n) -> {
+			throw new IllegalStateException("should not get called");
+		});
+		twice(() -> assertThat(emptyMappedForward, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMappedForward.iterator().next());
 
-		Sequence<Integer> mapForwardNext = _12345.mapForward(117, (c, n) -> n);
-		twice(() -> assertThat(mapForwardNext, contains(2, 3, 4, 5, 117)));
+		Sequence<Integer> fiveMappedForwardToCurrent = _12345.mapForward(117, (c, n) -> c);
+		twice(() -> assertThat(fiveMappedForwardToCurrent, contains(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> fiveMappedForwardToNext = _12345.mapForward(117, (c, n) -> n);
+		twice(() -> assertThat(fiveMappedForwardToNext, contains(2, 3, 4, 5, 117)));
 	}
 
 	@Test
 	public void cast() {
-		Sequence<Number> mappedEmpty = empty.cast(Number.class);
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		Sequence<Number> emptyCast = empty.cast(Number.class);
+		twice(() -> assertThat(emptyCast, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyCast.iterator().next());
 
-		Sequence<Number> oneMapped = _1.cast(Number.class);
-		twice(() -> assertThat(oneMapped, contains(1)));
+		Sequence<Number> oneCast = _1.cast(Number.class);
+		twice(() -> assertThat(oneCast, contains(1)));
 
-		Sequence<Number> twoMapped = _12.cast(Number.class);
-		twice(() -> assertThat(twoMapped, contains(1, 2)));
+		Sequence<Number> twoCast = _12.cast(Number.class);
+		twice(() -> assertThat(twoCast, contains(1, 2)));
 
-		Sequence<Number> fiveMapped = _12345.cast(Number.class);
-		twice(() -> assertThat(fiveMapped, contains(1, 2, 3, 4, 5)));
+		Sequence<Number> fiveCast = _12345.cast(Number.class);
+		twice(() -> assertThat(fiveCast, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void peekBack() {
+		Sequence<Integer> peekBackEmpty = empty.peekBack((previous, current) -> fail("should not get called"));
+		twice(() -> assertThat(peekBackEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> peekBackEmpty.iterator().next());
+
 		AtomicInteger value = new AtomicInteger();
 		Sequence<Integer> peekBack = _12345.peekBack((p, n) -> {
 			assertThat(n, is(value.getAndIncrement()));
@@ -1217,10 +1250,14 @@ public class SequenceTest {
 
 	@Test
 	public void peekForward() {
+		Sequence<Integer> peekForwardEmpty = empty.peekForward((current, next) -> fail("should not get called"));
+		twice(() -> assertThat(peekForwardEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> peekForwardEmpty.iterator().next());
+
 		AtomicInteger value = new AtomicInteger();
-		Sequence<Integer> peekForward = _12345.peekForward((n, f) -> {
-			assertThat(n, is(value.getAndIncrement()));
-			assertThat(f, is(n == 5 ? null : n + 1));
+		Sequence<Integer> peekForward = _12345.peekForward((current, next) -> {
+			assertThat(current, is(value.getAndIncrement()));
+			assertThat(next, is(current == 5 ? null : current + 1));
 		});
 
 		twice(() -> {
@@ -1231,10 +1268,14 @@ public class SequenceTest {
 
 	@Test
 	public void peekBackWithReplacement() {
+		Sequence<Integer> peekBackEmpty = empty.peekBack(117, (previous, current) -> fail("should not get called"));
+		twice(() -> assertThat(peekBackEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> peekBackEmpty.iterator().next());
+
 		AtomicInteger value = new AtomicInteger();
-		Sequence<Integer> peekBack = _12345.peekBack(117, (p, n) -> {
-			assertThat(n, is(value.getAndIncrement()));
-			assertThat(p, is(n == 1 ? 117 : n - 1));
+		Sequence<Integer> peekBack = _12345.peekBack(117, (previous, current) -> {
+			assertThat(current, is(value.getAndIncrement()));
+			assertThat(previous, is(current == 1 ? 117 : current - 1));
 		});
 
 		twice(() -> {
@@ -1245,10 +1286,14 @@ public class SequenceTest {
 
 	@Test
 	public void peekForwardWithReplacement() {
+		Sequence<Integer> peekForwardEmpty = empty.peekForward(117, (current, next) -> fail("should not get called"));
+		twice(() -> assertThat(peekForwardEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> peekForwardEmpty.iterator().next());
+
 		AtomicInteger value = new AtomicInteger();
-		Sequence<Integer> peekForward = _12345.peekForward(117, (n, f) -> {
-			assertThat(n, is(value.getAndIncrement()));
-			assertThat(f, is(n == 5 ? 117 : n + 1));
+		Sequence<Integer> peekForward = _12345.peekForward(117, (current, next) -> {
+			assertThat(current, is(value.getAndIncrement()));
+			assertThat(next, is(current == 5 ? 117 : current + 1));
 		});
 
 		twice(() -> {
@@ -1271,116 +1316,124 @@ public class SequenceTest {
 
 	@Test
 	public void untilTerminal() {
-		Sequence<Integer> untilEmpty = empty.until(5);
-		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyUntil5 = empty.until(5);
+		twice(() -> assertThat(emptyUntil5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.until(5);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
+		Sequence<Integer> nineUntil5 = _123456789.until(5);
+		twice(() -> assertThat(nineUntil5, contains(1, 2, 3, 4)));
 
-		Sequence<Integer> noEnd = _12345.until(10);
-		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveUntil10 = _12345.until(10);
+		twice(() -> assertThat(fiveUntil10, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilNull() {
-		Sequence<Integer> untilEmpty = empty.untilNull();
-		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyUntilNull = empty.untilNull();
+		twice(() -> assertThat(emptyUntilNull, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntilNull.iterator().next());
 
-		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).untilNull();
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> nineUntilNull = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).untilNull();
+		twice(() -> assertThat(nineUntilNull, contains(1, 2, 3, 4, 5)));
 
-		Sequence<Integer> noEnd = _12345.untilNull();
-		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveUntilNull = _12345.untilNull();
+		twice(() -> assertThat(fiveUntilNull, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilPredicate() {
-		Sequence<Integer> untilEmpty = empty.endingAt(5);
-		twice(() -> assertThat(untilEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyUntilEqual5 = empty.until(i -> i == 5);
+		twice(() -> assertThat(emptyUntilEqual5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntilEqual5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.until(i -> i == 5);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4)));
+		Sequence<Integer> nineUntilEqual5 = _123456789.until(i -> i == 5);
+		twice(() -> assertThat(nineUntilEqual5, contains(1, 2, 3, 4)));
 
-		Sequence<Integer> noEnd = _12345.until(i -> i == 10);
-		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveUntilEqual10 = _12345.until(i -> i == 10);
+		twice(() -> assertThat(fiveUntilEqual10, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void untilRemoval() {
-		Sequence<Integer> until5 = _123456789.until(5);
+		Sequence<Integer> nineUntil5 = _123456789.until(5);
 
-		until5.clear();
-		assertThat(until5, is(emptyIterable()));
+		nineUntil5.clear();
+		assertThat(nineUntil5, is(emptyIterable()));
 		assertThat(_123456789, contains(5, 6, 7, 8, 9));
 	}
 
 	@Test
 	public void endingAtTerminal() {
-		Sequence<Integer> endingEmpty = empty.endingAt(5);
-		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyEndingAt5 = empty.endingAt(5);
+		twice(() -> assertThat(emptyEndingAt5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.endingAt(5);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> nineEndingAt5 = _123456789.endingAt(5);
+		twice(() -> assertThat(nineEndingAt5, contains(1, 2, 3, 4, 5)));
 
-		Sequence<Integer> noEnd = _12345.endingAt(10);
-		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveEndingAt10 = _12345.endingAt(10);
+		twice(() -> assertThat(fiveEndingAt10, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtNull() {
-		Sequence<Integer> endingEmpty = empty.endingAtNull();
-		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyEndingAtNull = empty.endingAtNull();
+		twice(() -> assertThat(emptyEndingAtNull, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAtNull.iterator().next());
 
-		Sequence<Integer> endingAtNull = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).endingAtNull();
-		twice(() -> assertThat(endingAtNull, contains(1, 2, 3, 4, 5, null)));
+		Sequence<Integer> nineEndingAtNull = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).endingAtNull();
+		twice(() -> assertThat(nineEndingAtNull, contains(1, 2, 3, 4, 5, null)));
 
-		Sequence<Integer> noNullEnd = _12345.endingAtNull();
-		twice(() -> assertThat(noNullEnd, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveEndingAtNull = _12345.endingAtNull();
+		twice(() -> assertThat(fiveEndingAtNull, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		Sequence<Integer> endingEmpty = empty.endingAt(i -> i == 5);
-		twice(() -> assertThat(endingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyEndingAtEqual5 = empty.endingAt(i -> i == 5);
+		twice(() -> assertThat(emptyEndingAtEqual5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAtEqual5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.endingAt(i -> i == 5);
-		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> nineEndingAtEqual5 = _123456789.endingAt(i -> i == 5);
+		twice(() -> assertThat(nineEndingAtEqual5, contains(1, 2, 3, 4, 5)));
 
-		Sequence<Integer> noEnd = _12345.endingAt(i -> i == 10);
-		twice(() -> assertThat(noEnd, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> fiveEndingAtEqual10 = _12345.endingAt(i -> i == 10);
+		twice(() -> assertThat(fiveEndingAtEqual10, contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void endingAtRemoval() {
-		Sequence<Integer> endingAt5 = _123456789.endingAt(5);
+		Sequence<Integer> nineEndingAt5 = _123456789.endingAt(5);
 
-		endingAt5.clear();
-		assertThat(endingAt5, contains(6, 7, 8, 9));
+		nineEndingAt5.clear();
+		assertThat(nineEndingAt5, contains(6, 7, 8, 9));
 		assertThat(_123456789, contains(6, 7, 8, 9));
 	}
 
 	@Test
 	public void startingAfter() {
-		Sequence<Integer> startingEmpty = empty.startingAfter(5);
-		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyStartingAfter5 = empty.startingAfter(5);
+		twice(() -> assertThat(emptyStartingAfter5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStartingAfter5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.startingAfter(5);
-		twice(() -> assertThat(sequence, contains(6, 7, 8, 9)));
+		Sequence<Integer> nineStartingAfter5 = _123456789.startingAfter(5);
+		twice(() -> assertThat(nineStartingAfter5, contains(6, 7, 8, 9)));
 
-		Sequence<Integer> noStart = _12345.startingAfter(10);
-		twice(() -> assertThat(noStart, is(emptyIterable())));
+		Sequence<Integer> fiveStartingAfter10 = _12345.startingAfter(10);
+		twice(() -> assertThat(fiveStartingAfter10, is(emptyIterable())));
 	}
 
 	@Test
 	public void startingAfterPredicate() {
-		Sequence<Integer> startingEmpty = empty.startingAfter(i -> i == 5);
-		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyStartingAfterEqual5 = empty.startingAfter(i -> i == 5);
+		twice(() -> assertThat(emptyStartingAfterEqual5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStartingAfterEqual5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.startingAfter(i -> i == 5);
-		twice(() -> assertThat(sequence, contains(6, 7, 8, 9)));
+		Sequence<Integer> nineStartingAfterEqual5 = _123456789.startingAfter(i -> i == 5);
+		twice(() -> assertThat(nineStartingAfterEqual5, contains(6, 7, 8, 9)));
 
-		Sequence<Integer> noStart = _12345.startingAfter(i -> i == 10);
-		twice(() -> assertThat(noStart, is(emptyIterable())));
+		Sequence<Integer> fiveStartingAfterEqual10 = _12345.startingAfter(i -> i == 10);
+		twice(() -> assertThat(fiveStartingAfterEqual10, is(emptyIterable())));
 	}
 
 	@Test
@@ -1394,35 +1447,37 @@ public class SequenceTest {
 
 	@Test
 	public void startingFrom() {
-		Sequence<Integer> startingEmpty = empty.startingFrom(5);
-		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyStartingFrom5 = empty.startingFrom(5);
+		twice(() -> assertThat(emptyStartingFrom5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStartingFrom5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.startingFrom(5);
-		twice(() -> assertThat(sequence, contains(5, 6, 7, 8, 9)));
+		Sequence<Integer> nineStartingFrom5 = _123456789.startingFrom(5);
+		twice(() -> assertThat(nineStartingFrom5, contains(5, 6, 7, 8, 9)));
 
-		Sequence<Integer> noStart = _12345.startingFrom(10);
-		twice(() -> assertThat(noStart, is(emptyIterable())));
-	}
-
-	@Test
-	public void startingFromRemoval() {
-		Sequence<Integer> startingFrom5 = _123456789.startingFrom(5);
-
-		startingFrom5.clear();
-		assertThat(startingFrom5, is(emptyIterable()));
-		assertThat(_123456789, contains(1, 2, 3, 4));
+		Sequence<Integer> fiveStartingFrom10 = _12345.startingFrom(10);
+		twice(() -> assertThat(fiveStartingFrom10, is(emptyIterable())));
 	}
 
 	@Test
 	public void startingFromPredicate() {
-		Sequence<Integer> startingEmpty = empty.startingFrom(i -> i == 5);
-		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyStartingFromEqual5 = empty.startingFrom(i -> i == 5);
+		twice(() -> assertThat(emptyStartingFromEqual5, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStartingFromEqual5.iterator().next());
 
-		Sequence<Integer> sequence = _123456789.startingFrom(i -> i == 5);
-		twice(() -> assertThat(sequence, contains(5, 6, 7, 8, 9)));
+		Sequence<Integer> nineStartingFromEqual5 = _123456789.startingFrom(i -> i == 5);
+		twice(() -> assertThat(nineStartingFromEqual5, contains(5, 6, 7, 8, 9)));
 
-		Sequence<Integer> noStart = _12345.startingFrom(i -> i == 10);
-		twice(() -> assertThat(noStart, is(emptyIterable())));
+		Sequence<Integer> fiveStartingFromEqual10 = _12345.startingFrom(i -> i == 10);
+		twice(() -> assertThat(fiveStartingFromEqual10, is(emptyIterable())));
+	}
+
+	@Test
+	public void startingFromRemoval() {
+		Sequence<Integer> nineStartingFrom5 = _123456789.startingFrom(5);
+
+		nineStartingFrom5.clear();
+		assertThat(nineStartingFrom5, is(emptyIterable()));
+		assertThat(_123456789, contains(1, 2, 3, 4));
 	}
 
 	@Test
@@ -1752,6 +1807,7 @@ public class SequenceTest {
 	public void entries() {
 		Sequence<Entry<Integer, Integer>> emptyEntries = empty.entries();
 		twice(() -> assertThat(emptyEntries, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEntries.iterator().next());
 
 		Sequence<Entry<Integer, Integer>> oneEntries = _1.entries();
 		twice(() -> assertThat(oneEntries, contains(Maps.entry(1, null))));
@@ -1772,6 +1828,7 @@ public class SequenceTest {
 	public void pairs() {
 		Sequence<Pair<Integer, Integer>> emptyPaired = empty.pairs();
 		twice(() -> assertThat(emptyPaired, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPaired.iterator().next());
 
 		Sequence<Pair<Integer, Integer>> onePaired = _1.pairs();
 		twice(() -> assertThat(onePaired, contains(Pair.of(1, null))));
@@ -1791,6 +1848,7 @@ public class SequenceTest {
 	public void adjacentEntries() {
 		Sequence<Entry<Integer, Integer>> emptyEntries = empty.adjacentEntries();
 		twice(() -> assertThat(emptyEntries, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEntries.iterator().next());
 
 		Sequence<Entry<Integer, Integer>> oneEntries = _1.adjacentEntries();
 		twice(() -> assertThat(oneEntries, contains(Pair.of(1, null))));
@@ -1813,6 +1871,7 @@ public class SequenceTest {
 	public void adjacentPairs() {
 		Sequence<Pair<Integer, Integer>> emptyPaired = empty.adjacentPairs();
 		twice(() -> assertThat(emptyPaired, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPaired.iterator().next());
 
 		Sequence<Pair<Integer, Integer>> onePaired = _1.adjacentPairs();
 		twice(() -> assertThat(onePaired, contains(Pair.of(1, null))));
@@ -1835,6 +1894,7 @@ public class SequenceTest {
 	public void biSequence() {
 		BiSequence<Integer, String> emptyBiSequence = empty.toBiSequence();
 		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBiSequence.iterator().next());
 
 		BiSequence<Integer, String> oneBiSequence = newSequence(Pair.of(1, "1")).toBiSequence();
 		twice(() -> assertThat(oneBiSequence, contains(Pair.of(1, "1"))));
@@ -1852,6 +1912,7 @@ public class SequenceTest {
 	public void entrySequence() {
 		EntrySequence<Integer, String> emptyEntrySequence = empty.toEntrySequence();
 		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEntrySequence.iterator().next());
 
 		EntrySequence<Integer, String> oneEntrySequence = newSequence(Maps.entry(1, "1")).toEntrySequence();
 		twice(() -> assertThat(oneEntrySequence, contains(Maps.entry(1, "1"))));
@@ -1869,68 +1930,126 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void window() {
-		twice(() -> assertThat(empty.window(3), is(emptyIterable())));
-		twice(() -> assertThat(_1.window(3), contains(contains(1))));
-		twice(() -> assertThat(_12.window(3), contains(contains(1, 2))));
-		twice(() -> assertThat(_123.window(3), contains(contains(1, 2, 3))));
-		twice(() -> assertThat(_1234.window(3), contains(contains(1, 2, 3), contains(2, 3, 4))));
-		twice(() -> assertThat(_12345.window(3), contains(contains(1, 2, 3), contains(2, 3, 4), contains(3, 4, 5))));
+		Sequence<Sequence<Integer>> emptyWindowed = empty.window(3);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
+
+		Sequence<Sequence<Integer>> oneWindowed = _1.window(3);
+		twice(() -> assertThat(oneWindowed, contains(contains(1))));
+
+		Sequence<Sequence<Integer>> twoWindowed = _12.window(3);
+		twice(() -> assertThat(twoWindowed, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> threeWindowed = _123.window(3);
+		twice(() -> assertThat(threeWindowed, contains(contains(1, 2, 3))));
+
+		Sequence<Sequence<Integer>> fourWindowed = _1234.window(3);
+		twice(() -> assertThat(fourWindowed, contains(contains(1, 2, 3), contains(2, 3, 4))));
+
+		Sequence<Sequence<Integer>> fiveWindowed = _12345.window(3);
+		twice(() -> assertThat(fiveWindowed, contains(contains(1, 2, 3), contains(2, 3, 4), contains(3, 4, 5))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void windowWithStep() {
-		twice(() -> assertThat(empty.window(3, 2), is(emptyIterable())));
-		twice(() -> assertThat(_1.window(3, 2), contains(contains(1))));
-		twice(() -> assertThat(_12.window(3, 2), contains(contains(1, 2))));
-		twice(() -> assertThat(_123.window(3, 2), contains(contains(1, 2, 3))));
-		twice(() -> assertThat(_1234.window(3, 2), contains(contains(1, 2, 3), contains(3, 4))));
-		twice(() -> assertThat(_12345.window(3, 2), contains(contains(1, 2, 3), contains(3, 4, 5))));
-		twice(() -> assertThat(_123456789.window(3, 2),
-		                       contains(contains(1, 2, 3), contains(3, 4, 5), contains(5, 6, 7), contains(7, 8, 9))));
+	public void windowWithSmallerStep() {
+		Sequence<Sequence<Integer>> emptyWindowed = empty.window(3, 2);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
 
-		twice(() -> assertThat(empty.window(3, 4), is(emptyIterable())));
-		twice(() -> assertThat(_1.window(3, 4), contains(contains(1))));
-		twice(() -> assertThat(_12.window(3, 4), contains(contains(1, 2))));
-		twice(() -> assertThat(_123.window(3, 4), contains(contains(1, 2, 3))));
-		twice(() -> assertThat(_1234.window(3, 4), contains(contains(1, 2, 3))));
-		twice(() -> assertThat(_12345.window(3, 4), contains(contains(1, 2, 3), contains(5))));
-		twice(() -> assertThat(_123456789.window(3, 4), contains(contains(1, 2, 3), contains(5, 6, 7), contains(9))));
+		Sequence<Sequence<Integer>> oneWindowed = _1.window(3, 2);
+		twice(() -> assertThat(oneWindowed, contains(contains(1))));
+
+		Sequence<Sequence<Integer>> twoWindowed = _12.window(3, 2);
+		twice(() -> assertThat(twoWindowed, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> threeWindowed = _123.window(3, 2);
+		twice(() -> assertThat(threeWindowed, contains(contains(1, 2, 3))));
+
+		Sequence<Sequence<Integer>> fourWindowed = _1234.window(3, 2);
+		twice(() -> assertThat(fourWindowed, contains(contains(1, 2, 3), contains(3, 4))));
+
+		Sequence<Sequence<Integer>> fiveWindowed = _12345.window(3, 2);
+		twice(() -> assertThat(fiveWindowed, contains(contains(1, 2, 3), contains(3, 4, 5))));
+
+		Sequence<Sequence<Integer>> nineWindowed = _123456789.window(3, 2);
+		twice(() -> assertThat(nineWindowed,
+		                       contains(contains(1, 2, 3), contains(3, 4, 5), contains(5, 6, 7), contains(7, 8, 9))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void windowWithLargerStep() {
+		Sequence<Sequence<Integer>> emptyWindowed = empty.window(3, 4);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
+
+		Sequence<Sequence<Integer>> oneWindowed = _1.window(3, 4);
+		twice(() -> assertThat(oneWindowed, contains(contains(1))));
+
+		Sequence<Sequence<Integer>> twoWindowed = _12.window(3, 4);
+		twice(() -> assertThat(twoWindowed, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> threeWindowed = _123.window(3, 4);
+		twice(() -> assertThat(threeWindowed, contains(contains(1, 2, 3))));
+
+		Sequence<Sequence<Integer>> fourWindowed = _1234.window(3, 4);
+		twice(() -> assertThat(fourWindowed, contains(contains(1, 2, 3))));
+
+		Sequence<Sequence<Integer>> fiveWindowed = _12345.window(3, 4);
+		twice(() -> assertThat(fiveWindowed, contains(contains(1, 2, 3), contains(5))));
+
+		Sequence<Sequence<Integer>> nineWindowed = _123456789.window(3, 4);
+		twice(() -> assertThat(nineWindowed, contains(contains(1, 2, 3), contains(5, 6, 7), contains(9))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batch() {
-		twice(() -> assertThat(empty.batch(3), is(emptyIterable())));
-		twice(() -> assertThat(_1.batch(3), contains(contains(1))));
-		twice(() -> assertThat(_12.batch(3), contains(contains(1, 2))));
-		twice(() -> assertThat(_123.batch(3), contains(contains(1, 2, 3))));
-		twice(() -> assertThat(_1234.batch(3), contains(contains(1, 2, 3), contains(4))));
-		twice(() -> assertThat(_12345.batch(3), contains(contains(1, 2, 3), contains(4, 5))));
-		twice(() -> assertThat(_123456789.batch(3), contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9)
-		                                                    )));
+		Sequence<Sequence<Integer>> emptyBatched = empty.batch(3);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
+
+		Sequence<Sequence<Integer>> oneBatched = _1.batch(3);
+		twice(() -> assertThat(oneBatched, contains(contains(1))));
+
+		Sequence<Sequence<Integer>> twoBatched = _12.batch(3);
+		twice(() -> assertThat(twoBatched, contains(contains(1, 2))));
+
+		Sequence<Sequence<Integer>> threeBatched = _123.batch(3);
+		twice(() -> assertThat(threeBatched, contains(contains(1, 2, 3))));
+
+		Sequence<Sequence<Integer>> fourBatched = _1234.batch(3);
+		twice(() -> assertThat(fourBatched, contains(contains(1, 2, 3), contains(4))));
+
+		Sequence<Sequence<Integer>> fiveBatched = _12345.batch(3);
+		twice(() -> assertThat(fiveBatched, contains(contains(1, 2, 3), contains(4, 5))));
+
+		Sequence<Sequence<Integer>> nineBatched = _123456789.batch(3);
+		twice(() -> assertThat(nineBatched, contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8, 9))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<Sequence<Integer>> emptyPartitioned = empty.batch((a, b) -> a > b);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<Sequence<Integer>> emptyBatched = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
 
-		Sequence<Sequence<Integer>> onePartitioned = _1.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(contains(1))));
+		Sequence<Sequence<Integer>> oneBatched = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(oneBatched, contains(contains(1))));
 
-		Sequence<Sequence<Integer>> twoPartitioned = _12.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(contains(1, 2))));
+		Sequence<Sequence<Integer>> twoBatched = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoBatched, contains(contains(1, 2))));
 
-		Sequence<Sequence<Integer>> threePartitioned = _123.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(contains(1, 2, 3))));
+		Sequence<Sequence<Integer>> threeBatched = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeBatched, contains(contains(1, 2, 3))));
 
-		Sequence<Sequence<Integer>> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(contains(2, 3), contains(1))));
+		Sequence<Sequence<Integer>> threeRandomBatched = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomBatched, contains(contains(2, 3), contains(1))));
 
-		Sequence<Sequence<Integer>> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(nineRandomPartitioned,
+		Sequence<Sequence<Integer>> nineRandomBatched = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomBatched,
 		                       contains(contains(67), contains(5, 43), contains(3, 5, 7, 24), contains(5, 67))));
 	}
 
@@ -1939,6 +2058,7 @@ public class SequenceTest {
 	public void splitAroundElement() {
 		Sequence<Sequence<Integer>> emptySplit = empty.split(3);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<Sequence<Integer>> oneSplit = _1.split(3);
 		twice(() -> assertThat(oneSplit, contains(contains(1))));
@@ -1961,6 +2081,7 @@ public class SequenceTest {
 	public void splitPredicate() {
 		Sequence<Sequence<Integer>> emptySplit = empty.split(x -> x % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<Sequence<Integer>> oneSplit = _1.split(x -> x % 3 == 0);
 		twice(() -> assertThat(oneSplit, contains(contains(1))));
@@ -1980,13 +2101,19 @@ public class SequenceTest {
 
 	@Test
 	public void step() {
-		twice(() -> assertThat(_123456789.step(3), contains(1, 4, 7)));
+		Sequence<Integer> emptyStep3 = empty.step(3);
+		twice(() -> assertThat(emptyStep3, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStep3.iterator().next());
+
+		Sequence<Integer> nineStep3 = _123456789.step(3);
+		twice(() -> assertThat(nineStep3, contains(1, 4, 7)));
 	}
 
 	@Test
 	public void distinct() {
 		Sequence<Integer> emptyDistinct = empty.distinct();
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptyDistinct.iterator().next());
 
 		Sequence<Integer> oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains(17)));
@@ -2002,6 +2129,7 @@ public class SequenceTest {
 	public void sorted() {
 		Sequence<Integer> emptySorted = empty.sorted();
 		twice(() -> assertThat(emptySorted, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptySorted.iterator().next());
 
 		Sequence<Integer> oneSorted = oneRandom.sorted();
 		twice(() -> assertThat(oneSorted, contains(17)));
@@ -2015,16 +2143,17 @@ public class SequenceTest {
 
 	@Test
 	public void sortedComparator() {
-		Sequence<Integer> emptySorted = empty.sorted(Comparator.reverseOrder());
+		Sequence<Integer> emptySorted = empty.sorted(reverseOrder());
 		twice(() -> assertThat(emptySorted, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptySorted.iterator().next());
 
-		Sequence<Integer> oneSorted = oneRandom.sorted(Comparator.reverseOrder());
+		Sequence<Integer> oneSorted = oneRandom.sorted(reverseOrder());
 		twice(() -> assertThat(oneSorted, contains(17)));
 
-		Sequence<Integer> twoSorted = twoRandom.sorted(Comparator.reverseOrder());
+		Sequence<Integer> twoSorted = twoRandom.sorted(reverseOrder());
 		twice(() -> assertThat(twoSorted, contains(32, 17)));
 
-		Sequence<Integer> nineSorted = nineRandom.sorted(Comparator.reverseOrder());
+		Sequence<Integer> nineSorted = nineRandom.sorted(reverseOrder());
 		twice(() -> assertThat(nineSorted, contains(67, 67, 43, 24, 7, 5, 5, 5, 3)));
 	}
 
@@ -2046,18 +2175,18 @@ public class SequenceTest {
 
 	@Test
 	public void minByComparator() {
-		twice(() -> assertThat(empty.min(Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(oneRandom.min(Comparator.reverseOrder()), is(Optional.of(17))));
-		twice(() -> assertThat(twoRandom.min(Comparator.reverseOrder()), is(Optional.of(32))));
-		twice(() -> assertThat(nineRandom.min(Comparator.reverseOrder()), is(Optional.of(67))));
+		twice(() -> assertThat(empty.min(reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(oneRandom.min(reverseOrder()), is(Optional.of(17))));
+		twice(() -> assertThat(twoRandom.min(reverseOrder()), is(Optional.of(32))));
+		twice(() -> assertThat(nineRandom.min(reverseOrder()), is(Optional.of(67))));
 	}
 
 	@Test
 	public void maxByComparator() {
-		twice(() -> assertThat(empty.max(Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(oneRandom.max(Comparator.reverseOrder()), is(Optional.of(17))));
-		twice(() -> assertThat(twoRandom.max(Comparator.reverseOrder()), is(Optional.of(17))));
-		twice(() -> assertThat(nineRandom.max(Comparator.reverseOrder()), is(Optional.of(3))));
+		twice(() -> assertThat(empty.max(reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(oneRandom.max(reverseOrder()), is(Optional.of(17))));
+		twice(() -> assertThat(twoRandom.max(reverseOrder()), is(Optional.of(17))));
+		twice(() -> assertThat(nineRandom.max(reverseOrder()), is(Optional.of(3))));
 	}
 
 	@Test
@@ -2128,6 +2257,7 @@ public class SequenceTest {
 			throw new IllegalStateException("Should not get called");
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> peekEmpty.iterator().next());
 
 		AtomicInteger value = new AtomicInteger(1);
 		Sequence<Integer> peekOne = _1.peek(x -> assertThat(x, is(value.getAndIncrement())));
@@ -2146,6 +2276,7 @@ public class SequenceTest {
 			throw new IllegalStateException("Should not get called");
 		});
 		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> peekEmpty.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
 		Sequence<Integer> peekOne = _1.peekIndexed((i, x) -> {
@@ -2209,71 +2340,100 @@ public class SequenceTest {
 
 	@Test
 	public void delimit() {
-		Sequence<Object> delimitedEmpty = empty.delimit(", ");
-		twice(() -> assertThat(delimitedEmpty, is(emptyIterable())));
+		Sequence<?> emptyDelimited = empty.delimit(", ");
+		twice(() -> assertThat(emptyDelimited, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyDelimited.iterator().next());
 
-		Sequence<Object> delimited1 = _1.delimit(", ");
-		twice(() -> assertThat(delimited1, contains(1)));
+		Sequence<?> oneDelimited = _1.delimit(", ");
+		twice(() -> assertThat(oneDelimited, contains(1)));
 
-		Sequence<Object> delimited12 = _12.delimit(", ");
-		twice(() -> assertThat(delimited12, contains(1, ", ", 2)));
+		Iterator<?> oneIterator = oneDelimited.iterator();
+		oneIterator.next();
+		expecting(UnsupportedOperationException.class, oneIterator::remove);
 
-		Sequence<Object> delimited123 = _123.delimit(", ");
-		twice(() -> assertThat(delimited123, contains(1, ", ", 2, ", ", 3)));
+		Sequence<?> twoDelimited = _12.delimit(", ");
+		twice(() -> assertThat(twoDelimited, contains(1, ", ", 2)));
 
-		Sequence<Object> delimited1234 = _1234.delimit(", ");
-		twice(() -> assertThat(delimited1234, contains(1, ", ", 2, ", ", 3, ", ", 4)));
+		Sequence<?> threeDelimited = _123.delimit(", ");
+		twice(() -> assertThat(threeDelimited, contains(1, ", ", 2, ", ", 3)));
+
+		Sequence<?> fourDelimited = _1234.delimit(", ");
+		twice(() -> assertThat(fourDelimited, contains(1, ", ", 2, ", ", 3, ", ", 4)));
 	}
 
 	@Test
 	public void prefix() {
-		Sequence<Object> delimitedEmpty = empty.prefix("[");
-		twice(() -> assertThat(delimitedEmpty, contains("[")));
+		Sequence<?> emptyPrefixed = empty.prefix("[");
+		twice(() -> assertThat(emptyPrefixed, contains("[")));
 
-		Sequence<Object> delimited1 = _1.prefix("[");
-		twice(() -> assertThat(delimited1, contains("[", 1)));
+		Iterator<?> emptyIterator = emptyPrefixed.iterator();
+		emptyIterator.next();
+		expecting(NoSuchElementException.class, emptyIterator::next);
 
-		Sequence<Object> delimited123 = _123.prefix("[");
-		twice(() -> assertThat(delimited123, contains("[", 1, 2, 3)));
+		Sequence<?> onePrefixed = _1.prefix("[");
+		twice(() -> assertThat(onePrefixed, contains("[", 1)));
+
+		Sequence<?> threePrefixed = _123.prefix("[");
+		twice(() -> assertThat(threePrefixed, contains("[", 1, 2, 3)));
 	}
 
 	@Test
 	public void suffix() {
-		Sequence<Object> delimitedEmpty = empty.suffix("]");
-		twice(() -> assertThat(delimitedEmpty, contains("]")));
+		Sequence<?> emptySuffixed = empty.suffix("]");
+		twice(() -> assertThat(emptySuffixed, contains("]")));
 
-		Sequence<Object> delimited1 = _1.suffix("]");
-		twice(() -> assertThat(delimited1, contains(1, "]")));
+		Iterator<?> emptyIterator = emptySuffixed.iterator();
+		emptyIterator.next();
+		expecting(NoSuchElementException.class, emptyIterator::next);
 
-		Sequence<Object> delimited123 = _123.suffix("]");
-		twice(() -> assertThat(delimited123, contains(1, 2, 3, "]")));
+		Sequence<?> oneSuffixed = _1.suffix("]");
+		twice(() -> assertThat(oneSuffixed, contains(1, "]")));
+
+		Sequence<?> threeSuffixed = _123.suffix("]");
+		twice(() -> assertThat(threeSuffixed, contains(1, 2, 3, "]")));
 	}
 
 	@Test
 	public void delimitPrefixSuffix() {
-		Sequence<Object> delimitedEmpty = empty.delimit(", ").prefix("[").suffix("]");
-		twice(() -> assertThat(delimitedEmpty, contains("[", "]")));
+		Sequence<?> emptyDelimited = empty.delimit(", ").prefix("[").suffix("]");
+		twice(() -> assertThat(emptyDelimited, contains("[", "]")));
 
-		Sequence<Object> delimited = _123.delimit(", ").prefix("[").suffix("]");
-		twice(() -> assertThat(delimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
+		Iterator<?> emptyIterator = emptyDelimited.iterator();
+		emptyIterator.next();
+		emptyIterator.next();
+		expecting(NoSuchElementException.class, emptyIterator::next);
+
+		Sequence<?> threeDelimited = _123.delimit(", ").prefix("[").suffix("]");
+		twice(() -> assertThat(threeDelimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
 	}
 
 	@Test
 	public void suffixPrefixDelimit() {
-		Sequence<Object> delimitedEmpty = empty.suffix("]").prefix("[").delimit(", ");
-		twice(() -> assertThat(delimitedEmpty, contains("[", ", ", "]")));
+		Sequence<?> emptyDelimited = empty.suffix("]").prefix("[").delimit(", ");
+		twice(() -> assertThat(emptyDelimited, contains("[", ", ", "]")));
 
-		Sequence<Object> delimited = _123.suffix("]").prefix("[").delimit(", ");
-		twice(() -> assertThat(delimited, contains("[", ", ", 1, ", ", 2, ", ", 3, ", ", "]")));
+		Iterator<?> emptyIterator = emptyDelimited.iterator();
+		emptyIterator.next();
+		emptyIterator.next();
+		emptyIterator.next();
+		expecting(NoSuchElementException.class, emptyIterator::next);
+
+		Sequence<?> threeDelimited = _123.suffix("]").prefix("[").delimit(", ");
+		twice(() -> assertThat(threeDelimited, contains("[", ", ", 1, ", ", 2, ", ", 3, ", ", "]")));
 	}
 
 	@Test
 	public void surround() {
-		Sequence<Object> delimitedEmpty = empty.delimit("[", ", ", "]");
-		twice(() -> assertThat(delimitedEmpty, contains("[", "]")));
+		Sequence<?> emptyDelimited = empty.delimit("[", ", ", "]");
+		twice(() -> assertThat(emptyDelimited, contains("[", "]")));
 
-		Sequence<Object> delimited = _123.delimit("[", ", ", "]");
-		twice(() -> assertThat(delimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
+		Iterator<?> emptyIterator = emptyDelimited.iterator();
+		emptyIterator.next();
+		emptyIterator.next();
+		expecting(NoSuchElementException.class, emptyIterator::next);
+
+		Sequence<?> threeDelimited = _123.delimit("[", ", ", "]");
+		twice(() -> assertThat(threeDelimited, contains("[", 1, ", ", 2, ", ", 3, "]")));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2281,6 +2441,7 @@ public class SequenceTest {
 	public void interleave() {
 		Sequence<Pair<Integer, Integer>> emptyInterleaved = empty.interleave(empty);
 		twice(() -> assertThat(emptyInterleaved, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInterleaved.iterator().next());
 
 		Sequence<Pair<Integer, Integer>> interleavedShortFirst = _123.interleave(_12345);
 		twice(() -> assertThat(interleavedShortFirst,
@@ -2297,6 +2458,7 @@ public class SequenceTest {
 	public void reverse() {
 		Sequence<Integer> emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyReversed.iterator().next());
 
 		Sequence<Integer> oneReversed = _1.reverse();
 		twice(() -> assertThat(oneReversed, contains(1)));
@@ -2315,6 +2477,7 @@ public class SequenceTest {
 	public void shuffle() {
 		Sequence<Integer> emptyShuffled = empty.shuffle();
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		Sequence<Integer> oneShuffled = _1.shuffle();
 		twice(() -> assertThat(oneShuffled, contains(1)));
@@ -2333,6 +2496,7 @@ public class SequenceTest {
 	public void shuffleWithRandomSource() {
 		Sequence<Integer> emptyShuffled = empty.shuffle(new Random(17));
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		Sequence<Integer> oneShuffled = _1.shuffle(new Random(17));
 		twice(() -> assertThat(oneShuffled, contains(1)));
@@ -2487,6 +2651,7 @@ public class SequenceTest {
 	public void mapToChar() {
 		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().next());
 
 		CharSeq charSeq = _12345.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
@@ -2496,6 +2661,7 @@ public class SequenceTest {
 	public void mapToInt() {
 		IntSequence emptyInts = empty.toInts(x -> x + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInts.iterator().next());
 
 		IntSequence intSequence = _12345.toInts(x -> x + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
@@ -2505,6 +2671,7 @@ public class SequenceTest {
 	public void mapToLong() {
 		LongSequence emptyLongs = empty.toLongs(x -> x + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().next());
 
 		LongSequence longSequence = _12345.toLongs(x -> x + 1);
 		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
@@ -2514,6 +2681,7 @@ public class SequenceTest {
 	public void mapToDouble() {
 		DoubleSequence emptyDoubles = empty.toDoubles(x -> x + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().next());
 
 		DoubleSequence doubleSequence = _12345.toDoubles(x -> x + 1);
 		twice(() -> assertThat(doubleSequence, containsDoubles(2.0, 3.0, 4.0, 5.0, 6.0)));
@@ -2521,19 +2689,20 @@ public class SequenceTest {
 
 	@Test
 	public void repeat() {
-		Sequence<Integer> repeatEmpty = empty.repeat();
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyRepeated = empty.repeat();
+		twice(() -> assertThat(emptyRepeated, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeated.iterator().next());
 
-		Sequence<Integer> repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne, beginsWith(1, 1, 1)));
+		Sequence<Integer> oneRepeated = _1.repeat();
+		twice(() -> assertThat(oneRepeated, beginsWith(1, 1, 1)));
 
-		Sequence<Integer> repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo, beginsWith(1, 2, 1, 2, 1)));
+		Sequence<Integer> twoRepeated = _12.repeat();
+		twice(() -> assertThat(twoRepeated, beginsWith(1, 2, 1, 2, 1)));
 
-		Sequence<Integer> repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
+		Sequence<Integer> threeRepeated = _123.repeat();
+		twice(() -> assertThat(threeRepeated, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
 
-		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
+		Sequence<Integer> varyingLengthRepeated = Sequence.from(new Iterable<Integer>() {
 			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
@@ -2544,24 +2713,25 @@ public class SequenceTest {
 				return subList.iterator();
 			}
 		}).repeat();
-		assertThat(repeatVarying, contains(1, 2, 3, 1, 2, 1));
+		assertThat(varyingLengthRepeated, contains(1, 2, 3, 1, 2, 1));
 	}
 
 	@Test
 	public void repeatTwice() {
-		Sequence<Integer> repeatEmpty = empty.repeat(2);
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyRepeatedTwice = empty.repeat(2);
+		twice(() -> assertThat(emptyRepeatedTwice, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeatedTwice.iterator().next());
 
-		Sequence<Integer> repeatOne = _1.repeat(2);
-		twice(() -> assertThat(repeatOne, contains(1, 1)));
+		Sequence<Integer> oneRepeatedTwice = _1.repeat(2);
+		twice(() -> assertThat(oneRepeatedTwice, contains(1, 1)));
 
-		Sequence<Integer> repeatTwo = _12.repeat(2);
-		twice(() -> assertThat(repeatTwo, contains(1, 2, 1, 2)));
+		Sequence<Integer> twoRepeatedTwice = _12.repeat(2);
+		twice(() -> assertThat(twoRepeatedTwice, contains(1, 2, 1, 2)));
 
-		Sequence<Integer> repeatThree = _123.repeat(2);
-		twice(() -> assertThat(repeatThree, contains(1, 2, 3, 1, 2, 3)));
+		Sequence<Integer> threeRepeatedTwice = _123.repeat(2);
+		twice(() -> assertThat(threeRepeatedTwice, contains(1, 2, 3, 1, 2, 3)));
 
-		Sequence<Integer> repeatVarying = Sequence.from(new Iterable<Integer>() {
+		Sequence<Integer> varyingLengthRepeatedTwice = Sequence.from(new Iterable<Integer>() {
 			private List<Integer> list = asList(1, 2, 3);
 			int end = list.size();
 
@@ -2572,22 +2742,23 @@ public class SequenceTest {
 				return subList.iterator();
 			}
 		}).repeat(2);
-		assertThat(repeatVarying, contains(1, 2, 3, 1, 2));
+		assertThat(varyingLengthRepeatedTwice, contains(1, 2, 3, 1, 2));
 	}
 
 	@Test
 	public void repeatZero() {
-		Sequence<Integer> repeatEmpty = empty.repeat(0);
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		Sequence<Integer> emptyRepeatedZero = empty.repeat(0);
+		twice(() -> assertThat(emptyRepeatedZero, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeatedZero.iterator().next());
 
-		Sequence<Integer> repeatOne = _1.repeat(0);
-		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+		Sequence<Integer> oneRepeatedZero = _1.repeat(0);
+		twice(() -> assertThat(oneRepeatedZero, is(emptyIterable())));
 
-		Sequence<Integer> repeatTwo = _12.repeat(0);
-		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+		Sequence<Integer> twoRepeatedZero = _12.repeat(0);
+		twice(() -> assertThat(twoRepeatedZero, is(emptyIterable())));
 
-		Sequence<Integer> repeatThree = _123.repeat(0);
-		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+		Sequence<Integer> threeRepeatedZero = _123.repeat(0);
+		twice(() -> assertThat(threeRepeatedZero, is(emptyIterable())));
 	}
 
 	@Test
@@ -2611,16 +2782,27 @@ public class SequenceTest {
 
 	@Test
 	public void swap() {
-		twice(() -> assertThat(_12345.swap((a, b) -> a == 2 && b == 3), contains(1, 3, 2, 4, 5)));
-		twice(() -> assertThat(_12345.swap((a, b) -> a == 2), contains(1, 3, 4, 5, 2)));
+		Sequence<Integer> emptySwapTwoAndThree = empty.swap((a, b) -> a == 2 && b == 3);
+		twice(() -> assertThat(emptySwapTwoAndThree, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySwapTwoAndThree.iterator().next());
+
+		Sequence<Integer> swapTwoAndThree = _12345.swap((a, b) -> a == 2 && b == 3);
+		twice(() -> assertThat(swapTwoAndThree, contains(1, 3, 2, 4, 5)));
+
+		Sequence<Integer> swapTwoWithEverything = _12345.swap((a, b) -> a == 2);
+		twice(() -> assertThat(swapTwoWithEverything, contains(1, 3, 4, 5, 2)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void index() {
-		BiSequence<Integer, Integer> indexed = _12345.index();
-		twice(() -> assertThat(indexed, contains(Pair.of(0, 1), Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4),
-		                                         Pair.of(4, 5))));
+		BiSequence<Integer, Integer> emptyIndexed = empty.index();
+		twice(() -> assertThat(emptyIndexed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyIndexed.iterator().next());
+
+		BiSequence<Integer, Integer> fiveIndexed = _12345.index();
+		twice(() -> assertThat(fiveIndexed, contains(Pair.of(0, 1), Pair.of(1, 2), Pair.of(2, 3), Pair.of(3, 4),
+		                                             Pair.of(4, 5))));
 	}
 
 	@Test
@@ -2745,6 +2927,7 @@ public class SequenceTest {
 	public void immutable() {
 		Sequence<Integer> emptyImmutable = empty.immutable();
 		twice(() -> assertThat(emptyImmutable, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyImmutable.iterator().next());
 
 		Sequence<Integer> fiveImmutable = _12345.immutable();
 		twice(() -> assertThat(fiveImmutable, contains(1, 2, 3, 4, 5)));
