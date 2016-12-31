@@ -1196,55 +1196,55 @@ public class EntrySequenceTest {
 	@SuppressWarnings("uncheckeed")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<EntrySequence<String, Integer>> emptyPartitioned = empty.batch((a, b) -> a.getValue() > b.getValue());
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<EntrySequence<String, Integer>> emptyBatched = empty.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
 
-		Sequence<EntrySequence<String, Integer>> onePartitioned = _1.batch((a, b) -> a.getValue() > b.getValue());
-		twice(() -> assertThat(onePartitioned, contains(contains(Maps.entry("1", 1)))));
+		Sequence<EntrySequence<String, Integer>> oneBatched = _1.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(oneBatched, contains(contains(Maps.entry("1", 1)))));
 
-		Sequence<EntrySequence<String, Integer>> twoPartitioned = _12.batch((a, b) -> a.getValue() > b.getValue());
-		twice(() -> assertThat(twoPartitioned, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+		Sequence<EntrySequence<String, Integer>> twoBatched = _12.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(twoBatched, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
 
-		Sequence<EntrySequence<String, Integer>> threePartitioned = _123.batch((a, b) -> a.getValue() > b.getValue());
-		twice(() -> assertThat(threePartitioned,
+		Sequence<EntrySequence<String, Integer>> threeBatched = _123.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(threeBatched,
 		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)))));
 
-		Sequence<EntrySequence<String, Integer>> threeRandomPartitioned =
+		Sequence<EntrySequence<String, Integer>> threeRandomBatched =
 				random3.batch((a, b) -> a.getValue() > b.getValue());
-		twice(() -> assertThat(threeRandomPartitioned, contains(contains(Maps.entry("4", 4)),
-		                                                        contains(Maps.entry("2", 2), Maps.entry("3", 3)))));
+		twice(() -> assertThat(threeRandomBatched, contains(contains(Maps.entry("4", 4)),
+		                                                    contains(Maps.entry("2", 2), Maps.entry("3", 3)))));
 
-		Sequence<EntrySequence<String, Integer>> nineRandomPartitioned =
+		Sequence<EntrySequence<String, Integer>> nineRandomBatched =
 				random9.batch((a, b) -> a.getValue() > b.getValue());
-		twice(() -> assertThat(nineRandomPartitioned, contains(contains(Maps.entry("67", 67)),
-		                                                       contains(Maps.entry("5", 5), Maps.entry("43", 43)),
-		                                                       contains(Maps.entry("3", 3), Maps.entry("5", 5),
+		twice(() -> assertThat(nineRandomBatched, contains(contains(Maps.entry("67", 67)),
+		                                                   contains(Maps.entry("5", 5), Maps.entry("43", 43)),
+		                                                   contains(Maps.entry("3", 3), Maps.entry("5", 5),
 		                                                                Maps.entry("7", 7), Maps.entry("24", 24)),
-		                                                       contains(Maps.entry("5", 5), Maps.entry("67", 67)))));
+		                                                   contains(Maps.entry("5", 5), Maps.entry("67", 67)))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnQuaternaryPredicate() {
-		Sequence<EntrySequence<String, Integer>> emptyPartitioned = empty.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<EntrySequence<String, Integer>> emptyBatched = empty.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
 
-		Sequence<EntrySequence<String, Integer>> onePartitioned = _1.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(onePartitioned, contains(contains(Maps.entry("1", 1)))));
+		Sequence<EntrySequence<String, Integer>> oneBatched = _1.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(oneBatched, contains(contains(Maps.entry("1", 1)))));
 
-		Sequence<EntrySequence<String, Integer>> twoPartitioned = _12.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(twoPartitioned, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
+		Sequence<EntrySequence<String, Integer>> twoBatched = _12.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(twoBatched, contains(contains(Maps.entry("1", 1), Maps.entry("2", 2)))));
 
-		Sequence<EntrySequence<String, Integer>> threePartitioned = _123.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(threePartitioned,
+		Sequence<EntrySequence<String, Integer>> threeBatched = _123.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threeBatched,
 		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)))));
 
-		Sequence<EntrySequence<String, Integer>> threeRandomPartitioned = random3.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(threeRandomPartitioned, contains(contains(Maps.entry("4", 4)),
+		Sequence<EntrySequence<String, Integer>> threeRandomBatched = random3.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threeRandomBatched, contains(contains(Maps.entry("4", 4)),
 		                                                        contains(Maps.entry("2", 2), Maps.entry("3", 3)))));
 
-		Sequence<EntrySequence<String, Integer>> nineRandomPartitioned = random9.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(nineRandomPartitioned, contains(contains(Maps.entry("67", 67)),
+		Sequence<EntrySequence<String, Integer>> nineRandomBatched = random9.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(nineRandomBatched, contains(contains(Maps.entry("67", 67)),
 		                                                       contains(Maps.entry("5", 5), Maps.entry("43", 43)),
 		                                                       contains(Maps.entry("3", 3), Maps.entry("5", 5),
 		                                                                Maps.entry("7", 7), Maps.entry("24", 24)),

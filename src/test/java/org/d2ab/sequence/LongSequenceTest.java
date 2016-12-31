@@ -1435,23 +1435,23 @@ public class LongSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<LongSequence> emptyPartitioned = empty.batch((a, b) -> a > b);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<LongSequence> emptyBatched = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
 
-		Sequence<LongSequence> onePartitioned = _1.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(containsLongs(1L))));
+		Sequence<LongSequence> oneBatched = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(oneBatched, contains(containsLongs(1L))));
 
-		Sequence<LongSequence> twoPartitioned = _12.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(containsLongs(1L, 2L))));
+		Sequence<LongSequence> twoBatched = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoBatched, contains(containsLongs(1L, 2L))));
 
-		Sequence<LongSequence> threePartitioned = _123.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(containsLongs(1L, 2L, 3L))));
+		Sequence<LongSequence> threeBatched = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeBatched, contains(containsLongs(1L, 2L, 3L))));
 
-		Sequence<LongSequence> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(containsLongs(17L, 32L), containsLongs(12L))));
+		Sequence<LongSequence> threeRandomBatched = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomBatched, contains(containsLongs(17L, 32L), containsLongs(12L))));
 
-		Sequence<LongSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(nineRandomPartitioned,
+		Sequence<LongSequence> nineRandomBatched = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomBatched,
 		                       contains(containsLongs(6L, 6L), containsLongs(1L), containsLongs(-7L, 1L, 2L, 17L),
 		                                containsLongs(5L), containsLongs(4L))));
 	}

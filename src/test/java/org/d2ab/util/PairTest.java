@@ -307,4 +307,23 @@ public class PairTest {
 		assertThat(iterator.hasNext(), CoreMatchers.is(false));
 		expecting(NoSuchElementException.class, iterator::next);
 	}
+
+	@Test
+	public void testToString() {
+		assertThat(Pair.of(1, 2).toString(), is("(1, 2)"));
+		assertThat(Pair.of(1, 2.0).toString(), is("(1, 2.0)"));
+		assertThat(Pair.of(1, 2.0f).toString(), is("(1, 2.0)"));
+		assertThat(Pair.of(1, "2").toString(), is("(1, \"2\")"));
+		assertThat(Pair.of(1, '2').toString(), is("(1, '2')"));
+		assertThat(Pair.of(1, 2L).toString(), is("(1, 2L)"));
+		assertThat(Pair.of(1, null).toString(), is("(1, null)"));
+
+		assertThat(Pair.of(1, 2).toString(), is("(1, 2)"));
+		assertThat(Pair.of(1.0, 2).toString(), is("(1.0, 2)"));
+		assertThat(Pair.of(1.0f, 2).toString(), is("(1.0, 2)"));
+		assertThat(Pair.of("1", 2).toString(), is("(\"1\", 2)"));
+		assertThat(Pair.of('1', 2).toString(), is("('1', 2)"));
+		assertThat(Pair.of(1L, 2).toString(), is("(1L, 2)"));
+		assertThat(Pair.of(null, 2).toString(), is("(null, 2)"));
+	}
 }

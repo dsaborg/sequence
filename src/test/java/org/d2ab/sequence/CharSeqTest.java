@@ -1391,23 +1391,23 @@ public class CharSeqTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<CharSeq> emptyPartitioned = empty.batch((a, b) -> a > b);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<CharSeq> emptyBatched = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
 
-		Sequence<CharSeq> onePartitioned = a.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(containsChars('a'))));
+		Sequence<CharSeq> oneBatched = a.batch((a, b) -> a > b);
+		twice(() -> assertThat(oneBatched, contains(containsChars('a'))));
 
-		Sequence<CharSeq> twoPartitioned = ab.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(containsChars('a', 'b'))));
+		Sequence<CharSeq> twoBatched = ab.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoBatched, contains(containsChars('a', 'b'))));
 
-		Sequence<CharSeq> threePartitioned = abc.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(containsChars('a', 'b', 'c'))));
+		Sequence<CharSeq> threeBatched = abc.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeBatched, contains(containsChars('a', 'b', 'c'))));
 
-		Sequence<CharSeq> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(containsChars('q', 'w'), containsChars('d'))));
+		Sequence<CharSeq> threeRandomBatched = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomBatched, contains(containsChars('q', 'w'), containsChars('d'))));
 
-		Sequence<CharSeq> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(nineRandomPartitioned,
+		Sequence<CharSeq> nineRandomBatched = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomBatched,
 		                       contains(containsChars('f', 'f'), containsChars('a', 'g'), containsChars('a', 'b', 'q'),
 		                                containsChars('e'), containsChars('d'))));
 	}

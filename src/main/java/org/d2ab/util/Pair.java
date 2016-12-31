@@ -306,10 +306,15 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 	}
 
 	private static String format(Object o) {
+		String value = String.valueOf(o);
 		if (o instanceof String)
-			return '"' + (String) o + '"';
-
-		return String.valueOf(o);
+			return '"' + value + '"';
+		else if (o instanceof Character)
+			return '\'' + value + '\'';
+		else if (o instanceof Long)
+			return value + 'L';
+		else
+			return value;
 	}
 
 	@SuppressWarnings({"unchecked", "MethodDoesntCallSuperMethod"})

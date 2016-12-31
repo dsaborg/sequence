@@ -1509,23 +1509,23 @@ public class IntSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<IntSequence> emptyPartitioned = empty.batch((a, b) -> a > b);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<IntSequence> emptyBatched = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
 
-		Sequence<IntSequence> onePartitioned = _1.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(containsInts(1))));
+		Sequence<IntSequence> oneBatched = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(oneBatched, contains(containsInts(1))));
 
-		Sequence<IntSequence> twoPartitioned = _12.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(containsInts(1, 2))));
+		Sequence<IntSequence> twoBatched = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoBatched, contains(containsInts(1, 2))));
 
-		Sequence<IntSequence> threePartitioned = _123.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(containsInts(1, 2, 3))));
+		Sequence<IntSequence> threeBatched = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeBatched, contains(containsInts(1, 2, 3))));
 
-		Sequence<IntSequence> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(containsInts(17, 32), containsInts(12))));
+		Sequence<IntSequence> threeRandomBatched = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomBatched, contains(containsInts(17, 32), containsInts(12))));
 
-		Sequence<IntSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(nineRandomPartitioned,
+		Sequence<IntSequence> nineRandomBatched = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomBatched,
 		                       contains(containsInts(6, 6), containsInts(1), containsInts(-7, 1, 2, 17),
 		                                containsInts(5), containsInts(4))));
 	}

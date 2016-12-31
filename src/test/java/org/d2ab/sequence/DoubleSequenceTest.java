@@ -1450,23 +1450,23 @@ public class DoubleSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<DoubleSequence> emptyPartitioned = empty.batch((a, b) -> a > b);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<DoubleSequence> emptyBatched = empty.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
 
-		Sequence<DoubleSequence> onePartitioned = _1.batch((a, b) -> a > b);
-		twice(() -> assertThat(onePartitioned, contains(containsDoubles(1.0))));
+		Sequence<DoubleSequence> oneBatched = _1.batch((a, b) -> a > b);
+		twice(() -> assertThat(oneBatched, contains(containsDoubles(1.0))));
 
-		Sequence<DoubleSequence> twoPartitioned = _12.batch((a, b) -> a > b);
-		twice(() -> assertThat(twoPartitioned, contains(containsDoubles(1.0, 2.0))));
+		Sequence<DoubleSequence> twoBatched = _12.batch((a, b) -> a > b);
+		twice(() -> assertThat(twoBatched, contains(containsDoubles(1.0, 2.0))));
 
-		Sequence<DoubleSequence> threePartitioned = _123.batch((a, b) -> a > b);
-		twice(() -> assertThat(threePartitioned, contains(containsDoubles(1.0, 2.0, 3.0))));
+		Sequence<DoubleSequence> threeBatched = _123.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeBatched, contains(containsDoubles(1.0, 2.0, 3.0))));
 
-		Sequence<DoubleSequence> threeRandomPartitioned = threeRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(threeRandomPartitioned, contains(containsDoubles(17.0, 32.0), containsDoubles(12.0))));
+		Sequence<DoubleSequence> threeRandomBatched = threeRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(threeRandomBatched, contains(containsDoubles(17.0, 32.0), containsDoubles(12.0))));
 
-		Sequence<DoubleSequence> nineRandomPartitioned = nineRandom.batch((a, b) -> a > b);
-		twice(() -> assertThat(nineRandomPartitioned, contains(containsDoubles(6.0, 6.0), containsDoubles(1.0),
+		Sequence<DoubleSequence> nineRandomBatched = nineRandom.batch((a, b) -> a > b);
+		twice(() -> assertThat(nineRandomBatched, contains(containsDoubles(6.0, 6.0), containsDoubles(1.0),
 		                                                       containsDoubles(-7.0, 1.0, 2.0, 17.0),
 		                                                       containsDoubles(5.0), containsDoubles(4.0))));
 	}
