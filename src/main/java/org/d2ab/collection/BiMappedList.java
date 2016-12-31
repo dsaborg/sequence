@@ -67,6 +67,11 @@ public interface BiMappedList {
 		public int size() {
 			return list.size();
 		}
+
+		@Override
+		public boolean add(U element) {
+			return list.add(backMapper.apply(element));
+		}
 	}
 
 	class SequentialList<T, U> extends AbstractSequentialList<U> {
@@ -136,5 +141,11 @@ public interface BiMappedList {
 		public int size() {
 			return list.size();
 		}
+
+		@Override
+		public boolean add(U element) {
+			return list.add(backMapper.apply(element));
+		}
+
 	}
 }

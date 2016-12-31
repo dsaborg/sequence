@@ -22,8 +22,12 @@ public class CollectionSequenceTest {
 	private final Sequence<Integer> sequence = CollectionSequence.from(collection);
 
 	private final Sequence<Integer> odds = sequence.filter(x -> x % 2 == 1);
-	private final Sequence<String> strings = sequence.biMap(Object::toString, Integer::parseInt);
 	private final Sequence<String> oddStrings = odds.biMap(Object::toString, Integer::parseInt);
+
+	private final Sequence<Integer> evens = sequence.filter(x -> x % 2 == 0);
+	private final Sequence<String> evenStrings = evens.biMap(Object::toString, Integer::parseInt);
+
+	private final Sequence<String> strings = sequence.biMap(Object::toString, Integer::parseInt);
 
 	@Test
 	public void empty() {
@@ -103,7 +107,7 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterAdd() {
+	public void filterOddsAdd() {
 		assertThat(odds.add(17), is(true));
 		expecting(IllegalArgumentException.class, () -> odds.add(18));
 
@@ -113,7 +117,7 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterAddAll() {
+	public void filterOddsAddAll() {
 		assertThat(odds.addAll(asList(17, 19)), is(true));
 		assertThat(odds, contains(1, 3, 5, 17, 19));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 17, 19));
@@ -126,7 +130,7 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterRemove() {
+	public void filterOddsRemove() {
 		assertThat(odds.remove(3), is(true));
 		assertThat(odds.remove(4), is(false));
 
@@ -136,10 +140,50 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterContains() {
+	public void filterOddsContains() {
 		assertThat(odds.contains(3), is(true));
 		assertThat(odds.contains(4), is(false));
 		assertThat(odds.contains(17), is(false));
+	}
+
+	@Test
+	public void filterEvensAdd() {
+		assertThat(evens.add(18), is(true));
+		expecting(IllegalArgumentException.class, () -> evens.add(17));
+
+		assertThat(evens, contains(2, 4, 18));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 18));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 18));
+	}
+
+	@Test
+	public void filterEvensAddAll() {
+		assertThat(evens.addAll(asList(18, 20)), is(true));
+		assertThat(evens, contains(2, 4, 18, 20));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 18, 20));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 18, 20));
+
+		expecting(IllegalArgumentException.class, () -> evens.addAll(asList(22, 23)));
+		assertThat(evens, contains(2, 4, 18, 20, 22));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 18, 20, 22));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 18, 20, 22));
+	}
+
+	@Test
+	public void filterEvensRemove() {
+		assertThat(evens.remove(4), is(true));
+		assertThat(evens.remove(3), is(false));
+
+		assertThat(evens, contains(2));
+		assertThat(sequence, contains(1, 2, 3, 5));
+		assertThat(collection, contains(1, 2, 3, 5));
+	}
+
+	@Test
+	public void filterEvensContains() {
+		assertThat(evens.contains(4), is(true));
+		assertThat(evens.contains(3), is(false));
+		assertThat(evens.contains(18), is(false));
 	}
 
 	@Test
@@ -185,7 +229,7 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterBiMapAdd() {
+	public void filterOddsBiMapAdd() {
 		assertThat(oddStrings.add("7"), is(true));
 		assertThat(oddStrings, contains("1", "3", "5", "7"));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 7));
@@ -198,7 +242,7 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterBiMapAddAll() {
+	public void filterOddsBiMapAddAll() {
 		assertThat(oddStrings.addAll(asList("7", "9")), is(true));
 		assertThat(oddStrings, contains("1", "3", "5", "7", "9"));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 7, 9));
@@ -211,7 +255,7 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterBiMapRemove() {
+	public void filterOddsBiMapRemove() {
 		assertThat(oddStrings.remove("3"), is(true));
 		assertThat(oddStrings.remove("17"), is(false));
 
@@ -221,9 +265,52 @@ public class CollectionSequenceTest {
 	}
 
 	@Test
-	public void filterBiMapContains() {
+	public void filterOddsBiMapContains() {
 		assertThat(oddStrings.contains("3"), is(true));
 		assertThat(oddStrings.contains("4"), is(false));
 		assertThat(oddStrings.contains("17"), is(false));
+	}
+
+	@Test
+	public void filterEvensBiMapAdd() {
+		assertThat(evenStrings.add("6"), is(true));
+		assertThat(evenStrings, contains("2", "4", "6"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 6));
+
+		expecting(NumberFormatException.class, () -> evenStrings.add("foo"));
+		assertThat(evenStrings, contains("2", "4", "6"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 6));
+	}
+
+	@Test
+	public void filterEvensBiMapAddAll() {
+		assertThat(evenStrings.addAll(asList("6", "8")), is(true));
+		assertThat(evenStrings, contains("2", "4", "6", "8"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 8));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 6, 8));
+
+		expecting(NumberFormatException.class, () -> evenStrings.addAll(asList("10", "foo")));
+		assertThat(evenStrings, contains("2", "4", "6", "8", "10"));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 8, 10));
+		assertThat(collection, contains(1, 2, 3, 4, 5, 6, 8, 10));
+	}
+
+	@Test
+	public void filterEvensBiMapRemove() {
+		assertThat(evenStrings.remove("4"), is(true));
+		assertThat(evenStrings.remove("18"), is(false));
+
+		assertThat(evenStrings, contains("2"));
+		assertThat(sequence, contains(1, 2, 3, 5));
+		assertThat(collection, contains(1, 2, 3, 5));
+	}
+
+	@Test
+	public void filterEvensBiMapContains() {
+		assertThat(evenStrings.contains("4"), is(true));
+		assertThat(evenStrings.contains("3"), is(false));
+		assertThat(evenStrings.contains("18"), is(false));
 	}
 }
