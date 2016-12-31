@@ -5,10 +5,10 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
-import static org.d2ab.test.Tests.expecting;
-import static org.d2ab.test.Tests.twice;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -187,6 +187,20 @@ public class ListSequenceTest {
 
 		listList.add(new ArrayList<>(asList(10, 11, 12)));
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
+	}
+
+	@Test
+	public void reverse() {
+		Sequence<Integer> emptyReversed = empty.reverse();
+		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyReversed.iterator().next());
+
+		Sequence<Integer> reversed = sequence.reverse();
+		twice(() -> assertThat(reversed, contains(5, 4, 3, 2, 1)));
+
+		assertThat(removeFirst(reversed), is(5));
+		twice(() -> assertThat(reversed, contains(4, 3, 2, 1)));
+		twice(() -> assertThat(list, contains(1, 2, 3, 4)));
 	}
 
 	@Test
