@@ -62,7 +62,15 @@ public class IteratorsTest {
 
 	@Test
 	public void size() {
+		assertThat(Iterators.size(empty), is(0));
+		assertThat(Iterators.size(iterator), is(5));
+	}
 
+	@Test
+	public void bigSize() {
+		assertThat(Iterators.size(empty, i -> (long) Integer.MAX_VALUE), is(Integer.MAX_VALUE));
+		expecting(IllegalStateException.class, () -> Iterators.size(iterator,
+		                                                            i -> Integer.MAX_VALUE + 1L));
 	}
 
 	@Test

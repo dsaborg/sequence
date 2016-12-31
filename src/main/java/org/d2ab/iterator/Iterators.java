@@ -20,10 +20,7 @@ import org.d2ab.function.CharFunction;
 import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.*;
-import java.util.function.BinaryOperator;
-import java.util.function.DoubleFunction;
-import java.util.function.IntFunction;
-import java.util.function.LongFunction;
+import java.util.function.*;
 
 /**
  * Utility methods for {@link Iterator} instances.
@@ -205,24 +202,24 @@ public interface Iterators {
 	 * @return the size of the given {@link Iterator} as an int value.
 	 */
 	static int size(Iterator<?> iterator) {
-		long count = count(iterator);
+		return size(iterator, it -> {
+			long count = 0;
+			while (it.hasNext()) {
+				it.next();
+				count++;
+			}
+			return count;
+		});
+	}
+
+	// for test coverage purposes
+	static int size(Iterator<?> iterator, Function<Iterator<?>, Long> counter) {
+		long count = counter.apply(iterator);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);
 
 		return (int) count;
-	}
-
-	/**
-	 * @return the count of elements remaining in the given {@link Iterator}.
-	 */
-	static long count(Iterator<?> iterator) {
-		long count = 0;
-		while (iterator.hasNext()) {
-			iterator.next();
-			count++;
-		}
-		return count;
 	}
 
 	/**

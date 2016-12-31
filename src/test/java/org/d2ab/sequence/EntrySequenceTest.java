@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Comparator.reverseOrder;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -126,82 +127,6 @@ public class EntrySequenceTest {
 		assertThat(EntrySequence.ofEntries("1", 1, "2", 2, "3", 3), contains(entries123));
 
 		expecting(IllegalArgumentException.class, () -> EntrySequence.ofEntries("1"));
-	}
-
-	@Test
-	public void forLoop() {
-		twice(() -> {
-			for (Entry<String, Integer> ignored : empty)
-				fail("Should not get called");
-		});
-
-		twice(() -> {
-			int expected = 1;
-			for (Entry<String, Integer> e : _12345)
-				assertThat(e, is(Maps.entry(String.valueOf(expected), expected++)));
-
-			assertThat(expected, is(6));
-		});
-	}
-
-	@Test
-	public void forEach() {
-		twice(() -> {
-			empty.forEach(e -> fail("Should not get called"));
-
-			AtomicInteger value = new AtomicInteger(1);
-			_1.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
-
-			value.set(1);
-			_12.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
-
-			value.set(1);
-			_12345.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
-		});
-	}
-
-	@Test
-	public void forEachBiConsumer() {
-		twice(() -> {
-			empty.forEach((k, v) -> fail("Should not get called"));
-
-			AtomicInteger value = new AtomicInteger(1);
-			_1.forEach((k, v) -> {
-				assertThat(k, is(String.valueOf(value.get())));
-				assertThat(v, is(value.getAndIncrement()));
-			});
-
-			value.set(1);
-			_12.forEach((k, v) -> {
-				assertThat(k, is(String.valueOf(value.get())));
-				assertThat(v, is(value.getAndIncrement()));
-			});
-
-			value.set(1);
-			_12345.forEach((k, v) -> {
-				assertThat(k, is(String.valueOf(value.get())));
-				assertThat(v, is(value.getAndIncrement()));
-			});
-		});
-	}
-
-	@Test
-	public void iterator() {
-		twice(() -> {
-			Iterator iterator = _123.iterator();
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(Maps.entry("1", 1)));
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(Maps.entry("2", 2)));
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.next(), is(Maps.entry("3", 3)));
-
-			assertThat(iterator.hasNext(), is(false));
-			assertThat(iterator.hasNext(), is(false));
-		});
 	}
 
 	@Test
@@ -304,57 +229,159 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void forLoop() {
+		twice(() -> {
+			for (Entry<String, Integer> ignored : empty)
+				fail("Should not get called");
+		});
+
+		twice(() -> {
+			int expected = 1;
+			for (Entry<String, Integer> e : _12345)
+				assertThat(e, is(Maps.entry(String.valueOf(expected), expected++)));
+
+			assertThat(expected, is(6));
+		});
+	}
+
+	@Test
+	public void forEach() {
+		twice(() -> {
+			empty.forEach(e -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
+
+			value.set(1);
+			_12.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
+
+			value.set(1);
+			_12345.forEach(e -> assertThat(e, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
+		});
+	}
+
+	@Test
+	public void forEachBiConsumer() {
+		twice(() -> {
+			empty.forEach((k, v) -> fail("Should not get called"));
+
+			AtomicInteger value = new AtomicInteger(1);
+			_1.forEach((k, v) -> {
+				assertThat(k, is(String.valueOf(value.get())));
+				assertThat(v, is(value.getAndIncrement()));
+			});
+
+			value.set(1);
+			_12.forEach((k, v) -> {
+				assertThat(k, is(String.valueOf(value.get())));
+				assertThat(v, is(value.getAndIncrement()));
+			});
+
+			value.set(1);
+			_12345.forEach((k, v) -> {
+				assertThat(k, is(String.valueOf(value.get())));
+				assertThat(v, is(value.getAndIncrement()));
+			});
+		});
+	}
+
+	@Test
+	public void iterator() {
+		twice(() -> {
+			Iterator iterator = _123.iterator();
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(Maps.entry("1", 1)));
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(Maps.entry("2", 2)));
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.next(), is(Maps.entry("3", 3)));
+
+			assertThat(iterator.hasNext(), is(false));
+			assertThat(iterator.hasNext(), is(false));
+		});
+	}
+
+	@Test
 	public void skip() {
-		EntrySequence<String, Integer> skipNone = _123.skip(0);
-		twice(() -> assertThat(skipNone, contains(entries123)));
+		EntrySequence<String, Integer> threeSkipNone = _123.skip(0);
+		twice(() -> assertThat(threeSkipNone, contains(entries123)));
 
-		EntrySequence<String, Integer> skipOne = _123.skip(1);
-		twice(() -> assertThat(skipOne, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+		EntrySequence<String, Integer> threeSkipOne = _123.skip(1);
+		twice(() -> assertThat(threeSkipOne, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 
-		EntrySequence<String, Integer> skipTwo = _123.skip(2);
-		twice(() -> assertThat(skipTwo, contains(Maps.entry("3", 3))));
+		EntrySequence<String, Integer> threeSkipTwo = _123.skip(2);
+		twice(() -> assertThat(threeSkipTwo, contains(Maps.entry("3", 3))));
 
-		EntrySequence<String, Integer> skipThree = _123.skip(3);
-		twice(() -> assertThat(skipThree, is(emptyIterable())));
+		EntrySequence<String, Integer> threeSkipThree = _123.skip(3);
+		twice(() -> assertThat(threeSkipThree, is(emptyIterable())));
 
-		EntrySequence<String, Integer> skipFour = _123.skip(4);
-		twice(() -> assertThat(skipFour, is(emptyIterable())));
+		EntrySequence<String, Integer> threeSkipFour = _123.skip(4);
+		twice(() -> assertThat(threeSkipFour, is(emptyIterable())));
+
+		expecting(NoSuchElementException.class, () -> threeSkipFour.iterator().next());
+
+		assertThat(removeFirst(threeSkipNone), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(threeSkipNone, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void skipTail() {
-		EntrySequence<String, Integer> skipNone = _123.skipTail(0);
-		twice(() -> assertThat(skipNone, contains(entries123)));
+		EntrySequence<String, Integer> threeSkipTailNone = _123.skipTail(0);
+		twice(() -> assertThat(threeSkipTailNone, contains(entries123)));
 
-		EntrySequence<String, Integer> skipOne = _123.skipTail(1);
-		twice(() -> assertThat(skipOne, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		EntrySequence<String, Integer> threeSkipTailOne = _123.skipTail(1);
+		twice(() -> assertThat(threeSkipTailOne, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
 
-		EntrySequence<String, Integer> skipTwo = _123.skipTail(2);
-		twice(() -> assertThat(skipTwo, contains(Maps.entry("1", 1))));
+		EntrySequence<String, Integer> threeSkipTailTwo = _123.skipTail(2);
+		twice(() -> assertThat(threeSkipTailTwo, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> skipThree = _123.skipTail(3);
-		twice(() -> assertThat(skipThree, is(emptyIterable())));
+		EntrySequence<String, Integer> threeSkipTailThree = _123.skipTail(3);
+		twice(() -> assertThat(threeSkipTailThree, is(emptyIterable())));
 
-		EntrySequence<String, Integer> skipFour = _123.skipTail(4);
-		twice(() -> assertThat(skipFour, is(emptyIterable())));
+		EntrySequence<String, Integer> threeSkipTailFour = _123.skipTail(4);
+		twice(() -> assertThat(threeSkipTailFour, is(emptyIterable())));
+
+		expecting(NoSuchElementException.class, () -> threeSkipTailFour.iterator().next());
+
+		assertThat(removeFirst(threeSkipTailNone), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(threeSkipTailNone, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void limit() {
-		EntrySequence<String, Integer> limitZero = _123.limit(0);
-		twice(() -> assertThat(limitZero, is(emptyIterable())));
+		EntrySequence<String, Integer> threeLimitedToNone = _123.limit(0);
+		twice(() -> assertThat(threeLimitedToNone, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> threeLimitedToNone.iterator().next());
 
-		EntrySequence<String, Integer> limitOne = _123.limit(1);
-		twice(() -> assertThat(limitOne, contains(Maps.entry("1", 1))));
+		EntrySequence<String, Integer> threeLimitedToOne = _123.limit(1);
+		twice(() -> assertThat(threeLimitedToOne, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> limitTwo = _123.limit(2);
-		twice(() -> assertThat(limitTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		EntrySequence<String, Integer> threeLimitedToTwo = _123.limit(2);
+		twice(() -> assertThat(threeLimitedToTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
 
-		EntrySequence<String, Integer> limitThree = _123.limit(3);
-		twice(() -> assertThat(limitThree, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+		EntrySequence<String, Integer> threeLimitedToThree = _123.limit(3);
+		twice(() -> assertThat(threeLimitedToThree,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
 
-		EntrySequence<String, Integer> limitFour = _123.limit(4);
-		twice(() -> assertThat(limitFour, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+		EntrySequence<String, Integer> threeLimitedToFour = _123.limit(4);
+		twice(() -> assertThat(threeLimitedToFour,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		assertThat(removeFirst(threeLimitedToFour), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(threeLimitedToFour, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+	}
+
+	@Test
+	public void appendEmpty() {
+		EntrySequence<String, Integer> appendedEmpty = empty.append(Iterables.empty());
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
 	}
 
 	@Test
@@ -376,6 +403,32 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void appendEmptyIterator() {
+		EntrySequence<String, Integer> appendedEmpty = empty.append(Iterators.empty());
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
+	}
+
+	@Test
+	public void appendIterator() {
+		EntrySequence<String, Integer> appended = _123.append(Iterators.of(Maps.entry("4", 4), Maps.entry("5", 5),
+		                                                                   Maps.entry("6", 6)))
+		                                              .append(Iterators.of(Maps.entry("7", 7), Maps.entry("8", 8)));
+
+		assertThat(appended,
+		           contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                    Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8)));
+		assertThat(appended, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)));
+	}
+
+	@Test
+	public void appendEmptyStream() {
+		EntrySequence<String, Integer> appendedEmpty = empty.append(Stream.of());
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
+	}
+
+	@Test
 	public void appendStream() {
 		EntrySequence<String, Integer> appended = _123.append(Stream.of(Maps.entry("4", 4), Maps.entry("5", 5),
 		                                                                Maps.entry("6", 6)))
@@ -386,6 +439,25 @@ public class EntrySequenceTest {
 		                    Maps.entry("5", 5),
 		                    Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8)));
 		assertThat(appended, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)));
+	}
+
+	@Test
+	public void appendEmptyArray() {
+		EntrySequence<String, Integer> appendedEmpty = empty.append();
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
+	}
+
+	@Test
+	public void appendArray() {
+		EntrySequence<String, Integer> appended = _123.append(Maps.entry("4", 4), Maps.entry("5", 5),
+		                                                      Maps.entry("6", 6))
+		                                              .append(Maps.entry("7", 7), Maps.entry("8", 8));
+
+		twice(() -> assertThat(appended,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7),
+		                                Maps.entry("8", 8))));
 	}
 
 	@Test
@@ -424,61 +496,102 @@ public class EntrySequenceTest {
 	public void toSequence() {
 		Sequence<Entry<String, Integer>> emptySequence = empty.toSequence();
 		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySequence.iterator().next());
 
 		Sequence<Entry<String, Integer>> sequence = _12345.toSequence();
 		twice(() -> assertThat(sequence, contains(entries12345)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                          Maps.entry("5", 5))));
+		twice(() -> assertThat(_12345, contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void toSequenceKeyValueMapper() {
 		Sequence<String> emptyKeySequence = empty.toSequence((k, v) -> k);
 		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyKeySequence.iterator().next());
 
 		Sequence<Integer> emptyValueSequence = empty.toSequence((k, v) -> v);
 		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyValueSequence.iterator().next());
 
 		Sequence<String> keySequence = _12345.toSequence((k, v) -> k);
 		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
 
 		Sequence<Integer> valueSequence = _12345.toSequence((k, v) -> v);
 		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+
+		assertThat(removeFirst(keySequence), is("1"));
+		twice(() -> assertThat(keySequence, contains("2", "3", "4", "5")));
+		twice(() -> assertThat(_12345, contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
+
+		assertThat(removeFirst(valueSequence), is(2));
+		twice(() -> assertThat(valueSequence, contains(3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void toSequenceEntryMapper() {
 		Sequence<String> emptyKeySequence = empty.toSequence(Entry::getKey);
 		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyKeySequence.iterator().next());
 
 		Sequence<Integer> emptyValueSequence = empty.toSequence(Entry::getValue);
 		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyValueSequence.iterator().next());
 
 		Sequence<String> keySequence = _12345.toSequence(Entry::getKey);
 		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
 
 		Sequence<Integer> valueSequence = _12345.toSequence(Entry::getValue);
 		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+
+		assertThat(removeFirst(keySequence), is("1"));
+		twice(() -> assertThat(keySequence, contains("2", "3", "4", "5")));
+		twice(() -> assertThat(_12345, contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
+
+		assertThat(removeFirst(valueSequence), is(2));
+		twice(() -> assertThat(valueSequence, contains(3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void toBiSequence() {
-		BiSequence<String, Integer> emptySequence = empty.toBiSequence();
-		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+		BiSequence<String, Integer> emptyBiSequence = empty.toBiSequence();
+		twice(() -> assertThat(emptyBiSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBiSequence.iterator().next());
 
-		BiSequence<String, Integer> sequence = _12345.toBiSequence();
-		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                                          Pair.of("5", 5))));
+		BiSequence<String, Integer> biSequence = _12345.toBiSequence();
+		twice(() -> assertThat(biSequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                            Pair.of("5", 5))));
+
+		assertThat(removeFirst(biSequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(biSequence, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                            Pair.of("5", 5))));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                        Pair.of("5", 5))));
 	}
 
 	@Test
 	public void filter() {
 		EntrySequence<String, Integer> emptyFiltered = empty.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().next());
 
 		EntrySequence<String, Integer> oneFiltered = _1.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
 
 		EntrySequence<String, Integer> twoFiltered = _12.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(twoFiltered, contains(Maps.entry("2", 2))));
+
+		assertThat(removeFirst(twoFiltered), is(Maps.entry("2", 2)));
+		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
+		twice(() -> assertThat(_12, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> filtered = _123456789.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(filtered, contains(Maps.entry("2", 2), Maps.entry("4", 4), Maps.entry("6", 6),
@@ -489,12 +602,17 @@ public class EntrySequenceTest {
 	public void filterIndexed() {
 		EntrySequence<String, Integer> emptyFiltered = empty.filterIndexed((k, v, x) -> parseInt(k) == v && x > 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().next());
 
 		EntrySequence<String, Integer> oneFiltered = _1.filterIndexed((k, v, x) -> parseInt(k) == v && x > 0);
 		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
 
 		EntrySequence<String, Integer> twoFiltered = _12.filterIndexed((k, v, x) -> parseInt(k) == v && x > 0);
 		twice(() -> assertThat(twoFiltered, contains(Maps.entry("2", 2))));
+
+		assertThat(removeFirst(twoFiltered), is(Maps.entry("2", 2)));
+		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
+		twice(() -> assertThat(_12, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> filtered = _123456789.filterIndexed((k, v, x) -> parseInt(k) == v && x > 3);
 		twice(() -> assertThat(filtered,
@@ -507,6 +625,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> emptyFiltered = empty.filterIndexed(
 				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().next());
 
 		EntrySequence<String, Integer> oneFiltered = _1.filterIndexed(
 				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 0);
@@ -515,6 +634,10 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> twoFiltered = _12.filterIndexed(
 				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 0);
 		twice(() -> assertThat(twoFiltered, contains(Maps.entry("2", 2))));
+
+		assertThat(removeFirst(twoFiltered), is(Maps.entry("2", 2)));
+		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
+		twice(() -> assertThat(_12, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> filtered = _123456789.filterIndexed(
 				(e, x) -> parseInt(e.getKey()) == e.getValue() && x > 3);
@@ -528,6 +651,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> emptyIncluding = empty.including(Maps.entry("1", 1), Maps.entry("3", 3),
 		                                                                Maps.entry("5", 5), Maps.entry("17", 17));
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyIncluding.iterator().next());
 
 		EntrySequence<String, Integer> including = _12345.including(Maps.entry("1", 1), Maps.entry("3", 3),
 		                                                            Maps.entry("5", 5), Maps.entry("17", 17));
@@ -541,6 +665,11 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> includingNone = _12345.including();
 		twice(() -> assertThat(includingNone, is(emptyIterable())));
+
+		assertThat(removeFirst(including), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(including, contains(Maps.entry("3", 3), Maps.entry("5", 5))));
+		twice(() -> assertThat(_12345, contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
 	}
 
 	@Test
@@ -548,6 +677,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> emptyIncluding = empty.including(
 				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyIncluding.iterator().next());
 
 		EntrySequence<String, Integer> including = _12345.including(
 				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
@@ -561,6 +691,11 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> includingNone = _12345.including(Iterables.of());
 		twice(() -> assertThat(includingNone, is(emptyIterable())));
+
+		assertThat(removeFirst(including), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(including, contains(Maps.entry("3", 3), Maps.entry("5", 5))));
+		twice(() -> assertThat(_12345, contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
 	}
 
 	@Test
@@ -568,6 +703,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> emptyExcluding = empty.excluding(Maps.entry("1", 1), Maps.entry("3", 3),
 		                                                                Maps.entry("5", 5), Maps.entry("17", 17));
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyExcluding.iterator().next());
 
 		EntrySequence<String, Integer> excluding = _12345.excluding(Maps.entry("1", 1), Maps.entry("3", 3),
 		                                                            Maps.entry("5", 5), Maps.entry("17", 17));
@@ -581,6 +717,11 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> excludingNone = _12345.excluding();
 		twice(() -> assertThat(excludingNone, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
 		                                               Maps.entry("4", 4), Maps.entry("5", 5))));
+
+		assertThat(removeFirst(excluding), is(Maps.entry("2", 2)));
+		twice(() -> assertThat(excluding, contains(Maps.entry("4", 4))));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
 	}
 
 	@Test
@@ -588,6 +729,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> emptyExcluding = empty.excluding(
 				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyExcluding.iterator().next());
 
 		EntrySequence<String, Integer> excluding = _12345.excluding(
 				Iterables.of(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("5", 5), Maps.entry("17", 17)));
@@ -601,34 +743,64 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> excludingNone = _12345.excluding(Iterables.of());
 		twice(() -> assertThat(excludingNone, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3),
 		                                               Maps.entry("4", 4), Maps.entry("5", 5))));
+
+		assertThat(removeFirst(excluding), is(Maps.entry("2", 2)));
+		twice(() -> assertThat(excluding, contains(Maps.entry("4", 4))));
+		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                        Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void filterAndMap() {
-		EntrySequence<Integer, String> evens =
-				_123456789.filter((s, x) -> x % 2 == 0).map(Integer::parseInt, Object::toString);
+		EntrySequence<Integer, String> evensSwapped = _123456789.filter((s, x) -> x % 2 == 0)
+		                                                        .map(Integer::parseInt, Object::toString);
 
-		twice(() -> assertThat(evens, contains(Maps.entry(2, "2"), Maps.entry(4, "4"), Maps.entry(6, "6"),
-		                                       Maps.entry(8, "8"))));
+		twice(() -> assertThat(evensSwapped, contains(Maps.entry(2, "2"), Maps.entry(4, "4"), Maps.entry(6, "6"),
+		                                              Maps.entry(8, "8"))));
+
+		assertThat(removeFirst(evensSwapped), is(Maps.entry(2, "2")));
+		twice(() -> assertThat(evensSwapped, contains(Maps.entry(4, "4"), Maps.entry(6, "6"), Maps.entry(8, "8"))));
 	}
 
 	@Test
 	public void mapBiFunction() {
+		EntrySequence<Integer, String> emptyMapped = empty.map((s, i) -> Maps.entry(parseInt(s), i.toString()));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
 		EntrySequence<Integer, String> mapped = _123.map((s, i) -> Maps.entry(parseInt(s), i.toString()));
 		twice(() -> assertThat(mapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
+
+		assertThat(removeFirst(mapped), is(Maps.entry(1, "1")));
+		twice(() -> assertThat(mapped, contains(Maps.entry(2, "2"), Maps.entry(3, "3"))));
 	}
 
 	@Test
 	public void mapTwoFunctions() {
+		EntrySequence<Integer, String> emptyMapped = empty.map(Integer::parseInt, Object::toString);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
 		EntrySequence<Integer, String> mapped = _123.map(Integer::parseInt, Object::toString);
 		twice(() -> assertThat(mapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
+
+		assertThat(removeFirst(mapped), is(Maps.entry(1, "1")));
+		twice(() -> assertThat(mapped, contains(Maps.entry(2, "2"), Maps.entry(3, "3"))));
 	}
 
 	@Test
 	public void mapEntryFunction() {
-		EntrySequence<Integer, String> mapped =
-				_123.map(p -> Maps.entry(parseInt(p.getKey()), p.getValue().toString()));
+		EntrySequence<Integer, String> emptyMapped = empty.map(
+				e -> Maps.entry(parseInt(e.getKey()), e.getValue().toString()));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
+		EntrySequence<Integer, String> mapped = _123.map(
+				e -> Maps.entry(parseInt(e.getKey()), e.getValue().toString()));
 		twice(() -> assertThat(mapped, contains(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
+
+		assertThat(removeFirst(mapped), is(Maps.entry(1, "1")));
+		twice(() -> assertThat(mapped, contains(Maps.entry(2, "2"), Maps.entry(3, "3"))));
 	}
 
 	@Test
@@ -653,10 +825,11 @@ public class EntrySequenceTest {
 
 	@Test
 	public void mapWithIndex() {
-		EntrySequence<Integer, String> mappedEmpty = empty.mapIndexed((p, i) -> {
+		EntrySequence<Integer, String> emptyMapped = empty.mapIndexed((p, i) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
 		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((e, i) -> {
@@ -667,6 +840,10 @@ public class EntrySequenceTest {
 			index.set(0);
 			assertThat(oneMapped, contains(Maps.entry(1, "1")));
 		});
+
+		index.set(0);
+		assertThat(removeFirst(oneMapped), is(Maps.entry(1, "1")));
+		twice(() -> assertThat(oneMapped, is(emptyIterable())));
 
 		EntrySequence<Integer, String> twoMapped = _12.mapIndexed((e, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
@@ -691,10 +868,11 @@ public class EntrySequenceTest {
 
 	@Test
 	public void mapBiFunctionWithIndex() {
-		EntrySequence<Integer, String> mappedEmpty = empty.mapIndexed((k, v, i) -> {
+		EntrySequence<Integer, String> emptyMapped = empty.mapIndexed((k, v, i) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
 		EntrySequence<Integer, String> oneMapped = _1.mapIndexed((k, v, i) -> {
@@ -703,6 +881,11 @@ public class EntrySequenceTest {
 		});
 		twiceIndexed(index, 1, () -> assertThat(oneMapped, contains(Maps.entry(1, "1"))));
 
+		index.set(0);
+		assertThat(removeFirst(oneMapped), is(Maps.entry(1, "1")));
+		twice(() -> assertThat(oneMapped, is(emptyIterable())));
+
+		index.set(0);
 		EntrySequence<Integer, String> twoMapped = _12.mapIndexed((k, v, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Maps.entry(v, k);
@@ -737,62 +920,120 @@ public class EntrySequenceTest {
 
 	@Test
 	public void until() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(Maps.entry("4", 4));
+		EntrySequence<String, Integer> emptyUntil = empty.until(Maps.entry("4", 4));
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.until(Maps.entry("4", 4));
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void endingAt() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt(Maps.entry("3", 3));
+		EntrySequence<String, Integer> emptyEndingAt = empty.endingAt(Maps.entry("3", 3));
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.endingAt(Maps.entry("3", 3));
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void untilPredicate() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until(e -> e.equals(Maps.entry("4", 4)));
+		EntrySequence<String, Integer> emptyUntil = empty.until(e -> e.equals(Maps.entry("4", 4)));
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.until(e -> e.equals(Maps.entry("4", 4)));
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		EntrySequence<String, Integer> sequence =
-				EntrySequence.from(_12345).endingAt(e -> e.equals(Maps.entry("3", 3)));
+		EntrySequence<String, Integer> emptyEndingAt = empty.endingAt(e -> e.equals(Maps.entry("3", 3)));
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.endingAt(e -> e.equals(Maps.entry("3", 3)));
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void untilBinary() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until("4", 4);
+		EntrySequence<String, Integer> emptyUntil = empty.until("4", 4);
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.until("4", 4);
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void endingAtBinary() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).endingAt("3", 3);
+		EntrySequence<String, Integer> emptyEndingAt = empty.endingAt("3", 3);
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.endingAt("3", 3);
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void untilBinaryPredicate() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(_12345).until((k, v) -> k.equals("4") && v == 4);
+		EntrySequence<String, Integer> emptyUntil = empty.until((k, v) -> k.equals("4") && v == 4);
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.until((k, v) -> k.equals("4") && v == 4);
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void endingAtBinaryPredicate() {
-		EntrySequence<String, Integer> sequence =
-				EntrySequence.from(_12345).endingAt((k, v) -> k.equals("3") && v == 3);
+		EntrySequence<String, Integer> emptyEndingAt = empty.endingAt((k, v) -> k.equals("3") && v == 3);
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		EntrySequence<String, Integer> sequence = _12345.endingAt((k, v) -> k.equals("3") && v == 3);
 		twice(() -> assertThat(sequence, contains(entries123)));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void startingAfter() {
 		EntrySequence<String, Integer> startingEmpty = empty.startingAfter(Maps.entry("5", 5));
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		EntrySequence<String, Integer> sequence = _123456789.startingAfter(Maps.entry("5", 5));
 		twice(() -> assertThat(sequence, contains(Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                          Maps.entry("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("6", 6)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("7", 7), Maps.entry("8", 8), Maps.entry("9", 9))));
 
 		EntrySequence<String, Integer> noStart = _12345.startingAfter(Maps.entry("10", 10));
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -802,10 +1043,14 @@ public class EntrySequenceTest {
 	public void startingAfterPredicate() {
 		EntrySequence<String, Integer> startingEmpty = empty.startingAfter(e -> e.getValue() == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		EntrySequence<String, Integer> sequence = _123456789.startingAfter(e -> e.getValue() == 5);
 		twice(() -> assertThat(sequence, contains(Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                          Maps.entry("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("6", 6)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("7", 7), Maps.entry("8", 8), Maps.entry("9", 9))));
 
 		EntrySequence<String, Integer> noStart = _12345.startingAfter(e -> e.getValue() == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -820,6 +1065,9 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(sequence, contains(Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                          Maps.entry("9", 9))));
 
+		assertThat(removeFirst(sequence), is(Maps.entry("6", 6)));
+		twice(() -> assertThat(sequence, contains(Maps.entry("7", 7), Maps.entry("8", 8), Maps.entry("9", 9))));
+
 		EntrySequence<String, Integer> noStart = _12345.startingAfter((k, v) -> v == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
@@ -828,11 +1076,15 @@ public class EntrySequenceTest {
 	public void startingFrom() {
 		EntrySequence<String, Integer> startingEmpty = empty.startingFrom(Maps.entry("5", 5));
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		EntrySequence<String, Integer> sequence = _123456789.startingFrom(Maps.entry("5", 5));
 		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("5", 5)));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 
 		EntrySequence<String, Integer> noStart = _12345.startingFrom(Maps.entry("10", 10));
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -848,6 +1100,9 @@ public class EntrySequenceTest {
 		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
 
+		assertThat(removeFirst(sequence), is(Maps.entry("5", 5)));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+
 		EntrySequence<String, Integer> noStart = _12345.startingFrom(e -> e.getValue() == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
 	}
@@ -856,11 +1111,15 @@ public class EntrySequenceTest {
 	public void startingFromBiPredicate() {
 		EntrySequence<String, Integer> startingEmpty = empty.startingFrom((k, v) -> v == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		EntrySequence<String, Integer> sequence = _123456789.startingFrom((k, v) -> v == 5);
 		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
 		                                Maps.entry("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Maps.entry("5", 5)));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 
 		EntrySequence<String, Integer> noStart = _12345.startingFrom((k, v) -> v == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -1021,7 +1280,7 @@ public class EntrySequenceTest {
 	@Test
 	public void reduceQuaternary() {
 		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry =
-				(rk, rv, ek, ev) -> Maps.entry(rk + ek, rv + ev);
+				(rk, rv, k, v) -> Maps.entry(rk + k, rv + v);
 
 		twice(() -> {
 			assertThat(empty.reduce(sumEntry), is(Optional.empty()));
@@ -1035,6 +1294,7 @@ public class EntrySequenceTest {
 	public void reduceWithIdentity() {
 		BinaryOperator<Entry<String, Integer>> sumEntry =
 				(r, e) -> Maps.entry(r.getKey() + e.getKey(), r.getValue() + e.getValue());
+
 		twice(() -> {
 			assertThat(empty.reduce(Maps.entry("17", 17), sumEntry), is(Maps.entry("17", 17)));
 			assertThat(_1.reduce(Maps.entry("17", 17), sumEntry), is(Maps.entry("171", 18)));
@@ -1046,7 +1306,7 @@ public class EntrySequenceTest {
 	@Test
 	public void reduceQuaternaryWithIdentity() {
 		QuaternaryFunction<String, Integer, String, Integer, Entry<String, Integer>> sumEntry =
-				(rk, rv, ek, ev) -> Maps.entry(rk + ek, rv + ev);
+				(rk, rv, k, v) -> Maps.entry(rk + k, rv + v);
 
 		twice(() -> {
 			assertThat(empty.reduce("17", 17, sumEntry), is(Maps.entry("17", 17)));
@@ -1173,7 +1433,18 @@ public class EntrySequenceTest {
 
 	@Test
 	public void window() {
-		twice(() -> assertThat(_12345.window(3),
+		Sequence<EntrySequence<String, Integer>> emptyWindowed = empty.window(3);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
+
+		Sequence<EntrySequence<String, Integer>> windowed = _12345.window(3);
+		twice(() -> assertThat(windowed,
+		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)),
+		                                contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4)),
+		                                contains(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(windowed));
+		twice(() -> assertThat(windowed,
 		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)),
 		                                contains(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4)),
 		                                contains(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5)))));
@@ -1181,14 +1452,34 @@ public class EntrySequenceTest {
 
 	@Test
 	public void windowWithStep() {
-		twice(() -> assertThat(_12345.window(3, 2),
+		Sequence<EntrySequence<String, Integer>> emptyWindowed = empty.window(3, 2);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
+
+		Sequence<EntrySequence<String, Integer>> windowed = _12345.window(3, 2);
+		twice(() -> assertThat(windowed,
+		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)),
+		                                contains(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(windowed));
+		twice(() -> assertThat(windowed,
 		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)),
 		                                contains(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("5", 5)))));
 	}
 
 	@Test
 	public void batch() {
-		twice(() -> assertThat(_12345.batch(3),
+		Sequence<EntrySequence<String, Integer>> emptyBatched = empty.batch(3);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
+
+		Sequence<EntrySequence<String, Integer>> batched = _12345.batch(3);
+		twice(() -> assertThat(batched,
+		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)),
+		                                contains(Maps.entry("4", 4), Maps.entry("5", 5)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(batched));
+		twice(() -> assertThat(batched,
 		                       contains(contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3)),
 		                                contains(Maps.entry("4", 4), Maps.entry("5", 5)))));
 	}
@@ -1198,8 +1489,12 @@ public class EntrySequenceTest {
 	public void batchOnPredicate() {
 		Sequence<EntrySequence<String, Integer>> emptyBatched = empty.batch((a, b) -> a.getValue() > b.getValue());
 		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
 
 		Sequence<EntrySequence<String, Integer>> oneBatched = _1.batch((a, b) -> a.getValue() > b.getValue());
+		twice(() -> assertThat(oneBatched, contains(contains(Maps.entry("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
 		twice(() -> assertThat(oneBatched, contains(contains(Maps.entry("1", 1)))));
 
 		Sequence<EntrySequence<String, Integer>> twoBatched = _12.batch((a, b) -> a.getValue() > b.getValue());
@@ -1219,7 +1514,7 @@ public class EntrySequenceTest {
 		twice(() -> assertThat(nineRandomBatched, contains(contains(Maps.entry("67", 67)),
 		                                                   contains(Maps.entry("5", 5), Maps.entry("43", 43)),
 		                                                   contains(Maps.entry("3", 3), Maps.entry("5", 5),
-		                                                                Maps.entry("7", 7), Maps.entry("24", 24)),
+		                                                            Maps.entry("7", 7), Maps.entry("24", 24)),
 		                                                   contains(Maps.entry("5", 5), Maps.entry("67", 67)))));
 	}
 
@@ -1228,8 +1523,12 @@ public class EntrySequenceTest {
 	public void batchOnQuaternaryPredicate() {
 		Sequence<EntrySequence<String, Integer>> emptyBatched = empty.batch((a, b, c, d) -> b > d);
 		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
 
 		Sequence<EntrySequence<String, Integer>> oneBatched = _1.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(oneBatched, contains(contains(Maps.entry("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
 		twice(() -> assertThat(oneBatched, contains(contains(Maps.entry("1", 1)))));
 
 		Sequence<EntrySequence<String, Integer>> twoBatched = _12.batch((a, b, c, d) -> b > d);
@@ -1241,14 +1540,14 @@ public class EntrySequenceTest {
 
 		Sequence<EntrySequence<String, Integer>> threeRandomBatched = random3.batch((a, b, c, d) -> b > d);
 		twice(() -> assertThat(threeRandomBatched, contains(contains(Maps.entry("4", 4)),
-		                                                        contains(Maps.entry("2", 2), Maps.entry("3", 3)))));
+		                                                    contains(Maps.entry("2", 2), Maps.entry("3", 3)))));
 
 		Sequence<EntrySequence<String, Integer>> nineRandomBatched = random9.batch((a, b, c, d) -> b > d);
 		twice(() -> assertThat(nineRandomBatched, contains(contains(Maps.entry("67", 67)),
-		                                                       contains(Maps.entry("5", 5), Maps.entry("43", 43)),
-		                                                       contains(Maps.entry("3", 3), Maps.entry("5", 5),
-		                                                                Maps.entry("7", 7), Maps.entry("24", 24)),
-		                                                       contains(Maps.entry("5", 5), Maps.entry("67", 67)))));
+		                                                   contains(Maps.entry("5", 5), Maps.entry("43", 43)),
+		                                                   contains(Maps.entry("3", 3), Maps.entry("5", 5),
+		                                                            Maps.entry("7", 7), Maps.entry("24", 24)),
+		                                                   contains(Maps.entry("5", 5), Maps.entry("67", 67)))));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1256,8 +1555,12 @@ public class EntrySequenceTest {
 	public void split() {
 		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split(Maps.entry("3", 3));
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<EntrySequence<String, Integer>> oneSplit = _1.split(Maps.entry("3", 3));
+		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSplit));
 		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
 
 		Sequence<EntrySequence<String, Integer>> twoSplit = _12.split(Maps.entry("3", 3));
@@ -1282,8 +1585,12 @@ public class EntrySequenceTest {
 	public void splitPredicate() {
 		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split(x -> x.getValue() % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<EntrySequence<String, Integer>> oneSplit = _1.split(x -> x.getValue() % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSplit));
 		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
 
 		Sequence<EntrySequence<String, Integer>> twoSplit = _12.split(x -> x.getValue() % 3 == 0);
@@ -1307,8 +1614,12 @@ public class EntrySequenceTest {
 	public void splitKeyValue() {
 		Sequence<EntrySequence<String, Integer>> emptySplit = empty.split((k, v) -> v % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<EntrySequence<String, Integer>> oneSplit = _1.split((k, v) -> v % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSplit));
 		twice(() -> assertThat(oneSplit, contains(contains(Maps.entry("1", 1)))));
 
 		Sequence<EntrySequence<String, Integer>> twoSplit = _12.split((k, v) -> v % 3 == 0);
@@ -1329,17 +1640,29 @@ public class EntrySequenceTest {
 
 	@Test
 	public void step() {
-		twice(() -> assertThat(_123456789.step(3),
+		EntrySequence<String, Integer> emptyStep3 = empty.step(3);
+		twice(() -> assertThat(emptyStep3, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStep3.iterator().next());
+
+		EntrySequence<String, Integer> nineStep3 = _123456789.step(3);
+		twice(() -> assertThat(nineStep3,
 		                       contains(Maps.entry("1", 1), Maps.entry("4", 4), Maps.entry("7", 7))));
+
+		assertThat(removeFirst(nineStep3), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(nineStep3, contains(Maps.entry("2", 2), Maps.entry("5", 5), Maps.entry("8", 8))));
 	}
 
 	@Test
 	public void distinct() {
 		EntrySequence<String, Integer> emptyDistinct = empty.distinct();
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptyDistinct.iterator().next());
 
 		EntrySequence<String, Integer> oneDistinct = random1.distinct();
 		twice(() -> assertThat(oneDistinct, contains(Maps.entry("17", 17))));
+
+		assertThat(removeFirst(oneDistinct), is(Maps.entry("17", 17)));
+		twice(() -> assertThat(oneDistinct, is(emptyIterable())));
 
 		EntrySequence<String, Integer> twoDuplicatesDistinct =
 				EntrySequence.of(Maps.entry("17", 17), Maps.entry("17", 17)).distinct();
@@ -1354,8 +1677,12 @@ public class EntrySequenceTest {
 	public void sorted() {
 		EntrySequence<String, Integer> emptySorted = empty.sorted();
 		twice(() -> assertThat(emptySorted, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptySorted.iterator().next());
 
 		EntrySequence<String, Integer> oneSorted = random1.sorted();
+		twice(() -> assertThat(oneSorted, contains(Maps.entry("17", 17))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSorted));
 		twice(() -> assertThat(oneSorted, contains(Maps.entry("17", 17))));
 
 		EntrySequence<String, Integer> twoSorted = random2.sorted();
@@ -1370,16 +1697,20 @@ public class EntrySequenceTest {
 
 	@Test
 	public void sortedComparator() {
-		EntrySequence<String, Integer> emptySorted = empty.sorted((Comparator) Comparator.reverseOrder());
+		EntrySequence<String, Integer> emptySorted = empty.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(emptySorted, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptySorted.iterator().next());
 
-		EntrySequence<String, Integer> oneSorted = random1.sorted((Comparator) Comparator.reverseOrder());
+		EntrySequence<String, Integer> oneSorted = random1.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(oneSorted, contains(Maps.entry("17", 17))));
 
-		EntrySequence<String, Integer> twoSorted = random2.sorted((Comparator) Comparator.reverseOrder());
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSorted));
+		twice(() -> assertThat(oneSorted, contains(Maps.entry("17", 17))));
+
+		EntrySequence<String, Integer> twoSorted = random2.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(twoSorted, contains(Maps.entry("32", 32), Maps.entry("17", 17))));
 
-		EntrySequence<String, Integer> nineSorted = random9.sorted((Comparator) Comparator.reverseOrder());
+		EntrySequence<String, Integer> nineSorted = random9.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(nineSorted, // String sorting on first item reverse
 		                       contains(Maps.entry("7", 7), Maps.entry("67", 67), Maps.entry("67", 67),
 		                                Maps.entry("5", 5), Maps.entry("5", 5), Maps.entry("5", 5),
@@ -1404,23 +1735,23 @@ public class EntrySequenceTest {
 
 	@Test
 	public void minByComparator() {
-		twice(() -> assertThat(empty.min((Comparator) Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(random1.min((Comparator) Comparator.reverseOrder()),
+		twice(() -> assertThat(empty.min((Comparator) reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(random1.min((Comparator) reverseOrder()),
 		                       is(Optional.of(Maps.entry("17", 17)))));
-		twice(() -> assertThat(random2.min((Comparator) Comparator.reverseOrder()),
+		twice(() -> assertThat(random2.min((Comparator) reverseOrder()),
 		                       is(Optional.of(Maps.entry("32", 32)))));
-		twice(() -> assertThat(random9.min((Comparator) Comparator.reverseOrder()),
+		twice(() -> assertThat(random9.min((Comparator) reverseOrder()),
 		                       is(Optional.of(Maps.entry("7", 7)))));
 	}
 
 	@Test
 	public void maxByComparator() {
-		twice(() -> assertThat(empty.max((Comparator) Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(random1.max((Comparator) Comparator.reverseOrder()),
+		twice(() -> assertThat(empty.max((Comparator) reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(random1.max((Comparator) reverseOrder()),
 		                       is(Optional.of(Maps.entry("17", 17)))));
-		twice(() -> assertThat(random2.max((Comparator) Comparator.reverseOrder()),
+		twice(() -> assertThat(random2.max((Comparator) reverseOrder()),
 		                       is(Optional.of(Maps.entry("17", 17)))));
-		twice(() -> assertThat(random9.max((Comparator) Comparator.reverseOrder()),
+		twice(() -> assertThat(random9.max((Comparator) reverseOrder()),
 		                       is(Optional.of(Maps.entry("24", 24)))));
 	}
 
@@ -1455,118 +1786,138 @@ public class EntrySequenceTest {
 
 	@Test
 	public void peek() {
-		EntrySequence<String, Integer> peekEmpty = empty.peek((l, r) -> {
+		EntrySequence<String, Integer> emptyPeeked = empty.peek((l, r) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
-		EntrySequence<String, Integer> peekOne = _1.peek((l, r) -> {
+		EntrySequence<String, Integer> onePeeked = _1.peek((l, r) -> {
 			index.getAndIncrement();
 			assertThat(l, is(String.valueOf(index.get())));
 			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
+		twiceIndexed(index, 1, () -> assertThat(onePeeked, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> peekTwo = _12.peek((l, r) -> {
-			index.getAndIncrement();
-			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is(index.get()));
-		});
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Maps.entry("1", 1)));
+		index.set(0);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		EntrySequence<String, Integer> peek = _12345.peek((l, r) -> {
+		EntrySequence<String, Integer> twoPeeked = _12.peek((l, r) -> {
 			index.getAndIncrement();
 			assertThat(l, is(String.valueOf(index.get())));
 			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
-		                                                       Maps.entry("3", 3), Maps.entry("4", 4),
-		                                                       Maps.entry("5", 5))));
+		twiceIndexed(index, 2, () -> assertThat(twoPeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> fivePeeked = _12345.peek((l, r) -> {
+			index.getAndIncrement();
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(fivePeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                             Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                             Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void peekIndexed() {
-		EntrySequence<String, Integer> peekEmpty = empty.peekIndexed((l, r, x) -> {
+		EntrySequence<String, Integer> emptyPeeked = empty.peekIndexed((l, r, x) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
-		EntrySequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
+		EntrySequence<String, Integer> onePeeked = _1.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
 			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
+		twiceIndexed(index, 1, () -> assertThat(onePeeked, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> peekTwo = _12.peekIndexed((l, r, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
-			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is(index.get()));
-		});
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Maps.entry("1", 1)));
+		index.set(0);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		EntrySequence<String, Integer> peek = _12345.peekIndexed((l, r, x) -> {
+		EntrySequence<String, Integer> twoPeeked = _12.peekIndexed((l, r, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
 			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
-		                                                       Maps.entry("3", 3), Maps.entry("4", 4),
-		                                                       Maps.entry("5", 5))));
+		twiceIndexed(index, 2, () -> assertThat(twoPeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> fivePeeked = _12345.peekIndexed((l, r, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(fivePeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                             Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                             Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void peekEntry() {
-		EntrySequence<String, Integer> peekEmpty = empty.peek(p -> {
+		EntrySequence<String, Integer> emptyPeeked = empty.peek(p -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger value = new AtomicInteger(1);
-		EntrySequence<String, Integer> peekOne = _1.peek(
+		EntrySequence<String, Integer> onePeeked = _1.peek(
 				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
-		twiceIndexed(value, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
+		twiceIndexed(value, 1, () -> assertThat(onePeeked, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> peekTwo = _12.peek(
-				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
-		twiceIndexed(value, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Maps.entry("1", 1)));
+		value.set(1);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		EntrySequence<String, Integer> peek = _12345.peek(
+		EntrySequence<String, Integer> twoPeeked = _12.peek(
 				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
-		twiceIndexed(value, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
-		                                                       Maps.entry("3", 3), Maps.entry("4", 4),
-		                                                       Maps.entry("5", 5))));
+		twiceIndexed(value, 2, () -> assertThat(twoPeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> fivePeeked = _12345.peek(
+				p -> assertThat(p, is(Maps.entry(String.valueOf(value.get()), value.getAndIncrement()))));
+		twiceIndexed(value, 5, () -> assertThat(fivePeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                             Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                             Maps.entry("5", 5))));
 	}
 
 	@Test
 	public void peekIndexedEntry() {
-		EntrySequence<String, Integer> peekEmpty = empty.peekIndexed((p, x) -> {
+		EntrySequence<String, Integer> emptyPeeked = empty.peekIndexed((p, x) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
-		EntrySequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
+		EntrySequence<String, Integer> onePeeked = _1.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
 		});
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Maps.entry("1", 1))));
+		twiceIndexed(index, 1, () -> assertThat(onePeeked, contains(Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> peekTwo = _12.peekIndexed((p, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
-		});
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Maps.entry("1", 1)));
+		index.set(0);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		EntrySequence<String, Integer> peek = _12345.peekIndexed((p, x) -> {
+		EntrySequence<String, Integer> twoPeeked = _12.peekIndexed((p, x) -> {
 			assertThat(x, is(index.getAndIncrement()));
 			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
 		});
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(Maps.entry("1", 1), Maps.entry("2", 2),
-		                                                       Maps.entry("3", 3), Maps.entry("4", 4),
-		                                                       Maps.entry("5", 5))));
+		twiceIndexed(index, 2, () -> assertThat(twoPeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+
+		EntrySequence<String, Integer> fivePeeked = _12345.peekIndexed((p, x) -> {
+			assertThat(x, is(index.getAndIncrement()));
+			assertThat(p, is(Maps.entry(String.valueOf(index.get()), index.get())));
+		});
+		twiceIndexed(index, 5, () -> assertThat(fivePeeked, contains(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                             Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                             Maps.entry("5", 5))));
 	}
 
 	@Test
@@ -1601,158 +1952,207 @@ public class EntrySequenceTest {
 	public void mapToChar() {
 		CharSeq emptyChars = empty.toChars((k, v) -> (char) (v + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
 
 		CharSeq charSeq = _12345.toChars((k, v) -> (char) (v + 'a' - 1));
 		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
+
+		assertThat(removeFirst(charSeq), is('a'));
+		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void mapToInt() {
 		IntSequence emptyInts = empty.toInts((k, v) -> v + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
 
 		IntSequence intSequence = _12345.toInts((k, v) -> v + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(intSequence), is(2));
+		twice(() -> assertThat(intSequence, containsInts(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapToLong() {
 		LongSequence emptyLongs = empty.toLongs((k, v) -> v + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
 
 		LongSequence longSequence = _12345.toLongs((k, v) -> v + 1);
-		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
+		twice(() -> assertThat(longSequence, containsLongs(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(longSequence), is(2L));
+		twice(() -> assertThat(longSequence, containsLongs(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapToDouble() {
 		DoubleSequence emptyDoubles = empty.toDoubles((k, v) -> v + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
 		DoubleSequence doubleSequence = _12345.toDoubles((k, v) -> v + 1);
-		twice(() -> assertThat(doubleSequence, containsDoubles(2.0, 3.0, 4.0, 5.0, 6.0)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(doubleSequence), is(2.0));
+		twice(() -> assertThat(doubleSequence, containsDoubles(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapToCharFunction() {
 		CharSeq emptyChars = empty.toChars(e -> (char) (e.getValue() + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
 
 		CharSeq charSeq = _12345.toChars(e -> (char) (e.getValue() + 'a' - 1));
 		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
+
+		assertThat(removeFirst(charSeq), is('a'));
+		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
 	}
 
 	@Test
 	public void mapToIntFunction() {
 		IntSequence emptyInts = empty.toInts(e -> e.getValue() + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
 
 		IntSequence intSequence = _12345.toInts(e -> e.getValue() + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(intSequence), is(2));
+		twice(() -> assertThat(intSequence, containsInts(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapToLongFunction() {
 		LongSequence emptyLongs = empty.toLongs(e -> e.getValue() + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
 
 		LongSequence longSequence = _12345.toLongs(e -> e.getValue() + 1);
-		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
+		twice(() -> assertThat(longSequence, containsLongs(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(longSequence), is(2L));
+		twice(() -> assertThat(longSequence, containsLongs(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapToDoubleFunction() {
 		DoubleSequence emptyDoubles = empty.toDoubles(e -> e.getValue() + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
 		DoubleSequence doubleSequence = _12345.toDoubles(e -> e.getValue() + 1);
-		twice(() -> assertThat(doubleSequence, containsDoubles(2.0, 3.0, 4.0, 5.0, 6.0)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(doubleSequence), is(2.0));
+		twice(() -> assertThat(doubleSequence, containsDoubles(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void repeat() {
-		EntrySequence<String, Integer> repeatEmpty = empty.repeat();
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		EntrySequence<String, Integer> emptyRepeated = empty.repeat();
+		twice(() -> assertThat(emptyRepeated, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeated.iterator().next());
 
-		EntrySequence<String, Integer> repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne.limit(3),
+		EntrySequence<String, Integer> oneRepeated = _1.repeat();
+		twice(() -> assertThat(oneRepeated.limit(3),
 		                       contains(Maps.entry("1", 1), Maps.entry("1", 1), Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo.limit(5),
+		EntrySequence<String, Integer> twoRepeated = _12.repeat();
+		twice(() -> assertThat(twoRepeated.limit(5),
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("1", 1), Maps.entry("2", 2),
 		                                Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree.limit(8),
+		EntrySequence<String, Integer> threeRepeated = _123.repeat();
+		twice(() -> assertThat(threeRepeated.limit(8),
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("1", 1),
 		                                Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("1", 1),
 		                                Maps.entry("2", 2))));
 
-		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
-			private List<Entry<String, Integer>> list =
-					asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
-			int end = list.size();
+		assertThat(removeFirst(threeRepeated), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(threeRepeated,
+		                       beginsWith(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("2", 2),
+		                                  Maps.entry("3", 3),
+		                                  Maps.entry("2", 2), Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 
-			@Override
-			public Iterator<Entry<String, Integer>> iterator() {
-				List<Entry<String, Integer>> subList = list.subList(0, end);
-				end = end > 0 ? end - 1 : 0;
-				return subList.iterator();
-			}
-		}).repeat();
-		assertThat(repeatVarying,
+		EntrySequence<String, Integer> varyingLengthRepeated = EntrySequence.from(
+				new Iterable<Entry<String, Integer>>() {
+					private List<Entry<String, Integer>> list =
+							asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+					int end = list.size();
+
+					@Override
+					public Iterator<Entry<String, Integer>> iterator() {
+						List<Entry<String, Integer>> subList = list.subList(0, end);
+						end = end > 0 ? end - 1 : 0;
+						return subList.iterator();
+					}
+				}).repeat();
+		assertThat(varyingLengthRepeated,
 		           contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("1", 1),
 		                    Maps.entry("2", 2), Maps.entry("1", 1)));
 	}
 
 	@Test
 	public void repeatTwice() {
-		EntrySequence<String, Integer> repeatEmpty = empty.repeat(2);
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		EntrySequence<String, Integer> emptyRepeatedTwice = empty.repeat(2);
+		twice(() -> assertThat(emptyRepeatedTwice, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeatedTwice.iterator().next());
 
-		EntrySequence<String, Integer> repeatOne = _1.repeat(2);
-		twice(() -> assertThat(repeatOne, contains(Maps.entry("1", 1), Maps.entry("1", 1))));
+		EntrySequence<String, Integer> oneRepeatedTwice = _1.repeat(2);
+		twice(() -> assertThat(oneRepeatedTwice, contains(Maps.entry("1", 1), Maps.entry("1", 1))));
 
-		EntrySequence<String, Integer> repeatTwo = _12.repeat(2);
-		twice(() -> assertThat(repeatTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("1", 1),
-		                                           Maps.entry("2", 2))));
+		EntrySequence<String, Integer> twoRepeatedTwice = _12.repeat(2);
+		twice(() -> assertThat(twoRepeatedTwice, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("1", 1),
+		                                                  Maps.entry("2", 2))));
 
-		EntrySequence<String, Integer> repeatThree = _123.repeat(2);
-		twice(() -> assertThat(repeatThree,
+		EntrySequence<String, Integer> threeRepeatedTwice = _123.repeat(2);
+		twice(() -> assertThat(threeRepeatedTwice,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("1", 1),
 		                                Maps.entry("2", 2), Maps.entry("3", 3))));
 
-		EntrySequence<String, Integer> repeatVarying = EntrySequence.from(new Iterable<Entry<String, Integer>>() {
-			private List<Entry<String, Integer>> list =
-					asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
-			int end = list.size();
+		assertThat(removeFirst(threeRepeatedTwice), is(Maps.entry("1", 1)));
+		twice(() -> assertThat(threeRepeatedTwice,
+		                       beginsWith(Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("2", 2),
+		                                  Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 
-			@Override
-			public Iterator<Entry<String, Integer>> iterator() {
-				List<Entry<String, Integer>> subList = list.subList(0, end);
-				end = end > 0 ? end - 1 : 0;
-				return subList.iterator();
-			}
-		}).repeat(2);
-		assertThat(repeatVarying,
+		EntrySequence<String, Integer> varyingLengthRepeatedTwice = EntrySequence.from(
+				new Iterable<Entry<String, Integer>>() {
+					private List<Entry<String, Integer>> list =
+							asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+					int end = list.size();
+
+					@Override
+					public Iterator<Entry<String, Integer>> iterator() {
+						List<Entry<String, Integer>> subList = list.subList(0, end);
+						end = end > 0 ? end - 1 : 0;
+						return subList.iterator();
+					}
+				}).repeat(2);
+		assertThat(varyingLengthRepeatedTwice,
 		           contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("1", 1),
 		                    Maps.entry("2", 2)));
 	}
 
 	@Test
 	public void repeatZero() {
-		EntrySequence<String, Integer> repeatEmpty = empty.repeat(0);
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		EntrySequence<String, Integer> emptyRepeatedZero = empty.repeat(0);
+		twice(() -> assertThat(emptyRepeatedZero, is(emptyIterable())));
 
-		EntrySequence<String, Integer> repeatOne = _1.repeat(0);
-		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+		EntrySequence<String, Integer> oneRepeatedZero = _1.repeat(0);
+		twice(() -> assertThat(oneRepeatedZero, is(emptyIterable())));
 
-		EntrySequence<String, Integer> repeatTwo = _12.repeat(0);
-		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+		EntrySequence<String, Integer> twoRepeatedZero = _12.repeat(0);
+		twice(() -> assertThat(twoRepeatedZero, is(emptyIterable())));
 
-		EntrySequence<String, Integer> repeatThree = _123.repeat(0);
-		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+		EntrySequence<String, Integer> threeRepeatedZero = _123.repeat(0);
+		twice(() -> assertThat(threeRepeatedZero, is(emptyIterable())));
 	}
 
 	@Test
@@ -1784,8 +2184,12 @@ public class EntrySequenceTest {
 	public void reverse() {
 		EntrySequence<String, Integer> emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyReversed.iterator().next());
 
 		EntrySequence<String, Integer> oneReversed = _1.reverse();
+		twice(() -> assertThat(oneReversed, contains(Maps.entry("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneReversed));
 		twice(() -> assertThat(oneReversed, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> twoReversed = _12.reverse();
@@ -1805,8 +2209,12 @@ public class EntrySequenceTest {
 	public void shuffle() {
 		EntrySequence<String, Integer> emptyShuffled = empty.shuffle();
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		EntrySequence<String, Integer> oneShuffled = _1.shuffle();
+		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneShuffled));
 		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> twoShuffled = _12.shuffle();
@@ -1827,8 +2235,12 @@ public class EntrySequenceTest {
 	public void shuffleWithRandomSource() {
 		EntrySequence<String, Integer> emptyShuffled = empty.shuffle(new Random(17));
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		EntrySequence<String, Integer> oneShuffled = _1.shuffle(new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneShuffled));
 		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> twoShuffled = _12.shuffle(new Random(17));
@@ -1860,8 +2272,12 @@ public class EntrySequenceTest {
 	public void shuffleWithRandomSupplier() {
 		EntrySequence<String, Integer> emptyShuffled = empty.shuffle(() -> new Random(17));
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		EntrySequence<String, Integer> oneShuffled = _1.shuffle(() -> new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneShuffled));
 		twice(() -> assertThat(oneShuffled, contains(Maps.entry("1", 1))));
 
 		EntrySequence<String, Integer> twoShuffled = _12.shuffle(() -> new Random(17));
@@ -1879,41 +2295,75 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flatten() {
-		Sequence<Object> emptyFlattened = empty.flatten();
+		Sequence<?> emptyFlattened = empty.flatten();
 		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
 
-		Sequence<Object> oneFlattened = _1.flatten();
+		Sequence<?> oneFlattened = _1.flatten();
 		twice(() -> assertThat(oneFlattened, contains("1", 1)));
 
-		Sequence<Object> twoFlattened = _12.flatten();
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneFlattened));
+		twice(() -> assertThat(oneFlattened, contains("1", 1)));
+
+		Sequence<?> twoFlattened = _12.flatten();
 		twice(() -> assertThat(twoFlattened, contains("1", 1, "2", 2)));
 
-		Sequence<Object> fiveFlattened = _12345.flatten();
+		Sequence<?> fiveFlattened = _12345.flatten();
 		twice(() -> assertThat(fiveFlattened, contains("1", 1, "2", 2, "3", 3, "4", 4, "5", 5)));
 	}
 
 	@Test
 	public void flattenFunction() {
-		EntrySequence<String, Integer> flattened = _123.flatten(entry -> Iterables.of(entry, Maps.entry("0", 0)));
-		twice(() -> assertThat(flattened,
+		EntrySequence<String, Integer> emptyFlattened = empty.flatten(entry -> Iterables.of(entry, Maps.entry("0",
+		                                                                                                      0)));
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
+		EntrySequence<String, Integer> threeFlattened = _123.flatten(entry -> Iterables.of(entry, Maps.entry("0", 0)));
+		twice(() -> assertThat(threeFlattened,
+		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
+		                                Maps.entry("3", 3), Maps.entry("0", 0))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeFlattened));
+		twice(() -> assertThat(threeFlattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
 		                                Maps.entry("3", 3), Maps.entry("0", 0))));
 	}
 
 	@Test
 	public void flattenBiFunction() {
-		EntrySequence<String, Integer> flattened =
+		EntrySequence<String, Integer> emptyFlattened = empty.flatten(
+				(k, v) -> Iterables.of(Maps.entry(k, v), Maps.entry("0", 0)));
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
+		EntrySequence<String, Integer> threeFlattened =
 				_123.flatten((k, v) -> Iterables.of(Maps.entry(k, v), Maps.entry("0", 0)));
-		twice(() -> assertThat(flattened,
+		twice(() -> assertThat(threeFlattened,
+		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
+		                                Maps.entry("3", 3), Maps.entry("0", 0))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeFlattened));
+		twice(() -> assertThat(threeFlattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("0", 0), Maps.entry("2", 2), Maps.entry("0", 0),
 		                                Maps.entry("3", 3), Maps.entry("0", 0))));
 	}
 
 	@Test
 	public void flattenKeys() {
+		EntrySequence<String, Integer> emptyFlattened = EntrySequence.<Iterable<String>, Integer>of()
+				.flattenKeys(Entry::getKey);
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
 		EntrySequence<String, Integer> flattened = EntrySequence.<Iterable<String>, Integer>ofEntries(
 				Iterables.of("1", "2", "3"), 1, Iterables.empty(), 2, Iterables.of("5", "6", "7"), 3)
 				.flattenKeys(Entry::getKey);
+		twice(() -> assertThat(flattened,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 1), Maps.entry("3", 1), Maps.entry("5", 3),
+		                                Maps.entry("6", 3), Maps.entry("7", 3))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(flattened));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 1), Maps.entry("3", 1), Maps.entry("5", 3),
 		                                Maps.entry("6", 3), Maps.entry("7", 3))));
@@ -1921,9 +2371,19 @@ public class EntrySequenceTest {
 
 	@Test
 	public void flattenValues() {
+		EntrySequence<String, Integer> emptyFlattened = EntrySequence.<String, Iterable<Integer>>of()
+				.flattenValues(Entry::getValue);
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
 		EntrySequence<String, Integer> flattened = EntrySequence.<String, Iterable<Integer>>ofEntries(
 				"1", Iterables.of(1, 2, 3), "2", Iterables.empty(), "3", Iterables.of(2, 3, 4))
 				.flattenValues(Entry::getValue);
+		twice(() -> assertThat(flattened,
+		                       contains(Maps.entry("1", 1), Maps.entry("1", 2), Maps.entry("1", 3), Maps.entry("3", 2),
+		                                Maps.entry("3", 3), Maps.entry("3", 4))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(flattened));
 		twice(() -> assertThat(flattened,
 		                       contains(Maps.entry("1", 1), Maps.entry("1", 2), Maps.entry("1", 3), Maps.entry("3", 2),
 		                                Maps.entry("3", 3), Maps.entry("3", 4))));
