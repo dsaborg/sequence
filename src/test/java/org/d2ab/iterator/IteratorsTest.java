@@ -19,36 +19,63 @@ package org.d2ab.iterator;
 import org.d2ab.collection.Iterables;
 import org.junit.Test;
 
-import static org.d2ab.test.Tests.twice;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class IteratorsTest {
+	private final Iterator<Object> empty = Iterators.empty();
+	private final Iterator<Integer> iterator = Iterators.of(1, 2, 3, 4, 5);
+
 	@Test
 	public void empty() {
-		Iterable<Object> empty = Iterables.empty();
-		twice(() -> assertThat(empty, is(emptyIterable())));
+		assertThat(empty.hasNext(), is(false));
+		expecting(NoSuchElementException.class, empty::next);
 	}
 
 	@Test
 	public void of() {
-		Iterable<Integer> none = Iterables.of();
-		twice(() -> assertThat(none, is(emptyIterable())));
+		Iterator<Integer> none = Iterators.of();
+		assertThat(Iterables.once(none), is(emptyIterable()));
+		assertThat(none.hasNext(), is(false));
+		expecting(NoSuchElementException.class, none::next);
 
-		Iterable<Integer> one = Iterables.of(1);
-		twice(() -> assertThat(one, contains(1)));
+		Iterator<Integer> one = Iterators.of(1);
+		assertThat(Iterables.once(one), contains(1));
+		assertThat(one.hasNext(), is(false));
+		expecting(NoSuchElementException.class, one::next);
 
-		Iterable<Integer> two = Iterables.of(1, 2);
-		twice(() -> assertThat(two, contains(1, 2)));
+		Iterator<Integer> two = Iterators.of(1, 2);
+		assertThat(Iterables.once(two), contains(1, 2));
+		assertThat(two.hasNext(), is(false));
+		expecting(NoSuchElementException.class, two::next);
 
-		Iterable<Integer> five = Iterables.of(1, 2, 3, 4, 5);
-		twice(() -> assertThat(five, contains(1, 2, 3, 4, 5)));
+		assertThat(Iterables.once(iterator), contains(1, 2, 3, 4, 5));
+		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::next);
+	}
+
+	@Test
+	public void size() {
+
+	}
+
+	@Test
+	public void skip() {
+		assertThat(Iterators.skip(empty), is(false));
+
+		assertThat(iterator.next(), is(1));
+		assertThat(Iterators.skip(iterator), is(true));
+		assertThat(iterator.next(), is(3));
 	}
 
 	@Test
 	public void toList() {
-		assertThat(Iterators.toList(Iterators.of(1, 2, 3, 4, 5)), contains(1, 2, 3, 4, 5));
+		assertThat(Iterators.toList(iterator), contains(1, 2, 3, 4, 5));
 	}
 }

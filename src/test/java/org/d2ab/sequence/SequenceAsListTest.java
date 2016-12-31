@@ -291,6 +291,7 @@ public class SequenceAsListTest {
 	@Test
 	public void listIteratorEmpty() {
 		ListIterator<Integer> emptyIterator = emptyList.listIterator();
+		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));

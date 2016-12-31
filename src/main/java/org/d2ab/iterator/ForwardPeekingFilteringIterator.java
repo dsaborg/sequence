@@ -69,4 +69,9 @@ public class ForwardPeekingFilteringIterator<T> extends DelegatingUnaryIterator<
 		hasNext = false;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

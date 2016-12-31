@@ -50,7 +50,7 @@ public class FilteredCollection<T> extends AbstractCollection<T> {
 
 	@Override
 	public int size() {
-		return Iterators.count(iterator());
+		return Iterators.size(iterator());
 	}
 
 	@Override

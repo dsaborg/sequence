@@ -89,48 +89,55 @@ public class CharListIteratorTest {
 		assertThat(listIterator.previousIndex(), is(-1));
 
 		assertThat(listIterator.next(), is('a'));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
 
 		assertThat(listIterator.next(), is('b'));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
 		listIterator.add((Character) 'q');
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
 
 		assertThat(listIterator.next(), is('c'));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
 		listIterator.set((Character) 'p');
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
-		assertThat(listIterator.next(), is('d'));
+		assertThat(listIterator.previous(), is('p'));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(5));
-		assertThat(listIterator.previousIndex(), is(4));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 
 		listIterator.remove();
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(4));
-		assertThat(listIterator.previousIndex(), is(3));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 
-		assertThat(list, containsChars('a', 'b', 'q', 'p', 'e'));
+		assertThat(list, containsChars('a', 'b', 'q', 'd', 'e'));
 	}
 
 	@Test

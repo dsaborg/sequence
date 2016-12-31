@@ -1,6 +1,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.ints.IntList;
+import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.chars.CharIterator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.NoSuchElementException;
 
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -17,6 +19,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 public class CharIterableTest {
 	CharIterable empty = CharIterable.of();
@@ -57,9 +61,8 @@ public class CharIterableTest {
 		           containsInts('a', 'b', 'c', 'd', 'e'));
 	}
 
-
 	@Test
-	public void read() throws IOException {
+	public void read() {
 		Reader reader = new StringReader("abcde");
 
 		CharIterable iterable = CharIterable.read(reader);
@@ -67,11 +70,21 @@ public class CharIterableTest {
 	}
 
 	@Test
-	public void readEmpty() throws IOException {
+	public void readWithIOException() throws IOException {
+		Reader reader = spy(new StringReader("abcde"));
+		doThrow(IOException.class).when(reader).read();
+
+		CharIterable iterable = CharIterable.read(reader);
+		twice(() -> expecting(IterationException.class, () -> iterable.iterator().next()));
+	}
+
+	@Test
+	public void readEmpty() {
 		Reader reader = new StringReader("");
 
 		CharIterable iterable = CharIterable.read(reader);
 		twice(() -> assertThat(iterable, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> iterable.iterator().next());
 	}
 
 	@Test

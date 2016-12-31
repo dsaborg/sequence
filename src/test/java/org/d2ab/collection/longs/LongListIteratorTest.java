@@ -89,48 +89,55 @@ public class LongListIteratorTest {
 		assertThat(listIterator.previousIndex(), is(-1));
 
 		assertThat(listIterator.next(), is(1L));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
 
 		assertThat(listIterator.next(), is(2L));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
 		listIterator.add((Long) 17L);
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
 
 		assertThat(listIterator.next(), is(3L));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
 		listIterator.set((Long) 18L);
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
-		assertThat(listIterator.next(), is(4L));
+		assertThat(listIterator.previous(), is(18L));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(5));
-		assertThat(listIterator.previousIndex(), is(4));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 
 		listIterator.remove();
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(4));
-		assertThat(listIterator.previousIndex(), is(3));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 
-		assertThat(list, containsLongs(1, 2, 17, 18, 5));
+		assertThat(list, containsLongs(1, 2, 17, 4, 5));
 	}
 
 	@Test

@@ -340,6 +340,16 @@ public class FilteredListTest {
 	}
 
 	@Test
+	public void listIteratorWithIndex() {
+		assertThat(filtered.listIterator(0).next(), is(1));
+		assertThat(filtered.listIterator(4).next(), is(9));
+		assertThat(filtered.listIterator(5).hasNext(), is(false));
+		expecting(NoSuchElementException.class, () -> filtered.listIterator(5).next());
+		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(6));
+		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(7));
+	}
+
+	@Test
 	public void listIterator() {
 		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(11));
 

@@ -48,7 +48,7 @@ public interface IterableCollection<T> extends Collection<T> {
 
 	@Override
 	default int size() {
-		return Iterators.count(iterator());
+		return Iterators.size(iterator());
 	}
 
 	@Override

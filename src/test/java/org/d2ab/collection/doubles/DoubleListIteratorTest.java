@@ -89,48 +89,55 @@ public class DoubleListIteratorTest {
 		assertThat(listIterator.previousIndex(), is(-1));
 
 		assertThat(listIterator.next(), is(1.0));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
 
 		assertThat(listIterator.next(), is(2.0));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
 		listIterator.add((Double) 17.0);
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
 
 		assertThat(listIterator.next(), is(3.0));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
 		listIterator.set((Double) 18.0);
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
-		assertThat(listIterator.next(), is(4.0));
+		assertThat(listIterator.previous(), is(18.0));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(5));
-		assertThat(listIterator.previousIndex(), is(4));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 
 		listIterator.remove();
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(4));
-		assertThat(listIterator.previousIndex(), is(3));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
 
-		assertThat(list, containsDoubles(1, 2, 17, 18, 5));
+		assertThat(list, containsDoubles(1, 2, 17, 4, 5));
 	}
 
 	@Test
