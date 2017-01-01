@@ -1949,7 +1949,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToChar() {
+	public void toChars() {
 		CharSeq emptyChars = empty.toChars((k, v) -> (char) (v + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
@@ -1962,7 +1962,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToInt() {
+	public void toInts() {
 		IntSequence emptyInts = empty.toInts((k, v) -> v + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
@@ -1975,7 +1975,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToLong() {
+	public void toLongs() {
 		LongSequence emptyLongs = empty.toLongs((k, v) -> v + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
@@ -1988,7 +1988,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToDouble() {
+	public void toDoubles() {
 		DoubleSequence emptyDoubles = empty.toDoubles((k, v) -> v + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
@@ -2001,7 +2001,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToCharFunction() {
+	public void toCharsMapped() {
 		CharSeq emptyChars = empty.toChars(e -> (char) (e.getValue() + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
@@ -2014,7 +2014,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToIntFunction() {
+	public void toIntsMapped() {
 		IntSequence emptyInts = empty.toInts(e -> e.getValue() + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
@@ -2027,7 +2027,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToLongFunction() {
+	public void toLongsMapped() {
 		LongSequence emptyLongs = empty.toLongs(e -> e.getValue() + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
@@ -2040,7 +2040,7 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void mapToDoubleFunction() {
+	public void toDoublesMapped() {
 		DoubleSequence emptyDoubles = empty.toDoubles(e -> e.getValue() + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());

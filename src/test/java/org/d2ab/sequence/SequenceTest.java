@@ -1180,6 +1180,10 @@ public class SequenceTest {
 			assertThat(oneMapped, contains("1"));
 		});
 
+		index.set(0);
+		assertThat(removeFirst(oneMapped), is("1"));
+		twice(() -> assertThat(oneMapped, is(emptyIterable())));
+
 		Sequence<String> twoMapped = _12.mapIndexed((e, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return String.valueOf(e);
@@ -2880,7 +2884,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void mapToChar() {
+	public void toChars() {
 		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
@@ -2893,7 +2897,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void mapToInt() {
+	public void toInts() {
 		IntSequence emptyInts = empty.toInts(x -> x + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
@@ -2906,7 +2910,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void mapToLong() {
+	public void toLongs() {
 		LongSequence emptyLongs = empty.toLongs(x -> x + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
@@ -2919,7 +2923,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void mapToDouble() {
+	public void toDoubles() {
 		DoubleSequence emptyDoubles = empty.toDoubles(x -> x + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());

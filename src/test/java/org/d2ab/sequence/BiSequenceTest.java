@@ -1898,7 +1898,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToChar() {
+	public void toChars() {
 		CharSeq emptyChars = empty.toChars((l, r) -> (char) (r + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
@@ -1911,7 +1911,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToInt() {
+	public void toInts() {
 		IntSequence emptyInts = empty.toInts((l, r) -> r + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
@@ -1924,7 +1924,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToLong() {
+	public void toLongs() {
 		LongSequence emptyLongs = empty.toLongs((l, r) -> r + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
@@ -1937,7 +1937,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToDouble() {
+	public void toDoubles() {
 		DoubleSequence emptyDoubles = empty.toDoubles((l, r) -> r + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
@@ -1950,7 +1950,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToCharFunction() {
+	public void toCharsMapped() {
 		CharSeq emptyChars = empty.toChars(p -> (char) (p.getRight() + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
@@ -1963,7 +1963,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToIntFunction() {
+	public void toIntsMapped() {
 		IntSequence emptyInts = empty.toInts(p -> p.getRight() + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
@@ -1976,7 +1976,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToLongFunction() {
+	public void toLongsMapped() {
 		LongSequence emptyLongs = empty.toLongs(p -> p.getRight() + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
@@ -1989,7 +1989,7 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToDoubleFunction() {
+	public void toDoublesMapped() {
 		DoubleSequence emptyDoubles = empty.toDoubles(p -> p.getRight() + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());

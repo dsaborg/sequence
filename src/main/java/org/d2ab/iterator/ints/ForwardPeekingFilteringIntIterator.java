@@ -68,4 +68,9 @@ public class ForwardPeekingFilteringIntIterator extends DelegatingTransformingIn
 		hasNext = false;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }
