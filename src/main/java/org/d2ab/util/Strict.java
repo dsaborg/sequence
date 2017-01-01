@@ -5,16 +5,16 @@ import java.util.Stack;
 public abstract class Strict {
 	private static final String STRICT_PROPERTY = "org.d2ab.iterator.strict";
 
-	public static boolean ENABLED = Boolean.getBoolean(STRICT_PROPERTY);
+	public static boolean LENIENT = !Boolean.getBoolean(STRICT_PROPERTY);
 
 	private static Stack<Boolean> state = new Stack<>();
 
 	public static void unset() {
-		state.push(ENABLED);
-		ENABLED = false;
+		state.push(LENIENT);
+		LENIENT = true;
 	}
 
 	public static void reset() {
-		ENABLED = state.pop();
+		LENIENT = state.pop();
 	}
 }

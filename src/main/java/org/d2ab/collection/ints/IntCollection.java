@@ -46,14 +46,14 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default Integer[] toArray() {
-		assert !Strict.ENABLED : "IntCollection.toArray()";
+		assert Strict.LENIENT : "IntCollection.toArray()";
 
 		return toArray(new Integer[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert !Strict.ENABLED : "IntCollection.toArray(Object[])";
+		assert Strict.LENIENT : "IntCollection.toArray(Object[])";
 
 		return Collectionz.toArray(this, a);
 	}
@@ -67,7 +67,7 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean add(Integer x) {
-		assert !Strict.ENABLED : "IntCollection.add(Integer)";
+		assert Strict.LENIENT : "IntCollection.add(Integer)";
 
 		return addInt(x);
 	}
@@ -78,21 +78,21 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		assert !Strict.ENABLED : "IntCollection.contains(Object)";
+		assert Strict.LENIENT : "IntCollection.contains(Object)";
 
 		return o instanceof Integer && containsInt((int) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert !Strict.ENABLED : "IntCollection.remove(Object)";
+		assert Strict.LENIENT : "IntCollection.remove(Object)";
 
 		return o instanceof Integer && removeInt((int) o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
-		assert !Strict.ENABLED : "IntCollection.add(Collection)";
+		assert Strict.LENIENT : "IntCollection.add(Collection)";
 
 		return Collectionz.addAll(this, c);
 	}
@@ -114,28 +114,28 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		assert !Strict.ENABLED : "IntCollection.containsAll(Collection)";
+		assert Strict.LENIENT : "IntCollection.containsAll(Collection)";
 
 		return Collectionz.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		assert !Strict.ENABLED : "IntCollection.removeAll(Collection)";
+		assert Strict.LENIENT : "IntCollection.removeAll(Collection)";
 
 		return Collectionz.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		assert !Strict.ENABLED : "IntCollection.retainAll(Collection)";
+		assert Strict.LENIENT : "IntCollection.retainAll(Collection)";
 
 		return Collectionz.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Integer> filter) {
-		assert !Strict.ENABLED : "IntCollection.removeIf(Predicate)";
+		assert Strict.LENIENT : "IntCollection.removeIf(Predicate)";
 
 		return removeIntsIf(filter::test);
 	}
