@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
@@ -249,7 +250,7 @@ public class SequenceDocumentationTest {
 	public void intSequence() {
 		IntSequence squares = IntSequence.positive().map(i -> i * i);
 
-		assertThat(squares.limit(5), contains(1, 4, 9, 16, 25));
+		assertThat(squares.limit(5), containsInts(1, 4, 9, 16, 25));
 	}
 
 	@Test

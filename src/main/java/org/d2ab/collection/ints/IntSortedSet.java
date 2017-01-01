@@ -29,6 +29,8 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code int} values.
  */
 public interface IntSortedSet extends SortedSet<Integer>, IntSet {
+	// TODO: Enable Strict checking
+
 	/**
 	 * @return a new empty mutable {@code IntSortedSet}.
 	 *
@@ -149,7 +151,30 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class Base extends IntSet.Base implements IntSortedSet {}
+	abstract class Base extends IntSet.Base implements IntSortedSet {
+		public static IntSortedSet create(int... ints) {
+			return create(IntSortedSet.create(ints));
+		}
+
+		public static IntSortedSet create(final IntSortedSet sortedSet) {
+			return new IntSortedSet.Base() {
+				@Override
+				public IntIterator iterator() {
+					return sortedSet.iterator();
+				}
+
+				@Override
+				public int size() {
+					return sortedSet.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return sortedSet.addInt(x);
+				}
+			};
+		}
+	}
 
 	abstract class SubSet extends Base {
 		private final IntSortedSet set;

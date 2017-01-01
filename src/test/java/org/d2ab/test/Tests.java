@@ -15,6 +15,9 @@
  */
 package org.d2ab.test;
 
+import org.d2ab.collection.ints.IntIterable;
+import org.d2ab.iterator.ints.IntIterator;
+
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,6 +48,13 @@ public class Tests {
 	public static <T> T removeFirst(Iterable<T> iterable) {
 		Iterator<T> iterator = iterable.iterator();
 		T first = iterator.next();
+		iterator.remove();
+		return first;
+	}
+
+	public static int removeFirst(IntIterable iterable) {
+		IntIterator iterator = iterable.iterator();
+		int first = iterator.nextInt();
 		iterator.remove();
 		return first;
 	}

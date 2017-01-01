@@ -29,14 +29,6 @@ public class SkippingIntIterator extends DelegatingUnaryIntIterator {
 	}
 
 	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextInt();
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (!skipped) {
 			iterator.skip(skip);
@@ -44,5 +36,13 @@ public class SkippingIntIterator extends DelegatingUnaryIntIterator {
 		}
 
 		return iterator.hasNext();
+	}
+
+	@Override
+	public int nextInt() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return iterator.nextInt();
 	}
 }

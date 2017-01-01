@@ -18,14 +18,12 @@ package org.d2ab.iterator.ints;
 
 import org.d2ab.function.CharToIntFunction;
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
-import java.util.function.DoubleToIntFunction;
-import java.util.function.IntBinaryOperator;
-import java.util.function.LongToIntFunction;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 
 /**
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
@@ -140,6 +138,20 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 				return mapper.applyAsInt(iterator.next());
 			}
 		};
+	}
+
+	@Override
+	default Integer next() {
+		assert !Strict.ENABLED : "IntIterator.next()";
+
+		return nextInt();
+	}
+
+	@Override
+	default void forEachRemaining(Consumer<? super Integer> action) {
+		assert !Strict.ENABLED : "IntIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((IntConsumer) action::accept);
 	}
 
 	default boolean skip() {

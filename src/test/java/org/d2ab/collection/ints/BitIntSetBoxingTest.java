@@ -31,15 +31,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
-public class IntSortedSetBoxingTest extends BaseBoxingTest {
-	private final SortedSet<Integer> empty = IntSortedSet.Base.create();
-	private final SortedSet<Integer> set = IntSortedSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-
-	@Test
-	public void create() {
-		assertThat(IntSortedSet.create(), is(emptyIterable()));
-		assertThat(IntSortedSet.create(-2, -1, 0, 1), contains(-2, -1, 0, 1));
-	}
+public class BitIntSetBoxingTest extends BaseBoxingTest {
+	private final SortedSet<Integer> empty = new BitIntSet();
+	private final SortedSet<Integer> set = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void size() {
@@ -54,28 +48,13 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void iteratorFailFastPositives() {
+	public void iteratorFailFast() {
 		Iterator<Integer> it1 = set.iterator();
-		assertThat(it1.hasNext(), is(true));
-		assertThat(set.add(17), is(true));
+		set.add(17);
 		expecting(ConcurrentModificationException.class, it1::next);
 
 		Iterator<Integer> it2 = set.iterator();
-		assertThat(it2.hasNext(), is(true));
-		assertThat(set.remove(17), is(true));
-		expecting(ConcurrentModificationException.class, it2::next);
-	}
-
-	@Test
-	public void iteratorFailFastNegatives() {
-		Iterator<Integer> it1 = set.iterator();
-		assertThat(it1.hasNext(), is(true));
-		assertThat(set.add(-17), is(true));
-		expecting(ConcurrentModificationException.class, it1::next);
-
-		Iterator<Integer> it2 = set.iterator();
-		assertThat(it2.hasNext(), is(true));
-		assertThat(set.remove(-17), is(true));
+		set.remove(17);
 		expecting(ConcurrentModificationException.class, it2::next);
 	}
 
@@ -95,12 +74,6 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void comparator() {
-		assertThat(empty.comparator(), is(nullValue()));
-		assertThat(set.comparator(), is(nullValue()));
-	}
-
-	@Test
 	public void add() {
 		empty.add(17);
 		assertThat(empty, contains(17));
@@ -114,8 +87,6 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.contains(17), is(false));
 
 		assertThat(set.contains(17), is(false));
-		assertThat(set.contains(new Object()), is(false));
-
 		for (int x = -5; x <= 4; x++)
 			assertThat(set.contains(x), is(true));
 	}
@@ -125,11 +96,9 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.remove(17), is(false));
 
 		assertThat(set.remove(17), is(false));
-		assertThat(set.remove(new Object()), is(false));
-
 		for (int x = -5; x <= 4; x++)
 			assertThat(set.remove(x), is(true));
-		assertThat(set, is(emptyIterable()));
+		assertThat(set.isEmpty(), is(true));
 	}
 
 	@Test
@@ -152,7 +121,7 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstIntSet() {
-		BitIntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		IntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
@@ -210,7 +179,8 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void sparseSubSet() {
-		SortedSet<Integer> subSet = new BitIntSet(-5, -3, -1, 1, 3, 5).subSet(-2, 2);
+		SortedSet<Integer> set = new BitIntSet(-5, -3, -1, 1, 3, 5);
+		SortedSet<Integer> subSet = set.subSet(-2, 2);
 		assertThat(subSet, contains(-1, 1));
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.first(), is(-1));
@@ -277,7 +247,8 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void sparseHeadSet() {
-		SortedSet<Integer> headSet = new BitIntSet(-5, -3, -1, 1, 3, 5).headSet(0);
+		SortedSet<Integer> set = new BitIntSet(-5, -3, -1, 1, 3, 5);
+		SortedSet<Integer> headSet = set.headSet(0);
 		assertThat(headSet, contains(-5, -3, -1));
 		assertThat(headSet.size(), is(3));
 		assertThat(headSet.first(), is(-5));
@@ -344,7 +315,8 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void sparseTailSet() {
-		SortedSet<Integer> tailSet = new BitIntSet(-5, -3, -1, 1, 3, 5).tailSet(0);
+		SortedSet<Integer> set = new BitIntSet(-5, -3, -1, 1, 3, 5);
+		SortedSet<Integer> tailSet = set.tailSet(0);
 		assertThat(tailSet, contains(1, 3, 5));
 		assertThat(tailSet.size(), is(3));
 		assertThat(tailSet.first(), is(1));
@@ -376,8 +348,7 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 	@Test
 	public void parallelStream() {
 		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(set.parallelStream().collect(Collectors.toList()),
-		           contains(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		assertThat(set.parallelStream().collect(Collectors.toList()), contains(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
 	@Test
@@ -451,34 +422,7 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void addAll() {
-		assertThat(empty.addAll(asList(1, 2, 3)), is(true));
-		assertThat(empty, contains(1, 2, 3));
-
-		assertThat(set.addAll(asList(3, 4, 5, 6, 7)), is(true));
-		assertThat(set, contains(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void removeAll() {
-		assertThat(empty.removeAll(asList(1, 2, 3)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(asList(1, 2, 3)), is(true));
-		assertThat(set, contains(-5, -4, -3, -2, -1, 0, 4));
-	}
-
-	@Test
-	public void retainAll() {
-		assertThat(empty.retainAll(asList(1, 2, 3)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(asList(1, 2, 3)), is(true));
-		assertThat(set, contains(1, 2, 3));
-	}
-
-	@Test
-	public void containsAllCollection() {
+	public void containsIntCollection() {
 		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
 		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
 		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));
@@ -486,22 +430,22 @@ public class IntSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void boundaries() {
-		BitIntSet set = new BitIntSet();
-		assertThat(set.add(Integer.MIN_VALUE), is(true));
-		assertThat(set.add(0), is(true));
-		assertThat(set.add(Integer.MAX_VALUE), is(true));
+		SortedSet<Integer> intSet = new BitIntSet();
+		assertThat(intSet.add(Integer.MIN_VALUE), is(true));
+		assertThat(intSet.add(0), is(true));
+		assertThat(intSet.add(Integer.MAX_VALUE), is(true));
 
-		assertThat(set, contains(Integer.MIN_VALUE, 0, Integer.MAX_VALUE));
+		assertThat(intSet, contains(Integer.MIN_VALUE, 0, Integer.MAX_VALUE));
 
-		assertThat(set.contains(Integer.MIN_VALUE), is(true));
-		assertThat(set.contains(0), is(true));
-		assertThat(set.contains(Integer.MAX_VALUE), is(true));
+		assertThat(intSet.contains(Integer.MIN_VALUE), is(true));
+		assertThat(intSet.contains(0), is(true));
+		assertThat(intSet.contains(Integer.MAX_VALUE), is(true));
 
-		assertThat(set.remove(Integer.MIN_VALUE), is(true));
-		assertThat(set.remove(0), is(true));
-		assertThat(set.remove(Integer.MAX_VALUE), is(true));
+		assertThat(intSet.remove(Integer.MIN_VALUE), is(true));
+		assertThat(intSet.remove(0), is(true));
+		assertThat(intSet.remove(Integer.MAX_VALUE), is(true));
 
-		assertThat(set, is(emptyIterable()));
+		assertThat(intSet, is(emptyIterable()));
 	}
 
 	@Test

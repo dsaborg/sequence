@@ -19,7 +19,6 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.chars.CharSet;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.test.StrictIntIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -37,28 +36,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class IntSetTest {
-	private final IntSet empty = createIntSet();
-	private final IntSet set = createIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-
-	private static IntSet createIntSet(int... ints) {
-		final IntSet backing = new BitIntSet(ints);
-		return new IntSet.Base() {
-			@Override
-			public IntIterator iterator() {
-				return StrictIntIterator.from(backing.iterator());
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-
-			@Override
-			public boolean addInt(int x) {
-				return backing.addInt(x);
-			}
-		};
-	}
+	private final IntSet empty = IntSet.Base.create();
+	private final IntSet set = IntSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void size() {
@@ -153,7 +132,7 @@ public class IntSetTest {
 
 	@Test
 	public void equalsHashCodeAgainstIntSet() {
-		IntSet set2 = createIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		IntSet set2 = IntSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
@@ -313,7 +292,7 @@ public class IntSetTest {
 		twice(() -> assertThat(emptyAsChars, is(emptyIterable())));
 		assertThat(emptyAsChars.size(), is(0));
 
-		CharSet intSetAsChars = createIntSet('a', 'b', 'c', 'd', 'e').asChars();
+		CharSet intSetAsChars = IntSet.Base.create('a', 'b', 'c', 'd', 'e').asChars();
 		twice(() -> assertThat(intSetAsChars, containsChars('a', 'b', 'c', 'd', 'e')));
 		assertThat(intSetAsChars.size(), is(5));
 	}

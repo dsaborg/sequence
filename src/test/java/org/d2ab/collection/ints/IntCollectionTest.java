@@ -3,14 +3,12 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.chars.CharCollection;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.test.StrictIntIterator;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -22,41 +20,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class IntCollectionTest {
-	IntList backingEmpty = IntList.create();
-	IntCollection empty = new IntCollection.Base() {
-		@Override
-		public IntIterator iterator() {
-			return StrictIntIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addInt(int x) {
-			return backingEmpty.addInt(x);
-		}
-	};
-
-	IntList backing = IntList.create(1, 2, 3, 4, 5);
-	IntCollection collection = new IntCollection.Base() {
-		@Override
-		public IntIterator iterator() {
-			return StrictIntIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addInt(int x) {
-			return backing.addInt(x);
-		}
-	};
+	IntCollection empty = IntCollection.Base.create();
+	IntCollection collection = IntCollection.Base.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void isEmpty() {
@@ -204,11 +169,11 @@ public class IntCollectionTest {
 	}
 
 	@Test
-	public void removeAllIntCollection() {
-		assertThat(empty.removeAll(IntList.create(1, 2, 3)), is(false));
+	public void removeAllIntsIntCollection() {
+		assertThat(empty.removeAllInts(IntList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.removeAll(IntList.create(1, 2, 3)), is(true));
+		assertThat(collection.removeAllInts(IntList.create(1, 2, 3)), is(true));
 		assertThat(collection, containsInts(4, 5));
 	}
 
@@ -222,11 +187,11 @@ public class IntCollectionTest {
 	}
 
 	@Test
-	public void retainAllIntCollection() {
-		assertThat(empty.retainAll(IntList.create(1, 2, 3)), is(false));
+	public void retainAllIntsIntCollection() {
+		assertThat(empty.retainAllInts(IntList.create(1, 2, 3)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.retainAll(IntList.create(1, 2, 3)), is(true));
+		assertThat(collection.retainAllInts(IntList.create(1, 2, 3)), is(true));
 		assertThat(collection, containsInts(1, 2, 3));
 	}
 
@@ -250,13 +215,13 @@ public class IntCollectionTest {
 	}
 
 	@Test
-	public void containsAllIntCollection() {
-		assertThat(empty.containsAll(IntList.create()), is(true));
-		assertThat(empty.containsAll(IntList.create(1, 2, 3)), is(false));
+	public void containsAllIntsIntCollection() {
+		assertThat(empty.containsAllInts(IntList.create()), is(true));
+		assertThat(empty.containsAllInts(IntList.create(1, 2, 3)), is(false));
 
-		assertThat(collection.containsAll(IntList.create()), is(true));
-		assertThat(collection.containsAll(IntList.create(1, 2, 3)), is(true));
-		assertThat(collection.containsAll(IntList.create(1, 2, 3, 17)), is(false));
+		assertThat(collection.containsAllInts(IntList.create()), is(true));
+		assertThat(collection.containsAllInts(IntList.create(1, 2, 3)), is(true));
+		assertThat(collection.containsAllInts(IntList.create(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -271,103 +236,12 @@ public class IntCollectionTest {
 	}
 
 	@Test
-	public void addBoxed() {
-		assertThat(empty.add(17), is(true));
-		assertThat(empty, containsInts(17));
-
-		assertThat(collection.add(17), is(true));
-		assertThat(collection, containsInts(1, 2, 3, 4, 5, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17), is(false));
-
-		assertThat(collection.contains(17), is(false));
-		assertThat(collection.contains(new Object()), is(false));
-
-		for (int x = 1; x <= 5; x++)
-			assertThat(collection.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(collection.remove(17), is(false));
-		assertThat(collection.remove(new Object()), is(false));
-
-		for (int x = 1; x <= 5; x++)
-			assertThat(collection.remove(x), is(true));
-		assertThat(collection, is(emptyIterable()));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(asList(1, 2, 3)), is(true));
-		assertThat(empty, containsInts(1, 2, 3));
-
-		assertThat(collection.addAll(asList(6, 7, 8)), is(true));
-		assertThat(collection, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList(1, 2, 3)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.removeAll(asList(1, 2, 3)), is(true));
-		assertThat(collection, containsInts(4, 5));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList(1, 2, 3)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.retainAll(asList(1, 2, 3)), is(true));
-		assertThat(collection, containsInts(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.removeIf(x -> x > 3), is(true));
-		assertThat(collection, containsInts(1, 2, 3));
-	}
-
-	@Test
-	public void containsIntCollection() {
-		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
-		assertThat(collection.containsAll(asList(1, 2, 3)), is(true));
-		assertThat(collection.containsAll(asList(1, 2, 3, 17)), is(false));
-	}
-
-	@Test
 	public void asChars() {
 		CharCollection emptyAsChars = empty.asChars();
 		twice(() -> assertThat(emptyAsChars, is(emptyIterable())));
 		assertThat(emptyAsChars.size(), is(0));
 
-		IntList backing = IntList.create('a', 'b', 'c', 'd', 'e');
-		IntCollection collection = new IntCollection.Base() {
-			@Override
-			public IntIterator iterator() {
-				return StrictIntIterator.from(backing.iterator());
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-
-			@Override
-			public boolean addInt(int x) {
-				return backing.addInt(x);
-			}
-		};
+		IntCollection collection = IntCollection.Base.create('a', 'b', 'c', 'd', 'e');
 
 		CharCollection collectionAsChars = collection.asChars();
 		twice(() -> assertThat(collectionAsChars, containsChars('a', 'b', 'c', 'd', 'e')));
@@ -412,55 +286,5 @@ public class IntCollectionTest {
 
 		for (int randomValue : randomValues)
 			assertThat(empty.removeInt(randomValue), is(false));
-	}
-
-	public static class BoxingTest {
-		IntList backingEmpty = IntList.create();
-		IntCollection empty = new IntCollection.Base() {
-			@Override
-			public IntIterator iterator() {
-				return backingEmpty.iterator();
-			}
-
-			@Override
-			public int size() {
-				return backingEmpty.size();
-			}
-
-			@Override
-			public boolean addInt(int x) {
-				return backingEmpty.addInt(x);
-			}
-		};
-
-		IntList backing = IntList.create(1, 2, 3, 4, 5);
-		IntCollection collection = new IntCollection.Base() {
-			@Override
-			public IntIterator iterator() {
-				return backing.iterator();
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-
-			@Override
-			public boolean addInt(int x) {
-				return backing.addInt(x);
-			}
-		};
-
-		@Test
-		public void toArray() {
-			assertArrayEquals(new Integer[0], empty.toArray());
-			assertArrayEquals(new Integer[]{1, 2, 3, 4, 5}, collection.toArray());
-		}
-
-		@Test
-		public void toArrayWithType() {
-			assertArrayEquals(new Integer[0], empty.toArray(new Integer[0]));
-			assertArrayEquals(new Integer[]{1, 2, 3, 4, 5}, collection.toArray(new Integer[0]));
-		}
 	}
 }

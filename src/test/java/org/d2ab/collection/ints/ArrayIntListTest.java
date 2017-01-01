@@ -788,17 +788,6 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger(1);
-		list.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(6));
-	}
-
-	@Test
 	public void forEachInt() {
 		empty.forEachInt(x -> {
 			throw new IllegalStateException("should not get called");

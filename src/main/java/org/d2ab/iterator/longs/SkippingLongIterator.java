@@ -29,14 +29,6 @@ public class SkippingLongIterator extends DelegatingUnaryLongIterator {
 	}
 
 	@Override
-	public long nextLong() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextLong();
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (!skipped) {
 			iterator.skip(skip);
@@ -44,5 +36,13 @@ public class SkippingLongIterator extends DelegatingUnaryLongIterator {
 		}
 
 		return iterator.hasNext();
+	}
+
+	@Override
+	public long nextLong() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return iterator.nextLong();
 	}
 }

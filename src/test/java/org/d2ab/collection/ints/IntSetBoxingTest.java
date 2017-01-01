@@ -17,7 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,42 +31,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class IntSetBoxingTest {
-	private final IntSet backingEmpty = new BitIntSet();
-	private final Set<Integer> empty = new IntSet.Base() {
-		@Override
-		public IntIterator iterator() {
-			return backingEmpty.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addInt(int x) {
-			return backingEmpty.addInt(x);
-		}
-	};
-
-	private final IntSet backing = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-	private final Set<Integer> set = new IntSet.Base() {
-		@Override
-		public IntIterator iterator() {
-			return backing.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addInt(int x) {
-			return backing.addInt(x);
-		}
-	};
+public class IntSetBoxingTest extends BaseBoxingTest {
+	private final Set<Integer> empty = IntSet.Base.create();
+	private final Set<Integer> set = IntSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void iterator() {

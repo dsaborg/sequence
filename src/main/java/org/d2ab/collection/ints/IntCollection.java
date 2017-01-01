@@ -20,6 +20,7 @@ import org.d2ab.collection.Collectionz;
 import org.d2ab.collection.chars.CharCollection;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -45,11 +46,15 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default Integer[] toArray() {
+		assert !Strict.ENABLED : "IntCollection.toArray()";
+
 		return toArray(new Integer[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
+		assert !Strict.ENABLED : "IntCollection.toArray(Object[])";
+
 		return Collectionz.toArray(this, a);
 	}
 
@@ -62,6 +67,8 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean add(Integer x) {
+		assert !Strict.ENABLED : "IntCollection.add(Integer)";
+
 		return addInt(x);
 	}
 
@@ -71,16 +78,22 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean contains(Object o) {
+		assert !Strict.ENABLED : "IntCollection.contains(Object)";
+
 		return o instanceof Integer && containsInt((int) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
+		assert !Strict.ENABLED : "IntCollection.remove(Object)";
+
 		return o instanceof Integer && removeInt((int) o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
+		assert !Strict.ENABLED : "IntCollection.add(Collection)";
+
 		return Collectionz.addAll(this, c);
 	}
 
@@ -101,21 +114,29 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		assert !Strict.ENABLED : "IntCollection.containsAll(Collection)";
+
 		return Collectionz.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
+		assert !Strict.ENABLED : "IntCollection.removeAll(Collection)";
+
 		return Collectionz.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
+		assert !Strict.ENABLED : "IntCollection.retainAll(Collection)";
+
 		return Collectionz.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Integer> filter) {
+		assert !Strict.ENABLED : "IntCollection.removeIf(Predicate)";
+
 		return removeIntsIf(filter::test);
 	}
 
@@ -143,6 +164,29 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	 * Base class for {@link IntCollection} implementations.
 	 */
 	abstract class Base implements IntCollection {
+		public static IntCollection create(int... ints) {
+			return create(IntList.create(ints));
+		}
+
+		public static IntCollection create(final IntCollection collection) {
+			return new Base() {
+				@Override
+				public IntIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return collection.addInt(x);
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic

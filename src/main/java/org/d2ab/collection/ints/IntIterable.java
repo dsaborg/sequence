@@ -24,6 +24,7 @@ import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.InputStreamIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.sequence.IntSequence;
+import org.d2ab.util.Strict;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,6 +96,8 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Integer> consumer) {
+		assert !Strict.ENABLED : "IntIterable.forEach(Consumer)";
+
 		iterator().forEachRemaining(consumer);
 	}
 

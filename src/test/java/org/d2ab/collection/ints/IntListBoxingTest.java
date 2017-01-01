@@ -16,267 +16,34 @@
 
 package org.d2ab.collection.ints;
 
-import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.collection.Lists;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Comparator.naturalOrder;
-import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class IntListBoxingTest {
-	private final IntList backingEmpty = IntList.create();
-	private final List<Integer> empty = new IntList.Base() {
-		@Override
-		public IntIterator iterator() {
-			return backingEmpty.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-	};
-
-	private final IntList backingList = IntList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
-	private final List<Integer> list = new IntList.Base() {
-		@Override
-		public IntIterator iterator() {
-			return backingList.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingList.size();
-		}
-	};
-
-	@Test
-	public void subList() {
-		List<Integer> subList = list.subList(2, 8);
-		twice(() -> assertThat(subList, contains(3, 4, 5, 1, 2, 3)));
-
-		assertThat(subList.remove(1), is(4));
-		twice(() -> assertThat(subList, contains(3, 5, 1, 2, 3)));
-
-		assertThat(subList.remove((Integer) 5), is(true));
-		twice(() -> assertThat(subList, contains(3, 1, 2, 3)));
-
-		Iterator<Integer> subListIterator = subList.iterator();
-		assertThat(subListIterator.hasNext(), is(true));
-		assertThat(subListIterator.next(), is(3));
-		subListIterator.remove();
-		twice(() -> assertThat(subList, contains(1, 2, 3)));
-
-		subList.removeIf(x -> x % 2 == 0);
-		twice(() -> assertThat(subList, contains(1, 3)));
-
-		subList.clear();
-		twice(() -> assertThat(subList, is(emptyIterable())));
-	}
+public class IntListBoxingTest extends BaseBoxingTest {
+	private final List<Integer> empty = IntList.Base.create();
+	private final List<Integer> list = IntList.Base.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
-		assertThat(list.size(), is(10));
+		assertThat(list.size(), is(5));
 	}
 
 	@Test
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
 		assertThat(list.isEmpty(), is(false));
-	}
-
-	@Test
-	public void boxedContains() {
-		assertThat(empty.contains(2), is(false));
-
-		for (int i = 1; i < 5; i++)
-			assertThat(list.contains(i), is(true));
-
-		assertThat(list.contains(17), is(false));
-
-		assertThat(list.contains(new Object()), is(false));
-
-		assertThat(list.contains(null), is(false));
-	}
-
-	@Test
-	public void iterator() {
-		assertThat(empty, is(emptyIterable()));
-		expecting(NoSuchElementException.class, () -> empty.iterator().next());
-
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void iteratorRemove() {
-		Iterator<Integer> iterator = list.iterator();
-		iterator.next();
-		iterator.next();
-		iterator.remove();
-		iterator.next();
-		iterator.remove();
-
-		assertThat(list, contains(1, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void toArray() {
-		assertArrayEquals(new Integer[0], empty.toArray());
-		assertArrayEquals(new Integer[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toArray());
-	}
-
-	@Test
-	public void toArrayEmptyTarget() {
-		Integer[] emptyTarget = new Integer[0];
-		assertThat(empty.toArray(emptyTarget), is(sameInstance(emptyTarget)));
-		assertArrayEquals(new Integer[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toArray(new Integer[0]));
-	}
-
-	@Test
-	public void toArraySmallerTarget() {
-		assertArrayEquals(new Integer[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toArray(new Integer[9]));
-	}
-
-	@Test
-	public void toArrayBiggerTarget() {
-		assertArrayEquals(new Integer[]{null, 17}, empty.toArray(fill(new Integer[2], 17)));
-		assertArrayEquals(new Integer[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5, null, 17},
-		                  list.toArray(fill(new Integer[12], 17)));
-	}
-
-	@Test
-	public void addAt() {
-		expecting(UnsupportedOperationException.class, () -> empty.add(1));
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> list.add(6));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void remove() {
-		assertThat(empty.remove((Integer) 17), is(false));
-
-		assertThat(list.remove((Integer) 2), is(true));
-		assertThat(list, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
-
-		assertThat(list.remove((Integer) 17), is(false));
-		assertThat(list, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
-
-		assertThat(list.remove(new Object()), is(false));
-		assertThat(list, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
-
-		assertThat(list.remove(null), is(false));
-		assertThat(list, contains(1, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void containsAll() {
-		assertThat(empty.containsAll(asList(2, 3)), is(false));
-
-		assertThat(list.containsAll(asList(2, 3)), is(true));
-		assertThat(list.containsAll(asList(2, 17)), is(false));
-		assertThat(list.containsAll(singletonList(new Object())), is(false));
-		assertThat(list.containsAll(singletonList(null)), is(false));
-	}
-
-	@Test
-	public void addAllAt() {
-		assertThat(empty.addAll(emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(IntList.of()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> empty.addAll(asList(1, 2)));
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(6, 7, 8)));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void addAll() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(0, IntList.of()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> empty.addAll(0, asList(1, 2)));
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> list.addAll(2, asList(17, 18, 19)));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void removeAll() {
-		assertThat(empty.removeAll(asList(1, 2)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeAll(asList(1, 2, 5)), is(true));
-		assertThat(list, contains(3, 4, 3, 4));
-
-		assertThat(list.removeAll(singletonList(new Object())), is(false));
-		assertThat(list, contains(3, 4, 3, 4));
-
-		assertThat(list.removeAll(singletonList(null)), is(false));
-		assertThat(list, contains(3, 4, 3, 4));
-	}
-
-	@Test
-	public void retainAll() {
-		assertThat(empty.retainAll(asList(1, 2)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.retainAll(asList(1, 2, 3)), is(true));
-		assertThat(list, contains(1, 2, 3, 1, 2, 3));
-	}
-
-	@Test
-	public void retainAllObject() {
-		assertThat(list.retainAll(singletonList(new Object())), is(true));
-		assertThat(list, is(emptyIterable()));
-	}
-
-	@Test
-	public void retainAllNull() {
-		assertThat(list.retainAll(singletonList(new Object())), is(true));
-		assertThat(list, is(emptyIterable()));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> x + 1);
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> list.replaceAll(x -> x + 1));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void sort() {
-		expecting(UnsupportedOperationException.class, () -> empty.sort(naturalOrder()));
-		assertThat(empty, is(emptyIterable()));
-
-		expecting(UnsupportedOperationException.class, () -> list.sort(naturalOrder()));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -289,114 +56,160 @@ public class IntListBoxingTest {
 	}
 
 	@Test
-	public void get() {
-		assertThat(list.get(0), is(1));
-		assertThat(list.get(2), is(3));
-		assertThat(list.get(4), is(5));
-		assertThat(list.get(5), is(1));
-		assertThat(list.get(7), is(3));
-		assertThat(list.get(9), is(5));
-		expecting(IndexOutOfBoundsException.class, () -> list.get(10));
-		expecting(IndexOutOfBoundsException.class, () -> list.get(11));
-	}
-
-	@Test
-	public void set() {
-		expecting(UnsupportedOperationException.class, () -> list.set(2, 17));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void add() {
-		expecting(UnsupportedOperationException.class, () -> list.add(0, 17));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void indexOf() {
-		assertThat(empty.indexOf(17), is(-1));
-
-		assertThat(list.indexOf(1), is(0));
-		assertThat(list.indexOf(3), is(2));
-		assertThat(list.indexOf(5), is(4));
-		assertThat(list.indexOf(17), is(-1));
-		assertThat(list.indexOf(new Object()), is(-1));
-		assertThat(list.indexOf(null), is(-1));
-	}
-
-	@Test
-	public void lastIndexOf() {
-		assertThat(empty.lastIndexOf(17), is(-1));
-
-		assertThat(list.lastIndexOf(1), is(5));
-		assertThat(list.lastIndexOf(3), is(7));
-		assertThat(list.lastIndexOf(5), is(9));
-		assertThat(list.lastIndexOf(17), is(-1));
-		assertThat(list.lastIndexOf(new Object()), is(-1));
-		assertThat(list.lastIndexOf(null), is(-1));
+	public void iterator() {
+		assertThat(empty, is(emptyIterable()));
+		assertThat(list, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void listIteratorEmpty() {
 		ListIterator<Integer> emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
-		expecting(NoSuchElementException.class, emptyIterator::next);
-		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 
-		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
+		emptyIterator.add(17);
+		emptyIterator.add(18);
+		expecting(IllegalStateException.class, () -> emptyIterator.set(19));
 		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(2));
+		assertThat(emptyIterator.previousIndex(), is(1));
+
+		assertThat(emptyIterator.previous(), is(18));
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
+
+		emptyIterator.remove();
+		expecting(IllegalStateException.class, () -> emptyIterator.set(19));
+		assertThat(emptyIterator.hasNext(), is(false));
+		assertThat(emptyIterator.hasPrevious(), is(true));
+		assertThat(emptyIterator.nextIndex(), is(1));
+		assertThat(emptyIterator.previousIndex(), is(0));
+
+		assertThat(emptyIterator.previous(), is(17));
+		emptyIterator.set(19);
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
-		assertThat(empty, is(emptyIterable()));
-		expecting(IndexOutOfBoundsException.class, () -> empty.listIterator(1));
+		expecting(NoSuchElementException.class, emptyIterator::previous);
+		assertThat(emptyIterator.hasNext(), is(true));
+		assertThat(emptyIterator.hasPrevious(), is(false));
+		assertThat(emptyIterator.nextIndex(), is(0));
+		assertThat(emptyIterator.previousIndex(), is(-1));
+
+		assertThat(empty, contains(19));
 	}
 
 	@Test
 	public void listIterator() {
 		ListIterator<Integer> listIterator = list.listIterator();
 
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(32));
+		expecting(NoSuchElementException.class, listIterator::previous);
 		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.next(), is(1));
 
+		listIterator.add(33);
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(34));
 		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.next(), is(2));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
+		assertThat(listIterator.previous(), is(33));
 		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.set(35);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.remove();
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		assertThat(listIterator.next(), is(1));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
+		assertThat(listIterator.next(), is(2));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.next(), is(3));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
+		assertThat(listIterator.next(), is(3));
 		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.next(), is(4));
 
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(listIterator.previous(), is(3));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		assertThat(listIterator.previous(), is(2));
+		listIterator.set(17);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
+		assertThat(listIterator.next(), is(17));
+		listIterator.add(18);
+		listIterator.add(19);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
+
+		assertThat(listIterator.next(), is(3));
+
+		assertThat(list, contains(1, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void exhaustiveListIterator() {
-		ListIterator<Integer> listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger(0);
 		twice(() -> {
+			ListIterator<Integer> listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
-				assertThat(listIterator.next(), is(i.get() % 5 + 1));
+				assertThat(listIterator.next(), is(i.get() + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
 			}
-			assertThat(i.get(), is(10));
+			assertThat(i.get(), is(5));
 			expecting(NoSuchElementException.class, listIterator::next);
+
+			while (listIterator.hasPrevious()) {
+				i.decrementAndGet();
+				assertThat(listIterator.previous(), is(i.get() + 1));
+				assertThat(listIterator.nextIndex(), is(i.get()));
+				assertThat(listIterator.previousIndex(), is(i.get() - 1));
+			}
+			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previous);
 		});
 	}
 
@@ -406,22 +219,23 @@ public class IntListBoxingTest {
 
 		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.next(), is(i % 5 + 1));
+			assertThat(iterator.next(), is(i + 1));
 			iterator.remove();
 			i++;
 		}
-		assertThat(i, is(10));
+		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, iterator::next);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void listIteratorRemoveAll() {
+	public void listIteratorRemove() {
 		ListIterator<Integer> listIterator = list.listIterator();
 
 		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.next(), is(i % 5 + 1));
+			assertThat(listIterator.next(), is(i + 1));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -429,41 +243,318 @@ public class IntListBoxingTest {
 			assertThat(listIterator.previousIndex(), is(-1));
 			i++;
 		}
-		assertThat(i, is(10));
+		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, listIterator::next);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void stream() {
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+	public void listIteratorRemoveBackwards() {
+		int i = 5;
+		ListIterator<Integer> listIterator = list.listIterator(i);
+
+		while (listIterator.hasPrevious()) {
+			i--;
+			assertThat(listIterator.previous(), is(i + 1));
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+			listIterator.remove();
+			assertThat(listIterator.nextIndex(), is(i));
+			assertThat(listIterator.previousIndex(), is(i - 1));
+		}
+		assertThat(i, is(0));
+		expecting(NoSuchElementException.class, listIterator::previous);
+
+		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
-	public void parallelStream() {
-		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelStream().collect(Collectors.toList()),
-		           contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+	public void iteratorFailFast() {
+		Iterator<Integer> it1 = list.iterator();
+		list.add(17);
+		expecting(ConcurrentModificationException.class, it1::next);
+
+		Iterator<Integer> it2 = list.iterator();
+		list.remove((Integer) 17);
+		expecting(ConcurrentModificationException.class, it2::next);
+	}
+
+	@Test
+	public void subList() {
+		List<Integer> list = IntList.Base.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
+
+		List<Integer> subList = list.subList(2, 8);
+		assertThat(subList.size(), is(6));
+		twice(() -> assertThat(subList, contains(3, 4, 5, 6, 7, 8)));
+
+		assertThat(subList.remove(1), is(4));
+		twice(() -> assertThat(subList, contains(3, 5, 6, 7, 8)));
+		twice(() -> assertThat(list, contains(1, 2, 3, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(subList.remove((Integer) 5), is(true));
+		twice(() -> assertThat(subList, contains(3, 6, 7, 8)));
+		twice(() -> assertThat(list, contains(1, 2, 3, 6, 7, 8, 9, 10)));
+
+		Iterator<Integer> subListIterator = subList.iterator();
+		assertThat(subListIterator.hasNext(), is(true));
+		assertThat(subListIterator.next(), is(3));
+		subListIterator.remove();
+		twice(() -> assertThat(subList, contains(6, 7, 8)));
+		twice(() -> assertThat(list, contains(1, 2, 6, 7, 8, 9, 10)));
+
+		subList.removeIf(x -> x % 2 == 0);
+		twice(() -> assertThat(subList, contains(7)));
+		twice(() -> assertThat(list, contains(1, 2, 7, 9, 10)));
+
+		subList.clear();
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(list, contains(1, 2, 9, 10)));
+
+		expecting(UnsupportedOperationException.class, () -> subList.add(17));
+		twice(() -> assertThat(subList, is(emptyIterable())));
+		twice(() -> assertThat(list, contains(1, 2, 9, 10)));
+	}
+
+	@Test
+	public void sort() {
+		Lists.reverse(list);
+		expecting(UnsupportedOperationException.class, () -> list.sort(naturalOrder()));
+		assertThat(list, contains(5, 4, 3, 2, 1));
+	}
+
+	@Test
+	public void testToString() {
+		assertThat(empty.toString(), is("[]"));
+		assertThat(list.toString(), is("[1, 2, 3, 4, 5]"));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstList() {
+		assertThat(list, is(equalTo(list)));
+		assertThat(list, is(not(equalTo(null))));
+		assertThat(list, is(not(equalTo(new Object()))));
+		assertThat(list, is(not(equalTo(new TreeSet<>(asList(1, 2, 3, 4, 5))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1, 2, 3, 4))))));
+
+		List<Integer> list2 = new ArrayList<>(asList(1, 2, 3, 4, 5, 17));
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.remove((Integer) 17);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+	}
+
+	@Test
+	public void testEqualsHashCodeAgainstIntList() {
+		assertThat(list, is(not(equalTo(IntList.create(1, 2, 3, 4)))));
+
+		List<Integer> list2 = IntList.create(1, 2, 3, 4, 5, 17);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.remove((Integer) 17);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+	}
+
+	@Test
+	public void lastIndexOf() {
+		assertThat(empty.lastIndexOf(17), is(-1));
+
+		assertThat(list.lastIndexOf(17), is(-1));
+		assertThat(list.lastIndexOf(2), is(1));
+	}
+
+	@Test
+	public void indexOf() {
+		assertThat(empty.indexOf(17), is(-1));
+
+		assertThat(list.indexOf(17), is(-1));
+		assertThat(list.indexOf(2), is(1));
+	}
+
+	@Test
+	public void get() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(2));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.get(2), is(3));
+	}
+
+	@Test
+	public void set() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.set(2, 17));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.set(2, 17), is(3));
+		assertThat(list, contains(1, 2, 17, 4, 5));
+	}
+
+	@Test
+	public void add() {
+		assertThat(empty.add(17), is(true));
+		assertThat(empty, contains(17));
+
+		assertThat(list.add(17), is(true));
+		assertThat(list, contains(1, 2, 3, 4, 5, 17));
+	}
+
+	@Test
+	public void addAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 17));
+		assertThat(empty, is(emptyIterable()));
+
+		empty.add(0, 17);
+		assertThat(empty, contains(17));
+
+		list.add(2, 17);
+		assertThat(list, contains(1, 2, 17, 3, 4, 5));
+	}
+
+	@Test
+	public void addAllIntsIntCollection() {
+		assertThat(empty.addAll(IntSortedSet.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(IntSortedSet.create(1, 2, 3)), is(true));
+		assertThat(empty, contains(1, 2, 3));
+
+		assertThat(list.addAll(IntSortedSet.create(6, 7, 8)), is(true));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllIntsArrayIntList() {
+		assertThat(empty.addAll(IntList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(IntList.create(1, 2, 3)), is(true));
+		assertThat(empty, contains(1, 2, 3));
+
+		assertThat(list.addAll(IntList.create(6, 7, 8)), is(true));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllIntsAtIntCollection() {
+		assertThat(empty.addAll(0, IntSortedSet.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(0, IntSortedSet.create(1, 2, 3)), is(true));
+		assertThat(empty, contains(1, 2, 3));
+
+		assertThat(list.addAll(2, IntSortedSet.create(17, 18, 19)), is(true));
+		assertThat(list, contains(1, 2, 17, 18, 19, 3, 4, 5));
+	}
+
+	@Test
+	public void addAllIntsAtArrayIntList() {
+		assertThat(empty.addAll(0, IntList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(0, IntList.create(1, 2, 3)), is(true));
+		assertThat(empty, contains(1, 2, 3));
+
+		assertThat(list.addAll(2, IntList.create(17, 18, 19)), is(true));
+		assertThat(list, contains(1, 2, 17, 18, 19, 3, 4, 5));
+	}
+
+	@Test
+	public void remove() {
+		assertThat(empty.remove((Integer) 17), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.remove((Integer) 17), is(false));
+		assertThat(list.remove((Integer) 2), is(true));
+		assertThat(list, contains(1, 3, 4, 5));
+	}
+
+	@Test
+	public void removeAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.remove(2), is(3));
+		assertThat(list, contains(1, 2, 4, 5));
+	}
+
+	@Test
+	public void boxedContains() {
+		assertThat(empty.contains(17), is(false));
+
+		assertThat(list.contains(17), is(false));
+		assertThat(list.contains(2), is(true));
+	}
+
+	@Test
+	public void containsAllIntsCollection() {
+		assertThat(empty.containsAll(IntList.create(17, 18, 19)), is(false));
+
+		assertThat(list.containsAll(IntList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAll(IntList.create(1, 2, 3)), is(true));
+	}
+
+	@Test
+	public void removeAllIntsCollection() {
+		assertThat(empty.removeAll(IntList.create(1, 2, 3, 17)), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.removeAll(IntList.create(17, 18, 19)), is(false));
+		assertThat(list.removeAll(IntList.create(1, 2, 3, 17)), is(true));
+		assertThat(list, contains(4, 5));
 	}
 
 	@Test
 	public void removeIf() {
-		empty.removeIf(x -> x == 1);
+		assertThat(empty.removeIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		list.removeIf(x -> x == 1);
-		assertThat(list, contains(2, 3, 4, 5, 2, 3, 4, 5));
+		assertThat(list.removeIf(x -> x > 5), is(false));
+		assertThat(list.removeIf(x -> x > 3), is(true));
+		assertThat(list, contains(1, 2, 3));
+	}
+
+	@Test
+	public void retainAllIntsCollection() {
+		assertThat(empty.retainAll(IntList.create(1, 2, 3, 17)), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(list.retainAll(IntList.create(1, 2, 3, 17)), is(true));
+		assertThat(list, contains(1, 2, 3));
+	}
+
+	@Test
+	public void replaceAll() {
+		empty.replaceAll(x -> x + 1);
+		assertThat(empty, is(emptyIterable()));
+
+		list.replaceAll(x -> x + 1);
+		assertThat(list, contains(2, 3, 4, 5, 6));
 	}
 
 	@Test
 	public void forEach() {
 		empty.forEach(x -> {
-			throw new IllegalStateException("Should not get called");
+			throw new IllegalStateException("should not get called");
 		});
 
-		AtomicInteger value = new AtomicInteger(0);
-		list.forEach(x -> assertThat(x, is(value.getAndIncrement() % 5 + 1)));
-		assertThat(value.get(), is(10));
+		AtomicInteger value = new AtomicInteger(1);
+		list.forEach(x -> assertThat(x, is(value.getAndIncrement())));
+		assertThat(value.get(), is(6));
 	}
 }

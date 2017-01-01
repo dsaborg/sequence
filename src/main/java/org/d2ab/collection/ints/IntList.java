@@ -31,6 +31,7 @@ import java.util.function.UnaryOperator;
  */
 public interface IntList extends List<Integer>, IntCollection {
 	// TODO: Extract out relevant parts to IterableIntList
+	// TODO: Enable Strict checking
 
 	/**
 	 * Returns an immutable {@code IntList} of the given elements. The returned {@code IntList}'s
@@ -338,6 +339,53 @@ public interface IntList extends List<Integer>, IntCollection {
 	 * Base class for {@link IntList} implementations.
 	 */
 	abstract class Base extends IntCollection.Base implements IntList {
+		public static IntList create(final IntCollection collection) {
+			return new IntList.Base() {
+				@Override
+				public IntIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return collection.addInt(x);
+				}
+			};
+		}
+
+		public static IntList create(int... ints) {
+			return create(IntList.create(ints));
+		}
+
+		public static IntList create(final IntList list) {
+			return new IntList.Base() {
+				@Override
+				public IntIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public IntListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return list.addInt(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

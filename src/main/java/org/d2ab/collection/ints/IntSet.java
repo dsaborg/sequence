@@ -30,6 +30,8 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code int} values.
  */
 public interface IntSet extends Set<Integer>, IntCollection {
+	// TODO: Enable Strict checking
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -109,6 +111,29 @@ public interface IntSet extends Set<Integer>, IntCollection {
 	 * Base class for {@link IntSet} implementations.
 	 */
 	abstract class Base extends IntCollection.Base implements IntSet {
+		public static IntSet create(int... ints) {
+			return create(IntSortedSet.create(ints));
+		}
+
+		public static IntSet create(final IntSet set) {
+			return new IntSet.Base() {
+				@Override
+				public IntIterator iterator() {
+					return set.iterator();
+				}
+
+				@Override
+				public int size() {
+					return set.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return set.addInt(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

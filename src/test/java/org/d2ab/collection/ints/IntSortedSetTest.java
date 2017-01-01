@@ -19,7 +19,6 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.chars.CharSet;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.test.StrictIntIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -37,28 +36,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class IntSortedSetTest {
-	private final IntSortedSet empty = createIntSortedSet();
-	private final IntSortedSet set = createIntSortedSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-
-	private static IntSortedSet createIntSortedSet(int... ints) {
-		final IntSet backing = new BitIntSet(ints);
-		return new IntSortedSet.Base() {
-			@Override
-			public IntIterator iterator() {
-				return StrictIntIterator.from(backing.iterator());
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-
-			@Override
-			public boolean addInt(int x) {
-				return backing.addInt(x);
-			}
-		};
-	}
+	private final IntSortedSet empty = IntSortedSet.Base.create();
+	private final IntSortedSet set = IntSortedSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void create() {
@@ -152,7 +131,7 @@ public class IntSortedSetTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstIntSet() {
-		IntSet set2 = createIntSortedSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		IntSet set2 = IntSortedSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
@@ -210,7 +189,7 @@ public class IntSortedSetTest {
 
 	@Test
 	public void sparseSubSet() {
-		IntSortedSet set = createIntSortedSet(-5, -3, -1, 1, 3, 5);
+		IntSortedSet set = IntSortedSet.Base.create(-5, -3, -1, 1, 3, 5);
 		IntSortedSet subSet = set.subSet(-2, 2);
 		assertThat(subSet, containsInts(-1, 1));
 		assertThat(subSet.size(), is(2));
@@ -278,7 +257,7 @@ public class IntSortedSetTest {
 
 	@Test
 	public void sparseHeadSet() {
-		IntSortedSet set = createIntSortedSet(-5, -3, -1, 1, 3, 5);
+		IntSortedSet set = IntSortedSet.Base.create(-5, -3, -1, 1, 3, 5);
 		IntSortedSet headSet = set.headSet(0);
 		assertThat(headSet, containsInts(-5, -3, -1));
 		assertThat(headSet.size(), is(3));
@@ -346,7 +325,7 @@ public class IntSortedSetTest {
 
 	@Test
 	public void sparseTailSet() {
-		IntSortedSet set = createIntSortedSet(-5, -3, -1, 1, 3, 5);
+		IntSortedSet set = IntSortedSet.Base.create(-5, -3, -1, 1, 3, 5);
 		IntSortedSet tailSet = set.tailSet(0);
 		assertThat(tailSet, containsInts(1, 3, 5));
 		assertThat(tailSet.size(), is(3));
@@ -523,7 +502,7 @@ public class IntSortedSetTest {
 		twice(() -> assertThat(emptyAsChars, is(emptyIterable())));
 		assertThat(emptyAsChars.size(), is(0));
 
-		CharSet intSetAsChars = createIntSortedSet('a', 'b', 'c', 'd', 'e').asChars();
+		CharSet intSetAsChars = IntSortedSet.Base.create('a', 'b', 'c', 'd', 'e').asChars();
 		twice(() -> assertThat(intSetAsChars, containsChars('a', 'b', 'c', 'd', 'e')));
 		assertThat(intSetAsChars.size(), is(5));
 	}

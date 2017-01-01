@@ -19,8 +19,6 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.test.StrictIntIterator;
-import org.d2ab.test.StrictIntListIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -37,28 +35,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class IntListTest {
-	private final IntList empty = createIntList();
-	private final IntList list = createIntList(1, 2, 3, 4, 5);
-
-	private static IntList createIntList(int... items) {
-		IntList backing = IntList.create(items);
-		return new IntList.Base() {
-			@Override
-			public IntIterator iterator() {
-				return StrictIntIterator.from(backing.iterator());
-			}
-
-			@Override
-			public IntListIterator listIterator(int index) {
-				return StrictIntListIterator.from(backing.listIterator(index));
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-		};
-	}
+	private final IntList empty = IntList.Base.create();
+	private final IntList list = IntList.Base.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -314,7 +292,7 @@ public class IntListTest {
 
 	@Test
 	public void subList() {
-		IntList list = createIntList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		IntList list = IntList.Base.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
@@ -501,25 +479,25 @@ public class IntListTest {
 
 	@Test
 	public void addAllIntsIntCollection() {
-		assertThat(empty.addAllInts(new BitIntSet()), is(false));
+		assertThat(empty.addAllInts(IntSortedSet.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAllInts(new BitIntSet(1, 2, 3)), is(true));
+		assertThat(empty.addAllInts(IntSortedSet.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(list.addAllInts(new BitIntSet(6, 7, 8)), is(true));
+		assertThat(list.addAllInts(IntSortedSet.create(6, 7, 8)), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllIntsArrayIntList() {
-		assertThat(empty.addAllInts(ArrayIntList.create()), is(false));
+		assertThat(empty.addAllInts(IntList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAllInts(ArrayIntList.create(1, 2, 3)), is(true));
+		assertThat(empty.addAllInts(IntList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(list.addAllInts(ArrayIntList.create(6, 7, 8)), is(true));
+		assertThat(list.addAllInts(IntList.create(6, 7, 8)), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
@@ -537,25 +515,25 @@ public class IntListTest {
 
 	@Test
 	public void addAllIntsAtIntCollection() {
-		assertThat(empty.addAllIntsAt(0, new BitIntSet()), is(false));
+		assertThat(empty.addAllIntsAt(0, IntSortedSet.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAllIntsAt(0, new BitIntSet(1, 2, 3)), is(true));
+		assertThat(empty.addAllIntsAt(0, IntSortedSet.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(list.addAllIntsAt(2, new BitIntSet(17, 18, 19)), is(true));
+		assertThat(list.addAllIntsAt(2, IntSortedSet.create(17, 18, 19)), is(true));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllIntsAtArrayIntList() {
-		assertThat(empty.addAllIntsAt(0, ArrayIntList.create()), is(false));
+		assertThat(empty.addAllIntsAt(0, IntList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAllIntsAt(0, ArrayIntList.create(1, 2, 3)), is(true));
+		assertThat(empty.addAllIntsAt(0, IntList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsInts(1, 2, 3));
 
-		assertThat(list.addAllIntsAt(2, ArrayIntList.create(17, 18, 19)), is(true));
+		assertThat(list.addAllIntsAt(2, IntList.create(17, 18, 19)), is(true));
 		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
@@ -595,11 +573,11 @@ public class IntListTest {
 	}
 
 	@Test
-	public void containsAllIntsCollection() {
-		assertThat(empty.containsAllInts(ArrayIntList.create(17, 18, 19)), is(false));
+	public void containsAllIntsIntCollection() {
+		assertThat(empty.containsAllInts(IntList.create(17, 18, 19)), is(false));
 
-		assertThat(list.containsAllInts(ArrayIntList.create(17, 18, 19)), is(false));
-		assertThat(list.containsAllInts(ArrayIntList.create(1, 2, 3)), is(true));
+		assertThat(list.containsAllInts(IntList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAllInts(IntList.create(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -611,11 +589,11 @@ public class IntListTest {
 	}
 
 	@Test
-	public void containsAnyIntsCollection() {
-		assertThat(empty.containsAnyInts(ArrayIntList.create(17, 18, 19)), is(false));
+	public void containsAnyIntsIntCollection() {
+		assertThat(empty.containsAnyInts(IntList.create(17, 18, 19)), is(false));
 
-		assertThat(list.containsAnyInts(ArrayIntList.create(17, 18, 19)), is(false));
-		assertThat(list.containsAnyInts(ArrayIntList.create(1, 17, 3)), is(true));
+		assertThat(list.containsAnyInts(IntList.create(17, 18, 19)), is(false));
+		assertThat(list.containsAnyInts(IntList.create(1, 17, 3)), is(true));
 	}
 
 	@Test
@@ -629,12 +607,12 @@ public class IntListTest {
 	}
 
 	@Test
-	public void removeAllIntsCollection() {
-		assertThat(empty.removeAllInts(ArrayIntList.create(1, 2, 3, 17)), is(false));
+	public void removeAllIntsIntCollection() {
+		assertThat(empty.removeAllInts(IntList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAllInts(ArrayIntList.create(17, 18, 19)), is(false));
-		assertThat(list.removeAllInts(ArrayIntList.create(1, 2, 3, 17)), is(true));
+		assertThat(list.removeAllInts(IntList.create(17, 18, 19)), is(false));
+		assertThat(list.removeAllInts(IntList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsInts(4, 5));
 	}
 
@@ -658,7 +636,7 @@ public class IntListTest {
 	}
 
 	@Test
-	public void retainAllIntsCollection() {
+	public void retainAllIntsIntCollection() {
 		assertThat(empty.retainAllInts(IntList.create(1, 2, 3, 17)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -701,7 +679,7 @@ public class IntListTest {
 		twice(() -> assertThat(emptyAsChars, is(emptyIterable())));
 		assertThat(emptyAsChars.size(), is(0));
 
-		CharList listAsChars = createIntList('a', 'b', 'c', 'd', 'e').asChars();
+		CharList listAsChars = IntList.Base.create('a', 'b', 'c', 'd', 'e').asChars();
 		twice(() -> assertThat(listAsChars, containsChars('a', 'b', 'c', 'd', 'e')));
 		assertThat(listAsChars.size(), is(5));
 	}

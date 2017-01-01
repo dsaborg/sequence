@@ -2883,7 +2883,7 @@ public class SequenceTest {
 	public void mapToChar() {
 		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> emptyChars.iterator().next());
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
 
 		CharSeq charSeq = _12345.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
@@ -2896,7 +2896,7 @@ public class SequenceTest {
 	public void mapToInt() {
 		IntSequence emptyInts = empty.toInts(x -> x + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> emptyInts.iterator().next());
+		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
 
 		IntSequence intSequence = _12345.toInts(x -> x + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
@@ -2909,7 +2909,7 @@ public class SequenceTest {
 	public void mapToLong() {
 		LongSequence emptyLongs = empty.toLongs(x -> x + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().next());
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
 
 		LongSequence longSequence = _12345.toLongs(x -> x + 1);
 		twice(() -> assertThat(longSequence, containsLongs(2, 3, 4, 5, 6)));
@@ -2922,7 +2922,7 @@ public class SequenceTest {
 	public void mapToDouble() {
 		DoubleSequence emptyDoubles = empty.toDoubles(x -> x + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().next());
+		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
 		DoubleSequence doubleSequence = _12345.toDoubles(x -> x + 1);
 		twice(() -> assertThat(doubleSequence, containsDoubles(2, 3, 4, 5, 6)));

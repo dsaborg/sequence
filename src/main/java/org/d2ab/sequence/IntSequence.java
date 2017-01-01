@@ -912,17 +912,7 @@ public interface IntSequence extends IntCollection {
 	 * @since 2.1
 	 */
 	default IntList asList() {
-		return new IntList.Base() {
-			@Override
-			public IntIterator iterator() {
-				return IntSequence.this.iterator();
-			}
-
-			@Override
-			public int size() {
-				return IntSequence.this.size();
-			}
-		};
+		return IntList.Base.create(this);
 	}
 
 	/**
