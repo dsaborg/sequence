@@ -7,7 +7,7 @@ public abstract class Strict {
 
 	public static boolean LENIENT = !Boolean.getBoolean(STRICT_PROPERTY);
 
-	private static Stack<Boolean> state = new Stack<>();
+	private static final Stack<Boolean> state = new Stack<>();
 
 	public static void unset() {
 		state.push(LENIENT);
