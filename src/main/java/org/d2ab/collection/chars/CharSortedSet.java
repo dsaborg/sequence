@@ -149,7 +149,30 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class Base extends CharSet.Base implements CharSortedSet {}
+	abstract class Base extends CharSet.Base implements CharSortedSet {
+		public static CharSortedSet create(char... chars) {
+			return create(CharSortedSet.create(chars));
+		}
+
+		public static CharSortedSet create(final CharSortedSet sortedSet) {
+			return new CharSortedSet.Base() {
+				@Override
+				public CharIterator iterator() {
+					return sortedSet.iterator();
+				}
+
+				@Override
+				public int size() {
+					return sortedSet.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return sortedSet.addChar(x);
+				}
+			};
+		}
+	}
 
 	abstract class SubSet extends Base {
 		private final CharSortedSet set;

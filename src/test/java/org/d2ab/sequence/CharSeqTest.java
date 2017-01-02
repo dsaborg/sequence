@@ -24,7 +24,6 @@ import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.DelegatingTransformingCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.test.StrictCharIterable;
 import org.d2ab.util.OptionalChar;
 import org.junit.Test;
 
@@ -49,18 +48,17 @@ import static org.junit.Assert.fail;
 public class CharSeqTest {
 	private final CharSeq empty = CharSeq.empty();
 
-	private final CharSeq a = CharSeq.from(StrictCharIterable.of('a'));
-	private final CharSeq ab = CharSeq.from(StrictCharIterable.of('a', 'b'));
-	private final CharSeq abc = CharSeq.from(StrictCharIterable.of('a', 'b', 'c'));
-	private final CharSeq abcd = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd'));
-	private final CharSeq abcde = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e'));
-	private final CharSeq abcdefghi = CharSeq.from(StrictCharIterable.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'));
+	private final CharSeq a = CharSeq.from(CharList.create('a'));
+	private final CharSeq ab = CharSeq.from(CharList.create('a', 'b'));
+	private final CharSeq abc = CharSeq.from(CharList.create('a', 'b', 'c'));
+	private final CharSeq abcd = CharSeq.from(CharList.create('a', 'b', 'c', 'd'));
+	private final CharSeq abcde = CharSeq.from(CharList.create('a', 'b', 'c', 'd', 'e'));
+	private final CharSeq abcdefghi = CharSeq.from(CharList.create('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'));
 
-	private final CharSeq oneRandom = CharSeq.from(StrictCharIterable.of('q'));
-	private final CharSeq twoRandom = CharSeq.from(StrictCharIterable.of('q', 'w'));
-	private final CharSeq threeRandom = CharSeq.from(StrictCharIterable.of('q', 'w', 'd'));
-	private final CharSeq nineRandom = CharSeq.from(StrictCharIterable.of('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e',
-	                                                                      'd'));
+	private final CharSeq oneRandom = CharSeq.from(CharList.create('q'));
+	private final CharSeq twoRandom = CharSeq.from(CharList.create('q', 'w'));
+	private final CharSeq threeRandom = CharSeq.from(CharList.create('q', 'w', 'd'));
+	private final CharSeq nineRandom = CharSeq.from(CharList.create('f', 'f', 'a', 'g', 'a', 'b', 'q', 'e', 'd'));
 
 	@Test
 	public void empty() {
@@ -850,7 +848,7 @@ public class CharSeqTest {
 		CharSeq oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, containsChars('q')));
 
-		CharSeq twoDuplicatesDistinct = CharSeq.from(StrictCharIterable.of('q', 'q')).distinct();
+		CharSeq twoDuplicatesDistinct = CharSeq.from(CharList.create('q', 'q')).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, containsChars('q')));
 
 		CharSeq nineDistinct = nineRandom.distinct();

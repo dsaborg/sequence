@@ -18,6 +18,7 @@ package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -43,11 +44,15 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default Character[] toArray() {
+		assert Strict.LENIENT : "CharCollection.toArray()";
+
 		return toArray(new Character[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
+		assert Strict.LENIENT : "CharCollection.toArray(Object[])";
+
 		return Collectionz.toArray(this, a);
 	}
 
@@ -60,6 +65,8 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean add(Character x) {
+		assert Strict.LENIENT : "CharCollection.add(Character)";
+
 		return addChar(x);
 	}
 
@@ -69,16 +76,22 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean contains(Object o) {
+		assert Strict.LENIENT : "CharCollection.contains(Object)";
+
 		return o instanceof Character && containsChar((char) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
+		assert Strict.LENIENT : "CharCollection.remove(Character)";
+
 		return o instanceof Character && removeChar((char) o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Character> c) {
+		assert Strict.LENIENT : "CharCollection.addAll(Collection)";
+
 		return Collectionz.addAll(this, c);
 	}
 
@@ -99,21 +112,29 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		assert Strict.LENIENT : "CharCollection.containsAll(Collection)";
+
 		return Collectionz.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
+		assert Strict.LENIENT : "CharCollection.removeAll(Collection)";
+
 		return Collectionz.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
+		assert Strict.LENIENT : "CharCollection.retainAll(Collection)";
+
 		return Collectionz.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Character> filter) {
+		assert Strict.LENIENT : "CharCollection.removeIf(Predicate)";
+
 		return removeCharsIf(filter::test);
 	}
 
@@ -126,6 +147,29 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	 * Base class for {@link CharCollection} implementations.
 	 */
 	abstract class Base implements CharCollection {
+		public static CharCollection create(char... chars) {
+			return create(CharList.create(chars));
+		}
+
+		public static CharCollection create(final CharCollection collection) {
+			return new CharCollection.Base() {
+				@Override
+				public CharIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return collection.addChar(x);
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic

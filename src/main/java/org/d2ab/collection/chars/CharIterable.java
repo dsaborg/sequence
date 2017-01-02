@@ -25,6 +25,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ReaderCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.sequence.CharSeq;
+import org.d2ab.util.Strict;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -117,7 +118,9 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Character> consumer) {
-		iterator().forEachRemaining(consumer);
+		assert Strict.LENIENT : "CharIterable.forEach(Consumer)";
+
+		forEachChar(consumer::accept);
 	}
 
 	default IntStream intStream() {

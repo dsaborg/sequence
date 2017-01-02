@@ -19,8 +19,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterator;
-import org.d2ab.test.StrictCharListIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -37,33 +35,13 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class CharListTest {
-	private final CharList empty = createCharList();
-	private final CharList list = createCharList('a', 'b', 'c', 'd', 'e');
-
-	private static CharList createCharList(char... items) {
-		CharList backing = CharList.create(items);
-		return new CharList.Base() {
-			@Override
-			public CharIterator iterator() {
-				return StrictCharIterator.from(backing.iterator());
-			}
-
-			@Override
-			public CharListIterator listIterator(int index) {
-				return StrictCharListIterator.from(backing.listIterator(index));
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-		};
-	}
+	private final CharList empty = CharList.Base.create();
+	private final CharList list = CharList.Base.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
-		assertThat(list.size(), is(5));
+		assertThat(list.size(), is(10));
 	}
 
 	@Test
@@ -84,13 +62,13 @@ public class CharListTest {
 	@Test
 	public void toCharArray() {
 		assertArrayEquals(new char[0], empty.toCharArray());
-		assertArrayEquals(new char[]{'a', 'b', 'c', 'd', 'e'}, list.toCharArray());
+		assertArrayEquals(new char[]{'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'}, list.toCharArray());
 	}
 
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
-		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -217,7 +195,7 @@ public class CharListTest {
 
 		assertThat(listIterator.nextChar(), is('c'));
 
-		assertThat(list, containsChars('a', 'q', 'p', 'r', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'q', 'p', 'r', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -226,17 +204,17 @@ public class CharListTest {
 			CharListIterator listIterator = list.listIterator();
 			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
-				assertThat(listIterator.nextChar(), is((char) (i.get() + 'a')));
+				assertThat(listIterator.nextChar(), is((char) (i.get() % 5 + 'a')));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
 			}
-			assertThat(i.get(), is(5));
+			assertThat(i.get(), is(10));
 			expecting(NoSuchElementException.class, listIterator::nextChar);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
-				assertThat(listIterator.previousChar(), is((char) (i.get() + 'a')));
+				assertThat(listIterator.previousChar(), is((char) (i.get() % 5 + 'a')));
 				assertThat(listIterator.nextIndex(), is(i.get()));
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
@@ -251,11 +229,11 @@ public class CharListTest {
 
 		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.nextChar(), is((char) (i + 'a')));
+			assertThat(iterator.nextChar(), is((char) (i % 5 + 'a')));
 			iterator.remove();
 			i++;
 		}
-		assertThat(i, is(5));
+		assertThat(i, is(10));
 		expecting(NoSuchElementException.class, iterator::nextChar);
 
 		assertThat(list, is(emptyIterable()));
@@ -267,7 +245,7 @@ public class CharListTest {
 
 		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextChar(), is((char) (i + 'a')));
+			assertThat(listIterator.nextChar(), is((char) (i % 5 + 'a')));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -275,7 +253,7 @@ public class CharListTest {
 			assertThat(listIterator.previousIndex(), is(-1));
 			i++;
 		}
-		assertThat(i, is(5));
+		assertThat(i, is(10));
 		expecting(NoSuchElementException.class, listIterator::nextChar);
 
 		assertThat(list, is(emptyIterable()));
@@ -283,12 +261,12 @@ public class CharListTest {
 
 	@Test
 	public void listIteratorRemoveBackwards() {
-		int i = 5;
+		int i = 10;
 		CharListIterator listIterator = list.listIterator(i);
 
 		while (listIterator.hasPrevious()) {
 			i--;
-			assertThat(listIterator.previousChar(), is((char) (i + 'a')));
+			assertThat(listIterator.previousChar(), is((char) (i % 5 + 'a')));
 			assertThat(listIterator.nextIndex(), is(i));
 			assertThat(listIterator.previousIndex(), is(i - 1));
 			listIterator.remove();
@@ -314,7 +292,7 @@ public class CharListTest {
 
 	@Test
 	public void subList() {
-		CharList list = createCharList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
+		CharList list = CharList.Base.create('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
 
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
@@ -355,7 +333,7 @@ public class CharListTest {
 	public void sortChars() {
 		Lists.reverse(list);
 		expecting(UnsupportedOperationException.class, list::sortChars);
-		assertThat(list, containsChars('e', 'd', 'c', 'b', 'a'));
+		assertThat(list, containsChars('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a'));
 	}
 
 	@Test
@@ -369,7 +347,7 @@ public class CharListTest {
 		           is(emptyIterable()));
 
 		assertThat(list.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
-		           containsInts('a', 'b', 'c', 'd', 'e'));
+		           containsInts('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -378,13 +356,13 @@ public class CharListTest {
 		           is(emptyIterable()));
 
 		assertThat(list.parallelIntStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
-		           containsInts('a', 'b', 'c', 'd', 'e'));
+		           containsInts('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void testToString() {
 		assertThat(empty.toString(), is("[]"));
-		assertThat(list.toString(), is("[a, b, c, d, e]"));
+		assertThat(list.toString(), is("[a, b, c, d, e, a, b, c, d, e]"));
 	}
 
 	@Test
@@ -393,9 +371,9 @@ public class CharListTest {
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
 		assertThat(list, is(not(equalTo(new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(asList('a', 'b', 'c', 'd'))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd'))))));
 
-		List<Character> list2 = new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
+		List<Character> list2 = new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q'));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 
@@ -411,9 +389,9 @@ public class CharListTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstCharList() {
-		assertThat(list, is(not(equalTo(CharList.create('a', 'b', 'c', 'd')))));
+		assertThat(list, is(not(equalTo(CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd')))));
 
-		CharList list2 = CharList.create('a', 'b', 'c', 'd', 'e', 'q');
+		CharList list2 = CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q');
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 
@@ -430,7 +408,7 @@ public class CharListTest {
 	@Test
 	public void sequence() {
 		assertThat(empty.sequence(), is(emptyIterable()));
-		assertThat(list.sequence(), containsChars('a', 'b', 'c', 'd', 'e'));
+		assertThat(list.sequence(), containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -438,7 +416,7 @@ public class CharListTest {
 		assertThat(empty.lastIndexOfChar('q'), is(-1));
 
 		assertThat(list.lastIndexOfChar('q'), is(-1));
-		assertThat(list.lastIndexOfChar('b'), is(1));
+		assertThat(list.lastIndexOfChar('b'), is(6));
 	}
 
 	@Test
@@ -456,8 +434,8 @@ public class CharListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getChar(2), is('c'));
-		expecting(IndexOutOfBoundsException.class, () -> list.getChar(7));
-		expecting(IndexOutOfBoundsException.class, () -> list.getChar(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(12));
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(10));
 	}
 
 	@Test
@@ -466,7 +444,7 @@ public class CharListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.setChar(2, 'q'), is('c'));
-		assertThat(list, containsChars('a', 'b', 'q', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'q', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -475,7 +453,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('q'));
 
 		assertThat(list.addChar('q'), is(true));
-		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'q'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q'));
 	}
 
 	@Test
@@ -487,7 +465,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('q'));
 
 		list.addCharAt(2, 'q');
-		assertThat(list, containsChars('a', 'b', 'q', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'q', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -499,7 +477,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(list.addAllChars('f', 'g', 'h'), is(true));
-		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
 	@Test
@@ -511,7 +489,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(list.addAllChars(new BitCharSet('f', 'g', 'h')), is(true));
-		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
 	@Test
@@ -523,7 +501,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(list.addAllChars(ArrayCharList.create('f', 'g', 'h')), is(true));
-		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
 	@Test
@@ -535,7 +513,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(list.addAllCharsAt(2, 'q', 'p', 'r'), is(true));
-		assertThat(list, containsChars('a', 'b', 'q', 'p', 'r', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'q', 'p', 'r', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -547,7 +525,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(list.addAllCharsAt(2, new BitCharSet('p', 'q', 'r')), is(true));
-		assertThat(list, containsChars('a', 'b', 'p', 'q', 'r', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'p', 'q', 'r', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -559,7 +537,7 @@ public class CharListTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(list.addAllCharsAt(2, ArrayCharList.create('q', 'p', 'r')), is(true));
-		assertThat(list, containsChars('a', 'b', 'q', 'p', 'r', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'q', 'p', 'r', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -569,7 +547,7 @@ public class CharListTest {
 
 		assertThat(list.removeChar('q'), is(false));
 		assertThat(list.removeChar('b'), is(true));
-		assertThat(list, containsChars('a', 'c', 'd', 'e'));
+		assertThat(list, containsChars('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -578,7 +556,7 @@ public class CharListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeCharAt(2), is('c'));
-		assertThat(list, containsChars('a', 'b', 'd', 'e'));
+		assertThat(list, containsChars('a', 'b', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -628,7 +606,7 @@ public class CharListTest {
 
 		assertThat(list.removeAllChars('q', 'q', 'r'), is(false));
 		assertThat(list.removeAllChars('a', 'b', 'c', 'q'), is(true));
-		assertThat(list, containsChars('d', 'e'));
+		assertThat(list, containsChars('d', 'e', 'd', 'e'));
 	}
 
 	@Test
@@ -638,7 +616,7 @@ public class CharListTest {
 
 		assertThat(list.removeAllChars(ArrayCharList.create('q', 'p', 'r')), is(false));
 		assertThat(list.removeAllChars(ArrayCharList.create('a', 'b', 'c', 'q')), is(true));
-		assertThat(list, containsChars('d', 'e'));
+		assertThat(list, containsChars('d', 'e', 'd', 'e'));
 	}
 
 	@Test
@@ -648,7 +626,7 @@ public class CharListTest {
 
 		assertThat(list.removeCharsIf(x -> x > 'e'), is(false));
 		assertThat(list.removeCharsIf(x -> x > 'c'), is(true));
-		assertThat(list, containsChars('a', 'b', 'c'));
+		assertThat(list, containsChars('a', 'b', 'c', 'a', 'b', 'c'));
 	}
 
 	@Test
@@ -657,25 +635,16 @@ public class CharListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.retainAllChars('a', 'b', 'c', 'q'), is(true));
-		assertThat(list, containsChars('a', 'b', 'c'));
+		assertThat(list, containsChars('a', 'b', 'c', 'a', 'b', 'c'));
 	}
 
 	@Test
-	public void retainAllCharsCollection() {
+	public void retainAllCharsCharList() {
 		assertThat(empty.retainAllChars(CharList.create('a', 'b', 'c', 'q')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.retainAllChars(CharList.create('a', 'b', 'c', 'q')), is(true));
-		assertThat(list, containsChars('a', 'b', 'c'));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> (char) (x + 1));
-		assertThat(empty, is(emptyIterable()));
-
-		list.replaceAll(x -> (char) (x + 1));
-		assertThat(list, containsChars('b', 'c', 'd', 'e', 'f'));
+		assertThat(list, containsChars('a', 'b', 'c', 'a', 'b', 'c'));
 	}
 
 	@Test
@@ -684,7 +653,7 @@ public class CharListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		list.replaceAllChars(x -> (char) (x + 1));
-		assertThat(list, containsChars('b', 'c', 'd', 'e', 'f'));
+		assertThat(list, containsChars('b', 'c', 'd', 'e', 'f', 'b', 'c', 'd', 'e', 'f'));
 	}
 
 	@Test
@@ -693,8 +662,8 @@ public class CharListTest {
 			throw new IllegalStateException("should not get called");
 		});
 
-		AtomicInteger value = new AtomicInteger('a');
-		list.forEachChar(x -> assertThat(x, is((char) value.getAndIncrement())));
-		assertThat((char) value.get(), is('f'));
+		AtomicInteger index = new AtomicInteger(0);
+		list.forEachChar(x -> assertThat(x, is((char) (index.getAndIncrement() % 5 + 'a'))));
+		assertThat(index.get(), is(10));
 	}
 }

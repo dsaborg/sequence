@@ -19,7 +19,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -34,19 +33,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class BitCharSetTest {
-	private final BitCharSet empty = new BitCharSet() {
-		@Override
-		public CharIterator iterator() {
-			return StrictCharIterator.from(super.iterator());
-		}
-	};
-
-	private final BitCharSet set = new BitCharSet('a', 'b', 'c', 'd', 'e') {
-		@Override
-		public CharIterator iterator() {
-			return StrictCharIterator.from(super.iterator());
-		}
-	};
+	private final BitCharSet empty = new BitCharSet();
+	private final BitCharSet set = new BitCharSet('a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void size() {

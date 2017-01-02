@@ -19,7 +19,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Lists;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharListIterator;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -39,19 +38,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayCharListTest {
-	private final ArrayCharList empty = new ArrayCharList() {
-		@Override
-		public CharListIterator listIterator(int index) {
-			return StrictCharListIterator.from(super.listIterator(index));
-		}
-	};
-
-	private final ArrayCharList list = new ArrayCharList(new char[]{'a', 'b', 'c', 'd', 'e'}) {
-		@Override
-		public CharListIterator listIterator(int index) {
-			return StrictCharListIterator.from(super.listIterator(index));
-		}
-	};
+	private final ArrayCharList empty = new ArrayCharList();
+	private final ArrayCharList list = new ArrayCharList(new char[]{'a', 'b', 'c', 'd', 'e'});
 
 	@Test
 	public void withCapacity() {

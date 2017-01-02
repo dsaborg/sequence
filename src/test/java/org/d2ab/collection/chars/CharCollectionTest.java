@@ -2,58 +2,22 @@ package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterator;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class CharCollectionTest {
-	CharList backingEmpty = CharList.create();
-	CharCollection empty = new CharCollection.Base() {
-		@Override
-		public CharIterator iterator() {
-			return StrictCharIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addChar(char x) {
-			return backingEmpty.addChar(x);
-		}
-	};
-
-	CharList backing = CharList.create('a', 'b', 'c', 'd', 'e');
-	CharCollection collection = new CharCollection.Base() {
-		@Override
-		public CharIterator iterator() {
-			return StrictCharIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addChar(char x) {
-			return backing.addChar(x);
-		}
-	};
+	CharCollection empty = CharCollection.Base.create();
+	CharCollection collection = CharCollection.Base.create('a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void isEmpty() {
@@ -374,76 +338,4 @@ public class CharCollectionTest {
 			assertThat(empty.removeChar(randomValue), is(false));
 	}
 
-	public static class BoxingTest {
-		CharList backingEmpty = CharList.create();
-		CharCollection empty = new CharCollection.Base() {
-			@Override
-			public CharIterator iterator() {
-				return backingEmpty.iterator();
-			}
-
-			@Override
-			public int size() {
-				return backingEmpty.size();
-			}
-
-			@Override
-			public boolean addChar(char x) {
-				return backingEmpty.addChar(x);
-			}
-		};
-
-		CharList backing = CharList.create('a', 'b', 'c', 'd', 'e');
-		CharCollection collection = new CharCollection.Base() {
-			@Override
-			public CharIterator iterator() {
-				return backing.iterator();
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-
-			@Override
-			public boolean addChar(char x) {
-				return backing.addChar(x);
-			}
-		};
-
-		@Test
-		public void toArray() {
-			assertArrayEquals(new Character[0], empty.toArray());
-			assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e'}, collection.toArray());
-		}
-
-		@Test
-		public void toArrayWithType() {
-			assertArrayEquals(new Character[0], empty.toArray(new Character[0]));
-			assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e'}, collection.toArray(new Character[0]));
-		}
-
-		@Test
-		public void forEach() {
-			empty.forEach(x -> {
-				throw new IllegalStateException("should not get called");
-			});
-
-			AtomicInteger value = new AtomicInteger('a');
-			collection.forEach(x -> assertThat(x, is((char) value.getAndIncrement())));
-			assertThat((char) value.get(), is('f'));
-		}
-
-		@Test
-		public void stream() {
-			assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-			assertThat(collection.stream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e'));
-		}
-
-		@Test
-		public void parallelStream() {
-			assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-			assertThat(collection.parallelStream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e'));
-		}
-	}
 }

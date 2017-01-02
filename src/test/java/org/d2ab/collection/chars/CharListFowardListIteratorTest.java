@@ -17,7 +17,6 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterator;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -31,23 +30,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class CharListFowardListIteratorTest {
-	private final CharList empty = createCharList();
-	private final CharList list = createCharList('a', 'b', 'c', 'd', 'e');
-
-	private static CharList createCharList(char... items) {
-		CharList backing = CharList.create(items);
-		return new CharList.Base() {
-			@Override
-			public CharIterator iterator() {
-				return StrictCharIterator.from(backing.iterator());
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-		};
-	}
+	private final CharList empty = CharList.Base.create(new BitCharSet());
+	private final CharList list = CharList.Base.create(new BitCharSet('a', 'b', 'c', 'd', 'e'));
 
 	@Test
 	public void listIteratorEmpty() {

@@ -20,7 +20,6 @@ import org.d2ab.collection.chars.ArrayCharList;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.collection.chars.CharListIterator;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterable;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -37,11 +36,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class CharSeqAsListTest {
-	private final CharSeq empty = CharSeq.from(StrictCharIterable.from(ArrayCharList.create()));
+	private final CharSeq empty = CharSeq.from(ArrayCharList.create());
 	private final CharList emptyList = empty.asList();
 
-	private final CharSeq sequence = CharSeq.from(
-			StrictCharIterable.from(ArrayCharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')));
+	private final CharSeq sequence = CharSeq.from(ArrayCharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd',
+	                                                                   'e'));
 	private final CharList list = sequence.asList();
 
 	@Test

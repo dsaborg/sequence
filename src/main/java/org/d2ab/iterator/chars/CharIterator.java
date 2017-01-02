@@ -17,6 +17,7 @@
 package org.d2ab.iterator.chars;
 
 import org.d2ab.function.*;
+import org.d2ab.util.Strict;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -115,6 +116,8 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default Character next() {
+		assert Strict.LENIENT : "CharIterator.next()";
+
 		return nextChar();
 	}
 
@@ -132,6 +135,8 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default void forEachRemaining(Consumer<? super Character> consumer) {
+		assert Strict.LENIENT : "CharIterator.forEachRemaining(Consumer)";
+
 		forEachRemaining((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
 	}
 

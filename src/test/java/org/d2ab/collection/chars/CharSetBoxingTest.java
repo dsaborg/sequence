@@ -17,7 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -29,42 +29,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class CharSetBoxingTest {
-	private final CharSet backingEmpty = new BitCharSet();
-	private final Set<Character> empty = new CharSet.Base() {
-		@Override
-		public CharIterator iterator() {
-			return backingEmpty.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addChar(char x) {
-			return backingEmpty.addChar(x);
-		}
-	};
-
-	private final CharSet backing = new BitCharSet('a', 'b', 'c', 'd', 'e');
-	private final Set<Character> set = new CharSet.Base() {
-		@Override
-		public CharIterator iterator() {
-			return backing.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addChar(char x) {
-			return backing.addChar(x);
-		}
-	};
+public class CharSetBoxingTest extends BaseBoxingTest {
+	private final Set<Character> empty = CharSet.Base.create();
+	private final Set<Character> set = CharSet.Base.create('a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void size() {

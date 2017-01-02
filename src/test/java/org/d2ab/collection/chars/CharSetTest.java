@@ -19,7 +19,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -34,51 +33,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class CharSetTest {
-	private final CharSet backingEmpty = new BitCharSet();
-	private final CharSet empty = new CharSet.Base() {
-		@Override
-		public CharIterator iterator() {
-			return StrictCharIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean add(Character x) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean addChar(char x) {
-			return backingEmpty.addChar(x);
-		}
-	};
-
-	private final CharSet backing = new BitCharSet('a', 'b', 'c', 'd', 'e');
-	private final CharSet set = new CharSet.Base() {
-		@Override
-		public CharIterator iterator() {
-			return StrictCharIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean add(Character x) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean addChar(char x) {
-			return backing.addChar(x);
-		}
-	};
+	private final CharSet empty = CharSet.Base.create();
+	private final CharSet set = CharSet.Base.create('a', 'b', 'c', 'd', 'e');
 
 	@Test
 	public void size() {

@@ -321,6 +321,53 @@ public interface CharList extends List<Character>, CharCollection {
 	 * Base class for {@link CharList} implementations.
 	 */
 	abstract class Base extends CharCollection.Base implements CharList {
+		public static CharList create(final CharCollection collection) {
+			return new CharList.Base() {
+				@Override
+				public CharIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return collection.addChar(x);
+				}
+			};
+		}
+
+		public static CharList create(char... chars) {
+			return create(CharList.create(chars));
+		}
+
+		public static CharList create(final CharList list) {
+			return new CharList.Base() {
+				@Override
+				public CharIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public CharListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return list.addChar(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
