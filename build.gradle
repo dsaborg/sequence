@@ -71,44 +71,46 @@ distributions {
     }
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project {
-                name 'Sequence'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'A lightweight alternative to Java 8 sequential Stream'
-                url 'http://github.com/d2ab/sequence'
-
-                scm {
-                    connection 'scm:git:https://github.com/d2ab/sequence.git'
-                    developerConnection 'scm:git:https://github.com/d2ab/sequence.git'
-                    url 'https://github.com/d2ab/sequence'
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
 
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name 'Sequence'
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    description 'A lightweight alternative to Java 8 sequential Stream'
+                    url 'http://github.com/d2ab/sequence'
+
+                    scm {
+                        connection 'scm:git:https://github.com/d2ab/sequence.git'
+                        developerConnection 'scm:git:https://github.com/d2ab/sequence.git'
+                        url 'https://github.com/d2ab/sequence'
                     }
-                }
 
-                developers {
-                    developer {
-                        id 'd2ab'
-                        name 'Daniel Skogquist Åborg'
-                        email 'daniel@d2ab.org'
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'd2ab'
+                            name 'Daniel Skogquist Åborg'
+                            email 'daniel@d2ab.org'
+                        }
                     }
                 }
             }
