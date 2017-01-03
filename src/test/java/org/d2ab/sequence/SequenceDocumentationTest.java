@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.test.BaseBoxingTest;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -27,14 +28,13 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
-import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class SequenceDocumentationTest {
+public class SequenceDocumentationTest extends BaseBoxingTest {
 	@Test
 	public void filterAndMap() {
 		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -250,7 +250,7 @@ public class SequenceDocumentationTest {
 	public void intSequence() {
 		IntSequence squares = IntSequence.positive().map(i -> i * i);
 
-		assertThat(squares.limit(5), containsInts(1, 4, 9, 16, 25));
+		assertThat(squares.limit(5), contains(1, 4, 9, 16, 25));
 	}
 
 	@Test

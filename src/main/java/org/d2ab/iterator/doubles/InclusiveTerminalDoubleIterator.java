@@ -47,6 +47,6 @@ public class InclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterat
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
-		return previous = iterator.next();
+		return previous = iterator.nextDouble();
 	}
 }

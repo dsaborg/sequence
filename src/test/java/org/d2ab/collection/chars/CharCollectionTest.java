@@ -7,7 +7,6 @@ import org.junit.Test;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
@@ -94,7 +93,7 @@ public class CharCollectionTest {
 	}
 
 	@Test
-	public void addAllCharArray() {
+	public void addAllCharsCharArray() {
 		assertThat(empty.addAllChars(), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -106,7 +105,7 @@ public class CharCollectionTest {
 	}
 
 	@Test
-	public void addAllCharCollection() {
+	public void addAllCharsCharCollection() {
 		assertThat(empty.addAllChars(CharList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -114,6 +113,18 @@ public class CharCollectionTest {
 		assertThat(empty, containsChars('a', 'b', 'c'));
 
 		assertThat(collection.addAllChars(CharList.create('f', 'g', 'h')), is(true));
+		assertThat(collection, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+	}
+
+	@Test
+	public void addAllCharCollection() {
+		assertThat(empty.addAll(CharList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(CharList.create('a', 'b', 'c')), is(true));
+		assertThat(empty, containsChars('a', 'b', 'c'));
+
+		assertThat(collection.addAll(CharList.create('f', 'g', 'h')), is(true));
 		assertThat(collection, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
@@ -221,81 +232,6 @@ public class CharCollectionTest {
 		AtomicInteger value = new AtomicInteger('a');
 		collection.forEachChar(x -> assertThat(x, is((char) value.getAndIncrement())));
 		assertThat((char) value.get(), is('f'));
-	}
-
-	@Test
-	public void addBoxed() {
-		assertThat(empty.add('q'), is(true));
-		assertThat(empty, containsChars('q'));
-
-		assertThat(collection.add('q'), is(true));
-		assertThat(collection, containsChars('a', 'b', 'c', 'd', 'e', 'q'));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains('q'), is(false));
-
-		assertThat(collection.contains('q'), is(false));
-		assertThat(collection.contains(new Object()), is(false));
-
-		for (char x = 'a'; x <= 'e'; x++)
-			assertThat(collection.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove('q'), is(false));
-
-		assertThat(collection.remove('q'), is(false));
-		assertThat(collection.remove(new Object()), is(false));
-
-		for (char x = 'a'; x <= 'e'; x++)
-			assertThat(collection.remove(x), is(true));
-		assertThat(collection, is(emptyIterable()));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(asList('a', 'b', 'c')), is(true));
-		assertThat(empty, containsChars('a', 'b', 'c'));
-
-		assertThat(collection.addAll(asList('f', 'g', 'h')), is(true));
-		assertThat(collection, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList('a', 'b', 'c')), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.removeAll(asList('a', 'b', 'c')), is(true));
-		assertThat(collection, containsChars('d', 'e'));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList('a', 'b', 'c')), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.retainAll(asList('a', 'b', 'c')), is(true));
-		assertThat(collection, containsChars('a', 'b', 'c'));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 'c'), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.removeIf(x -> x > 'c'), is(true));
-		assertThat(collection, containsChars('a', 'b', 'c'));
-	}
-
-	@Test
-	public void containsCharCollection() {
-		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
-		assertThat(collection.containsAll(asList('a', 'b', 'c')), is(true));
-		assertThat(collection.containsAll(asList('a', 'b', 'c', 'q')), is(false));
 	}
 
 	@Test

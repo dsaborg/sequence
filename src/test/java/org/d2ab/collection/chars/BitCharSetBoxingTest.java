@@ -17,6 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,7 +32,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
-public class BitCharSetBoxingTest {
+public class BitCharSetBoxingTest extends BaseBoxingTest {
 	private final SortedSet<Character> empty = new BitCharSet();
 	private final SortedSet<Character> set = new BitCharSet('a', 'b', 'c', 'd', 'e');
 

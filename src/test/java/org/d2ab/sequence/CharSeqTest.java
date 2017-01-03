@@ -446,9 +446,10 @@ public class CharSeqTest {
 
 		// check delayed iteration
 		CharIterator iterator = sequence.iterator();
-		assertThat(iterator.next(), is('a'));
-		assertThat(iterator.next(), is('b'));
+		assertThat(iterator.nextChar(), is('a'));
+		assertThat(iterator.nextChar(), is('b'));
 		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::nextChar);
 
 		assertThat(sequence, is(emptyIterable())); // second run is empty
 	}

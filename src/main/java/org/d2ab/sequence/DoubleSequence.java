@@ -773,17 +773,7 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 2.1
 	 */
 	default DoubleList asList() {
-		return new DoubleList.Base() {
-			@Override
-			public DoubleIterator iterator() {
-				return DoubleSequence.this.iterator();
-			}
-
-			@Override
-			public int size() {
-				return DoubleSequence.this.size();
-			}
-		};
+		return DoubleList.Base.create(this);
 	}
 
 	/**

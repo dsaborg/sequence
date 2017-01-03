@@ -18,13 +18,10 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterator;
-import org.d2ab.test.StrictDoubleListIterator;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -36,33 +33,13 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class DoubleListTest {
-	private final DoubleList empty = createDoubleList();
-	private final DoubleList list = createDoubleList(1, 2, 3, 4, 5);
-
-	private static DoubleList createDoubleList(double... items) {
-		DoubleList backing = DoubleList.create(items);
-		return new DoubleList.Base() {
-			@Override
-			public DoubleIterator iterator() {
-				return StrictDoubleIterator.from(backing.iterator());
-			}
-
-			@Override
-			public DoubleListIterator listIterator(int index) {
-				return StrictDoubleListIterator.from(backing.listIterator(index));
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-		};
-	}
+	private final DoubleList empty = DoubleList.Base.create();
+	private final DoubleList list = DoubleList.Base.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
-		assertThat(list.size(), is(5));
+		assertThat(list.size(), is(10));
 	}
 
 	@Test
@@ -83,13 +60,13 @@ public class DoubleListTest {
 	@Test
 	public void toDoubleArray() {
 		assertArrayEquals(new double[0], empty.toDoubleArray(), 0);
-		assertArrayEquals(new double[]{1, 2, 3, 4, 5}, list.toDoubleArray(), 0);
+		assertArrayEquals(new double[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toDoubleArray(), 0);
 	}
 
 	@Test
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -216,7 +193,7 @@ public class DoubleListTest {
 
 		assertThat(listIterator.nextDouble(), is(3.0));
 
-		assertThat(list, containsDoubles(1, 17, 18, 19, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -225,17 +202,17 @@ public class DoubleListTest {
 			DoubleListIterator listIterator = list.listIterator();
 			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
-				assertThat(listIterator.nextDouble(), is((double) i.get() + 1));
+				assertThat(listIterator.nextDouble(), is((double) (i.get() % 5 + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
 			}
-			assertThat(i.get(), is(5));
+			assertThat(i.get(), is(10));
 			expecting(NoSuchElementException.class, listIterator::nextDouble);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
-				assertThat(listIterator.previousDouble(), is((double) i.get() + 1));
+				assertThat(listIterator.previousDouble(), is((double) (i.get() % 5 + 1)));
 				assertThat(listIterator.nextIndex(), is(i.get()));
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
@@ -250,11 +227,11 @@ public class DoubleListTest {
 
 		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.nextDouble(), is((double) i + 1));
+			assertThat(iterator.nextDouble(), is((double) (i % 5 + 1)));
 			iterator.remove();
 			i++;
 		}
-		assertThat(i, is(5));
+		assertThat(i, is(10));
 		expecting(NoSuchElementException.class, iterator::nextDouble);
 
 		assertThat(list, is(emptyIterable()));
@@ -266,7 +243,7 @@ public class DoubleListTest {
 
 		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextDouble(), is((double) i + 1));
+			assertThat(listIterator.nextDouble(), is((double) (i % 5 + 1)));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -274,7 +251,7 @@ public class DoubleListTest {
 			assertThat(listIterator.previousIndex(), is(-1));
 			i++;
 		}
-		assertThat(i, is(5));
+		assertThat(i, is(10));
 		expecting(NoSuchElementException.class, listIterator::nextDouble);
 
 		assertThat(list, is(emptyIterable()));
@@ -282,12 +259,12 @@ public class DoubleListTest {
 
 	@Test
 	public void listIteratorRemoveBackwards() {
-		int i = 5;
+		int i = 10;
 		DoubleListIterator listIterator = list.listIterator(i);
 
 		while (listIterator.hasPrevious()) {
 			i--;
-			assertThat(listIterator.previousDouble(), is((double) i + 1));
+			assertThat(listIterator.previousDouble(), is((double) (i % 5 + 1)));
 			assertThat(listIterator.nextIndex(), is(i));
 			assertThat(listIterator.previousIndex(), is(i - 1));
 			listIterator.remove();
@@ -313,7 +290,7 @@ public class DoubleListTest {
 
 	@Test
 	public void subList() {
-		DoubleList list = createDoubleList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		DoubleList list = DoubleList.Base.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
@@ -354,7 +331,7 @@ public class DoubleListTest {
 	public void sortDoubles() {
 		Lists.reverse(list);
 		expecting(UnsupportedOperationException.class, list::sortDoubles);
-		assertThat(list, containsDoubles(5, 4, 3, 2, 1));
+		assertThat(list, containsDoubles(5, 4, 3, 2, 1, 5, 4, 3, 2, 1));
 	}
 
 	@Test
@@ -368,7 +345,7 @@ public class DoubleListTest {
 		           is(emptyIterable()));
 
 		assertThat(list.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
-		           containsDoubles(1, 2, 3, 4, 5));
+		           containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -377,13 +354,13 @@ public class DoubleListTest {
 		           is(emptyIterable()));
 
 		assertThat(list.parallelDoubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
-		           containsDoubles(1, 2, 3, 4, 5));
+		           containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void testToString() {
 		assertThat(empty.toString(), is("[]"));
-		assertThat(list.toString(), is("[1.0, 2.0, 3.0, 4.0, 5.0]"));
+		assertThat(list.toString(), is("[1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0]"));
 	}
 
 	@Test
@@ -392,9 +369,9 @@ public class DoubleListTest {
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
 		assertThat(list, is(not(equalTo(new TreeSet<>(asList(1.0, 2.0, 3.0, 4.0, 5.0))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0))))));
 
-		List<Double> list2 = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
+		List<Double> list2 = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 
@@ -410,9 +387,9 @@ public class DoubleListTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstDoubleList() {
-		assertThat(list, is(not(equalTo(DoubleList.create(1, 2, 3, 4)))));
+		assertThat(list, is(not(equalTo(DoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4)))));
 
-		DoubleList list2 = DoubleList.create(1, 2, 3, 4, 5, 17);
+		DoubleList list2 = DoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 17);
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 
@@ -429,7 +406,7 @@ public class DoubleListTest {
 	@Test
 	public void sequence() {
 		assertThat(empty.sequence(), is(emptyIterable()));
-		assertThat(list.sequence(), containsDoubles(1, 2, 3, 4, 5));
+		assertThat(list.sequence(), containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -437,7 +414,7 @@ public class DoubleListTest {
 		assertThat(empty.lastIndexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.lastIndexOfDoubleExactly(17), is(-1));
-		assertThat(list.lastIndexOfDoubleExactly(2), is(1));
+		assertThat(list.lastIndexOfDoubleExactly(2), is(6));
 	}
 
 	@Test
@@ -462,7 +439,7 @@ public class DoubleListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.setDouble(2, 17), is(3.0));
-		assertThat(list, containsDoubles(1, 2, 17, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 17, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -471,7 +448,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(17));
 
 		assertThat(list.addDouble(17, 0.5), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 17));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
@@ -480,7 +457,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(17));
 
 		assertThat(list.addDoubleExactly(17), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 17));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
@@ -492,7 +469,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(17));
 
 		list.addDoubleAt(2, 17);
-		assertThat(list, containsDoubles(1, 2, 17, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 17, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -504,7 +481,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		assertThat(list.addAllDoubles(6, 7, 8), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
@@ -516,7 +493,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		assertThat(list.addAllDoubles(new SortedListDoubleSet(6, 7, 8)), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
@@ -528,7 +505,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		assertThat(list.addAllDoubles(ArrayDoubleList.create(6, 7, 8)), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
@@ -540,7 +517,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		assertThat(list.addAllDoublesAt(2, 17, 18, 19), is(true));
-		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -552,7 +529,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		assertThat(list.addAllDoublesAt(2, new SortedListDoubleSet(17, 18, 19)), is(true));
-		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -564,7 +541,7 @@ public class DoubleListTest {
 		assertThat(empty, containsDoubles(1, 2, 3));
 
 		assertThat(list.addAllDoublesAt(2, ArrayDoubleList.create(17, 18, 19)), is(true));
-		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -574,7 +551,7 @@ public class DoubleListTest {
 
 		assertThat(list.removeDoubleExactly(17), is(false));
 		assertThat(list.removeDoubleExactly(2), is(true));
-		assertThat(list, containsDoubles(1, 3, 4, 5));
+		assertThat(list, containsDoubles(1, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -583,7 +560,7 @@ public class DoubleListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeDoubleAt(2), is(3.0));
-		assertThat(list, containsDoubles(1, 2, 4, 5));
+		assertThat(list, containsDoubles(1, 2, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -633,7 +610,7 @@ public class DoubleListTest {
 
 		assertThat(list.removeAllDoublesExactly(17, 17, 19), is(false));
 		assertThat(list.removeAllDoublesExactly(1, 2, 3, 17), is(true));
-		assertThat(list, containsDoubles(4, 5));
+		assertThat(list, containsDoubles(4, 5, 4, 5));
 	}
 
 	@Test
@@ -643,7 +620,7 @@ public class DoubleListTest {
 
 		assertThat(list.removeAllDoublesExactly(ArrayDoubleList.create(17, 18, 19)), is(false));
 		assertThat(list.removeAllDoublesExactly(ArrayDoubleList.create(1, 2, 3, 17)), is(true));
-		assertThat(list, containsDoubles(4, 5));
+		assertThat(list, containsDoubles(4, 5, 4, 5));
 	}
 
 	@Test
@@ -653,7 +630,7 @@ public class DoubleListTest {
 
 		assertThat(list.removeDoublesIf(x -> x > 5), is(false));
 		assertThat(list.removeDoublesIf(x -> x > 3), is(true));
-		assertThat(list, containsDoubles(1, 2, 3));
+		assertThat(list, containsDoubles(1, 2, 3, 1, 2, 3));
 	}
 
 	@Test
@@ -662,7 +639,7 @@ public class DoubleListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.retainAllDoublesExactly(1, 2, 3, 17), is(true));
-		assertThat(list, containsDoubles(1, 2, 3));
+		assertThat(list, containsDoubles(1, 2, 3, 1, 2, 3));
 	}
 
 	@Test
@@ -671,7 +648,7 @@ public class DoubleListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.retainAllDoublesExactly(DoubleList.create(1, 2, 3, 17)), is(true));
-		assertThat(list, containsDoubles(1, 2, 3));
+		assertThat(list, containsDoubles(1, 2, 3, 1, 2, 3));
 	}
 
 	@Test
@@ -680,7 +657,7 @@ public class DoubleListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		list.replaceAll(x -> x + 1);
-		assertThat(list, containsDoubles(2, 3, 4, 5, 6));
+		assertThat(list, containsDoubles(2, 3, 4, 5, 6, 2, 3, 4, 5, 6));
 	}
 
 	@Test
@@ -689,7 +666,7 @@ public class DoubleListTest {
 		assertThat(empty, is(emptyIterable()));
 
 		list.replaceAllDoubles(x -> x + 1);
-		assertThat(list, containsDoubles(2, 3, 4, 5, 6));
+		assertThat(list, containsDoubles(2, 3, 4, 5, 6, 2, 3, 4, 5, 6));
 	}
 
 	@Test
@@ -698,8 +675,8 @@ public class DoubleListTest {
 			throw new IllegalStateException("should not get called");
 		});
 
-		AtomicLong value = new AtomicLong(1);
-		list.forEachDouble(x -> assertThat(x, is((double) value.getAndIncrement())));
-		assertThat(value.get(), is(6L));
+		AtomicInteger index = new AtomicInteger();
+		list.forEachDouble(x -> assertThat(x, is((double) (index.getAndIncrement() % 5 + 1))));
+		assertThat(index.get(), is(10));
 	}
 }

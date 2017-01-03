@@ -18,7 +18,6 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -33,41 +32,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class DoubleSetTest {
-	private final DoubleSet backingEmpty = new SortedListDoubleSet();
-	private final DoubleSet empty = new DoubleSet.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return StrictDoubleIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addDoubleExactly(double x) {
-			return backingEmpty.addDoubleExactly(x);
-		}
-	};
-
-	private final DoubleSet backing = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-	private final DoubleSet set = new DoubleSet.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return StrictDoubleIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addDoubleExactly(double x) {
-			return backing.addDoubleExactly(x);
-		}
-	};
+	private final DoubleSet empty = DoubleSet.Base.create();
+	private final DoubleSet set = DoubleSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void createEmpty() {
@@ -413,15 +379,6 @@ public class DoubleSetTest {
 
 		assertThat(set.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
 		assertThat(set, containsDoubles(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeIf(x -> x > 3), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3));
 	}
 
 	@Test

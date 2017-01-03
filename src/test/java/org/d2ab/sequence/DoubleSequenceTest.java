@@ -403,9 +403,10 @@ public class DoubleSequenceTest {
 
 		// check delayed iteration
 		DoubleIterator iterator = sequence.iterator();
-		assertThat(iterator.next(), is(1.0));
-		assertThat(iterator.next(), is(2.0));
+		assertThat(iterator.nextDouble(), is(1.0));
+		assertThat(iterator.nextDouble(), is(2.0));
 		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::nextDouble);
 
 		assertThat(sequence, is(emptyIterable())); // second run is empty
 	}
@@ -1295,10 +1296,10 @@ public class DoubleSequenceTest {
 		assertThat(iterator.nextDouble(), is(3.0));
 		assertThat(iterator.nextDouble(), is(4.0));
 		assertThat(iterator.nextDouble(), is(5.0));
-		expecting(NullPointerException.class, iterator::next);
+		expecting(NullPointerException.class, iterator::nextDouble);
 
 		DoubleIterator iterator2 = sequence.iterator();
-		expecting(NullPointerException.class, iterator2::next);
+		expecting(NullPointerException.class, iterator2::nextDouble);
 	}
 
 	@Test

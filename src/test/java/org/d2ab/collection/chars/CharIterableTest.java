@@ -75,7 +75,7 @@ public class CharIterableTest {
 		doThrow(IOException.class).when(reader).read();
 
 		CharIterable iterable = CharIterable.read(reader);
-		twice(() -> expecting(IterationException.class, () -> iterable.iterator().next()));
+		twice(() -> expecting(IterationException.class, () -> iterable.iterator().nextChar()));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class CharIterableTest {
 
 		CharIterable iterable = CharIterable.read(reader);
 		twice(() -> assertThat(iterable, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> iterable.iterator().next());
+		expecting(NoSuchElementException.class, () -> iterable.iterator().nextChar());
 	}
 
 	@Test

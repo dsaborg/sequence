@@ -90,6 +90,9 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean addAll(Collection<? extends Character> c) {
+		if (c instanceof CharCollection)
+			return addAllChars((CharCollection) c);
+
 		assert Strict.LENIENT : "CharCollection.addAll(Collection)";
 
 		return Collectionz.addAll(this, c);
@@ -112,6 +115,9 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		if (c instanceof CharCollection)
+			return containsAllChars((CharCollection) c);
+
 		assert Strict.LENIENT : "CharCollection.containsAll(Collection)";
 
 		return Collectionz.containsAll(this, c);
@@ -119,6 +125,9 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
+		if (c instanceof CharCollection)
+			return removeAllChars((CharCollection) c);
+
 		assert Strict.LENIENT : "CharCollection.removeAll(Collection)";
 
 		return Collectionz.removeAll(this, c);
@@ -126,6 +135,9 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
+		if (c instanceof CharCollection)
+			return retainAllChars((CharCollection) c);
+
 		assert Strict.LENIENT : "CharCollection.retainAll(Collection)";
 
 		return Collectionz.retainAll(this, c);
@@ -175,12 +187,12 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
 			builder.append("[");
 
-			boolean started = false;
+			boolean tail = false;
 			for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
-				if (started)
+				if (tail)
 					builder.append(", ");
 				else
-					started = true;
+					tail = true;
 				builder.append(iterator.nextChar());
 			}
 

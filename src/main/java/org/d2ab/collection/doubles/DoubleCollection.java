@@ -18,6 +18,7 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Collection;
 import java.util.Spliterator;
@@ -43,11 +44,15 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default Double[] toArray() {
+		assert Strict.LENIENT : "DoubleCollection.toArray()";
+
 		return toArray(new Double[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
+		assert Strict.LENIENT : "DoubleCollection.toArray(Object[])";
+
 		return Collectionz.toArray(this, a);
 	}
 
@@ -60,6 +65,8 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean add(Double x) {
+		assert Strict.LENIENT : "DoubleCollection.add(Double)";
+
 		return addDoubleExactly(x);
 	}
 
@@ -81,16 +88,25 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean contains(Object o) {
+		assert Strict.LENIENT : "DoubleCollection.contains(Object)";
+
 		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
+		assert Strict.LENIENT : "DoubleCollection.remove(Object)";
+
 		return o instanceof Double && removeDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
+		if (c instanceof DoubleCollection)
+			return addAllDoubles((DoubleCollection) c);
+
+		assert Strict.LENIENT : "DoubleCollection.addAll(Collection)";
+
 		return Collectionz.addAll(this, c);
 	}
 
@@ -111,21 +127,38 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		if (c instanceof DoubleCollection)
+			return containsAllDoublesExactly((DoubleCollection) c);
+
+		assert Strict.LENIENT : "DoubleCollection.containsAll(Collection)";
+
 		return Collectionz.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
+		if (c instanceof DoubleCollection)
+			return removeAllDoublesExactly((DoubleCollection) c);
+
+		assert Strict.LENIENT : "DoubleCollection.removeAll(Collection)";
+
 		return Collectionz.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
+		if (c instanceof DoubleCollection)
+			return retainAllDoublesExactly((DoubleCollection) c);
+
+		assert Strict.LENIENT : "DoubleCollection.retainAll(Collection)";
+
 		return Collectionz.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Double> filter) {
+		assert Strict.LENIENT : "DoubleCollection.removeIf(Predicate)";
+
 		return removeDoublesIf(filter::test);
 	}
 
@@ -138,17 +171,40 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	 * Base class for {@link DoubleCollection} implementations.
 	 */
 	abstract class Base implements DoubleCollection {
+		public static DoubleCollection create(double... doubles) {
+			return create(DoubleList.create(doubles));
+		}
+
+		public static DoubleCollection create(final DoubleCollection collection) {
+			return new DoubleCollection.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return collection.addDoubleExactly(x);
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
 			builder.append("[");
 
-			boolean started = false;
+			boolean tail = false;
 			for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
-				if (started)
+				if (tail)
 					builder.append(", ");
 				else
-					started = true;
+					tail = true;
 				builder.append(iterator.nextDouble());
 			}
 

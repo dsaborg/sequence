@@ -18,6 +18,7 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -33,7 +34,9 @@ import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class RawDoubleSetTest {
+public class RawDoubleSetTest extends BaseBoxingTest {
+	// TODO: Fix so it doesn't need to extend boxing test
+
 	private final RawDoubleSet empty = new RawDoubleSet();
 	private final RawDoubleSet set = new RawDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 

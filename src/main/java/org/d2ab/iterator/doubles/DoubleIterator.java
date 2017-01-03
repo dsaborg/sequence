@@ -17,14 +17,12 @@
 package org.d2ab.iterator.doubles;
 
 import org.d2ab.util.Doubles;
+import org.d2ab.util.Strict;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
-import java.util.function.DoubleBinaryOperator;
-import java.util.function.IntToDoubleFunction;
-import java.util.function.LongToDoubleFunction;
-import java.util.function.ToDoubleFunction;
+import java.util.function.*;
 
 /**
  * An Iterator specialized for {@code double} values. Extends {@link PrimitiveIterator.OfDouble} with helper methods.
@@ -122,6 +120,20 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 				return mapper.applyAsDouble(iterator.next());
 			}
 		};
+	}
+
+	@Override
+	default Double next() {
+		assert Strict.LENIENT : "DoubleIterator.next()";
+
+		return nextDouble();
+	}
+
+	@Override
+	default void forEachRemaining(Consumer<? super Double> action) {
+		assert Strict.LENIENT : "DoubleIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((DoubleConsumer) action::accept);
 	}
 
 	default boolean skip() {

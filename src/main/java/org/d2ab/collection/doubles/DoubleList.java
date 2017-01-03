@@ -347,6 +347,53 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	 * Base class for {@link DoubleList} implementations.
 	 */
 	abstract class Base extends DoubleCollection.Base implements DoubleList {
+		public static DoubleList create(final DoubleCollection collection) {
+			return new DoubleList.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return collection.addDoubleExactly(x);
+				}
+			};
+		}
+
+		public static DoubleList create(double... doubles) {
+			return create(DoubleList.create(doubles));
+		}
+
+		public static DoubleList create(final DoubleList list) {
+			return new DoubleList.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public DoubleListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return list.addDoubleExactly(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

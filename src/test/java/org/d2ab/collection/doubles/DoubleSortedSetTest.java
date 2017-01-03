@@ -18,7 +18,6 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -34,41 +33,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class DoubleSortedSetTest {
-	private final DoubleSortedSet backingEmpty = new SortedListDoubleSet();
-	private final DoubleSortedSet empty = new DoubleSortedSet.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return StrictDoubleIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addDoubleExactly(double x) {
-			return backingEmpty.addDoubleExactly(x);
-		}
-	};
-
-	private final DoubleSortedSet backing = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-	private final DoubleSortedSet set = new DoubleSortedSet.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return StrictDoubleIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addDoubleExactly(double x) {
-			return backing.addDoubleExactly(x);
-		}
-	};
+	private final DoubleSortedSet empty = DoubleSortedSet.Base.create();
+	private final DoubleSortedSet set = DoubleSortedSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void create() {
@@ -607,10 +573,17 @@ public class DoubleSortedSetTest {
 	}
 
 	@Test
-	public void containsAllDoubleArray() {
+	public void containsAllDoublesDoubleArray() {
 		assertThat(empty.containsAllDoublesExactly(1, 2, 3), is(false));
 		assertThat(set.containsAllDoublesExactly(1, 2, 3), is(true));
 		assertThat(set.containsAllDoublesExactly(1, 2, 3, 17), is(false));
+	}
+
+	@Test
+	public void containsAllDoublesDoubleCollection() {
+		assertThat(empty.containsAll(DoubleList.create(1, 2, 3)), is(false));
+		assertThat(set.containsAll(DoubleList.create(1, 2, 3)), is(true));
+		assertThat(set.containsAll(DoubleList.create(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -698,33 +671,6 @@ public class DoubleSortedSetTest {
 
 		assertThat(set.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
 		assertThat(set, containsDoubles(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeIf(x -> x > 3), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3));
-	}
-
-	@Test
-	public void containsDoubleCollection() {
-		assertThat(empty.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(false));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger(-5);
-		set.forEach(x -> assertThat(x, is((double) value.getAndIncrement())));
-		assertThat(value.get(), is(5));
 	}
 
 	@Test

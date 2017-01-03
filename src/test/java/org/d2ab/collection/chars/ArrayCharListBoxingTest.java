@@ -16,6 +16,7 @@
 
 package org.d2ab.collection.chars;
 
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -27,7 +28,7 @@ import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class ArrayCharListBoxingTest {
+public class ArrayCharListBoxingTest extends BaseBoxingTest {
 	private final List<Character> empty = new ArrayCharList();
 	private final List<Character> list = new ArrayCharList(new char[]{'a', 'b', 'c', 'd', 'e'});
 

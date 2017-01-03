@@ -166,8 +166,8 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean containsAllChars(CharIterable c) {
-		for (char x : c)
-			if (!containsChar(x))
+		for (CharIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsChar(iterator.nextChar()))
 				return false;
 
 		return true;

@@ -192,12 +192,12 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
 			builder.append("[");
 
-			boolean started = false;
+			boolean tail = false;
 			for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-				if (started)
+				if (tail)
 					builder.append(", ");
 				else
-					started = true;
+					tail = true;
 				builder.append(iterator.nextInt());
 			}
 

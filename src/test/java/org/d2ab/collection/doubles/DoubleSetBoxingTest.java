@@ -17,7 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,42 +31,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class DoubleSetBoxingTest {
-	private final DoubleSet backingEmpty = new SortedListDoubleSet();
-	private final Set<Double> empty = new DoubleSet.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return backingEmpty.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addDoubleExactly(double x) {
-			return backingEmpty.addDoubleExactly(x);
-		}
-	};
-
-	private final DoubleSet backing = new SortedListDoubleSet(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0);
-	private final Set<Double> set = new DoubleSet.Base() {
-		@Override
-		public DoubleIterator iterator() {
-			return backing.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addDoubleExactly(double x) {
-			return backing.addDoubleExactly(x);
-		}
-	};
+public class DoubleSetBoxingTest extends BaseBoxingTest {
+	private final Set<Double> empty = DoubleSet.Base.create();
+	private final Set<Double> set = DoubleSet.Base.create(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0);
 
 	@Test
 	public void iterator() {
