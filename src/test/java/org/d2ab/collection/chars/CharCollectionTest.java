@@ -273,5 +273,4 @@ public class CharCollectionTest {
 		for (char randomValue : randomValues)
 			assertThat(empty.removeChar(randomValue), is(false));
 	}
-
 }
