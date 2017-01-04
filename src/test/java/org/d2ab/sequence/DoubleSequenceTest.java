@@ -21,7 +21,6 @@ import org.d2ab.collection.doubles.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingTransformingDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterable;
 import org.junit.Test;
 
 import java.util.*;
@@ -44,19 +43,19 @@ import static org.junit.Assert.fail;
 public class DoubleSequenceTest {
 	private final DoubleSequence empty = DoubleSequence.empty();
 
-	private final DoubleSequence _1 = DoubleSequence.from(StrictDoubleIterable.of(1.0));
-	private final DoubleSequence _12 = DoubleSequence.from(StrictDoubleIterable.of(1.0, 2.0));
-	private final DoubleSequence _123 = DoubleSequence.from(StrictDoubleIterable.of(1.0, 2.0, 3.0));
-	private final DoubleSequence _1234 = DoubleSequence.from(StrictDoubleIterable.of(1.0, 2.0, 3.0, 4.0));
-	private final DoubleSequence _12345 = DoubleSequence.from(StrictDoubleIterable.of(1.0, 2.0, 3.0, 4.0, 5.0));
+	private final DoubleSequence _1 = DoubleSequence.from(DoubleIterable.of(1.0));
+	private final DoubleSequence _12 = DoubleSequence.from(DoubleIterable.of(1.0, 2.0));
+	private final DoubleSequence _123 = DoubleSequence.from(DoubleIterable.of(1.0, 2.0, 3.0));
+	private final DoubleSequence _1234 = DoubleSequence.from(DoubleIterable.of(1.0, 2.0, 3.0, 4.0));
+	private final DoubleSequence _12345 = DoubleSequence.from(DoubleIterable.of(1.0, 2.0, 3.0, 4.0, 5.0));
 	private final DoubleSequence _123456789 =
-			DoubleSequence.from(StrictDoubleIterable.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
+			DoubleSequence.from(DoubleIterable.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
 
-	private final DoubleSequence oneRandom = DoubleSequence.from(StrictDoubleIterable.of(17.0));
-	private final DoubleSequence twoRandom = DoubleSequence.from(StrictDoubleIterable.of(17.0, 32.0));
-	private final DoubleSequence threeRandom = DoubleSequence.from(StrictDoubleIterable.of(17.0, 32.0, 12.0));
+	private final DoubleSequence oneRandom = DoubleSequence.from(DoubleIterable.of(17.0));
+	private final DoubleSequence twoRandom = DoubleSequence.from(DoubleIterable.of(17.0, 32.0));
+	private final DoubleSequence threeRandom = DoubleSequence.from(DoubleIterable.of(17.0, 32.0, 12.0));
 	private final DoubleSequence nineRandom =
-			DoubleSequence.from(StrictDoubleIterable.of(6.0, 6.0, 1.0, -7.0, 1.0, 2.0, 17.0, 5.0, 4.0));
+			DoubleSequence.from(DoubleIterable.of(6.0, 6.0, 1.0, -7.0, 1.0, 2.0, 17.0, 5.0, 4.0));
 
 	@Test
 	public void ofOne() {
@@ -78,23 +77,6 @@ public class DoubleSequenceTest {
 	public void fromArrayWithOffsetAndSize() {
 		DoubleSequence sequence = DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 1, 3);
 		twice(() -> assertThat(sequence, containsDoubles(2, 3, 4)));
-	}
-
-	@Test
-	public void forLoop() {
-		twice(() -> {
-			for (double ignored : empty)
-				fail("Should not get called");
-		});
-
-		DoubleSequence sequence = DoubleSequence.of(1, 2, 3, 4, 5);
-		twice(() -> {
-			double expected = 1.0;
-			for (double d : sequence)
-				assertThat(d, is(expected++));
-
-			assertThat(expected, is(6.0));
-		});
 	}
 
 	@Test
@@ -329,7 +311,7 @@ public class DoubleSequenceTest {
 	@Test
 	public void appendDoubleIterable() {
 		DoubleSequence appended =
-				_123.append(StrictDoubleIterable.of(4.0, 5.0, 6.0)).append(StrictDoubleIterable.of(7.0, 8.0));
+				_123.append(DoubleIterable.of(4.0, 5.0, 6.0)).append(DoubleIterable.of(7.0, 8.0));
 
 		twice(() -> assertThat(appended, containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)));
 	}
@@ -832,7 +814,7 @@ public class DoubleSequenceTest {
 		DoubleSequence oneDistinct = oneRandom.distinct(0.5);
 		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
 
-		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17.15, 17.3))
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(DoubleIterable.of(17, 17.15, 17.3))
 		                                                     .distinct(0.2);
 		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17, 17.3)));
 
@@ -848,7 +830,7 @@ public class DoubleSequenceTest {
 		DoubleSequence oneDistinct = oneRandom.distinctExactly();
 		twice(() -> assertThat(oneDistinct, containsDoubles(17)));
 
-		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(StrictDoubleIterable.of(17, 17)).distinctExactly();
+		DoubleSequence twoDuplicatesDistinct = DoubleSequence.from(DoubleIterable.of(17, 17)).distinctExactly();
 		twice(() -> assertThat(twoDuplicatesDistinct, containsDoubles(17)));
 
 		DoubleSequence nineDistinct = nineRandom.distinctExactly();
@@ -1316,7 +1298,7 @@ public class DoubleSequenceTest {
 			assertThat(iterator.nextDouble(), is(3.0));
 			assertThat(iterator.nextDouble(), is(4.0));
 			assertThat(iterator.nextDouble(), is(5.0));
-			expecting(NullPointerException.class, iterator::next);
+			expecting(NullPointerException.class, iterator::nextDouble);
 		});
 	}
 
@@ -1326,7 +1308,7 @@ public class DoubleSequenceTest {
 
 		twice(() -> times(1000, random.iterator()::nextDouble));
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsDoubles(random.limit(10))));
 	}
 
 	@Test
@@ -1348,7 +1330,7 @@ public class DoubleSequenceTest {
 			                             is(both(greaterThanOrEqualTo(0.0)).and(lessThan(1000.0)))));
 		});
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsDoubles(random.limit(10))));
 	}
 
 	@Test
@@ -1370,7 +1352,7 @@ public class DoubleSequenceTest {
 			                             is(both(greaterThanOrEqualTo(1000.0)).and(lessThan(2000.0)))));
 		});
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsDoubles(random.limit(10))));
 	}
 
 	@Test
@@ -1572,4 +1554,5 @@ public class DoubleSequenceTest {
 		assertThat(_12345.containsAnyDoubles(new double[]{1.1, 1.9, 3.1, 3.9, 5.1, 17.1}, 0.5), is(true));
 		assertThat(_12345.containsAnyDoubles(new double[]{17.1, 17.9, 19.1}, 0.5), is(false));
 	}
+
 }

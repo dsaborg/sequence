@@ -17,10 +17,10 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.doubles.ArrayDoubleList;
+import org.d2ab.collection.doubles.DoubleIterable;
 import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.collection.doubles.DoubleListIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterable;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -37,11 +37,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class DoubleSequenceAsListTest {
-	private final DoubleSequence empty = DoubleSequence.from(StrictDoubleIterable.from(ArrayDoubleList.create()));
+	private final DoubleSequence empty = DoubleSequence.from(DoubleIterable.from(ArrayDoubleList.create()));
 	private final DoubleList emptyList = empty.asList();
 
 	private final DoubleSequence sequence = DoubleSequence.from(
-			StrictDoubleIterable.from(ArrayDoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+			DoubleIterable.from(ArrayDoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
 	private final DoubleList list = sequence.asList();
 
 	@Test

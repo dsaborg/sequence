@@ -133,6 +133,23 @@ public class IsCharIterableContainingInOrder extends TypeSafeDiagnosingMatcher<C
 
 	/**
 	 * Creates a matcher for {@link CharIterable}s that matches when a single pass over the
+	 * examined {@link CharIterable} yields a series of items, each logically equal to the
+	 * corresponding item in the specified items.  For a positive match, the examined iterable
+	 * must be of the same length as the number of specified items.
+	 *
+	 * @param items the items that must equal the items provided by an examined {@link CharIterable}
+	 */
+	public static Matcher<CharIterable> containsChars(CharIterable items) {
+		List<Matcher<? super Character>> matchers = new ArrayList<>();
+		for (CharIterator iterator = items.iterator(); iterator.hasNext(); ) {
+			matchers.add(equalTo(iterator.nextChar()));
+		}
+
+		return containsChars(matchers);
+	}
+
+	/**
+	 * Creates a matcher for {@link CharIterable}s that matches when a single pass over the
 	 * examined {@link CharIterable} yields a single item that satisfies the specified matcher.
 	 * For a positive match, the examined iterable must only yield one item.
 	 *

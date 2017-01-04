@@ -133,6 +133,23 @@ public class IsDoubleIterableContainingInOrder extends TypeSafeDiagnosingMatcher
 
 	/**
 	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
+	 * examined {@link DoubleIterable} yields a series of items, each logically equal to the
+	 * corresponding item in the specified items.  For a positive match, the examined iterable
+	 * must be of the same length as the number of specified items.
+	 *
+	 * @param items the items that must equal the items provided by an examined {@link DoubleIterable}
+	 */
+	public static Matcher<DoubleIterable> containsDoubles(DoubleIterable items) {
+		List<Matcher<? super Double>> matchers = new ArrayList<>();
+		for (DoubleIterator iterator = items.iterator(); iterator.hasNext(); ) {
+			matchers.add(equalTo(iterator.nextDouble()));
+		}
+
+		return containsDoubles(matchers);
+	}
+
+	/**
+	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
 	 * examined {@link DoubleIterable} yields a single item that satisfies the specified matcher.
 	 * For a positive match, the examined iterable must only yield one item.
 	 *

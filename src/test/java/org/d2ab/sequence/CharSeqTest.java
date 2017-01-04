@@ -32,7 +32,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -92,23 +91,6 @@ public class CharSeqTest {
 	public void fromArrayWithOffsetAndSize() {
 		CharSeq sequence = CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 1, 3);
 		twice(() -> assertThat(sequence, containsChars('b', 'c', 'd')));
-	}
-
-	@Test
-	public void forLoop() {
-		twice(() -> {
-			for (int ignored : empty)
-				fail("Should not get called");
-		});
-
-		CharSeq seq = CharSeq.of('a', 'b', 'c', 'd', 'e');
-		twice(() -> {
-			char expected = 'a';
-			for (char c : seq)
-				assertThat(c, is(expected++));
-
-			assertThat(expected, is('f'));
-		});
 	}
 
 	@Test
@@ -971,26 +953,6 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void stream() {
-		CharSeq empty = CharSeq.empty();
-		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
-
-		CharSeq sequence = CharSeq.of('a', 'b', 'c', 'd', 'e');
-		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e')));
-	}
-
-	@Test
-	public void streamFromOnce() {
-		CharSeq empty = CharSeq.once(CharIterator.of());
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-
-		CharSeq sequence = CharSeq.once(CharIterator.of('a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence.stream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
-	}
-
-	@Test
 	public void intStream() {
 		twice(() -> assertThat(
 				empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts).asChars(),
@@ -1229,10 +1191,10 @@ public class CharSeqTest {
 		assertThat(iterator.nextChar(), is('c'));
 		assertThat(iterator.nextChar(), is('d'));
 		assertThat(iterator.nextChar(), is('e'));
-		expecting(NullPointerException.class, iterator::next);
+		expecting(NullPointerException.class, iterator::nextChar);
 
 		CharIterator iterator2 = sequence.iterator();
-		expecting(NullPointerException.class, iterator2::next);
+		expecting(NullPointerException.class, iterator2::nextChar);
 	}
 
 	@Test
@@ -1248,7 +1210,7 @@ public class CharSeqTest {
 		assertThat(iterator.nextChar(), is('c'));
 		assertThat(iterator.nextChar(), is('d'));
 		assertThat(iterator.nextChar(), is('e'));
-		expecting(NullPointerException.class, iterator::next);
+		expecting(NullPointerException.class, iterator::nextChar);
 
 		CharIterator iterator2 = sequence.iterator();
 		assertThat(iterator2.nextChar(), is('a'));
@@ -1256,7 +1218,7 @@ public class CharSeqTest {
 		assertThat(iterator2.nextChar(), is('c'));
 		assertThat(iterator2.nextChar(), is('d'));
 		assertThat(iterator2.nextChar(), is('e'));
-		expecting(NullPointerException.class, iterator2::next);
+		expecting(NullPointerException.class, iterator2::nextChar);
 	}
 
 	@Test
@@ -1269,7 +1231,7 @@ public class CharSeqTest {
 			                             is(both(greaterThanOrEqualTo('a')).and(lessThanOrEqualTo('z')))));
 		});
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsChars(random.limit(10))));
 	}
 
 	@Test
@@ -1289,7 +1251,7 @@ public class CharSeqTest {
 			                             is(both(greaterThanOrEqualTo(0)).and(lessThan(16)))));
 		});
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsChars(random.limit(10))));
 	}
 
 	@Test
@@ -1511,4 +1473,5 @@ public class CharSeqTest {
 		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e', 'p'), is(true));
 		assertThat(abcde.containsAnyChars('p', 'q', 'r'), is(false));
 	}
+
 }
