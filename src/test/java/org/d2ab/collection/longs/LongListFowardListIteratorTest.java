@@ -17,7 +17,6 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterator;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -39,7 +38,7 @@ public class LongListFowardListIteratorTest {
 		return new LongList.Base() {
 			@Override
 			public LongIterator iterator() {
-				return StrictLongIterator.from(backing.iterator());
+				return backing.iterator();
 			}
 
 			@Override

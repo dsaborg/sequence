@@ -17,8 +17,6 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Lists;
-import org.d2ab.collection.chars.ArrayCharList;
-import org.d2ab.collection.chars.CharList;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
@@ -30,12 +28,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 

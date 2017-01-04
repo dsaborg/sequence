@@ -35,9 +35,9 @@ import static org.junit.Assert.fail;
 public class Tests {
 	@FunctionalInterface
 	public interface ThrowingRunnable {
-
 		void run() throws Exception;
 	}
+
 	private Tests() {
 	}
 

@@ -17,7 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -26,47 +26,12 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class LongSortedSetBoxingTest {
-	private final LongSet backingEmpty = new BitLongSet();
-	private final SortedSet<Long> empty = new LongSortedSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return backingEmpty.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backingEmpty.addLong(x);
-		}
-	};
-
-	private final LongSet backing = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-	private final SortedSet<Long> set = new LongSortedSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return backing.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backing.addLong(x);
-		}
-	};
+public class LongSortedSetBoxingTest extends BaseBoxingTest {
+	private final SortedSet<Long> empty = LongSortedSet.Base.create();
+	private final SortedSet<Long> set = LongSortedSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void create() {

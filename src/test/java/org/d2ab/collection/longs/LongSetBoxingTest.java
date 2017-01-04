@@ -17,7 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
-import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,42 +31,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongSetBoxingTest {
-	private final LongSet backingEmpty = new BitLongSet();
-	private final Set<Long> empty = new LongSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return backingEmpty.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backingEmpty.addLong(x);
-		}
-	};
-
-	private final LongSet backing = new BitLongSet(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L);
-	private final Set<Long> set = new LongSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return backing.iterator();
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backing.addLong(x);
-		}
-	};
+public class LongSetBoxingTest extends BaseBoxingTest {
+	private final Set<Long> empty = LongSet.Base.create();
+	private final Set<Long> set = LongSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void iterator() {

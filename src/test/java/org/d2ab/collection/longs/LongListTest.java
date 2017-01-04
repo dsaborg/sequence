@@ -18,8 +18,6 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterator;
-import org.d2ab.test.StrictLongListIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -30,8 +28,7 @@ import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
@@ -44,12 +41,12 @@ public class LongListTest {
 		return new LongList.Base() {
 			@Override
 			public LongIterator iterator() {
-				return StrictLongIterator.from(backing.iterator());
+				return backing.iterator();
 			}
 
 			@Override
 			public LongListIterator listIterator(int index) {
-				return StrictLongListIterator.from(backing.listIterator(index));
+				return backing.listIterator(index);
 			}
 
 			@Override

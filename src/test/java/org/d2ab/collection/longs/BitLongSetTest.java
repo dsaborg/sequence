@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class BitLongSetTest {
@@ -620,17 +618,6 @@ public class BitLongSetTest {
 		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
 		assertThat(set.containsAll(asList(1L, 2L, 3L)), is(true));
 		assertThat(set.containsAll(asList(1L, 2L, 3L, 17L)), is(false));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicLong value = new AtomicLong(-5);
-		set.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(5L));
 	}
 
 	@Test

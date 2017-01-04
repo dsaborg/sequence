@@ -21,7 +21,7 @@ import org.d2ab.collection.longs.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.longs.DelegatingTransformingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterable;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
@@ -46,19 +46,19 @@ import static org.junit.Assert.fail;
 public class LongSequenceTest {
 	private final LongSequence empty = LongSequence.empty();
 
-	private final LongSequence _1 = LongSequence.from(StrictLongIterable.of(1L));
-	private final LongSequence _12 = LongSequence.from(StrictLongIterable.of(1L, 2L));
-	private final LongSequence _123 = LongSequence.from(StrictLongIterable.of(1L, 2L, 3L));
-	private final LongSequence _1234 = LongSequence.from(StrictLongIterable.of(1L, 2L, 3L, 4L));
-	private final LongSequence _12345 = LongSequence.from(StrictLongIterable.of(1L, 2L, 3L, 4L, 5L));
+	private final LongSequence _1 = LongSequence.from(LongList.create(1L));
+	private final LongSequence _12 = LongSequence.from(LongList.create(1L, 2L));
+	private final LongSequence _123 = LongSequence.from(LongList.create(1L, 2L, 3L));
+	private final LongSequence _1234 = LongSequence.from(LongList.create(1L, 2L, 3L, 4L));
+	private final LongSequence _12345 = LongSequence.from(LongList.create(1L, 2L, 3L, 4L, 5L));
 	private final LongSequence _123456789 =
-			LongSequence.from(StrictLongIterable.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
+			LongSequence.from(LongList.create(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
 
-	private final LongSequence oneRandom = LongSequence.from(StrictLongIterable.of(17L));
-	private final LongSequence twoRandom = LongSequence.from(StrictLongIterable.of(17L, 32L));
-	private final LongSequence threeRandom = LongSequence.from(StrictLongIterable.of(17L, 32L, 12L));
+	private final LongSequence oneRandom = LongSequence.from(LongList.create(17L));
+	private final LongSequence twoRandom = LongSequence.from(LongList.create(17L, 32L));
+	private final LongSequence threeRandom = LongSequence.from(LongList.create(17L, 32L, 12L));
 	private final LongSequence nineRandom =
-			LongSequence.from(StrictLongIterable.of(6L, 6L, 1L, -7L, 1L, 2L, 17L, 5L, 4L));
+			LongSequence.from(LongList.create(6L, 6L, 1L, -7L, 1L, 2L, 17L, 5L, 4L));
 
 	@Test
 	public void empty() {
@@ -92,89 +92,6 @@ public class LongSequenceTest {
 	public void fromArrayWithOffsetAndSize() {
 		LongSequence sequence = LongSequence.from(new long[]{1, 2, 3, 4, 5}, 1, 3);
 		twice(() -> assertThat(sequence, containsLongs(2, 3, 4)));
-	}
-
-	@Test
-	public void forLoop() {
-		twice(() -> {
-			for (long ignored : empty)
-				fail("Should not get called");
-		});
-
-		LongSequence sequence = LongSequence.of(1L, 2L, 3L, 4L, 5L);
-		twice(() -> {
-			long expected = 1;
-			for (long i : sequence)
-				assertThat(i, is(expected++));
-
-			assertThat(expected, is(6L));
-		});
-	}
-
-	@Test
-	public void forEachLong() {
-		twice(() -> {
-			empty.forEachLong(c -> fail("Should not get called"));
-
-			AtomicLong value = new AtomicLong(1);
-			_1.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
-
-			value.set(1);
-			_12.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
-
-			value.set(1);
-			_12345.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
-		});
-	}
-
-	@Test
-	public void forEachLongIndexed() {
-		twice(() -> {
-			empty.forEachLongIndexed((e, i) -> fail("Should not get called"));
-
-			AtomicLong value = new AtomicLong(1);
-			AtomicInteger index = new AtomicInteger();
-			_1.forEachLongIndexed((e, i) -> {
-				assertThat(e, is(value.getAndIncrement()));
-				assertThat(i, is(index.getAndIncrement()));
-			});
-			assertThat(index.get(), is(1));
-
-			value.set(1);
-			index.set(0);
-			_12.forEachLongIndexed((e, i) -> {
-				assertThat(e, is(value.getAndIncrement()));
-				assertThat(i, is(index.getAndIncrement()));
-			});
-			assertThat(index.get(), is(2));
-
-			value.set(1);
-			index.set(0);
-			_12345.forEachLongIndexed((e, i) -> {
-				assertThat(e, is(value.getAndIncrement()));
-				assertThat(i, is(index.getAndIncrement()));
-			});
-			assertThat(index.get(), is(5));
-		});
-	}
-
-	@Test
-	public void iterator() {
-		twice(() -> {
-			LongIterator iterator = _123.iterator();
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.nextLong(), is(1L));
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.nextLong(), is(2L));
-
-			assertThat(iterator.hasNext(), is(true));
-			assertThat(iterator.nextLong(), is(3L));
-
-			assertThat(iterator.hasNext(), is(false));
-			assertThat(iterator.hasNext(), is(false));
-		});
 	}
 
 	@Test
@@ -277,6 +194,72 @@ public class LongSequenceTest {
 		LongSequence cached = LongSequence.cache(Stream.of(1L, 2L, 3L, 4L, 5L));
 
 		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+	}
+
+	@Test
+	public void forEachLong() {
+		twice(() -> {
+			empty.forEachLong(c -> fail("Should not get called"));
+
+			AtomicLong value = new AtomicLong(1);
+			_1.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
+
+			value.set(1);
+			_12345.forEachLong(l -> assertThat(l, is(value.getAndIncrement())));
+		});
+	}
+
+	@Test
+	public void forEachLongIndexed() {
+		twice(() -> {
+			empty.forEachLongIndexed((e, i) -> fail("Should not get called"));
+
+			AtomicLong value = new AtomicLong(1);
+			AtomicInteger index = new AtomicInteger();
+			_1.forEachLongIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(1));
+
+			value.set(1);
+			index.set(0);
+			_12.forEachLongIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(2));
+
+			value.set(1);
+			index.set(0);
+			_12345.forEachLongIndexed((e, i) -> {
+				assertThat(e, is(value.getAndIncrement()));
+				assertThat(i, is(index.getAndIncrement()));
+			});
+			assertThat(index.get(), is(5));
+		});
+	}
+
+	@Test
+	public void iterator() {
+		twice(() -> {
+			LongIterator iterator = _123.iterator();
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.nextLong(), is(1L));
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.nextLong(), is(2L));
+
+			assertThat(iterator.hasNext(), is(true));
+			assertThat(iterator.nextLong(), is(3L));
+
+			assertThat(iterator.hasNext(), is(false));
+			assertThat(iterator.hasNext(), is(false));
+		});
 	}
 
 	@Test
@@ -409,9 +392,10 @@ public class LongSequenceTest {
 
 		// check delayed iteration
 		LongIterator iterator = sequence.iterator();
-		assertThat(iterator.next(), is(1L));
-		assertThat(iterator.next(), is(2L));
+		assertThat(iterator.nextLong(), is(1L));
+		assertThat(iterator.nextLong(), is(2L));
 		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::nextLong);
 
 		assertThat(sequence, is(emptyIterable())); // second run is empty
 	}
@@ -806,7 +790,7 @@ public class LongSequenceTest {
 		LongSequence oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, containsLongs(17L)));
 
-		LongSequence twoDuplicatesDistinct = LongSequence.from(StrictLongIterable.of(17L, 17L)).distinct();
+		LongSequence twoDuplicatesDistinct = LongSequence.from(LongList.create(17L, 17L)).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, containsLongs(17L)));
 
 		LongSequence nineDistinct = nineRandom.distinct();
@@ -1287,10 +1271,10 @@ public class LongSequenceTest {
 		assertThat(iterator.nextLong(), is(3L));
 		assertThat(iterator.nextLong(), is(4L));
 		assertThat(iterator.nextLong(), is(5L));
-		expecting(NullPointerException.class, iterator::next);
+		expecting(NullPointerException.class, iterator::nextLong);
 
 		LongIterator iterator2 = sequence.iterator();
-		expecting(NullPointerException.class, iterator2::next);
+		expecting(NullPointerException.class, iterator2::nextLong);
 	}
 
 	@Test
@@ -1307,7 +1291,7 @@ public class LongSequenceTest {
 			assertThat(iterator.nextLong(), is(3L));
 			assertThat(iterator.nextLong(), is(4L));
 			assertThat(iterator.nextLong(), is(5L));
-			expecting(NullPointerException.class, iterator::next);
+			expecting(NullPointerException.class, iterator::nextLong);
 		});
 	}
 
@@ -1317,7 +1301,7 @@ public class LongSequenceTest {
 
 		twice(() -> times(1000, random.iterator()::nextLong));
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsLongs(random.limit(10))));
 	}
 
 	@Test
@@ -1339,7 +1323,7 @@ public class LongSequenceTest {
 			                             is(both(greaterThanOrEqualTo(0L)).and(lessThan(1000L)))));
 		});
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsLongs(random.limit(10))));
 	}
 
 	@Test
@@ -1360,7 +1344,7 @@ public class LongSequenceTest {
 			                             is(both(greaterThanOrEqualTo(1000L)).and(lessThan(2000L)))));
 		});
 
-		assertThat(random.limit(10), not(contains(random.limit(10))));
+		assertThat(random.limit(10), not(containsLongs(random.limit(10))));
 	}
 
 	@Test
@@ -1553,5 +1537,26 @@ public class LongSequenceTest {
 		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5), is(true));
 		assertThat(_12345.containsAnyLongs(1, 2, 3, 4, 5, 17), is(true));
 		assertThat(_12345.containsAnyLongs(17, 18, 19), is(false));
+	}
+
+	public static class LongSequenceBoxingTest extends BaseBoxingTest {
+		private final LongSequence empty = LongSequence.empty();
+		private final LongSequence _12345 = LongSequence.from(LongList.create(1L, 2L, 3L, 4L, 5L));
+
+		@Test
+		public void forLoop() {
+			twice(() -> {
+				for (long ignored : empty)
+					fail("Should not get called");
+			});
+
+			twice(() -> {
+				long expected = 1;
+				for (long i : _12345)
+					assertThat(i, is(expected++));
+
+				assertThat(expected, is(6L));
+			});
+		}
 	}
 }

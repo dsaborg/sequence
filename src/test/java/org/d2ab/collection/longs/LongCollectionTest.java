@@ -2,7 +2,6 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterator;
 import org.junit.Test;
 
 import java.util.Random;
@@ -19,41 +18,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class LongCollectionTest {
-	LongList backingEmpty = LongList.create();
-	LongCollection empty = new LongCollection.Base() {
-		@Override
-		public LongIterator iterator() {
-			return StrictLongIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backingEmpty.addLong(x);
-		}
-	};
-
-	LongList backing = LongList.create(1, 2, 3, 4, 5);
-	LongCollection collection = new LongCollection.Base() {
-		@Override
-		public LongIterator iterator() {
-			return StrictLongIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backing.addLong(x);
-		}
-	};
+	private final LongCollection empty = LongCollection.Base.create();
+	private final LongCollection collection = LongCollection.Base.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void isEmpty() {
@@ -380,55 +346,5 @@ public class LongCollectionTest {
 
 		for (long randomValue : randomValues)
 			assertThat(empty.removeLong(randomValue), is(false));
-	}
-
-	public static class BoxingTest {
-		LongList backingEmpty = LongList.create();
-		LongCollection empty = new LongCollection.Base() {
-			@Override
-			public LongIterator iterator() {
-				return backingEmpty.iterator();
-			}
-
-			@Override
-			public int size() {
-				return backingEmpty.size();
-			}
-
-			@Override
-			public boolean addLong(long x) {
-				return backingEmpty.addLong(x);
-			}
-		};
-
-		LongList backing = LongList.create(1, 2, 3, 4, 5);
-		LongCollection collection = new LongCollection.Base() {
-			@Override
-			public LongIterator iterator() {
-				return backing.iterator();
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-
-			@Override
-			public boolean addLong(long x) {
-				return backing.addLong(x);
-			}
-		};
-
-		@Test
-		public void toArray() {
-			assertArrayEquals(new Long[0], empty.toArray());
-			assertArrayEquals(new Long[]{1L, 2L, 3L, 4L, 5L}, collection.toArray());
-		}
-
-		@Test
-		public void toArrayWithType() {
-			assertArrayEquals(new Long[0], empty.toArray(new Long[0]));
-			assertArrayEquals(new Long[]{1L, 2L, 3L, 4L, 5L}, collection.toArray(new Long[0]));
-		}
 	}
 }

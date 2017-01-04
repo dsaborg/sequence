@@ -29,8 +29,7 @@ import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
@@ -784,17 +783,6 @@ public class ArrayLongListTest {
 
 		list.replaceAllLongs(x -> x + 1);
 		assertThat(list, containsLongs(2, 3, 4, 5, 6));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicLong value = new AtomicLong(1);
-		list.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(6L));
 	}
 
 	@Test

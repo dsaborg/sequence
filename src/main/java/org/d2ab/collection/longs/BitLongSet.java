@@ -18,6 +18,7 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.SparseBitSet;
 import org.d2ab.iterator.longs.ChainingLongIterator;
+import org.d2ab.iterator.longs.DelegatingUnaryLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.ConcurrentModificationException;
@@ -56,8 +57,12 @@ public class BitLongSet extends LongSet.Base implements LongSortedSet {
 
 	@Override
 	public LongIterator iterator() {
-		return new ChainingLongIterator(() -> LongIterator.from(negatives.descendingIterator(), n -> -(n + 1)),
-		                                () -> LongIterator.from(positives.iterator())) {
+		return new ChainingLongIterator(() -> new DelegatingUnaryLongIterator(negatives.descendingIterator()) {
+			@Override
+			public long nextLong() {
+				return -(iterator.nextLong() + 1);
+			}
+		}, positives) {
 			int expectedModCount = modCount;
 
 			@Override

@@ -18,7 +18,6 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -32,41 +31,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class LongSetTest {
-	private final LongSet backingEmpty = new BitLongSet();
-	private final LongSet empty = new LongSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return StrictLongIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backingEmpty.addLong(x);
-		}
-	};
-
-	private final LongSet backing = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-	private final LongSet set = new LongSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return StrictLongIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backing.addLong(x);
-		}
-	};
+	private final LongSet empty = LongSet.Base.create();
+	private final LongSet set = LongSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void size() {

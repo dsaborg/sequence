@@ -16,13 +16,12 @@
 
 package org.d2ab.iterator.longs;
 
+import org.d2ab.util.Strict;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
-import java.util.function.DoubleToLongFunction;
-import java.util.function.IntToLongFunction;
-import java.util.function.LongBinaryOperator;
-import java.util.function.ToLongFunction;
+import java.util.function.*;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -119,6 +118,20 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 				return mapper.applyAsLong(iterator.next());
 			}
 		};
+	}
+
+	@Override
+	default Long next() {
+		assert Strict.LENIENT : "LongIterator.next()";
+
+		return nextLong();
+	}
+
+	@Override
+	default void forEachRemaining(Consumer<? super Long> action) {
+		assert Strict.LENIENT : "LongIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((LongConsumer) action::accept);
 	}
 
 	default boolean skip() {

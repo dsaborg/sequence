@@ -20,7 +20,6 @@ import org.d2ab.collection.longs.ArrayLongList;
 import org.d2ab.collection.longs.LongList;
 import org.d2ab.collection.longs.LongListIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterable;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -37,11 +36,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class LongSequenceAsListTest {
-	private final LongSequence empty = LongSequence.from(StrictLongIterable.from(ArrayLongList.create()));
+	private final LongSequence empty = LongSequence.from(ArrayLongList.create());
 	private final LongList emptyList = empty.asList();
 
-	private final LongSequence sequence = LongSequence.from(
-			StrictLongIterable.from(ArrayLongList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	private final LongSequence sequence = LongSequence.from(ArrayLongList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	private final LongList list = sequence.asList();
 
 	@Test

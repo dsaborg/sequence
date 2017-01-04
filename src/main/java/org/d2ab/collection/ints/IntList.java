@@ -339,6 +339,10 @@ public interface IntList extends List<Integer>, IntCollection {
 	 * Base class for {@link IntList} implementations.
 	 */
 	abstract class Base extends IntCollection.Base implements IntList {
+		public static IntList create(int... ints) {
+			return create(IntList.create(ints));
+		}
+
 		public static IntList create(final IntCollection collection) {
 			return new IntList.Base() {
 				@Override
@@ -356,10 +360,6 @@ public interface IntList extends List<Integer>, IntCollection {
 					return collection.addInt(x);
 				}
 			};
-		}
-
-		public static IntList create(int... ints) {
-			return create(IntList.create(ints));
 		}
 
 		public static IntList create(final IntList list) {

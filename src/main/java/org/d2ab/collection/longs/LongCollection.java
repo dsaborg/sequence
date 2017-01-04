@@ -126,6 +126,29 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	 * Base class for {@link LongCollection} implementations.
 	 */
 	abstract class Base implements LongCollection {
+		public static LongCollection create(long... longs) {
+			return create(LongList.create(longs));
+		}
+
+		public static LongCollection create(final LongCollection collection) {
+			return new LongCollection.Base() {
+				@Override
+				public LongIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return collection.addLong(x);
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic

@@ -17,6 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -38,7 +39,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongListBoxingTest {
+public class LongListBoxingTest extends BaseBoxingTest {
 	private final LongList backingEmpty = LongList.create();
 	private final List<Long> empty = new LongList.Base() {
 		@Override

@@ -18,7 +18,6 @@ package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterator;
 import org.junit.Test;
 
 import java.util.*;
@@ -28,47 +27,12 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class LongSortedSetTest {
-	private final LongSet backingEmpty = new BitLongSet();
-	private final LongSortedSet empty = new LongSortedSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return StrictLongIterator.from(backingEmpty.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backingEmpty.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backingEmpty.addLong(x);
-		}
-	};
-
-	private final LongSet backing = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
-	private final LongSortedSet set = new LongSortedSet.Base() {
-		@Override
-		public LongIterator iterator() {
-			return StrictLongIterator.from(backing.iterator());
-		}
-
-		@Override
-		public int size() {
-			return backing.size();
-		}
-
-		@Override
-		public boolean addLong(long x) {
-			return backing.addLong(x);
-		}
-	};
+	private final LongSortedSet empty = LongSortedSet.Base.create();
+	private final LongSortedSet set = LongSortedSet.Base.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
 
 	@Test
 	public void create() {

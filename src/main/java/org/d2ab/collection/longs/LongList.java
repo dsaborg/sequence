@@ -321,6 +321,53 @@ public interface LongList extends List<Long>, LongCollection {
 	 * Base class for {@link LongList} implementations.
 	 */
 	abstract class Base extends LongCollection.Base implements LongList {
+		public static LongList create(long... longs) {
+			return create(LongList.create(longs));
+		}
+
+		public static LongList create(final LongCollection collection) {
+			return new LongList.Base() {
+				@Override
+				public LongIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return collection.addLong(x);
+				}
+			};
+		}
+
+		public static LongList create(final LongList list) {
+			return new LongList.Base() {
+				@Override
+				public LongIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public LongListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return list.addLong(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

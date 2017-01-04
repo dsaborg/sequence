@@ -149,7 +149,30 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class Base extends LongSet.Base implements LongSortedSet {}
+	abstract class Base extends LongSet.Base implements LongSortedSet {
+		public static LongSortedSet create(long... longs) {
+			return create(LongSortedSet.create(longs));
+		}
+
+		public static LongSortedSet create(final LongSortedSet sortedSet) {
+			return new LongSortedSet.Base() {
+				@Override
+				public LongIterator iterator() {
+					return sortedSet.iterator();
+				}
+
+				@Override
+				public int size() {
+					return sortedSet.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return sortedSet.addLong(x);
+				}
+			};
+		}
+	}
 
 	abstract class SubSet extends Base {
 		private final LongSortedSet set;
