@@ -430,9 +430,12 @@ public class IntListTest {
 	@Test
 	public void getInt() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(0));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getInt(2), is(3));
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(7));
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(5));
 	}
 
 	@Test
