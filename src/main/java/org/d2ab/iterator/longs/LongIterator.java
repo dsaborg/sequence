@@ -181,7 +181,7 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	}
 
 	// for testing purposes
-	default int size(org.d2ab.function.ToLongFunction<LongIterator> counter) {
+	default int size(ToLongFunction<LongIterator> counter) {
 		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)

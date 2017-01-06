@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
+import java.util.function.ToLongFunction;
 
 /**
  * An Iterator specialized for {@code char} values. Adapted from {@link PrimitiveIterator}.

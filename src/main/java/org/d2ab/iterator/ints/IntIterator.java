@@ -17,7 +17,6 @@
 package org.d2ab.iterator.ints;
 
 import org.d2ab.function.CharToIntFunction;
-import org.d2ab.function.ToLongFunction;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.util.Strict;
 
