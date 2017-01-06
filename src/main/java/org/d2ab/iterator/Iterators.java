@@ -202,14 +202,14 @@ public interface Iterators {
 	 * @return the size of the given {@link Iterator} as an int value.
 	 */
 	static int size(Iterator<?> iterator) {
-		return size(iterator, it -> {
-			long count = 0;
-			while (it.hasNext()) {
-				it.next();
-				count++;
-			}
-			return count;
-		});
+		return size(iterator, Iterators::count);
+	}
+
+	static long count(Iterator<?> it) {
+		long count = 0;
+		for (; it.hasNext(); it.next())
+			count++;
+		return count;
 	}
 
 	// for test coverage purposes

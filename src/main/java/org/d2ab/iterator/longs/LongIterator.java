@@ -172,12 +172,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	 * @return the number of {@code longs} remaining in this iterator.
 	 */
 	default int size() {
-		return size(iterator -> {
-			long count = 0;
-			for (; iterator.hasNext(); iterator.nextLong())
-				count++;
-			return count;
-		});
+		return size(LongIterator::count);
+	}
+
+	default long count() {
+		long count = 0;
+		for (; hasNext(); nextLong())
+			count++;
+		return count;
 	}
 
 	// for testing purposes

@@ -175,12 +175,14 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 * @return the number of {@code chars} remaining in this iterator.
 	 */
 	default int size() {
-		return size(iterator -> {
-			long count = 0;
-			for (; iterator.hasNext(); iterator.nextChar())
-				count++;
-			return count;
-		});
+		return size(CharIterator::count);
+	}
+
+	default long count() {
+		long count = 0;
+		for (; hasNext(); nextChar())
+			count++;
+		return count;
 	}
 
 	// for testing purposes
