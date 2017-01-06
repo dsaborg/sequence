@@ -37,6 +37,14 @@ public class InterleavingCharIterator implements CharIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		for (Iterator iterator : iterators)
+			if (iterator.hasNext())
+				return true;
+		return false;
+	}
+
+	@Override
 	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -47,14 +55,6 @@ public class InterleavingCharIterator implements CharIterator {
 		CharIterator iterator = iterators.get(current);
 		advance();
 		return iterator.nextChar();
-	}
-
-	@Override
-	public boolean hasNext() {
-		for (Iterator iterator : iterators)
-			if (iterator.hasNext())
-				return true;
-		return false;
 	}
 
 	private void advance() {

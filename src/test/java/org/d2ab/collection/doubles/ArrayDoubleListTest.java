@@ -906,17 +906,6 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger(1);
-		list.forEach(x -> assertThat(x, is((double) value.getAndIncrement())));
-		assertThat(value.get(), is(6));
-	}
-
-	@Test
 	public void forEachDouble() {
 		empty.forEachDouble(x -> {
 			throw new IllegalStateException("should not get called");

@@ -1060,7 +1060,7 @@ public interface IntSequence extends IntCollection {
 	 */
 	@Override
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**

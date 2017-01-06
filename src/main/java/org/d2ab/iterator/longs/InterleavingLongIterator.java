@@ -37,6 +37,14 @@ public class InterleavingLongIterator implements LongIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		for (Iterator iterator : iterators)
+			if (iterator.hasNext())
+				return true;
+		return false;
+	}
+
+	@Override
 	public long nextLong() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -47,14 +55,6 @@ public class InterleavingLongIterator implements LongIterator {
 		LongIterator iterator = iterators.get(current);
 		advance();
 		return iterator.nextLong();
-	}
-
-	@Override
-	public boolean hasNext() {
-		for (Iterator iterator : iterators)
-			if (iterator.hasNext())
-				return true;
-		return false;
 	}
 
 	private void advance() {

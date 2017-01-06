@@ -17,6 +17,7 @@
 package org.d2ab.iterator.ints;
 
 import org.d2ab.function.CharToIntFunction;
+import org.d2ab.function.ToLongFunction;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.util.Strict;
 
@@ -40,6 +41,10 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 			throw new NoSuchElementException();
 		}
 	};
+
+	static IntIterator empty() {
+		return EMPTY;
+	}
 
 	static IntIterator of(int... ints) {
 		return new ArrayIntIterator(ints);
@@ -170,10 +175,18 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	/**
 	 * @return the number of {@code ints} remaining in this iterator.
 	 */
-	default int count() {
-		long count = 0;
-		for (; hasNext(); nextInt())
-			count++;
+	default int size() {
+		return size(iterator -> {
+			long count = 0;
+			for (; iterator.hasNext(); iterator.nextInt())
+				count++;
+			return count;
+		});
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<IntIterator> counter) {
+		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);

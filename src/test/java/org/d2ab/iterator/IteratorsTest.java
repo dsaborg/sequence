@@ -24,8 +24,7 @@ import java.util.NoSuchElementException;
 
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class IteratorsTest {
@@ -68,9 +67,17 @@ public class IteratorsTest {
 
 	@Test
 	public void bigSize() {
-		assertThat(Iterators.size(empty, i -> (long) Integer.MAX_VALUE), is(Integer.MAX_VALUE));
-		expecting(IllegalStateException.class, () -> Iterators.size(iterator,
-		                                                            i -> Integer.MAX_VALUE + 1L));
+		assertThat(Iterators.size(iterator, it -> {
+			assertThat(it, is(sameInstance(iterator)));
+			return (long) Integer.MAX_VALUE;
+		}), is(Integer.MAX_VALUE));
+
+		expecting(IllegalStateException.class, () ->
+				Iterators.size(iterator,
+				               it -> {
+					               assertThat(it, is(sameInstance(iterator)));
+					               return Integer.MAX_VALUE + 1L;
+				               }));
 	}
 
 	@Test

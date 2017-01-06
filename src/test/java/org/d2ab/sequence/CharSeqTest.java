@@ -89,6 +89,15 @@ public class CharSeqTest {
 
 	@Test
 	public void fromArrayWithOffsetAndSize() {
+		expecting(IndexOutOfBoundsException.class,
+		          () -> CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, -1, 3).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 6, 0).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 1, 5).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 1, -1).iterator());
+
 		CharSeq sequence = CharSeq.from(new char[]{'a', 'b', 'c', 'd', 'e'}, 1, 3);
 		twice(() -> assertThat(sequence, containsChars('b', 'c', 'd')));
 	}
@@ -1473,5 +1482,4 @@ public class CharSeqTest {
 		assertThat(abcde.containsAnyChars('a', 'b', 'c', 'd', 'e', 'p'), is(true));
 		assertThat(abcde.containsAnyChars('p', 'q', 'r'), is(false));
 	}
-
 }

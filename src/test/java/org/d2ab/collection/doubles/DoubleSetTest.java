@@ -387,17 +387,6 @@ public class DoubleSetTest {
 	}
 
 	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger(-5);
-		set.forEach(x -> assertThat(x, is((double) value.getAndIncrement())));
-		assertThat(value.get(), is(5));
-	}
-
-	@Test
 	public void boundaries() {
 		SortedListDoubleSet intSet = new SortedListDoubleSet();
 		assertThat(intSet.addDoubleExactly(0), is(true));

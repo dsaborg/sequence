@@ -31,7 +31,7 @@ public class RepeatingIntIterator extends DelegatingUnaryIntIterator {
 	private int times;
 
 	public RepeatingIntIterator(IntIterable iterable, int times) {
-		super(EMPTY);
+		super(IntIterator.empty());
 		this.iterable = iterable;
 		this.times = times;
 	}

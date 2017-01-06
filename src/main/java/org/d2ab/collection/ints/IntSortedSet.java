@@ -185,7 +185,7 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

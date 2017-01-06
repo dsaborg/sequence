@@ -19,16 +19,13 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static org.d2ab.iterator.SteppingIterator.State.*;
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.HAS_NEXT;
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.NEXT;
 
 public class SteppingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final int step;
 
 	private boolean skipOnHasNext;
-
-	enum State {INIT, HAS_NEXT, NEXT}
-
-	private State state = INIT;
 
 	public SteppingIterator(Iterator<T> iterator, int step) {
 		super(iterator);

@@ -19,6 +19,7 @@ package org.d2ab.collection.doubles;
 import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.sequence.DoubleSequence;
+import org.d2ab.util.Strict;
 
 import java.util.PrimitiveIterator;
 import java.util.Spliterator;
@@ -62,7 +63,9 @@ public interface DoubleIterable extends Iterable<Double> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Double> consumer) {
-		forEachDouble((consumer instanceof DoubleConsumer) ? (DoubleConsumer) consumer : consumer::accept);
+		assert Strict.LENIENT : "DoubleIterable.forEach(Consumer)";
+
+		forEachDouble(consumer::accept);
 	}
 
 	/**

@@ -90,6 +90,15 @@ public class LongSequenceTest {
 
 	@Test
 	public void fromArrayWithOffsetAndSize() {
+		expecting(IndexOutOfBoundsException.class,
+		          () -> LongSequence.from(new long[]{1, 2, 3, 4, 5}, -1, 3).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> LongSequence.from(new long[]{1, 2, 3, 4, 5}, 6, 0).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> LongSequence.from(new long[]{1, 2, 3, 4, 5}, 1, 5).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> LongSequence.from(new long[]{1, 2, 3, 4, 5}, 1, -1).iterator());
+
 		LongSequence sequence = LongSequence.from(new long[]{1, 2, 3, 4, 5}, 1, 3);
 		twice(() -> assertThat(sequence, containsLongs(2, 3, 4)));
 	}

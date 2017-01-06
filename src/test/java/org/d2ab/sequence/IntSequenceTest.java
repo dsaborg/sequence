@@ -77,6 +77,15 @@ public class IntSequenceTest {
 
 	@Test
 	public void fromArrayWithOffsetAndSize() {
+		expecting(IndexOutOfBoundsException.class,
+		          () -> IntSequence.from(new int[]{1, 2, 3, 4, 5}, -1, 3).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> IntSequence.from(new int[]{1, 2, 3, 4, 5}, 6, 0).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> IntSequence.from(new int[]{1, 2, 3, 4, 5}, 1, 5).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> IntSequence.from(new int[]{1, 2, 3, 4, 5}, 1, -1).iterator());
+
 		IntSequence sequence = IntSequence.from(new int[]{1, 2, 3, 4, 5}, 1, 3);
 		twice(() -> assertThat(sequence, containsInts(2, 3, 4)));
 	}
@@ -413,6 +422,15 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void appendIntIteratorAsIterator() {
+		IntSequence appended = _123.append((Iterator<Integer>) IntIterator.of(4, 5, 6))
+		                           .append((Iterator<Integer>) IntIterator.of(7, 8));
+
+		assertThat(appended, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(appended, containsInts(1, 2, 3));
+	}
+
+	@Test
 	public void appendIterator() {
 		IntSequence appended = _123.append(Iterators.of(4, 5, 6)).append(Iterators.of(7, 8));
 
@@ -532,14 +550,14 @@ public class IntSequenceTest {
 
 	@Test
 	public void filterForward() {
-		IntSequence emptyFilteredLess = empty.filterBack(117, (p, i) -> p < i);
+		IntSequence emptyFilteredLess = empty.filterForward(117, (i, n) -> i < n);
 		twice(() -> assertThat(emptyFilteredLess, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyFilteredLess.iterator().nextInt());
 
-		IntSequence filteredLess = nineRandom.filterForward(117, (i, f) -> f < i);
+		IntSequence filteredLess = nineRandom.filterForward(117, (i, n) -> n < i);
 		twice(() -> assertThat(filteredLess, containsInts(6, 1, 17, 5)));
 
-		IntSequence filteredGreater = nineRandom.filterForward(117, (i, f) -> f > i);
+		IntSequence filteredGreater = nineRandom.filterForward(117, (i, n) -> n > i);
 		twice(() -> assertThat(filteredGreater, containsInts(-7, 1, 2, 4)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(filteredGreater));
@@ -947,8 +965,26 @@ public class IntSequenceTest {
 
 	@Test
 	public void step() {
-		IntSequence stepThree = _123456789.step(3);
-		twice(() -> assertThat(stepThree, containsInts(1, 4, 7)));
+		IntSequence emptyStep3 = empty.step(3);
+		twice(() -> assertThat(emptyStep3, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStep3.iterator().nextInt());
+
+		IntSequence nineStep3 = _123456789.step(3);
+		twice(() -> assertThat(nineStep3, containsInts(1, 4, 7)));
+
+		IntIterator nineStep3Iterator = nineStep3.iterator();
+		expecting(IllegalStateException.class, nineStep3Iterator::remove);
+		assertThat(nineStep3Iterator.hasNext(), is(true));
+		expecting(IllegalStateException.class, nineStep3Iterator::remove);
+		assertThat(nineStep3Iterator.nextInt(), is(1));
+		nineStep3Iterator.remove();
+		assertThat(nineStep3Iterator.hasNext(), is(true));
+		expecting(IllegalStateException.class, nineStep3Iterator::remove);
+		assertThat(nineStep3Iterator.nextInt(), is(4));
+		nineStep3Iterator.remove();
+
+		twice(() -> assertThat(nineStep3, containsInts(2, 6, 9)));
+		twice(() -> assertThat(_123456789, containsInts(2, 3, 5, 6, 7, 8, 9)));
 	}
 
 	@Test
@@ -1220,6 +1256,7 @@ public class IntSequenceTest {
 	public void interleave() {
 		IntSequence emptyInterleaved = empty.interleave(empty);
 		twice(() -> assertThat(emptyInterleaved, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInterleaved.iterator().nextInt());
 
 		IntSequence interleavedShortFirst = _123.interleave(_12345);
 		twice(() -> assertThat(interleavedShortFirst, containsInts(1, 1, 2, 2, 3, 3, 4, 5)));

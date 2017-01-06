@@ -75,6 +75,15 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void fromArrayWithOffsetAndSize() {
+		expecting(IndexOutOfBoundsException.class,
+		          () -> DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, -1, 3).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 6, 0).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 1, 5).iterator());
+		expecting(IndexOutOfBoundsException.class,
+		          () -> DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 1, -1).iterator());
+
 		DoubleSequence sequence = DoubleSequence.from(new double[]{1, 2, 3, 4, 5}, 1, 3);
 		twice(() -> assertThat(sequence, containsDoubles(2, 3, 4)));
 	}

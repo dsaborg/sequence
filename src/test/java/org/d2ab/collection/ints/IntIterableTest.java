@@ -17,6 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.chars.CharIterable;
+import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.ints.IntIterator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.NoSuchElementException;
 
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -84,11 +86,21 @@ public class IntIterableTest {
 	}
 
 	@Test
+	public void readWithIOException() throws IOException {
+		InputStream inputStream = spy(new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5}));
+		doThrow(IOException.class).when(inputStream).read();
+
+		IntIterable iterable = IntIterable.read(inputStream);
+		twice(() -> expecting(IterationException.class, () -> iterable.iterator().nextInt()));
+	}
+
+	@Test
 	public void readEmpty() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 
 		IntIterable iterable = IntIterable.read(inputStream);
 		twice(() -> assertThat(iterable, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> iterable.iterator().nextInt());
 	}
 
 	@Test

@@ -877,14 +877,14 @@ public class SequenceTest {
 
 	@Test
 	public void filterForward() {
-		Sequence<Integer> emptyFilteredLess = empty.filterForward((i, f) -> f == null || f < i);
+		Sequence<Integer> emptyFilteredLess = empty.filterForward((i, n) -> n == null || n < i);
 		twice(() -> assertThat(emptyFilteredLess, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyFilteredLess.iterator().next());
 
-		Sequence<Integer> filteredLess = nineRandom.filterForward((i, f) -> f == null || f < i);
+		Sequence<Integer> filteredLess = nineRandom.filterForward((i, n) -> n == null || n < i);
 		twice(() -> assertThat(filteredLess, contains(67, 43, 24, 67)));
 
-		Sequence<Integer> filteredGreater = nineRandom.filterForward((i, f) -> f == null || f > i);
+		Sequence<Integer> filteredGreater = nineRandom.filterForward((i, n) -> n == null || n > i);
 		twice(() -> assertThat(filteredGreater, contains(5, 3, 5, 7, 5, 67)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(filteredGreater));

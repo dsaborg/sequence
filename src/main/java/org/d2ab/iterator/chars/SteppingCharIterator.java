@@ -18,11 +18,13 @@ package org.d2ab.iterator.chars;
 
 import java.util.NoSuchElementException;
 
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.HAS_NEXT;
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.NEXT;
+
 public class SteppingCharIterator extends DelegatingUnaryCharIterator {
 	private final int step;
 
-	private boolean hasNext;
-	private char next;
+	private boolean skipOnHasNext;
 
 	public SteppingCharIterator(CharIterator iterator, int step) {
 		super(iterator);
@@ -30,27 +32,33 @@ public class SteppingCharIterator extends DelegatingUnaryCharIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		if (skipOnHasNext) {
+			iterator.skip(step - 1);
+			skipOnHasNext = false;
+		}
+
+		state = HAS_NEXT;
+		return iterator.hasNext();
+	}
+
+	@Override
 	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		hasNext = false;
-		return next;
+		skipOnHasNext = true;
+		state = NEXT;
+		return iterator.nextChar();
 	}
 
 	@Override
-	public boolean hasNext() {
-		if (hasNext)
-			return true;
+	public void remove() {
+		if (state == HAS_NEXT)
+			throw new IllegalStateException("Cannot remove immediately after calling hasNext()");
+		if (state != NEXT)
+			throw new IllegalStateException("Can only remove after calling next()");
 
-		if (!iterator.hasNext())
-			return false;
-
-		next = iterator.nextChar();
-
-		iterator.skip(step - 1);
-		hasNext = true;
-
-		return true;
+		super.remove();
 	}
 }
