@@ -39,7 +39,6 @@ import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.*;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -296,7 +295,7 @@ public class IntSequenceTest {
 			assertThat(iterator.nextInt(), is(3));
 
 			assertThat(iterator.hasNext(), is(false));
-			assertThat(iterator.hasNext(), is(false));
+			expecting(NoSuchElementException.class, iterator::nextInt);
 		});
 	}
 
@@ -487,60 +486,61 @@ public class IntSequenceTest {
 		assertThat(iterator.nextInt(), is(1));
 		assertThat(iterator.nextInt(), is(2));
 		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::nextInt);
 
 		assertThat(sequence, is(emptyIterable())); // second run is empty
 	}
 
 	@Test
 	public void filter() {
-		IntSequence emptyFiltered = empty.filter(i -> (i % 2) == 0);
+		IntSequence emptyFiltered = empty.filter(x -> (x % 2) == 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().nextInt());
 
-		IntSequence oneFiltered = _1.filter(i -> (i % 2) == 0);
+		IntSequence oneFiltered = _1.filter(x -> (x % 2) == 0);
 		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
 
-		IntSequence twoFiltered = _12.filter(i -> (i % 2) == 0);
+		IntSequence twoFiltered = _12.filter(x -> (x % 2) == 0);
 		twice(() -> assertThat(twoFiltered, containsInts(2)));
 
 		assertThat(removeFirst(twoFiltered), is(2));
 		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
 		twice(() -> assertThat(_12, containsInts(1)));
 
-		IntSequence filtered = _123456789.filter(i -> (i % 2) == 0);
+		IntSequence filtered = _123456789.filter(x -> (x % 2) == 0);
 		twice(() -> assertThat(filtered, containsInts(2, 4, 6, 8)));
 	}
 
 	@Test
 	public void filterIndexed() {
-		IntSequence emptyFiltered = empty.filterIndexed((i, x) -> x > 0);
+		IntSequence emptyFiltered = empty.filterIndexed((x, i) -> i > 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().nextInt());
 
-		IntSequence oneFiltered = _1.filterIndexed((i, x) -> x > 0);
+		IntSequence oneFiltered = _1.filterIndexed((x, i) -> i > 0);
 		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
 
-		IntSequence twoFiltered = _12.filterIndexed((i, x) -> x > 0);
+		IntSequence twoFiltered = _12.filterIndexed((x, i) -> i > 0);
 		twice(() -> assertThat(twoFiltered, containsInts(2)));
 
 		assertThat(removeFirst(twoFiltered), is(2));
 		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
 		twice(() -> assertThat(_12, containsInts(1)));
 
-		IntSequence filtered = _123456789.filterIndexed((i, x) -> x > 3);
+		IntSequence filtered = _123456789.filterIndexed((x, i) -> i > 3);
 		twice(() -> assertThat(filtered, containsInts(5, 6, 7, 8, 9)));
 	}
 
 	@Test
 	public void filterBack() {
-		IntSequence emptyFilteredLess = empty.filterBack(117, (p, i) -> p < i);
+		IntSequence emptyFilteredLess = empty.filterBack(117, (p, x) -> p < x);
 		twice(() -> assertThat(emptyFilteredLess, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyFilteredLess.iterator().nextInt());
 
-		IntSequence filteredLess = nineRandom.filterBack(117, (p, i) -> p < i);
+		IntSequence filteredLess = nineRandom.filterBack(117, (p, x) -> p < x);
 		twice(() -> assertThat(filteredLess, containsInts(1, 2, 17)));
 
-		IntSequence filteredGreater = nineRandom.filterBack(117, (p, i) -> p > i);
+		IntSequence filteredGreater = nineRandom.filterBack(117, (p, x) -> p > x);
 		twice(() -> assertThat(filteredGreater, containsInts(6, 1, -7, 5, 4)));
 
 		assertThat(removeFirst(filteredGreater), is(6));
@@ -550,14 +550,14 @@ public class IntSequenceTest {
 
 	@Test
 	public void filterForward() {
-		IntSequence emptyFilteredLess = empty.filterForward(117, (i, n) -> i < n);
+		IntSequence emptyFilteredLess = empty.filterForward(117, (x, n) -> x < n);
 		twice(() -> assertThat(emptyFilteredLess, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyFilteredLess.iterator().nextInt());
 
-		IntSequence filteredLess = nineRandom.filterForward(117, (i, n) -> n < i);
+		IntSequence filteredLess = nineRandom.filterForward(117, (x, n) -> n < x);
 		twice(() -> assertThat(filteredLess, containsInts(6, 1, 17, 5)));
 
-		IntSequence filteredGreater = nineRandom.filterForward(117, (i, n) -> n > i);
+		IntSequence filteredGreater = nineRandom.filterForward(117, (x, n) -> n > x);
 		twice(() -> assertThat(filteredGreater, containsInts(-7, 1, 2, 4)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(filteredGreater));
@@ -606,46 +606,47 @@ public class IntSequenceTest {
 
 	@Test
 	public void map() {
-		IntSequence emptyMapped = empty.map(i -> i + 1);
+		IntSequence emptyMapped = empty.map(x -> x + 1);
 		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().nextInt());
 
-		IntSequence oneMapped = _1.map(i -> i + 1);
+		IntSequence oneMapped = _1.map(x -> x + 1);
 		twice(() -> assertThat(oneMapped, containsInts(2)));
 
 		assertThat(removeFirst(oneMapped), is(2));
 		twice(() -> assertThat(oneMapped, is(emptyIterable())));
 		twice(() -> assertThat(_1, is(emptyIterable())));
 
-		IntSequence twoMapped = _12.map(i -> i + 1);
+		IntSequence twoMapped = _12.map(x -> x + 1);
 		twice(() -> assertThat(twoMapped, containsInts(2, 3)));
 
-		IntSequence mapped = _12345.map(i -> i + 1);
+		IntSequence mapped = _12345.map(x -> x + 1);
 		twice(() -> assertThat(mapped, containsInts(2, 3, 4, 5, 6)));
 	}
 
 	@Test
 	public void mapWithIndex() {
-		IntSequence emptyMapped = empty.mapIndexed((i, x) -> i + x);
+		IntSequence emptyMapped = empty.mapIndexed((x, i) -> x + i);
 		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().nextInt());
 
-		IntSequence oneMapped = _1.mapIndexed((i, x) -> i + x);
+		IntSequence oneMapped = _1.mapIndexed((x, i) -> x + i);
 		twice(() -> assertThat(oneMapped, containsInts(1)));
 
 		assertThat(removeFirst(oneMapped), is(1));
 		twice(() -> assertThat(oneMapped, is(emptyIterable())));
+		twice(() -> assertThat(_1, is(emptyIterable())));
 
-		IntSequence twoMapped = _12.mapIndexed((i, x) -> i + x);
+		IntSequence twoMapped = _12.mapIndexed((x, i) -> x + i);
 		twice(() -> assertThat(twoMapped, containsInts(1, 3)));
 
-		IntSequence mapped = _12345.mapIndexed((i, x) -> i + x);
+		IntSequence mapped = _12345.mapIndexed((x, i) -> x + i);
 		twice(() -> assertThat(mapped, containsInts(1, 3, 5, 7, 9)));
 	}
 
 	@Test
 	public void recurse() {
-		IntSequence recursive = IntSequence.recurse(1, i -> i + 1);
+		IntSequence recursive = IntSequence.recurse(1, x -> x + 1);
 		twice(() -> assertThat(recursive.limit(10), containsInts(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
@@ -724,18 +725,18 @@ public class IntSequenceTest {
 
 	@Test
 	public void startingAfterPredicate() {
-		IntSequence emptyStartingAfterEqual5 = empty.startingAfter(i -> i == 5);
+		IntSequence emptyStartingAfterEqual5 = empty.startingAfter(x -> x == 5);
 		twice(() -> assertThat(emptyStartingAfterEqual5, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyStartingAfterEqual5.iterator().nextInt());
 
-		IntSequence nineStartingAfterEqual5 = _123456789.startingAfter(i -> i == 5);
+		IntSequence nineStartingAfterEqual5 = _123456789.startingAfter(x -> x == 5);
 		twice(() -> assertThat(nineStartingAfterEqual5, containsInts(6, 7, 8, 9)));
 
 		assertThat(removeFirst(nineStartingAfterEqual5), is(6));
 		twice(() -> assertThat(nineStartingAfterEqual5, containsInts(7, 8, 9)));
 		twice(() -> assertThat(_123456789, containsInts(1, 2, 3, 4, 5, 7, 8, 9)));
 
-		IntSequence fiveStartingAfterEqual10 = _12345.startingAfter(i -> i == 10);
+		IntSequence fiveStartingAfterEqual10 = _12345.startingAfter(x -> x == 10);
 		twice(() -> assertThat(fiveStartingAfterEqual10, is(emptyIterable())));
 	}
 
@@ -758,18 +759,18 @@ public class IntSequenceTest {
 
 	@Test
 	public void startingFromPredicate() {
-		IntSequence emptyStartingFromEqual5 = empty.startingFrom(i -> i == 5);
+		IntSequence emptyStartingFromEqual5 = empty.startingFrom(x -> x == 5);
 		twice(() -> assertThat(emptyStartingFromEqual5, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyStartingFromEqual5.iterator().nextInt());
 
-		IntSequence nineStartingFromEqual5 = _123456789.startingFrom(i -> i == 5);
+		IntSequence nineStartingFromEqual5 = _123456789.startingFrom(x -> x == 5);
 		twice(() -> assertThat(nineStartingFromEqual5, containsInts(5, 6, 7, 8, 9)));
 
 		assertThat(removeFirst(nineStartingFromEqual5), is(5));
 		twice(() -> assertThat(nineStartingFromEqual5, is(emptyIterable())));
 		twice(() -> assertThat(_123456789, containsInts(1, 2, 3, 4, 6, 7, 8, 9)));
 
-		IntSequence fiveStartingFromEqual10 = _12345.startingFrom(i -> i == 10);
+		IntSequence fiveStartingFromEqual10 = _12345.startingFrom(x -> x == 10);
 		twice(() -> assertThat(fiveStartingFromEqual10, is(emptyIterable())));
 	}
 
@@ -1024,7 +1025,7 @@ public class IntSequenceTest {
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(nineSorted));
 		twice(() -> assertThat(nineSorted, containsInts(-7, 1, 1, 2, 4, 5, 6, 6, 17)));
-		twice(() -> assertThat(nineRandom, contains(6, 6, 1, -7, 1, 2, 17, 5, 4)));
+		twice(() -> assertThat(nineRandom, containsInts(6, 6, 1, -7, 1, 2, 17, 5, 4)));
 	}
 
 	@Test
@@ -1106,17 +1107,15 @@ public class IntSequenceTest {
 
 	@Test
 	public void peekIndexed() {
-		IntSequence emptyPeeked = empty.peekIndexed((i, x) -> {
-			throw new IllegalStateException("Should not get called");
-		});
+		IntSequence emptyPeeked = empty.peekIndexed((x, i) -> fail("Should not get called"));
 		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().nextInt());
 
 		AtomicInteger index = new AtomicInteger();
 		AtomicInteger value = new AtomicInteger(1);
-		IntSequence onePeeked = _1.peekIndexed((i, x) -> {
-			assertThat(i, is(value.getAndIncrement()));
-			assertThat(x, is(index.getAndIncrement()));
+		IntSequence onePeeked = _1.peekIndexed((x, i) -> {
+			assertThat(x, is(value.getAndIncrement()));
+			assertThat(i, is(index.getAndIncrement()));
 		});
 		twice(() -> {
 			assertThat(onePeeked, containsInts(1));
@@ -1127,9 +1126,9 @@ public class IntSequenceTest {
 			value.set(1);
 		});
 
-		IntSequence twoPeeked = _12.peekIndexed((i, x) -> {
-			assertThat(i, is(value.getAndIncrement()));
-			assertThat(x, is(index.getAndIncrement()));
+		IntSequence twoPeeked = _12.peekIndexed((x, i) -> {
+			assertThat(x, is(value.getAndIncrement()));
+			assertThat(i, is(index.getAndIncrement()));
 		});
 		twice(() -> {
 			assertThat(twoPeeked, containsInts(1, 2));
@@ -1140,9 +1139,9 @@ public class IntSequenceTest {
 			value.set(1);
 		});
 
-		IntSequence fivePeeked = _12345.peekIndexed((i, x) -> {
-			assertThat(i, is(value.getAndIncrement()));
-			assertThat(x, is(index.getAndIncrement()));
+		IntSequence fivePeeked = _12345.peekIndexed((x, i) -> {
+			assertThat(x, is(value.getAndIncrement()));
+			assertThat(i, is(index.getAndIncrement()));
 		});
 		twice(() -> {
 			assertThat(fivePeeked, containsInts(1, 2, 3, 4, 5));
@@ -1156,7 +1155,6 @@ public class IntSequenceTest {
 		assertThat(removeFirst(fivePeeked), is(1));
 		index.set(0);
 		value.set(2);
-
 		twice(() -> {
 			assertThat(fivePeeked, containsInts(2, 3, 4, 5));
 			assertThat(index.get(), is(4));
@@ -1431,6 +1429,19 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void toCharsMapped() {
+		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
+		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
+
+		CharSeq charSeq = _12345.toChars(x -> (char) ('a' + x - 1));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
+
+		assertThat(removeFirst(charSeq), is('a'));
+		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
+	}
+
+	@Test
 	public void toLongs() {
 		LongSequence emptyLongs = empty.toLongs();
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
@@ -1444,8 +1455,24 @@ public class IntSequenceTest {
 	}
 
 	@Test
+	public void toLongsMapped() {
+		long maxInt = Integer.MAX_VALUE;
+
+		LongSequence emptyLongs = empty.toLongs(x -> x + maxInt);
+		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
+
+		LongSequence longSequence = _12345.toLongs(x -> x + maxInt);
+		twice(() -> assertThat(longSequence,
+		                       containsLongs(1L + maxInt, 2L + maxInt, 3L + maxInt, 4L + maxInt, 5L + maxInt)));
+
+		assertThat(removeFirst(longSequence), is(1L + maxInt));
+		twice(() -> assertThat(longSequence, containsLongs(2L + maxInt, 3L + maxInt, 4L + maxInt, 5L + maxInt)));
+	}
+
+	@Test
 	public void toDoubles() {
-		DoubleSequence emptyDoubles = empty.toDoubles(x -> x + 1);
+		DoubleSequence emptyDoubles = empty.toDoubles();
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
@@ -1457,41 +1484,12 @@ public class IntSequenceTest {
 	}
 
 	@Test
-	public void toCharsMapped() {
-		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
-		twice(() -> assertThat(emptyChars, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
-
-		CharSeq charSeq = _12345.toChars(i -> (char) ('a' + i - 1));
-		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
-
-		assertThat(removeFirst(charSeq), is('a'));
-		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
-	}
-
-	@Test
-	public void toLongsMapped() {
-		long maxInt = Integer.MAX_VALUE;
-
-		LongSequence emptyLongs = empty.toLongs(i -> i + maxInt);
-		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
-		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
-
-		LongSequence longSequence = _12345.toLongs(i -> i + maxInt);
-		twice(() -> assertThat(longSequence,
-		                       containsLongs(1L + maxInt, 2L + maxInt, 3L + maxInt, 4L + maxInt, 5L + maxInt)));
-
-		assertThat(removeFirst(longSequence), is(1L + maxInt));
-		twice(() -> assertThat(longSequence, containsLongs(2L + maxInt, 3L + maxInt, 4L + maxInt, 5L + maxInt)));
-	}
-
-	@Test
 	public void toDoublesMapped() {
-		DoubleSequence emptyDoubles = empty.toDoubles(i -> i / 2.0);
+		DoubleSequence emptyDoubles = empty.toDoubles(x -> x / 2.0);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
-		DoubleSequence doubleSequence = _12345.toDoubles(i -> i / 2.0);
+		DoubleSequence doubleSequence = _12345.toDoubles(x -> x / 2.0);
 		twice(() -> assertThat(doubleSequence, containsDoubles(0.5, 1.0, 1.5, 2.0, 2.5)));
 
 		assertThat(removeFirst(doubleSequence), is(0.5));
@@ -1500,11 +1498,11 @@ public class IntSequenceTest {
 
 	@Test
 	public void toSequence() {
-		Sequence<Integer> emptySequence = empty.toSequence(i -> i + 1);
+		Sequence<Integer> emptySequence = empty.toSequence(x -> x + 1);
 		twice(() -> assertThat(emptySequence, is(emptyIterable())));
 		expecting(NoSuchElementException.class, () -> emptySequence.iterator().next());
 
-		Sequence<Integer> fiveSequence = _12345.toSequence(i -> i + 1);
+		Sequence<Integer> fiveSequence = _12345.toSequence(x -> x + 1);
 		twice(() -> assertThat(fiveSequence, contains(2, 3, 4, 5, 6)));
 
 		assertThat(removeFirst(fiveSequence), is(2));

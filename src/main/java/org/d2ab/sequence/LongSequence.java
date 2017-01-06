@@ -1058,7 +1058,7 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**

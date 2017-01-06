@@ -39,6 +39,10 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		}
 	};
 
+	static LongIterator empty() {
+		return EMPTY;
+	}
+
 	static LongIterator of(long... longs) {
 		return new ArrayLongIterator(longs);
 	}
@@ -167,10 +171,18 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	/**
 	 * @return the number of {@code longs} remaining in this iterator.
 	 */
-	default int count() {
-		long count = 0;
-		for (; hasNext(); nextLong())
-			count++;
+	default int size() {
+		return size(iterator -> {
+			long count = 0;
+			for (; iterator.hasNext(); iterator.nextLong())
+				count++;
+			return count;
+		});
+	}
+
+	// for testing purposes
+	default int size(org.d2ab.function.ToLongFunction<LongIterator> counter) {
+		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);

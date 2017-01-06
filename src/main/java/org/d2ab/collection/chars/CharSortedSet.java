@@ -183,7 +183,7 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

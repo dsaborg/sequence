@@ -17,7 +17,6 @@
 package org.d2ab.util;
 
 import org.d2ab.collection.Maps;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -30,7 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -300,11 +299,11 @@ public class PairTest {
 	@Test
 	public void iterator() {
 		Iterator<Integer> iterator = Pair.of(1, 2).iterator();
-		assertThat(iterator.hasNext(), CoreMatchers.is(true));
-		assertThat(iterator.next(), CoreMatchers.is(1));
-		assertThat(iterator.hasNext(), CoreMatchers.is(true));
-		assertThat(iterator.next(), CoreMatchers.is(2));
-		assertThat(iterator.hasNext(), CoreMatchers.is(false));
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.next(), is(1));
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.next(), is(2));
+		assertThat(iterator.hasNext(), is(false));
 		expecting(NoSuchElementException.class, iterator::next);
 	}
 

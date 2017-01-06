@@ -40,6 +40,10 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		}
 	};
 
+	static CharIterator empty() {
+		return EMPTY;
+	}
+
 	static CharIterator of(char... chars) {
 		return new ArrayCharIterator(chars);
 	}
@@ -53,6 +57,9 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	}
 
 	static CharIterator from(Iterator<Character> iterator) {
+		if (iterator instanceof CharIterator)
+			return (CharIterator) iterator;
+
 		return new DelegatingTransformingCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override
 			public char nextChar() {
@@ -137,7 +144,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	default void forEachRemaining(Consumer<? super Character> consumer) {
 		assert Strict.LENIENT : "CharIterator.forEachRemaining(Consumer)";
 
-		forEachRemaining((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
+		forEachRemaining((CharConsumer) consumer::accept);
 	}
 
 	/**
@@ -166,10 +173,18 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	/**
 	 * @return the number of {@code chars} remaining in this iterator.
 	 */
-	default int count() {
-		long count = 0;
-		for (; hasNext(); nextChar())
-			count++;
+	default int size() {
+		return size(iterator -> {
+			long count = 0;
+			for (; iterator.hasNext(); iterator.nextChar())
+				count++;
+			return count;
+		});
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<CharIterator> counter) {
+		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);

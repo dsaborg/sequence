@@ -7,9 +7,7 @@ import org.junit.Test;
 import java.util.stream.Collectors;
 
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 

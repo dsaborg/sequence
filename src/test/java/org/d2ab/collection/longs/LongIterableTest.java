@@ -1,6 +1,5 @@
 package org.d2ab.collection.longs;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -30,7 +29,7 @@ public class LongIterableTest {
 	@Test
 	public void longStream() {
 		assertThat(empty.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.longStream().collect(LongList::create, LongList::addLong, LongList::addAllLongs),
 		           containsLongs(1, 2, 3, 4, 5));
@@ -40,7 +39,7 @@ public class LongIterableTest {
 	public void parallelLongStream() {
 		assertThat(empty.parallelLongStream()
 		                .collect(LongList::create, LongList::addLong, LongList::addAllLongs),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.parallelLongStream()
 		                   .collect(LongList::create, LongList::addLong, LongList::addAllLongs),

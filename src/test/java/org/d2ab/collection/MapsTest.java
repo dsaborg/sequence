@@ -27,9 +27,7 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class MapsTest {

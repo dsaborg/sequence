@@ -70,4 +70,9 @@ public class ForwardPeekingFilteringDoubleIterator extends
 		hasNext = false;
 		return next;
 	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

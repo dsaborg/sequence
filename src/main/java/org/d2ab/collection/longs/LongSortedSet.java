@@ -183,7 +183,7 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

@@ -1,6 +1,5 @@
 package org.d2ab.collection.doubles;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -30,7 +29,7 @@ public class DoubleIterableTest {
 	@Test
 	public void doubleStream() {
 		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
 		           containsDoubles(1, 2, 3, 4, 5));
@@ -40,7 +39,7 @@ public class DoubleIterableTest {
 	public void parallelDoubleStream() {
 		assertThat(empty.parallelDoubleStream()
 		                .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.parallelDoubleStream()
 		                   .collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),

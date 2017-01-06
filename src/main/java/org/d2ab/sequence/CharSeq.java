@@ -990,7 +990,7 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**

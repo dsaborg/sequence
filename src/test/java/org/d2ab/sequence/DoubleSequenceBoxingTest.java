@@ -5,7 +5,7 @@ import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 

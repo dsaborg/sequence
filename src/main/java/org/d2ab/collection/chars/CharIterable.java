@@ -72,6 +72,9 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	static CharIterable from(Iterable<Character> iterable) {
+		if (iterable instanceof CharIterable)
+			return (CharIterable) iterable;
+
 		return () -> CharIterator.from(iterable.iterator());
 	}
 

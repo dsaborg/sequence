@@ -19,7 +19,6 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.chars.CharIterable;
 import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.ints.IntIterator;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +59,7 @@ public class IntIterableTest {
 	@Test
 	public void intStream() {
 		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
@@ -70,7 +69,7 @@ public class IntIterableTest {
 	public void parallelIntStream() {
 		assertThat(empty.parallelIntStream()
 		                .collect(IntList::create, IntList::addInt, IntList::addAllInts),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.parallelIntStream()
 		                   .collect(IntList::create, IntList::addInt, IntList::addAllInts),
@@ -302,7 +301,7 @@ public class IntIterableTest {
 	@Test
 	public void asChars() {
 		CharIterable emptyAsChars = empty.asChars();
-		twice(() -> assertThat(emptyAsChars, CoreMatchers.is(emptyIterable())));
+		twice(() -> assertThat(emptyAsChars, is(emptyIterable())));
 
 		CharIterable listAsChars = IntIterable.of('a', 'b', 'c', 'd', 'e').asChars();
 		twice(() -> assertThat(listAsChars, containsChars('a', 'b', 'c', 'd', 'e')));

@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;

@@ -1,6 +1,6 @@
 package org.d2ab.sequence;
 
-import org.d2ab.collection.ints.IntList;
+import org.d2ab.collection.longs.LongList;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -9,23 +9,23 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class IntSequenceBoxingTest extends BaseBoxingTest {
-	private final IntSequence empty = IntSequence.empty();
-	private final IntSequence _12345 = IntSequence.from(IntList.create(1, 2, 3, 4, 5));
+public class LongSequenceBoxingTest extends BaseBoxingTest {
+	private final LongSequence empty = LongSequence.empty();
+	private final LongSequence _12345 = LongSequence.from(LongList.create(1L, 2L, 3L, 4L, 5L));
 
 	@Test
 	public void forLoop() {
 		twice(() -> {
-			for (int ignored : empty)
+			for (long ignored : empty)
 				fail("Should not get called");
 		});
 
 		twice(() -> {
-			int expected = 1;
-			for (int i : _12345)
+			long expected = 1;
+			for (long i : _12345)
 				assertThat(i, is(expected++));
 
-			assertThat(expected, is(6));
+			assertThat(expected, is(6L));
 		});
 	}
 }

@@ -3,7 +3,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.IterationException;
 import org.d2ab.iterator.chars.CharIterator;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class CharIterableTest {
 	@Test
 	public void intStream() {
 		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           containsInts('a', 'b', 'c', 'd', 'e'));
@@ -54,7 +53,7 @@ public class CharIterableTest {
 	public void parallelIntStream() {
 		assertThat(empty.parallelIntStream()
 		                .collect(IntList::create, IntList::addInt, IntList::addAllInts),
-		           CoreMatchers.is(emptyIterable()));
+		           is(emptyIterable()));
 
 		assertThat(iterable.parallelIntStream()
 		                   .collect(IntList::create, IntList::addInt, IntList::addAllInts),
