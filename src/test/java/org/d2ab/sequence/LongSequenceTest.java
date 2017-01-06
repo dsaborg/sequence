@@ -44,19 +44,19 @@ import static org.junit.Assert.fail;
 public class LongSequenceTest {
 	private final LongSequence empty = LongSequence.empty();
 
-	private final LongSequence _1 = LongSequence.from(LongList.create(1L));
-	private final LongSequence _12 = LongSequence.from(LongList.create(1L, 2L));
-	private final LongSequence _123 = LongSequence.from(LongList.create(1L, 2L, 3L));
-	private final LongSequence _1234 = LongSequence.from(LongList.create(1L, 2L, 3L, 4L));
-	private final LongSequence _12345 = LongSequence.from(LongList.create(1L, 2L, 3L, 4L, 5L));
+	private final LongSequence _1 = LongSequence.from(LongList.create(1));
+	private final LongSequence _12 = LongSequence.from(LongList.create(1, 2));
+	private final LongSequence _123 = LongSequence.from(LongList.create(1, 2, 3));
+	private final LongSequence _1234 = LongSequence.from(LongList.create(1, 2, 3, 4));
+	private final LongSequence _12345 = LongSequence.from(LongList.create(1, 2, 3, 4, 5));
 	private final LongSequence _123456789 =
-			LongSequence.from(LongList.create(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
+			LongSequence.from(LongList.create(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-	private final LongSequence oneRandom = LongSequence.from(LongList.create(17L));
-	private final LongSequence twoRandom = LongSequence.from(LongList.create(17L, 32L));
-	private final LongSequence threeRandom = LongSequence.from(LongList.create(17L, 32L, 12L));
+	private final LongSequence oneRandom = LongSequence.from(LongList.create(17));
+	private final LongSequence twoRandom = LongSequence.from(LongList.create(17, 32));
+	private final LongSequence threeRandom = LongSequence.from(LongList.create(17, 32, 12));
 	private final LongSequence nineRandom =
-			LongSequence.from(LongList.create(6L, 6L, 1L, -7L, 1L, 2L, 17L, 5L, 4L));
+			LongSequence.from(LongList.create(6, 6, 1, -7, 1, 2, 17, 5, 4));
 
 	@Test
 	public void empty() {
@@ -105,28 +105,28 @@ public class LongSequenceTest {
 	public void fromLongIterable() {
 		LongSequence sequence = LongSequence.from(LongIterable.of(1, 2, 3, 4, 5));
 
-		twice(() -> assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(sequence, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void fromLongIterableAsIterable() {
 		LongSequence sequence = LongSequence.from((Iterable<Long>) LongIterable.of(1, 2, 3, 4, 5));
 
-		twice(() -> assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(sequence, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void fromIterable() {
 		LongSequence sequence = LongSequence.from(Iterables.of(1L, 2L, 3L, 4L, 5L));
 
-		twice(() -> assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(sequence, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void oncePrimitiveIteratorOfLong() {
 		LongSequence sequence = LongSequence.once(LongIterator.of(1, 2, 3, 4, 5));
 
-		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
+		assertThat(sequence, containsLongs(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
@@ -134,15 +134,15 @@ public class LongSequenceTest {
 	public void onceIterator() {
 		LongSequence sequence = LongSequence.once(Iterators.of(1L, 2L, 3L, 4L, 5L));
 
-		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
+		assertThat(sequence, containsLongs(1, 2, 3, 4, 5L));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
 	public void onceLongStream() {
-		LongSequence sequence = LongSequence.once(LongStream.of(1L, 2L, 3L, 4L, 5L));
+		LongSequence sequence = LongSequence.once(LongStream.of(1, 2, 3, 4, 5));
 
-		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
+		assertThat(sequence, containsLongs(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
@@ -150,7 +150,7 @@ public class LongSequenceTest {
 	public void onceStream() {
 		LongSequence sequence = LongSequence.once(Stream.of(1L, 2L, 3L, 4L, 5L));
 
-		assertThat(sequence, containsLongs(1L, 2L, 3L, 4L, 5L));
+		assertThat(sequence, containsLongs(1, 2, 3, 4, 5));
 		assertThat(sequence, is(emptyIterable()));
 	}
 
@@ -163,44 +163,44 @@ public class LongSequenceTest {
 
 	@Test
 	public void cachePrimitiveIteratorOfLong() {
-		LongSequence cached = LongSequence.cache(LongIterator.of(1L, 2L, 3L, 4L, 5L));
+		LongSequence cached = LongSequence.cache(LongIterator.of(1, 2, 3, 4, 5));
 
-		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(cached, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void cacheIterator() {
 		LongSequence cached = LongSequence.cache(Iterators.of(1L, 2L, 3L, 4L, 5L));
 
-		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(cached, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void cacheLongIterable() {
-		LongSequence cached = LongSequence.cache(LongIterable.of(1L, 2L, 3L, 4L, 5L));
+		LongSequence cached = LongSequence.cache(LongIterable.of(1, 2, 3, 4, 5));
 
-		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(cached, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void cacheIterable() {
 		LongSequence cached = LongSequence.cache(Iterables.of(1L, 2L, 3L, 4L, 5L));
 
-		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(cached, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void cacheLongStream() {
-		LongSequence cached = LongSequence.cache(LongStream.of(1L, 2L, 3L, 4L, 5L));
+		LongSequence cached = LongSequence.cache(LongStream.of(1, 2, 3, 4, 5));
 
-		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(cached, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void cacheStream() {
 		LongSequence cached = LongSequence.cache(Stream.of(1L, 2L, 3L, 4L, 5L));
 
-		twice(() -> assertThat(cached, containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(cached, containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -351,7 +351,7 @@ public class LongSequenceTest {
 	public void appendArray() {
 		LongSequence appended = _123.append(4, 5, 6).append(7, 8);
 
-		twice(() -> assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)));
+		twice(() -> assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
 
 	@Test
@@ -365,14 +365,14 @@ public class LongSequenceTest {
 	public void appendLongIterable() {
 		LongSequence appended = _123.append(LongIterable.of(4, 5, 6)).append(LongIterable.of(7, 8));
 
-		twice(() -> assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)));
+		twice(() -> assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
 
 	@Test
 	public void appendIterable() {
 		LongSequence appended = _123.append(Iterables.of(4L, 5L, 6L)).append(Iterables.of(7L, 8L));
 
-		twice(() -> assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)));
+		twice(() -> assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8)));
 	}
 
 	@Test
@@ -386,8 +386,8 @@ public class LongSequenceTest {
 	public void appendLongIterator() {
 		LongSequence appended = _123.append(LongIterator.of(4, 5, 6)).append(LongIterator.of(7, 8));
 
-		assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
-		assertThat(appended, containsLongs(1L, 2L, 3L));
+		assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(appended, containsLongs(1, 2, 3));
 	}
 
 	@Test
@@ -403,8 +403,8 @@ public class LongSequenceTest {
 	public void appendIterator() {
 		LongSequence appended = _123.append(Iterators.of(4L, 5L, 6L)).append(Iterators.of(7L, 8L));
 
-		assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
-		assertThat(appended, containsLongs(1L, 2L, 3L));
+		assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(appended, containsLongs(1, 2, 3));
 	}
 
 	@Test
@@ -416,18 +416,18 @@ public class LongSequenceTest {
 
 	@Test
 	public void appendLongStream() {
-		LongSequence appended = _123.append(LongStream.of(4L, 5L, 6L)).append(LongStream.of(7L, 8L));
+		LongSequence appended = _123.append(LongStream.of(4, 5, 6)).append(LongStream.of(7, 8));
 
-		assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
-		assertThat(appended, containsLongs(1L, 2L, 3L));
+		assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(appended, containsLongs(1, 2, 3));
 	}
 
 	@Test
 	public void appendStream() {
 		LongSequence appended = _123.append(Stream.of(4L, 5L, 6L)).append(Stream.of(7L, 8L));
 
-		assertThat(appended, containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
-		assertThat(appended, containsLongs(1L, 2L, 3L));
+		assertThat(appended, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
+		assertThat(appended, containsLongs(1, 2, 3));
 	}
 
 	@Test
@@ -616,8 +616,8 @@ public class LongSequenceTest {
 
 	@Test
 	public void recurse() {
-		LongSequence recursive = LongSequence.recurse(1L, i -> i + 1L);
-		twice(() -> assertThat(recursive.limit(10), containsLongs(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L)));
+		LongSequence recursive = LongSequence.recurse(1L, x -> x + 1);
+		twice(() -> assertThat(recursive.limit(10), containsLongs(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
 	@Test
@@ -821,7 +821,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(Arrays.equals(_123.toLongArray(), new long[]{1L, 2L, 3L}), is(true)));
+		twice(() -> assertThat(Arrays.equals(_123.toLongArray(), new long[]{1, 2, 3}), is(true)));
 	}
 
 	@Test
@@ -836,18 +836,18 @@ public class LongSequenceTest {
 
 	@Test
 	public void reduce() {
-		LongBinaryOperator secondLong = (c1, c2) -> c2;
+		LongBinaryOperator secondLong = (x1, x2) -> x2;
 		twice(() -> {
 			assertThat(empty.reduce(secondLong), is(OptionalLong.empty()));
-			assertThat(_1.reduce(secondLong), is(OptionalLong.of(1L)));
-			assertThat(_12.reduce(secondLong), is(OptionalLong.of(2L)));
-			assertThat(_123.reduce(secondLong), is(OptionalLong.of(3L)));
+			assertThat(_1.reduce(secondLong), is(OptionalLong.of(1)));
+			assertThat(_12.reduce(secondLong), is(OptionalLong.of(2)));
+			assertThat(_123.reduce(secondLong), is(OptionalLong.of(3)));
 		});
 	}
 
 	@Test
 	public void reduceWithIdentity() {
-		LongBinaryOperator secondLong = (c1, c2) -> c2;
+		LongBinaryOperator secondLong = (x1, x2) -> x2;
 		twice(() -> {
 			assertThat(empty.reduce(17L, secondLong), is(17L));
 			assertThat(_1.reduce(17L, secondLong), is(1L));
@@ -860,9 +860,9 @@ public class LongSequenceTest {
 	public void first() {
 		twice(() -> {
 			assertThat(empty.first(), is(OptionalLong.empty()));
-			assertThat(_1.first(), is(OptionalLong.of(1L)));
-			assertThat(_12.first(), is(OptionalLong.of(1L)));
-			assertThat(_123.first(), is(OptionalLong.of(1L)));
+			assertThat(_1.first(), is(OptionalLong.of(1)));
+			assertThat(_12.first(), is(OptionalLong.of(1)));
+			assertThat(_123.first(), is(OptionalLong.of(1)));
 		});
 	}
 
@@ -870,9 +870,9 @@ public class LongSequenceTest {
 	public void last() {
 		twice(() -> {
 			assertThat(empty.last(), is(OptionalLong.empty()));
-			assertThat(_1.last(), is(OptionalLong.of(1L)));
-			assertThat(_12.last(), is(OptionalLong.of(2L)));
-			assertThat(_123.last(), is(OptionalLong.of(3L)));
+			assertThat(_1.last(), is(OptionalLong.of(1)));
+			assertThat(_12.last(), is(OptionalLong.of(2)));
+			assertThat(_123.last(), is(OptionalLong.of(3)));
 		});
 	}
 
@@ -965,13 +965,13 @@ public class LongSequenceTest {
 		expecting(NoSuchElementException.class, () -> emptyDistinct.iterator().nextLong());
 
 		LongSequence oneDistinct = oneRandom.distinct();
-		twice(() -> assertThat(oneDistinct, containsLongs(17L)));
+		twice(() -> assertThat(oneDistinct, containsLongs(17)));
 
-		LongSequence twoDuplicatesDistinct = LongSequence.from(LongList.create(17L, 17L)).distinct();
-		twice(() -> assertThat(twoDuplicatesDistinct, containsLongs(17L)));
+		LongSequence twoDuplicatesDistinct = LongSequence.from(LongList.create(17, 17)).distinct();
+		twice(() -> assertThat(twoDuplicatesDistinct, containsLongs(17)));
 
 		LongSequence nineDistinct = nineRandom.distinct();
-		twice(() -> assertThat(nineDistinct, containsLongs(6L, 1L, -7L, 2L, 17L, 5L, 4L)));
+		twice(() -> assertThat(nineDistinct, containsLongs(6, 1, -7, 2, 17, 5, 4)));
 
 		assertThat(removeFirst(nineDistinct), is(6L));
 		twice(() -> assertThat(nineDistinct, containsLongs(6, 1, -7, 2, 17, 5, 4)));
@@ -985,13 +985,13 @@ public class LongSequenceTest {
 		expecting(NoSuchElementException.class, () -> emptySorted.iterator().nextLong());
 
 		LongSequence oneSorted = oneRandom.sorted();
-		twice(() -> assertThat(oneSorted, containsLongs(17L)));
+		twice(() -> assertThat(oneSorted, containsLongs(17)));
 
 		LongSequence twoSorted = twoRandom.sorted();
-		twice(() -> assertThat(twoSorted, containsLongs(17L, 32L)));
+		twice(() -> assertThat(twoSorted, containsLongs(17, 32)));
 
 		LongSequence nineSorted = nineRandom.sorted();
-		twice(() -> assertThat(nineSorted, containsLongs(-7L, 1L, 1L, 2L, 4L, 5L, 6L, 6L, 17L)));
+		twice(() -> assertThat(nineSorted, containsLongs(-7, 1, 1, 2, 4, 5, 6, 6, 17)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(nineSorted));
 		twice(() -> assertThat(nineSorted, containsLongs(-7, 1, 1, 2, 4, 5, 6, 6, 17)));
@@ -1004,23 +1004,23 @@ public class LongSequenceTest {
 		LongSequence sorted = LongSequence.from(backing).sorted();
 
 		backing.add(4L);
-		assertThat(sorted, containsLongs(1L, 2L, 3L, 4L));
+		assertThat(sorted, containsLongs(1, 2, 3, 4));
 	}
 
 	@Test
 	public void min() {
 		twice(() -> assertThat(empty.min(), is(OptionalLong.empty())));
-		twice(() -> assertThat(oneRandom.min(), is(OptionalLong.of(17L))));
-		twice(() -> assertThat(twoRandom.min(), is(OptionalLong.of(17L))));
-		twice(() -> assertThat(nineRandom.min(), is(OptionalLong.of(-7L))));
+		twice(() -> assertThat(oneRandom.min(), is(OptionalLong.of(17))));
+		twice(() -> assertThat(twoRandom.min(), is(OptionalLong.of(17))));
+		twice(() -> assertThat(nineRandom.min(), is(OptionalLong.of(-7))));
 	}
 
 	@Test
 	public void max() {
 		twice(() -> assertThat(empty.max(), is(OptionalLong.empty())));
-		twice(() -> assertThat(oneRandom.max(), is(OptionalLong.of(17L))));
-		twice(() -> assertThat(twoRandom.max(), is(OptionalLong.of(32L))));
-		twice(() -> assertThat(nineRandom.max(), is(OptionalLong.of(17L))));
+		twice(() -> assertThat(oneRandom.max(), is(OptionalLong.of(17))));
+		twice(() -> assertThat(twoRandom.max(), is(OptionalLong.of(32))));
+		twice(() -> assertThat(nineRandom.max(), is(OptionalLong.of(17))));
 	}
 
 	@Test
@@ -1033,23 +1033,23 @@ public class LongSequenceTest {
 
 	@Test
 	public void any() {
-		twice(() -> assertThat(_123.any(x -> x > 0L), is(true)));
-		twice(() -> assertThat(_123.any(x -> x > 2L), is(true)));
-		twice(() -> assertThat(_123.any(x -> x > 4L), is(false)));
+		twice(() -> assertThat(_123.any(x -> x > 0), is(true)));
+		twice(() -> assertThat(_123.any(x -> x > 2), is(true)));
+		twice(() -> assertThat(_123.any(x -> x > 4), is(false)));
 	}
 
 	@Test
 	public void all() {
-		twice(() -> assertThat(_123.all(x -> x > 0L), is(true)));
-		twice(() -> assertThat(_123.all(x -> x > 2L), is(false)));
-		twice(() -> assertThat(_123.all(x -> x > 4L), is(false)));
+		twice(() -> assertThat(_123.all(x -> x > 0), is(true)));
+		twice(() -> assertThat(_123.all(x -> x > 2), is(false)));
+		twice(() -> assertThat(_123.all(x -> x > 4), is(false)));
 	}
 
 	@Test
 	public void none() {
-		twice(() -> assertThat(_123.none(x -> x > 0L), is(false)));
-		twice(() -> assertThat(_123.none(x -> x > 2L), is(false)));
-		twice(() -> assertThat(_123.none(x -> x > 4L), is(true)));
+		twice(() -> assertThat(_123.none(x -> x > 0), is(false)));
+		twice(() -> assertThat(_123.none(x -> x > 2), is(false)));
+		twice(() -> assertThat(_123.none(x -> x > 4), is(true)));
 	}
 
 	@Test
@@ -1138,11 +1138,8 @@ public class LongSequenceTest {
 
 	@Test
 	public void stream() {
-		LongSequence empty = LongSequence.empty();
 		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
-
-		LongSequence sequence = LongSequence.of(1, 2, 3, 4, 5);
-		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(_12345.stream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L)));
 	}
 
 	@Test
@@ -1243,20 +1240,20 @@ public class LongSequenceTest {
 		expecting(NoSuchElementException.class, () -> emptyReversed.iterator().nextLong());
 
 		LongSequence oneReversed = _1.reverse();
-		twice(() -> assertThat(oneReversed, containsLongs(1L)));
+		twice(() -> assertThat(oneReversed, containsLongs(1)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(oneReversed));
 		twice(() -> assertThat(oneReversed, containsLongs(1)));
 		twice(() -> assertThat(_1, containsLongs(1)));
 
 		LongSequence twoReversed = _12.reverse();
-		twice(() -> assertThat(twoReversed, containsLongs(2L, 1L)));
+		twice(() -> assertThat(twoReversed, containsLongs(2, 1)));
 
 		LongSequence threeReversed = _123.reverse();
-		twice(() -> assertThat(threeReversed, containsLongs(3L, 2L, 1L)));
+		twice(() -> assertThat(threeReversed, containsLongs(3, 2, 1)));
 
 		LongSequence nineReversed = _123456789.reverse();
-		twice(() -> assertThat(nineReversed, containsLongs(9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L)));
+		twice(() -> assertThat(nineReversed, containsLongs(9, 8, 7, 6, 5, 4, 3, 2, 1)));
 	}
 
 	@Test
@@ -1271,34 +1268,34 @@ public class LongSequenceTest {
 	@Test
 	public void positive() {
 		LongSequence positive = LongSequence.positive();
-		twice(() -> assertThat(positive.limit(5), containsLongs(1L, 2L, 3L, 4L, 5L)));
+		twice(() -> assertThat(positive.limit(5), containsLongs(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void positiveFromZero() {
 		LongSequence positiveFromZero = LongSequence.positiveFromZero();
-		twice(() -> assertThat(positiveFromZero.limit(5), containsLongs(0L, 1L, 2L, 3L, 4L)));
+		twice(() -> assertThat(positiveFromZero.limit(5), containsLongs(0, 1, 2, 3, 4)));
 	}
 
 	@Test
 	public void negative() {
 		LongSequence negative = LongSequence.negative();
-		twice(() -> assertThat(negative.limit(5), containsLongs(-1L, -2L, -3L, -4L, -5L)));
+		twice(() -> assertThat(negative.limit(5), containsLongs(-1, -2, -3, -4, -5)));
 	}
 
 	@Test
 	public void negativeFromZero() {
 		LongSequence negativeFromZero = LongSequence.negativeFromZero();
-		twice(() -> assertThat(negativeFromZero.limit(5), containsLongs(0L, -1L, -2L, -3L, -4L)));
+		twice(() -> assertThat(negativeFromZero.limit(5), containsLongs(0, -1, -2, -3, -4)));
 	}
 
 	@Test
 	public void decreasingFrom() {
 		LongSequence decreasing = LongSequence.decreasingFrom(-10);
-		twice(() -> assertThat(decreasing.limit(5), containsLongs(-10L, -11L, -12L, -13L, -14L)));
+		twice(() -> assertThat(decreasing.limit(5), containsLongs(-10, -11, -12, -13, -14)));
 
 		LongSequence decreasingFrom2 = LongSequence.decreasingFrom(2);
-		twice(() -> assertThat(decreasingFrom2.limit(5), containsLongs(2L, 1L, 0L, -1L, -2L)));
+		twice(() -> assertThat(decreasingFrom2.limit(5), containsLongs(2, 1, 0, -1, -2)));
 
 		LongSequence decreasingFromMinValue = LongSequence.decreasingFrom(Long.MIN_VALUE);
 		twice(() -> assertThat(decreasingFromMinValue.limit(3),
@@ -1308,10 +1305,10 @@ public class LongSequenceTest {
 	@Test
 	public void increasingFrom() {
 		LongSequence increasingFrom10 = LongSequence.increasingFrom(10);
-		twice(() -> assertThat(increasingFrom10.limit(5), containsLongs(10L, 11L, 12L, 13L, 14L)));
+		twice(() -> assertThat(increasingFrom10.limit(5), containsLongs(10, 11, 12, 13, 14)));
 
 		LongSequence increasingFrom_2 = LongSequence.increasingFrom(-2);
-		twice(() -> assertThat(increasingFrom_2.limit(5), containsLongs(-2L, -1L, 0L, 1L, 2L)));
+		twice(() -> assertThat(increasingFrom_2.limit(5), containsLongs(-2, -1, 0, 1, 2)));
 
 		LongSequence increasingFromMaxValue = LongSequence.increasingFrom(Long.MAX_VALUE);
 		twice(() -> assertThat(increasingFromMaxValue.limit(3),
@@ -1321,10 +1318,10 @@ public class LongSequenceTest {
 	@Test
 	public void steppingFrom() {
 		LongSequence steppingFrom0Step10 = LongSequence.steppingFrom(0, 10);
-		twice(() -> assertThat(steppingFrom0Step10.limit(5), containsLongs(0L, 10L, 20L, 30L, 40L)));
+		twice(() -> assertThat(steppingFrom0Step10.limit(5), containsLongs(0, 10, 20, 30, 40)));
 
 		LongSequence steppingFrom0Step_10 = LongSequence.steppingFrom(0, -10);
-		twice(() -> assertThat(steppingFrom0Step_10.limit(5), containsLongs(0L, -10L, -20L, -30L, -40L)));
+		twice(() -> assertThat(steppingFrom0Step_10.limit(5), containsLongs(0, -10, -20, -30, -40)));
 
 		LongSequence steppingFromMaxValueStep10 = LongSequence.steppingFrom(Long.MAX_VALUE, 10);
 		twice(() -> assertThat(steppingFromMaxValueStep10.limit(3),
@@ -1334,16 +1331,16 @@ public class LongSequenceTest {
 	@Test
 	public void range() {
 		LongSequence range1to6 = LongSequence.range(1, 6);
-		twice(() -> assertThat(range1to6, containsLongs(1L, 2L, 3L, 4L, 5L, 6L)));
+		twice(() -> assertThat(range1to6, containsLongs(1, 2, 3, 4, 5, 6)));
 
-		LongSequence range6to1 = LongSequence.range(6L, 1L);
-		twice(() -> assertThat(range6to1, containsLongs(6L, 5L, 4L, 3L, 2L, 1L)));
+		LongSequence range6to1 = LongSequence.range(6, 1);
+		twice(() -> assertThat(range6to1, containsLongs(6, 5, 4, 3, 2, 1)));
 
 		LongSequence range_2to2 = LongSequence.range(-2, 2);
-		twice(() -> assertThat(range_2to2, containsLongs(-2L, -1L, 0L, 1L, 2L)));
+		twice(() -> assertThat(range_2to2, containsLongs(-2, -1, 0, 1, 2)));
 
 		LongSequence range2to_2 = LongSequence.range(2, -2);
-		twice(() -> assertThat(range2to_2, containsLongs(2L, 1L, 0L, -1L, -2L)));
+		twice(() -> assertThat(range2to_2, containsLongs(2, 1, 0, -1, -2)));
 
 		LongSequence maxValue = LongSequence.range(Long.MAX_VALUE - 3, Long.MAX_VALUE);
 		twice(() -> assertThat(maxValue, containsLongs(Long.MAX_VALUE - 3, Long.MAX_VALUE - 2, Long.MAX_VALUE - 1,
@@ -1357,16 +1354,16 @@ public class LongSequenceTest {
 	@Test
 	public void rangeWithStep() {
 		LongSequence range1to6step2 = LongSequence.range(1, 6, 2);
-		twice(() -> assertThat(range1to6step2, containsLongs(1L, 3L, 5L)));
+		twice(() -> assertThat(range1to6step2, containsLongs(1, 3, 5)));
 
 		LongSequence range6to1step2 = LongSequence.range(6, 1, 2);
-		twice(() -> assertThat(range6to1step2, containsLongs(6L, 4L, 2L)));
+		twice(() -> assertThat(range6to1step2, containsLongs(6, 4, 2)));
 
 		LongSequence range_6to6step2 = LongSequence.range(-6, 6, 3);
-		twice(() -> assertThat(range_6to6step2, containsLongs(-6L, -3L, 0L, 3L, 6L)));
+		twice(() -> assertThat(range_6to6step2, containsLongs(-6, -3, 0, 3, 6)));
 
 		LongSequence range6to_6step2 = LongSequence.range(6, -6, 3);
-		twice(() -> assertThat(range6to_6step2, containsLongs(6L, 3L, 0L, -3L, -6L)));
+		twice(() -> assertThat(range6to_6step2, containsLongs(6, 3, 0, -3, -6)));
 
 		LongSequence maxValue = LongSequence.range(Long.MAX_VALUE - 2, Long.MAX_VALUE, 2);
 		twice(() -> assertThat(maxValue, containsLongs(Long.MAX_VALUE - 2, Long.MAX_VALUE)));
@@ -1653,7 +1650,7 @@ public class LongSequenceTest {
 		LongSequence random = LongSequence.random(() -> new Random(17), 1000);
 
 		twice(() -> assertThat(random.limit(5),
-		                       containsLongs(732L, 697L, 82L, 816L, 44L)));
+		                       containsLongs(732, 697, 82, 816, 44)));
 	}
 
 	@Test
@@ -1674,7 +1671,7 @@ public class LongSequenceTest {
 		LongSequence random = LongSequence.random(() -> new Random(17), 1000, 2000);
 
 		twice(() -> assertThat(random.limit(5),
-		                       containsLongs(1732L, 1697L, 1082L, 1816L, 1044L)));
+		                       containsLongs(1732, 1697, 1082, 1816, 1044)));
 	}
 
 	@Test

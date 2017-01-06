@@ -888,7 +888,7 @@ public class CharSeqTest {
 
 	@Test
 	public void reduce() {
-		CharBinaryOperator secondChar = (c1, c2) -> c2;
+		CharBinaryOperator secondChar = (x1, x2) -> x2;
 		twice(() -> {
 			assertThat(empty.reduce(secondChar), is(OptionalChar.empty()));
 			assertThat(a.reduce(secondChar), is(OptionalChar.of('a')));
@@ -899,7 +899,7 @@ public class CharSeqTest {
 
 	@Test
 	public void reduceWithIdentity() {
-		CharBinaryOperator secondChar = (c1, c2) -> c2;
+		CharBinaryOperator secondChar = (x1, x2) -> x2;
 		twice(() -> {
 			assertThat(empty.reduce('q', secondChar), is('q'));
 			assertThat(a.reduce('q', secondChar), is('a'));

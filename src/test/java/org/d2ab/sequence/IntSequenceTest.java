@@ -866,7 +866,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void reduce() {
-		IntBinaryOperator secondInt = (c1, c2) -> c2;
+		IntBinaryOperator secondInt = (x1, x2) -> x2;
 		twice(() -> {
 			assertThat(empty.reduce(secondInt), is(OptionalInt.empty()));
 			assertThat(_1.reduce(secondInt), is(OptionalInt.of(1)));
@@ -877,7 +877,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void reduceWithIdentity() {
-		IntBinaryOperator secondInt = (c1, c2) -> c2;
+		IntBinaryOperator secondInt = (x1, x2) -> x2;
 		twice(() -> {
 			assertThat(empty.reduce(17, secondInt), is(17));
 			assertThat(_1.reduce(17, secondInt), is(1));
@@ -1168,22 +1168,19 @@ public class IntSequenceTest {
 
 	@Test
 	public void stream() {
-		IntSequence empty = IntSequence.empty();
-		twice(() -> assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable())));
-
-		IntSequence sequence = IntSequence.of(1, 2, 3, 4, 5);
-		twice(() -> assertThat(sequence.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(empty.box().stream().collect(Collectors.toList()), is(emptyIterable())));
+		twice(() -> assertThat(_12345.box().stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
 	}
 
 	@Test
 	public void streamFromOnce() {
 		IntSequence empty = IntSequence.once(IntIterator.of());
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.box().stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.box().stream().collect(Collectors.toList()), is(emptyIterable()));
 
 		IntSequence sequence = IntSequence.once(IntIterator.of(1, 2, 3, 4, 5));
-		assertThat(sequence.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5));
-		assertThat(sequence.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(sequence.box().stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5));
+		assertThat(sequence.box().stream().collect(Collectors.toList()), is(emptyIterable()));
 	}
 
 	@Test

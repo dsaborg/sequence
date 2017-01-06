@@ -236,7 +236,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

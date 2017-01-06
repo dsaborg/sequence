@@ -40,6 +40,10 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		}
 	};
 
+	static DoubleIterator empty() {
+		return EMPTY;
+	}
+
 	static DoubleIterator of(double... doubles) {
 		return new ArrayDoubleIterator(doubles);
 	}
@@ -152,11 +156,23 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	/**
 	 * @return the number of {@code doubles} remaining in this iterator.
 	 */
-	default int count() {
-		int count = 0;
-		for (; hasNext(); nextDouble())
-			count++;
-		return count;
+	default int size() {
+		return size(iterator -> {
+			long count = 0;
+			for (; iterator.hasNext(); iterator.nextDouble())
+				count++;
+			return count;
+		});
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<DoubleIterator> counter) {
+		double count = counter.applyAsLong(this);
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);
+
+		return (int) count;
 	}
 
 	default double reduce(double identity, DoubleBinaryOperator operator) {

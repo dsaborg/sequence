@@ -312,7 +312,8 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * @return a {@code DoubleSequence} of random doubles between {@code 0}, inclusive and {@code 1}, exclusive, that
 	 * never terminates. The given supplier is used to produce the instance of {@link Random} that is used, one for
-	 * each new {@link #iterator()}.
+	 * each
+	 * new {@link #iterator()}.
 	 *
 	 * @see #random()
 	 * @see Random#nextDouble()
@@ -341,7 +342,8 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * @return a {@code DoubleSequence} of random doubles between {@code 0}, inclusive, and the upper bound, exclusive,
 	 * that never terminates. The given supplier is used to produce the instance of {@link Random} that is used, one
-	 * for each new {@link #iterator()}.
+	 * for
+	 * each new {@link #iterator()}.
 	 *
 	 * @see #random(double)
 	 * @see Random#nextDouble()
@@ -822,7 +824,8 @@ public interface DoubleSequence extends DoubleCollection {
 
 	/**
 	 * @return the last double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are no
-	 * doubles in the {@code DoubleSequence}.
+	 * doubles
+	 * in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble last() {
 		DoubleIterator iterator = iterator();
@@ -854,7 +857,8 @@ public interface DoubleSequence extends DoubleCollection {
 
 	/**
 	 * @return the first double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
+	 * {@link
+	 * OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
 	 * @see #at(int, DoublePredicate)
@@ -929,7 +933,7 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**
