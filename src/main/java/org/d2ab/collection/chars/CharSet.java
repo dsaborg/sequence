@@ -93,24 +93,24 @@ public interface CharSet extends Set<Character>, CharCollection {
 	 */
 	abstract class Base extends CharCollection.Base implements CharSet {
 		public static CharSet create(char... chars) {
-			return create(CharSortedSet.create(chars));
+			return from(CharSortedSet.create(chars));
 		}
 
-		public static CharSet create(final CharSet set) {
+		public static CharSet from(final CharCollection collection) {
 			return new CharSet.Base() {
 				@Override
 				public CharIterator iterator() {
-					return set.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return set.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addChar(char x) {
-					return set.addChar(x);
+					return collection.addChar(x);
 				}
 			};
 		}

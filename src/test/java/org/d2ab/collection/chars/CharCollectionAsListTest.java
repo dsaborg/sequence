@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.d2ab.sequence;
+package org.d2ab.collection.chars;
 
-import org.d2ab.collection.chars.CharList;
-import org.d2ab.collection.chars.CharListIterator;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
 
@@ -34,12 +32,10 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class CharSeqAsListTest {
-	private final CharSeq empty = CharSeq.from(CharList.create());
-	private final CharList emptyList = empty.asList();
-
-	private final CharSeq sequence = CharSeq.from(CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-	private final CharList list = sequence.asList();
+public class CharCollectionAsListTest {
+	private final CharList emptyList = CharCollection.Base.from(CharList.create()).asList();
+	private final CharList list = CharCollection.Base.from(
+			CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')).asList();
 
 	@Test
 	public void subList() {
@@ -48,26 +44,21 @@ public class CharSeqAsListTest {
 
 		assertThat(subList.removeCharAt(1), is('d'));
 		twice(() -> assertThat(subList, containsChars('c', 'e', 'a', 'b', 'c')));
-		twice(() -> assertThat(sequence, containsChars('a', 'b', 'c', 'e', 'a', 'b', 'c', 'd', 'e')));
 
 		assertThat(subList.removeChar('e'), is(true));
 		twice(() -> assertThat(subList, containsChars('c', 'a', 'b', 'c')));
-		twice(() -> assertThat(sequence, containsChars('a', 'b', 'c', 'a', 'b', 'c', 'd', 'e')));
 
 		CharIterator subListIterator = subList.iterator();
 		assertThat(subListIterator.hasNext(), is(true));
 		assertThat(subListIterator.nextChar(), is('c'));
 		subListIterator.remove();
 		twice(() -> assertThat(subList, containsChars('a', 'b', 'c')));
-		twice(() -> assertThat(sequence, containsChars('a', 'b', 'a', 'b', 'c', 'd', 'e')));
 
 		subList.removeCharsIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsChars('a', 'c')));
-		twice(() -> assertThat(sequence, containsChars('a', 'b', 'a', 'c', 'd', 'e')));
 
 		subList.clear();
 		twice(() -> assertThat(subList, is(emptyIterable())));
-		twice(() -> assertThat(sequence, containsChars('a', 'b', 'd', 'e')));
 	}
 
 	@Test
@@ -106,7 +97,6 @@ public class CharSeqAsListTest {
 		iterator.remove();
 
 		assertThat(list, containsChars('a', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -117,13 +107,11 @@ public class CharSeqAsListTest {
 
 	@Test
 	public void addChar() {
-		expecting(UnsupportedOperationException.class, () -> emptyList.addChar('a'));
-		assertThat(emptyList, is(emptyIterable()));
-		assertThat(empty, is(emptyIterable()));
+		assertThat(emptyList.addChar('a'), is(true));
+		assertThat(emptyList, containsChars('a'));
 
-		expecting(UnsupportedOperationException.class, () -> list.addChar('f'));
-		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list.addChar('f'), is(true));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'f'));
 	}
 
 	@Test
@@ -132,11 +120,9 @@ public class CharSeqAsListTest {
 
 		assertThat(list.removeChar('b'), is(true));
 		assertThat(list, containsChars('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 
 		assertThat(list.removeChar('q'), is(false));
 		assertThat(list, containsChars('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -154,11 +140,9 @@ public class CharSeqAsListTest {
 
 		expecting(UnsupportedOperationException.class, () -> emptyList.addAllChars(CharList.create('a', 'b')));
 		assertThat(emptyList, is(emptyIterable()));
-		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> list.addAllChars(CharList.create('f', 'g', 'h')));
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -171,7 +155,6 @@ public class CharSeqAsListTest {
 
 		expecting(UnsupportedOperationException.class, () -> list.addAllCharsAt(2, CharList.create('q', 'p', 'r')));
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -181,7 +164,6 @@ public class CharSeqAsListTest {
 
 		assertThat(list.removeAllChars(CharList.create('a', 'b', 'e')), is(true));
 		assertThat(list, containsChars('c', 'd', 'c', 'd'));
-		assertThat(sequence, containsChars('c', 'd', 'c', 'd'));
 	}
 
 	@Test
@@ -191,7 +173,6 @@ public class CharSeqAsListTest {
 
 		assertThat(list.retainAllChars(CharList.create('a', 'b', 'c')), is(true));
 		assertThat(list, containsChars('a', 'b', 'c', 'a', 'b', 'c'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'a', 'b', 'c'));
 	}
 
 	@Test
@@ -201,7 +182,6 @@ public class CharSeqAsListTest {
 
 		expecting(UnsupportedOperationException.class, () -> list.replaceAllChars(x -> (char) (x + 1)));
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -211,7 +191,6 @@ public class CharSeqAsListTest {
 
 		expecting(UnsupportedOperationException.class, list::sortChars);
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -221,7 +200,6 @@ public class CharSeqAsListTest {
 
 		list.clear();
 		assertThat(list, is(emptyIterable()));
-		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
@@ -259,7 +237,6 @@ public class CharSeqAsListTest {
 	public void setChar() {
 		expecting(UnsupportedOperationException.class, () -> list.setChar(2, 'q'));
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -302,7 +279,6 @@ public class CharSeqAsListTest {
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
 		assertThat(emptyList, is(emptyIterable()));
-		assertThat(empty, is(emptyIterable()));
 	}
 
 	@Test
@@ -332,7 +308,6 @@ public class CharSeqAsListTest {
 		assertThat(listIterator.nextChar(), is('d'));
 
 		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
-		assertThat(sequence, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
@@ -364,7 +339,6 @@ public class CharSeqAsListTest {
 		assertThat(i, is(10));
 
 		assertThat(list, is(emptyIterable()));
-		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test
@@ -384,7 +358,6 @@ public class CharSeqAsListTest {
 		assertThat(i, is(10));
 
 		assertThat(list, is(emptyIterable()));
-		assertThat(sequence, is(emptyIterable()));
 	}
 
 	@Test

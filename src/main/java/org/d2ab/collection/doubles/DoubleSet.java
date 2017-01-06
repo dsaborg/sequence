@@ -116,24 +116,24 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 	 */
 	abstract class Base extends DoubleCollection.Base implements DoubleSet {
 		public static DoubleSet create(double... doubles) {
-			return create(DoubleSortedSet.create(doubles));
+			return from(DoubleSortedSet.create(doubles));
 		}
 
-		public static DoubleSet create(final DoubleSet set) {
+		public static DoubleSet from(final DoubleCollection collection) {
 			return new DoubleSet.Base() {
 				@Override
 				public DoubleIterator iterator() {
-					return set.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return set.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addDoubleExactly(double x) {
-					return set.addDoubleExactly(x);
+					return collection.addDoubleExactly(x);
 				}
 			};
 		}

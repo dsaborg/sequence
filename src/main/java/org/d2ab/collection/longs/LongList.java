@@ -86,6 +86,11 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	@Override
+	default LongList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Long && containsLong((long) o);
 	}
@@ -322,10 +327,10 @@ public interface LongList extends List<Long>, LongCollection {
 	 */
 	abstract class Base extends LongCollection.Base implements LongList {
 		public static LongList create(long... longs) {
-			return create(LongList.create(longs));
+			return from(LongList.create(longs));
 		}
 
-		public static LongList create(final LongCollection collection) {
+		public static LongList from(final LongCollection collection) {
 			return new LongList.Base() {
 				@Override
 				public LongIterator iterator() {
@@ -344,7 +349,7 @@ public interface LongList extends List<Long>, LongCollection {
 			};
 		}
 
-		public static LongList create(final LongList list) {
+		public static LongList from(final LongList list) {
 			return new LongList.Base() {
 				@Override
 				public LongIterator iterator() {

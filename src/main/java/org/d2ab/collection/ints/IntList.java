@@ -89,6 +89,11 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	@Override
+	default IntList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Integer && containsInt((int) o);
 	}
@@ -340,10 +345,10 @@ public interface IntList extends List<Integer>, IntCollection {
 	 */
 	abstract class Base extends IntCollection.Base implements IntList {
 		public static IntList create(int... ints) {
-			return create(IntList.create(ints));
+			return from(IntList.create(ints));
 		}
 
-		public static IntList create(final IntCollection collection) {
+		public static IntList from(final IntCollection collection) {
 			return new IntList.Base() {
 				@Override
 				public IntIterator iterator() {
@@ -362,7 +367,7 @@ public interface IntList extends List<Integer>, IntCollection {
 			};
 		}
 
-		public static IntList create(final IntList list) {
+		public static IntList from(final IntList list) {
 			return new IntList.Base() {
 				@Override
 				public IntIterator iterator() {

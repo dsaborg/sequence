@@ -204,24 +204,24 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	abstract class Base extends DoubleSet.Base implements DoubleSortedSet {
 		public static DoubleSortedSet create(double... doubles) {
-			return create(DoubleSortedSet.create(doubles));
+			return from(DoubleSortedSet.create(doubles));
 		}
 
-		public static DoubleSortedSet create(final DoubleSortedSet sortedSet) {
+		public static DoubleSortedSet from(final DoubleCollection collection) {
 			return new DoubleSortedSet.Base() {
 				@Override
 				public DoubleIterator iterator() {
-					return sortedSet.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return sortedSet.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addDoubleExactly(double x) {
-					return sortedSet.addDoubleExactly(x);
+					return collection.addDoubleExactly(x);
 				}
 			};
 		}

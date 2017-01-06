@@ -86,6 +86,11 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	@Override
+	default CharList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Character && containsChar((char) o);
 	}
@@ -321,7 +326,11 @@ public interface CharList extends List<Character>, CharCollection {
 	 * Base class for {@link CharList} implementations.
 	 */
 	abstract class Base extends CharCollection.Base implements CharList {
-		public static CharList create(final CharCollection collection) {
+		public static CharList create(char... chars) {
+			return from(CharList.create(chars));
+		}
+
+		public static CharList from(final CharCollection collection) {
 			return new CharList.Base() {
 				@Override
 				public CharIterator iterator() {
@@ -340,11 +349,7 @@ public interface CharList extends List<Character>, CharCollection {
 			};
 		}
 
-		public static CharList create(char... chars) {
-			return create(CharList.create(chars));
-		}
-
-		public static CharList create(final CharList list) {
+		public static CharList from(final CharList list) {
 			return new CharList.Base() {
 				@Override
 				public CharIterator iterator() {

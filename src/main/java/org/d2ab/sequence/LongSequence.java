@@ -904,27 +904,6 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return a {@link LongList} view of this {@code LongSequence}, which is updated in real time as the backing store
-	 * of the {@code LongSequence} changes. The list does not implement {@link RandomAccess} and is best accessed in
-	 * sequence.
-	 *
-	 * @since 2.1
-	 */
-	default LongList asList() {
-		return new LongList.Base() {
-			@Override
-			public LongIterator iterator() {
-				return LongSequence.this.iterator();
-			}
-
-			@Override
-			public int size() {
-				return LongSequence.this.size();
-			}
-		};
-	}
-
-	/**
 	 * Join this {@code LongSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {

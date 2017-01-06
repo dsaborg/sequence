@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
-public class LongListFowardListIteratorTest {
+public class LongListForwardListIteratorTest {
 	private final LongList empty = createLongList();
 	private final LongList list = createLongList(1, 2, 3, 4, 5);
 

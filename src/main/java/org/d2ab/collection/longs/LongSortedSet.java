@@ -151,24 +151,24 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 	abstract class Base extends LongSet.Base implements LongSortedSet {
 		public static LongSortedSet create(long... longs) {
-			return create(LongSortedSet.create(longs));
+			return from(LongSortedSet.create(longs));
 		}
 
-		public static LongSortedSet create(final LongSortedSet sortedSet) {
+		public static LongSortedSet from(final LongCollection collection) {
 			return new LongSortedSet.Base() {
 				@Override
 				public LongIterator iterator() {
-					return sortedSet.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return sortedSet.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addLong(long x) {
-					return sortedSet.addLong(x);
+					return collection.addLong(x);
 				}
 			};
 		}

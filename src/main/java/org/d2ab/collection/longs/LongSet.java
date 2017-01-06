@@ -93,24 +93,24 @@ public interface LongSet extends Set<Long>, LongCollection {
 	 */
 	abstract class Base extends LongCollection.Base implements LongSet {
 		public static LongSet create(long... longs) {
-			return create(LongSortedSet.create(longs));
+			return from(LongSortedSet.create(longs));
 		}
 
-		public static LongSet create(final LongSet set) {
+		public static LongSet from(final LongCollection collection) {
 			return new LongSet.Base() {
 				@Override
 				public LongIterator iterator() {
-					return set.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return set.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addLong(long x) {
-					return set.addLong(x);
+					return collection.addLong(x);
 				}
 			};
 		}

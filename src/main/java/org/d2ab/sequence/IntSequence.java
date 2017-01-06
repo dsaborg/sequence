@@ -905,17 +905,6 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return an {@link IntList} view of this {@code IntSequence}, which is updated in real time as the backing store
-	 * of the {@code IntSequence} changes. The list does not implement {@link RandomAccess} and is best accessed in
-	 * sequence.
-	 *
-	 * @since 2.1
-	 */
-	default IntList asList() {
-		return IntList.Base.create(this);
-	}
-
-	/**
 	 * Join this {@code IntSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {

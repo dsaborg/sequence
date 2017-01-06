@@ -313,5 +313,4 @@ public class DoubleCollectionTest {
 		for (double randomValue : randomValues)
 			assertThat(empty.removeDoubleExactly(randomValue), is(false));
 	}
-
 }

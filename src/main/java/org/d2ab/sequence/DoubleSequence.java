@@ -766,17 +766,6 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return a {@link DoubleList} view of this {@code DoubleSequence}, which is updated in real time as the backing
-	 * store of the {@code DoubleSequence} changes. The list does not implement {@link RandomAccess} and is best
-	 * accessed in sequence.
-	 *
-	 * @since 2.1
-	 */
-	default DoubleList asList() {
-		return DoubleList.Base.create(this);
-	}
-
-	/**
 	 * Join this {@code DoubleSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {

@@ -21,6 +21,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.util.Strict;
 
 import java.util.Collection;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -61,6 +62,16 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	 */
 	default char[] toCharArray() {
 		return new ArrayCharList(this).toCharArray();
+	}
+
+	/**
+	 * @return a {@link CharList} view of this {@code CharCollection}, which is updated in real time as the {@code
+	 * CharCollection} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 2.2
+	 */
+	default CharList asList() {
+		return CharList.Base.from(this);
 	}
 
 	@Override
@@ -160,10 +171,10 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	 */
 	abstract class Base implements CharCollection {
 		public static CharCollection create(char... chars) {
-			return create(CharList.create(chars));
+			return from(CharList.create(chars));
 		}
 
-		public static CharCollection create(final CharCollection collection) {
+		public static CharCollection from(final CharCollection collection) {
 			return new CharCollection.Base() {
 				@Override
 				public CharIterator iterator() {

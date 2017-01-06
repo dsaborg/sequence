@@ -57,6 +57,12 @@ public class DoubleListTest {
 	}
 
 	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(sameInstance(empty)));
+		assertThat(list.asList(), is(sameInstance(list)));
+	}
+
+	@Test
 	public void toDoubleArray() {
 		assertArrayEquals(new double[0], empty.toDoubleArray(), 0);
 		assertArrayEquals(new double[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toDoubleArray(), 0);
@@ -427,9 +433,12 @@ public class DoubleListTest {
 	@Test
 	public void getDouble() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(0));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getDouble(2), is(3.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(12));
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(10));
 	}
 
 	@Test

@@ -14,43 +14,58 @@
  * limitations under the License.
  */
 
-package org.d2ab.collection.chars;
+package org.d2ab.collection.ints;
 
-import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
-public class CharListForwardListIteratorTest {
-	private final CharList empty = CharList.Base.from(new BitCharSet());
-	private final CharList list = CharList.Base.from(new BitCharSet('a', 'b', 'c', 'd', 'e'));
+public class IntListForwardListIteratorTest {
+	private final IntList empty = createIntList();
+	private final IntList list = createIntList(1, 2, 3, 4, 5);
+
+	private static IntList createIntList(int... items) {
+		IntList backing = IntList.create(items);
+		return new IntList.Base() {
+			@Override
+			public IntIterator iterator() {
+				return backing.iterator();
+			}
+
+			@Override
+			public int size() {
+				return backing.size();
+			}
+		};
+	}
 
 	@Test
 	public void listIteratorEmpty() {
-		CharListIterator emptyIterator = empty.listIterator();
+		IntListIterator emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
-		expecting(NoSuchElementException.class, emptyIterator::nextChar);
-		expecting(UnsupportedOperationException.class, emptyIterator::previousChar);
+		expecting(NoSuchElementException.class, emptyIterator::nextInt);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousInt);
 
 		assertThat(empty, is(emptyIterable()));
 	}
 
 	@Test
 	public void listIteratorAtEnd() {
-		CharListIterator listIterator = list.listIterator(5);
+		IntListIterator listIterator = list.listIterator(5);
 		assertThat(listIterator.hasNext(), is(false));
-		expecting(NoSuchElementException.class, listIterator::nextChar);
+		expecting(NoSuchElementException.class, listIterator::nextInt);
 	}
 
 	@Test
@@ -60,98 +75,98 @@ public class CharListForwardListIteratorTest {
 
 	@Test
 	public void listIterator() {
-		CharListIterator listIterator = list.listIterator();
+		IntListIterator listIterator = list.listIterator();
 
 		expecting(IllegalStateException.class, listIterator::remove);
-		expecting(UnsupportedOperationException.class, () -> listIterator.set('p'));
-		expecting(UnsupportedOperationException.class, listIterator::previousChar);
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(32));
+		expecting(UnsupportedOperationException.class, listIterator::previousInt);
 		assertThat(listIterator.hasNext(), is(true));
 		expecting(UnsupportedOperationException.class, listIterator::hasPrevious);
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.add('q'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(33));
 
-		assertThat(listIterator.nextChar(), is('a'));
+		assertThat(listIterator.nextInt(), is(1));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
 
-		assertThat(listIterator.nextChar(), is('b'));
+		assertThat(listIterator.nextInt(), is(2));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
-		assertThat(listIterator.nextChar(), is('c'));
+		assertThat(listIterator.nextInt(), is(3));
 		listIterator.remove();
 		expecting(IllegalStateException.class, listIterator::remove);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
-		expecting(UnsupportedOperationException.class, listIterator::previousChar);
+		expecting(UnsupportedOperationException.class, listIterator::previousInt);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.set('r'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
-		assertThat(listIterator.nextChar(), is('d'));
-		expecting(UnsupportedOperationException.class, () -> listIterator.add('s'));
+		assertThat(listIterator.nextInt(), is(4));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(18));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
 
-		assertThat(listIterator.nextChar(), is('e'));
+		assertThat(listIterator.nextInt(), is(5));
 		assertThat(listIterator.hasNext(), is(false));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
 
-		assertThat(list, containsChars('a', 'b', 'd', 'e'));
+		assertThat(list, containsInts(1, 2, 4, 5));
 	}
 
 	@Test
 	public void exhaustiveListIterator() {
 		twice(() -> {
-			CharListIterator listIterator = list.listIterator();
+			IntListIterator listIterator = list.listIterator();
 			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
-				assertThat(listIterator.nextChar(), is((char) (i.get() + 'a')));
+				assertThat(listIterator.nextInt(), is(i.get() + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(5));
-			expecting(NoSuchElementException.class, listIterator::nextChar);
+			expecting(NoSuchElementException.class, listIterator::nextInt);
 		});
 	}
 
 	@Test
 	public void iteratorRemoveAll() {
-		CharIterator iterator = list.iterator();
+		IntIterator iterator = list.iterator();
 
 		int i = 0;
 		while (iterator.hasNext()) {
-			assertThat(iterator.nextChar(), is((char) (i + 'a')));
+			assertThat(iterator.nextInt(), is(i + 1));
 			iterator.remove();
 			i++;
 		}
 		assertThat(i, is(5));
-		expecting(NoSuchElementException.class, iterator::nextChar);
+		expecting(NoSuchElementException.class, iterator::nextInt);
 
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
 	public void listIteratorRemove() {
-		CharListIterator listIterator = list.listIterator();
+		IntListIterator listIterator = list.listIterator();
 
 		int i = 0;
 		while (listIterator.hasNext()) {
-			assertThat(listIterator.nextChar(), is((char) (i + 'a')));
+			assertThat(listIterator.nextInt(), is(i + 1));
 			assertThat(listIterator.nextIndex(), is(1));
 			assertThat(listIterator.previousIndex(), is(0));
 			listIterator.remove();
@@ -160,7 +175,7 @@ public class CharListForwardListIteratorTest {
 			i++;
 		}
 		assertThat(i, is(5));
-		expecting(NoSuchElementException.class, listIterator::nextChar);
+		expecting(NoSuchElementException.class, listIterator::nextInt);
 
 		assertThat(list, is(emptyIterable()));
 	}

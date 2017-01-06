@@ -112,24 +112,24 @@ public interface IntSet extends Set<Integer>, IntCollection {
 	 */
 	abstract class Base extends IntCollection.Base implements IntSet {
 		public static IntSet create(int... ints) {
-			return create(IntSortedSet.create(ints));
+			return from(IntSortedSet.create(ints));
 		}
 
-		public static IntSet create(final IntSet set) {
+		public static IntSet from(final IntCollection collection) {
 			return new IntSet.Base() {
 				@Override
 				public IntIterator iterator() {
-					return set.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return set.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addInt(int x) {
-					return set.addInt(x);
+					return collection.addInt(x);
 				}
 			};
 		}

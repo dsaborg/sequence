@@ -21,6 +21,7 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.util.Strict;
 
 import java.util.Collection;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -61,6 +62,16 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	 */
 	default double[] toDoubleArray() {
 		return new ArrayDoubleList(this).toDoubleArray();
+	}
+
+	/**
+	 * @return a {@link DoubleList} view of this {@code DoubleCollection}, which is updated as the {@code
+	 * DoubleSequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 2.2
+	 */
+	default DoubleList asList() {
+		return DoubleList.Base.from(this);
 	}
 
 	@Override
@@ -118,11 +129,10 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	}
 
 	default boolean addAllDoubles(DoubleCollection c) {
-		if (c.isEmpty())
-			return false;
-
-		c.forEachDouble(this::addDoubleExactly);
-		return true;
+		boolean changed = false;
+		for (DoubleIterator iterator = c.iterator(); iterator.hasNext(); )
+			changed |= addDoubleExactly(iterator.nextDouble());
+		return changed;
 	}
 
 	@Override
@@ -172,10 +182,10 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	 */
 	abstract class Base implements DoubleCollection {
 		public static DoubleCollection create(double... doubles) {
-			return create(DoubleList.create(doubles));
+			return from(DoubleList.create(doubles));
 		}
 
-		public static DoubleCollection create(final DoubleCollection collection) {
+		public static DoubleCollection from(final DoubleCollection collection) {
 			return new DoubleCollection.Base() {
 				@Override
 				public DoubleIterator iterator() {

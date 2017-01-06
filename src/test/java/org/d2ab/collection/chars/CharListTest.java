@@ -59,6 +59,12 @@ public class CharListTest {
 	}
 
 	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(sameInstance(empty)));
+		assertThat(list.asList(), is(sameInstance(list)));
+	}
+
+	@Test
 	public void toCharArray() {
 		assertArrayEquals(new char[0], empty.toCharArray());
 		assertArrayEquals(new char[]{'a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'}, list.toCharArray());

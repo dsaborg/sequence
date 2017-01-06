@@ -33,28 +33,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class LongListTest {
-	private final LongList empty = createLongList();
-	private final LongList list = createLongList(1, 2, 3, 4, 5);
-
-	private static LongList createLongList(long... items) {
-		LongList backing = LongList.create(items);
-		return new LongList.Base() {
-			@Override
-			public LongIterator iterator() {
-				return backing.iterator();
-			}
-
-			@Override
-			public LongListIterator listIterator(int index) {
-				return backing.listIterator(index);
-			}
-
-			@Override
-			public int size() {
-				return backing.size();
-			}
-		};
-	}
+	private final LongList empty = LongList.Base.create();
+	private final LongList list = LongList.Base.create(1, 2, 3, 4, 5);
 
 	@Test
 	public void size() {
@@ -75,6 +55,12 @@ public class LongListTest {
 
 		list.clear();
 		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(sameInstance(empty)));
+		assertThat(list.asList(), is(sameInstance(list)));
 	}
 
 	@Test
@@ -310,7 +296,7 @@ public class LongListTest {
 
 	@Test
 	public void subList() {
-		LongList list = createLongList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		LongList list = LongList.Base.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
 		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
@@ -448,9 +434,12 @@ public class LongListTest {
 	@Test
 	public void getLong() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(0));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getLong(2), is(3L));
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(7));
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(5));
 	}
 
 	@Test

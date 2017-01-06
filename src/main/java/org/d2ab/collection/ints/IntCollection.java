@@ -23,6 +23,7 @@ import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.util.Strict;
 
 import java.util.Collection;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -63,6 +64,16 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	 */
 	default int[] toIntArray() {
 		return new ArrayIntList(this).toIntArray();
+	}
+
+	/**
+	 * @return an {@link IntList} view of this {@code IntCollection}, which is updated as the {@code IntCollection}
+	 * changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 2.2
+	 */
+	default IntList asList() {
+		return IntList.Base.from(this);
 	}
 
 	@Override
@@ -165,10 +176,10 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	 */
 	abstract class Base implements IntCollection {
 		public static IntCollection create(int... ints) {
-			return create(IntList.create(ints));
+			return from(IntList.create(ints));
 		}
 
-		public static IntCollection create(final IntCollection collection) {
+		public static IntCollection from(final IntCollection collection) {
 			return new Base() {
 				@Override
 				public IntIterator iterator() {

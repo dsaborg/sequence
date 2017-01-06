@@ -153,24 +153,24 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 	abstract class Base extends IntSet.Base implements IntSortedSet {
 		public static IntSortedSet create(int... ints) {
-			return create(IntSortedSet.create(ints));
+			return from(IntSortedSet.create(ints));
 		}
 
-		public static IntSortedSet create(final IntSortedSet sortedSet) {
+		public static IntSortedSet from(final IntCollection collection) {
 			return new IntSortedSet.Base() {
 				@Override
 				public IntIterator iterator() {
-					return sortedSet.iterator();
+					return collection.iterator();
 				}
 
 				@Override
 				public int size() {
-					return sortedSet.size();
+					return collection.size();
 				}
 
 				@Override
 				public boolean addInt(int x) {
-					return sortedSet.addInt(x);
+					return collection.addInt(x);
 				}
 			};
 		}

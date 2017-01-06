@@ -20,6 +20,7 @@ import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -39,6 +40,16 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	@Override
 	default void clear() {
 		iterator().removeAll();
+	}
+
+	/**
+	 * @return a {@link LongList} view of this {@code LongCollection}, which is updated as the {@code LongCollection}
+	 * changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 2.2
+	 */
+	default LongList asList() {
+		return LongList.Base.from(this);
 	}
 
 	@Override
@@ -127,10 +138,10 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	 */
 	abstract class Base implements LongCollection {
 		public static LongCollection create(long... longs) {
-			return create(LongList.create(longs));
+			return from(LongList.create(longs));
 		}
 
-		public static LongCollection create(final LongCollection collection) {
+		public static LongCollection from(final LongCollection collection) {
 			return new LongCollection.Base() {
 				@Override
 				public LongIterator iterator() {

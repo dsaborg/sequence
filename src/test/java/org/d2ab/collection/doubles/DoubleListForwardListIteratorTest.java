@@ -30,8 +30,8 @@ import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
 public class DoubleListForwardListIteratorTest {
-	private final DoubleList empty = DoubleList.Base.create(new SortedListDoubleSet());
-	private final DoubleList list = DoubleList.Base.create(new SortedListDoubleSet(1, 2, 3, 4, 5));
+	private final DoubleList empty = DoubleList.Base.from(new SortedListDoubleSet());
+	private final DoubleList list = DoubleList.Base.from(new SortedListDoubleSet(1, 2, 3, 4, 5));
 
 	@Test
 	public void listIteratorEmpty() {

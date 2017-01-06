@@ -59,6 +59,12 @@ public class IntListTest {
 	}
 
 	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(sameInstance(empty)));
+		assertThat(list.asList(), is(sameInstance(list)));
+	}
+
+	@Test
 	public void toIntArray() {
 		assertArrayEquals(new int[0], empty.toIntArray());
 		assertArrayEquals(new int[]{1, 2, 3, 4, 5}, list.toIntArray());

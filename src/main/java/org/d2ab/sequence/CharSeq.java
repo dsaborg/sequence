@@ -825,16 +825,6 @@ public interface CharSeq extends CharCollection {
 	}
 
 	/**
-	 * @return a {@link CharList} view of this {@code CharSeq}, which is updated in real time as the backing store of
-	 * the {@code CharSeq} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
-	 *
-	 * @since 2.1
-	 */
-	default CharList asList() {
-		return CharList.Base.create(this);
-	}
-
-	/**
 	 * Join this {@code CharSeq} into a string.
 	 *
 	 * @since 1.2

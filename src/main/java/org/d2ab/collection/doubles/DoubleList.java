@@ -87,6 +87,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	@Override
+	default DoubleList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Double && containsDoubleExactly((double) o);
 	}
@@ -347,7 +352,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	 * Base class for {@link DoubleList} implementations.
 	 */
 	abstract class Base extends DoubleCollection.Base implements DoubleList {
-		public static DoubleList create(final DoubleCollection collection) {
+		public static DoubleList create(double... doubles) {
+			return from(DoubleList.create(doubles));
+		}
+
+		public static DoubleList from(final DoubleCollection collection) {
 			return new DoubleList.Base() {
 				@Override
 				public DoubleIterator iterator() {
@@ -366,11 +375,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 			};
 		}
 
-		public static DoubleList create(double... doubles) {
-			return create(DoubleList.create(doubles));
-		}
-
-		public static DoubleList create(final DoubleList list) {
+		public static DoubleList from(final DoubleList list) {
 			return new DoubleList.Base() {
 				@Override
 				public DoubleIterator iterator() {
