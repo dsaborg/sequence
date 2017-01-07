@@ -222,11 +222,25 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	default boolean removeAllDoublesExactly(DoubleIterable c) {
-		return removeDoublesIf(c::containsDoubleExactly);
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.containsDoubleExactly(iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeAllDoubles(DoubleIterable c, double precision) {
-		return removeDoublesIf(x -> c.containsDouble(x, precision));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.containsDouble(iterator.nextDouble(), precision)) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllDoublesExactly(double... xs) {

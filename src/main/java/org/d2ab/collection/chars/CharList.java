@@ -220,7 +220,14 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return removeCharsIf(c::contains);
+		boolean modified = false;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	@Override

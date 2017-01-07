@@ -155,7 +155,14 @@ public interface LongIterable extends Iterable<Long> {
 	}
 
 	default boolean removeAllLongs(LongIterable c) {
-		return removeLongsIf(c::containsLong);
+		boolean modified = false;
+		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.containsLong(iterator.nextLong())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllLongs(LongIterable c) {

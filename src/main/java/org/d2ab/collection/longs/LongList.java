@@ -220,7 +220,14 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return removeLongsIf(c::contains);
+		boolean modified = false;
+		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextLong())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	@Override

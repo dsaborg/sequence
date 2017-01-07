@@ -966,7 +966,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> flatten() {
-		return ChainingIterable.<U>concatAny(this)::iterator;
+		return ChainingIterable.<T, U>flatten(this, Iterables::from)::iterator;
 	}
 
 	/**
@@ -1032,8 +1032,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
-		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
-		return entrySequence.collect(constructor, Maps::put);
+		M result = constructor.get();
+		for (Entry<K, V> t : (Sequence<Entry<K, V>>) this)
+			result.put(t.getKey(), t.getValue());
+		return result;
 	}
 
 	/**

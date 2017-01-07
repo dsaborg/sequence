@@ -59,7 +59,8 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 
 	@Override
 	public void clear() {
-		collections.forEach(Collection::clear);
+		for (Collection<T> c : collections)
+			c.clear();
 	}
 
 	@Override

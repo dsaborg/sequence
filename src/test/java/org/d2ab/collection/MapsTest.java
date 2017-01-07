@@ -32,6 +32,13 @@ import static org.junit.Assert.assertThat;
 
 public class MapsTest {
 	@Test
+	public void constructor() {
+		new Maps() {
+			// test coverage
+		};
+	}
+
+	@Test
 	public void entry() {
 		Entry<Integer, String> entry = Maps.entry(1, "2");
 

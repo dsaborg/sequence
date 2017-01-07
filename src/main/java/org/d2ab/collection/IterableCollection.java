@@ -227,7 +227,14 @@ public interface IterableCollection<T> extends Collection<T> {
 	 */
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return removeIf(c::contains);
+		boolean removed = false;
+		for (Iterator<T> iterator = iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.next())) {
+				iterator.remove();
+				removed = true;
+			}
+		}
+		return removed;
 	}
 
 	/**

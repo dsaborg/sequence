@@ -29,24 +29,24 @@ import static org.d2ab.collection.Comparators.naturalOrderNullsFirst;
 /**
  * Utility methods for {@link Map} instances
  */
-public interface Maps {
-	Comparator<Entry> COMPARATOR =
+public abstract class Maps {
+	private static final Comparator<Entry> COMPARATOR =
 			comparing((Function<Entry, Object>) Entry::getKey, naturalOrderNullsFirst()).thenComparing(
 					(Function<Entry, Object>) Entry::getValue, naturalOrderNullsFirst());
 
-	static <K, V> Builder<K, V> builder(IntFunction<Map<K, V>> constructor, int initialCapacity) {
+	public static <K, V> Builder<K, V> builder(IntFunction<Map<K, V>> constructor, int initialCapacity) {
 		return new Builder<>(() -> constructor.apply(initialCapacity));
 	}
 
-	static <K, V> Builder<K, V> builder(K key, V value) {
+	public static <K, V> Builder<K, V> builder(K key, V value) {
 		return Maps.<K, V>builder().put(key, value);
 	}
 
-	static <K, V> Builder<K, V> builder() {
+	public static <K, V> Builder<K, V> builder() {
 		return builder(HashMap::new);
 	}
 
-	static <K, V> Builder<K, V> builder(Supplier<Map<K, V>> constructor) {
+	public static <K, V> Builder<K, V> builder(Supplier<Map<K, V>> constructor) {
 		return new Builder<>(constructor);
 	}
 
@@ -54,24 +54,24 @@ public interface Maps {
 	 * Creates a new {@link Entry} with the given key and value. Calling {@link Entry#setValue(Object)} on the
 	 * entry will result in an {@link UnsupportedOperationException} being thrown.
 	 */
-	static <K, V> Entry<K, V> entry(K key, V value) {
+	public static <K, V> Entry<K, V> entry(K key, V value) {
 		return new EntryImpl<>(key, value);
 	}
 
-	static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> entry) {
+	public static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> entry) {
 		result.put(entry.getKey(), entry.getValue());
 		return result;
 	}
 
-	static <T> Iterator<T> iterator(Entry<? extends T, ? extends T> entry) {
+	public static <T> Iterator<T> iterator(Entry<? extends T, ? extends T> entry) {
 		return new EntryIterator<>(entry);
 	}
 
-	static <K, V> Comparator<? super Entry<? extends K, ? extends V>> entryComparator() {
+	public static <K, V> Comparator<? super Entry<? extends K, ? extends V>> entryComparator() {
 		return COMPARATOR;
 	}
 
-	class Builder<K, V> {
+	public static class Builder<K, V> {
 		private final Supplier<Map<K, V>> constructor;
 		private Map<K, V> map;
 
@@ -93,7 +93,7 @@ public interface Maps {
 		}
 	}
 
-	class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>>, Serializable {
+	private static class EntryImpl<K, V> implements Entry<K, V>, Comparable<Entry<K, V>>, Serializable {
 		private final K key;
 		private final V value;
 
@@ -146,7 +146,7 @@ public interface Maps {
 		}
 	}
 
-	class EntryIterator<T> implements Iterator<T> {
+	private static class EntryIterator<T> implements Iterator<T> {
 		private final Entry<? extends T, ? extends T> entry;
 		int index;
 

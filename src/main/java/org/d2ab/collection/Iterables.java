@@ -22,7 +22,6 @@ import org.d2ab.util.Pair;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -191,20 +190,12 @@ public interface Iterables {
 	static <T> List<T> toList(Iterable<T> iterable) {
 		if (iterable instanceof Collection) {
 			return new ArrayList<>((Collection<T>) iterable);
-		} else {
-			return collect(iterable, ArrayList::new);
 		}
-	}
 
-	/**
-	 * @return the given {@link Iterable} collected into a {@link Collection} of the type determined by the given
-	 * {@link Collection} constructor.
-	 */
-	static <T, C extends Collection<T>> C collect(Iterable<T> iterable, Supplier<C> supplier) {
-		C collection = supplier.get();
+		List<T> list = new ArrayList<>();
 		for (T t : iterable)
-			collection.add(t);
-		return collection;
+			list.add(t);
+		return list;
 	}
 
 	/**

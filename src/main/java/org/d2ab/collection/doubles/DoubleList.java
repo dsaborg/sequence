@@ -226,7 +226,14 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return removeDoublesIf(c::contains);
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	@Override

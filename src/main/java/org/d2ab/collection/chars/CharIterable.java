@@ -206,7 +206,14 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean removeAllChars(CharIterable xs) {
-		return removeCharsIf(xs::containsChar);
+		boolean modified = false;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (xs.containsChar(iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllChars(char... xs) {

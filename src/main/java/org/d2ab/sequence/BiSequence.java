@@ -825,7 +825,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * constructor.
 	 */
 	default <M extends Map<L, R>> M toMap(Supplier<? extends M> constructor) {
-		return collect(constructor, (result, pair) -> pair.put(result));
+		M result = constructor.get();
+		for (Pair<L, R> each : this)
+			result.put(each.getLeft(), each.getRight());
+		return result;
 	}
 
 	/**
@@ -839,7 +842,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code BiSequence} into a {@link Collection} of the type determined by the given constructor.
 	 */
 	default <C extends Collection<Pair<L, R>>> C toCollection(Supplier<? extends C> constructor) {
-		return collect(constructor, Collection::add);
+		return collectInto(constructor.get());
 	}
 
 	/**
@@ -861,7 +864,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code BiSequence} into the given {@link Collection}.
 	 */
 	default <U extends Collection<Pair<L, R>>> U collectInto(U collection) {
-		return collectInto(collection, Collection::add);
+		for (Pair<L, R> t : this)
+			collection.add(t);
+		return collection;
 	}
 
 	/**

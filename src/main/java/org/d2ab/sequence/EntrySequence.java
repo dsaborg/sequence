@@ -821,7 +821,10 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * constructor.
 	 */
 	default <M extends Map<K, V>> M toMap(Supplier<? extends M> constructor) {
-		return collect(constructor, Maps::put);
+		M result = constructor.get();
+		for (Entry<K, V> t : this)
+			result.put(t.getKey(), t.getValue());
+		return result;
 	}
 
 	/**
@@ -835,7 +838,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Collect this {@code EntrySequence} into a {@link Collection} of the type determined by the given constructor.
 	 */
 	default <C extends Collection<Entry<K, V>>> C toCollection(Supplier<? extends C> constructor) {
-		return collect(constructor, Collection::add);
+		return collectInto(constructor.get());
 	}
 
 	/**

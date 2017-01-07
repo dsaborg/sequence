@@ -38,13 +38,9 @@ public class ChainingIterable<T> implements Iterable<T> {
 		return new ChainingIterable<>(Iterables.of(iterables));
 	}
 
-	public static <U> Iterable<U> concatAny(Iterable<?> containers) {
-		return flatten(containers, Iterables::from);
-	}
-
-	public static <T, U> Iterable<U> flatten(Iterable<? extends T> iterable,
+	public static <T, U> Iterable<U> flatten(Iterable<? extends T> containers,
 	                                         Function<? super T, ? extends Iterable<U>> mapper) {
-		return new ChainingIterable<>(() -> new MappingIterator<>(iterable.iterator(), mapper));
+		return new ChainingIterable<>(() -> new MappingIterator<>(containers.iterator(), mapper));
 	}
 
 	@Override

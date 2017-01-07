@@ -205,7 +205,14 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean removeAllInts(IntIterable xs) {
-		return removeIntsIf(xs::containsInt);
+		boolean modified = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (xs.containsInt(iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllInts(int... xs) {

@@ -223,7 +223,14 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return removeIntsIf(c::contains);
+		boolean modified = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	@Override

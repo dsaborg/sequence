@@ -121,7 +121,8 @@ public class ChainedList<T> extends AbstractList<T> {
 
 	@Override
 	public void clear() {
-		lists.forEach(List::clear);
+		for (List<T> l : lists)
+			l.clear();
 	}
 
 	@Override
