@@ -321,7 +321,7 @@ public class IntListTest {
 		twice(() -> assertThat(subList, containsInts(6, 7, 8)));
 		twice(() -> assertThat(list, containsInts(1, 2, 6, 7, 8, 9, 10)));
 
-		subList.removeIf(x -> x % 2 == 0);
+		subList.removeIntsIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsInts(7)));
 		twice(() -> assertThat(list, containsInts(1, 2, 7, 9, 10)));
 
@@ -336,7 +336,7 @@ public class IntListTest {
 
 	@Test
 	public void sortInts() {
-		Lists.reverse(list);
+		IntList list = IntList.Base.create(5, 4, 3, 2, 1);
 		expecting(UnsupportedOperationException.class, list::sortInts);
 		assertThat(list, containsInts(5, 4, 3, 2, 1));
 	}
@@ -405,9 +405,9 @@ public class IntListTest {
 		assertThat(list, is(equalTo(list2)));
 		assertThat(list.hashCode(), is(list2.hashCode()));
 
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
+		IntList list3 = IntList.create(5, 4, 3, 2, 1);
+		assertThat(list, is(not(equalTo(list3))));
+		assertThat(list.hashCode(), is(not(list3.hashCode())));
 	}
 
 	@Test
@@ -650,15 +650,6 @@ public class IntListTest {
 
 		assertThat(list.retainAllInts(IntList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsInts(1, 2, 3));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> x + 1);
-		assertThat(empty, is(emptyIterable()));
-
-		list.replaceAll(x -> x + 1);
-		assertThat(list, containsInts(2, 3, 4, 5, 6));
 	}
 
 	@Test

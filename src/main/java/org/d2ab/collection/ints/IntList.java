@@ -20,6 +20,7 @@ import org.d2ab.collection.Collectionz;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.*;
+import org.d2ab.util.Strict;
 
 import java.util.*;
 import java.util.function.IntUnaryOperator;
@@ -95,31 +96,46 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean contains(Object o) {
+		assert Strict.LENIENT : "IntList.contains(Object)";
+
 		return o instanceof Integer && containsInt((int) o);
 	}
 
 	@Override
 	default Integer[] toArray() {
+		assert Strict.LENIENT : "IntList.toArray()";
+
 		return toArray(new Integer[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
+		assert Strict.LENIENT : "IntList.toArray(Object[])";
+
 		return Collectionz.toArray(this, a);
 	}
 
 	@Override
 	default boolean remove(Object o) {
+		assert Strict.LENIENT : "IntList.remove(Object)";
+
 		return o instanceof Integer && removeInt((int) o);
 	}
 
 	@Override
 	default boolean add(Integer x) {
+		assert Strict.LENIENT : "IntList.add(Integer)";
+
 		return addInt(x);
 	}
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Integer> c) {
+		if (c instanceof IntCollection)
+			return addAllIntsAt(index, (IntCollection) c);
+
+		assert Strict.LENIENT : "IntList.addAll(int, Collection)";
+
 		if (c.isEmpty())
 			return false;
 
@@ -154,6 +170,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default void replaceAll(UnaryOperator<Integer> operator) {
+		assert Strict.LENIENT : "IntList.replaceAll(UnaryOperator)";
+
 		replaceAllInts(operator::apply);
 	}
 
@@ -169,6 +187,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default void sort(Comparator<? super Integer> c) {
+		assert Strict.LENIENT : "IntList.sort(Comparator)";
+
 		throw new UnsupportedOperationException();
 	}
 
@@ -183,6 +203,11 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
+		if (c instanceof IntCollection)
+			return addAllInts((IntCollection) c);
+
+		assert Strict.LENIENT : "IntList.addAll(Collection)";
+
 		return Collectionz.addAll(this, c);
 	}
 
@@ -218,11 +243,21 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		if (c instanceof IntIterable)
+			return containsAllInts((IntIterable) c);
+
+		assert Strict.LENIENT : "IntList.containsAll(Collection)";
+
 		return Collectionz.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
+		if (c instanceof IntIterable)
+			return removeAllInts((IntIterable) c);
+
+		assert Strict.LENIENT : "IntList.removeAll(Collection)";
+
 		boolean modified = false;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (c.contains(iterator.nextInt())) {
@@ -235,16 +270,25 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean removeIf(Predicate<? super Integer> filter) {
+		assert Strict.LENIENT : "IntList.removeIf(Predicate)";
+
 		return removeIntsIf(filter::test);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
+		if (c instanceof IntIterable)
+			return retainAllInts((IntIterable) c);
+
+		assert Strict.LENIENT : "IntList.retainAll(Collection)";
+
 		return removeIntsIf(x -> !c.contains(x));
 	}
 
 	@Override
 	default Integer get(int index) {
+		assert Strict.LENIENT : "IntList.get(int)";
+
 		return getInt(index);
 	}
 
@@ -258,6 +302,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default Integer set(int index, Integer x) {
+		assert Strict.LENIENT : "IntList.set(int, Integer)";
+
 		return setInt(index, x);
 	}
 
@@ -270,6 +316,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default void add(int index, Integer x) {
+		assert Strict.LENIENT : "IntList.add(int, Integer)";
+
 		addIntAt(index, x);
 	}
 
@@ -279,6 +327,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default Integer remove(int index) {
+		assert Strict.LENIENT : "IntList.remove(int)";
+
 		return removeIntAt(index);
 	}
 
@@ -291,6 +341,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
+		assert Strict.LENIENT : "IntList.lastIndexOf(Object)";
+
 		return o instanceof Integer ? lastIndexOfInt((int) o) : -1;
 	}
 
@@ -307,6 +359,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default int indexOf(Object o) {
+		assert Strict.LENIENT : "IntList.indexOf(Object)";
+
 		return o instanceof Integer ? indexOfInt((int) o) : -1;
 	}
 

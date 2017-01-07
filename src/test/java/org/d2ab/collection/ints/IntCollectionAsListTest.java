@@ -224,12 +224,12 @@ public class IntCollectionAsListTest {
 
 	@Test
 	public void get() {
-		assertThat(list.get(0), is(1));
-		assertThat(list.get(2), is(3));
-		assertThat(list.get(4), is(5));
-		assertThat(list.get(5), is(1));
-		assertThat(list.get(7), is(3));
-		assertThat(list.get(9), is(5));
+		assertThat(list.getInt(0), is(1));
+		assertThat(list.getInt(2), is(3));
+		assertThat(list.getInt(4), is(5));
+		assertThat(list.getInt(5), is(1));
+		assertThat(list.getInt(7), is(3));
+		assertThat(list.getInt(9), is(5));
 	}
 
 	@Test

@@ -20,11 +20,13 @@ import org.d2ab.collection.Lists;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -293,7 +295,7 @@ public class ArrayIntListTest {
 		twice(() -> assertThat(subList, containsInts(6, 7, 8)));
 		twice(() -> assertThat(list, containsInts(1, 2, 6, 7, 8, 9, 10)));
 
-		subList.removeIf(x -> x % 2 == 0);
+		subList.removeIntsIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsInts(7)));
 		twice(() -> assertThat(list, containsInts(1, 2, 7, 9, 10)));
 
@@ -378,23 +380,15 @@ public class ArrayIntListTest {
 		assertThat(list, is(equalTo(list2)));
 		assertThat(list.hashCode(), is(list2.hashCode()));
 
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
+		IntList list3 = IntList.create(5, 4, 3, 2, 1);
+		assertThat(list, is(not(equalTo(list3))));
+		assertThat(list.hashCode(), is(not(list3.hashCode())));
 	}
 
 	@Test
 	public void sequence() {
 		assertThat(empty.sequence(), is(emptyIterable()));
 		assertThat(list.sequence(), containsInts(1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void lastIndexOfBoxed() {
-		assertThat(empty.lastIndexOf(17), is(-1));
-
-		assertThat(list.lastIndexOf(17), is(-1));
-		assertThat(list.lastIndexOf(2), is(1));
 	}
 
 	@Test
@@ -406,14 +400,6 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void indexOfBoxed() {
-		assertThat(empty.indexOf(17), is(-1));
-
-		assertThat(list.indexOf(17), is(-1));
-		assertThat(list.indexOf(2), is(1));
-	}
-
-	@Test
 	public void indexOfInt() {
 		assertThat(empty.indexOfInt(17), is(-1));
 
@@ -422,28 +408,11 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void getBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.get(2));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.get(2), is(3));
-	}
-
-	@Test
 	public void getInt() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(2));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getInt(2), is(3));
-	}
-
-	@Test
-	public void setBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.set(2, 17));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.set(2, 17), is(3));
-		assertThat(list, containsInts(1, 2, 17, 4, 5));
 	}
 
 	@Test
@@ -456,33 +425,12 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void addBoxed() {
-		assertThat(empty.add(17), is(true));
-		assertThat(empty, containsInts(17));
-
-		assertThat(list.add(17), is(true));
-		assertThat(list, containsInts(1, 2, 3, 4, 5, 17));
-	}
-
-	@Test
 	public void addInt() {
 		assertThat(empty.addInt(17), is(true));
 		assertThat(empty, containsInts(17));
 
 		assertThat(list.addInt(17), is(true));
 		assertThat(list, containsInts(1, 2, 3, 4, 5, 17));
-	}
-
-	@Test
-	public void addAtBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 17));
-		assertThat(empty, is(emptyIterable()));
-
-		empty.add(0, 17);
-		assertThat(empty, containsInts(17));
-
-		list.add(2, 17);
-		assertThat(list, containsInts(1, 2, 17, 3, 4, 5));
 	}
 
 	@Test
@@ -495,18 +443,6 @@ public class ArrayIntListTest {
 
 		list.addIntAt(2, 17);
 		assertThat(list, containsInts(1, 2, 17, 3, 4, 5));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(Arrays.asList(1, 2, 3)), is(true));
-		assertThat(empty, containsInts(1, 2, 3));
-
-		assertThat(list.addAll(Arrays.asList(6, 7, 8)), is(true));
-		assertThat(list, containsInts(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
@@ -546,18 +482,6 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void addAllAtBoxed() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(0, Arrays.asList(1, 2, 3)), is(true));
-		assertThat(empty, containsInts(1, 2, 3));
-
-		assertThat(list.addAll(2, Arrays.asList(17, 18, 19)), is(true));
-		assertThat(list, containsInts(1, 2, 17, 18, 19, 3, 4, 5));
-	}
-
-	@Test
 	public void addAllIntsAtAtArray() {
 		assertThat(empty.addAllIntsAt(0), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -594,18 +518,6 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove((Integer) 17), is(false));
-		assertThat(empty.remove(new Object()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.remove((Integer) 17), is(false));
-		assertThat(list.remove(new Object()), is(false));
-		assertThat(list.remove((Integer) 2), is(true));
-		assertThat(list, containsInts(1, 3, 4, 5));
-	}
-
-	@Test
 	public void removeInt() {
 		assertThat(empty.removeInt(17), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -613,15 +525,6 @@ public class ArrayIntListTest {
 		assertThat(list.removeInt(17), is(false));
 		assertThat(list.removeInt(2), is(true));
 		assertThat(list, containsInts(1, 3, 4, 5));
-	}
-
-	@Test
-	public void removeAtBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.remove(2), is(3));
-		assertThat(list, containsInts(1, 2, 4, 5));
 	}
 
 	@Test
@@ -634,29 +537,11 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17), is(false));
-		assertThat(empty.contains(new Object()), is(false));
-
-		assertThat(list.contains(17), is(false));
-		assertThat(list.contains(new Object()), is(false));
-		assertThat(list.contains(2), is(true));
-	}
-
-	@Test
 	public void containsInt() {
 		assertThat(empty.containsInt(17), is(false));
 
 		assertThat(list.containsInt(17), is(false));
 		assertThat(list.containsInt(2), is(true));
-	}
-
-	@Test
-	public void containsAllBoxed() {
-		assertThat(empty.containsAll(Arrays.asList(17, 18, 19, new Object())), is(false));
-
-		assertThat(list.containsAll(Arrays.asList(17, 18, 19, new Object())), is(false));
-		assertThat(list.containsAll(Arrays.asList(1, 2, 3)), is(true));
 	}
 
 	@Test
@@ -692,16 +577,6 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1, 2, 3, 17)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeAll(Arrays.asList(17, 18, 19)), is(false));
-		assertThat(list.removeAll(Arrays.asList(1, 2, 3, 17)), is(true));
-		assertThat(list, containsInts(4, 5));
-	}
-
-	@Test
 	public void removeAllIntsArray() {
 		assertThat(empty.removeAllInts(1, 2, 3, 17), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -722,31 +597,12 @@ public class ArrayIntListTest {
 	}
 
 	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeIf(x -> x > 5), is(false));
-		assertThat(list.removeIf(x -> x > 3), is(true));
-		assertThat(list, containsInts(1, 2, 3));
-	}
-
-	@Test
 	public void removeIntsIf() {
 		assertThat(empty.removeIntsIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeIntsIf(x -> x > 5), is(false));
 		assertThat(list.removeIntsIf(x -> x > 3), is(true));
-		assertThat(list, containsInts(1, 2, 3));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1, 2, 3, 17)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.retainAll(Arrays.asList(1, 2, 3, 17)), is(true));
 		assertThat(list, containsInts(1, 2, 3));
 	}
 
@@ -766,15 +622,6 @@ public class ArrayIntListTest {
 
 		assertThat(list.retainAllInts(ArrayIntList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsInts(1, 2, 3));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> x + 1);
-		assertThat(empty, is(emptyIterable()));
-
-		list.replaceAll(x -> x + 1);
-		assertThat(list, containsInts(2, 3, 4, 5, 6));
 	}
 
 	@Test
