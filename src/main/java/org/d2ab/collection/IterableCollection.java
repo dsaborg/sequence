@@ -29,21 +29,21 @@ import java.util.function.Predicate;
  */
 @FunctionalInterface
 public interface IterableCollection<T> extends Collection<T> {
-	static <T> Collection<T> empty() {
-		return (IterableCollection<T>) Iterators::empty;
+	static <T> IterableCollection<T> empty() {
+		return Iterators::empty;
 	}
 
-	static <T> Collection<T> of(T t) {
+	static <T> IterableCollection<T> of(T t) {
 		return from(Iterables.of(t));
 	}
 
 	@SafeVarargs
-	static <T> Collection<T> of(T... ts) {
+	static <T> IterableCollection<T> of(T... ts) {
 		return from(Iterables.of(ts));
 	}
 
-	static <T> Collection<T> from(Iterable<T> iterable) {
-		return (IterableCollection<T>) iterable::iterator;
+	static <T> IterableCollection<T> from(Iterable<T> iterable) {
+		return iterable::iterator;
 	}
 
 	@Override
@@ -276,11 +276,12 @@ public interface IterableCollection<T> extends Collection<T> {
 	 */
 	default boolean retainIf(Predicate<? super T> condition) {
 		boolean modified = false;
-		for (Iterator<T> iterator = iterator(); iterator.hasNext(); )
+		for (Iterator<T> iterator = iterator(); iterator.hasNext(); ) {
 			if (!condition.test(iterator.next())) {
 				iterator.remove();
 				modified = true;
 			}
+		}
 		return modified;
 	}
 
