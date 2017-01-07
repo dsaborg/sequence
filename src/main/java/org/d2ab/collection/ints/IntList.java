@@ -32,7 +32,6 @@ import java.util.function.UnaryOperator;
  */
 public interface IntList extends List<Integer>, IntCollection {
 	// TODO: Extract out relevant parts to IterableIntList
-	// TODO: Enable Strict checking
 
 	/**
 	 * Returns an immutable {@code IntList} of the given elements. The returned {@code IntList}'s
