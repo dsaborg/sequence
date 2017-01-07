@@ -109,18 +109,17 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	}
 
 	default boolean addAllInts(int... xs) {
-		boolean changed = false;
+		boolean modified = false;
 		for (int x : xs)
-			changed |= addInt(x);
-		return changed;
+			modified |= addInt(x);
+		return modified;
 	}
 
 	default boolean addAllInts(IntCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
-		xs.forEachInt(this::addInt);
-		return true;
+		boolean modified = false;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); )
+			modified |= addInt(iterator.nextInt());
+		return modified;
 	}
 
 	@Override

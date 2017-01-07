@@ -142,13 +142,14 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	default boolean addAllIntsAt(int index, IntCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		IntListIterator listIterator = listIterator(index);
-		xs.forEachInt(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextInt());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override
@@ -205,13 +206,14 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean addAllInts(IntCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		IntListIterator listIterator = listIterator(size());
-		xs.forEachInt(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextInt());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override

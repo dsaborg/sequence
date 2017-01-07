@@ -171,13 +171,13 @@ public interface LongIterable extends Iterable<Long> {
 	}
 
 	default boolean removeLongsIf(LongPredicate filter) {
-		boolean changed = false;
+		boolean modified = false;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (filter.test(iterator.nextLong())) {
 				iterator.remove();
-				changed = true;
+				modified = true;
 			}
 		}
-		return changed;
+		return modified;
 	}
 }

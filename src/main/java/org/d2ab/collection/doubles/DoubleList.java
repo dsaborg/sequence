@@ -140,13 +140,14 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	default boolean addAllDoublesAt(int index, DoubleCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		DoubleListIterator listIterator = listIterator(index);
-		xs.forEachDouble(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (DoubleIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextDouble());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override
@@ -208,13 +209,14 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAllDoubles(DoubleCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		DoubleListIterator listIterator = listIterator(size());
-		xs.forEachDouble(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (DoubleIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextDouble());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override

@@ -21,8 +21,7 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.util.Arrays.asList;
+import java.util.Collections;
 
 /**
  * A {@link DoubleIterable} that can chain together several {@link DoubleIterable}s into one unbroken sequence.
@@ -31,7 +30,7 @@ public class ChainingDoubleIterable implements DoubleIterable {
 	private final Collection<DoubleIterable> iterables = new ArrayList<>();
 
 	public ChainingDoubleIterable(DoubleIterable... iterables) {
-		asList(iterables).forEach(this.iterables::add);
+		Collections.addAll(this.iterables, iterables);
 	}
 
 	@Override

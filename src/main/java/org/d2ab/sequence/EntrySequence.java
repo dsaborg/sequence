@@ -864,7 +864,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Collect this {@code EntrySequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super Entry<K, V>> adder) {
-		forEach(entry -> adder.accept(result, entry));
+		for (Entry<K, V> t : this)
+			adder.accept(result, t);
 		return result;
 	}
 

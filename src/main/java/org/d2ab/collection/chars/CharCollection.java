@@ -110,18 +110,17 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	}
 
 	default boolean addAllChars(char... xs) {
-		boolean changed = false;
+		boolean modified = false;
 		for (char x : xs)
-			changed |= addChar(x);
-		return changed;
+			modified |= addChar(x);
+		return modified;
 	}
 
 	default boolean addAllChars(CharCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
-		xs.forEachChar(this::addChar);
-		return true;
+		boolean modified = false;
+		for (CharIterator iterator = xs.iterator(); iterator.hasNext(); )
+			modified |= addChar(iterator.nextChar());
+		return modified;
 	}
 
 	@Override

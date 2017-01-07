@@ -60,10 +60,10 @@ public class ReverseList<T> extends AbstractList<T> {
 	@Override
 	public boolean addAll(int index, Collection<? extends T> c) {
 		int start = original.size() - index;
-		boolean changed = original.addAll(start, c);
+		boolean modified = original.addAll(start, c);
 		for (int i = 0, size = c.size(); i < size / 2; i++)
 			swap(start + i, start + size - i - 1);
-		return changed;
+		return modified;
 	}
 
 	private void swap(int i, int j) {

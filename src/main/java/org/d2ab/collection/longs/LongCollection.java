@@ -94,18 +94,17 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	default boolean addAllLongs(long... xs) {
-		boolean changed = false;
+		boolean modified = false;
 		for (long x : xs)
-			changed |= addLong(x);
-		return changed;
+			modified |= addLong(x);
+		return modified;
 	}
 
 	default boolean addAllLongs(LongCollection c) {
-		if (c.isEmpty())
-			return false;
-
-		c.forEachLong(this::addLong);
-		return true;
+		boolean modified = false;
+		for (LongIterator iterator = c.iterator(); iterator.hasNext(); )
+			modified |= addLong(iterator.nextLong());
+		return modified;
 	}
 
 	@Override

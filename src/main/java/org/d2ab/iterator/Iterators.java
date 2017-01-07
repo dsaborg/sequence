@@ -194,7 +194,8 @@ public interface Iterators {
 	 */
 	static <T> List<T> toList(Iterator<? extends T> iterator) {
 		List<T> list = new ArrayList<>();
-		iterator.forEachRemaining(list::add);
+		while (iterator.hasNext())
+			list.add(iterator.next());
 		return list;
 	}
 

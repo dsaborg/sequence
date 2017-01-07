@@ -763,7 +763,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Collect this {@code DoubleSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjDoubleConsumer<? super C> adder) {
-		forEachDouble(x -> adder.accept(result, x));
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
+			adder.accept(result, iterator.nextDouble());
 		return result;
 	}
 

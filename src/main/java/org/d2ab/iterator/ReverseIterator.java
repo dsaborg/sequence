@@ -16,7 +16,10 @@
 
 package org.d2ab.iterator;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * An {@link Iterator} that iterates over the elements of another {@link Iterator} in reverse order, by creating a
@@ -31,19 +34,18 @@ public class ReverseIterator<T> extends DelegatingUnaryIterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		return iterator.hasNext() || listIterator != null && listIterator.hasPrevious();
+		if (listIterator == null) {
+			List<T> list = Iterators.toList(iterator);
+			listIterator = list.listIterator(list.size());
+		}
+
+		return listIterator.hasPrevious();
 	}
 
 	@Override
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-
-		if (listIterator == null) {
-			List<T> list = new ArrayList<>();
-			iterator.forEachRemaining(list::add);
-			listIterator = list.listIterator(list.size());
-		}
 
 		return listIterator.previous();
 	}

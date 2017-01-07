@@ -899,7 +899,8 @@ public interface LongSequence extends LongCollection {
 	 * Collect this {@code LongSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjLongConsumer<? super C> adder) {
-		forEachLong(x -> adder.accept(result, x));
+		for (LongIterator iterator = iterator(); iterator.hasNext(); )
+			adder.accept(result, iterator.nextLong());
 		return result;
 	}
 

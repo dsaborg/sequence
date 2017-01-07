@@ -218,13 +218,13 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean removeCharsIf(CharPredicate filter) {
-		boolean changed = false;
+		boolean modified = false;
 		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (filter.test(iterator.nextChar())) {
 				iterator.remove();
-				changed = true;
+				modified = true;
 			}
 		}
-		return changed;
+		return modified;
 	}
 }

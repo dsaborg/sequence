@@ -202,7 +202,8 @@ public interface Iterables {
 	 */
 	static <T, C extends Collection<T>> C collect(Iterable<T> iterable, Supplier<C> supplier) {
 		C collection = supplier.get();
-		iterable.forEach(collection::add);
+		for (T t : iterable)
+			collection.add(t);
 		return collection;
 	}
 

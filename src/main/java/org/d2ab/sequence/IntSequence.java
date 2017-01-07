@@ -900,7 +900,8 @@ public interface IntSequence extends IntCollection {
 	 * Collect this {@code IntSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjIntConsumer<? super C> adder) {
-		forEachInt(x -> adder.accept(result, x));
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
+			adder.accept(result, iterator.nextInt());
 		return result;
 	}
 

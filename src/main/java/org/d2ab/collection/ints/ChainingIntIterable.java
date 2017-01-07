@@ -21,8 +21,7 @@ import org.d2ab.iterator.ints.IntIterator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.util.Arrays.asList;
+import java.util.Collections;
 
 /**
  * An {@link IntIterable} that can chain together several {@link IntIterable}s into one unbroken sequence.
@@ -31,7 +30,7 @@ public class ChainingIntIterable implements IntIterable {
 	private final Collection<IntIterable> iterables = new ArrayList<>();
 
 	public ChainingIntIterable(IntIterable... iterables) {
-		asList(iterables).forEach(this.iterables::add);
+		Collections.addAll(this.iterables, iterables);
 	}
 
 	@Override

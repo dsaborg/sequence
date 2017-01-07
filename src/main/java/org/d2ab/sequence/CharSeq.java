@@ -820,7 +820,8 @@ public interface CharSeq extends CharCollection {
 	 * Collect this {@code CharSeq} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjCharConsumer<? super C> adder) {
-		forEachChar(x -> adder.accept(result, x));
+		for (CharIterator iterator = iterator(); iterator.hasNext(); )
+			adder.accept(result, iterator.nextChar());
 		return result;
 	}
 

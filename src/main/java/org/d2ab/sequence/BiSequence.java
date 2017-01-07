@@ -868,7 +868,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code Sequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super Pair<L, R>> adder) {
-		forEach(pair -> adder.accept(result, pair));
+		for (Pair<L, R> t : this)
+			adder.accept(result, t);
 		return result;
 	}
 

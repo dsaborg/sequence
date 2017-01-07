@@ -139,13 +139,14 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	default boolean addAllCharsAt(int index, CharCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		CharListIterator listIterator = listIterator(index);
-		xs.forEachChar(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (CharIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextChar());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override
@@ -202,13 +203,14 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean addAllChars(CharCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		CharListIterator listIterator = listIterator(size());
-		xs.forEachChar(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (CharIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextChar());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override

@@ -1110,7 +1110,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super T> adder) {
-		forEach(each -> adder.accept(result, each));
+		for (T t : this)
+			adder.accept(result, t);
 		return result;
 	}
 

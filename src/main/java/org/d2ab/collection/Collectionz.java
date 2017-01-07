@@ -22,6 +22,10 @@ import org.d2ab.collection.doubles.DoubleCollection;
 import org.d2ab.collection.ints.IntCollection;
 import org.d2ab.collection.ints.IntIterable;
 import org.d2ab.collection.longs.LongCollection;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,25 +67,38 @@ public interface Collectionz {
 		if (c instanceof IntCollection)
 			return xs.addAllInts((IntCollection) c);
 
-		if (c.isEmpty())
-			return false;
-
-		c.forEach(xs::addInt);
-		return true;
+		boolean modified = false;
+		for (int x : c)
+			modified |= xs.addInt(x);
+		return modified;
 	}
 
 	static boolean retainAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.retainAllInts((IntIterable) c);
 
-		return xs.removeIntsIf(x -> !c.contains(x));
+		boolean modified = false;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (!c.contains(iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean removeAll(IntCollection xs, Collection<?> c) {
 		if (c instanceof IntIterable)
 			return xs.removeAllInts((IntIterable) c);
 
-		return xs.removeIntsIf(c::contains);
+		boolean modified = false;
+		for (IntIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean containsAll(LongCollection xs, Collection<?> c) {
@@ -99,25 +116,38 @@ public interface Collectionz {
 		if (c instanceof LongCollection)
 			return xs.addAllLongs((LongCollection) c);
 
-		if (c.isEmpty())
-			return false;
-
-		c.forEach(xs::addLong);
-		return true;
+		boolean modified = false;
+		for (long x : c)
+			modified |= xs.addLong(x);
+		return modified;
 	}
 
 	static boolean retainAll(LongCollection xs, Collection<?> c) {
 		if (c instanceof LongCollection)
 			return xs.retainAllLongs((LongCollection) c);
 
-		return xs.removeLongsIf(x -> !c.contains(x));
+		boolean modified = false;
+		for (LongIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (!c.contains(iterator.nextLong())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean removeAll(LongCollection xs, Collection<?> c) {
 		if (c instanceof LongCollection)
 			return xs.removeAllLongs((LongCollection) c);
 
-		return xs.removeLongsIf(c::contains);
+		boolean modified = false;
+		for (LongIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextLong())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean containsAll(CharCollection xs, Collection<?> c) {
@@ -135,25 +165,38 @@ public interface Collectionz {
 		if (c instanceof CharCollection)
 			return xs.addAllChars((CharCollection) c);
 
-		if (c.isEmpty())
-			return false;
-
-		c.forEach(xs::addChar);
-		return true;
+		boolean modified = false;
+		for (Character x : c)
+			modified |= xs.addChar(x);
+		return modified;
 	}
 
 	static boolean retainAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.retainAllChars((CharIterable) c);
 
-		return xs.removeCharsIf(x -> !c.contains(x));
+		boolean modified = false;
+		for (CharIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (!c.contains(iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean removeAll(CharCollection xs, Collection<?> c) {
 		if (c instanceof CharIterable)
 			return xs.removeAllChars((CharIterable) c);
 
-		return xs.removeCharsIf(c::contains);
+		boolean modified = false;
+		for (CharIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean containsAll(DoubleCollection xs, Collection<?> c) {
@@ -171,25 +214,38 @@ public interface Collectionz {
 		if (c instanceof DoubleCollection)
 			return xs.addAllDoubles((DoubleCollection) c);
 
-		if (c.isEmpty())
-			return false;
-
-		c.forEach(xs::addDoubleExactly);
-		return true;
+		boolean modified = false;
+		for (double x : c)
+			modified |= xs.addDoubleExactly(x);
+		return modified;
 	}
 
 	static boolean retainAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
 			return xs.retainAllDoublesExactly((DoubleCollection) c);
 
-		return xs.removeDoublesIf(x -> !c.contains(x));
+		boolean modified = false;
+		for (DoubleIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (!c.contains(iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	static boolean removeAll(DoubleCollection xs, Collection<?> c) {
 		if (c instanceof DoubleCollection)
 			return xs.removeAllDoublesExactly((DoubleCollection) c);
 
-		return xs.removeDoublesIf(c::contains);
+		boolean modified = false;
+		for (DoubleIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			if (c.contains(iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	/**

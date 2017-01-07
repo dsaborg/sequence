@@ -122,17 +122,17 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	}
 
 	default boolean addAllDoubles(double... xs) {
-		boolean changed = false;
+		boolean modified = false;
 		for (double x : xs)
-			changed |= addDoubleExactly(x);
-		return changed;
+			modified |= addDoubleExactly(x);
+		return modified;
 	}
 
 	default boolean addAllDoubles(DoubleCollection c) {
-		boolean changed = false;
+		boolean modified = false;
 		for (DoubleIterator iterator = c.iterator(); iterator.hasNext(); )
-			changed |= addDoubleExactly(iterator.nextDouble());
-		return changed;
+			modified |= addDoubleExactly(iterator.nextDouble());
+		return modified;
 	}
 
 	@Override

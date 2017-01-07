@@ -72,9 +72,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * Performs the given action for each {@code double} in this iterable.
 	 */
 	default void forEachDouble(DoubleConsumer consumer) {
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
-			consumer.accept(iterator.nextDouble());
+		iterator().forEachRemaining(consumer);
 	}
 
 	default DoubleStream doubleStream() {
@@ -248,13 +246,13 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	default boolean removeDoublesIf(DoublePredicate filter) {
-		boolean changed = false;
+		boolean modified = false;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (filter.test(iterator.nextDouble())) {
 				iterator.remove();
-				changed = true;
+				modified = true;
 			}
 		}
-		return changed;
+		return modified;
 	}
 }

@@ -119,7 +119,7 @@ public class ListSequence<T> implements Sequence<T> {
 	 */
 	static <T> Sequence<T> createFrom(Iterable<? extends T> iterable) {
 		ListSequence<T> result = new ListSequence<>();
-		iterable.forEach(result::add);
+		result.addAll(iterable);
 		return result;
 	}
 
@@ -129,7 +129,8 @@ public class ListSequence<T> implements Sequence<T> {
 	 */
 	static <T> Sequence<T> createFrom(Iterator<? extends T> iterator) {
 		ListSequence<T> result = new ListSequence<>();
-		iterator.forEachRemaining(result::add);
+		while (iterator.hasNext())
+			result.add(iterator.next());
 		return result;
 	}
 

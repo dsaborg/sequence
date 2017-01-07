@@ -139,13 +139,14 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	default boolean addAllLongsAt(int index, LongCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		LongListIterator listIterator = listIterator(index);
-		xs.forEachLong(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (LongIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextLong());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override
@@ -202,13 +203,14 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAllLongs(LongCollection xs) {
-		if (xs.isEmpty())
-			return false;
-
 		LongListIterator listIterator = listIterator(size());
-		xs.forEachLong(listIterator::add);
 
-		return true;
+		boolean modified = false;
+		for (LongIterator iterator = xs.iterator(); iterator.hasNext(); ) {
+			listIterator.add(iterator.nextLong());
+			modified = true;
+		}
+		return modified;
 	}
 
 	@Override

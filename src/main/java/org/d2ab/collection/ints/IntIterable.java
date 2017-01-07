@@ -217,14 +217,14 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean removeIntsIf(IntPredicate filter) {
-		boolean changed = false;
+		boolean modified = false;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (filter.test(iterator.nextInt())) {
 				iterator.remove();
-				changed = true;
+				modified = true;
 			}
 		}
-		return changed;
+		return modified;
 	}
 
 	default CharIterable asChars() {
