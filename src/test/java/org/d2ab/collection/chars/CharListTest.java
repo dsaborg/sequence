@@ -446,8 +446,11 @@ public class CharListTest {
 	@Test
 	public void setChar() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.setChar(2, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> empty.setChar(0, 'q'));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.setChar(12, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> list.setChar(10, 'q'));
 		assertThat(list.setChar(2, 'q'), is('c'));
 		assertThat(list, containsChars('a', 'b', 'q', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}

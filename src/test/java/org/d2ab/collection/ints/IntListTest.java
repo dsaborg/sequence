@@ -446,8 +446,11 @@ public class IntListTest {
 	@Test
 	public void setInt() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.setInt(2, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.setInt(0, 17));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.setInt(12, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.setInt(10, 17));
 		assertThat(list.setInt(2, 17), is(3));
 		assertThat(list, containsInts(1, 2, 17, 4, 5));
 	}

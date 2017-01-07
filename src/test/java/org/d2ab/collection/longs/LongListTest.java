@@ -445,8 +445,11 @@ public class LongListTest {
 	@Test
 	public void setLong() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.setLong(2, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.setLong(0, 17));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.setLong(12, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.setLong(10, 17));
 		assertThat(list.setLong(2, 17), is(3L));
 		assertThat(list, containsLongs(1, 2, 17, 4, 5));
 	}
