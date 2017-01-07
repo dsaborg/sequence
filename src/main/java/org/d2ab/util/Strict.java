@@ -6,7 +6,7 @@ public abstract class Strict {
 	protected Strict() {
 	}
 
-	private static final String STRICT_PROPERTY = "org.d2ab.iterator.strict";
+	private static final String STRICT_PROPERTY = "org.d2ab.sequence.strict";
 
 	public static boolean LENIENT = !Boolean.getBoolean(STRICT_PROPERTY);
 
