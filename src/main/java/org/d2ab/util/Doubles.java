@@ -16,16 +16,19 @@
 
 package org.d2ab.util;
 
-public interface Doubles {
-	static boolean eq(double l, double r, double precision) {
+public abstract class Doubles {
+	Doubles() {
+	}
+
+	public static boolean eq(double l, double r, double precision) {
 		return Math.abs(l - r) <= precision;
 	}
 
-	static boolean ge(double l, double r, double precision) {
+	public static boolean ge(double l, double r, double precision) {
 		return l - r >= -precision;
 	}
 
-	static boolean lt(double l, double r, double precision) {
+	public static boolean lt(double l, double r, double precision) {
 		return l - r < precision;
 	}
 }

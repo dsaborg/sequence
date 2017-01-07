@@ -10,6 +10,13 @@ import static org.junit.Assert.assertThat;
 
 public class ArrayzTest {
 	@Test
+	public void constructor() {
+		new Arrayz() {
+			// code coverage
+		};
+	}
+
+	@Test
 	public void forEach() throws Exception {
 		AtomicInteger i = new AtomicInteger();
 		Arrayz.forEach(new Integer[]{1, 2, 3, 4, 5}, x -> assertThat(x, is(i.getAndIncrement() + 1)));

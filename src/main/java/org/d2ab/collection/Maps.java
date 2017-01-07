@@ -30,6 +30,9 @@ import static org.d2ab.collection.Comparators.naturalOrderNullsFirst;
  * Utility methods for {@link Map} instances
  */
 public abstract class Maps {
+	Maps() {
+	}
+
 	private static final Comparator<Entry> COMPARATOR =
 			comparing((Function<Entry, Object>) Entry::getKey, naturalOrderNullsFirst()).thenComparing(
 					(Function<Entry, Object>) Entry::getValue, naturalOrderNullsFirst());
@@ -56,11 +59,6 @@ public abstract class Maps {
 	 */
 	public static <K, V> Entry<K, V> entry(K key, V value) {
 		return new EntryImpl<>(key, value);
-	}
-
-	public static <K, V> Map<K, V> put(Map<K, V> result, Entry<K, V> entry) {
-		result.put(entry.getKey(), entry.getValue());
-		return result;
 	}
 
 	public static <T> Iterator<T> iterator(Entry<? extends T, ? extends T> entry) {

@@ -25,8 +25,8 @@ import java.util.function.*;
 /**
  * Utility methods for {@link Iterator} instances.
  */
-public interface Iterators {
-	Iterator EMPTY = new Iterator() {
+public abstract class Iterators {
+	private static final Iterator EMPTY = new Iterator() {
 		@Override
 		public boolean hasNext() {
 			return false;
@@ -38,11 +38,14 @@ public interface Iterators {
 		}
 	};
 
+	Iterators() {
+	}
+
 	/**
 	 * @return an empty {@link Iterator}.
 	 */
 	@SuppressWarnings("unchecked")
-	static <T> Iterator<T> empty() {
+	public static <T> Iterator<T> empty() {
 		return EMPTY;
 	}
 
@@ -50,7 +53,7 @@ public interface Iterators {
 	 * @return an {@link Iterator} containing the given items.
 	 */
 	@SafeVarargs
-	static <T> Iterator<T> of(T... items) {
+	public static <T> Iterator<T> of(T... items) {
 		return new ArrayIterator<>(items);
 	}
 
@@ -58,7 +61,7 @@ public interface Iterators {
 	 * @return an {@link Iterator} over the items in the given {@link CharIterator}, mapped to objects using the given
 	 * {@link CharFunction}.
 	 */
-	static <T> Iterator<T> from(CharIterator iterator, CharFunction<T> mapper) {
+	public static <T> Iterator<T> from(CharIterator iterator, CharFunction<T> mapper) {
 		return new DelegatingTransformingIterator<Character, CharIterator, T>(iterator) {
 			@Override
 			public T next() {
@@ -71,7 +74,7 @@ public interface Iterators {
 	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfInt}, mapped to objects using
 	 * the given {@link IntFunction}.
 	 */
-	static <T> Iterator<T> from(PrimitiveIterator.OfInt iterator, IntFunction<T> mapper) {
+	public static <T> Iterator<T> from(PrimitiveIterator.OfInt iterator, IntFunction<T> mapper) {
 		return new DelegatingTransformingIterator<Integer, PrimitiveIterator.OfInt, T>(iterator) {
 			@Override
 			public T next() {
@@ -84,7 +87,7 @@ public interface Iterators {
 	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfDouble}, mapped to objects
 	 * using the given {@link DoubleFunction}.
 	 */
-	static <T> Iterator<T> from(PrimitiveIterator.OfDouble iterator, DoubleFunction<T> mapper) {
+	public static <T> Iterator<T> from(PrimitiveIterator.OfDouble iterator, DoubleFunction<T> mapper) {
 		return new DelegatingTransformingIterator<Double, PrimitiveIterator.OfDouble, T>(iterator) {
 			@Override
 			public T next() {
@@ -95,9 +98,10 @@ public interface Iterators {
 
 	/**
 	 * @return an {@link Iterator} over the items in the given {@link PrimitiveIterator.OfLong}, mapped to objects
-	 * using the given {@link LongFunction}.
+	 * using
+	 * the given {@link LongFunction}.
 	 */
-	static <T> Iterator<T> from(PrimitiveIterator.OfLong iterator, LongFunction<T> mapper) {
+	public static <T> Iterator<T> from(PrimitiveIterator.OfLong iterator, LongFunction<T> mapper) {
 		return new DelegatingTransformingIterator<Long, PrimitiveIterator.OfLong, T>(iterator) {
 			@Override
 			public T next() {
@@ -111,7 +115,7 @@ public interface Iterators {
 	 *
 	 * @return true if there was an element to skip over.
 	 */
-	static boolean skip(Iterator<?> iterator) {
+	public static boolean skip(Iterator<?> iterator) {
 		if (iterator.hasNext()) {
 			iterator.next();
 			return true;
@@ -125,7 +129,7 @@ public interface Iterators {
 	 *
 	 * @return the actual number of steps skipped, if iterator terminated early.
 	 */
-	static int skip(Iterator<?> iterator, int steps) {
+	public static int skip(Iterator<?> iterator, int steps) {
 		int count = 0;
 		while (count < steps && iterator.hasNext()) {
 			iterator.next();
@@ -139,7 +143,7 @@ public interface Iterators {
 	 * the current result and each element in this sequence. Returns an empty optional if the sequence is empty,
 	 * or the result if it's not.
 	 */
-	static <T> Optional<T> reduce(Iterator<? extends T> iterator, BinaryOperator<T> operator) {
+	public static <T> Optional<T> reduce(Iterator<? extends T> iterator, BinaryOperator<T> operator) {
 		if (!iterator.hasNext())
 			return Optional.empty();
 
@@ -155,7 +159,7 @@ public interface Iterators {
 	 * Reduce the given iterator into a single element by iteratively applying the given binary operator to
 	 * the current result and each element in this sequence, starting with the given identity as the initial result.
 	 */
-	static <T> T reduce(Iterator<? extends T> iterator, T identity, BinaryOperator<T> operator) {
+	public static <T> T reduce(Iterator<? extends T> iterator, T identity, BinaryOperator<T> operator) {
 		T result = identity;
 		while (iterator.hasNext())
 			result = operator.apply(result, iterator.next());
@@ -164,9 +168,10 @@ public interface Iterators {
 
 	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
-	 * items than the index.
+	 * items
+	 * than the index.
 	 */
-	static <T> Optional<T> get(Iterator<? extends T> iterator, int index) {
+	public static <T> Optional<T> get(Iterator<? extends T> iterator, int index) {
 		skip(iterator, index);
 		if (!iterator.hasNext())
 			return Optional.empty();
@@ -178,7 +183,7 @@ public interface Iterators {
 	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no elements in
 	 * the {@link Iterator}.
 	 */
-	static <T> Optional<T> last(Iterator<? extends T> iterator) {
+	public static <T> Optional<T> last(Iterator<? extends T> iterator) {
 		if (!iterator.hasNext())
 			return Optional.empty();
 
@@ -192,7 +197,7 @@ public interface Iterators {
 	/**
 	 * Collect the given {@link Iterator} into a {@link List}.
 	 */
-	static <T> List<T> toList(Iterator<? extends T> iterator) {
+	public static <T> List<T> toList(Iterator<? extends T> iterator) {
 		List<T> list = new ArrayList<>();
 		while (iterator.hasNext())
 			list.add(iterator.next());
@@ -202,11 +207,11 @@ public interface Iterators {
 	/**
 	 * @return the size of the given {@link Iterator} as an int value.
 	 */
-	static int size(Iterator<?> iterator) {
+	public static int size(Iterator<?> iterator) {
 		return size(iterator, Iterators::count);
 	}
 
-	static long count(Iterator<?> it) {
+	public static long count(Iterator<?> it) {
 		long count = 0;
 		for (; it.hasNext(); it.next())
 			count++;
@@ -214,7 +219,7 @@ public interface Iterators {
 	}
 
 	// for test coverage purposes
-	static int size(Iterator<?> iterator, Function<Iterator<?>, Long> counter) {
+	public static int size(Iterator<?> iterator, Function<Iterator<?>, Long> counter) {
 		long count = counter.apply(iterator);
 
 		if (count > Integer.MAX_VALUE)
@@ -226,14 +231,14 @@ public interface Iterators {
 	/**
 	 * @return an unmodifiable view of an {@link Iterator} retrieved from the given {@link Iterable}.
 	 */
-	static <T> Iterator<T> unmodifiable(Iterable<? extends T> iterable) {
+	public static <T> Iterator<T> unmodifiable(Iterable<? extends T> iterable) {
 		return unmodifiable(iterable.iterator());
 	}
 
 	/**
 	 * @return an unmodifiable view of the given {@link Iterator}.
 	 */
-	static <T> Iterator<T> unmodifiable(Iterator<? extends T> iterator) {
+	public static <T> Iterator<T> unmodifiable(Iterator<? extends T> iterator) {
 		return new Iterator<T>() {
 			@Override
 			public boolean hasNext() {
@@ -252,7 +257,7 @@ public interface Iterators {
 	 *
 	 * @since 2.0
 	 */
-	static <T> boolean contains(Iterator<? extends T> iterator, T object) {
+	public static <T> boolean contains(Iterator<? extends T> iterator, T object) {
 		while (iterator.hasNext())
 			if (Objects.equals(object, iterator.next()))
 				return true;

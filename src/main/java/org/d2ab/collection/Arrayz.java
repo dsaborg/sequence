@@ -25,11 +25,14 @@ import java.util.function.Consumer;
 /**
  * Utilities for arrays, similar to {@link Arrays} with a few extras like iterators and {@link #forEach}.
  */
-public interface Arrayz {
+public abstract class Arrayz {
+	Arrayz() {
+	}
+
 	/**
 	 * Perform the given action once for each item in the given array.
 	 */
-	static <T> void forEach(T[] array, Consumer<? super T> action) {
+	public static <T> void forEach(T[] array, Consumer<? super T> action) {
 		for (T item : array)
 			action.accept(item);
 	}
@@ -37,7 +40,7 @@ public interface Arrayz {
 	/**
 	 * Swap the given items in the given array.
 	 */
-	static void swap(long[] array, int i, int j) {
+	public static void swap(long[] array, int i, int j) {
 		long temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
@@ -46,7 +49,7 @@ public interface Arrayz {
 	/**
 	 * Swap the given items in the given array.
 	 */
-	static void swap(int[] array, int i, int j) {
+	public static void swap(int[] array, int i, int j) {
 		int temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
@@ -55,7 +58,7 @@ public interface Arrayz {
 	/**
 	 * Swap the given items in the given array.
 	 */
-	static void swap(char[] array, int i, int j) {
+	public static void swap(char[] array, int i, int j) {
 		char temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
@@ -64,7 +67,7 @@ public interface Arrayz {
 	/**
 	 * Swap the given items in the given array.
 	 */
-	static void swap(double[] array, int i, int j) {
+	public static void swap(double[] array, int i, int j) {
 		double temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
@@ -73,7 +76,7 @@ public interface Arrayz {
 	/**
 	 * Swap the given items in the given array.
 	 */
-	static void swap(Object[] array, int i, int j) {
+	public static void swap(Object[] array, int i, int j) {
 		Object temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
@@ -84,7 +87,7 @@ public interface Arrayz {
 	 *
 	 * @return the given array, reversed.
 	 */
-	static Object[] reverse(Object... array) {
+	public static Object[] reverse(Object... array) {
 		for (int i = 0; i < array.length / 2; i++)
 			swap(array, i, array.length - i - 1);
 		return array;
@@ -95,7 +98,7 @@ public interface Arrayz {
 	 *
 	 * @return the given array, reversed.
 	 */
-	static double[] reverse(double... array) {
+	public static double[] reverse(double... array) {
 		for (int i = 0; i < array.length / 2; i++)
 			swap(array, i, array.length - 1 - i);
 		return array;
@@ -106,7 +109,7 @@ public interface Arrayz {
 	 *
 	 * @return the given array, reversed.
 	 */
-	static int[] reverse(int... array) {
+	public static int[] reverse(int... array) {
 		for (int i = 0; i < array.length / 2; i++)
 			swap(array, i, array.length - 1 - i);
 		return array;
@@ -117,7 +120,7 @@ public interface Arrayz {
 	 *
 	 * @return the given array, reversed.
 	 */
-	static long[] reverse(long... array) {
+	public static long[] reverse(long... array) {
 		for (int i = 0; i < array.length / 2; i++)
 			swap(array, i, array.length - 1 - i);
 		return array;
@@ -128,7 +131,7 @@ public interface Arrayz {
 	 *
 	 * @return the given array, reversed.
 	 */
-	static char[] reverse(char... array) {
+	public static char[] reverse(char... array) {
 		for (int i = 0; i < array.length / 2; i++)
 			swap(array, i, array.length - 1 - i);
 		return array;
@@ -137,7 +140,7 @@ public interface Arrayz {
 	/**
 	 * @return true if the given array contains the given target object, false otherwise.
 	 */
-	static boolean contains(Object[] elements, Object target) {
+	public static boolean contains(Object[] elements, Object target) {
 		for (Object element : elements)
 			if (Objects.equals(element, target))
 				return true;
@@ -147,7 +150,7 @@ public interface Arrayz {
 	/**
 	 * @return true if the given array contains the given target {@code char}, false otherwise.
 	 */
-	static boolean contains(char[] items, char target) {
+	public static boolean contains(char[] items, char target) {
 		for (char item : items)
 			if (item == target)
 				return true;
@@ -157,7 +160,7 @@ public interface Arrayz {
 	/**
 	 * @return true if the given array contains the given target {@code int}, false otherwise.
 	 */
-	static boolean contains(int[] items, int target) {
+	public static boolean contains(int[] items, int target) {
 		for (int item : items)
 			if (item == target)
 				return true;
@@ -167,7 +170,7 @@ public interface Arrayz {
 	/**
 	 * @return true if the given array contains the given target {@code long}, false otherwise.
 	 */
-	static boolean contains(long[] items, long target) {
+	public static boolean contains(long[] items, long target) {
 		for (long item : items)
 			if (item == target)
 				return true;
@@ -177,7 +180,7 @@ public interface Arrayz {
 	/**
 	 * @return true if the given array contains exactly the given target {@code double}, false otherwise.
 	 */
-	static boolean containsExactly(double[] items, double target) {
+	public static boolean containsExactly(double[] items, double target) {
 		for (double item : items)
 			if (item == target)
 				return true;
@@ -188,7 +191,7 @@ public interface Arrayz {
 	 * @return true if the given array contains the given target {@code double} within the given precision, false
 	 * otherwise.
 	 */
-	static boolean contains(double[] items, double target, double precision) {
+	public static boolean contains(double[] items, double target, double precision) {
 		for (double item : items)
 			if (Doubles.eq(item, target, precision))
 				return true;
@@ -200,7 +203,7 @@ public interface Arrayz {
 	 *
 	 * @return the given array, for call chaining.
 	 */
-	static <T> T[] fill(T[] array, T value) {
+	public static <T> T[] fill(T[] array, T value) {
 		Arrays.fill(array, value);
 		return array;
 	}

@@ -24,15 +24,15 @@ import static java.util.Comparator.nullsFirst;
 /**
  * Utilities for comparators.
  */
-public interface Comparators {
+public abstract class Comparators {
 	@SuppressWarnings("unchecked")
-	Comparator NATURAL_ORDER_NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
+	private static final Comparator NATURAL_ORDER_NULLS_FIRST = nullsFirst((Comparator) naturalOrder());
 
 	/**
 	 * @return a {@link Comparator} comparing objects using their natural order, and sorting {@code nulls} first.
 	 */
 	@SuppressWarnings("unchecked")
-	static <T> Comparator<T> naturalOrderNullsFirst() {
+	public static <T> Comparator<T> naturalOrderNullsFirst() {
 		return (Comparator<T>) NATURAL_ORDER_NULLS_FIRST;
 	}
 }

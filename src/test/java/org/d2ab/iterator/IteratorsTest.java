@@ -31,6 +31,13 @@ public class IteratorsTest {
 	private final Iterator<Integer> iterator = Iterators.of(1, 2, 3, 4, 5);
 
 	@Test
+	public void constructor() {
+		new Iterators() {
+			// code coverage
+		};
+	}
+
+	@Test
 	public void empty() {
 		assertThat(empty.hasNext(), is(false));
 		expecting(NoSuchElementException.class, empty::next);

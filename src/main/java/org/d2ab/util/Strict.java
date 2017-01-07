@@ -3,7 +3,7 @@ package org.d2ab.util;
 import java.util.Stack;
 
 public abstract class Strict {
-	protected Strict() {
+	Strict() {
 	}
 
 	private static final String STRICT_PROPERTY = "org.d2ab.sequence.strict";

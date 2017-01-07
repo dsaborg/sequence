@@ -27,18 +27,21 @@ import java.util.stream.Stream;
 /**
  * Utility methods for {@link Iterable} instances.
  */
-public interface Iterables {
+public abstract class Iterables {
+	Iterables() {
+	}
+
 	/**
 	 * @return an unmodifiable empty {@link Iterable}.
 	 */
-	static <T> Iterable<T> empty() {
+	public static <T> Iterable<T> empty() {
 		return Iterators::empty;
 	}
 
 	/**
 	 * @return an unmodifiable singleton {@link Iterable} containing the given object.
 	 */
-	static <T> Iterable<T> of(T object) {
+	public static <T> Iterable<T> of(T object) {
 		return () -> new SingletonIterator<>(object);
 	}
 
@@ -46,7 +49,7 @@ public interface Iterables {
 	 * @return an unmodifiable {@link Iterable} containing the given objects.
 	 */
 	@SafeVarargs
-	static <T> Iterable<T> of(T... objects) {
+	public static <T> Iterable<T> of(T... objects) {
 		return () -> new ArrayIterator<>(objects);
 	}
 
@@ -57,7 +60,7 @@ public interface Iterables {
 	 * calls to {@link Iterable#iterator()} will pick up where the previous iterator left off. If
 	 * {@link Iterable#iterator()} calls are interleaved, calls to the given iterator will be interleaved.
 	 */
-	static <T> Iterable<T> once(Iterator<T> iterator) {
+	public static <T> Iterable<T> once(Iterator<T> iterator) {
 		return () -> iterator;
 	}
 
@@ -73,7 +76,7 @@ public interface Iterables {
 	 *                            {@code Array}, {@link Pair} or {@link Map.Entry}
 	 */
 	@SuppressWarnings("unchecked")
-	static <T> Iterable<T> from(Object container) {
+	public static <T> Iterable<T> from(Object container) {
 		if (container instanceof Iterable)
 			return (Iterable<T>) container;
 		else if (container instanceof Iterator)
@@ -94,7 +97,7 @@ public interface Iterables {
 	/**
 	 * @return true if all elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
-	static <T> boolean all(Iterable<T> iterable, Predicate<? super T> predicate) {
+	public static <T> boolean all(Iterable<T> iterable, Predicate<? super T> predicate) {
 		for (T each : iterable)
 			if (!predicate.test(each))
 				return false;
@@ -105,14 +108,14 @@ public interface Iterables {
 	/**
 	 * @return true if no elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
-	static <T> boolean none(Iterable<T> iterable, Predicate<? super T> predicate) {
+	public static <T> boolean none(Iterable<T> iterable, Predicate<? super T> predicate) {
 		return !any(iterable, predicate);
 	}
 
 	/**
 	 * @return true if any element in this {@code Sequence} satisfies the given predicate, false otherwise.
 	 */
-	static <T> boolean any(Iterable<T> iterable, Predicate<? super T> predicate) {
+	public static <T> boolean any(Iterable<T> iterable, Predicate<? super T> predicate) {
 		for (T each : iterable)
 			if (predicate.test(each))
 				return true;
@@ -123,7 +126,7 @@ public interface Iterables {
 	/**
 	 * Remove all elements in the given {@link Iterable} using {@link Iterator#remove()}.
 	 */
-	static void clear(Iterable<?> iterable) {
+	public static void clear(Iterable<?> iterable) {
 		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); ) {
 			iterator.next();
 			iterator.remove();
@@ -133,7 +136,7 @@ public interface Iterables {
 	/**
 	 * Remove all elements in the given {@link Iterable} found among the given items, using {@link Iterator#remove()}.
 	 */
-	static boolean removeAll(Iterable<?> iterable, Object... items) {
+	public static boolean removeAll(Iterable<?> iterable, Object... items) {
 		boolean modified = false;
 		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
 			if (Arrayz.contains(items, iterator.next())) {
@@ -147,7 +150,7 @@ public interface Iterables {
 	 * Remove all elements in the given {@link Iterable} found in the second {@link Iterable},
 	 * using {@link Iterator#remove()}.
 	 */
-	static boolean removeAll(Iterable<?> iterable, Iterable<?> items) {
+	public static boolean removeAll(Iterable<?> iterable, Iterable<?> items) {
 		boolean modified = false;
 		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
 			if (contains(items, iterator.next())) {
@@ -160,7 +163,7 @@ public interface Iterables {
 	/**
 	 * Remove all elements in the given {@link Iterable} found among the given items, using {@link Iterator#remove()}.
 	 */
-	static boolean retainAll(Iterable<?> iterable, Object... items) {
+	public static boolean retainAll(Iterable<?> iterable, Object... items) {
 		boolean modified = false;
 		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
 			if (!Arrayz.contains(items, iterator.next())) {
@@ -174,7 +177,7 @@ public interface Iterables {
 	 * Remove all elements in the given {@link Iterable} found in the second {@link Iterable},
 	 * using {@link Iterator#remove()}.
 	 */
-	static boolean retainAll(Iterable<?> iterable, Iterable<?> items) {
+	public static boolean retainAll(Iterable<?> iterable, Iterable<?> items) {
 		boolean modified = false;
 		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
 			if (!contains(items, iterator.next())) {
@@ -187,7 +190,7 @@ public interface Iterables {
 	/**
 	 * @return the given {@link Iterable} collected into a {@link List}.
 	 */
-	static <T> List<T> toList(Iterable<T> iterable) {
+	public static <T> List<T> toList(Iterable<T> iterable) {
 		if (iterable instanceof Collection) {
 			return new ArrayList<>((Collection<T>) iterable);
 		}
@@ -207,7 +210,7 @@ public interface Iterables {
 	 *
 	 * @since 1.2
 	 */
-	static <T> List<T> asList(Iterable<T> iterable) {
+	public static <T> List<T> asList(Iterable<T> iterable) {
 		return new IterableList<>(iterable);
 	}
 
@@ -217,7 +220,7 @@ public interface Iterables {
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
-	static <T> boolean contains(Iterable<? extends T> iterable, T object) {
+	public static <T> boolean contains(Iterable<? extends T> iterable, T object) {
 		if (iterable instanceof Collection)
 			return ((Collection<? extends T>) iterable).contains(object);
 
@@ -234,7 +237,7 @@ public interface Iterables {
 	 * @since 1.2
 	 */
 	@SafeVarargs
-	static <T> boolean containsAll(Collection<?> collection, T... items) {
+	public static <T> boolean containsAll(Collection<?> collection, T... items) {
 		for (T item : items)
 			if (!collection.contains(item))
 				return false;
@@ -248,7 +251,7 @@ public interface Iterables {
 	 * @since 1.2
 	 */
 	@SafeVarargs
-	static <T> boolean containsAny(Collection<?> collection, T... items) {
+	public static <T> boolean containsAny(Collection<?> collection, T... items) {
 		for (Object item : items)
 			if (collection.contains(item))
 				return true;
@@ -261,7 +264,7 @@ public interface Iterables {
 	 *
 	 * @since 1.2
 	 */
-	static boolean containsAny(Collection<?> collection, Iterable<?> items) {
+	public static boolean containsAny(Collection<?> collection, Iterable<?> items) {
 		for (Object item : items)
 			if (collection.contains(item))
 				return true;
@@ -269,7 +272,7 @@ public interface Iterables {
 		return false;
 	}
 
-	class SingletonIterator<T> implements Iterator<T> {
+	private static class SingletonIterator<T> implements Iterator<T> {
 		private final T object;
 		private boolean used;
 

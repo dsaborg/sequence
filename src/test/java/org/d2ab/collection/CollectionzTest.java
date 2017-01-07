@@ -13,6 +13,13 @@ import static org.junit.Assert.assertThat;
 
 public class CollectionzTest {
 	@Test
+	public void constructor() {
+		new Collectionz() {
+			// code coverage
+		};
+	}
+
+	@Test
 	public void testAsList() {
 		Collection<Integer> collection = new ArrayDeque<>(asList(1, 2, 3));
 		List<Integer> asList = Collectionz.asList(collection);
