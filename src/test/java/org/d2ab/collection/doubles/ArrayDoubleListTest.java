@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -295,7 +294,7 @@ public class ArrayDoubleListTest {
 		twice(() -> assertThat(subList, containsDoubles(6, 7, 8)));
 		twice(() -> assertThat(list, containsDoubles(1, 2, 6, 7, 8, 9, 10)));
 
-		subList.removeIf(x -> x % 2 == 0);
+		subList.removeDoublesIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsDoubles(7)));
 		twice(() -> assertThat(list, containsDoubles(1, 2, 7, 9, 10)));
 
@@ -384,23 +383,15 @@ public class ArrayDoubleListTest {
 		assertThat(list, is(equalTo(list2)));
 		assertThat(list.hashCode(), is(list2.hashCode()));
 
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
+		DoubleList list3 = DoubleList.create(5, 4, 3, 2, 1);
+		assertThat(list, is(not(equalTo(list3))));
+		assertThat(list.hashCode(), is(not(list3.hashCode())));
 	}
 
 	@Test
 	public void sequence() {
 		assertThat(empty.sequence(), is(emptyIterable()));
 		assertThat(list.sequence(), containsDoubles(1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void lastIndexOfBoxed() {
-		assertThat(empty.lastIndexOf(17.0), is(-1));
-
-		assertThat(list.lastIndexOf(17.0), is(-1));
-		assertThat(list.lastIndexOf(2.0), is(1));
 	}
 
 	@Test
@@ -420,14 +411,6 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void indexOfBoxed() {
-		assertThat(empty.indexOf(17.0), is(-1));
-
-		assertThat(list.indexOf(17.0), is(-1));
-		assertThat(list.indexOf(2.0), is(1));
-	}
-
-	@Test
 	public void indexOfDoubleExactly() {
 		assertThat(empty.indexOfDoubleExactly(17), is(-1));
 
@@ -444,28 +427,11 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void getBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.get(2));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.get(2), is(3.0));
-	}
-
-	@Test
 	public void getDouble() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(2));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getDouble(2), is(3.0));
-	}
-
-	@Test
-	public void setBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.set(2, 17.0));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.set(2, 17.0), is(3.0));
-		assertThat(list, containsDoubles(1, 2, 17, 4, 5));
 	}
 
 	@Test
@@ -475,15 +441,6 @@ public class ArrayDoubleListTest {
 
 		assertThat(list.setDouble(2, 17), is(3.0));
 		assertThat(list, containsDoubles(1, 2, 17, 4, 5));
-	}
-
-	@Test
-	public void addBoxed() {
-		assertThat(empty.add(17.0), is(true));
-		assertThat(empty, containsDoubles(17));
-
-		assertThat(list.add(17.0), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
@@ -505,18 +462,6 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void addAtBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 17.0));
-		assertThat(empty, is(emptyIterable()));
-
-		empty.add(0, 17.0);
-		assertThat(empty, containsDoubles(17));
-
-		list.add(2, 17.0);
-		assertThat(list, containsDoubles(1, 2, 17, 3, 4, 5));
-	}
-
-	@Test
 	public void addDoubleAt() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.addDoubleAt(2, 17));
 		assertThat(empty, is(emptyIterable()));
@@ -526,18 +471,6 @@ public class ArrayDoubleListTest {
 
 		list.addDoubleAt(2, 17);
 		assertThat(list, containsDoubles(1, 2, 17, 3, 4, 5));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(empty, containsDoubles(1, 2, 3));
-
-		assertThat(list.addAll(asList(6.0, 7.0, 8.0)), is(true));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
@@ -577,18 +510,6 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void addAllAtBoxed() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(0, asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(empty, containsDoubles(1, 2, 3));
-
-		assertThat(list.addAll(2, asList(17.0, 18.0, 19.0)), is(true));
-		assertThat(list, containsDoubles(1, 2, 17, 18, 19, 3, 4, 5));
-	}
-
-	@Test
 	public void addAllDoublesAtAtArray() {
 		assertThat(empty.addAllDoublesAt(0), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -625,18 +546,6 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17.0), is(false));
-		assertThat(empty.remove(new Object()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.remove(17.0), is(false));
-		assertThat(list.remove(new Object()), is(false));
-		assertThat(list.remove(2.0), is(true));
-		assertThat(list, containsDoubles(1, 3, 4, 5));
-	}
-
-	@Test
 	public void removeDoubleExactly() {
 		assertThat(empty.removeDoubleExactly(17), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -657,31 +566,12 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void removeAtBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.remove(2), is(3.0));
-		assertThat(list, containsDoubles(1, 2, 4, 5));
-	}
-
-	@Test
 	public void removeDoubleAt() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(2));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeDoubleAt(2), is(3.0));
 		assertThat(list, containsDoubles(1, 2, 4, 5));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17.0), is(false));
-		assertThat(empty.contains(new Object()), is(false));
-
-		assertThat(list.contains(17.0), is(false));
-		assertThat(list.contains(new Object()), is(false));
-		assertThat(list.contains(2.0), is(true));
 	}
 
 	@Test
@@ -698,14 +588,6 @@ public class ArrayDoubleListTest {
 
 		assertThat(list.containsDouble(17.1, 0.5), is(false));
 		assertThat(list.containsDouble(2.1, 0.5), is(true));
-	}
-
-	@Test
-	public void containsAllBoxed() {
-		assertThat(empty.containsAll(asList(17.0, 18.0, 19.0, new Object())), is(false));
-
-		assertThat(list.containsAll(asList(17.0, 18.0, 19.0, new Object())), is(false));
-		assertThat(list.containsAll(asList(1.0, 2.0, 3.0)), is(true));
 	}
 
 	@Test
@@ -773,16 +655,6 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeAll(asList(17.0, 18.0, 19.0)), is(false));
-		assertThat(list.removeAll(asList(1.0, 2.0, 3.0, 17.0)), is(true));
-		assertThat(list, containsDoubles(4, 5));
-	}
-
-	@Test
 	public void removeAllDoublesExactlyArray() {
 		assertThat(empty.removeAllDoublesExactly(1, 2, 3, 17), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -823,31 +695,12 @@ public class ArrayDoubleListTest {
 	}
 
 	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeIf(x -> x > 5), is(false));
-		assertThat(list.removeIf(x -> x > 3), is(true));
-		assertThat(list, containsDoubles(1, 2, 3));
-	}
-
-	@Test
 	public void removeDoublesIf() {
 		assertThat(empty.removeDoublesIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeDoublesIf(x -> x > 5), is(false));
 		assertThat(list.removeDoublesIf(x -> x > 3), is(true));
-		assertThat(list, containsDoubles(1, 2, 3));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.retainAll(asList(1.0, 2.0, 3.0, 17.0)), is(true));
 		assertThat(list, containsDoubles(1, 2, 3));
 	}
 
@@ -885,15 +738,6 @@ public class ArrayDoubleListTest {
 
 		assertThat(list.retainAllDoubles(ArrayDoubleList.create(1.1, 1.9, 3.1, 17.1), 0.5), is(true));
 		assertThat(list, containsDoubles(1, 2, 3));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> x + 1);
-		assertThat(empty, is(emptyIterable()));
-
-		list.replaceAll(x -> x + 1);
-		assertThat(list, containsDoubles(2, 3, 4, 5, 6));
 	}
 
 	@Test

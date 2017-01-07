@@ -260,6 +260,8 @@ public interface LongList extends List<Long>, LongCollection {
 
 	default long setLong(int index, long x) {
 		LongListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		long previous = listIterator.nextLong();
 		listIterator.set(x);
 		return previous;

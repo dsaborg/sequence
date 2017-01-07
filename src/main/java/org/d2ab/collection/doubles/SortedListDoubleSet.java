@@ -84,7 +84,7 @@ public class SortedListDoubleSet extends DoubleSet.Base implements DoubleSortedS
 		if (isEmpty())
 			throw new NoSuchElementException();
 
-		return values.get(0);
+		return values.getDouble(0);
 	}
 
 	@Override
@@ -92,6 +92,6 @@ public class SortedListDoubleSet extends DoubleSet.Base implements DoubleSortedS
 		if (isEmpty())
 			throw new NoSuchElementException();
 
-		return values.get(values.size() - 1);
+		return values.getDouble(values.size() - 1);
 	}
 }

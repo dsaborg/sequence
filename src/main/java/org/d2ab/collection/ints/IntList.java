@@ -282,7 +282,14 @@ public interface IntList extends List<Integer>, IntCollection {
 
 		assert Strict.LENIENT : "IntList.retainAll(Collection)";
 
-		return removeIntsIf(x -> !c.contains(x));
+		boolean modified = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!c.contains(iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	@Override
@@ -309,6 +316,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	default int setInt(int index, int x) {
 		IntListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		int previous = listIterator.nextInt();
 		listIterator.set(x);
 		return previous;

@@ -19,6 +19,7 @@ package org.d2ab.collection.doubles;
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.doubles.*;
 import org.d2ab.util.Doubles;
+import org.d2ab.util.Strict;
 
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
@@ -93,31 +94,46 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean contains(Object o) {
+		assert Strict.LENIENT : "DoubleList.contains(Object)";
+
 		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
 	default Double[] toArray() {
+		assert Strict.LENIENT : "DoubleList.toArray()";
+
 		return toArray(new Double[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
+		assert Strict.LENIENT : "DoubleList.toArray(Object[])";
+
 		return Collectionz.toArray(this, a);
 	}
 
 	@Override
 	default boolean remove(Object o) {
+		assert Strict.LENIENT : "DoubleList.remove(Object)";
+
 		return o instanceof Double && removeDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean add(Double x) {
+		assert Strict.LENIENT : "DoubleList.add(Double)";
+
 		return addDoubleExactly(x);
 	}
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Double> c) {
+		if (c instanceof DoubleCollection)
+			return addAllDoublesAt(index, (DoubleCollection) c);
+
+		assert Strict.LENIENT : "DoubleList.contains(Object)";
+
 		if (c.isEmpty())
 			return false;
 
@@ -152,6 +168,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default void replaceAll(UnaryOperator<Double> operator) {
+		assert Strict.LENIENT : "DoubleList.replaceAll(UnaryOperator)";
+
 		replaceAllDoubles(operator::apply);
 	}
 
@@ -171,6 +189,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default void sort(Comparator<? super Double> c) {
+		assert Strict.LENIENT : "DoubleList.sort(Comparator)";
+
 		throw new UnsupportedOperationException();
 	}
 
@@ -181,6 +201,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
+		if (c instanceof DoubleCollection)
+			return addAllDoubles((DoubleCollection) c);
+
+		assert Strict.LENIENT : "DoubleList.addAll(Collection)";
+
 		return DoubleCollections.addAll(this, c);
 	}
 
@@ -221,33 +246,45 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		if (c instanceof DoubleIterable)
+			return containsAllDoublesExactly((DoubleIterable) c);
+
+		assert Strict.LENIENT : "DoubleList.containsAll(Collection)";
+
 		return DoubleCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		boolean modified = false;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (c.contains(iterator.nextDouble())) {
-				iterator.remove();
-				modified = true;
-			}
-		}
-		return modified;
+		if (c instanceof DoubleIterable)
+			return removeAllDoublesExactly((DoubleIterable) c);
+
+		assert Strict.LENIENT : "DoubleList.removeAll(Collection)";
+
+		return DoubleCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Double> filter) {
+		assert Strict.LENIENT : "DoubleList.removeIf(Predicate)";
+
 		return removeDoublesIf(filter::test);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return removeDoublesIf(x -> !c.contains(x));
+		if (c instanceof DoubleIterable)
+			return retainAllDoublesExactly((DoubleIterable) c);
+
+		assert Strict.LENIENT : "DoubleList.retainAll(Collection)";
+
+		return DoubleCollections.retainAll(this, c);
 	}
 
 	@Override
 	default Double get(int index) {
+		assert Strict.LENIENT : "DoubleList.get(int)";
+
 		return getDouble(index);
 	}
 
@@ -261,11 +298,15 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default Double set(int index, Double x) {
+		assert Strict.LENIENT : "DoubleList.set(int, Double)";
+
 		return setDouble(index, x);
 	}
 
 	default double setDouble(int index, double x) {
 		DoubleListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		double previous = listIterator.nextDouble();
 		listIterator.set(x);
 		return previous;
@@ -273,6 +314,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default void add(int index, Double x) {
+		assert Strict.LENIENT : "DoubleList.add(int, Double)";
+
 		addDoubleAt(index, x);
 	}
 
@@ -282,6 +325,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default Double remove(int index) {
+		assert Strict.LENIENT : "DoubleList.remove(int)";
+
 		return removeDoubleAt(index);
 	}
 
@@ -294,6 +339,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
+		assert Strict.LENIENT : "DoubleList.lastIndexOf(Object)";
+
 		return o instanceof Double ? lastIndexOfDoubleExactly((double) o) : -1;
 	}
 
@@ -321,6 +368,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default int indexOf(Object o) {
+		assert Strict.LENIENT : "DoubleList.indexOf(Object)";
+
 		return o instanceof Double ? indexOfDoubleExactly((double) o) : -1;
 	}
 

@@ -269,14 +269,7 @@ public interface CharList extends List<Character>, CharCollection {
 	default boolean removeIf(Predicate<? super Character> filter) {
 		assert Strict.LENIENT : "CharList.removeIf(Predicate)";
 
-		boolean modified = false;
-		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (filter.test(iterator.nextChar())) {
-				iterator.remove();
-				modified = true;
-			}
-		}
-		return modified;
+		return removeCharsIf(filter::test);
 	}
 
 	@Override
@@ -320,6 +313,8 @@ public interface CharList extends List<Character>, CharCollection {
 
 	default char setChar(int index, char x) {
 		CharListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		char previous = listIterator.nextChar();
 		listIterator.set(x);
 		return previous;

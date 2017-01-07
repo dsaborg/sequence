@@ -201,7 +201,14 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean removeAllInts(int... xs) {
-		return removeIntsIf(x -> Arrayz.contains(xs, x));
+		boolean modified = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (Arrayz.contains(xs, iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeAllInts(IntIterable xs) {
@@ -216,11 +223,25 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean retainAllInts(int... xs) {
-		return removeIntsIf(x -> !Arrayz.contains(xs, x));
+		boolean modified = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!Arrayz.contains(xs, iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllInts(IntIterable xs) {
-		return removeIntsIf(x -> !xs.containsInt(x));
+		boolean modified = false;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!xs.containsInt(iterator.nextInt())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeIntsIf(IntPredicate filter) {

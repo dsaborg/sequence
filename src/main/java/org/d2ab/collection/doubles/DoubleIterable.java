@@ -214,11 +214,25 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	default boolean removeAllDoublesExactly(double... xs) {
-		return removeDoublesIf(x -> containsExactly(xs, x));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (containsExactly(xs, iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeAllDoubles(double[] xs, double precision) {
-		return removeDoublesIf(x -> contains(xs, x, precision));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (contains(xs, iterator.nextDouble(), precision)) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeAllDoublesExactly(DoubleIterable c) {
@@ -244,19 +258,47 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	default boolean retainAllDoublesExactly(double... xs) {
-		return removeDoublesIf(x -> !containsExactly(xs, x));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!containsExactly(xs, iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllDoubles(double[] xs, double precision) {
-		return removeDoublesIf(x -> !contains(xs, x, precision));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!contains(xs, iterator.nextDouble(), precision)) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllDoublesExactly(DoubleIterable c) {
-		return removeDoublesIf(x -> !c.containsDoubleExactly(x));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!c.containsDoubleExactly(iterator.nextDouble())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllDoubles(DoubleIterable c, double precision) {
-		return removeDoublesIf(x -> !c.containsDouble(x, precision));
+		boolean modified = false;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!c.containsDouble(iterator.nextDouble(), precision)) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeDoublesIf(DoublePredicate filter) {

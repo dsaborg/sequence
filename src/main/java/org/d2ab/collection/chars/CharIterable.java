@@ -202,7 +202,14 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean removeAllChars(char... xs) {
-		return removeCharsIf(x -> Arrayz.contains(xs, x));
+		boolean modified = false;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (Arrayz.contains(xs, iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeAllChars(CharIterable xs) {
@@ -217,11 +224,25 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean retainAllChars(char... xs) {
-		return removeCharsIf(x -> !Arrayz.contains(xs, x));
+		boolean modified = false;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!Arrayz.contains(xs, iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean retainAllChars(CharIterable xs) {
-		return removeCharsIf(x -> !xs.containsChar(x));
+		boolean modified = false;
+		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
+			if (!xs.containsChar(iterator.nextChar())) {
+				iterator.remove();
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	default boolean removeCharsIf(CharPredicate filter) {
