@@ -255,14 +255,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 		assert Strict.LENIENT : "CharList.removeAll(Collection)";
 
-		boolean modified = false;
-		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (c.contains(iterator.nextChar())) {
-				iterator.remove();
-				modified = true;
-			}
-		}
-		return modified;
+		return CharCollections.removeAll(this, c);
 	}
 
 	@Override
@@ -279,14 +272,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 		assert Strict.LENIENT : "CharList.retainAll(Collection)";
 
-		boolean modified = false;
-		for (CharIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (!c.contains(iterator.nextChar())) {
-				iterator.remove();
-				modified = true;
-			}
-		}
-		return modified;
+		return CharCollections.retainAll(this, c);
 	}
 
 	@Override

@@ -258,14 +258,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 		assert Strict.LENIENT : "IntList.removeAll(Collection)";
 
-		boolean modified = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (c.contains(iterator.nextInt())) {
-				iterator.remove();
-				modified = true;
-			}
-		}
-		return modified;
+		return IntCollections.removeAll(this, c);
 	}
 
 	@Override
@@ -282,14 +275,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 		assert Strict.LENIENT : "IntList.retainAll(Collection)";
 
-		boolean modified = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-			if (!c.contains(iterator.nextInt())) {
-				iterator.remove();
-				modified = true;
-			}
-		}
-		return modified;
+		return IntCollections.retainAll(this, c);
 	}
 
 	@Override

@@ -320,7 +320,7 @@ public class LongListTest {
 		twice(() -> assertThat(subList, containsLongs(6, 7, 8)));
 		twice(() -> assertThat(list, containsLongs(1, 2, 6, 7, 8, 9, 10)));
 
-		subList.removeIf(x -> x % 2 == 0);
+		subList.removeLongsIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsLongs(7)));
 		twice(() -> assertThat(list, containsLongs(1, 2, 7, 9, 10)));
 
@@ -335,7 +335,7 @@ public class LongListTest {
 
 	@Test
 	public void sortLongs() {
-		Lists.reverse(list);
+		LongList list = LongList.Base.create(5, 4, 3, 2, 1);
 		expecting(UnsupportedOperationException.class, list::sortLongs);
 		assertThat(list, containsLongs(5, 4, 3, 2, 1));
 	}
@@ -404,9 +404,9 @@ public class LongListTest {
 		assertThat(list, is(equalTo(list2)));
 		assertThat(list.hashCode(), is(list2.hashCode()));
 
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
+		LongList list3 = LongList.create(5, 4, 3, 2, 1);
+		assertThat(list, is(not(equalTo(list3))));
+		assertThat(list.hashCode(), is(not(list3.hashCode())));
 	}
 
 	@Test
@@ -652,15 +652,6 @@ public class LongListTest {
 
 		assertThat(list.retainAllLongs(LongList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(1, 2, 3));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> x + 1);
-		assertThat(empty, is(emptyIterable()));
-
-		list.replaceAll(x -> x + 1);
-		assertThat(list, containsLongs(2, 3, 4, 5, 6));
 	}
 
 	@Test

@@ -20,12 +20,14 @@ import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -292,7 +294,7 @@ public class ArrayLongListTest {
 		twice(() -> assertThat(subList, containsLongs(6, 7, 8)));
 		twice(() -> assertThat(list, containsLongs(1, 2, 6, 7, 8, 9, 10)));
 
-		subList.removeIf(x -> x % 2 == 0);
+		subList.removeLongsIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsLongs(7)));
 		twice(() -> assertThat(list, containsLongs(1, 2, 7, 9, 10)));
 
@@ -377,23 +379,15 @@ public class ArrayLongListTest {
 		assertThat(list, is(equalTo(list2)));
 		assertThat(list.hashCode(), is(list2.hashCode()));
 
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
+		LongList list3 = LongList.create(5, 4, 3, 2, 1);
+		assertThat(list, is(not(equalTo(list3))));
+		assertThat(list.hashCode(), is(not(list3.hashCode())));
 	}
 
 	@Test
 	public void sequence() {
 		assertThat(empty.sequence(), is(emptyIterable()));
 		assertThat(list.sequence(), containsLongs(1, 2, 3, 4, 5));
-	}
-
-	@Test
-	public void lastIndexOfBoxed() {
-		assertThat(empty.lastIndexOf(17L), is(-1));
-
-		assertThat(list.lastIndexOf(17L), is(-1));
-		assertThat(list.lastIndexOf(2L), is(1));
 	}
 
 	@Test
@@ -405,14 +399,6 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void indexOfBoxed() {
-		assertThat(empty.indexOf(17L), is(-1));
-
-		assertThat(list.indexOf(17L), is(-1));
-		assertThat(list.indexOf(2L), is(1));
-	}
-
-	@Test
 	public void indexOfLong() {
 		assertThat(empty.indexOfLong(17), is(-1));
 
@@ -421,28 +407,11 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void getBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.get(2));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.get(2), is(3L));
-	}
-
-	@Test
 	public void getLong() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(2));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.getLong(2), is(3L));
-	}
-
-	@Test
-	public void setBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.set(2, 17L));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.set(2, 17L), is(3L));
-		assertThat(list, containsLongs(1, 2, 17, 4, 5));
 	}
 
 	@Test
@@ -455,33 +424,12 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void addBoxed() {
-		assertThat(empty.add(17L), is(true));
-		assertThat(empty, containsLongs(17));
-
-		assertThat(list.add(17L), is(true));
-		assertThat(list, containsLongs(1, 2, 3, 4, 5, 17));
-	}
-
-	@Test
 	public void addLong() {
 		assertThat(empty.addLong(17), is(true));
 		assertThat(empty, containsLongs(17));
 
 		assertThat(list.addLong(17), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 17));
-	}
-
-	@Test
-	public void addAtBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 17L));
-		assertThat(empty, is(emptyIterable()));
-
-		empty.add(0, 17L);
-		assertThat(empty, containsLongs(17));
-
-		list.add(2, 17L);
-		assertThat(list, containsLongs(1, 2, 17, 3, 4, 5));
 	}
 
 	@Test
@@ -494,18 +442,6 @@ public class ArrayLongListTest {
 
 		list.addLongAt(2, 17);
 		assertThat(list, containsLongs(1, 2, 17, 3, 4, 5));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(Arrays.asList(1L, 2L, 3L)), is(true));
-		assertThat(empty, containsLongs(1, 2, 3));
-
-		assertThat(list.addAll(Arrays.asList(6L, 7L, 8L)), is(true));
-		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
@@ -545,18 +481,6 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void addAllAtBoxed() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(empty.addAll(0, Arrays.asList(1L, 2L, 3L)), is(true));
-		assertThat(empty, containsLongs(1, 2, 3));
-
-		assertThat(list.addAll(2, Arrays.asList(17L, 18L, 19L)), is(true));
-		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
-	}
-
-	@Test
 	public void addAllLongsAtAtArray() {
 		assertThat(empty.addAllLongsAt(0), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -593,18 +517,6 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17L), is(false));
-		assertThat(empty.remove(new Object()), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.remove(17L), is(false));
-		assertThat(list.remove(new Object()), is(false));
-		assertThat(list.remove(2L), is(true));
-		assertThat(list, containsLongs(1, 3, 4, 5));
-	}
-
-	@Test
 	public void removeLong() {
 		assertThat(empty.removeLong(17), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -612,15 +524,6 @@ public class ArrayLongListTest {
 		assertThat(list.removeLong(17), is(false));
 		assertThat(list.removeLong(2), is(true));
 		assertThat(list, containsLongs(1, 3, 4, 5));
-	}
-
-	@Test
-	public void removeAtBoxed() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.remove(2), is(3L));
-		assertThat(list, containsLongs(1, 2, 4, 5));
 	}
 
 	@Test
@@ -633,29 +536,11 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17L), is(false));
-		assertThat(empty.contains(new Object()), is(false));
-
-		assertThat(list.contains(17L), is(false));
-		assertThat(list.contains(new Object()), is(false));
-		assertThat(list.contains(2L), is(true));
-	}
-
-	@Test
 	public void containsLong() {
 		assertThat(empty.containsLong(17), is(false));
 
 		assertThat(list.containsLong(17), is(false));
 		assertThat(list.containsLong(2), is(true));
-	}
-
-	@Test
-	public void containsAllBoxed() {
-		assertThat(empty.containsAll(Arrays.asList(17L, 18L, 19L, new Object())), is(false));
-
-		assertThat(list.containsAll(Arrays.asList(17L, 18L, 19L, new Object())), is(false));
-		assertThat(list.containsAll(Arrays.asList(1L, 2L, 3L)), is(true));
 	}
 
 	@Test
@@ -691,16 +576,6 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1L, 2L, 3L, 17L)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeAll(Arrays.asList(17L, 18L, 19L)), is(false));
-		assertThat(list.removeAll(Arrays.asList(1L, 2L, 3L, 17L)), is(true));
-		assertThat(list, containsLongs(4, 5));
-	}
-
-	@Test
 	public void removeAllLongsArray() {
 		assertThat(empty.removeAllLongs(1, 2, 3, 17), is(false));
 		assertThat(empty, is(emptyIterable()));
@@ -721,31 +596,12 @@ public class ArrayLongListTest {
 	}
 
 	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.removeIf(x -> x > 5), is(false));
-		assertThat(list.removeIf(x -> x > 3), is(true));
-		assertThat(list, containsLongs(1, 2, 3));
-	}
-
-	@Test
 	public void removeLongsIf() {
 		assertThat(empty.removeLongsIf(x -> x > 3), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeLongsIf(x -> x > 5), is(false));
 		assertThat(list.removeLongsIf(x -> x > 3), is(true));
-		assertThat(list, containsLongs(1, 2, 3));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1L, 2L, 3L, 17L)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(list.retainAll(Arrays.asList(1L, 2L, 3L, 17L)), is(true));
 		assertThat(list, containsLongs(1, 2, 3));
 	}
 
@@ -765,15 +621,6 @@ public class ArrayLongListTest {
 
 		assertThat(list.retainAllLongs(ArrayLongList.create(1, 2, 3, 17)), is(true));
 		assertThat(list, containsLongs(1, 2, 3));
-	}
-
-	@Test
-	public void replaceAll() {
-		empty.replaceAll(x -> x + 1);
-		assertThat(empty, is(emptyIterable()));
-
-		list.replaceAll(x -> x + 1);
-		assertThat(list, containsLongs(2, 3, 4, 5, 6));
 	}
 
 	@Test
