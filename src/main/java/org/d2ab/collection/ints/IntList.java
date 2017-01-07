@@ -208,7 +208,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 		assert Strict.LENIENT : "IntList.addAll(Collection)";
 
-		return Collectionz.addAll(this, c);
+		return IntCollections.addAll(this, c);
 	}
 
 	@Override
@@ -248,7 +248,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 		assert Strict.LENIENT : "IntList.containsAll(Collection)";
 
-		return Collectionz.containsAll(this, c);
+		return IntCollections.containsAll(this, c);
 	}
 
 	@Override

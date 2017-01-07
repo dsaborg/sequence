@@ -65,22 +65,22 @@ public interface CharSet extends Set<Character>, CharCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Character> c) {
-		return Collectionz.addAll(this, c);
+		return CharCollections.addAll(this, c);
 	}
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		return Collectionz.containsAll(this, c);
+		return CharCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return Collectionz.removeAll(this, c);
+		return CharCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return Collectionz.retainAll(this, c);
+		return CharCollections.retainAll(this, c);
 	}
 
 	@Override

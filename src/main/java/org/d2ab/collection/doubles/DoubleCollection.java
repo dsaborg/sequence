@@ -118,7 +118,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 		assert Strict.LENIENT : "DoubleCollection.addAll(Collection)";
 
-		return Collectionz.addAll(this, c);
+		return DoubleCollections.addAll(this, c);
 	}
 
 	default boolean addAllDoubles(double... xs) {
@@ -142,7 +142,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 		assert Strict.LENIENT : "DoubleCollection.containsAll(Collection)";
 
-		return Collectionz.containsAll(this, c);
+		return DoubleCollections.containsAll(this, c);
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 		assert Strict.LENIENT : "DoubleCollection.removeAll(Collection)";
 
-		return Collectionz.removeAll(this, c);
+		return DoubleCollections.removeAll(this, c);
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 		assert Strict.LENIENT : "DoubleCollection.retainAll(Collection)";
 
-		return Collectionz.retainAll(this, c);
+		return DoubleCollections.retainAll(this, c);
 	}
 
 	@Override

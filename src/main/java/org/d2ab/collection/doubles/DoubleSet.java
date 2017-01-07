@@ -88,22 +88,22 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
-		return Collectionz.addAll(this, c);
+		return DoubleCollections.addAll(this, c);
 	}
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		return Collectionz.containsAll(this, c);
+		return DoubleCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return Collectionz.removeAll(this, c);
+		return DoubleCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return Collectionz.retainAll(this, c);
+		return DoubleCollections.retainAll(this, c);
 	}
 
 	@Override

@@ -69,22 +69,22 @@ public interface IntSet extends Set<Integer>, IntCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
-		return Collectionz.addAll(this, c);
+		return IntCollections.addAll(this, c);
 	}
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		return Collectionz.containsAll(this, c);
+		return IntCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return Collectionz.removeAll(this, c);
+		return IntCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return Collectionz.retainAll(this, c);
+		return IntCollections.retainAll(this, c);
 	}
 
 	@Override

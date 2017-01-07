@@ -90,7 +90,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 
 	@Override
 	default boolean addAll(Collection<? extends Long> c) {
-		return Collectionz.addAll(this, c);
+		return LongCollections.addAll(this, c);
 	}
 
 	default boolean addAllLongs(long... xs) {
@@ -109,17 +109,17 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		return Collectionz.containsAll(this, c);
+		return LongCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		return Collectionz.removeAll(this, c);
+		return LongCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		return Collectionz.retainAll(this, c);
+		return LongCollections.retainAll(this, c);
 	}
 
 	@Override

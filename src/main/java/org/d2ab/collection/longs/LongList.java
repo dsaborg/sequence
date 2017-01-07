@@ -180,7 +180,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Long> c) {
-		return Collectionz.addAll(this, c);
+		return LongCollections.addAll(this, c);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		return Collectionz.containsAll(this, c);
+		return LongCollections.containsAll(this, c);
 	}
 
 	@Override

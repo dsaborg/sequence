@@ -106,7 +106,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 		assert Strict.LENIENT : "CharCollection.addAll(Collection)";
 
-		return Collectionz.addAll(this, c);
+		return CharCollections.addAll(this, c);
 	}
 
 	default boolean addAllChars(char... xs) {
@@ -130,7 +130,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 		assert Strict.LENIENT : "CharCollection.containsAll(Collection)";
 
-		return Collectionz.containsAll(this, c);
+		return CharCollections.containsAll(this, c);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 		assert Strict.LENIENT : "CharCollection.removeAll(Collection)";
 
-		return Collectionz.removeAll(this, c);
+		return CharCollections.removeAll(this, c);
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 		assert Strict.LENIENT : "CharCollection.retainAll(Collection)";
 
-		return Collectionz.retainAll(this, c);
+		return CharCollections.retainAll(this, c);
 	}
 
 	@Override

@@ -181,7 +181,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
-		return Collectionz.addAll(this, c);
+		return DoubleCollections.addAll(this, c);
 	}
 
 	@Override
@@ -221,7 +221,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		return Collectionz.containsAll(this, c);
+		return DoubleCollections.containsAll(this, c);
 	}
 
 	@Override

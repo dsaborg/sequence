@@ -105,7 +105,7 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	default boolean addAll(Collection<? extends Integer> c) {
 		assert Strict.LENIENT : "IntCollection.add(Collection)";
 
-		return Collectionz.addAll(this, c);
+		return IntCollections.addAll(this, c);
 	}
 
 	default boolean addAllInts(int... xs) {
@@ -126,21 +126,21 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	default boolean containsAll(Collection<?> c) {
 		assert Strict.LENIENT : "IntCollection.containsAll(Collection)";
 
-		return Collectionz.containsAll(this, c);
+		return IntCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
 		assert Strict.LENIENT : "IntCollection.removeAll(Collection)";
 
-		return Collectionz.removeAll(this, c);
+		return IntCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
 		assert Strict.LENIENT : "IntCollection.retainAll(Collection)";
 
-		return Collectionz.retainAll(this, c);
+		return IntCollections.retainAll(this, c);
 	}
 
 	@Override

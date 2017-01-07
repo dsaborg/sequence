@@ -321,7 +321,7 @@ public class CharListTest {
 		twice(() -> assertThat(subList, containsChars('f', 'g', 'h')));
 		twice(() -> assertThat(list, containsChars('a', 'b', 'f', 'g', 'h', 'i', 'j')));
 
-		subList.removeIf(x -> x % 2 == 0);
+		subList.removeCharsIf(x -> x % 2 == 0);
 		twice(() -> assertThat(subList, containsChars('g')));
 		twice(() -> assertThat(list, containsChars('a', 'b', 'g', 'i', 'j')));
 
@@ -336,7 +336,7 @@ public class CharListTest {
 
 	@Test
 	public void sortChars() {
-		Lists.reverse(list);
+		CharList list = CharList.Base.create('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a');
 		expecting(UnsupportedOperationException.class, list::sortChars);
 		assertThat(list, containsChars('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a'));
 	}
@@ -405,9 +405,9 @@ public class CharListTest {
 		assertThat(list, is(equalTo(list2)));
 		assertThat(list.hashCode(), is(list2.hashCode()));
 
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
+		CharList list3 = CharList.create('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a');
+		assertThat(list, is(not(equalTo(list3))));
+		assertThat(list.hashCode(), is(not(list3.hashCode())));
 	}
 
 	@Test
