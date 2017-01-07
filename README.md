@@ -22,6 +22,11 @@ Javadoc for the entire project is available at the
 
 ### News
 
+**2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
+code coverage of the entire project to 100% line coverage. Fixes minor bugs and inconsistencies under error conditions,
+such as correct exceptions being thrown for index out of bounds in primitive collections, as well as several cases of
+unnecessary boxing in primitive collections and sequences.
+
 **2016-12-11 - Sequence v2.1** with `Sequence` backtracking from implementing the `List` interface to 
 implementing just `Collection`, due to the general inability to fulfill `List`'s `equals` and `hashCode` contract.
 It is still possible to get a full-fledged `List` view of a `Sequence` through `Sequence#asList()`. Also improves 
