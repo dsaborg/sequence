@@ -19,11 +19,13 @@ package org.d2ab.iterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.HAS_NEXT;
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.NEXT;
+
 public class SteppingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final int step;
 
-	private boolean hasNext;
-	private T next;
+	private boolean skipOnHasNext;
 
 	public SteppingIterator(Iterator<T> iterator, int step) {
 		super(iterator);
@@ -32,18 +34,13 @@ public class SteppingIterator<T> extends DelegatingUnaryIterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (hasNext)
-			return true;
+		if (skipOnHasNext) {
+			Iterators.skip(iterator, step - 1);
+			skipOnHasNext = false;
+		}
 
-		if (!iterator.hasNext())
-			return false;
-
-		next = iterator.next();
-
-		Iterators.skip(iterator, step - 1);
-		hasNext = true;
-
-		return true;
+		state = HAS_NEXT;
+		return iterator.hasNext();
 	}
 
 	@Override
@@ -51,9 +48,18 @@ public class SteppingIterator<T> extends DelegatingUnaryIterator<T> {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T result = next;
-		next = null;
-		hasNext = false;
-		return result;
+		skipOnHasNext = true;
+		state = NEXT;
+		return iterator.next();
+	}
+
+	@Override
+	public void remove() {
+		if (state == HAS_NEXT)
+			throw new IllegalStateException("Cannot remove immediately after calling hasNext()");
+		if (state != NEXT)
+			throw new IllegalStateException("Can only remove after calling next()");
+
+		super.remove();
 	}
 }

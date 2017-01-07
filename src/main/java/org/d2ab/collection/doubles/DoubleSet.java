@@ -115,6 +115,29 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 	 * Base class for {@link DoubleSet} implementations.
 	 */
 	abstract class Base extends DoubleCollection.Base implements DoubleSet {
+		public static DoubleSet create(double... doubles) {
+			return from(DoubleSortedSet.create(doubles));
+		}
+
+		public static DoubleSet from(final DoubleCollection collection) {
+			return new DoubleSet.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return collection.addDoubleExactly(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

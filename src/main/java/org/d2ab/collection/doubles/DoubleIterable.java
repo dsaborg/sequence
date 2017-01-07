@@ -19,6 +19,7 @@ package org.d2ab.collection.doubles;
 import org.d2ab.iterator.doubles.ArrayDoubleIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.sequence.DoubleSequence;
+import org.d2ab.util.Strict;
 
 import java.util.PrimitiveIterator;
 import java.util.Spliterator;
@@ -29,19 +30,14 @@ import java.util.function.DoublePredicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.contains;
 import static org.d2ab.collection.Arrayz.containsExactly;
-import static org.d2ab.collection.doubles.DoubleComparator.eq;
+import static org.d2ab.util.Doubles.eq;
 
 @FunctionalInterface
 public interface DoubleIterable extends Iterable<Double> {
 	static DoubleIterable of(double... doubles) {
 		return () -> new ArrayDoubleIterator(doubles);
-	}
-
-	static DoubleIterable from(Double... doubles) {
-		return from(asList(doubles));
 	}
 
 	static DoubleIterable from(Iterable<Double> iterable) {
@@ -67,7 +63,9 @@ public interface DoubleIterable extends Iterable<Double> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Double> consumer) {
-		forEachDouble((consumer instanceof DoubleConsumer) ? (DoubleConsumer) consumer : consumer::accept);
+		assert Strict.LENIENT : "DoubleIterable.forEach(Consumer)";
+
+		forEachDouble(consumer::accept);
 	}
 
 	/**
@@ -192,8 +190,8 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	/**
-	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code DoubleIterable},
-	 * false otherwise.
+	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code
+	 * DoubleIterable}, false otherwise.
 	 */
 	default boolean containsAnyDoublesExactly(DoubleIterable xs) {
 		DoubleIterator iterator = iterator();
@@ -205,8 +203,8 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	/**
-	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given
-	 * {@code DoubleIterable} to the given precision, false otherwise.
+	 * @return true if this {@code DoubleIterable} contains any of the {@code doubles} in the given {@code
+	 * DoubleIterable} to the given precision, false otherwise.
 	 */
 	default boolean containsAnyDoubles(DoubleIterable xs, double precision) {
 		DoubleIterator iterator = iterator();

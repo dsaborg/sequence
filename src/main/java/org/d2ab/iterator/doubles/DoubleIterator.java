@@ -16,15 +16,13 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.DoubleComparator;
+import org.d2ab.util.Doubles;
+import org.d2ab.util.Strict;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
-import java.util.function.DoubleBinaryOperator;
-import java.util.function.IntToDoubleFunction;
-import java.util.function.LongToDoubleFunction;
-import java.util.function.ToDoubleFunction;
+import java.util.function.*;
 
 /**
  * An Iterator specialized for {@code double} values. Extends {@link PrimitiveIterator.OfDouble} with helper methods.
@@ -42,8 +40,20 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		}
 	};
 
+	static DoubleIterator empty() {
+		return EMPTY;
+	}
+
 	static DoubleIterator of(double... doubles) {
 		return new ArrayDoubleIterator(doubles);
+	}
+
+	static DoubleIterator from(double[] doubles, int size) {
+		return new ArrayDoubleIterator(doubles, size);
+	}
+
+	static DoubleIterator from(double[] doubles, int offset, int size) {
+		return new ArrayDoubleIterator(doubles, offset, size);
 	}
 
 	static DoubleIterator from(Iterator<Double> iterator) {
@@ -106,14 +116,28 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 		};
 	}
 
-	static <T> DoubleIterator from(final Iterator<T> iterator,
-	                               final ToDoubleFunction<? super T> mapper) {
+	static <T> DoubleIterator from(Iterator<T> iterator,
+	                               ToDoubleFunction<? super T> mapper) {
 		return new DelegatingTransformingDoubleIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public double nextDouble() {
 				return mapper.applyAsDouble(iterator.next());
 			}
 		};
+	}
+
+	@Override
+	default Double next() {
+		assert Strict.LENIENT : "DoubleIterator.next()";
+
+		return nextDouble();
+	}
+
+	@Override
+	default void forEachRemaining(Consumer<? super Double> action) {
+		assert Strict.LENIENT : "DoubleIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((DoubleConsumer) action::accept);
 	}
 
 	default boolean skip() {
@@ -132,11 +156,25 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	/**
 	 * @return the number of {@code doubles} remaining in this iterator.
 	 */
-	default int count() {
-		int count = 0;
+	default int size() {
+		return size(DoubleIterator::count);
+	}
+
+	default long count() {
+		long count = 0;
 		for (; hasNext(); nextDouble())
 			count++;
 		return count;
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<DoubleIterator> counter) {
+		double count = counter.applyAsLong(this);
+
+		if (count > Integer.MAX_VALUE)
+			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);
+
+		return (int) count;
 	}
 
 	default double reduce(double identity, DoubleBinaryOperator operator) {
@@ -151,7 +189,7 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 	 */
 	default boolean contains(double d, double precision) {
 		while (hasNext())
-			if (DoubleComparator.eq(nextDouble(), d, precision))
+			if (Doubles.eq(nextDouble(), d, precision))
 				return true;
 
 		return false;

@@ -27,14 +27,14 @@ import java.util.function.Function;
  * A {@link Collection} that presents a mapped view of another {@link Collection}.
  */
 public class MappedCollection<T, U> extends AbstractCollection<U> {
-	private final Collection<? extends T> collection;
+	protected final Collection<T> collection;
 	private final Function<? super T, ? extends U> mapper;
 
-	public static <T, U> Collection<U> from(Collection<? extends T> collection, Function<? super T, ? extends U> mapper) {
+	public static <T, U> Collection<U> from(Collection<T> collection, Function<? super T, ? extends U> mapper) {
 		return new MappedCollection<>(collection, mapper);
 	}
 
-	private MappedCollection(Collection<? extends T> collection, Function<? super T, ? extends U> mapper) {
+	protected MappedCollection(Collection<T> collection, Function<? super T, ? extends U> mapper) {
 		this.collection = collection;
 		this.mapper = mapper;
 	}

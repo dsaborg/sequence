@@ -18,6 +18,7 @@ package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.doubles.*;
+import org.d2ab.util.Doubles;
 
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
@@ -28,6 +29,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code double} values.
  */
 public interface DoubleList extends List<Double>, DoubleCollection {
+	// TODO: Extract out relevant parts to IterableDoubleList
+
 	/**
 	 * Returns an immutable {@code DoubleList} of the given elements. The returned {@code DoubleList}'s
 	 * {@link DoubleListIterator} supports forward iteration only.
@@ -84,6 +87,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	@Override
+	default DoubleList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Double && containsDoubleExactly((double) o);
 	}
@@ -110,11 +118,12 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Double> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		DoubleListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (double t : c)
+			listIterator.add(t);
 
 		return true;
 	}
@@ -135,7 +144,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 			return false;
 
 		DoubleListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachDouble(listIterator::add);
 
 		return true;
 	}
@@ -155,17 +164,13 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		throw new UnsupportedOperationException();
 	}
 
-	default void sortDoubles(DoubleComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	default int binarySearchExactly(double x) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	default void sort(Comparator<? super Double> c) {
-		sortDoubles(c::compare);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -175,10 +180,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
-		boolean modified = false;
-		for (double x : c)
-			modified |= addDoubleExactly(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -241,7 +243,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	default double getDouble(int index) {
-		return listIterator(index).nextDouble();
+		DoubleListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextDouble();
 	}
 
 	@Override
@@ -298,7 +304,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.eq(iterator.nextDouble(), x, precision))
+			if (Doubles.eq(iterator.nextDouble(), x, precision))
 				lastIndex = index;
 
 		return lastIndex;
@@ -321,7 +327,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	default int indexOfDouble(double x, double precision) {
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); index++)
-			if (DoubleComparator.eq(iterator.nextDouble(), x, precision))
+			if (Doubles.eq(iterator.nextDouble(), x, precision))
 				return index;
 
 		return -1;
@@ -346,6 +352,53 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	 * Base class for {@link DoubleList} implementations.
 	 */
 	abstract class Base extends DoubleCollection.Base implements DoubleList {
+		public static DoubleList create(double... doubles) {
+			return from(DoubleList.create(doubles));
+		}
+
+		public static DoubleList from(final DoubleCollection collection) {
+			return new DoubleList.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return collection.addDoubleExactly(x);
+				}
+			};
+		}
+
+		public static DoubleList from(final DoubleList list) {
+			return new DoubleList.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public DoubleListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return list.addDoubleExactly(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
@@ -401,7 +454,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		}
 
 		public DoubleIterator iterator() {
-			return new DelegatingUnaryDoubleIterator(new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryDoubleIterator(
+					new LimitingDoubleIterator(new SkippingDoubleIterator(list.iterator(), from), to - from)) {
 				@Override
 				public double nextDouble() {
 					return iterator.nextDouble();

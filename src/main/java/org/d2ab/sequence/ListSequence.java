@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.ChainedList;
-import org.d2ab.collection.FilteredList;
-import org.d2ab.collection.MappedList;
-import org.d2ab.collection.ReverseList;
+import org.d2ab.collection.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -27,8 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 
 /**
  * A {@link Sequence} backed by a {@link List}. Implements certain operations on {@link Sequence} in a more performant
@@ -36,19 +32,19 @@ import static java.util.Collections.singletonList;
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
 public class ListSequence<T> implements Sequence<T> {
-	private List<T> list;
+	private final List<T> list;
 
 	/**
 	 * @return an immutable empty {@code ListSequence}.
 	 */
-	public static <T> Sequence<T> empty() {
+	static <T> Sequence<T> empty() {
 		return from(emptyList());
 	}
 
 	/**
 	 * @return an immutable {@code ListSequence} of the given element.
 	 */
-	public static <T> Sequence<T> of(T item) {
+	static <T> Sequence<T> of(T item) {
 		return from(singletonList(item));
 	}
 
@@ -56,46 +52,63 @@ public class ListSequence<T> implements Sequence<T> {
 	 * @return an immutable {@code ListSequence} of the given elements.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Sequence<T> of(T... items) {
-		return from(Arrays.asList(items));
+	static <T> Sequence<T> of(T... items) {
+		return from(unmodifiableList(Arrays.asList(items)));
 	}
 
 	/**
-	 * @return a {@code ListSequence} backed by the given {@link List}. Updates to the backing list is reflected
-	 * in the returned {@link ListSequence}.
+	 * @return a {@code ListSequence} backed by the given {@link List}. Updates to the backing list is reflected in the
+	 * returned {@link ListSequence}.
 	 */
-	public static <T> Sequence<T> from(List<T> list) {
+	static <T> Sequence<T> from(List<T> list) {
 		return new ListSequence<>(list);
 	}
 
 	/**
-	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s.
-	 * Updates to the backing lists is reflected in the returned {@link ListSequence}.
+	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s. Updates to the backing
+	 * lists is reflected in the returned {@link ListSequence}.
 	 */
 	@SafeVarargs
-	public static <T> Sequence<T> concat(List<T>... lists) {
-		return from(ChainedList.from(lists));
+	static <T> Sequence<T> concat(List<T>... lists) {
+		return from(ChainedList.concat(lists));
 	}
 
 	/**
-	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s.
-	 * Updates to the backing lists is reflected in the returned {@link ListSequence}.
+	 * @return a {@code ListSequence} backed by the concatenation of the given {@link List}s. Updates to the backing
+	 * lists is reflected in the returned {@link ListSequence}.
 	 */
-	public static <T> Sequence<T> concat(List<List<T>> lists) {
-		return from(ChainedList.from(lists));
+	static <T> Sequence<T> concat(List<List<T>> lists) {
+		return from(ChainedList.concat(lists));
+	}
+
+	/**
+	 * @return a new empty mutable {@code ListSequence}.
+	 */
+	static <T> Sequence<T> create() {
+		return new ListSequence<>();
 	}
 
 	/**
 	 * @return a new empty mutable {@code ListSequence} with the given initial capacity.
 	 */
-	public static <T> Sequence<T> withCapacity(int capacity) {
+	static <T> Sequence<T> withCapacity(int capacity) {
 		return new ListSequence<>(capacity);
+	}
+
+	/**
+	 * @return a new mutable {@code ListSequence} initialized with the given elements.
+	 */
+	@SafeVarargs
+	static <T> Sequence<T> createOf(T... ts) {
+		ListSequence<T> result = new ListSequence<>(ts.length);
+		result.addAll(Arrays.asList(ts));
+		return result;
 	}
 
 	/**
 	 * @return a new mutable {@code ListSequence} initialized with the elements in the given {@link Collection}.
 	 */
-	public static <T> Sequence<T> create(Collection<? extends T> c) {
+	static <T> Sequence<T> createFrom(Collection<? extends T> c) {
 		ListSequence<T> result = new ListSequence<>(c.size());
 		result.addAll(c);
 		return result;
@@ -104,7 +117,7 @@ public class ListSequence<T> implements Sequence<T> {
 	/**
 	 * @return a new mutable {@code ListSequence} initialized with the elements in the given {@link Iterable}.
 	 */
-	public static <T> Sequence<T> create(Iterable<? extends T> iterable) {
+	static <T> Sequence<T> createFrom(Iterable<? extends T> iterable) {
 		ListSequence<T> result = new ListSequence<>();
 		iterable.forEach(result::add);
 		return result;
@@ -114,26 +127,16 @@ public class ListSequence<T> implements Sequence<T> {
 	 * @return a new mutable {@code ListSequence} initialized with the remaining elements in the given
 	 * {@link Iterator}.
 	 */
-	public static <T> Sequence<T> create(Iterator<? extends T> iterator) {
+	static <T> Sequence<T> createFrom(Iterator<? extends T> iterator) {
 		ListSequence<T> result = new ListSequence<>();
 		iterator.forEachRemaining(result::add);
 		return result;
 	}
 
 	/**
-	 * @return a new mutable {@code ListSequence} initialized with the given elements.
-	 */
-	@SafeVarargs
-	public static <T> Sequence<T> create(T... ts) {
-		ListSequence<T> result = new ListSequence<>(ts.length);
-		result.addAll(Arrays.asList(ts));
-		return result;
-	}
-
-	/**
 	 * Create a new empty mutable {@code ListSequence}.
 	 */
-	public ListSequence() {
+	private ListSequence() {
 		this(new ArrayList<>());
 	}
 
@@ -269,12 +272,12 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public Sequence<T> reverse() {
-		return from(new ReverseList<>(list));
+		return from(ReverseList.from(list));
 	}
 
 	@Override
 	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return from(new FilteredList<>(list, predicate));
+		return from(FilteredList.from(list, predicate));
 	}
 
 	@Override
@@ -282,11 +285,17 @@ public class ListSequence<T> implements Sequence<T> {
 		return from(MappedList.from(list, mapper));
 	}
 
+	@Override
+	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
+			backMapper) {
+		return from(BiMappedList.from(list, mapper, backMapper));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Sequence<T> append(Iterable<T> iterable) {
 		if (iterable instanceof List)
-			return from(ChainedList.from(list, (List<T>) iterable));
+			return from(ChainedList.concat(list, (List<T>) iterable));
 
 		return Sequence.concat(this, iterable);
 	}

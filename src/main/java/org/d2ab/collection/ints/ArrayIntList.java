@@ -28,21 +28,11 @@ import java.util.function.IntUnaryOperator;
  * An {@link IntList} backed by an int-array, supporting all {@link IntList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayIntList extends IntList.Base implements IntList, RandomAccess {
+public class ArrayIntList extends IntList.Base implements RandomAccess {
 	private int[] contents;
 	private int size;
 
 	private int modCount;
-
-	/**
-	 * @return a new mutable {@code ArrayIntList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(int...)} instead.
-	 */
-	@Deprecated
-	public static ArrayIntList of(int... xs) {
-		return create(xs);
-	}
 
 	/**
 	 * Create a new empty mutable {@code ArrayIntList}. When possible, it's preferred to use {@link IntList#create()}
@@ -86,7 +76,7 @@ public class ArrayIntList extends IntList.Base implements IntList, RandomAccess 
 	 *
 	 * @since 2.0
 	 */
-	public ArrayIntList() {
+	private ArrayIntList() {
 		this(10);
 	}
 
@@ -94,10 +84,8 @@ public class ArrayIntList extends IntList.Base implements IntList, RandomAccess 
 	 * Create a new mutable {@code ArrayIntList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayIntList(int capacity) {
+	private ArrayIntList(int capacity) {
 		this.contents = new int[capacity];
 	}
 
@@ -421,10 +409,6 @@ public class ArrayIntList extends IntList.Base implements IntList, RandomAccess 
 		}
 
 		private ListIter(int index, int from, int to) {
-			if (index < 0)
-				throw new ArrayIndexOutOfBoundsException(index);
-			if (index > to - from)
-				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
 			this.from = from;
@@ -522,7 +506,7 @@ public class ArrayIntList extends IntList.Base implements IntList, RandomAccess 
 		private int from;
 		private int to;
 
-		public SubList(int from, int to) {
+		private SubList(int from, int to) {
 			if (from < 0)
 				throw new ArrayIndexOutOfBoundsException(from);
 			if (to > size)

@@ -23,7 +23,8 @@ import java.util.Iterator;
 /**
  * A superclass for delegating {@link DoubleIterator}s.
  */
-public abstract class DelegatingTransformingDoubleIterator<T, I extends Iterator<T>> extends DelegatingTransformingIterator<T, I, Double>
+public abstract class DelegatingTransformingDoubleIterator<T, I extends Iterator<T>>
+		extends DelegatingTransformingIterator<T, I, Double>
 		implements DoubleIterator {
 	public DelegatingTransformingDoubleIterator(I iterator) {
 		super(iterator);

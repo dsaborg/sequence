@@ -28,24 +28,14 @@ import java.util.NoSuchElementException;
 import java.util.RandomAccess;
 
 /**
- * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing the
- * underlying array.
+ * An {@link CharList} backed by an char-array, supporting all {@link CharList}-methods by modifying and/or replacing
+ * the underlying array.
  */
-public class ArrayCharList extends CharList.Base implements CharList, RandomAccess {
+public class ArrayCharList extends CharList.Base implements RandomAccess {
 	private char[] contents;
 	private int size;
 
 	private int modCount;
-
-	/**
-	 * @return a new mutable {@code ArrayCharList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(char...)} instead.
-	 */
-	@Deprecated
-	public static ArrayCharList of(char... xs) {
-		return create(xs);
-	}
 
 	/**
 	 * Create a new empty mutable {@code ArrayCharList}. When possible, it's preferred to use
@@ -55,7 +45,6 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	 *
 	 * @see CharList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayCharList create() {
@@ -70,7 +59,6 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	 *
 	 * @see CharList#create(char...)
 	 * @see #ArrayCharList(CharCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayCharList create(char... xs) {
@@ -99,11 +87,8 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	 * Create a new mutable {@code ArrayCharList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayCharList(int capacity) {
+	private ArrayCharList(int capacity) {
 		this.contents = new char[capacity];
 	}
 
@@ -149,6 +134,11 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	}
 
 	@Override
+	public CharList subList(int from, int to) {
+		return new SubList(from, to);
+	}
+
+	@Override
 	public void sortChars() {
 		Arrays.sort(contents, 0, size);
 	}
@@ -156,11 +146,6 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 	@Override
 	public int binarySearch(char x) {
 		return Arrays.binarySearch(contents, 0, size, x);
-	}
-
-	@Override
-	public CharList subList(int from, int to) {
-		return new SubList(from, to);
 	}
 
 	@Override
@@ -417,15 +402,11 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 
 		private int expectedModCount = modCount;
 
-		public ListIter(int index) {
+		private ListIter(int index) {
 			this(index, 0, size);
 		}
 
 		private ListIter(int index, int from, int to) {
-			if (index < 0)
-				throw new ArrayIndexOutOfBoundsException(index);
-			if (index > to - from)
-				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
 			this.from = from;
@@ -523,7 +504,7 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 		private int from;
 		private int to;
 
-		public SubList(int from, int to) {
+		private SubList(int from, int to) {
 			if (from < 0)
 				throw new ArrayIndexOutOfBoundsException(from);
 			if (to > size)
@@ -539,7 +520,7 @@ public class ArrayCharList extends CharList.Base implements CharList, RandomAcce
 
 		@Override
 		public CharListIterator listIterator(int index) {
-			return new ArrayCharList.ListIter(index, from, to) {
+			return new ListIter(index, from, to) {
 				@Override
 				public void add(char x) {
 					super.add(x);

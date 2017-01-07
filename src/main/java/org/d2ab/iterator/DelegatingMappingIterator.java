@@ -21,7 +21,8 @@ import java.util.Iterator;
 /**
  * An {@link Iterator}s that delegates to the same type of {@link Iterator} but maps the values to a different type.
  */
-public abstract class DelegatingMappingIterator<T, U> extends DelegatingTransformingIterator<T, Iterator<? extends T>, U> {
+public abstract class DelegatingMappingIterator<T, U>
+		extends DelegatingTransformingIterator<T, Iterator<? extends T>, U> {
 	protected DelegatingMappingIterator(Iterator<? extends T> iterator) {
 		super(iterator);
 	}

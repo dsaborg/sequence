@@ -34,11 +34,11 @@ public class FilteredListTest {
 	private final Predicate<Integer> predicate = e -> e % 2 == 1;
 
 	private final List<Integer> originalEmpty = new ArrayList<>();
-	private final List<Integer> filteredEmpty = new FilteredList<>(originalEmpty,
-	                                                               (Predicate<? super Integer>) predicate);
+	private final List<Integer> filteredEmpty = FilteredList.from(originalEmpty,
+	                                                              (Predicate<? super Integer>) predicate);
 
 	private final List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-	private final List<Integer> filtered = new FilteredList<>(original, (Predicate<? super Integer>) predicate);
+	private final List<Integer> filtered = FilteredList.from(original, (Predicate<? super Integer>) predicate);
 
 	@Test
 	public void size() {
@@ -307,24 +307,27 @@ public class FilteredListTest {
 
 	@Test
 	public void listIteratorEmpty() {
+		expecting(IndexOutOfBoundsException.class, () -> filteredEmpty.listIterator(1));
+
 		ListIterator<Integer> emptyIterator = filteredEmpty.listIterator();
-		assertThat(emptyIterator.hasNext(), is(false));
-		assertThat(emptyIterator.hasPrevious(), is(false));
-		assertThat(emptyIterator.nextIndex(), is(0));
-		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(NoSuchElementException.class, emptyIterator::previous);
 
 		emptyIterator.add(17);
+
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.hasPrevious(), is(true));
 		assertThat(emptyIterator.nextIndex(), is(1));
 		assertThat(emptyIterator.previousIndex(), is(0));
-		assertThat(emptyIterator.previous(), is(17));
 
+		assertThat(emptyIterator.previous(), is(17));
 		emptyIterator.set(19);
+
 		assertThat(emptyIterator.hasNext(), is(true));
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+
 		assertThat(emptyIterator.next(), is(19));
 
 		assertThat(emptyIterator.hasNext(), is(false));
@@ -337,80 +340,149 @@ public class FilteredListTest {
 	}
 
 	@Test
+	public void listIteratorWithIndex() {
+		assertThat(filtered.listIterator(0).next(), is(1));
+		assertThat(filtered.listIterator(4).next(), is(9));
+		assertThat(filtered.listIterator(5).hasNext(), is(false));
+		expecting(NoSuchElementException.class, () -> filtered.listIterator(5).next());
+		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(6));
+		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(7));
+	}
+
+	@Test
 	public void listIterator() {
+		expecting(IndexOutOfBoundsException.class, () -> filtered.listIterator(11));
+
 		ListIterator<Integer> listIterator = filtered.listIterator();
+		expecting(IllegalStateException.class, () -> listIterator.set(13));
+		expecting(IllegalStateException.class, listIterator::remove);
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.add(15);
+
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
 		assertThat(listIterator.next(), is(1));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
 		assertThat(listIterator.next(), is(3));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
+
 		assertThat(listIterator.next(), is(5));
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(3));
-		assertThat(listIterator.previousIndex(), is(2));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
+
 		assertThat(listIterator.previous(), is(5));
+		listIterator.remove();
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(16));
+
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
+
+		assertThat(listIterator.previous(), is(3));
+		listIterator.set(17);
 
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.previous(), is(3));
 
-		listIterator.set(17);
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
 		assertThat(listIterator.next(), is(17));
-
 		expecting(IllegalArgumentException.class, () -> listIterator.add(18));
-
 		listIterator.add(19);
+		listIterator.add(21);
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(22));
+
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
-		assertThat(listIterator.nextIndex(), is(3));
-		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.next(), is(5));
+		assertThat(listIterator.nextIndex(), is(5));
+		assertThat(listIterator.previousIndex(), is(4));
+		expecting(IllegalStateException.class, () -> listIterator.add(23));
 
-		assertThat(filtered, contains(1, 17, 19, 5, 7, 9));
-		assertThat(original, contains(1, 2, 17, 19, 4, 5, 6, 7, 8, 9, 10));
+		assertThat(listIterator.next(), is(7));
+		listIterator.remove();
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(24));
+
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(5));
+		assertThat(listIterator.previousIndex(), is(4));
+
+		assertThat(listIterator.next(), is(9));
+		assertThat(listIterator.previous(), is(9));
+		assertThat(listIterator.next(), is(9));
+		listIterator.add(25);
+
+		assertThat(listIterator.hasNext(), is(false));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(7));
+		assertThat(listIterator.previousIndex(), is(6));
+
+		expecting(NoSuchElementException.class, listIterator::next);
+		listIterator.add(27);
+
+		assertThat(listIterator.hasNext(), is(false));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(8));
+		assertThat(listIterator.previousIndex(), is(7));
+
+		assertThat(filtered, contains(15, 1, 17, 19, 21, 9, 25, 27));
+		assertThat(original, contains(15, 1, 2, 17, 19, 21, 4, 6, 8, 9, 25, 10, 27));
 	}
 
 	@Test
 	public void exhaustiveListIterator() {
-		ListIterator<Integer> listIterator = filtered.listIterator();
-
-		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
+			ListIterator<Integer> listIterator = filtered.listIterator();
+			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
+				assertThat(listIterator.nextIndex(), is(i.get()));
+				assertThat(listIterator.previousIndex(), is(i.get() - 1));
+
 				assertThat(listIterator.next(), is(i.get() * 2 + 1));
+
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
 				assertThat(listIterator.previousIndex(), is(i.get()));
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(5));
+			expecting(NoSuchElementException.class, listIterator::next);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
+				assertThat(listIterator.nextIndex(), is(i.get() + 1));
+				assertThat(listIterator.previousIndex(), is(i.get()));
+
 				assertThat(listIterator.previous(), is(i.get() * 2 + 1));
+
 				assertThat(listIterator.nextIndex(), is(i.get()));
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previous);
 		});
 	}
 
@@ -425,6 +497,7 @@ public class FilteredListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, iterator::next);
 
 		assertThat(filtered, is(emptyIterable()));
 		assertThat(original, contains(2, 4, 6, 8, 10));
@@ -445,6 +518,7 @@ public class FilteredListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, listIterator::next);
 
 		assertThat(filtered, is(emptyIterable()));
 		assertThat(original, contains(2, 4, 6, 8, 10));

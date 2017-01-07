@@ -45,7 +45,7 @@ public class IterableList<T> extends AbstractSequentialList<T> {
 
 	@Override
 	public int size() {
-		return Iterators.count(iterator());
+		return Iterators.size(iterator());
 	}
 
 	@Override

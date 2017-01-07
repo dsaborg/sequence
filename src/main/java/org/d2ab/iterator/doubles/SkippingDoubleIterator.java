@@ -29,14 +29,6 @@ public class SkippingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	}
 
 	@Override
-	public double nextDouble() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextDouble();
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (!skipped) {
 			iterator.skip(skip);
@@ -44,5 +36,13 @@ public class SkippingDoubleIterator extends DelegatingUnaryDoubleIterator {
 		}
 
 		return iterator.hasNext();
+	}
+
+	@Override
+	public double nextDouble() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return iterator.nextDouble();
 	}
 }

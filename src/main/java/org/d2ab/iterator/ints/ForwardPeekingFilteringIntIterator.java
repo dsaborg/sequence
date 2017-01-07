@@ -21,7 +21,7 @@ import org.d2ab.function.IntBiPredicate;
 import java.util.NoSuchElementException;
 
 public class ForwardPeekingFilteringIntIterator extends DelegatingTransformingIntIterator<Integer, IntIterator> {
-	private int lastNext;
+	private final int lastNext;
 	private final IntBiPredicate predicate;
 
 	private int next;
@@ -67,5 +67,10 @@ public class ForwardPeekingFilteringIntIterator extends DelegatingTransformingIn
 
 		hasNext = false;
 		return next;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -92,14 +92,42 @@ public interface LongSet extends Set<Long>, LongCollection {
 	 * Base class for {@link LongSet} implementations.
 	 */
 	abstract class Base extends LongCollection.Base implements LongSet {
+		public static LongSet create(long... longs) {
+			return from(LongSortedSet.create(longs));
+		}
+
+		public static LongSet from(final LongCollection collection) {
+			return new LongSet.Base() {
+				@Override
+				public LongIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return collection.addLong(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
 			if (!(o instanceof Set))
 				return false;
 
-			Set<?> that = (Set<?>) o;
-			return size() == that.size() && containsAll(that);
+			if (o instanceof LongSet) {
+				LongSet that = (LongSet) o;
+				return size() == that.size() && containsAllLongs(that);
+			} else {
+				Set<?> that = (Set<?>) o;
+				return size() == that.size() && containsAll(that);
+			}
 		}
 
 		public int hashCode() {

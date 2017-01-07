@@ -23,11 +23,11 @@ import java.util.NoSuchElementException;
  * An {@link Iterator} over an array of items.
  */
 public class ArrayLongIterator implements LongIterator {
-	private final long[] values;
-	private final int offset;
+	protected final long[] values;
+	protected final int offset;
 	private final int size;
 
-	private int index;
+	protected int index;
 
 	public ArrayLongIterator(long... values) {
 		this(values, values.length);

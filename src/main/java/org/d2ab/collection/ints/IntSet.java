@@ -30,6 +30,8 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code int} values.
  */
 public interface IntSet extends Set<Integer>, IntCollection {
+	// TODO: Enable Strict checking
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -109,14 +111,42 @@ public interface IntSet extends Set<Integer>, IntCollection {
 	 * Base class for {@link IntSet} implementations.
 	 */
 	abstract class Base extends IntCollection.Base implements IntSet {
+		public static IntSet create(int... ints) {
+			return from(IntSortedSet.create(ints));
+		}
+
+		public static IntSet from(final IntCollection collection) {
+			return new IntSet.Base() {
+				@Override
+				public IntIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return collection.addInt(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
 			if (!(o instanceof Set))
 				return false;
 
-			Set<?> that = (Set<?>) o;
-			return size() == that.size() && containsAll(that);
+			if (o instanceof IntSet) {
+				IntSet that = (IntSet) o;
+				return size() == that.size() && containsAllInts(that);
+			} else {
+				Set<?> that = (Set<?>) o;
+				return size() == that.size() && containsAll(that);
+			}
 		}
 
 		public int hashCode() {

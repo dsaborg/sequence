@@ -16,7 +16,7 @@
 
 package org.d2ab.iterator.doubles;
 
-import org.d2ab.collection.doubles.DoubleComparator;
+import org.d2ab.util.Doubles;
 
 import java.util.NoSuchElementException;
 import java.util.function.DoublePredicate;
@@ -28,7 +28,7 @@ public class InclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterat
 	private boolean hasPrevious;
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, double terminal, double accuracy) {
-		this(iterator, d -> DoubleComparator.eq(d, terminal, accuracy));
+		this(iterator, d -> Doubles.eq(d, terminal, accuracy));
 	}
 
 	public InclusiveTerminalDoubleIterator(DoubleIterator iterator, DoublePredicate terminal) {
@@ -47,6 +47,6 @@ public class InclusiveTerminalDoubleIterator extends DelegatingUnaryDoubleIterat
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
-		return previous = iterator.next();
+		return previous = iterator.nextDouble();
 	}
 }

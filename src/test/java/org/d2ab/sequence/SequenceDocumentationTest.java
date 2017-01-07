@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Maps;
+import org.d2ab.test.BaseBoxingTest;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -27,12 +28,12 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
-import static org.hamcrest.CoreMatchers.is;
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class SequenceDocumentationTest {
+public class SequenceDocumentationTest extends BaseBoxingTest {
 	@Test
 	public void filterAndMap() {
 		List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -113,11 +114,19 @@ public class SequenceDocumentationTest {
 	public void updatingCollection() {
 		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-		Sequence<Integer> sequence = Sequence.from(list).filter(x -> x % 2 == 0);
-		assertThat(sequence, contains(2, 4));
+		Sequence<String> evensAsStrings = Sequence.from(list)
+		                                          .filter(x -> x % 2 == 0)
+		                                          .biMap(Object::toString, Integer::parseInt); // biMap allows add
+		assertThat(evensAsStrings, contains("2", "4"));
 
-		list.add(6);
-		assertThat(sequence, contains(2, 4, 6));
+		evensAsStrings.add("6");
+		assertThat(evensAsStrings, contains("2", "4", "6"));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6));
+
+		expecting(IllegalArgumentException.class,
+		          () -> evensAsStrings.add("7")); // cannot add filtered out item to sequence
+		assertThat(evensAsStrings, contains("2", "4", "6"));
+		assertThat(list, contains(1, 2, 3, 4, 5, 6));
 	}
 
 	@SuppressWarnings("SpellCheckingInspection")

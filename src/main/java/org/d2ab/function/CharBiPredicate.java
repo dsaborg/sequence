@@ -26,7 +26,7 @@ public interface CharBiPredicate {
 	/**
 	 * Test this predicate against the given two {@code char}s.
 	 */
-	boolean test(char c1, char c2);
+	boolean test(char x1, char x2);
 
 	/**
 	 * Negate this predicate, returning a predicate that always returns the opposite values.

@@ -24,6 +24,10 @@ import java.util.ListIterator;
  * A {@link ListIterator} over a sequence of {@code double} values.
  */
 public interface DoubleListIterator extends ListIterator<Double>, DoubleIterator {
+	static DoubleListIterator of(double... values) {
+		return new ArrayDoubleListIterator(values);
+	}
+
 	@Override
 	boolean hasNext();
 
@@ -75,7 +79,10 @@ public interface DoubleListIterator extends ListIterator<Double>, DoubleIterator
 	}
 
 	static DoubleListIterator forwardOnly(DoubleIterator iterator, int index) {
-		iterator.skip(index);
+		int skipped = iterator.skip(index);
+		if (skipped != index)
+			throw new IndexOutOfBoundsException("index: " + index + "size: " + skipped);
+
 		return new DoubleListIterator() {
 			int cursor = index;
 

@@ -17,12 +17,13 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.doubles.ArrayDoubleList;
+import org.d2ab.collection.doubles.DoubleIterable;
 import org.d2ab.collection.doubles.DoubleList;
 import org.d2ab.collection.doubles.DoubleListIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
-import org.d2ab.test.StrictDoubleIterable;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -36,11 +37,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class DoubleSequenceAsListTest {
-	private final DoubleSequence empty = DoubleSequence.from(StrictDoubleIterable.from(ArrayDoubleList.create()));
+	private final DoubleSequence empty = DoubleSequence.from(DoubleIterable.from(ArrayDoubleList.create()));
 	private final DoubleList emptyList = empty.asList();
 
 	private final DoubleSequence sequence = DoubleSequence.from(
-			StrictDoubleIterable.from(ArrayDoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+			DoubleIterable.from(ArrayDoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
 	private final DoubleList list = sequence.asList();
 
 	@Test
@@ -292,6 +293,9 @@ public class DoubleSequenceAsListTest {
 	public void listIteratorEmpty() {
 		DoubleListIterator emptyIterator = emptyList.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, emptyIterator::nextDouble);
+		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousDouble);
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 

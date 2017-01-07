@@ -16,13 +16,12 @@
 
 package org.d2ab.iterator.longs;
 
+import org.d2ab.util.Strict;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
-import java.util.function.DoubleToLongFunction;
-import java.util.function.IntToLongFunction;
-import java.util.function.LongBinaryOperator;
-import java.util.function.ToLongFunction;
+import java.util.function.*;
 
 /**
  * An Iterator specialized for {@code long} values. Extends {@link OfLong} with helper methods.
@@ -39,6 +38,10 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 			throw new NoSuchElementException();
 		}
 	};
+
+	static LongIterator empty() {
+		return EMPTY;
+	}
 
 	static LongIterator of(long... longs) {
 		return new ArrayLongIterator(longs);
@@ -112,13 +115,27 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 		};
 	}
 
-	static <T> LongIterator from(final Iterator<T> iterator, final ToLongFunction<? super T> mapper) {
+	static <T> LongIterator from(Iterator<T> iterator, ToLongFunction<? super T> mapper) {
 		return new DelegatingTransformingLongIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public long nextLong() {
 				return mapper.applyAsLong(iterator.next());
 			}
 		};
+	}
+
+	@Override
+	default Long next() {
+		assert Strict.LENIENT : "LongIterator.next()";
+
+		return nextLong();
+	}
+
+	@Override
+	default void forEachRemaining(Consumer<? super Long> action) {
+		assert Strict.LENIENT : "LongIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((LongConsumer) action::accept);
 	}
 
 	default boolean skip() {
@@ -154,10 +171,20 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 	/**
 	 * @return the number of {@code longs} remaining in this iterator.
 	 */
-	default int count() {
+	default int size() {
+		return size(LongIterator::count);
+	}
+
+	default long count() {
 		long count = 0;
 		for (; hasNext(); nextLong())
 			count++;
+		return count;
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<LongIterator> counter) {
+		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);

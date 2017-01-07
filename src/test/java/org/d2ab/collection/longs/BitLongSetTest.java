@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class BitLongSetTest {
@@ -40,6 +38,23 @@ public class BitLongSetTest {
 	public void size() {
 		assertThat(empty.size(), is(0));
 		assertThat(set.size(), is(10));
+	}
+
+	@Test
+	public void bigSize() {
+		assertThat(new BitLongSet() {
+			@Override
+			protected long bitCount() {
+				return Integer.MAX_VALUE;
+			}
+		}.size(), is(Integer.MAX_VALUE));
+
+		expecting(IllegalStateException.class, () -> new BitLongSet() {
+			@Override
+			protected long bitCount() {
+				return Integer.MAX_VALUE + 1L;
+			}
+		}.size());
 	}
 
 	@Test
@@ -87,6 +102,12 @@ public class BitLongSetTest {
 
 		set.clear();
 		assertThat(set.isEmpty(), is(true));
+	}
+
+	@Test
+	public void comparator() {
+		assertThat(empty.comparator(), is(nullValue()));
+		assertThat(set.comparator(), is(nullValue()));
 	}
 
 	@Test
@@ -148,6 +169,13 @@ public class BitLongSetTest {
 	}
 
 	@Test
+	public void subSetBoxed() {
+		Long start = -3L;
+		LongSortedSet subSet = set.subSet(start, (Long) 3L);
+		assertThat(subSet, containsLongs(-3, -2, -1, 0L, 1, 2));
+	}
+
+	@Test
 	public void subSet() {
 		LongSortedSet subSet = set.subSet(-3, 3);
 		assertThat(subSet, containsLongs(-3, -2, -1, 0, 1, 2));
@@ -195,8 +223,7 @@ public class BitLongSetTest {
 
 	@Test
 	public void sparseSubSet() {
-		BitLongSet set = new BitLongSet(-5, -3, -1, 1, 3, 5);
-		LongSortedSet subSet = set.subSet(-2, 2);
+		LongSortedSet subSet = new BitLongSet(-5, -3, -1, 1, 3, 5).subSet(-2, 2);
 		assertThat(subSet, containsLongs(-1, 1));
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.firstLong(), is(-1L));
@@ -208,6 +235,12 @@ public class BitLongSetTest {
 		Set<Long> equivalentSet = new HashSet<>(asList(-1L, 1L));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
+	public void headSetBoxed() {
+		LongSortedSet headSet = set.headSet((Long) 0L);
+		assertThat(headSet, containsLongs(-5, -4, -3, -2, -1));
 	}
 
 	@Test
@@ -263,8 +296,7 @@ public class BitLongSetTest {
 
 	@Test
 	public void sparseHeadSet() {
-		BitLongSet set = new BitLongSet(-5, -3, -1, 1, 3, 5);
-		LongSortedSet headSet = set.headSet(0);
+		LongSortedSet headSet = new BitLongSet(-5, -3, -1, 1, 3, 5).headSet(0);
 		assertThat(headSet, containsLongs(-5, -3, -1));
 		assertThat(headSet.size(), is(3));
 		assertThat(headSet.firstLong(), is(-5L));
@@ -276,6 +308,12 @@ public class BitLongSetTest {
 		Set<Long> equivalentSet = new HashSet<>(asList(-5L, -3L, -1L));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
+	}
+
+	@Test
+	public void tailSetBoxed() {
+		LongSortedSet tailSet = set.tailSet((Long) 0L);
+		assertThat(tailSet, containsLongs(0, 1, 2, 3, 4));
 	}
 
 	@Test
@@ -331,8 +369,7 @@ public class BitLongSetTest {
 
 	@Test
 	public void sparseTailSet() {
-		BitLongSet set = new BitLongSet(-5, -3, -1, 1, 3, 5);
-		LongSortedSet tailSet = set.tailSet(0);
+		LongSortedSet tailSet = new BitLongSet(-5, -3, -1, 1, 3, 5).tailSet(0);
 		assertThat(tailSet, containsLongs(1, 3, 5));
 		assertThat(tailSet.size(), is(3));
 		assertThat(tailSet.firstLong(), is(1L));
@@ -584,17 +621,6 @@ public class BitLongSetTest {
 	}
 
 	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicLong value = new AtomicLong(-5);
-		set.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(5L));
-	}
-
-	@Test
 	public void boundaries() {
 		BitLongSet set = new BitLongSet();
 		assertThat(set.addLong(Long.MIN_VALUE), is(true));
@@ -616,7 +642,7 @@ public class BitLongSetTest {
 
 	@Test
 	public void fuzz() {
-		long[] randomValues = new long[10000];
+		long[] randomValues = new long[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			long randomValue;

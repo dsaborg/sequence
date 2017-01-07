@@ -46,6 +46,6 @@ public class InclusiveTerminalCharIterator extends DelegatingUnaryCharIterator {
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
-		return previous = iterator.next();
+		return previous = iterator.nextChar();
 	}
 }

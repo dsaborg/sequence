@@ -16,6 +16,7 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.FilteringListIterator;
 import org.d2ab.iterator.Iterators;
 
 import java.util.AbstractSequentialList;
@@ -47,14 +48,16 @@ public class FilteredList<T> extends AbstractSequentialList<T> {
 	@Override
 	public ListIterator<T> listIterator(int index) {
 		ListIterator<T> listIterator = new FilteringListIterator<>(list.listIterator(), predicate);
-		if (skip(listIterator, index) != index)
-			throw new IndexOutOfBoundsException(String.valueOf(index));
+		int skipped = skip(listIterator, index);
+		if (skipped != index)
+			throw new IndexOutOfBoundsException("index: " + index + " size: " + skipped);
+
 		return listIterator;
 	}
 
 	@Override
 	public int size() {
-		return Iterators.count(iterator());
+		return Iterators.size(iterator());
 	}
 
 	@Override

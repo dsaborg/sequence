@@ -7,8 +7,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ChainedListSequenceTest {

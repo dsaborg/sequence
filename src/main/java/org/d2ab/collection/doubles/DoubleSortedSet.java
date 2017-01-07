@@ -19,7 +19,9 @@ package org.d2ab.collection.doubles;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.doubles.ExclusiveTerminalDoubleIterator;
 import org.d2ab.iterator.doubles.InclusiveStartingDoubleIterator;
+import org.d2ab.util.Doubles;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,13 +49,13 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 	}
 
 	@Override
-	default DoubleComparator comparator() {
+	default Comparator<Double> comparator() {
 		return null;
 	}
 
 	@Override
 	default DoubleSortedSet subSet(Double from, Double to) {
-		return subSetExactly((double) from, (double) to);
+		return subSetExactly(from, to);
 	}
 
 	default DoubleSortedSet subSetExactly(double from, double to) {
@@ -79,14 +81,14 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 			@Override
 			protected boolean included(double x) {
-				return DoubleComparator.ge(x, from, precision) && DoubleComparator.lt(x, to, precision);
+				return Doubles.ge(x, from, precision) && Doubles.lt(x, to, precision);
 			}
 		};
 	}
 
 	@Override
 	default DoubleSortedSet headSet(Double to) {
-		return headSetExactly((double) to);
+		return headSetExactly(to);
 	}
 
 	default DoubleSortedSet headSetExactly(double to) {
@@ -122,14 +124,14 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 			@Override
 			protected boolean included(double x) {
-				return DoubleComparator.lt(x, to, precision);
+				return Doubles.lt(x, to, precision);
 			}
 		};
 	}
 
 	@Override
 	default DoubleSortedSet tailSet(Double from) {
-		return tailSetExactly((double) from);
+		return tailSetExactly(from);
 	}
 
 	default DoubleSortedSet tailSetExactly(double from) {
@@ -165,7 +167,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 			@Override
 			protected boolean included(double x) {
-				return DoubleComparator.ge(x, from, precision);
+				return Doubles.ge(x, from, precision);
 			}
 		};
 	}
@@ -200,8 +202,33 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class SubSet extends DoubleSet.Base implements DoubleSortedSet {
-		private DoubleSortedSet set;
+	abstract class Base extends DoubleSet.Base implements DoubleSortedSet {
+		public static DoubleSortedSet create(double... doubles) {
+			return from(DoubleSortedSet.create(doubles));
+		}
+
+		public static DoubleSortedSet from(final DoubleCollection collection) {
+			return new DoubleSortedSet.Base() {
+				@Override
+				public DoubleIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addDoubleExactly(double x) {
+					return collection.addDoubleExactly(x);
+				}
+			};
+		}
+	}
+
+	abstract class SubSet extends Base {
+		private final DoubleSortedSet set;
 
 		public SubSet(DoubleSortedSet set) {
 			this.set = set;
@@ -209,7 +236,7 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

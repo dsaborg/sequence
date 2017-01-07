@@ -20,8 +20,10 @@ import org.d2ab.collection.Collectionz;
 import org.d2ab.collection.chars.CharCollection;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Collection;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -31,6 +33,7 @@ import java.util.function.Predicate;
  * methods with corresponding {@code int}-valued methods.
  */
 public interface IntCollection extends Collection<Integer>, IntIterable {
+	// TODO: Extract out relevant parts to IterableIntCollection
 
 	@Override
 	default boolean isEmpty() {
@@ -44,11 +47,15 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default Integer[] toArray() {
+		assert Strict.LENIENT : "IntCollection.toArray()";
+
 		return toArray(new Integer[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
+		assert Strict.LENIENT : "IntCollection.toArray(Object[])";
+
 		return Collectionz.toArray(this, a);
 	}
 
@@ -59,8 +66,20 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 		return new ArrayIntList(this).toIntArray();
 	}
 
+	/**
+	 * @return an {@link IntList} view of this {@code IntCollection}, which is updated as the {@code IntCollection}
+	 * changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 2.2
+	 */
+	default IntList asList() {
+		return IntList.Base.from(this);
+	}
+
 	@Override
 	default boolean add(Integer x) {
+		assert Strict.LENIENT : "IntCollection.add(Integer)";
+
 		return addInt(x);
 	}
 
@@ -70,16 +89,22 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean contains(Object o) {
+		assert Strict.LENIENT : "IntCollection.contains(Object)";
+
 		return o instanceof Integer && containsInt((int) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
+		assert Strict.LENIENT : "IntCollection.remove(Object)";
+
 		return o instanceof Integer && removeInt((int) o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
+		assert Strict.LENIENT : "IntCollection.add(Collection)";
+
 		return Collectionz.addAll(this, c);
 	}
 
@@ -100,21 +125,29 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
+		assert Strict.LENIENT : "IntCollection.containsAll(Collection)";
+
 		return Collectionz.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
+		assert Strict.LENIENT : "IntCollection.removeAll(Collection)";
+
 		return Collectionz.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
+		assert Strict.LENIENT : "IntCollection.retainAll(Collection)";
+
 		return Collectionz.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Integer> filter) {
+		assert Strict.LENIENT : "IntCollection.removeIf(Predicate)";
+
 		return removeIntsIf(filter::test);
 	}
 
@@ -142,17 +175,40 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	 * Base class for {@link IntCollection} implementations.
 	 */
 	abstract class Base implements IntCollection {
+		public static IntCollection create(int... ints) {
+			return from(IntList.create(ints));
+		}
+
+		public static IntCollection from(final IntCollection collection) {
+			return new Base() {
+				@Override
+				public IntIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return collection.addInt(x);
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
 			builder.append("[");
 
-			boolean started = false;
+			boolean tail = false;
 			for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
-				if (started)
+				if (tail)
 					builder.append(", ");
 				else
-					started = true;
+					tail = true;
 				builder.append(iterator.nextInt());
 			}
 

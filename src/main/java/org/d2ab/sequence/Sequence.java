@@ -93,47 +93,58 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
-	 * the stream of items in the {@code Sequence}.
+	 * Create a {@code Sequence} of {@link Entry} key/value items from a {@link Map} of items. The resulting
+	 * {@code Sequence} can be mapped using {@link Pair} items, which implement {@link Entry} and can thus be
+	 * processed as part of the {@code Sequence}'s transformation steps.
 	 *
-	 * @see #of(Object)
-	 * @see #of(Object...)
+	 * @see #of
 	 * @see #from(Iterable)
-	 *
-	 * @since 1.1.1
 	 */
-	@SuppressWarnings("unchecked")
-	@SafeVarargs
-	static <T> Sequence<T> concat(Iterable<T>... iterables) {
-		Sequence<Iterable<T>> iterableAsSequence = Sequence.of(iterables);
-		if (iterableAsSequence.all(List.class))
-			return ListSequence.concat(iterableAsSequence.map(iterable -> (List<T>) iterable).toList());
-
-		if (iterableAsSequence.all(Collection.class))
-			return CollectionSequence.concat(iterableAsSequence.map(iterable -> (Collection<T>) iterable).toList());
-
-		return new ChainingIterable<>(iterables)::iterator;
+	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
+		return from(map.entrySet());
 	}
 
 	/**
 	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
 	 * the stream of items in the {@code Sequence}.
 	 *
+	 * @see #concat(Iterable)
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
+	 * @since 1.1.1
+	 */
+	@SafeVarargs
+	static <T> Sequence<T> concat(Iterable<T>... iterables) {
+		Sequence<Iterable<T>> iterablesSequence = Sequence.of(iterables);
+		if (iterablesSequence.all(List.class))
+			return ListSequence.concat(iterablesSequence.map(iterable -> (List<T>) iterable).asList());
+
+		if (iterablesSequence.all(Collection.class))
+			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable).asList());
+
+		return ChainingIterable.concat(iterables)::iterator;
+	}
+
+	/**
+	 * Create a concatenated {@code Sequence} from several {@link Iterable}s which are concatenated together to form
+	 * the stream of items in the {@code Sequence}.
 	 *
+	 * @see #concat(Iterable[])
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #from(Iterable)
 	 * @since 1.1.1
 	 */
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
-		Sequence<Iterable<T>> iterableAsSequence = Sequence.from(iterables);
-		if (iterableAsSequence.all(List.class))
-			return ListSequence.concat(iterableAsSequence.map(iterable -> (List<T>) iterable).toList());
+		Sequence<Iterable<T>> iterablesSequence = Sequence.from(iterables);
+		if (iterablesSequence.all(List.class))
+			return ListSequence.concat(iterablesSequence.map(iterable -> (List<T>) iterable).asList());
 
-		if (iterableAsSequence.all(Collection.class))
-			return CollectionSequence.concat(iterableAsSequence.map(iterable -> (Collection<T>) iterable).toList());
+		if (iterablesSequence.all(Collection.class))
+			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable));
 
-		return ChainingIterable.<T>flatten(iterables)::iterator;
+		return new ChainingIterable<>(iterables)::iterator;
 	}
 
 	/**
@@ -147,7 +158,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 * @see #cache(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Iterator<T> iterator) {
@@ -166,7 +176,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #from(Iterable)
 	 * @see #once(Iterator)
 	 * @see #cache(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Stream<T> stream) {
@@ -179,7 +188,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterator)
 	 * @see #cache(Stream)
 	 * @see #from(Iterable)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterable<T> iterable) {
@@ -192,7 +200,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Stream)
 	 * @see #once(Iterator)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterator<T> iterator) {
@@ -205,7 +212,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 * @see #cache(Iterator)
 	 * @see #once(Stream)
-	 *
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Stream<T> stream) {
@@ -213,15 +219,50 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} of {@link Entry} key/value items from a {@link Map} of items. The resulting
-	 * {@code Sequence} can be mapped using {@link Pair} items, which implement {@link Entry} and can thus be
-	 * processed as part of the {@code Sequence}'s transformation steps.
-	 *
-	 * @see #of
-	 * @see #from(Iterable)
+	 * @return a new empty mutable {@code Sequence}.
 	 */
-	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
-		return from(map.entrySet());
+	static <T> Sequence<T> create() {
+		return ListSequence.create();
+	}
+
+	/**
+	 * @return a new empty mutable {@code Sequence} with the given initial capacity.
+	 */
+	static <T> Sequence<T> withCapacity(int capacity) {
+		return ListSequence.withCapacity(capacity);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the given elements.
+	 */
+	@SafeVarargs
+	static <T> Sequence<T> createOf(T... ts) {
+		return ListSequence.createOf(ts);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the elements in the given {@link Collection}.
+	 */
+	static <T> Sequence<T> createFrom(Collection<? extends T> c) {
+		return ListSequence.createFrom(c);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the elements in the given {@link Iterable}.
+	 */
+	@SuppressWarnings("unchecked")
+	static <T> Sequence<T> createFrom(Iterable<? extends T> iterable) {
+		if (iterable instanceof Collection)
+			return createFrom((Collection<T>) iterable);
+
+		return ListSequence.createFrom(iterable);
+	}
+
+	/**
+	 * @return a new mutable {@code Sequence} initialized with the remaining elements in the given {@link Iterator}.
+	 */
+	static <T> Sequence<T> createFrom(Iterator<? extends T> iterator) {
+		return ListSequence.createFrom(iterator);
 	}
 
 	/**
@@ -257,7 +298,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #ints()
 	 * @see #range(int, int)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Integer> intsFrom(int start) {
@@ -312,7 +352,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #longs()
 	 * @see #longsFromZero()
 	 * @see #range(long, long)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Long> longsFrom(long start) {
@@ -350,7 +389,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #chars()
 	 * @see #range(char, char)
-	 *
 	 * @since 1.1
 	 */
 	static Sequence<Character> charsFrom(char start) {
@@ -371,10 +409,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return an infinite {@code Sequence} generated by repeatedly calling the given supplier. The returned
-	 * {@code Sequence} never terminates naturally. If {@link #iterator()} is called multiple times, further iterators
-	 * will pick up where the previous iterator left off in the given supplier. If iterator calls are interleaved,
-	 * calls to the supplier will be interleaved.
+	 * @return an infinite {@code Sequence} generated by repeatedly calling the given supplier. The returned {@code
+	 * Sequence} never terminates naturally. If {@link #iterator()} is called multiple times, further iterators will
+	 * pick up where the previous iterator left off in the given supplier. If iterator calls are interleaved, calls to
+	 * the supplier will be interleaved.
 	 *
 	 * @see #multiGenerate(Supplier)
 	 * @see #recurse(Object, UnaryOperator)
@@ -425,8 +463,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @param f a mapper function for producing elements that are to be included in the sequence, the first being
 	 *          f(seed)
-	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence,
-	 *          applied to the first mapped element f(seed) to produce the second unmapped value
+	 * @param g an incrementer function for producing the next unmapped element to be included in the sequence, applied
+	 *          to the first mapped element f(seed) to produce the second unmapped value
 	 *
 	 * @return a {@code Sequence} produced by recursively applying the given mapper and incrementer operations to the
 	 * given seed
@@ -548,7 +586,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingAfter(Predicate)
 	 * @see #startingFrom(Object)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingAfter(T element) {
@@ -561,7 +598,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingFrom(Predicate)
 	 * @see #startingAfter(Object)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingFrom(T element) {
@@ -574,7 +610,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingAfter(Object)
 	 * @see #startingFrom(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingAfter(Predicate<? super T> predicate) {
@@ -587,7 +622,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #startingFrom(Object)
 	 * @see #startingAfter(Predicate)
-	 *
 	 * @since 1.1
 	 */
 	default Sequence<T> startingFrom(Predicate<? super T> predicate) {
@@ -597,6 +631,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 *
+	 * @see #biMap(Function, Function)
 	 * @see #mapIndexed(ObjIntFunction)
 	 * @see #mapBack(BiFunction)
 	 * @see #mapForward(BiFunction)
@@ -612,6 +647,29 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper}
+	 * functions,
+	 * allowing for backwards mapping using {@code backMapper} so elements can be added to underlying
+	 * {@link Collection}s after being mapped.
+	 *
+	 * @see #map(Function)
+	 */
+	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
+			backMapper) {
+		return () -> new MappingIterator<>(iterator(), mapper);
+	}
+
+	/**
+	 * Cast the values in this {@code Sequence} to the given {@link Class}.
+	 *
+	 * @see #map(Function)
+	 */
+	@SuppressWarnings({"unchecked", "unused"})
+	default <U> Sequence<U> cast(Class<U> clazz) {
+		return (Sequence<U>) this;
+	}
+
+	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper} function.
 	 * In addition to the current element, the mapper has access to the index of each element.
 	 *
@@ -624,7 +682,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toInts(ToIntFunction)
 	 * @see #toLongs(ToLongFunction)
 	 * @see #toDoubles(ToDoubleFunction)
-	 *
 	 * @since 1.2
 	 */
 	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
@@ -734,7 +791,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 */
 	default Sequence<T> append(Iterable<T> iterable) {
-		return new ChainingIterable<>(this, iterable)::iterator;
+		return ChainingIterable.concat(this, iterable)::iterator;
 	}
 
 	/**
@@ -889,6 +946,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toLongs(ToLongFunction)
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
+	// TODO: Add flattenIterator, flattenArray, etc
 	default <U> Sequence<U> flatten(Function<? super T, ? extends Iterable<U>> mapper) {
 		return ChainingIterable.flatten(this, mapper)::iterator;
 	}
@@ -908,7 +966,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> flatten() {
-		return ChainingIterable.<U>flatten(this)::iterator;
+		return ChainingIterable.<U>concatAny(this)::iterator;
 	}
 
 	/**
@@ -917,9 +975,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
 		List<T> list = toList();
-		@SuppressWarnings("unchecked")
-		A[] array = list.toArray(constructor.apply(list.size()));
-		return array;
+		return list.toArray(constructor.apply(list.size()));
 	}
 
 	/**
@@ -974,8 +1030,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
+	@SuppressWarnings("unchecked")
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
-		@SuppressWarnings("unchecked")
 		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
 		return entrySequence.collect(constructor, Maps::put);
 	}
@@ -1060,7 +1116,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * @return a {@link List} view of this {@code Sequence}, which is updated in real time as the backing store of the
-	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 * {@code Sequence} changes. The list does not implement {@link RandomAccess} and is best accessed in sequence. The
+	 * list supports {@link List#add} only if the {@code Sequence} is backed by a list itself, otherwise it supports
+	 * removal only.
 	 *
 	 * @since 1.2
 	 */
@@ -1127,16 +1185,16 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no
-	 * elements in the {@code Sequence}.
+	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no elements in the
+	 * {@code Sequence}.
 	 */
 	default Optional<T> last() {
 		return Iterators.last(iterator());
 	}
 
 	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than
-	 * the index.
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than the
+	 * index.
 	 *
 	 * @since 1.2
 	 */
@@ -1146,7 +1204,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * @return the first element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * {@link Optional}
+	 * if there are no matching elements in the {@code Sequence}.
 	 *
 	 * @since 1.2
 	 */
@@ -1165,8 +1224,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return the element at the given index out of the elements matching the given predicate, or an empty
-	 * {@link Optional} if the {@code Sequence} of matching elements is smaller than the index.
+	 * @return the element at the given index out of the elements matching the given predicate, or an empty {@link
+	 * Optional} if the {@code Sequence} of matching elements is smaller than the index.
 	 *
 	 * @since 1.2
 	 */
@@ -1266,8 +1325,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Converts a {@code Sequence} of {@link Pair}s of items into a {@link BiSequence}. Note the sequence must be of
 	 * {@link Pair} or a {@link ClassCastException} will occur when traversal is attempted.
 	 */
+	@SuppressWarnings("unchecked")
 	default <L, R> BiSequence<L, R> toBiSequence() {
-		@SuppressWarnings("unchecked")
 		Sequence<Pair<L, R>> pairSequence = (Sequence<Pair<L, R>>) this;
 		return BiSequence.from(pairSequence);
 	}
@@ -1276,8 +1335,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Converts a {@code Sequence} of {@link Map.Entry} items into an {@link EntrySequence}. Note the sequence must be
 	 * of {@link Map.Entry} or a {@link ClassCastException} will occur when traversal is attempted.
 	 */
+	@SuppressWarnings("unchecked")
 	default <K, V> EntrySequence<K, V> toEntrySequence() {
-		@SuppressWarnings("unchecked")
 		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
 		return EntrySequence.from(entrySequence);
 	}
@@ -1375,8 +1434,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return this {@code Sequence} sorted according to the natural order. Must be a (@code Sequence} of
-	 * {@link Comparable} or a {@link ClassCastException} is thrown during traversal.
+	 * @return this {@code Sequence} sorted according to the natural order. Must be a (@code Sequence} of {@link
+	 * Comparable} or a {@link ClassCastException} is thrown during traversal.
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> sorted() {
@@ -1437,7 +1496,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return true if no elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(Predicate<? super T> predicate) {
-		return !any(predicate);
+		return Iterables.none(this, predicate);
 	}
 
 	/**
@@ -1462,7 +1521,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default boolean none(Class<?> target) {
-		return !any(target);
+		return none(target::isInstance);
 	}
 
 	/**
@@ -1720,46 +1779,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 				return Pair.of(index++, iterator.next());
 			}
 		};
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(T... items) {
-		return Iterables.containsAll(this, items);
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains all of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAll(Iterable<? extends T> items) {
-		return Iterables.containsAll(this, items);
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(T... items) {
-		return Iterables.containsAny(this, items);
-	}
-
-	/**
-	 * @return true if this {@code Sequence} contains any of the given items, false otherwise.
-	 *
-	 * @since 1.2
-	 */
-	@SuppressWarnings("unchecked")
-	default boolean containsAny(Iterable<? extends T> items) {
-		return Iterables.containsAny(this, items);
 	}
 
 	/**

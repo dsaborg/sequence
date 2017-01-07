@@ -69,11 +69,6 @@ public class CollectionList<T> extends AbstractSequentialList<T> {
 	}
 
 	@Override
-	public boolean add(T t) {
-		return collection.add(t);
-	}
-
-	@Override
 	public boolean remove(Object o) {
 		return collection.remove(o);
 	}
@@ -81,11 +76,6 @@ public class CollectionList<T> extends AbstractSequentialList<T> {
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		return collection.containsAll(c);
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends T> c) {
-		return collection.addAll(c);
 	}
 
 	@Override

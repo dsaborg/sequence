@@ -35,20 +35,20 @@ public class ExclusiveTerminalCharIterator extends DelegatingUnaryCharIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		if (!hasNext && iterator.hasNext()) {
+			next = iterator.nextChar();
+			hasNext = true;
+		}
+		return hasNext && !terminal.test(next);
+	}
+
+	@Override
 	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
 		hasNext = false;
 		return next;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if (!hasNext && iterator.hasNext()) {
-			next = iterator.next();
-			hasNext = true;
-		}
-		return hasNext && !terminal.test(next);
 	}
 }

@@ -56,6 +56,22 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
+	 * Create an {@code DoubleSequence} with the given {@code doubles}, limited to the given size.
+	 */
+	static DoubleSequence from(double[] is, int size) {
+		return () -> DoubleIterator.from(is, size);
+	}
+
+	/**
+	 * Create an {@code DoubleSequence} with the given {@code doubles}, reading from the given offset and limited to
+	 * the
+	 * given size.
+	 */
+	static DoubleSequence from(double[] is, int offset, int size) {
+		return () -> DoubleIterator.from(is, offset, size);
+	}
+
+	/**
 	 * Create a {@code DoubleSequence} from a {@link DoubleIterable}.
 	 *
 	 * @see #cache(DoubleIterable)
@@ -234,6 +250,7 @@ public interface DoubleSequence extends DoubleCollection {
 	static DoubleSequence range(double start, double end, double step, double accuracy) {
 		if (step < 0)
 			throw new IllegalArgumentException("Require step to be >= 0");
+
 		return end > start ?
 		       recurse(start, d -> d + step).until(d -> d - accuracy >= end) :
 		       recurse(start, d -> d - step).until(d -> d + accuracy <= end);
@@ -295,7 +312,8 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * @return a {@code DoubleSequence} of random doubles between {@code 0}, inclusive and {@code 1}, exclusive, that
 	 * never terminates. The given supplier is used to produce the instance of {@link Random} that is used, one for
-	 * each new {@link #iterator()}.
+	 * each
+	 * new {@link #iterator()}.
 	 *
 	 * @see #random()
 	 * @see Random#nextDouble()
@@ -324,7 +342,8 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * @return a {@code DoubleSequence} of random doubles between {@code 0}, inclusive, and the upper bound, exclusive,
 	 * that never terminates. The given supplier is used to produce the instance of {@link Random} that is used, one
-	 * for each new {@link #iterator()}.
+	 * for
+	 * each new {@link #iterator()}.
 	 *
 	 * @see #random(double)
 	 * @see Random#nextDouble()
@@ -641,23 +660,21 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
-	 * compared to the given precision.
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array, compared
+	 * to the given precision.
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence includingExactly(double... elements) {
 		return filter(e -> Arrayz.containsExactly(elements, e));
 	}
 
 	/**
-	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array,
-	 * compared with the given precision.
+	 * @return an {@code DoubleSequence} containing only the {@code doubles} found in the given target array, compared
+	 * with the given precision.
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence including(double[] elements, double precision) {
 		return filter(e -> Arrayz.contains(elements, e, precision));
 	}
@@ -668,7 +685,6 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence excludingExactly(double... elements) {
 		return filter(e -> !Arrayz.containsExactly(elements, e));
 	}
@@ -679,7 +695,6 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	@SuppressWarnings("unchecked")
 	default DoubleSequence excluding(double[] elements, double precision) {
 		return filter(e -> !Arrayz.contains(elements, e, precision));
 	}
@@ -753,27 +768,6 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return a {@link DoubleList} view of this {@code DoubleSequence}, which is updated in real time as the backing
-	 * store of the {@code DoubleSequence} changes. The list does not implement {@link RandomAccess} and is best
-	 * accessed in sequence.
-	 *
-	 * @since 2.1
-	 */
-	default DoubleList asList() {
-		return new DoubleList.Base() {
-			@Override
-			public DoubleIterator iterator() {
-				return DoubleSequence.this.iterator();
-			}
-
-			@Override
-			public int size() {
-				return DoubleSequence.this.size();
-			}
-		};
-	}
-
-	/**
 	 * Join this {@code DoubleSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
@@ -830,7 +824,8 @@ public interface DoubleSequence extends DoubleCollection {
 
 	/**
 	 * @return the last double of this {@code DoubleSequence} or an empty {@link OptionalDouble} if there are no
-	 * doubles in the {@code DoubleSequence}.
+	 * doubles
+	 * in the {@code DoubleSequence}.
 	 */
 	default OptionalDouble last() {
 		DoubleIterator iterator = iterator();
@@ -862,7 +857,8 @@ public interface DoubleSequence extends DoubleCollection {
 
 	/**
 	 * @return the first double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
+	 * {@link
+	 * OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
 	 * @see #at(int, DoublePredicate)
@@ -873,8 +869,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return the last double of those in this {@code DoubleSequence} matching the given predicate, or an empty
-	 * {@link OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
+	 * @return the last double of those in this {@code DoubleSequence} matching the given predicate, or an empty {@link
+	 * OptionalDouble} if there are no matching doubles in the {@code DoubleSequence}.
 	 *
 	 * @see #filter(DoublePredicate)
 	 * @see #at(int, DoublePredicate)
@@ -885,8 +881,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return the {@code double} at the given index out of doubles matching the given predicate, or an empty
-	 * {@link OptionalDouble} if the matching {@code DoubleSequence} is smaller than the index.
+	 * @return the {@code double} at the given index out of doubles matching the given predicate, or an empty {@link
+	 * OptionalDouble} if the matching {@code DoubleSequence} is smaller than the index.
 	 *
 	 * @see #filter(DoublePredicate)
 	 * @since 1.2
@@ -903,8 +899,8 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
-	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered,
-	 * compared to the given precision.
+	 * @return a {@code DoubleSequence} where each item occurs only once, the first time it is encountered, compared to
+	 * the given precision.
 	 */
 	default DoubleSequence distinct(double precision) {
 		return () -> new DistinctDoubleIterator(iterator(), precision);
@@ -937,7 +933,7 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**

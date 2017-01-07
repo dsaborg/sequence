@@ -17,11 +17,13 @@
 package org.d2ab.iterator.chars;
 
 import org.d2ab.function.*;
+import org.d2ab.util.Strict;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
+import java.util.function.ToLongFunction;
 
 /**
  * An Iterator specialized for {@code char} values. Adapted from {@link PrimitiveIterator}.
@@ -39,11 +41,26 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		}
 	};
 
+	static CharIterator empty() {
+		return EMPTY;
+	}
+
 	static CharIterator of(char... chars) {
 		return new ArrayCharIterator(chars);
 	}
 
+	static CharIterator from(char[] chars, int size) {
+		return new ArrayCharIterator(chars, size);
+	}
+
+	static CharIterator from(char[] chars, int offset, int size) {
+		return new ArrayCharIterator(chars, offset, size);
+	}
+
 	static CharIterator from(Iterator<Character> iterator) {
+		if (iterator instanceof CharIterator)
+			return (CharIterator) iterator;
+
 		return new DelegatingTransformingCharIterator<Character, Iterator<Character>>(iterator) {
 			@Override
 			public char nextChar() {
@@ -52,7 +69,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 		};
 	}
 
-	static <T> CharIterator from(final Iterator<T> iterator, final ToCharFunction<? super T> mapper) {
+	static <T> CharIterator from(Iterator<T> iterator, ToCharFunction<? super T> mapper) {
 		return new DelegatingTransformingCharIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public char nextChar() {
@@ -107,6 +124,8 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default Character next() {
+		assert Strict.LENIENT : "CharIterator.next()";
+
 		return nextChar();
 	}
 
@@ -124,7 +143,9 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default void forEachRemaining(Consumer<? super Character> consumer) {
-		forEachRemaining((consumer instanceof CharConsumer) ? (CharConsumer) consumer : consumer::accept);
+		assert Strict.LENIENT : "CharIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((CharConsumer) consumer::accept);
 	}
 
 	/**
@@ -153,10 +174,20 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	/**
 	 * @return the number of {@code chars} remaining in this iterator.
 	 */
-	default int count() {
+	default int size() {
+		return size(CharIterator::count);
+	}
+
+	default long count() {
 		long count = 0;
 		for (; hasNext(); nextChar())
 			count++;
+		return count;
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<CharIterator> counter) {
+		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);

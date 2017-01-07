@@ -52,7 +52,6 @@ public class TailSkippingLongIterator extends DelegatingUnaryLongIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		@SuppressWarnings("unchecked")
 		long next = buffer[position];
 		buffer[position++] = iterator.nextLong();
 		position = position % skip;

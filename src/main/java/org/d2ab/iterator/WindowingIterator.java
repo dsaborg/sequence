@@ -22,7 +22,7 @@ public abstract class WindowingIterator<T, S> extends DelegatingMappingIterator<
 	private final int window;
 	private final int step;
 
-	private Deque<T> partition = new LinkedList<>();
+	private final Deque<T> partition = new LinkedList<>();
 	private boolean started;
 
 	public WindowingIterator(Iterator<T> iterator, int window, int step) {
@@ -37,7 +37,7 @@ public abstract class WindowingIterator<T, S> extends DelegatingMappingIterator<
 			partition.add(iterator.next());
 
 		return partition.size() == window ||
-		       partition.size() > 0 && (!started || partition.size() > window - step && !iterator.hasNext());
+		       !partition.isEmpty() && (!started || partition.size() > window - step && !iterator.hasNext());
 	}
 
 	@Override

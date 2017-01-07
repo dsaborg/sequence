@@ -44,136 +44,148 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class IsDoubleIterableContainingInOrder extends TypeSafeDiagnosingMatcher<DoubleIterable> {
-    private final List<Matcher<? super Double>> matchers;
+	private final List<Matcher<? super Double>> matchers;
 
-    public IsDoubleIterableContainingInOrder(List<Matcher<? super Double>> matchers) {
-        this.matchers = matchers;
-    }
+	public IsDoubleIterableContainingInOrder(List<Matcher<? super Double>> matchers) {
+		this.matchers = matchers;
+	}
 
-    @Override
-    protected boolean matchesSafely(DoubleIterable iterable, Description mismatchDescription) {
-        final DoubleMatchSeries matchSeries = new DoubleMatchSeries(matchers, mismatchDescription);
-        for (DoubleIterator iterator = iterable.iterator(); iterator.hasNext(); ) {
-            double item = iterator.nextDouble();
-            if (!matchSeries.matches(item)) {
-                return false;
-            }
-        }
+	@Override
+	protected boolean matchesSafely(DoubleIterable iterable, Description mismatchDescription) {
+		final DoubleMatchSeries matchSeries = new DoubleMatchSeries(matchers, mismatchDescription);
+		for (DoubleIterator iterator = iterable.iterator(); iterator.hasNext(); ) {
+			double item = iterator.nextDouble();
+			if (!matchSeries.matches(item)) {
+				return false;
+			}
+		}
 
-        return matchSeries.isFinished();
-    }
+		return matchSeries.isFinished();
+	}
 
-    @Override
-    public void describeTo(Description description) {
-        description.appendText("double iterable containing ").appendList("[", ", ", "]", matchers);
-    }
+	@Override
+	public void describeTo(Description description) {
+		description.appendText("double iterable containing ").appendList("[", ", ", "]", matchers);
+	}
 
-    private static class DoubleMatchSeries {
-        private final List<Matcher<? super Double>> matchers;
-        private final Description mismatchDescription;
-        private int nextMatchIx = 0;
+	private static class DoubleMatchSeries {
+		private final List<Matcher<? super Double>> matchers;
+		private final Description mismatchDescription;
+		private int nextMatchIx = 0;
 
-        public DoubleMatchSeries(List<Matcher<? super Double>> matchers, Description mismatchDescription) {
-            this.mismatchDescription = mismatchDescription;
-            if (matchers.isEmpty()) {
-                throw new IllegalArgumentException("Should specify at least one expected double");
-            }
-            this.matchers = matchers;
-        }
+		public DoubleMatchSeries(List<Matcher<? super Double>> matchers, Description mismatchDescription) {
+			this.mismatchDescription = mismatchDescription;
+			if (matchers.isEmpty()) {
+				throw new IllegalArgumentException("Should specify at least one expected double");
+			}
+			this.matchers = matchers;
+		}
 
-        public boolean matches(double item) {
-          if (matchers.size() <= nextMatchIx) {
-            mismatchDescription.appendText("not matched: ").appendValue(item);
-            return false;
-          }
+		public boolean matches(double item) {
+			if (matchers.size() <= nextMatchIx) {
+				mismatchDescription.appendText("not matched: ").appendValue(item);
+				return false;
+			}
 
-          return isMatched(item);
-        }
+			return isMatched(item);
+		}
 
-        public boolean isFinished() {
-            if (nextMatchIx < matchers.size()) {
-                mismatchDescription.appendText("no item was ").appendDescriptionOf(matchers.get(nextMatchIx));
-                return false;
-            }
-            return true;
-        }
+		public boolean isFinished() {
+			if (nextMatchIx < matchers.size()) {
+				mismatchDescription.appendText("no item was ").appendDescriptionOf(matchers.get(nextMatchIx));
+				return false;
+			}
+			return true;
+		}
 
-        private boolean isMatched(double item) {
-            final Matcher<? super Double> matcher = matchers.get(nextMatchIx);
-            if (!matcher.matches(item)) {
-                describeMismatch(matcher, item);
-                return false;
-            }
-            nextMatchIx++;
-            return true;
-        }
+		private boolean isMatched(double item) {
+			final Matcher<? super Double> matcher = matchers.get(nextMatchIx);
+			if (!matcher.matches(item)) {
+				describeMismatch(matcher, item);
+				return false;
+			}
+			nextMatchIx++;
+			return true;
+		}
 
-      private void describeMismatch(Matcher<? super Double> matcher, double item) {
-            mismatchDescription.appendText("item " + nextMatchIx + ": ");
-            matcher.describeMismatch(item, mismatchDescription);
-        }
-    }
+		private void describeMismatch(Matcher<? super Double> matcher, double item) {
+			mismatchDescription.appendText("item " + nextMatchIx + ": ");
+			matcher.describeMismatch(item, mismatchDescription);
+		}
+	}
 
-    /**
-     * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
-     * examined {@link DoubleIterable} yields a series of items, each logically equal to the
-     * corresponding item in the specified items.  For a positive match, the examined iterable
-     * must be of the same length as the number of specified items.
-     *
-     * @param items
-     *     the items that must equal the items provided by an examined {@link DoubleIterable}
-     */
-    public static Matcher<DoubleIterable> containsDoubles(double... items) {
-        List<Matcher<? super Double>> matchers = new ArrayList<>();
-        for (double item : items) {
-            matchers.add(equalTo(item));
-        }
+	/**
+	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
+	 * examined {@link DoubleIterable} yields a series of items, each logically equal to the
+	 * corresponding item in the specified items.  For a positive match, the examined iterable
+	 * must be of the same length as the number of specified items.
+	 *
+	 * @param items the items that must equal the items provided by an examined {@link DoubleIterable}
+	 */
+	public static Matcher<DoubleIterable> containsDoubles(double... items) {
+		List<Matcher<? super Double>> matchers = new ArrayList<>();
+		for (double item : items) {
+			matchers.add(equalTo(item));
+		}
 
-        return containsDoubles(matchers);
-    }
+		return containsDoubles(matchers);
+	}
 
-    /**
-     * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
-     * examined {@link DoubleIterable} yields a single item that satisfies the specified matcher.
-     * For a positive match, the examined iterable must only yield one item.
-     *
-     * @param itemMatcher
-     *     the matcher that must be satisfied by the single item provided by an
-     *     examined {@link DoubleIterable}
-     */
-    @SuppressWarnings("unchecked")
-    public static Matcher<DoubleIterable> containsDoubles(final Matcher<? super Double> itemMatcher) {
-        return containsDoubles(new ArrayList<>(singletonList(itemMatcher)));
-    }
+	/**
+	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
+	 * examined {@link DoubleIterable} yields a series of items, each logically equal to the
+	 * corresponding item in the specified items.  For a positive match, the examined iterable
+	 * must be of the same length as the number of specified items.
+	 *
+	 * @param items the items that must equal the items provided by an examined {@link DoubleIterable}
+	 */
+	public static Matcher<DoubleIterable> containsDoubles(DoubleIterable items) {
+		List<Matcher<? super Double>> matchers = new ArrayList<>();
+		for (DoubleIterator iterator = items.iterator(); iterator.hasNext(); ) {
+			matchers.add(equalTo(iterator.nextDouble()));
+		}
 
-    /**
-     * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
-     * examined {@link DoubleIterable} yields a series of items, each satisfying the corresponding
-     * matcher in the specified matchers.  For a positive match, the examined iterable
-     * must be of the same length as the number of specified matchers.
-     *
-     * @param itemMatchers
-     *     the matchers that must be satisfied by the items provided by an examined {@link Iterable}
-     */
-    @SafeVarargs
-    public static Matcher<DoubleIterable> containsDoubles(Matcher<? super Double>... itemMatchers) {
-        // required for JDK 1.6
-        //noinspection RedundantTypeArguments
-        final List<Matcher<? super Double>> nullSafeWithExplicitTypeMatchers = NullSafety.<Double>nullSafe(itemMatchers);
-    	return containsDoubles(nullSafeWithExplicitTypeMatchers);
-    }
+		return containsDoubles(matchers);
+	}
 
-    /**
-     * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
-     * examined {@link DoubleIterable} yields a series of items, each satisfying the corresponding
-     * matcher in the specified list of matchers.  For a positive match, the examined iterable
-     * must be of the same length as the specified list of matchers.
-     *
-     * @param itemMatchers
-     *     a list of matchers, each of which must be satisfied by the corresponding item provided by
-     *     an examined {@link DoubleIterable}
-     */
-    public static Matcher<DoubleIterable> containsDoubles(List<Matcher<? super Double>> itemMatchers) {
-        return new IsDoubleIterableContainingInOrder(itemMatchers);
-    }
+	/**
+	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
+	 * examined {@link DoubleIterable} yields a single item that satisfies the specified matcher.
+	 * For a positive match, the examined iterable must only yield one item.
+	 *
+	 * @param itemMatcher the matcher that must be satisfied by the single item provided by an examined {@link
+	 *                    DoubleIterable}
+	 */
+	@SuppressWarnings("unchecked")
+	public static Matcher<DoubleIterable> containsDoubles(final Matcher<? super Double> itemMatcher) {
+		return containsDoubles(new ArrayList<>(singletonList(itemMatcher)));
+	}
+
+	/**
+	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
+	 * examined {@link DoubleIterable} yields a series of items, each satisfying the corresponding
+	 * matcher in the specified matchers.  For a positive match, the examined iterable
+	 * must be of the same length as the number of specified matchers.
+	 *
+	 * @param itemMatchers the matchers that must be satisfied by the items provided by an examined {@link Iterable}
+	 */
+	@SafeVarargs
+	public static Matcher<DoubleIterable> containsDoubles(Matcher<? super Double>... itemMatchers) {
+		// required for JDK 1.6
+		final List<Matcher<? super Double>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
+		return containsDoubles(nullSafeWithExplicitTypeMatchers);
+	}
+
+	/**
+	 * Creates a matcher for {@link DoubleIterable}s that matches when a single pass over the
+	 * examined {@link DoubleIterable} yields a series of items, each satisfying the corresponding
+	 * matcher in the specified list of matchers.  For a positive match, the examined iterable
+	 * must be of the same length as the specified list of matchers.
+	 *
+	 * @param itemMatchers a list of matchers, each of which must be satisfied by the corresponding item provided by an
+	 *                     examined {@link DoubleIterable}
+	 */
+	public static Matcher<DoubleIterable> containsDoubles(List<Matcher<? super Double>> itemMatchers) {
+		return new IsDoubleIterableContainingInOrder(itemMatchers);
+	}
 }

@@ -28,6 +28,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code long} values.
  */
 public interface LongList extends List<Long>, LongCollection {
+	// TODO: Extract out relevant parts to IterableLongList
+
 	/**
 	 * Returns an immutable {@code LongList} of the given elements. The returned {@code LongList}'s
 	 * {@link LongListIterator} supports forward iteration only.
@@ -84,6 +86,11 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	@Override
+	default LongList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Long && containsLong((long) o);
 	}
@@ -110,11 +117,12 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Long> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		LongListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (long x : c)
+			listIterator.add(x);
 
 		return true;
 	}
@@ -135,7 +143,7 @@ public interface LongList extends List<Long>, LongCollection {
 			return false;
 
 		LongListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachLong(listIterator::add);
 
 		return true;
 	}
@@ -155,13 +163,9 @@ public interface LongList extends List<Long>, LongCollection {
 		throw new UnsupportedOperationException();
 	}
 
-	default void sortLongs(LongComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	default void sort(Comparator<? super Long> c) {
-		sortLongs(c::compare);
+		throw new UnsupportedOperationException();
 	}
 
 	default int binarySearch(long x) {
@@ -175,10 +179,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Long> c) {
-		boolean modified = false;
-		for (long x : c)
-			modified |= addLong(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -236,7 +237,11 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	default long getLong(int index) {
-		return listIterator(index).nextLong();
+		LongListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextLong();
 	}
 
 	@Override
@@ -321,6 +326,53 @@ public interface LongList extends List<Long>, LongCollection {
 	 * Base class for {@link LongList} implementations.
 	 */
 	abstract class Base extends LongCollection.Base implements LongList {
+		public static LongList create(long... longs) {
+			return from(LongList.create(longs));
+		}
+
+		public static LongList from(final LongCollection collection) {
+			return new LongList.Base() {
+				@Override
+				public LongIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return collection.addLong(x);
+				}
+			};
+		}
+
+		public static LongList from(final LongList list) {
+			return new LongList.Base() {
+				@Override
+				public LongIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public LongListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return list.addLong(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
@@ -376,7 +428,8 @@ public interface LongList extends List<Long>, LongCollection {
 		}
 
 		public LongIterator iterator() {
-			return new DelegatingUnaryLongIterator(new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryLongIterator(
+					new LimitingLongIterator(new SkippingLongIterator(list.iterator(), from), to - from)) {
 				@Override
 				public long nextLong() {
 					return iterator.nextLong();

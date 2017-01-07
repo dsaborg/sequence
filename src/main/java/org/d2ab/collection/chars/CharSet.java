@@ -92,6 +92,29 @@ public interface CharSet extends Set<Character>, CharCollection {
 	 * Base class for {@link CharSet} implementations.
 	 */
 	abstract class Base extends CharCollection.Base implements CharSet {
+		public static CharSet create(char... chars) {
+			return from(CharSortedSet.create(chars));
+		}
+
+		public static CharSet from(final CharCollection collection) {
+			return new CharSet.Base() {
+				@Override
+				public CharIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return collection.addChar(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

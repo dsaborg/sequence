@@ -20,9 +20,9 @@ import org.d2ab.collection.longs.ArrayLongList;
 import org.d2ab.collection.longs.LongList;
 import org.d2ab.collection.longs.LongListIterator;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.test.StrictLongIterable;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -36,11 +36,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class LongSequenceAsListTest {
-	private final LongSequence empty = LongSequence.from(StrictLongIterable.from(ArrayLongList.create()));
+	private final LongSequence empty = LongSequence.from(ArrayLongList.create());
 	private final LongList emptyList = empty.asList();
 
-	private final LongSequence sequence = LongSequence.from(
-			StrictLongIterable.from(ArrayLongList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	private final LongSequence sequence = LongSequence.from(ArrayLongList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	private final LongList list = sequence.asList();
 
 	@Test
@@ -292,6 +291,9 @@ public class LongSequenceAsListTest {
 	public void listIteratorEmpty() {
 		LongListIterator emptyIterator = emptyList.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, emptyIterator::nextLong);
+		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousLong);
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
@@ -395,7 +397,8 @@ public class LongSequenceAsListTest {
 	@Test
 	public void parallelStream() {
 		assertThat(emptyList.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelStream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
+		assertThat(list.parallelStream().collect(Collectors.toList()),
+		           contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
 	}
 
 	@Test

@@ -16,21 +16,65 @@
 
 package org.d2ab.collection.ints;
 
+import org.d2ab.collection.chars.CharIterable;
+import org.d2ab.iterator.IterationException;
+import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.NoSuchElementException;
 
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
+import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 public class IntIterableTest {
-	private final IntIterable iterable = IntIterable.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	private final IntIterable empty = IntIterable.of();
+	private final IntIterable iterable = IntIterable.from(IntList.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+	@Test
+	public void isEmpty() {
+		assertThat(empty.isEmpty(), is(true));
+		assertThat(iterable.isEmpty(), is(false));
+	}
+
+	@Test
+	public void clear() {
+		empty.clear();
+		assertThat(empty, is(emptyIterable()));
+
+		iterable.clear();
+		assertThat(iterable, is(emptyIterable()));
+	}
+
+	@Test
+	public void intStream() {
+		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(iterable.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
+		           containsInts(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+	}
+
+	@Test
+	public void parallelIntStream() {
+		assertThat(empty.parallelIntStream()
+		                .collect(IntList::create, IntList::addInt, IntList::addAllInts),
+		           is(emptyIterable()));
+
+		assertThat(iterable.parallelIntStream()
+		                   .collect(IntList::create, IntList::addInt, IntList::addAllInts),
+		           containsInts(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+	}
 
 	@Test
 	public void read() {
@@ -41,11 +85,21 @@ public class IntIterableTest {
 	}
 
 	@Test
+	public void readWithIOException() throws IOException {
+		InputStream inputStream = spy(new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5}));
+		doThrow(IOException.class).when(inputStream).read();
+
+		IntIterable iterable = IntIterable.read(inputStream);
+		twice(() -> expecting(IterationException.class, () -> iterable.iterator().nextInt()));
+	}
+
+	@Test
 	public void readEmpty() {
 		InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 
 		IntIterable iterable = IntIterable.read(inputStream);
 		twice(() -> assertThat(iterable, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> iterable.iterator().nextInt());
 	}
 
 	@Test
@@ -77,6 +131,28 @@ public class IntIterableTest {
 	}
 
 	@Test
+	public void readWithMarkFailingReset() throws IOException {
+		InputStream inputStream = spy(new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5}));
+		doThrow(IOException.class).when(inputStream).reset();
+
+		IntIterable iterable = IntIterable.read(inputStream);
+		assertThat(iterable, containsInts(1, 2, 3, 4, 5));
+		assertThat(iterable, is(emptyIterable()));
+	}
+
+	@Test
+	public void asInputStreamAvailable() throws Exception {
+		InputStream inputStream = iterable.asInputStream();
+		assertThat(inputStream.available(), is(0));
+	}
+
+	@Test
+	public void asInputStreamMarkSupported() throws Exception {
+		InputStream inputStream = iterable.asInputStream();
+		assertThat(inputStream.markSupported(), is(true));
+	}
+
+	@Test
 	public void asInputStreamReadSingleInts() throws Exception {
 		InputStream inputStream = iterable.asInputStream();
 
@@ -100,16 +176,8 @@ public class IntIterableTest {
 		InputStream inputStream = IntIterable.of(1, 256, -1, 2).asInputStream();
 
 		assertThat(inputStream.read(), is(1));
-		try {
-			inputStream.read();
-			fail("Expected IOException");
-		} catch (IOException ignored) {
-		}
-		try {
-			inputStream.read();
-			fail("Expected IOException");
-		} catch (IOException ignored) {
-		}
+		expecting(IOException.class, inputStream::read);
+		expecting(IOException.class, inputStream::read);
 		assertThat(inputStream.read(), is(2));
 	}
 
@@ -146,6 +214,25 @@ public class IntIterableTest {
 		inputStream.reset();
 		assertThat(inputStream.read(), is(3));
 		assertThat(inputStream.read(), is(4));
+
+		inputStream.close();
+		expecting(IOException.class, inputStream::reset);
+	}
+
+	@Test
+	public void asInputStreamMarkAndResetSingleUseIterator() throws Exception {
+		InputStream inputStream = IntIterable.once(IntIterator.of(1, 2, 3, 4, 5)).asInputStream();
+
+		assertThat(inputStream.read(), is(1));
+		assertThat(inputStream.read(), is(2));
+
+		inputStream.mark(17);
+		assertThat(inputStream.read(), is(3));
+		assertThat(inputStream.read(), is(4));
+		assertThat(inputStream.read(), is(5));
+		assertThat(inputStream.read(), is(-1));
+
+		expecting(IllegalStateException.class, inputStream::reset);
 	}
 
 	@Test
@@ -168,6 +255,9 @@ public class IntIterableTest {
 		assertThat(inputStream.read(buf, 0, 0), is(0));
 		assertThat(inputStream.read(buf, 0, 10), is(5));
 		assertThat(inputStream.read(buf, 0, 10), is(-1));
+
+		inputStream.close();
+		expecting(IOException.class, () -> inputStream.read(buf, 0, 10));
 	}
 
 	@Test
@@ -181,6 +271,16 @@ public class IntIterableTest {
 		assertThat(inputStream.read(), is(5));
 
 		assertThat(inputStream.skip(10), is(5L));
+
+		inputStream.close();
+		expecting(IOException.class, () -> inputStream.skip(10));
+	}
+
+	@Test
+	public void asInputStreamSkipVeryLarge() throws Exception {
+		InputStream inputStream = iterable.asInputStream();
+
+		assertThat(inputStream.skip(Integer.MAX_VALUE * 2L), is(10L));
 	}
 
 	@Test
@@ -196,5 +296,14 @@ public class IntIterableTest {
 			fail("Expected IOException");
 		} catch (IOException ignored) {
 		}
+	}
+
+	@Test
+	public void asChars() {
+		CharIterable emptyAsChars = empty.asChars();
+		twice(() -> assertThat(emptyAsChars, is(emptyIterable())));
+
+		CharIterable listAsChars = IntIterable.of('a', 'b', 'c', 'd', 'e').asChars();
+		twice(() -> assertThat(listAsChars, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 }

@@ -33,7 +33,8 @@ public class SequenceAsListTest {
 	private final Sequence<Integer> empty = Sequence.from(new ArrayDeque<Integer>()::iterator);
 	private final List<Integer> emptyList = empty.asList();
 
-	private final Sequence<Integer> sequence = Sequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))::iterator);
+	private final Sequence<Integer> sequence = Sequence.from(
+			new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))::iterator);
 	private final List<Integer> list = sequence.asList();
 
 	@Test
@@ -290,6 +291,7 @@ public class SequenceAsListTest {
 	@Test
 	public void listIteratorEmpty() {
 		ListIterator<Integer> emptyIterator = emptyList.listIterator();
+		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));

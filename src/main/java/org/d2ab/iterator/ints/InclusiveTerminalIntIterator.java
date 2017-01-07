@@ -45,6 +45,6 @@ public class InclusiveTerminalIntIterator extends DelegatingUnaryIntIterator {
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
-		return previous = iterator.next();
+		return previous = iterator.nextInt();
 	}
 }

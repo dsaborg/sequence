@@ -26,7 +26,7 @@ public interface DoubleBiPredicate {
 	/**
 	 * Test this predicate against the given two {@code double}s.
 	 */
-	boolean test(double c1, double c2);
+	boolean test(double x1, double x2);
 
 	/**
 	 * Negate this predicate, returning a predicate that always returns the opposite values.

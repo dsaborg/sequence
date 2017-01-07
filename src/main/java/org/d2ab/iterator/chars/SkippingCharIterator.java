@@ -29,14 +29,6 @@ public class SkippingCharIterator extends DelegatingUnaryCharIterator {
 	}
 
 	@Override
-	public char nextChar() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
-		return iterator.nextChar();
-	}
-
-	@Override
 	public boolean hasNext() {
 		if (!skipped) {
 			iterator.skip(skip);
@@ -44,5 +36,13 @@ public class SkippingCharIterator extends DelegatingUnaryCharIterator {
 		}
 
 		return iterator.hasNext();
+	}
+
+	@Override
+	public char nextChar() {
+		if (!hasNext())
+			throw new NoSuchElementException();
+
+		return iterator.nextChar();
 	}
 }

@@ -16,21 +16,20 @@
 
 package org.d2ab.collection;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 /**
  * Utility methods for {@link List}s.
  */
-public class Lists {
+public interface Lists {
 	/**
 	 * A pass-through version of {@link Collections#shuffle(List)}.
 	 *
 	 * @return the given list shuffled using {@link Collections#shuffle(List)}.
 	 */
-	public static <T> List<T> shuffle(List<T> list) {
+	static <T> List<T> shuffle(List<T> list) {
 		Collections.shuffle(list);
 		return list;
 	}
@@ -40,7 +39,7 @@ public class Lists {
 	 *
 	 * @return the given list shuffled using {@link Collections#shuffle(List, Random)}.
 	 */
-	public static <T> List<T> shuffle(List<T> list, Random random) {
+	static <T> List<T> shuffle(List<T> list, Random random) {
 		Collections.shuffle(list, random);
 		return list;
 	}
@@ -49,10 +48,9 @@ public class Lists {
 	 * A pass-through version of {@link List#sort(Comparator)} sorted using
 	 * {@link Comparator#naturalOrder()}.
 	 *
-	 * @return the given list sorted using {@link List#sort(Comparator)} with
-	 * {@link Comparator#naturalOrder()}.
+	 * @return the given list sorted using {@link List#sort(Comparator)} with {@link Comparator#naturalOrder()}.
 	 */
-	public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
+	static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
 		return sort(list, Comparator.naturalOrder());
 	}
 
@@ -60,10 +58,9 @@ public class Lists {
 	 * A pass-through version of {@link List#sort(Comparator)} sorted using
 	 * {@link Comparator#naturalOrder()}.
 	 *
-	 * @return the given list sorted using {@link List#sort(Comparator)} with
-	 * {@link Comparator#naturalOrder()}.
+	 * @return the given list sorted using {@link List#sort(Comparator)} with {@link Comparator#naturalOrder()}.
 	 */
-	public static <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
+	static <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
 		list.sort(comparator);
 		return list;
 	}
@@ -71,7 +68,7 @@ public class Lists {
 	/**
 	 * Swap the given items in the given {@link List}.
 	 */
-	public static <T> void swap(List<T> list, int i, int j) {
+	static <T> void swap(List<T> list, int i, int j) {
 		T temp = list.get(i);
 		list.set(i, list.get(j));
 		list.set(j, temp);
@@ -82,9 +79,14 @@ public class Lists {
 	 *
 	 * @return the given {@link List}, reversed.
 	 */
-	public static <T> List<T> reverse(List<T> list) {
+	static <T> List<T> reverse(List<T> list) {
 		for (int i = 0; i < list.size() / 2; i++)
 			swap(list, i, list.size() - i - 1);
 		return list;
+	}
+
+	@SafeVarargs
+	static <T> List<T> create(T... items) {
+		return new ArrayList<>(asList(items));
 	}
 }

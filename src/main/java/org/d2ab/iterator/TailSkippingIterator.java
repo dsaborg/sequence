@@ -48,12 +48,12 @@ public class TailSkippingIterator<T> extends DelegatingUnaryIterator<T> {
 		return super.hasNext();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T next() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		@SuppressWarnings("unchecked")
 		T next = (T) buffer[position];
 		buffer[position++] = iterator.next();
 		position = position % skip;

@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterator.Iterators;
@@ -32,12 +33,14 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Comparator.reverseOrder;
+import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
+import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
-import static org.d2ab.test.Tests.twice;
-import static org.d2ab.test.Tests.twiceIndexed;
-import static org.hamcrest.CoreMatchers.is;
+import static org.d2ab.test.Tests.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -45,28 +48,33 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("unchecked")
 public class BiSequenceTest {
 	private final BiSequence<String, Integer> empty = BiSequence.empty();
-	private final BiSequence<String, Integer> _1 = BiSequence.of(Pair.of("1", 1));
-	private final BiSequence<String, Integer> _12 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2));
-	private final BiSequence<String, Integer> _123 = BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
-	private final BiSequence<String, Integer> _1234 =
-			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4));
-	private final BiSequence<String, Integer> _12345 =
-			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5));
-	private final BiSequence<String, Integer> _123456789 =
-			BiSequence.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
-			              Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9));
-	private final BiSequence<String, Integer> random1 = BiSequence.of(Pair.of("17", 17));
-	private final BiSequence<String, Integer> random2 = BiSequence.of(Pair.of("17", 17), Pair.of("32", 32));
-	private final BiSequence<String, Integer> random3 =
-			BiSequence.of(Pair.of("4", 4), Pair.of("2", 2), Pair.of("3", 3));
-	private final BiSequence<String, Integer> random9 =
-			BiSequence.of(Pair.of("67", 67), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3), Pair.of("5", 5),
-			              Pair.of("7", 7), Pair.of("24", 24), Pair.of("5", 5), Pair.of("67", 67));
-	private final Pair<String, Integer>[] entries123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
-	private final Pair<String, Integer>[] entries12345 =
+
+	private final BiSequence<String, Integer> _1 = BiSequence.from(Lists.create(Pair.of("1", 1)));
+	private final BiSequence<String, Integer> _12 = BiSequence.from(Lists.create(Pair.of("1", 1), Pair.of("2", 2)));
+	private final BiSequence<String, Integer> _123 = BiSequence.from(
+			Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)));
+	private final BiSequence<String, Integer> _1234 = BiSequence.from(
+			Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+	private final BiSequence<String, Integer> _12345 = BiSequence.from(Lists.create(
+			Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
+	private final BiSequence<String, Integer> _123456789 = BiSequence.from(
+			Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+			             Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)));
+
+	private final BiSequence<String, Integer> random1 = BiSequence.from(Lists.create(Pair.of("17", 17)));
+	private final BiSequence<String, Integer> random2 = BiSequence.from(
+			Lists.create(Pair.of("17", 17), Pair.of("32", 32)));
+	private final BiSequence<String, Integer> random3 = BiSequence.from(
+			Lists.create(Pair.of("4", 4), Pair.of("2", 2), Pair.of("3", 3)));
+	private final BiSequence<String, Integer> random9 = BiSequence.from(
+			Lists.create(Pair.of("67", 67), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3), Pair.of("5", 5),
+			             Pair.of("7", 7), Pair.of("24", 24), Pair.of("5", 5), Pair.of("67", 67)));
+
+	private final Pair<String, Integer>[] pairs123 = new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)};
+	private final Pair<String, Integer>[] pairs12345 =
 			new Pair[]{Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)};
-	private final Pair<String, Integer>[] entries456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
-	private final Pair<String, Integer>[] entries789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
+	private final Pair<String, Integer>[] pairs456 = new Pair[]{Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)};
+	private final Pair<String, Integer>[] pairs789 = new Pair[]{Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)};
 
 	@Test
 	public void empty() {
@@ -98,7 +106,7 @@ public class BiSequenceTest {
 
 	@Test
 	public void ofMany() {
-		twice(() -> assertThat(_123, contains(entries123)));
+		twice(() -> assertThat(_123, contains(pairs123)));
 	}
 
 	@Test
@@ -108,7 +116,95 @@ public class BiSequenceTest {
 
 	@Test
 	public void ofPairs() {
-		assertThat(BiSequence.ofPairs("1", 1, "2", 2, "3", 3), contains(entries123));
+		assertThat(BiSequence.ofPairs("1", 1, "2", 2, "3", 3), contains(pairs123));
+
+		expecting(IllegalArgumentException.class, () -> BiSequence.ofPairs("1"));
+	}
+
+	@Test
+	public void fromBiSequence() {
+		BiSequence<String, Integer> sequence = BiSequence.from(_12345);
+
+		twice(() -> assertThat(sequence, contains(pairs12345)));
+	}
+
+	@Test
+	public void fromIterable() {
+		BiSequence<String, Integer> sequence = BiSequence.from(Iterables.of(pairs12345));
+
+		twice(() -> assertThat(sequence, contains(pairs12345)));
+	}
+
+	@Test
+	public void fromIterables() {
+		Iterable<Pair<String, Integer>> first = Iterables.of(pairs123);
+		Iterable<Pair<String, Integer>> second = Iterables.of(pairs456);
+		Iterable<Pair<String, Integer>> third = Iterables.of(pairs789);
+
+		BiSequence<String, Integer> sequence = BiSequence.from(first, second, third);
+
+		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
+	}
+
+	@Test
+	public void fromNoIterables() {
+		BiSequence<String, Integer> sequence = BiSequence.from(new Iterable[0]);
+
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void onceIterator() {
+		BiSequence<String, Integer> sequence = BiSequence.once(Iterators.of(pairs12345));
+
+		assertThat(sequence, contains(pairs12345));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void onceStream() {
+		BiSequence<String, Integer> sequence = BiSequence.once(Stream.of(pairs12345));
+
+		assertThat(sequence, contains(pairs12345));
+		assertThat(sequence, is(emptyIterable()));
+	}
+
+	@Test
+	public void cacheIterable() {
+		List<Pair<String, Integer>> list = Lists.create(pairs12345);
+		BiSequence<String, Integer> cached = BiSequence.cache(list::iterator);
+		list.set(0, Pair.of("17", 17));
+
+		twice(() -> assertThat(cached, contains(pairs12345)));
+
+		cached.clear();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheIterator() {
+		List<Pair<String, Integer>> list = Lists.create(pairs12345);
+		BiSequence<String, Integer> cached = BiSequence.cache(list.iterator());
+		list.set(0, Pair.of("17", 17));
+
+		twice(() -> assertThat(cached, contains(pairs12345)));
+
+		cached.clear();
+		twice(() -> assertThat(cached, is(emptyIterable())));
+	}
+
+	@Test
+	public void cacheStream() {
+		List<Pair<String, Integer>> list = Lists.create(pairs12345);
+		BiSequence<String, Integer> cached = BiSequence.cache(list.stream());
+		list.set(0, Pair.of("17", 17));
+
+		twice(() -> assertThat(cached, contains(pairs12345)));
+
+		cached.clear();
+		twice(() -> assertThat(cached, is(emptyIterable())));
 	}
 
 	@Test
@@ -183,154 +279,92 @@ public class BiSequenceTest {
 			assertThat(iterator.next(), is(Pair.of("3", 3)));
 
 			assertThat(iterator.hasNext(), is(false));
-			assertThat(iterator.hasNext(), is(false));
+			expecting(NoSuchElementException.class, iterator::next);
 		});
 	}
 
 	@Test
-	public void fromBiSequence() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345);
-
-		twice(() -> assertThat(sequence, contains(entries12345)));
-	}
-
-	@Test
-	public void fromIterable() {
-		BiSequence<String, Integer> sequence = BiSequence.from(Iterables.of(entries12345));
-
-		twice(() -> assertThat(sequence, contains(entries12345)));
-	}
-
-	@Test
-	public void fromIterables() {
-		Iterable<Pair<String, Integer>> first = Iterables.of(entries123);
-		Iterable<Pair<String, Integer>> second = Iterables.of(entries456);
-		Iterable<Pair<String, Integer>> third = Iterables.of(entries789);
-
-		BiSequence<String, Integer> sequence = BiSequence.from(first, second, third);
-
-		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
-		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
-		                                          Pair.of("9", 9))));
-	}
-
-	@Test
-	public void fromNoIterables() {
-		BiSequence<String, Integer> sequence = BiSequence.from(new Iterable[0]);
-
-		twice(() -> assertThat(sequence, is(emptyIterable())));
-	}
-
-	@Test
-	public void onceIterator() {
-		BiSequence<String, Integer> sequence = BiSequence.once(Iterators.of(entries12345));
-
-		assertThat(sequence, contains(entries12345));
-		assertThat(sequence, is(emptyIterable()));
-	}
-
-	@Test
-	public void onceStream() {
-		BiSequence<String, Integer> sequence = BiSequence.once(Stream.of(entries12345));
-
-		assertThat(sequence, contains(entries12345));
-		assertThat(sequence, is(emptyIterable()));
-	}
-
-	@Test
-	public void cacheIterable() {
-		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
-		BiSequence<String, Integer> cached = BiSequence.cache(list::iterator);
-		list.set(0, Pair.of("17", 17));
-
-		twice(() -> assertThat(cached, contains(entries12345)));
-
-		cached.clear();
-		twice(() -> assertThat(cached, is(emptyIterable())));
-	}
-
-	@Test
-	public void cacheIterator() {
-		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
-		BiSequence<String, Integer> cached = BiSequence.cache(list.iterator());
-		list.set(0, Pair.of("17", 17));
-
-		twice(() -> assertThat(cached, contains(entries12345)));
-
-		cached.clear();
-		twice(() -> assertThat(cached, is(emptyIterable())));
-	}
-
-	@Test
-	public void cacheStream() {
-		List<Pair<String, Integer>> list = new ArrayList<>(asList(entries12345));
-		BiSequence<String, Integer> cached = BiSequence.cache(list.stream());
-		list.set(0, Pair.of("17", 17));
-
-		twice(() -> assertThat(cached, contains(entries12345)));
-
-		cached.clear();
-		twice(() -> assertThat(cached, is(emptyIterable())));
-	}
-
-	@Test
 	public void skip() {
-		BiSequence<String, Integer> skipNone = _123.skip(0);
-		twice(() -> assertThat(skipNone, contains(entries123)));
+		BiSequence<String, Integer> threeSkipNone = _123.skip(0);
+		twice(() -> assertThat(threeSkipNone, contains(pairs123)));
 
-		BiSequence<String, Integer> skipOne = _123.skip(1);
-		twice(() -> assertThat(skipOne, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		BiSequence<String, Integer> threeSkipOne = _123.skip(1);
+		twice(() -> assertThat(threeSkipOne, contains(Pair.of("2", 2), Pair.of("3", 3))));
 
-		BiSequence<String, Integer> skipTwo = _123.skip(2);
-		twice(() -> assertThat(skipTwo, contains(Pair.of("3", 3))));
+		BiSequence<String, Integer> threeSkipTwo = _123.skip(2);
+		twice(() -> assertThat(threeSkipTwo, contains(Pair.of("3", 3))));
 
-		BiSequence<String, Integer> skipThree = _123.skip(3);
-		twice(() -> assertThat(skipThree, is(emptyIterable())));
+		BiSequence<String, Integer> threeSkipThree = _123.skip(3);
+		twice(() -> assertThat(threeSkipThree, is(emptyIterable())));
 
-		BiSequence<String, Integer> skipFour = _123.skip(4);
-		twice(() -> assertThat(skipFour, is(emptyIterable())));
+		BiSequence<String, Integer> threeSkipFour = _123.skip(4);
+		twice(() -> assertThat(threeSkipFour, is(emptyIterable())));
+
+		expecting(NoSuchElementException.class, () -> threeSkipFour.iterator().next());
+
+		assertThat(removeFirst(threeSkipNone), is(Pair.of("1", 1)));
+		twice(() -> assertThat(threeSkipNone, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void skipTail() {
-		BiSequence<String, Integer> skipNone = _123.skipTail(0);
-		twice(() -> assertThat(skipNone, contains(entries123)));
+		BiSequence<String, Integer> threeSkipTailNone = _123.skipTail(0);
+		twice(() -> assertThat(threeSkipTailNone, contains(pairs123)));
 
-		BiSequence<String, Integer> skipOne = _123.skipTail(1);
-		twice(() -> assertThat(skipOne, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		BiSequence<String, Integer> threeSkipTailOne = _123.skipTail(1);
+		twice(() -> assertThat(threeSkipTailOne, contains(Pair.of("1", 1), Pair.of("2", 2))));
 
-		BiSequence<String, Integer> skipTwo = _123.skipTail(2);
-		twice(() -> assertThat(skipTwo, contains(Pair.of("1", 1))));
+		BiSequence<String, Integer> threeSkipTailTwo = _123.skipTail(2);
+		twice(() -> assertThat(threeSkipTailTwo, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> skipThree = _123.skipTail(3);
-		twice(() -> assertThat(skipThree, is(emptyIterable())));
+		BiSequence<String, Integer> threeSkipTailThree = _123.skipTail(3);
+		twice(() -> assertThat(threeSkipTailThree, is(emptyIterable())));
 
-		BiSequence<String, Integer> skipFour = _123.skipTail(4);
-		twice(() -> assertThat(skipFour, is(emptyIterable())));
+		BiSequence<String, Integer> threeSkipTailFour = _123.skipTail(4);
+		twice(() -> assertThat(threeSkipTailFour, is(emptyIterable())));
+
+		expecting(NoSuchElementException.class, () -> threeSkipTailFour.iterator().next());
+
+		assertThat(removeFirst(threeSkipTailNone), is(Pair.of("1", 1)));
+		twice(() -> assertThat(threeSkipTailNone, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void limit() {
-		BiSequence<String, Integer> limitZero = _123.limit(0);
-		twice(() -> assertThat(limitZero, is(emptyIterable())));
+		BiSequence<String, Integer> threeLimitedToNone = _123.limit(0);
+		twice(() -> assertThat(threeLimitedToNone, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> threeLimitedToNone.iterator().next());
 
-		BiSequence<String, Integer> limitOne = _123.limit(1);
-		twice(() -> assertThat(limitOne, contains(Pair.of("1", 1))));
+		BiSequence<String, Integer> threeLimitedToOne = _123.limit(1);
+		twice(() -> assertThat(threeLimitedToOne, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> limitTwo = _123.limit(2);
-		twice(() -> assertThat(limitTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		BiSequence<String, Integer> threeLimitedToTwo = _123.limit(2);
+		twice(() -> assertThat(threeLimitedToTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
 
-		BiSequence<String, Integer> limitThree = _123.limit(3);
-		twice(() -> assertThat(limitThree, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		BiSequence<String, Integer> threeLimitedToThree = _123.limit(3);
+		twice(() -> assertThat(threeLimitedToThree, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
 
-		BiSequence<String, Integer> limitFour = _123.limit(4);
-		twice(() -> assertThat(limitFour, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		BiSequence<String, Integer> threeLimitedToFour = _123.limit(4);
+		twice(() -> assertThat(threeLimitedToFour, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		assertThat(removeFirst(threeLimitedToFour), is(Pair.of("1", 1)));
+		twice(() -> assertThat(threeLimitedToFour, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
+	}
+
+	@Test
+	public void appendEmpty() {
+		BiSequence<String, Integer> appendedEmpty = empty.append(Iterables.empty());
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
 	}
 
 	@Test
 	public void append() {
-		BiSequence<String, Integer> appended = _123.append(BiSequence.of(entries456)).append(BiSequence.of
-				(entries789));
+		BiSequence<String, Integer> appended = _123.append(BiSequence.of(pairs456)).append(BiSequence.of
+				(pairs789));
 
 		twice(() -> assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
 		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
@@ -340,14 +374,69 @@ public class BiSequenceTest {
 	@Test
 	public void appendPair() {
 		BiSequence<String, Integer> appended = _123.appendPair("4", 4);
-		twice(() -> assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)
-		)));
+		twice(() -> assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                          Pair.of("4", 4))));
+	}
+
+	@Test
+	public void appendEmptyIterator() {
+		BiSequence<String, Integer> appendedEmpty = empty.append(Iterators.empty());
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
+	}
+
+	@Test
+	public void appendIterator() {
+		BiSequence<String, Integer> appended = _123.append(
+				Iterators.of(Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6)))
+		                                           .append(Iterators.of(Pair.of("7", 7), Pair.of("8", 8)));
+
+		assertThat(appended,
+		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+		                    Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8)));
+		assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)));
+	}
+
+	@Test
+	public void appendEmptyStream() {
+		BiSequence<String, Integer> appendedEmpty = empty.append(Stream.of());
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
+	}
+
+	@Test
+	public void appendStream() {
+		BiSequence<String, Integer> appended = _123.append(Stream.of(Pair.of("4", 4), Pair.of("5", 5), Pair.of("6",
+		                                                                                                       6)))
+		                                           .append(Stream.of(Pair.of("7", 7), Pair.of("8", 8)));
+
+		assertThat(appended,
+		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5),
+		                    Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8)));
+		assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)));
+	}
+
+	@Test
+	public void appendEmptyArray() {
+		BiSequence<String, Integer> appendedEmpty = empty.append();
+		twice(() -> assertThat(appendedEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> appendedEmpty.iterator().next());
+	}
+
+	@Test
+	public void appendArray() {
+		BiSequence<String, Integer> appended = _123.append(Pair.of("4", 4), Pair.of("5", 5), Pair.of("6", 6))
+		                                           .append(Pair.of("7", 7), Pair.of("8", 8));
+
+		twice(() -> assertThat(appended, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7),
+		                                          Pair.of("8", 8))));
 	}
 
 	@Test
 	public void appendIsLazy() {
-		Iterator<Pair<String, Integer>> first = Iterators.of(entries123);
-		Iterator<Pair<String, Integer>> second = Iterators.of(entries456);
+		Iterator<Pair<String, Integer>> first = Iterators.of(pairs123);
+		Iterator<Pair<String, Integer>> second = Iterators.of(pairs456);
 
 		BiSequence<String, Integer> then = BiSequence.once(first).append(() -> second);
 
@@ -380,61 +469,102 @@ public class BiSequenceTest {
 	public void toSequence() {
 		Sequence<Pair<String, Integer>> emptySequence = empty.toSequence();
 		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySequence.iterator().next());
 
 		Sequence<Pair<String, Integer>> sequence = _12345.toSequence();
-		twice(() -> assertThat(sequence, contains(entries12345)));
+		twice(() -> assertThat(sequence, contains(pairs12345)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                          Pair.of("5", 5))));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                        Pair.of("5", 5))));
 	}
 
 	@Test
-	public void toSequenceKeyValueMapper() {
-		Sequence<String> emptyKeySequence = empty.toSequence((l, r) -> l);
-		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+	public void toSequenceLeftRightMapper() {
+		Sequence<String> emptyLeftSequence = empty.toSequence((l, r) -> l);
+		twice(() -> assertThat(emptyLeftSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLeftSequence.iterator().next());
 
-		Sequence<Integer> emptyValueSequence = empty.toSequence((l, r) -> r);
-		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+		Sequence<Integer> emptyRightSequence = empty.toSequence((l, r) -> r);
+		twice(() -> assertThat(emptyRightSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRightSequence.iterator().next());
 
-		Sequence<String> keySequence = _12345.toSequence((l, r) -> l);
-		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
+		Sequence<String> leftSequence = _12345.toSequence((l, r) -> l);
+		twice(() -> assertThat(leftSequence, contains("1", "2", "3", "4", "5")));
 
-		Sequence<Integer> valueSequence = _12345.toSequence((l, r) -> r);
-		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> rightSequence = _12345.toSequence((l, r) -> r);
+		twice(() -> assertThat(rightSequence, contains(1, 2, 3, 4, 5)));
+
+		assertThat(removeFirst(leftSequence), is("1"));
+		twice(() -> assertThat(leftSequence, contains("2", "3", "4", "5")));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                        Pair.of("5", 5))));
+
+		assertThat(removeFirst(rightSequence), is(2));
+		twice(() -> assertThat(rightSequence, contains(3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
-	public void toSequenceEntryMapper() {
-		Sequence<String> emptyKeySequence = empty.toSequence(Pair::getLeft);
-		twice(() -> assertThat(emptyKeySequence, is(emptyIterable())));
+	public void toSequencePairMapper() {
+		Sequence<String> emptyLeftSequence = empty.toSequence(Pair::getLeft);
+		twice(() -> assertThat(emptyLeftSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLeftSequence.iterator().next());
 
-		Sequence<Integer> emptyValueSequence = empty.toSequence(Pair::getRight);
-		twice(() -> assertThat(emptyValueSequence, is(emptyIterable())));
+		Sequence<Integer> emptyRightSequence = empty.toSequence(Pair::getRight);
+		twice(() -> assertThat(emptyRightSequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRightSequence.iterator().next());
 
-		Sequence<String> keySequence = _12345.toSequence(Pair::getLeft);
-		twice(() -> assertThat(keySequence, contains("1", "2", "3", "4", "5")));
+		Sequence<String> leftSequence = _12345.toSequence(Pair::getLeft);
+		twice(() -> assertThat(leftSequence, contains("1", "2", "3", "4", "5")));
 
-		Sequence<Integer> valueSequence = _12345.toSequence(Pair::getRight);
-		twice(() -> assertThat(valueSequence, contains(1, 2, 3, 4, 5)));
+		Sequence<Integer> rightSequence = _12345.toSequence(Pair::getRight);
+		twice(() -> assertThat(rightSequence, contains(1, 2, 3, 4, 5)));
+
+		assertThat(removeFirst(leftSequence), is("1"));
+		twice(() -> assertThat(leftSequence, contains("2", "3", "4", "5")));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                        Pair.of("5", 5))));
+
+		assertThat(removeFirst(rightSequence), is(2));
+		twice(() -> assertThat(rightSequence, contains(3, 4, 5)));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
-	public void toBiSequence() {
-		EntrySequence<String, Integer> emptySequence = empty.toEntrySequence();
-		twice(() -> assertThat(emptySequence, is(emptyIterable())));
+	public void toEntrySequence() {
+		EntrySequence<String, Integer> emptyEntrySequence = empty.toEntrySequence();
+		twice(() -> assertThat(emptyEntrySequence, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEntrySequence.iterator().next());
 
-		EntrySequence<String, Integer> sequence = _12345.toEntrySequence();
-		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-		                                          Pair.of("4", 4), Pair.of("5", 5))));
+		EntrySequence<String, Integer> entrySequence = _12345.toEntrySequence();
+		twice(() -> assertThat(entrySequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                               Pair.of("4", 4), Pair.of("5", 5))));
+
+		assertThat(removeFirst(entrySequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(entrySequence, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                               Pair.of("5", 5))));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                        Pair.of("5", 5))));
 	}
 
 	@Test
 	public void filter() {
 		BiSequence<String, Integer> emptyFiltered = empty.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().next());
 
 		BiSequence<String, Integer> oneFiltered = _1.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
 
 		BiSequence<String, Integer> twoFiltered = _12.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(twoFiltered, contains(Pair.of("2", 2))));
+
+		assertThat(removeFirst(twoFiltered), is(Pair.of("2", 2)));
+		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
+		twice(() -> assertThat(_12, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> filtered = _123456789.filter((s, i) -> parseInt(s) == i && i % 2 == 0);
 		twice(() -> assertThat(filtered, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("6", 6),
@@ -445,12 +575,17 @@ public class BiSequenceTest {
 	public void filterIndexed() {
 		BiSequence<String, Integer> emptyFiltered = empty.filterIndexed((l, r, x) -> parseInt(l) == r && x > 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().next());
 
 		BiSequence<String, Integer> oneFiltered = _1.filterIndexed((l, r, x) -> parseInt(l) == r && x > 0);
 		twice(() -> assertThat(oneFiltered, is(emptyIterable())));
 
 		BiSequence<String, Integer> twoFiltered = _12.filterIndexed((l, r, x) -> parseInt(l) == r && x > 0);
 		twice(() -> assertThat(twoFiltered, contains(Pair.of("2", 2))));
+
+		assertThat(removeFirst(twoFiltered), is(Pair.of("2", 2)));
+		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
+		twice(() -> assertThat(_12, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> filtered = _123456789.filterIndexed((l, r, x) -> parseInt(l) == r && x > 3);
 		twice(() -> assertThat(filtered, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
@@ -462,6 +597,7 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> emptyFiltered = empty.filterIndexed(
 				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 0);
 		twice(() -> assertThat(emptyFiltered, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFiltered.iterator().next());
 
 		BiSequence<String, Integer> oneFiltered = _1.filterIndexed(
 				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 0);
@@ -470,6 +606,10 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> twoFiltered = _12.filterIndexed(
 				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 0);
 		twice(() -> assertThat(twoFiltered, contains(Pair.of("2", 2))));
+
+		assertThat(removeFirst(twoFiltered), is(Pair.of("2", 2)));
+		twice(() -> assertThat(twoFiltered, is(emptyIterable())));
+		twice(() -> assertThat(_12, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> filtered = _123456789.filterIndexed(
 				(p, x) -> parseInt(p.getLeft()) == p.getRight() && x > 3);
@@ -482,6 +622,7 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> emptyIncluding = empty.including(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
 		                                                             Pair.of("17", 17));
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyIncluding.iterator().next());
 
 		BiSequence<String, Integer> including = _12345.including(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
 		                                                         Pair.of("17", 17));
@@ -495,6 +636,10 @@ public class BiSequenceTest {
 
 		BiSequence<String, Integer> includingNone = _12345.including();
 		twice(() -> assertThat(includingNone, is(emptyIterable())));
+
+		assertThat(removeFirst(including), is(Pair.of("1", 1)));
+		twice(() -> assertThat(including, contains(Pair.of("3", 3), Pair.of("5", 5))));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
@@ -502,6 +647,7 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> emptyIncluding = empty.including(
 				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
 		twice(() -> assertThat(emptyIncluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyIncluding.iterator().next());
 
 		BiSequence<String, Integer> including = _12345.including(
 				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
@@ -515,6 +661,10 @@ public class BiSequenceTest {
 
 		BiSequence<String, Integer> includingNone = _12345.including(Iterables.of());
 		twice(() -> assertThat(includingNone, is(emptyIterable())));
+
+		assertThat(removeFirst(including), is(Pair.of("1", 1)));
+		twice(() -> assertThat(including, contains(Pair.of("3", 3), Pair.of("5", 5))));
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
@@ -522,6 +672,7 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> emptyExcluding = empty.excluding(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
 		                                                             Pair.of("17", 17));
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyExcluding.iterator().next());
 
 		BiSequence<String, Integer> excluding = _12345.excluding(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5),
 		                                                         Pair.of("17", 17));
@@ -535,6 +686,10 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> excludingNone = _12345.excluding();
 		twice(() -> assertThat(excludingNone, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
 		                                               Pair.of("4", 4), Pair.of("5", 5))));
+
+		assertThat(removeFirst(excluding), is(Pair.of("2", 2)));
+		twice(() -> assertThat(excluding, contains(Pair.of("4", 4))));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
@@ -542,6 +697,7 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> emptyExcluding = empty.excluding(
 				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
 		twice(() -> assertThat(emptyExcluding, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyExcluding.iterator().next());
 
 		BiSequence<String, Integer> excluding = _12345.excluding(
 				Iterables.of(Pair.of("1", 1), Pair.of("3", 3), Pair.of("5", 5), Pair.of("17", 17)));
@@ -555,32 +711,61 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> excludingNone = _12345.excluding(Iterables.of());
 		twice(() -> assertThat(excludingNone, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
 		                                               Pair.of("4", 4), Pair.of("5", 5))));
+
+		assertThat(removeFirst(excluding), is(Pair.of("2", 2)));
+		twice(() -> assertThat(excluding, contains(Pair.of("4", 4))));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
 	public void filterAndMap() {
-		BiSequence<Integer, String> evens =
-				_123456789.filter((s, x) -> x % 2 == 0).map(Integer::parseInt, Object::toString);
+		BiSequence<Integer, String> evensSwapped = _123456789.filter((s, x) -> x % 2 == 0)
+		                                                     .map(Integer::parseInt, Object::toString);
 
-		twice(() -> assertThat(evens, contains(Pair.of(2, "2"), Pair.of(4, "4"), Pair.of(6, "6"), Pair.of(8, "8"))));
+		twice(() -> assertThat(evensSwapped,
+		                       contains(Pair.of(2, "2"), Pair.of(4, "4"), Pair.of(6, "6"), Pair.of(8, "8"))));
+
+		assertThat(removeFirst(evensSwapped), is(Pair.of(2, "2")));
+		twice(() -> assertThat(evensSwapped, contains(Pair.of(4, "4"), Pair.of(6, "6"), Pair.of(8, "8"))));
 	}
 
 	@Test
 	public void mapBiFunction() {
+		BiSequence<Integer, String> emptyMapped = empty.map((s, i) -> Pair.of(parseInt(s), i.toString()));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
 		BiSequence<Integer, String> mapped = _123.map((s, i) -> Pair.of(parseInt(s), i.toString()));
 		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+
+		assertThat(removeFirst(mapped), is(Pair.of(1, "1")));
+		twice(() -> assertThat(mapped, contains(Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
 	@Test
 	public void mapTwoFunctions() {
+		BiSequence<Integer, String> emptyMapped = empty.map(Integer::parseInt, Object::toString);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
 		BiSequence<Integer, String> mapped = _123.map(Integer::parseInt, Object::toString);
 		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+
+		assertThat(removeFirst(mapped), is(Pair.of(1, "1")));
+		twice(() -> assertThat(mapped, contains(Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
 	@Test
 	public void mapPairFunction() {
+		BiSequence<Integer, String> emptyMapped = empty.map(Pair::swap);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
 		BiSequence<Integer, String> mapped = _123.map(Pair::swap);
 		twice(() -> assertThat(mapped, contains(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
+
+		assertThat(removeFirst(mapped), is(Pair.of(1, "1")));
+		twice(() -> assertThat(mapped, contains(Pair.of(2, "2"), Pair.of(3, "3"))));
 	}
 
 	@Test
@@ -605,10 +790,11 @@ public class BiSequenceTest {
 
 	@Test
 	public void mapWithIndex() {
-		BiSequence<Integer, String> mappedEmpty = empty.mapIndexed((p, i) -> {
+		BiSequence<Integer, String> emptyMapped = empty.mapIndexed((p, i) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
 		BiSequence<Integer, String> oneMapped = _1.mapIndexed((p, i) -> {
@@ -619,6 +805,10 @@ public class BiSequenceTest {
 			index.set(0);
 			assertThat(oneMapped, contains(Pair.of(1, "1")));
 		});
+
+		index.set(0);
+		assertThat(removeFirst(oneMapped), is(Pair.of(1, "1")));
+		twice(() -> assertThat(oneMapped, is(emptyIterable())));
 
 		BiSequence<Integer, String> twoMapped = _12.mapIndexed((p, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
@@ -642,27 +832,29 @@ public class BiSequenceTest {
 
 	@Test
 	public void mapBiFunctionWithIndex() {
-		BiSequence<Integer, String> mappedEmpty = empty.mapIndexed((l, r, i) -> {
+		BiSequence<Integer, String> emptyMapped = empty.mapIndexed((l, r, i) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(mappedEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
 		BiSequence<Integer, String> oneMapped = _1.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twiceIndexed(index, 1, () -> {
-			assertThat(oneMapped, contains(Pair.of(1, "1")));
-		});
+		twiceIndexed(index, 1, () -> assertThat(oneMapped, contains(Pair.of(1, "1"))));
 
+		index.set(0);
+		assertThat(removeFirst(oneMapped), is(Pair.of(1, "1")));
+		twice(() -> assertThat(oneMapped, is(emptyIterable())));
+
+		index.set(0);
 		BiSequence<Integer, String> twoMapped = _12.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
 			return Pair.of(r, l);
 		});
-		twiceIndexed(index, 2, () -> {
-			assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2")));
-		});
+		twiceIndexed(index, 2, () -> assertThat(twoMapped, contains(Pair.of(1, "1"), Pair.of(2, "2"))));
 
 		BiSequence<Integer, String> fiveMapped = _12345.mapIndexed((l, r, i) -> {
 			assertThat(i, is(index.getAndIncrement()));
@@ -690,60 +882,120 @@ public class BiSequenceTest {
 
 	@Test
 	public void until() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).until(Pair.of("4", 4));
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyUntil = empty.until(Pair.of("4", 4));
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.until(Pair.of("4", 4));
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void endingAt() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).endingAt(Pair.of("3", 3));
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyEndingAt = empty.endingAt(Pair.of("3", 3));
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.endingAt(Pair.of("3", 3));
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void untilPredicate() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).until(e -> e.equals(Pair.of("4", 4)));
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyUntil = empty.until(e -> e.equals(Pair.of("4", 4)));
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.until(e -> e.equals(Pair.of("4", 4)));
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void endingAtPredicate() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).endingAt(e -> e.equals(Pair.of("3", 3)));
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyEndingAt = empty.endingAt(e -> e.equals(Pair.of("3", 3)));
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.endingAt(e -> e.equals(Pair.of("3", 3)));
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void untilBinary() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).until("4", 4);
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyUntil = empty.until("4", 4);
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.until("4", 4);
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void endingAtBinary() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).endingAt("3", 3);
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyEndingAt = empty.endingAt("3", 3);
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.endingAt("3", 3);
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void untilBinaryPredicate() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).until((l, r) -> l.equals("4") && r == 4);
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyUntil = empty.until((l, r) -> l.equals("4") && r == 4);
+		twice(() -> assertThat(emptyUntil, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyUntil.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.until((l, r) -> l.equals("4") && r == 4);
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void endingAtBinaryPredicate() {
-		BiSequence<String, Integer> sequence = BiSequence.from(_12345).endingAt((l, r) -> l.equals("3") && r == 3);
-		twice(() -> assertThat(sequence, contains(entries123)));
+		BiSequence<String, Integer> emptyEndingAt = empty.endingAt((l, r) -> l.equals("3") && r == 3);
+		twice(() -> assertThat(emptyEndingAt, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyEndingAt.iterator().next());
+
+		BiSequence<String, Integer> sequence = _12345.endingAt((l, r) -> l.equals("3") && r == 3);
+		twice(() -> assertThat(sequence, contains(pairs123)));
+
+		assertThat(removeFirst(sequence), is(Pair.of("1", 1)));
+		twice(() -> assertThat(sequence, contains(Pair.of("2", 2), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void startingAfter() {
 		BiSequence<String, Integer> startingEmpty = empty.startingAfter(Pair.of("5", 5));
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		BiSequence<String, Integer> sequence = _123456789.startingAfter(Pair.of("5", 5));
-		twice(() -> assertThat(sequence, contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)
-		)));
+		twice(() -> assertThat(sequence, contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Pair.of("6", 6)));
+		twice(() -> assertThat(sequence, contains(Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9))));
 
 		BiSequence<String, Integer> noStart = _12345.startingAfter(Pair.of("10", 10));
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -753,10 +1005,14 @@ public class BiSequenceTest {
 	public void startingAfterPredicate() {
 		BiSequence<String, Integer> startingEmpty = empty.startingAfter(p -> p.getRight() == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		BiSequence<String, Integer> sequence = _123456789.startingAfter(p -> p.getRight() == 5);
-		twice(() -> assertThat(sequence, contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)
-		)));
+		twice(() -> assertThat(sequence, contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Pair.of("6", 6)));
+		twice(() -> assertThat(sequence, contains(Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9))));
 
 		BiSequence<String, Integer> noStart = _12345.startingAfter(p -> p.getRight() == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -766,10 +1022,14 @@ public class BiSequenceTest {
 	public void startingAfterBiPredicate() {
 		BiSequence<String, Integer> startingEmpty = empty.startingAfter((l, r) -> r == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		BiSequence<String, Integer> sequence = _123456789.startingAfter((l, r) -> r == 5);
-		twice(() -> assertThat(sequence, contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9)
-		)));
+		twice(() -> assertThat(sequence, contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Pair.of("6", 6)));
+		twice(() -> assertThat(sequence, contains(Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9))));
 
 		BiSequence<String, Integer> noStart = _12345.startingAfter((l, r) -> r == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -779,10 +1039,14 @@ public class BiSequenceTest {
 	public void startingFrom() {
 		BiSequence<String, Integer> startingEmpty = empty.startingFrom(Pair.of("5", 5));
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		BiSequence<String, Integer> sequence = _123456789.startingFrom(Pair.of("5", 5));
 		twice(() -> assertThat(sequence, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                          Pair.of("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Pair.of("5", 5)));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 
 		BiSequence<String, Integer> noStart = _12345.startingFrom(Pair.of("10", 10));
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -792,10 +1056,14 @@ public class BiSequenceTest {
 	public void startingFromPredicate() {
 		BiSequence<String, Integer> startingEmpty = empty.startingFrom(p -> p.getRight() == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		BiSequence<String, Integer> sequence = _123456789.startingFrom(p -> p.getRight() == 5);
 		twice(() -> assertThat(sequence, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                          Pair.of("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Pair.of("5", 5)));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 
 		BiSequence<String, Integer> noStart = _12345.startingFrom(p -> p.getRight() == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -805,10 +1073,14 @@ public class BiSequenceTest {
 	public void startingFromBiPredicate() {
 		BiSequence<String, Integer> startingEmpty = empty.startingFrom((l, r) -> r == 5);
 		twice(() -> assertThat(startingEmpty, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> startingEmpty.iterator().next());
 
 		BiSequence<String, Integer> sequence = _123456789.startingFrom((l, r) -> r == 5);
 		twice(() -> assertThat(sequence, contains(Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
 		                                          Pair.of("9", 9))));
+
+		assertThat(removeFirst(sequence), is(Pair.of("5", 5)));
+		twice(() -> assertThat(sequence, is(emptyIterable())));
 
 		BiSequence<String, Integer> noStart = _12345.startingFrom((l, r) -> r == 10);
 		twice(() -> assertThat(noStart, is(emptyIterable())));
@@ -816,67 +1088,67 @@ public class BiSequenceTest {
 
 	@Test
 	public void toList() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			List<Pair<String, Integer>> list = sequence.toList();
+			List<Pair<String, Integer>> list = _12345.toList();
 			assertThat(list, instanceOf(ArrayList.class));
-			assertThat(list, contains(entries12345));
+			assertThat(list, contains(pairs12345));
 		});
 	}
 
 	@Test
 	public void toLinkedList() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			List<Pair<String, Integer>> list = sequence.toList(LinkedList::new);
+			List<Pair<String, Integer>> list = _12345.toList(LinkedList::new);
 			assertThat(list, instanceOf(LinkedList.class));
-			assertThat(list, contains(entries12345));
+			assertThat(list, contains(pairs12345));
 		});
 	}
 
 	@Test
 	public void toSet() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Set<Pair<String, Integer>> set = sequence.toSet();
+			Set<Pair<String, Integer>> set = _12345.toSet();
 			assertThat(set, instanceOf(HashSet.class));
-			assertThat(set, containsInAnyOrder(entries12345));
+			assertThat(set, containsInAnyOrder(pairs12345));
 		});
 	}
 
 	@Test
 	public void toSortedSet() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			SortedSet<Pair<String, Integer>> sortedSet = sequence.toSortedSet();
+			SortedSet<Pair<String, Integer>> sortedSet = _12345.toSortedSet();
 			assertThat(sortedSet, instanceOf(TreeSet.class));
-			assertThat(sortedSet, contains(entries12345));
+			assertThat(sortedSet, contains(pairs12345));
 		});
 	}
 
 	@Test
 	public void toSetWithType() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Set<Pair<String, Integer>> set = sequence.toSet(LinkedHashSet::new);
+			Set<Pair<String, Integer>> set = _12345.toSet(LinkedHashSet::new);
 			assertThat(set, instanceOf(LinkedHashSet.class));
-			assertThat(set, contains(entries12345));
+			assertThat(set, contains(pairs12345));
 		});
 	}
 
 	@Test
 	public void toCollection() {
-		BiSequence<String, Integer> sequence = _12345;
-
 		twice(() -> {
-			Deque<Pair<String, Integer>> deque = sequence.toCollection(ArrayDeque::new);
+			Deque<Pair<String, Integer>> deque = _12345.toCollection(ArrayDeque::new);
 			assertThat(deque, instanceOf(ArrayDeque.class));
-			assertThat(deque, contains(entries12345));
+			assertThat(deque, contains(pairs12345));
+		});
+	}
+
+	@Test
+	public void collectIntoCollection() {
+		twice(() -> {
+			Deque<Pair<String, Integer>> deque = new ArrayDeque<>();
+			Deque<Pair<String, Integer>> result = _12345.collectInto(deque);
+
+			assertThat(result, is(sameInstance(deque)));
+			assertThat(result,
+			           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)));
 		});
 	}
 
@@ -913,7 +1185,7 @@ public class BiSequenceTest {
 			Deque<Pair<String, Integer>> deque = _123.collect(ArrayDeque::new, ArrayDeque::add);
 
 			assertThat(deque, instanceOf(ArrayDeque.class));
-			assertThat(deque, contains(entries123));
+			assertThat(deque, contains(pairs123));
 		});
 	}
 
@@ -924,23 +1196,23 @@ public class BiSequenceTest {
 			Deque<Pair<String, Integer>> deque = _123.collectInto(original, ArrayDeque::add);
 
 			assertThat(deque, is(sameInstance(original)));
-			assertThat(deque, contains(entries123));
+			assertThat(deque, contains(pairs123));
 		});
 	}
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(_123.toArray(), is(arrayContaining(entries123))));
+		twice(() -> assertThat(_123.toArray(), is(arrayContaining(pairs123))));
 	}
 
 	@Test
 	public void toArrayWithType() {
-		twice(() -> assertThat(_123.toArray(Pair[]::new), arrayContaining(entries123)));
+		twice(() -> assertThat(_123.toArray(Pair[]::new), arrayContaining(pairs123)));
 	}
 
 	@Test
 	public void collector() {
-		twice(() -> assertThat(_123.collect(Collectors.toList()), contains(entries123)));
+		twice(() -> assertThat(_123.collect(Collectors.toList()), contains(pairs123)));
 	}
 
 	@Test
@@ -969,7 +1241,7 @@ public class BiSequenceTest {
 	@Test
 	public void reduceQuaternary() {
 		QuaternaryFunction<String, Integer, String, Integer, Pair<String, Integer>> sumPair =
-				(rk, rv, ek, ev) -> Pair.of(rk + ek, rv + ev);
+				(rl, rr, l, r) -> Pair.of(rl + l, rr + r);
 
 		twice(() -> {
 			assertThat(empty.reduce(sumPair), is(Optional.empty()));
@@ -982,7 +1254,8 @@ public class BiSequenceTest {
 	@Test
 	public void reduceWithIdentity() {
 		BinaryOperator<Pair<String, Integer>> sumPair =
-				(r, e) -> Pair.of(r.getLeft() + e.getLeft(), r.getRight() + e.getRight());
+				(r, p) -> Pair.of(r.getLeft() + p.getLeft(), r.getRight() + p.getRight());
+
 		twice(() -> {
 			assertThat(empty.reduce(Pair.of("17", 17), sumPair), is(Pair.of("17", 17)));
 			assertThat(_1.reduce(Pair.of("17", 17), sumPair), is(Pair.of("171", 18)));
@@ -994,7 +1267,7 @@ public class BiSequenceTest {
 	@Test
 	public void reduceQuaternaryWithIdentity() {
 		QuaternaryFunction<String, Integer, String, Integer, Pair<String, Integer>> sumPair =
-				(rk, rv, ek, ev) -> Pair.of(rk + ek, rv + ev);
+				(rl, rr, l, r) -> Pair.of(rl + l, rr + r);
 
 		twice(() -> {
 			assertThat(empty.reduce("17", 17, sumPair), is(Pair.of("17", 17)));
@@ -1125,7 +1398,17 @@ public class BiSequenceTest {
 
 	@Test
 	public void window() {
+		Sequence<BiSequence<String, Integer>> emptyWindowed = empty.window(3);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
+
 		Sequence<BiSequence<String, Integer>> windowed = _12345.window(3);
+		twice(() -> assertThat(windowed,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
+		                                contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(windowed));
 		twice(() -> assertThat(windowed,
 		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
 		                                contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)),
@@ -1134,7 +1417,16 @@ public class BiSequenceTest {
 
 	@Test
 	public void windowWithStep() {
+		Sequence<BiSequence<String, Integer>> emptyWindowed = empty.window(3, 2);
+		twice(() -> assertThat(emptyWindowed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyWindowed.iterator().next());
+
 		Sequence<BiSequence<String, Integer>> windowed = _12345.window(3, 2);
+		twice(() -> assertThat(windowed,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(windowed));
 		twice(() -> assertThat(windowed,
 		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
 		                                contains(Pair.of("3", 3), Pair.of("4", 4), Pair.of("5", 5)))));
@@ -1142,35 +1434,48 @@ public class BiSequenceTest {
 
 	@Test
 	public void batch() {
+		Sequence<BiSequence<String, Integer>> emptyBatched = empty.batch(3);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
+
 		Sequence<BiSequence<String, Integer>> batched = _12345.batch(3);
 		twice(() -> assertThat(batched, contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
 		                                         contains(Pair.of("4", 4), Pair.of("5", 5)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(batched));
+		twice(() -> assertThat(batched,
+		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)),
+		                                contains(Pair.of("4", 4), Pair.of("5", 5)))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnPredicate() {
-		Sequence<BiSequence<String, Integer>> emptyPartitioned = empty.batch((a, b) -> a.getRight() > b.getRight());
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<BiSequence<String, Integer>> emptyBatched = empty.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
 
-		Sequence<BiSequence<String, Integer>> onePartitioned = _1.batch((a, b) -> a.getRight() > b.getRight());
-		twice(() -> assertThat(onePartitioned, contains(contains(Pair.of("1", 1)))));
+		Sequence<BiSequence<String, Integer>> oneBatched = _1.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(oneBatched, contains(contains(Pair.of("1", 1)))));
 
-		Sequence<BiSequence<String, Integer>> twoPartitioned = _12.batch((a, b) -> a.getRight() > b.getRight());
-		twice(() -> assertThat(twoPartitioned, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
+		twice(() -> assertThat(oneBatched, contains(contains(Pair.of("1", 1)))));
 
-		Sequence<BiSequence<String, Integer>> threePartitioned = _123.batch((a, b) -> a.getRight() > b.getRight());
-		twice(() -> assertThat(threePartitioned,
+		Sequence<BiSequence<String, Integer>> twoBatched = _12.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(twoBatched, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threeBatched = _123.batch((a, b) -> a.getRight() > b.getRight());
+		twice(() -> assertThat(threeBatched,
 		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
 
-		Sequence<BiSequence<String, Integer>> threeRandomPartitioned =
+		Sequence<BiSequence<String, Integer>> threeRandomBatched =
 				random3.batch((a, b) -> a.getRight() > b.getRight());
-		twice(() -> assertThat(threeRandomPartitioned,
+		twice(() -> assertThat(threeRandomBatched,
 		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
 
-		Sequence<BiSequence<String, Integer>> nineRandomPartitioned =
+		Sequence<BiSequence<String, Integer>> nineRandomBatched =
 				random9.batch((a, b) -> a.getRight() > b.getRight());
-		twice(() -> assertThat(nineRandomPartitioned,
+		twice(() -> assertThat(nineRandomBatched,
 		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
 		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
 		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
@@ -1179,25 +1484,29 @@ public class BiSequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void batchOnQuaternaryPredicate() {
-		Sequence<BiSequence<String, Integer>> emptyPartitioned = empty.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(emptyPartitioned, is(emptyIterable())));
+		Sequence<BiSequence<String, Integer>> emptyBatched = empty.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
 
-		Sequence<BiSequence<String, Integer>> onePartitioned = _1.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(onePartitioned, contains(contains(Pair.of("1", 1)))));
+		Sequence<BiSequence<String, Integer>> oneBatched = _1.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(oneBatched, contains(contains(Pair.of("1", 1)))));
 
-		Sequence<BiSequence<String, Integer>> twoPartitioned = _12.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(twoPartitioned, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
+		twice(() -> assertThat(oneBatched, contains(contains(Pair.of("1", 1)))));
 
-		Sequence<BiSequence<String, Integer>> threePartitioned = _123.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(threePartitioned,
+		Sequence<BiSequence<String, Integer>> twoBatched = _12.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(twoBatched, contains(contains(Pair.of("1", 1), Pair.of("2", 2)))));
+
+		Sequence<BiSequence<String, Integer>> threeBatched = _123.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threeBatched,
 		                       contains(contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3)))));
 
-		Sequence<BiSequence<String, Integer>> threeRandomPartitioned = random3.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(threeRandomPartitioned,
+		Sequence<BiSequence<String, Integer>> threeRandomBatched = random3.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(threeRandomBatched,
 		                       contains(contains(Pair.of("4", 4)), contains(Pair.of("2", 2), Pair.of("3", 3)))));
 
-		Sequence<BiSequence<String, Integer>> nineRandomPartitioned = random9.batch((a, b, c, d) -> b > d);
-		twice(() -> assertThat(nineRandomPartitioned,
+		Sequence<BiSequence<String, Integer>> nineRandomBatched = random9.batch((a, b, c, d) -> b > d);
+		twice(() -> assertThat(nineRandomBatched,
 		                       contains(contains(Pair.of("67", 67)), contains(Pair.of("5", 5), Pair.of("43", 43)),
 		                                contains(Pair.of("3", 3), Pair.of("5", 5), Pair.of("7", 7), Pair.of("24", 24)),
 		                                contains(Pair.of("5", 5), Pair.of("67", 67)))));
@@ -1208,8 +1517,12 @@ public class BiSequenceTest {
 	public void split() {
 		Sequence<BiSequence<String, Integer>> emptySplit = empty.split(Pair.of("3", 3));
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<BiSequence<String, Integer>> oneSplit = _1.split(Pair.of("3", 3));
+		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSplit));
 		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
 
 		Sequence<BiSequence<String, Integer>> twoSplit = _12.split(Pair.of("3", 3));
@@ -1233,8 +1546,12 @@ public class BiSequenceTest {
 	public void splitPredicate() {
 		Sequence<BiSequence<String, Integer>> emptySplit = empty.split(x -> x.getRight() % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<BiSequence<String, Integer>> oneSplit = _1.split(x -> x.getRight() % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSplit));
 		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
 
 		Sequence<BiSequence<String, Integer>> twoSplit = _12.split(x -> x.getRight() % 3 == 0);
@@ -1258,8 +1575,12 @@ public class BiSequenceTest {
 	public void splitLeftRight() {
 		Sequence<BiSequence<String, Integer>> emptySplit = empty.split((l, r) -> r % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<BiSequence<String, Integer>> oneSplit = _1.split((l, r) -> r % 3 == 0);
+		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSplit));
 		twice(() -> assertThat(oneSplit, contains(contains(Pair.of("1", 1)))));
 
 		Sequence<BiSequence<String, Integer>> twoSplit = _12.split((l, r) -> r % 3 == 0);
@@ -1280,16 +1601,28 @@ public class BiSequenceTest {
 
 	@Test
 	public void step() {
-		twice(() -> assertThat(_123456789.step(3), contains(Pair.of("1", 1), Pair.of("4", 4), Pair.of("7", 7))));
+		BiSequence<String, Integer> emptyStep3 = empty.step(3);
+		twice(() -> assertThat(emptyStep3, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyStep3.iterator().next());
+
+		BiSequence<String, Integer> nineStep3 = _123456789.step(3);
+		twice(() -> assertThat(nineStep3, contains(Pair.of("1", 1), Pair.of("4", 4), Pair.of("7", 7))));
+
+		assertThat(removeFirst(nineStep3), is(Pair.of("1", 1)));
+		twice(() -> assertThat(nineStep3, contains(Pair.of("2", 2), Pair.of("5", 5), Pair.of("8", 8))));
 	}
 
 	@Test
 	public void distinct() {
 		BiSequence<String, Integer> emptyDistinct = empty.distinct();
 		twice(() -> assertThat(emptyDistinct, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptyDistinct.iterator().next());
 
 		BiSequence<String, Integer> oneDistinct = random1.distinct();
 		twice(() -> assertThat(oneDistinct, contains(Pair.of("17", 17))));
+
+		assertThat(removeFirst(oneDistinct), is(Pair.of("17", 17)));
+		twice(() -> assertThat(oneDistinct, is(emptyIterable())));
 
 		BiSequence<String, Integer> twoDuplicatesDistinct =
 				BiSequence.of(Pair.of("17", 17), Pair.of("17", 17)).distinct();
@@ -1305,8 +1638,12 @@ public class BiSequenceTest {
 	public void sorted() {
 		BiSequence<String, Integer> emptySorted = empty.sorted();
 		twice(() -> assertThat(emptySorted, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptySorted.iterator().next());
 
 		BiSequence<String, Integer> oneSorted = random1.sorted();
+		twice(() -> assertThat(oneSorted, contains(Pair.of("17", 17))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSorted));
 		twice(() -> assertThat(oneSorted, contains(Pair.of("17", 17))));
 
 		BiSequence<String, Integer> twoSorted = random2.sorted();
@@ -1321,16 +1658,20 @@ public class BiSequenceTest {
 
 	@Test
 	public void sortedComparator() {
-		BiSequence<String, Integer> emptySorted = empty.sorted((Comparator) Comparator.reverseOrder());
+		BiSequence<String, Integer> emptySorted = empty.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(emptySorted, emptyIterable()));
+		expecting(NoSuchElementException.class, () -> emptySorted.iterator().next());
 
-		BiSequence<String, Integer> oneSorted = random1.sorted((Comparator) Comparator.reverseOrder());
+		BiSequence<String, Integer> oneSorted = random1.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(oneSorted, contains(Pair.of("17", 17))));
 
-		BiSequence<String, Integer> twoSorted = random2.sorted((Comparator) Comparator.reverseOrder());
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneSorted));
+		twice(() -> assertThat(oneSorted, contains(Pair.of("17", 17))));
+
+		BiSequence<String, Integer> twoSorted = random2.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(twoSorted, contains(Pair.of("32", 32), Pair.of("17", 17))));
 
-		BiSequence<String, Integer> nineSorted = random9.sorted((Comparator) Comparator.reverseOrder());
+		BiSequence<String, Integer> nineSorted = random9.sorted((Comparator) reverseOrder());
 		twice(() -> assertThat(nineSorted, // String sorting on first item reverse
 		                       contains(Pair.of("7", 7), Pair.of("67", 67), Pair.of("67", 67), Pair.of("5", 5),
 		                                Pair.of("5", 5), Pair.of("5", 5), Pair.of("43", 43), Pair.of("3", 3),
@@ -1355,18 +1696,18 @@ public class BiSequenceTest {
 
 	@Test
 	public void minByComparator() {
-		twice(() -> assertThat(empty.min(Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(random1.min(Comparator.reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
-		twice(() -> assertThat(random2.min(Comparator.reverseOrder()), is(Optional.of(Pair.of("32", 32)))));
-		twice(() -> assertThat(random9.min(Comparator.reverseOrder()), is(Optional.of(Pair.of("7", 7)))));
+		twice(() -> assertThat(empty.min(reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(random1.min(reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random2.min(reverseOrder()), is(Optional.of(Pair.of("32", 32)))));
+		twice(() -> assertThat(random9.min(reverseOrder()), is(Optional.of(Pair.of("7", 7)))));
 	}
 
 	@Test
 	public void maxByComparator() {
-		twice(() -> assertThat(empty.max(Comparator.reverseOrder()), is(Optional.empty())));
-		twice(() -> assertThat(random1.max(Comparator.reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
-		twice(() -> assertThat(random2.max(Comparator.reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
-		twice(() -> assertThat(random9.max(Comparator.reverseOrder()), is(Optional.of(Pair.of("24", 24)))));
+		twice(() -> assertThat(empty.max(reverseOrder()), is(Optional.empty())));
+		twice(() -> assertThat(random1.max(reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random2.max(reverseOrder()), is(Optional.of(Pair.of("17", 17)))));
+		twice(() -> assertThat(random9.max(reverseOrder()), is(Optional.of(Pair.of("24", 24)))));
 	}
 
 	@Test
@@ -1400,117 +1741,134 @@ public class BiSequenceTest {
 
 	@Test
 	public void peek() {
-		BiSequence<String, Integer> peekEmpty = empty.peek((l, r) -> {
+		BiSequence<String, Integer> emptyPeeked = empty.peek((l, r) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
-		BiSequence<String, Integer> peekOne = _1.peek((l, r) -> {
+		BiSequence<String, Integer> onePeeked = _1.peek((l, r) -> {
 			index.getAndIncrement();
 			assertThat(l, is(String.valueOf(index.get())));
 			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+		twiceIndexed(index, 1, () -> assertThat(onePeeked, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> peekTwo = _12.peek((l, r) -> {
-			index.getAndIncrement();
-			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is(index.get()));
-		});
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Pair.of("1", 1)));
+		index.set(0);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		BiSequence<String, Integer> peek = _12345.peek((l, r) -> {
+		BiSequence<String, Integer> twoPeeked = _12.peek((l, r) -> {
 			index.getAndIncrement();
 			assertThat(l, is(String.valueOf(index.get())));
 			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+		twiceIndexed(index, 2, () -> assertThat(twoPeeked, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> fivePeeked = _12345.peek((l, r) -> {
+			index.getAndIncrement();
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(fivePeeked, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                             Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
 	public void peekIndexed() {
-		BiSequence<String, Integer> peekEmpty = empty.peekIndexed((l, r, x) -> {
+		BiSequence<String, Integer> emptyPeeked = empty.peekIndexed((l, r, i) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
-		BiSequence<String, Integer> peekOne = _1.peekIndexed((l, r, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
+		BiSequence<String, Integer> onePeeked = _1.peekIndexed((l, r, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is((int) index.get()));
+			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+		twiceIndexed(index, 1, () -> assertThat(onePeeked, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> peekTwo = _12.peekIndexed((l, r, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
-			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is((int) index.get()));
-		});
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Pair.of("1", 1)));
+		index.set(0);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		BiSequence<String, Integer> peek = _12345.peekIndexed((l, r, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
+		BiSequence<String, Integer> twoPeeked = _12.peekIndexed((l, r, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
 			assertThat(l, is(String.valueOf(index.get())));
-			assertThat(r, is((int) index.get()));
+			assertThat(r, is(index.get()));
 		});
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+		twiceIndexed(index, 2, () -> assertThat(twoPeeked, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> fivePeeked = _12345.peekIndexed((l, r, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			assertThat(l, is(String.valueOf(index.get())));
+			assertThat(r, is(index.get()));
+		});
+		twiceIndexed(index, 5, () -> assertThat(fivePeeked, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                             Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
 	public void peekPair() {
-		BiSequence<String, Integer> peekEmpty = empty.peek(p -> {
+		BiSequence<String, Integer> emptyPeeked = empty.peek(p -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger value = new AtomicInteger(1);
-		BiSequence<String, Integer> peekOne = _1.peek(p -> {
-			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
-		});
-		twiceIndexed(value, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+		BiSequence<String, Integer> onePeeked = _1.peek(
+				p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
+		twiceIndexed(value, 1, () -> assertThat(onePeeked, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> peekTwo = _12.peek(p -> {
-			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
-		});
-		twiceIndexed(value, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Pair.of("1", 1)));
+		value.set(1);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		BiSequence<String, Integer> peek = _12345.peek(p -> {
-			assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement())));
-		});
-		twiceIndexed(value, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+		BiSequence<String, Integer> twoPeeked = _12.peek(
+				p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
+		twiceIndexed(value, 2, () -> assertThat(twoPeeked, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> fivePeeked = _12345.peek(
+				p -> assertThat(p, is(Pair.of(String.valueOf(value.get()), value.getAndIncrement()))));
+		twiceIndexed(value, 5, () -> assertThat(fivePeeked, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                             Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
 	public void peekIndexedPair() {
-		BiSequence<String, Integer> peekEmpty = empty.peekIndexed((p, x) -> {
+		BiSequence<String, Integer> emptyPeeked = empty.peekIndexed((p, i) -> {
 			throw new IllegalStateException("Should not get called");
 		});
-		twice(() -> assertThat(peekEmpty, is(emptyIterable())));
+		twice(() -> assertThat(emptyPeeked, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyPeeked.iterator().next());
 
 		AtomicInteger index = new AtomicInteger();
-		BiSequence<String, Integer> peekOne = _1.peekIndexed((p, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));
+		BiSequence<String, Integer> onePeeked = _1.peekIndexed((p, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			assertThat(p, is(Pair.of(String.valueOf(index.get()), index.get())));
 		});
-		twiceIndexed(index, 1, () -> assertThat(peekOne, contains(Pair.of("1", 1))));
+		twiceIndexed(index, 1, () -> assertThat(onePeeked, contains(Pair.of("1", 1))));
 
-		BiSequence<String, Integer> peekTwo = _12.peekIndexed((p, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));
-		});
-		twiceIndexed(index, 2, () -> assertThat(peekTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		assertThat(removeFirst(onePeeked), is(Pair.of("1", 1)));
+		index.set(0);
+		twice(() -> assertThat(onePeeked, is(emptyIterable())));
 
-		BiSequence<String, Integer> peek = _12345.peekIndexed((p, x) -> {
-			assertThat(x, is(index.getAndIncrement()));
-			assertThat(p, is(Pair.of(String.valueOf(index.get()), (int) index.get())));
+		BiSequence<String, Integer> twoPeeked = _12.peekIndexed((p, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			assertThat(p, is(Pair.of(String.valueOf(index.get()), index.get())));
 		});
-		twiceIndexed(index, 5, () -> assertThat(peek, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-		                                                       Pair.of("4", 4), Pair.of("5", 5))));
+		twiceIndexed(index, 2, () -> assertThat(twoPeeked, contains(Pair.of("1", 1), Pair.of("2", 2))));
+
+		BiSequence<String, Integer> fivePeeked = _12345.peekIndexed((p, i) -> {
+			assertThat(i, is(index.getAndIncrement()));
+			assertThat(p, is(Pair.of(String.valueOf(index.get()), index.get())));
+		});
+		twiceIndexed(index, 5, () -> assertThat(fivePeeked, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                             Pair.of("4", 4), Pair.of("5", 5))));
 	}
 
 	@Test
@@ -1539,96 +1897,135 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void mapToChar() {
+	public void toChars() {
 		CharSeq emptyChars = empty.toChars((l, r) -> (char) (r + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
 
 		CharSeq charSeq = _12345.toChars((l, r) -> (char) (r + 'a' - 1));
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
+
+		assertThat(removeFirst(charSeq), is('a'));
+		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
 	}
 
 	@Test
-	public void mapToInt() {
+	public void toInts() {
 		IntSequence emptyInts = empty.toInts((l, r) -> r + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
 
 		IntSequence intSequence = _12345.toInts((l, r) -> r + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(intSequence), is(2));
+		twice(() -> assertThat(intSequence, containsInts(3, 4, 5, 6)));
 	}
 
 	@Test
-	public void mapToLong() {
+	public void toLongs() {
 		LongSequence emptyLongs = empty.toLongs((l, r) -> r + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
 
 		LongSequence longSequence = _12345.toLongs((l, r) -> r + 1);
-		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
+		twice(() -> assertThat(longSequence, containsLongs(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(longSequence), is(2L));
+		twice(() -> assertThat(longSequence, containsLongs(3, 4, 5, 6)));
 	}
 
 	@Test
-	public void mapToDouble() {
+	public void toDoubles() {
 		DoubleSequence emptyDoubles = empty.toDoubles((l, r) -> r + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
 		DoubleSequence doubleSequence = _12345.toDoubles((l, r) -> r + 1);
-		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(doubleSequence), is(2.0));
+		twice(() -> assertThat(doubleSequence, containsDoubles(3, 4, 5, 6)));
 	}
 
 	@Test
-	public void mapToCharFunction() {
+	public void toCharsMapped() {
 		CharSeq emptyChars = empty.toChars(p -> (char) (p.getRight() + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
 
 		CharSeq charSeq = _12345.toChars(p -> (char) (p.getRight() + 'a' - 1));
-		twice(() -> assertThat(charSeq, contains('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
+
+		assertThat(removeFirst(charSeq), is('a'));
+		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
 	}
 
 	@Test
-	public void mapToIntFunction() {
+	public void toIntsMapped() {
 		IntSequence emptyInts = empty.toInts(p -> p.getRight() + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
 
 		IntSequence intSequence = _12345.toInts(p -> p.getRight() + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(intSequence), is(2));
+		twice(() -> assertThat(intSequence, containsInts(3, 4, 5, 6)));
 	}
 
 	@Test
-	public void mapToLongFunction() {
+	public void toLongsMapped() {
 		LongSequence emptyLongs = empty.toLongs(p -> p.getRight() + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
 
 		LongSequence longSequence = _12345.toLongs(p -> p.getRight() + 1);
-		twice(() -> assertThat(longSequence, containsLongs(2L, 3L, 4L, 5L, 6L)));
+		twice(() -> assertThat(longSequence, containsLongs(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(longSequence), is(2L));
+		twice(() -> assertThat(longSequence, containsLongs(3, 4, 5, 6)));
 	}
 
 	@Test
-	public void mapToDoubleFunction() {
+	public void toDoublesMapped() {
 		DoubleSequence emptyDoubles = empty.toDoubles(p -> p.getRight() + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
 		DoubleSequence doubleSequence = _12345.toDoubles(p -> p.getRight() + 1);
-		twice(() -> assertThat(doubleSequence, contains(2.0, 3.0, 4.0, 5.0, 6.0)));
+		twice(() -> assertThat(doubleSequence, containsDoubles(2, 3, 4, 5, 6)));
+
+		assertThat(removeFirst(doubleSequence), is(2.0));
+		twice(() -> assertThat(doubleSequence, containsDoubles(3, 4, 5, 6)));
 	}
 
 	@Test
 	public void repeat() {
-		BiSequence<String, Integer> repeatEmpty = empty.repeat();
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		BiSequence<String, Integer> emptyRepeated = empty.repeat();
+		twice(() -> assertThat(emptyRepeated, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeated.iterator().next());
 
-		BiSequence<String, Integer> repeatOne = _1.repeat();
-		twice(() -> assertThat(repeatOne.limit(3), contains(Pair.of("1", 1), Pair.of("1", 1), Pair.of("1", 1))));
+		BiSequence<String, Integer> oneRepeated = _1.repeat();
+		twice(() -> assertThat(oneRepeated.limit(3), contains(Pair.of("1", 1), Pair.of("1", 1), Pair.of("1", 1))));
 
-		BiSequence<String, Integer> repeatTwo = _12.repeat();
-		twice(() -> assertThat(repeatTwo.limit(5),
+		BiSequence<String, Integer> twoRepeated = _12.repeat();
+		twice(() -> assertThat(twoRepeated.limit(5),
 		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("1", 1), Pair.of("2", 2),
 		                                Pair.of("1", 1))));
 
-		BiSequence<String, Integer> repeatThree = _123.repeat();
-		twice(() -> assertThat(repeatThree.limit(8),
+		BiSequence<String, Integer> threeRepeated = _123.repeat();
+		twice(() -> assertThat(threeRepeated.limit(8),
 		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1),
 		                                Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2))));
 
-		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
+		assertThat(removeFirst(threeRepeated), is(Pair.of("1", 1)));
+		twice(() -> assertThat(threeRepeated,
+		                       beginsWith(Pair.of("2", 2), Pair.of("3", 3), Pair.of("2", 2), Pair.of("3", 3),
+		                                  Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> varyingLengthRepeated = BiSequence.from(new Iterable<Pair<String, Integer>>() {
 			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
 			int end = list.size();
 
@@ -1639,55 +2036,65 @@ public class BiSequenceTest {
 				return subList.iterator();
 			}
 		}).repeat();
-		assertThat(repeatVarying,
+		assertThat(varyingLengthRepeated,
 		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2),
 		                    Pair.of("1", 1)));
 	}
 
 	@Test
 	public void repeatTwice() {
-		BiSequence<String, Integer> repeatEmpty = empty.repeat(2);
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		BiSequence<String, Integer> emptyRepeatedTwice = empty.repeat(2);
+		twice(() -> assertThat(emptyRepeatedTwice, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeatedTwice.iterator().next());
 
-		BiSequence<String, Integer> repeatOne = _1.repeat(2);
-		twice(() -> assertThat(repeatOne, contains(Pair.of("1", 1), Pair.of("1", 1))));
+		BiSequence<String, Integer> oneRepeatedTwice = _1.repeat(2);
+		twice(() -> assertThat(oneRepeatedTwice, contains(Pair.of("1", 1), Pair.of("1", 1))));
 
-		BiSequence<String, Integer> repeatTwo = _12.repeat(2);
-		twice(() -> assertThat(repeatTwo,
+		BiSequence<String, Integer> twoRepeatedTwice = _12.repeat(2);
+		twice(() -> assertThat(twoRepeatedTwice,
 		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("1", 1), Pair.of("2", 2))));
 
-		BiSequence<String, Integer> repeatThree = _123.repeat(2);
-		twice(() -> assertThat(repeatThree, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1",
-		                                                                                                        1),
-		                                             Pair.of("2", 2), Pair.of("3", 3))));
-		BiSequence<String, Integer> repeatVarying = BiSequence.from(new Iterable<Pair<String, Integer>>() {
-			private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3));
-			int end = list.size();
+		BiSequence<String, Integer> threeRepeatedTwice = _123.repeat(2);
+		twice(() -> assertThat(threeRepeatedTwice,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1),
+		                                Pair.of("2", 2), Pair.of("3", 3))));
 
-			@Override
-			public Iterator<Pair<String, Integer>> iterator() {
-				List<Pair<String, Integer>> subList = list.subList(0, end);
-				end = end > 0 ? end - 1 : 0;
-				return subList.iterator();
-			}
-		}).repeat(2);
-		assertThat(repeatVarying,
+		assertThat(removeFirst(threeRepeatedTwice), is(Pair.of("1", 1)));
+		twice(() -> assertThat(threeRepeatedTwice,
+		                       beginsWith(Pair.of("2", 2), Pair.of("3", 3), Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> varyingLengthRepeatedTwice = BiSequence.from(
+				new Iterable<Pair<String, Integer>>() {
+					private List<Pair<String, Integer>> list = asList(Pair.of("1", 1), Pair.of("2", 2),
+					                                                  Pair.of("3", 3));
+					int end = list.size();
+
+					@Override
+					public Iterator<Pair<String, Integer>> iterator() {
+						List<Pair<String, Integer>> subList = list.subList(0, end);
+						end = end > 0 ? end - 1 : 0;
+						return subList.iterator();
+					}
+				}).repeat(2);
+		assertThat(varyingLengthRepeatedTwice,
 		           contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1), Pair.of("2", 2)));
 	}
 
 	@Test
 	public void repeatZero() {
-		BiSequence<String, Integer> repeatEmpty = empty.repeat(0);
-		twice(() -> assertThat(repeatEmpty, is(emptyIterable())));
+		BiSequence<String, Integer> emptyRepeatedZero = empty.repeat(0);
+		twice(() -> assertThat(emptyRepeatedZero, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeatedZero.iterator().next());
 
-		BiSequence<String, Integer> repeatOne = _1.repeat(0);
-		twice(() -> assertThat(repeatOne, is(emptyIterable())));
+		BiSequence<String, Integer> oneRepeatedZero = _1.repeat(0);
+		twice(() -> assertThat(oneRepeatedZero, is(emptyIterable())));
 
-		BiSequence<String, Integer> repeatTwo = _12.repeat(0);
-		twice(() -> assertThat(repeatTwo, is(emptyIterable())));
+		BiSequence<String, Integer> twoRepeatedZero = _12.repeat(0);
+		twice(() -> assertThat(twoRepeatedZero, is(emptyIterable())));
 
-		BiSequence<String, Integer> repeatThree = _123.repeat(0);
-		twice(() -> assertThat(repeatThree, is(emptyIterable())));
+		BiSequence<String, Integer> threeRepeatedZero = _123.repeat(0);
+		twice(() -> assertThat(threeRepeatedZero, is(emptyIterable())));
 	}
 
 	@Test
@@ -1718,8 +2125,12 @@ public class BiSequenceTest {
 	public void reverse() {
 		BiSequence<String, Integer> emptyReversed = empty.reverse();
 		twice(() -> assertThat(emptyReversed, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyReversed.iterator().next());
 
 		BiSequence<String, Integer> oneReversed = _1.reverse();
+		twice(() -> assertThat(oneReversed, contains(Pair.of("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneReversed));
 		twice(() -> assertThat(oneReversed, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> twoReversed = _12.reverse();
@@ -1739,8 +2150,12 @@ public class BiSequenceTest {
 	public void shuffle() {
 		BiSequence<String, Integer> emptyShuffled = empty.shuffle();
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		BiSequence<String, Integer> oneShuffled = _1.shuffle();
+		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneShuffled));
 		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> twoShuffled = _12.shuffle();
@@ -1760,8 +2175,12 @@ public class BiSequenceTest {
 	public void shuffleWithRandomSource() {
 		BiSequence<String, Integer> emptyShuffled = empty.shuffle(new Random(17));
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		BiSequence<String, Integer> oneShuffled = _1.shuffle(new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneShuffled));
 		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> twoShuffled = _12.shuffle(new Random(17));
@@ -1791,8 +2210,12 @@ public class BiSequenceTest {
 	public void shuffleWithRandomSupplier() {
 		BiSequence<String, Integer> emptyShuffled = empty.shuffle(() -> new Random(17));
 		twice(() -> assertThat(emptyShuffled, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyShuffled.iterator().next());
 
 		BiSequence<String, Integer> oneShuffled = _1.shuffle(() -> new Random(17));
+		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneShuffled));
 		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> twoShuffled = _12.shuffle(() -> new Random(17));
@@ -1810,55 +2233,101 @@ public class BiSequenceTest {
 
 	@Test
 	public void flatten() {
-		Sequence<Object> emptyFlattened = empty.flatten();
+		Sequence<?> emptyFlattened = empty.flatten();
 		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
 
-		Sequence<Object> oneFlattened = _1.flatten();
+		Sequence<?> oneFlattened = _1.flatten();
 		twice(() -> assertThat(oneFlattened, contains("1", 1)));
 
-		Sequence<Object> twoFlattened = _12.flatten();
+		expecting(UnsupportedOperationException.class, () -> removeFirst(oneFlattened));
+		twice(() -> assertThat(oneFlattened, contains("1", 1)));
+
+		Sequence<?> twoFlattened = _12.flatten();
 		twice(() -> assertThat(twoFlattened, contains("1", 1, "2", 2)));
 
-		Sequence<Object> fiveFlattened = _12345.flatten();
+		Sequence<?> fiveFlattened = _12345.flatten();
 		twice(() -> assertThat(fiveFlattened, contains("1", 1, "2", 2, "3", 3, "4", 4, "5", 5)));
 	}
 
 	@Test
 	public void flattenFunction() {
-		BiSequence<String, Integer> flattened = _123.flatten(pair -> Iterables.of(pair, Pair.of("0", 0)));
-		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
-		                                           Pair.of("3", 3), Pair.of("0", 0))));
+		BiSequence<String, Integer> emptyFlattened = empty.flatten(pair -> Iterables.of(pair, Pair.of("0", 0)));
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
+		BiSequence<String, Integer> threeFlattened = _123.flatten(pair -> Iterables.of(pair, Pair.of("0", 0)));
+		twice(() -> assertThat(threeFlattened,
+		                       contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
+		                                Pair.of("3", 3), Pair.of("0", 0))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeFlattened));
+		twice(() -> assertThat(threeFlattened,
+		                       contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
+		                                Pair.of("3", 3), Pair.of("0", 0))));
 	}
 
 	@Test
 	public void flattenBiFunction() {
-		BiSequence<String, Integer> flattened = _123.flatten((l, r) -> Iterables.of(Pair.of(l, r), Pair.of("0", 0)));
-		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
-		                                           Pair.of("3", 3), Pair.of("0", 0))));
+		BiSequence<String, Integer> emptyFlattened = empty.flatten(
+				(l, r) -> Iterables.of(Pair.of(l, r), Pair.of("0", 0)));
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
+		BiSequence<String, Integer> threeFlattened = _123.flatten(
+				(l, r) -> Iterables.of(Pair.of(l, r), Pair.of("0", 0)));
+		twice(() -> assertThat(threeFlattened,
+		                       contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
+		                                Pair.of("3", 3), Pair.of("0", 0))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeFlattened));
+		twice(() -> assertThat(threeFlattened,
+		                       contains(Pair.of("1", 1), Pair.of("0", 0), Pair.of("2", 2), Pair.of("0", 0),
+		                                Pair.of("3", 3), Pair.of("0", 0))));
 	}
 
 	@Test
 	public void flattenLeft() {
-		BiSequence<String, Integer> flattened = BiSequence.<Iterable<String>, Integer>ofPairs(
-				Iterables.of("1", "2", "3"), 1, Iterables.empty(), 2, Iterables.of("5", "6", "7"), 3)
+		BiSequence<String, Integer> emptyFlattened = BiSequence.<Iterable<String>, Integer>of()
 				.flattenLeft(Pair::getLeft);
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
+		BiSequence<String, Integer> flattened =
+				BiSequence.<Iterable<String>, Integer>ofPairs(Iterables.of("1", "2", "3"), 1, Iterables.empty(), 2,
+				                                              Iterables.of("5", "6", "7"), 3)
+						.flattenLeft(Pair::getLeft);
+		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("2", 1), Pair.of("3", 1), Pair.of("5", 3),
+		                                           Pair.of("6", 3), Pair.of("7", 3))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(flattened));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("2", 1), Pair.of("3", 1), Pair.of("5", 3),
 		                                           Pair.of("6", 3), Pair.of("7", 3))));
 	}
 
 	@Test
 	public void flattenRight() {
-		BiSequence<String, Integer> flattened = BiSequence.<String, Iterable<Integer>>ofPairs(
-				"1", Iterables.of(1, 2, 3), "2", Iterables.empty(), "3", Iterables.of(2, 3, 4))
+		BiSequence<String, Integer> emptyFlattened = BiSequence.<String, Iterable<Integer>>of()
 				.flattenRight(Pair::getRight);
+		twice(() -> assertThat(emptyFlattened, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyFlattened.iterator().next());
+
+		BiSequence<String, Integer> flattened =
+				BiSequence.<String, Iterable<Integer>>ofPairs("1", Iterables.of(1, 2, 3), "2", Iterables.empty(),
+				                                              "3", Iterables.of(2, 3, 4))
+						.flattenRight(Pair::getRight);
+		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("1", 2), Pair.of("1", 3), Pair.of("3", 2),
+		                                           Pair.of("3", 3), Pair.of("3", 4))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(flattened));
 		twice(() -> assertThat(flattened, contains(Pair.of("1", 1), Pair.of("1", 2), Pair.of("1", 3), Pair.of("3", 2),
 		                                           Pair.of("3", 3), Pair.of("3", 4))));
 	}
 
 	@Test
 	public void clear() {
-		List<Pair<String, Integer>> original =
-				new ArrayList<>(asList(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4)));
+		List<Pair<String, Integer>> original = Lists.create(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+		                                                    Pair.of("4", 4));
 
 		BiSequence<String, Integer> filtered = BiSequence.from(original).filter((l, r) -> r % 2 != 0);
 		filtered.clear();
@@ -1957,5 +2426,107 @@ public class BiSequenceTest {
 		                                           Pair.of("5", 5), Pair.of("17", 17))), is(true));
 		assertThat(_12345.containsAny(Iterables.of(Pair.of("17", 17), Pair.of("18", 18), Pair.of("19", 19))),
 		           is(false));
+	}
+
+	@Test
+	public void iteratorRemove() {
+		Iterator<Pair<String, Integer>> iterator = _12345.iterator();
+		iterator.next();
+		iterator.remove();
+		iterator.next();
+		iterator.next();
+		iterator.remove();
+
+		twice(() -> assertThat(_12345, contains(Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void remove() {
+		assertThat(empty.remove(Pair.of("3", 3)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.remove(Pair.of("3", 3)), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+
+		assertThat(_12345.remove(Pair.of("7", 7)), is(false));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void removeAllVarargs() {
+		assertThat(empty.removeAll(Pair.of("3", 3), Pair.of("4", 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7)), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void removeAllIterable() {
+		assertThat(empty.removeAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void removeAllCollection() {
+		assertThat(empty.removeAll(asList(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeAll(asList(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void retainAllVarargs() {
+		assertThat(empty.retainAll(Pair.of("3", 3), Pair.of("4", 4)), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7)), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4))));
+	}
+
+	@Test
+	public void retainAllIterable() {
+		assertThat(empty.retainAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(Iterables.of(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4))));
+	}
+
+	@Test
+	public void retainAllCollection() {
+		assertThat(empty.retainAll(asList(Pair.of("3", 3), Pair.of("4", 4))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainAll(asList(Pair.of("3", 3), Pair.of("4", 4), Pair.of("7", 7))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3), Pair.of("4", 4))));
+	}
+
+	@Test
+	public void removeIf() {
+		assertThat(empty.removeIf(x -> x.equals(Pair.of("3", 3))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.removeIf(x -> x.equals(Pair.of("3", 3))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("4", 4), Pair.of("5", 5))));
+	}
+
+	@Test
+	public void retainIf() {
+		assertThat(empty.retainIf(x -> x.equals(Pair.of("3", 3))), is(false));
+		twice(() -> assertThat(empty, is(emptyIterable())));
+
+		assertThat(_12345.retainIf(x -> x.equals(Pair.of("3", 3))), is(true));
+		twice(() -> assertThat(_12345, contains(Pair.of("3", 3))));
+	}
+
+	@Test
+	public void testAsList() {
+		assertThat(empty.asList(), is(equalTo(emptyList())));
+		assertThat(_12345.asList(), is(equalTo(asList(pairs12345))));
 	}
 }

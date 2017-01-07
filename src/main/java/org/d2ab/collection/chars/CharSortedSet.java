@@ -20,6 +20,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ExclusiveTerminalCharIterator;
 import org.d2ab.iterator.chars.InclusiveStartingCharIterator;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,7 +48,7 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 	}
 
 	@Override
-	default CharComparator comparator() {
+	default Comparator<Character> comparator() {
 		return null;
 	}
 
@@ -148,8 +149,33 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class SubSet extends CharSet.Base implements CharSortedSet {
-		private CharSortedSet set;
+	abstract class Base extends CharSet.Base implements CharSortedSet {
+		public static CharSortedSet create(char... chars) {
+			return from(CharSortedSet.create(chars));
+		}
+
+		public static CharSortedSet from(final CharCollection collection) {
+			return new CharSortedSet.Base() {
+				@Override
+				public CharIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return collection.addChar(x);
+				}
+			};
+		}
+	}
+
+	abstract class SubSet extends Base {
+		private final CharSortedSet set;
 
 		public SubSet(CharSortedSet set) {
 			this.set = set;
@@ -157,7 +183,7 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

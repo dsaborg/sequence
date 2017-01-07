@@ -20,9 +20,9 @@ import org.d2ab.collection.ints.ArrayIntList;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.collection.ints.IntListIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.test.StrictIntIterable;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -36,11 +36,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class IntSequenceAsListTest {
-	private final IntSequence empty = IntSequence.from(StrictIntIterable.from(ArrayIntList.create()));
+	private final IntSequence empty = IntSequence.from(ArrayIntList.create());
 	private final IntList emptyList = empty.asList();
 
-	private final IntSequence sequence = IntSequence.from(
-			StrictIntIterable.from(ArrayIntList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	private final IntSequence sequence = IntSequence.from(ArrayIntList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	private final IntList list = sequence.asList();
 
 	@Test
@@ -292,6 +291,9 @@ public class IntSequenceAsListTest {
 	public void listIteratorEmpty() {
 		IntListIterator emptyIterator = emptyList.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, emptyIterator::nextInt);
+		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousInt);
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 

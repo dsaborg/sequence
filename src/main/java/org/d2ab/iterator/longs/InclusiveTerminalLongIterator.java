@@ -45,6 +45,6 @@ public class InclusiveTerminalLongIterator extends DelegatingUnaryLongIterator {
 			throw new NoSuchElementException();
 
 		hasPrevious = true;
-		return previous = iterator.next();
+		return previous = iterator.nextLong();
 	}
 }

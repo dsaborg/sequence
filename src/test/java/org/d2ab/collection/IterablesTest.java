@@ -24,6 +24,12 @@ import static org.junit.Assert.assertThat;
 
 public class IterablesTest {
 	@Test
+	public void empty() {
+		Iterable<Object> empty = Iterables.empty();
+		twice(() -> assertThat(empty, is(emptyIterable())));
+	}
+
+	@Test
 	public void of() {
 		Iterable<Integer> empty = Iterables.of();
 		twice(() -> assertThat(empty, is(emptyIterable())));

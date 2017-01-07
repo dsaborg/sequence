@@ -26,7 +26,7 @@ public class WindowingDoubleIterator extends DelegatingTransformingIterator<Doub
 	private final int window;
 	private final int step;
 
-	private double[] partition;
+	private final double[] partition;
 	private int size;
 	private boolean started;
 

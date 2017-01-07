@@ -52,7 +52,6 @@ public class TailSkippingDoubleIterator extends DelegatingUnaryDoubleIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		@SuppressWarnings("unchecked")
 		double next = buffer[position];
 		buffer[position++] = iterator.nextDouble();
 		position = position % skip;

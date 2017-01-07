@@ -20,25 +20,31 @@ import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class ArrayLongListTest {
 	private final ArrayLongList empty = ArrayLongList.create();
 	private final ArrayLongList list = ArrayLongList.create(1, 2, 3, 4, 5);
+
+	@Test
+	public void withCapacity() {
+		LongList list = ArrayLongList.withCapacity(3);
+		twice(() -> assertThat(list, is(emptyIterable())));
+
+		list.addAllLongs(1, 2, 3, 4, 5);
+		twice(() -> assertThat(list, containsLongs(1, 2, 3, 4, 5)));
+	}
 
 	@Test
 	public void size() {
@@ -80,6 +86,8 @@ public class ArrayLongListTest {
 		assertThat(emptyIterator.hasPrevious(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+		expecting(NoSuchElementException.class, emptyIterator::nextLong);
+		expecting(NoSuchElementException.class, emptyIterator::previousLong);
 
 		assertThat(empty, is(emptyIterable()));
 	}
@@ -88,49 +96,79 @@ public class ArrayLongListTest {
 	public void listIterator() {
 		LongListIterator listIterator = list.listIterator();
 
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(32));
+		expecting(NoSuchElementException.class, listIterator::previousLong);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(false));
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.nextLong(), is(1L));
 
+		listIterator.add(33);
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(IllegalStateException.class, () -> listIterator.set(34));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextLong(), is(2L));
 
+		assertThat(listIterator.previousLong(), is(33L));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.set(35);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		listIterator.remove();
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(false));
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		assertThat(listIterator.nextLong(), is(1L));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.hasPrevious(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
+		assertThat(listIterator.nextLong(), is(2L));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.nextLong(), is(3L));
 
+		assertThat(listIterator.nextLong(), is(3L));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.previousLong(), is(3L));
 
+		assertThat(listIterator.previousLong(), is(3L));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.previousLong(), is(2L));
 
+		assertThat(listIterator.previousLong(), is(2L));
 		listIterator.set(17);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(1));
 		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextLong(), is(17L));
 
+		assertThat(listIterator.nextLong(), is(17L));
 		listIterator.add(18);
 		listIterator.add(19);
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.hasPrevious(), is(true));
 		assertThat(listIterator.nextIndex(), is(4));
 		assertThat(listIterator.previousIndex(), is(3));
+
 		assertThat(listIterator.nextLong(), is(3L));
 
 		assertThat(list, containsLongs(1, 17, 18, 19, 3, 4, 5));
@@ -138,10 +176,9 @@ public class ArrayLongListTest {
 
 	@Test
 	public void exhaustiveListIterator() {
-		LongListIterator listIterator = list.listIterator();
-
-		AtomicInteger i = new AtomicInteger();
 		twice(() -> {
+			LongListIterator listIterator = list.listIterator();
+			AtomicInteger i = new AtomicInteger();
 			while (listIterator.hasNext()) {
 				assertThat(listIterator.nextLong(), is((long) i.get() + 1));
 				assertThat(listIterator.nextIndex(), is(i.get() + 1));
@@ -149,6 +186,7 @@ public class ArrayLongListTest {
 				i.incrementAndGet();
 			}
 			assertThat(i.get(), is(5));
+			expecting(NoSuchElementException.class, listIterator::nextLong);
 
 			while (listIterator.hasPrevious()) {
 				i.decrementAndGet();
@@ -157,6 +195,7 @@ public class ArrayLongListTest {
 				assertThat(listIterator.previousIndex(), is(i.get() - 1));
 			}
 			assertThat(i.get(), is(0));
+			expecting(NoSuchElementException.class, listIterator::previousLong);
 		});
 	}
 
@@ -171,6 +210,7 @@ public class ArrayLongListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, iterator::nextLong);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -190,6 +230,7 @@ public class ArrayLongListTest {
 			i++;
 		}
 		assertThat(i, is(5));
+		expecting(NoSuchElementException.class, listIterator::nextLong);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -209,6 +250,7 @@ public class ArrayLongListTest {
 			assertThat(listIterator.previousIndex(), is(i - 1));
 		}
 		assertThat(i, is(0));
+		expecting(NoSuchElementException.class, listIterator::previousLong);
 
 		assertThat(list, is(emptyIterable()));
 	}
@@ -228,7 +270,11 @@ public class ArrayLongListTest {
 	public void subList() {
 		LongList list = LongList.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(-1, 2));
+		expecting(ArrayIndexOutOfBoundsException.class, () -> list.subList(2, 11));
+
 		LongList subList = list.subList(2, 8);
+		assertThat(subList.size(), is(6));
 		twice(() -> assertThat(subList, containsLongs(3, 4, 5, 6, 7, 8)));
 
 		assertThat(subList.removeLongAt(1), is(4L));
@@ -257,6 +303,27 @@ public class ArrayLongListTest {
 		subList.addLong(17);
 		twice(() -> assertThat(subList, containsLongs(17)));
 		twice(() -> assertThat(list, containsLongs(1, 2, 17, 9, 10)));
+	}
+
+	@Test
+	public void sortLongs() {
+		LongList list = ArrayLongList.create(32, 17, 5, 7, 19, 22);
+		list.sortLongs();
+		assertThat(list, containsLongs(5, 7, 17, 19, 22, 32));
+	}
+
+	@Test
+	public void binarySearch() {
+		LongList list = ArrayLongList.create(1, 3, 5, 6, 7, 8, 32);
+		assertThat(list.binarySearch(1), is(0));
+		assertThat(list.binarySearch(5), is(2));
+		assertThat(list.binarySearch(7), is(4));
+		assertThat(list.binarySearch(32), is(6));
+		assertThat(list.binarySearch(0), is(-1));
+		assertThat(list.binarySearch(2), is(-2));
+		assertThat(list.binarySearch(4), is(-3));
+		assertThat(list.binarySearch(31), is(-7));
+		assertThat(list.binarySearch(33), is(-8));
 	}
 
 	@Test
@@ -389,19 +456,19 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addBoxed() {
-		empty.add(17L);
+		assertThat(empty.add(17L), is(true));
 		assertThat(empty, containsLongs(17));
 
-		list.add(17L);
+		assertThat(list.add(17L), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 17));
 	}
 
 	@Test
 	public void addLong() {
-		empty.addLong(17);
+		assertThat(empty.addLong(17), is(true));
 		assertThat(empty, containsLongs(17));
 
-		list.addLong(17);
+		assertThat(list.addLong(17), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 17));
 	}
 
@@ -431,73 +498,97 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addAllBoxed() {
-		empty.addAll(Arrays.asList(1L, 2L, 3L));
+		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(Arrays.asList(1L, 2L, 3L)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAll(Arrays.asList(6L, 7L, 8L));
+		assertThat(list.addAll(Arrays.asList(6L, 7L, 8L)), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllLongsArray() {
-		empty.addAllLongs(1, 2, 3);
+		assertThat(empty.addAllLongs(), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongs(1, 2, 3), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongs(6, 7, 8);
+		assertThat(list.addAllLongs(6, 7, 8), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllLongsLongCollection() {
-		empty.addAllLongs(new BitLongSet(1, 2, 3));
+		assertThat(empty.addAllLongs(new BitLongSet()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongs(new BitLongSet(1, 2, 3)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongs(new BitLongSet(6, 7, 8));
+		assertThat(list.addAllLongs(new BitLongSet(6, 7, 8)), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllLongsArrayLongList() {
-		empty.addAllLongs(ArrayLongList.create(1, 2, 3));
+		assertThat(empty.addAllLongs(ArrayLongList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongs(ArrayLongList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongs(ArrayLongList.create(6, 7, 8));
+		assertThat(list.addAllLongs(ArrayLongList.create(6, 7, 8)), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllAtBoxed() {
-		empty.addAll(0, Arrays.asList(1L, 2L, 3L));
+		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAll(0, Arrays.asList(1L, 2L, 3L)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAll(2, Arrays.asList(17L, 18L, 19L));
+		assertThat(list.addAll(2, Arrays.asList(17L, 18L, 19L)), is(true));
 		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllLongsAtAtArray() {
-		empty.addAllLongsAt(0, 1, 2, 3);
+		assertThat(empty.addAllLongsAt(0), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongsAt(0, 1, 2, 3), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongsAt(2, 17, 18, 19);
+		assertThat(list.addAllLongsAt(2, 17, 18, 19), is(true));
 		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllLongsAtLongCollection() {
-		empty.addAllLongsAt(0, new BitLongSet(1, 2, 3));
+		assertThat(empty.addAllLongsAt(0, new BitLongSet()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongsAt(0, new BitLongSet(1, 2, 3)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongsAt(2, new BitLongSet(17, 18, 19));
+		assertThat(list.addAllLongsAt(2, new BitLongSet(17, 18, 19)), is(true));
 		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllLongsAtArrayLongList() {
-		empty.addAllLongsAt(0, ArrayLongList.create(1, 2, 3));
+		assertThat(empty.addAllLongsAt(0, ArrayLongList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongsAt(0, ArrayLongList.create(1, 2, 3)), is(true));
 		assertThat(empty, containsLongs(1, 2, 3));
 
-		list.addAllLongsAt(2, ArrayLongList.create(17, 18, 19));
+		assertThat(list.addAllLongsAt(2, ArrayLongList.create(17, 18, 19)), is(true));
 		assertThat(list, containsLongs(1, 2, 17, 18, 19, 3, 4, 5));
 	}
 
@@ -692,17 +783,6 @@ public class ArrayLongListTest {
 
 		list.replaceAllLongs(x -> x + 1);
 		assertThat(list, containsLongs(2, 3, 4, 5, 6));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicLong value = new AtomicLong(1);
-		list.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(6L));
 	}
 
 	@Test

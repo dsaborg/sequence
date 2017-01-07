@@ -31,7 +31,7 @@ public class ChainingIntIterator extends DelegatingUnaryIntIterator {
 	}
 
 	public ChainingIntIterator(Iterable<IntIterable> iterables) {
-		super(IntIterator.EMPTY);
+		super(IntIterator.empty());
 		this.iterables = iterables.iterator();
 	}
 

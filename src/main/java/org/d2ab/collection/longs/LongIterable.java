@@ -20,6 +20,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.ArrayLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.sequence.LongSequence;
+import org.d2ab.util.Strict;
 
 import java.util.PrimitiveIterator;
 import java.util.Spliterator;
@@ -30,16 +31,10 @@ import java.util.function.LongPredicate;
 import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
-
 @FunctionalInterface
 public interface LongIterable extends Iterable<Long> {
 	static LongIterable of(long... longs) {
 		return () -> new ArrayLongIterator(longs);
-	}
-
-	static LongIterable from(Long... longs) {
-		return from(asList(longs));
 	}
 
 	static LongIterable from(Iterable<Long> iterable) {
@@ -65,7 +60,9 @@ public interface LongIterable extends Iterable<Long> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Long> consumer) {
-		iterator().forEachRemaining(consumer);
+		assert Strict.LENIENT : "LongIterable.forEach(Consumer)";
+
+		forEachLong(consumer::accept);
 	}
 
 	/**
@@ -125,8 +122,8 @@ public interface LongIterable extends Iterable<Long> {
 	}
 
 	default boolean containsAllLongs(LongIterable c) {
-		for (long x : c)
-			if (!containsLong(x))
+		for (LongIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsLong(iterator.nextLong()))
 				return false;
 
 		return true;

@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class SortedListDoubleSetTest {
@@ -457,7 +455,8 @@ public class SortedListDoubleSetTest {
 	@Test
 	public void stream() {
 		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(set.stream().collect(Collectors.toList()), contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
+		assertThat(set.stream().collect(Collectors.toList()),
+		           contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
 	}
 
 	@Test
@@ -469,10 +468,12 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void doubleStream() {
-		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		assertThat(empty.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly,
+		                                        DoubleList::addAllDoubles),
 		           is(emptyIterable()));
 
-		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly, DoubleList::addAllDoubles),
+		assertThat(set.doubleStream().collect(DoubleList::create, DoubleList::addDoubleExactly,
+		                                      DoubleList::addAllDoubles),
 		           containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 	}
 
@@ -589,102 +590,6 @@ public class SortedListDoubleSetTest {
 	}
 
 	@Test
-	public void addBoxed() {
-		empty.add(17.0);
-		assertThat(empty, containsDoubles(17));
-
-		set.add(17.0);
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17.0), is(false));
-
-		assertThat(set.contains(17.0), is(false));
-		assertThat(set.contains(new Object()), is(false));
-		for (double x = -5; x <= 4; x++)
-			assertThat(set.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(set.remove(17), is(false));
-		assertThat(set.remove(new Object()), is(false));
-		for (double x = -5; x <= 4; x++)
-			assertThat(set.remove(x), is(true));
-		assertThat(set.isEmpty(), is(true));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(empty, containsDoubles(1, 2, 3));
-
-		assertThat(set.addAll(Arrays.asList(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void firstBoxed() {
-		expecting(NoSuchElementException.class, empty::first);
-		assertThat(set.first(), is(-5.0));
-	}
-
-	@Test
-	public void lastBoxed() {
-		expecting(NoSuchElementException.class, empty::last);
-		assertThat(set.last(), is(4.0));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 4));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set, containsDoubles(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeIf(x -> x > 3), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3));
-	}
-
-	@Test
-	public void containsDoubleCollection() {
-		assertThat(empty.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(false));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger(-5);
-		set.forEach(x -> assertThat(x, is((double) value.getAndIncrement())));
-		assertThat(value.get(), is(5));
-	}
-
-	@Test
 	public void boundaries() {
 		SortedListDoubleSet intSet = new SortedListDoubleSet();
 		assertThat(intSet.addDoubleExactly(0), is(true));
@@ -706,7 +611,7 @@ public class SortedListDoubleSetTest {
 
 	@Test
 	public void fuzz() {
-		double[] randomValues = new double[10000];
+		double[] randomValues = new double[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			double randomValue;

@@ -21,12 +21,13 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class MapsTest {
@@ -75,6 +76,28 @@ public class MapsTest {
 	}
 
 	@Test
+	public void builderFromCapacityConstructor() {
+		assertThat(Maps.<Integer, String>builder(HashMap::new, 17).build(),
+		           is(equalTo(new HashMap<Integer, String>())));
+
+		Map<Integer, String> expectedSingleton = new HashMap<>();
+		expectedSingleton.put(1, "2");
+		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").build(), is(equalTo(expectedSingleton)));
+
+		Map<Integer, String> expectedTwo = new HashMap<>();
+		expectedTwo.put(1, "2");
+		expectedTwo.put(3, "4");
+		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").put(3, "4").build(), is(equalTo(expectedTwo)));
+
+		Map<Integer, String> expectedThree = new HashMap<>();
+		expectedThree.put(1, "2");
+		expectedThree.put(3, "4");
+		expectedThree.put(5, "6");
+		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").put(3, "4").put(5, "6").build(),
+		           is(equalTo(expectedThree)));
+	}
+
+	@Test
 	public void builderFromSingleton() {
 		Map<Integer, String> expectedSingleton = new HashMap<>();
 		expectedSingleton.put(1, "2");
@@ -90,5 +113,28 @@ public class MapsTest {
 		expectedThree.put(3, "4");
 		expectedThree.put(5, "6");
 		assertThat(Maps.builder(1, "2").put(3, "4").put(5, "6").build(), is(equalTo(expectedThree)));
+	}
+
+	@Test
+	public void entryIterator() {
+		Iterator<Integer> iterator = Maps.iterator(Maps.entry(1, 2));
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.next(), is(1));
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.next(), is(2));
+		assertThat(iterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, iterator::next);
+	}
+
+	@Test
+	public void entryEquals() {
+		Entry<Integer, String> _1 = Maps.entry(1, "1");
+		assertThat(_1, is(equalTo(_1)));
+		assertThat(_1, is(equalTo(Maps.entry(1, "1"))));
+		assertThat(_1, is(not(equalTo(Maps.entry(1, "2")))));
+		assertThat(_1, is(not(equalTo(Maps.entry(2, "1")))));
+		assertThat(_1, is(not(equalTo(Maps.entry(2, "2")))));
+		assertThat(_1, is(not(equalTo(new Object()))));
+		assertThat(_1, is(not(equalTo(null))));
 	}
 }

@@ -20,6 +20,7 @@ import org.d2ab.iterator.longs.ExclusiveTerminalLongIterator;
 import org.d2ab.iterator.longs.InclusiveStartingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -47,7 +48,7 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 	}
 
 	@Override
-	default LongComparator comparator() {
+	default Comparator<Long> comparator() {
 		return null;
 	}
 
@@ -148,8 +149,33 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class SubSet extends LongSet.Base implements LongSortedSet {
-		private LongSortedSet set;
+	abstract class Base extends LongSet.Base implements LongSortedSet {
+		public static LongSortedSet create(long... longs) {
+			return from(LongSortedSet.create(longs));
+		}
+
+		public static LongSortedSet from(final LongCollection collection) {
+			return new LongSortedSet.Base() {
+				@Override
+				public LongIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return collection.addLong(x);
+				}
+			};
+		}
+	}
+
+	abstract class SubSet extends Base {
+		private final LongSortedSet set;
 
 		public SubSet(LongSortedSet set) {
 			this.set = set;
@@ -157,7 +183,7 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

@@ -24,6 +24,10 @@ import java.util.ListIterator;
  * A {@link ListIterator} over a sequence of {@code int} values.
  */
 public interface IntListIterator extends ListIterator<Integer>, IntIterator {
+	static IntListIterator of(int... xs) {
+		return new ArrayIntListIterator(xs);
+	}
+
 	@Override
 	boolean hasNext();
 
@@ -75,7 +79,10 @@ public interface IntListIterator extends ListIterator<Integer>, IntIterator {
 	}
 
 	static IntListIterator forwardOnly(IntIterator iterator, int index) {
-		iterator.skip(index);
+		int skipped = iterator.skip(index);
+		if (skipped != index)
+			throw new IndexOutOfBoundsException("index: " + index + " size: " + skipped);
+
 		return new IntListIterator() {
 			int cursor = index;
 

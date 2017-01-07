@@ -37,6 +37,14 @@ public class InterleavingIntIterator implements IntIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		for (Iterator iterator : iterators)
+			if (iterator.hasNext())
+				return true;
+		return false;
+	}
+
+	@Override
 	public int nextInt() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -47,14 +55,6 @@ public class InterleavingIntIterator implements IntIterator {
 		IntIterator iterator = iterators.get(current);
 		advance();
 		return iterator.nextInt();
-	}
-
-	@Override
-	public boolean hasNext() {
-		for (Iterator iterator : iterators)
-			if (iterator.hasNext())
-				return true;
-		return false;
 	}
 
 	private void advance() {

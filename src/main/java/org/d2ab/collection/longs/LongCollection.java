@@ -20,6 +20,7 @@ import org.d2ab.collection.Collectionz;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -29,6 +30,8 @@ import java.util.function.Predicate;
  * methods with corresponding {@code long}-valued methods.
  */
 public interface LongCollection extends Collection<Long>, LongIterable {
+	// TODO: Extract out relevant parts to IterableLongCollection
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -37,6 +40,16 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	@Override
 	default void clear() {
 		iterator().removeAll();
+	}
+
+	/**
+	 * @return a {@link LongList} view of this {@code LongCollection}, which is updated as the {@code LongCollection}
+	 * changes. The list does not implement {@link RandomAccess} and is best accessed in sequence.
+	 *
+	 * @since 2.2
+	 */
+	default LongList asList() {
+		return LongList.Base.from(this);
 	}
 
 	@Override
@@ -124,17 +137,40 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	 * Base class for {@link LongCollection} implementations.
 	 */
 	abstract class Base implements LongCollection {
+		public static LongCollection create(long... longs) {
+			return from(LongList.create(longs));
+		}
+
+		public static LongCollection from(final LongCollection collection) {
+			return new LongCollection.Base() {
+				@Override
+				public LongIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addLong(long x) {
+					return collection.addLong(x);
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder(size() * 5); // heuristic
 			builder.append("[");
 
-			boolean started = false;
+			boolean tail = false;
 			for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
-				if (started)
+				if (tail)
 					builder.append(", ");
 				else
-					started = true;
+					tail = true;
 				builder.append(iterator.nextLong());
 			}
 

@@ -25,14 +25,15 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
+import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class CollectionListTest {
-	private final Deque<Integer> originalEmpty = new ArrayDeque<>();
+	private final Collection<Integer> originalEmpty = new ArrayDeque<>();
 	private final List<Integer> listEmpty = new CollectionList<>(originalEmpty);
 
-	private final Deque<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+	private final Collection<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
 	private final List<Integer> list = new CollectionList<>(original);
 
 	@Test
@@ -60,6 +61,8 @@ public class CollectionListTest {
 	@Test
 	public void iterator() {
 		assertThat(listEmpty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> listEmpty.iterator().next());
+
 		assertThat(list, contains(1, 2, 3, 4, 5));
 	}
 
@@ -90,11 +93,11 @@ public class CollectionListTest {
 
 	@Test
 	public void add() {
-		assertThat(listEmpty.add(3), is(true));
-		assertThat(originalEmpty, contains(3));
+		expecting(UnsupportedOperationException.class, () -> listEmpty.add(3));
+		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.add(3), is(true));
-		assertThat(original, contains(1, 2, 3, 4, 5, 3));
+		expecting(UnsupportedOperationException.class, () -> list.add(3));
+		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -120,11 +123,11 @@ public class CollectionListTest {
 
 	@Test
 	public void addAll() {
-		assertThat(listEmpty.addAll(asList(1, 3)), is(true));
-		assertThat(originalEmpty, contains(1, 3));
+		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(asList(1, 3)));
+		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.addAll(asList(1, 3)), is(true));
-		assertThat(original, contains(1, 2, 3, 4, 5, 1, 3));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 3)));
+		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -239,7 +242,8 @@ public class CollectionListTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
-
+		expecting(NoSuchElementException.class, emptyIterator::next);
+		expecting(UnsupportedOperationException.class, emptyIterator::previous);
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.set(17));
 
@@ -284,6 +288,34 @@ public class CollectionListTest {
 
 		assertThat(list, contains(1, 2, 3, 4, 5));
 		assertThat(original, contains(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void exhaustiveListIterator() {
+		twice(() -> {
+			AtomicInteger i = new AtomicInteger();
+			ListIterator<Integer> listIterator = list.listIterator();
+			while (listIterator.hasNext()) {
+				assertThat(listIterator.next(), is(i.get() + 1));
+				assertThat(listIterator.nextIndex(), is(i.get() + 1));
+				assertThat(listIterator.previousIndex(), is(i.get()));
+				i.incrementAndGet();
+			}
+			assertThat(i.get(), is(5));
+			expecting(NoSuchElementException.class, listIterator::next);
+		});
+	}
+
+	@Test
+	public void listIteratorAtIndex() {
+		twice(() -> {
+			ListIterator<Integer> listIterator = list.listIterator(3);
+			assertThat(listIterator.next(), is(4));
+			assertThat(listIterator.next(), is(5));
+			expecting(NoSuchElementException.class, listIterator::next);
+		});
+
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(6));
 	}
 
 	@Test

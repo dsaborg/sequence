@@ -30,6 +30,9 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code int} values.
  */
 public interface IntList extends List<Integer>, IntCollection {
+	// TODO: Extract out relevant parts to IterableIntList
+	// TODO: Enable Strict checking
+
 	/**
 	 * Returns an immutable {@code IntList} of the given elements. The returned {@code IntList}'s
 	 * {@link IntListIterator} supports forward iteration only.
@@ -86,6 +89,11 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	@Override
+	default IntList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Integer && containsInt((int) o);
 	}
@@ -112,11 +120,12 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Integer> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		IntListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (int t : c)
+			listIterator.add(t);
 
 		return true;
 	}
@@ -137,7 +146,7 @@ public interface IntList extends List<Integer>, IntCollection {
 			return false;
 
 		IntListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachInt(listIterator::add);
 
 		return true;
 	}
@@ -157,13 +166,9 @@ public interface IntList extends List<Integer>, IntCollection {
 		throw new UnsupportedOperationException();
 	}
 
-	default void sortInts(IntComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	default void sort(Comparator<? super Integer> c) {
-		sortInts(c::compare);
+		throw new UnsupportedOperationException();
 	}
 
 	default int binarySearch(int x) {
@@ -177,10 +182,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
-		boolean modified = false;
-		for (int x : c)
-			modified |= addInt(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -238,7 +240,11 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	default int getInt(int index) {
-		return listIterator(index).nextInt();
+		IntListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextInt();
 	}
 
 	@Override
@@ -338,6 +344,53 @@ public interface IntList extends List<Integer>, IntCollection {
 	 * Base class for {@link IntList} implementations.
 	 */
 	abstract class Base extends IntCollection.Base implements IntList {
+		public static IntList create(int... ints) {
+			return from(IntList.create(ints));
+		}
+
+		public static IntList from(final IntCollection collection) {
+			return new IntList.Base() {
+				@Override
+				public IntIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return collection.addInt(x);
+				}
+			};
+		}
+
+		public static IntList from(final IntList list) {
+			return new IntList.Base() {
+				@Override
+				public IntIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public IntListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return list.addInt(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;

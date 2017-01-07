@@ -22,18 +22,15 @@ import java.util.function.Function;
 /**
  * A {@link List} that presents a mapped view of another {@link List}.
  */
-public abstract class MappedList {
-	private MappedList() {
-	}
-
-	public static <T, U> List<U> from(List<T> list, Function<? super T, ? extends U> mapper) {
+public interface MappedList {
+	static <T, U> List<U> from(List<T> list, Function<? super T, ? extends U> mapper) {
 		if (list instanceof RandomAccess)
 			return new RandomAccessList<>(list, mapper);
 		else
 			return new SequentialList<>(list, mapper);
 	}
 
-	private static class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess {
+	class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess {
 		private final List<T> list;
 		private final Function<? super T, ? extends U> mapper;
 
@@ -58,7 +55,7 @@ public abstract class MappedList {
 		}
 	}
 
-	private static class SequentialList<T, U> extends AbstractSequentialList<U> {
+	class SequentialList<T, U> extends AbstractSequentialList<U> {
 		private final List<T> list;
 		private final Function<? super T, ? extends U> mapper;
 

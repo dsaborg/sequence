@@ -52,7 +52,6 @@ public class TailSkippingIntIterator extends DelegatingUnaryIntIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		@SuppressWarnings("unchecked")
 		int next = buffer[position];
 		buffer[position++] = iterator.nextInt();
 		position = position % skip;

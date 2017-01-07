@@ -16,124 +16,37 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.ChainedCollection;
-import org.d2ab.collection.Collectionz;
-import org.d2ab.collection.FilteredCollection;
-import org.d2ab.collection.MappedCollection;
+import org.d2ab.collection.*;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-
 /**
  * A {@link Sequence} backed by a {@link Collection}. Implements certain operations on {@link Sequence} in a more
- * performant way due to the {@link Collection} backing. This class should normally not be used directly as e.g.
- * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
+ * performant way due to the {@link Collection} backing. This class should not be used directly as {@link
+ * Sequence#from(Iterable)} and other factory methods return this class directly where appropriate.
  */
 public class CollectionSequence<T> implements Sequence<T> {
-	private Collection<T> collection;
+	private final Collection<T> collection;
 
 	/**
-	 * @return an immutable empty {@code CollectionSequence}.
+	 * @return a {@code CollectionSequence} backed by the given {@link Collection}. Updates to the backing
+	 * collection is
+	 * reflected in the returned {@link CollectionSequence}.
 	 */
-	public static <T> Sequence<T> empty() {
-		return from(emptySet());
-	}
-
-	/**
-	 * @return an immutable {@code CollectionSequence} of the given element.
-	 */
-	public static <T> Sequence<T> of(T item) {
-		return from(singleton(item));
-	}
-
-	/**
-	 * @return an immutable {@code CollectionSequence} of the given elements.
-	 */
-	@SafeVarargs
-	public static <T> Sequence<T> of(T... items) {
-		return from(Arrays.asList(items));
-	}
-
-	/**
-	 * @return a {@code CollectionSequence} backed by the given {@link Collection}. Updates to the backing collection
-	 * is reflected in the returned {@link CollectionSequence}.
-	 */
-	public static <T> Sequence<T> from(Collection<T> collection) {
+	static <T> Sequence<T> from(Collection<T> collection) {
 		return new CollectionSequence<>(collection);
 	}
 
 	/**
-	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s.
-	 * Updates to the backing collections is reflected in the returned {@link CollectionSequence}.
+	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s. Updates to
+	 * the
+	 * backing collections is reflected in the returned {@link CollectionSequence}.
 	 */
-	public static <T> Sequence<T> concat(Collection<T>... collections) {
-		return from(ChainedCollection.from(collections));
-	}
-
-	/**
-	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s.
-	 * Updates to the backing collections is reflected in the returned {@link CollectionSequence}.
-	 */
-	public static <T> Sequence<T> concat(Collection<Collection<T>> collections) {
-		return from(ChainedCollection.from(collections));
-	}
-
-	/**
-	 * @return a new empty mutable {@code CollectionSequence} with the given initial capacity.
-	 */
-	public static <T> Sequence<T> withCapacity(int capacity) {
-		return new CollectionSequence<>(capacity);
-	}
-
-	/**
-	 * @return a new mutable {@code CollectionSequence} initialized with the elements in the given {@link Collection}.
-	 */
-	public static <T> Sequence<T> create(Collection<? extends T> c) {
-		CollectionSequence<T> result = new CollectionSequence<>(c.size());
-		result.addAll(c);
-		return result;
-	}
-
-	/**
-	 * @return a new mutable {@code CollectionSequence} initialized with the elements in the given {@link Iterable}.
-	 */
-	public static <T> Sequence<T> create(Iterable<? extends T> iterable) {
-		CollectionSequence<T> result = new CollectionSequence<>();
-		iterable.forEach(result::add);
-		return result;
-	}
-
-	/**
-	 * @return a new mutable {@code CollectionSequence} initialized with the remaining elements in the given
-	 * {@link Iterator}.
-	 */
-	public static <T> Sequence<T> create(Iterator<? extends T> iterator) {
-		CollectionSequence<T> result = new CollectionSequence<>();
-		iterator.forEachRemaining(result::add);
-		return result;
-	}
-
-	/**
-	 * @return a new mutable {@code CollectionSequence} initialized with the given elements.
-	 */
-	@SafeVarargs
-	public static <T> Sequence<T> create(T... ts) {
-		CollectionSequence<T> result = new CollectionSequence<>(ts.length);
-		result.addAll(Arrays.asList(ts));
-		return result;
-	}
-
-	public CollectionSequence() {
-		this(new ArrayList<>());
-	}
-
-	private CollectionSequence(int capacity) {
-		this(new ArrayList<>(capacity));
+	static <T> Sequence<T> concat(Collection<Collection<T>> collections) {
+		return from(ChainedCollection.concat(collections));
 	}
 
 	private CollectionSequence(Collection<T> collection) {
@@ -215,11 +128,17 @@ public class CollectionSequence<T> implements Sequence<T> {
 		return from(MappedCollection.from(collection, mapper));
 	}
 
+	@Override
+	public <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
+			backMapper) {
+		return from(BiMappedCollection.from(collection, mapper, backMapper));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Sequence<T> append(Iterable<T> iterable) {
 		if (iterable instanceof Collection)
-			return from(ChainedCollection.from(collection, (Collection<T>) iterable));
+			return from(ChainedCollection.concat(collection, (Collection<T>) iterable));
 
 		return Sequence.concat(this, iterable);
 	}

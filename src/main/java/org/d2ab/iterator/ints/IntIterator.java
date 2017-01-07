@@ -18,14 +18,12 @@ package org.d2ab.iterator.ints;
 
 import org.d2ab.function.CharToIntFunction;
 import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
-import java.util.function.DoubleToIntFunction;
-import java.util.function.IntBinaryOperator;
-import java.util.function.LongToIntFunction;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 
 /**
  * An Iterator specialized for {@code int} values. Extends {@link PrimitiveIterator.OfInt} with helper methods.
@@ -42,6 +40,10 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 			throw new NoSuchElementException();
 		}
 	};
+
+	static IntIterator empty() {
+		return EMPTY;
+	}
 
 	static IntIterator of(int... ints) {
 		return new ArrayIntIterator(ints);
@@ -133,13 +135,27 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 		};
 	}
 
-	static <T> IntIterator from(final Iterator<T> iterator, final ToIntFunction<? super T> mapper) {
+	static <T> IntIterator from(Iterator<T> iterator, ToIntFunction<? super T> mapper) {
 		return new DelegatingTransformingIntIterator<T, Iterator<T>>(iterator) {
 			@Override
 			public int nextInt() {
 				return mapper.applyAsInt(iterator.next());
 			}
 		};
+	}
+
+	@Override
+	default Integer next() {
+		assert Strict.LENIENT : "IntIterator.next()";
+
+		return nextInt();
+	}
+
+	@Override
+	default void forEachRemaining(Consumer<? super Integer> action) {
+		assert Strict.LENIENT : "IntIterator.forEachRemaining(Consumer)";
+
+		forEachRemaining((IntConsumer) action::accept);
 	}
 
 	default boolean skip() {
@@ -158,10 +174,20 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 	/**
 	 * @return the number of {@code ints} remaining in this iterator.
 	 */
-	default int count() {
+	default int size() {
+		return size(IntIterator::count);
+	}
+
+	default long count() {
 		long count = 0;
 		for (; hasNext(); nextInt())
 			count++;
+		return count;
+	}
+
+	// for testing purposes
+	default int size(ToLongFunction<IntIterator> counter) {
+		long count = counter.applyAsLong(this);
 
 		if (count > Integer.MAX_VALUE)
 			throw new IllegalStateException("count > Integer.MAX_VALUE: " + count);

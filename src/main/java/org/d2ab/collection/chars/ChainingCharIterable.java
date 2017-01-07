@@ -19,7 +19,6 @@ package org.d2ab.collection.chars;
 import org.d2ab.iterator.chars.ChainingCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
@@ -28,41 +27,14 @@ import static java.util.Arrays.asList;
  * A {@link CharIterable} that can chain together several {@link CharIterable}s into one unbroken sequence.
  */
 public class ChainingCharIterable implements CharIterable {
-	private final Collection<CharIterable> iterables = new ArrayList<>();
+	private final Collection<CharIterable> iterables;
 
 	public ChainingCharIterable(CharIterable... iterables) {
-		asList(iterables).forEach(this.iterables::add);
-	}
-
-	public ChainingCharIterable append(CharIterable iterable) {
-		iterables.add(iterable);
-		return this;
+		this.iterables = asList(iterables);
 	}
 
 	@Override
 	public CharIterator iterator() {
 		return new ChainingCharIterator(iterables);
-	}
-
-	@Override
-	public int hashCode() {
-		return iterables.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if ((o == null) || (getClass() != o.getClass()))
-			return false;
-
-		ChainingCharIterable that = (ChainingCharIterable) o;
-
-		return iterables.equals(that.iterables);
-	}
-
-	@Override
-	public String toString() {
-		return "ChainingCharIterable" + iterables;
 	}
 }

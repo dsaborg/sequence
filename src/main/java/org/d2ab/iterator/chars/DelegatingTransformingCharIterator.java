@@ -23,7 +23,8 @@ import java.util.Iterator;
 /**
  * A superclass for delegating {@link CharIterator}s.
  */
-public abstract class DelegatingTransformingCharIterator<T, I extends Iterator<T>> extends DelegatingTransformingIterator<T, I, Character>
+public abstract class DelegatingTransformingCharIterator<T, I extends Iterator<T>>
+		extends DelegatingTransformingIterator<T, I, Character>
 		implements CharIterator {
 	public DelegatingTransformingCharIterator(I iterator) {
 		super(iterator);

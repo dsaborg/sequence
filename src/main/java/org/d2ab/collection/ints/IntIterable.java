@@ -24,6 +24,7 @@ import org.d2ab.iterator.ints.ArrayIntIterator;
 import org.d2ab.iterator.ints.InputStreamIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.sequence.IntSequence;
+import org.d2ab.util.Strict;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,16 +37,10 @@ import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Arrays.asList;
-
 @FunctionalInterface
 public interface IntIterable extends Iterable<Integer> {
 	static IntIterable of(int... integers) {
 		return () -> new ArrayIntIterator(integers);
-	}
-
-	static IntIterable from(Integer... integers) {
-		return from(asList(integers));
 	}
 
 	static IntIterable from(Iterable<Integer> iterable) {
@@ -101,7 +96,9 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Integer> consumer) {
-		iterator().forEachRemaining(consumer);
+		assert Strict.LENIENT : "IntIterable.forEach(Consumer)";
+
+		forEachInt(consumer::accept);
 	}
 
 	/**
@@ -131,9 +128,9 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	/**
-	 * @return this {@code IntIterable} as an {@link InputStream}. Mark and reset is supported, by re-traversing
-	 * the iterator to the mark position. Ints outside of the allowed range {@code 0} to {@code 255} will result in
-	 * an {@link IOException} being thrown during traversal.
+	 * @return this {@code IntIterable} as an {@link InputStream}. Mark and reset is supported, by re-traversing the
+	 * iterator to the mark position. Ints outside of the allowed range {@code 0} to {@code 255} will result in an
+	 * {@link IOException} being thrown during traversal.
 	 *
 	 * @since 1.2
 	 */
@@ -172,8 +169,8 @@ public interface IntIterable extends Iterable<Integer> {
 	}
 
 	default boolean containsAllInts(IntIterable c) {
-		for (int x : c)
-			if (!containsInt(x))
+		for (IntIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsInt(iterator.nextInt()))
 				return false;
 
 		return true;
@@ -196,8 +193,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 * false otherwise.
 	 */
 	default boolean containsAnyInts(IntIterable xs) {
-		IntIterator iterator = iterator();
-		while (iterator.hasNext())
+		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (xs.containsInt(iterator.nextInt()))
 				return true;
 

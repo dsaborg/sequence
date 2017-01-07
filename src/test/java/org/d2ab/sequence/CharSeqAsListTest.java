@@ -16,13 +16,12 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.chars.ArrayCharList;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.collection.chars.CharListIterator;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.test.StrictCharIterable;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -36,11 +35,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 public class CharSeqAsListTest {
-	private final CharSeq empty = CharSeq.from(StrictCharIterable.from(ArrayCharList.create()));
+	private final CharSeq empty = CharSeq.from(CharList.create());
 	private final CharList emptyList = empty.asList();
 
-	private final CharSeq sequence = CharSeq.from(
-			StrictCharIterable.from(ArrayCharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')));
+	private final CharSeq sequence = CharSeq.from(CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	private final CharList list = sequence.asList();
 
 	@Test
@@ -292,6 +290,9 @@ public class CharSeqAsListTest {
 	public void listIteratorEmpty() {
 		CharListIterator emptyIterator = emptyList.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, emptyIterator::nextChar);
+		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
+		expecting(UnsupportedOperationException.class, emptyIterator::previousChar);
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
@@ -389,13 +390,16 @@ public class CharSeqAsListTest {
 	@Test
 	public void stream() {
 		assertThat(emptyList.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(list.intStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test
 	public void parallelStream() {
-		assertThat(emptyList.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(list.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
+		assertThat(emptyList.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           is(emptyIterable()));
+		assertThat(list.parallelIntStream().mapToObj(x -> (char) x).collect(Collectors.toList()),
+		           contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

@@ -23,15 +23,12 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class BitCharSetTest {
@@ -111,7 +108,16 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstSet() {
+	public void equalsEdgeCases() {
+		assertThat(set, is(equalTo(set)));
+		assertThat(set, is(not(equalTo(null))));
+		assertThat(set, is(not(equalTo(new Object()))));
+		assertThat(set, is(not(equalTo(asList('a', 'b', 'c', 'd', 'e')))));
+		assertThat(set, is(not(equalTo(CharList.create('a', 'b', 'c', 'd', 'e')))));
+	}
+
+	@Test
+	public void equalsHashCodeAgainstSet() {
 		Set<Character> set2 = new HashSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
@@ -123,7 +129,7 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstCharSet() {
+	public void equalsHashCodeAgainstCharSet() {
 		BitCharSet set2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
@@ -347,18 +353,6 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void stream() {
-		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(set.stream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e'));
-	}
-
-	@Test
-	public void parallelStream() {
-		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
-		assertThat(set.parallelStream().collect(Collectors.toList()), contains('a', 'b', 'c', 'd', 'e'));
-	}
-
-	@Test
 	public void intStream() {
 		assertThat(empty.intStream().collect(IntList::create, IntList::addInt, IntList::addAllInts),
 		           is(emptyIterable()));
@@ -478,99 +472,10 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void addBoxed() {
-		empty.add('q');
-		assertThat(empty, containsChars('q'));
-
-		set.add('q');
-		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e', 'q'));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains('q'), is(false));
-
-		assertThat(set.contains('q'), is(false));
-		assertThat(set.contains(new Object()), is(false));
-		for (char x = 'a'; x <= 'e'; x++)
-			assertThat(set.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove('q'), is(false));
-
-		assertThat(set.remove('q'), is(false));
-		assertThat(set.remove(new Object()), is(false));
-		for (char x = 'a'; x <= 'e'; x++)
-			assertThat(set.remove(x), is(true));
-		assertThat(set.isEmpty(), is(true));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(asList('a', 'b', 'c')), is(true));
-		assertThat(empty, containsChars('a', 'b', 'c'));
-
-		assertThat(set.addAll(asList('c', 'd', 'e', 'f', 'g')), is(true));
-		assertThat(set, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g'));
-	}
-
-	@Test
-	public void firstBoxed() {
-		expecting(NoSuchElementException.class, empty::first);
-		assertThat(set.first(), is('a'));
-	}
-
-	@Test
-	public void lastBoxed() {
-		expecting(NoSuchElementException.class, empty::last);
-		assertThat(set.last(), is('e'));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList('a', 'b', 'c')), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set, containsChars('d', 'e'));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList('a', 'b', 'c')), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set, containsChars('a', 'b', 'c'));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 'c'), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeIf(x -> x > 'c'), is(true));
-		assertThat(set, containsChars('a', 'b', 'c'));
-	}
-
-	@Test
 	public void containsCharCollection() {
 		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
 		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
 		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger('a');
-		set.forEach(x -> assertThat(x, is((char) value.getAndIncrement())));
-		assertThat(value.get(), is((int) 'f'));
 	}
 
 	@Test
@@ -592,7 +497,7 @@ public class BitCharSetTest {
 
 	@Test
 	public void fuzz() {
-		char[] randomValues = new char[10000];
+		char[] randomValues = new char[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			char randomValue;

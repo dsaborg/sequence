@@ -37,6 +37,14 @@ public class InterleavingDoubleIterator implements DoubleIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		for (Iterator iterator : iterators)
+			if (iterator.hasNext())
+				return true;
+		return false;
+	}
+
+	@Override
 	public double nextDouble() {
 		if (!hasNext())
 			throw new NoSuchElementException();
@@ -47,14 +55,6 @@ public class InterleavingDoubleIterator implements DoubleIterator {
 		DoubleIterator iterator = iterators.get(current);
 		advance();
 		return iterator.nextDouble();
-	}
-
-	@Override
-	public boolean hasNext() {
-		for (Iterator iterator : iterators)
-			if (iterator.hasNext())
-				return true;
-		return false;
 	}
 
 	private void advance() {

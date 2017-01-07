@@ -34,35 +34,8 @@ public class ChainingDoubleIterable implements DoubleIterable {
 		asList(iterables).forEach(this.iterables::add);
 	}
 
-	public ChainingDoubleIterable append(DoubleIterable iterable) {
-		iterables.add(iterable);
-		return this;
-	}
-
 	@Override
 	public DoubleIterator iterator() {
 		return new ChainingDoubleIterator(iterables);
-	}
-
-	@Override
-	public int hashCode() {
-		return iterables.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if ((o == null) || (getClass() != o.getClass()))
-			return false;
-
-		ChainingDoubleIterable that = (ChainingDoubleIterable) o;
-
-		return iterables.equals(that.iterables);
-	}
-
-	@Override
-	public String toString() {
-		return "ChainingDoubleIterable" + iterables;
 	}
 }

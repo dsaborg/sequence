@@ -18,11 +18,13 @@ package org.d2ab.iterator.doubles;
 
 import java.util.NoSuchElementException;
 
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.HAS_NEXT;
+import static org.d2ab.iterator.DelegatingTransformingIterator.State.NEXT;
+
 public class SteppingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final int step;
 
-	private boolean hasNext;
-	private double next;
+	private boolean skipOnHasNext;
 
 	public SteppingDoubleIterator(DoubleIterator iterator, int step) {
 		super(iterator);
@@ -30,27 +32,33 @@ public class SteppingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	}
 
 	@Override
+	public boolean hasNext() {
+		if (skipOnHasNext) {
+			iterator.skip(step - 1);
+			skipOnHasNext = false;
+		}
+
+		state = HAS_NEXT;
+		return iterator.hasNext();
+	}
+
+	@Override
 	public double nextDouble() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		hasNext = false;
-		return next;
+		skipOnHasNext = true;
+		state = NEXT;
+		return iterator.nextDouble();
 	}
 
 	@Override
-	public boolean hasNext() {
-		if (hasNext)
-			return true;
+	public void remove() {
+		if (state == HAS_NEXT)
+			throw new IllegalStateException("Cannot remove immediately after calling hasNext()");
+		if (state != NEXT)
+			throw new IllegalStateException("Can only remove after calling next()");
 
-		if (!iterator.hasNext())
-			return false;
-
-		next = iterator.nextDouble();
-
-		iterator.skip(step - 1);
-		hasNext = true;
-
-		return true;
+		super.remove();
 	}
 }

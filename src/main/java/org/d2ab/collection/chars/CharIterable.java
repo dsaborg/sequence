@@ -25,6 +25,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ReaderCharIterator;
 import org.d2ab.iterator.ints.IntIterator;
 import org.d2ab.sequence.CharSeq;
+import org.d2ab.util.Strict;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -33,8 +34,6 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
-
-import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface CharIterable extends Iterable<Character> {
@@ -72,11 +71,10 @@ public interface CharIterable extends Iterable<Character> {
 		return () -> new ArrayCharIterator(characters);
 	}
 
-	static CharIterable from(Character... characters) {
-		return from(asList(characters));
-	}
-
 	static CharIterable from(Iterable<Character> iterable) {
+		if (iterable instanceof CharIterable)
+			return (CharIterable) iterable;
+
 		return () -> CharIterator.from(iterable.iterator());
 	}
 
@@ -102,8 +100,8 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	/**
-	 * @return this {@code CharIterable} as a {@link Reader}. Mark and reset is supported, by re-traversing
-	 * the iterator to the mark position.
+	 * @return this {@code CharIterable} as a {@link Reader}. Mark and reset is supported, by re-traversing the
+	 * iterator to the mark position.
 	 *
 	 * @since 1.2
 	 */
@@ -123,7 +121,9 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Character> consumer) {
-		iterator().forEachRemaining(consumer);
+		assert Strict.LENIENT : "CharIterable.forEach(Consumer)";
+
+		forEachChar(consumer::accept);
 	}
 
 	default IntStream intStream() {
@@ -169,8 +169,8 @@ public interface CharIterable extends Iterable<Character> {
 	}
 
 	default boolean containsAllChars(CharIterable c) {
-		for (char x : c)
-			if (!containsChar(x))
+		for (CharIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsChar(iterator.nextChar()))
 				return false;
 
 		return true;

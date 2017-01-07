@@ -90,7 +90,7 @@ instead of a black box pipeline, and is built for convenience and compatibility 
 for programmers wanting to perform common data processing tasks on moderately sized collections. If you need parallel
 iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
-The `Sequence` library is protected by over 2500 tests for your safety.
+The `Sequence` library is protected by over 4500 tests, providing 100% line coverage of all classes in the project.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -275,8 +275,9 @@ See also:
 
 #### Updating
 
-`Sequences` have full support for updating the underlying collection where possible, both through `Iterator#remove()`
-and by modifying the underlying collection directly in between iterations.
+`Sequences` have full support for updating the underlying collection where possible, through `Iterator#remove()`, by
+modifying the underlying collection directly (in between iterations), and by using `Collection` methods directly on
+the `Sequence` itself.
 
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
@@ -289,11 +290,19 @@ assertThat(list, contains(2, 4));
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-Sequence<Integer> sequence = Sequence.from(list).filter(x -> x % 2 == 0);
-assertThat(sequence, contains(2, 4));
+Sequence<String> evensAsStrings = Sequence.from(list)
+                                          .filter(x -> x % 2 == 0)
+                                          .biMap(Object::toString, Integer::parseInt); // biMap allows add
+assertThat(evensAsStrings, contains("2", "4"));
 
-list.add(6);
-assertThat(sequence, contains(2, 4, 6));
+evensAsStrings.add("6");
+assertThat(evensAsStrings, contains("2", "4", "6"));
+assertThat(list, contains(1, 2, 3, 4, 5, 6));
+
+expecting(IllegalArgumentException.class,
+          () -> evensAsStrings.add("7")); // cannot add filtered out item to sequence
+assertThat(evensAsStrings, contains("2", "4", "6"));
+assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 
 #### Streams

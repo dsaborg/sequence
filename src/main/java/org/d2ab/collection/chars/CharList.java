@@ -28,6 +28,8 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code char} values.
  */
 public interface CharList extends List<Character>, CharCollection {
+	// TODO: Extract out relevant parts to IterableCharList
+
 	/**
 	 * Returns an immutable {@code CharList} of the given elements. The returned {@code CharList}'s
 	 * {@link CharListIterator} supports forward iteration only.
@@ -84,6 +86,11 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	@Override
+	default CharList asList() {
+		return this;
+	}
+
+	@Override
 	default boolean contains(Object o) {
 		return o instanceof Character && containsChar((char) o);
 	}
@@ -110,11 +117,12 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean addAll(int index, Collection<? extends Character> c) {
-		if (c.size() == 0)
+		if (c.isEmpty())
 			return false;
 
 		CharListIterator listIterator = listIterator(index);
-		c.forEach(listIterator::add);
+		for (char t : c)
+			listIterator.add(t);
 
 		return true;
 	}
@@ -135,7 +143,7 @@ public interface CharList extends List<Character>, CharCollection {
 			return false;
 
 		CharListIterator listIterator = listIterator(index);
-		xs.forEach(listIterator::add);
+		xs.forEachChar(listIterator::add);
 
 		return true;
 	}
@@ -151,17 +159,13 @@ public interface CharList extends List<Character>, CharCollection {
 			listIterator.set(operator.applyAsChar(listIterator.nextChar()));
 	}
 
-	default void sortChars() {
-		throw new UnsupportedOperationException();
-	}
-
-	default void sortChars(CharComparator c) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	default void sort(Comparator<? super Character> c) {
-		sortChars(c::compare);
+		throw new UnsupportedOperationException();
+	}
+
+	default void sortChars() {
+		throw new UnsupportedOperationException();
 	}
 
 	default int binarySearch(char x) {
@@ -175,10 +179,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Character> c) {
-		boolean modified = false;
-		for (char x : c)
-			modified |= addChar(x);
-		return modified;
+		return Collectionz.addAll(this, c);
 	}
 
 	@Override
@@ -236,7 +237,11 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	default char getChar(int index) {
-		return listIterator(index).nextChar();
+		CharListIterator iterator = listIterator(index);
+		if (!iterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
+
+		return iterator.nextChar();
 	}
 
 	@Override
@@ -321,6 +326,53 @@ public interface CharList extends List<Character>, CharCollection {
 	 * Base class for {@link CharList} implementations.
 	 */
 	abstract class Base extends CharCollection.Base implements CharList {
+		public static CharList create(char... chars) {
+			return from(CharList.create(chars));
+		}
+
+		public static CharList from(final CharCollection collection) {
+			return new CharList.Base() {
+				@Override
+				public CharIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return collection.addChar(x);
+				}
+			};
+		}
+
+		public static CharList from(final CharList list) {
+			return new CharList.Base() {
+				@Override
+				public CharIterator iterator() {
+					return list.iterator();
+				}
+
+				@Override
+				public CharListIterator listIterator(int index) {
+					return list.listIterator(index);
+				}
+
+				@Override
+				public int size() {
+					return list.size();
+				}
+
+				@Override
+				public boolean addChar(char x) {
+					return list.addChar(x);
+				}
+			};
+		}
+
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
@@ -376,7 +428,8 @@ public interface CharList extends List<Character>, CharCollection {
 		}
 
 		public CharIterator iterator() {
-			return new DelegatingUnaryCharIterator(new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
+			return new DelegatingUnaryCharIterator(
+					new LimitingCharIterator(new SkippingCharIterator(list.iterator(), from), to - from)) {
 				@Override
 				public char nextChar() {
 					return iterator.nextChar();

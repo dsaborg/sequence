@@ -35,7 +35,6 @@ import static org.d2ab.collection.Comparators.naturalOrderNullsFirst;
  * @param <R> the type of the "right" side of the pair.
  */
 public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>, Cloneable, Serializable {
-	@SuppressWarnings("unchecked")
 	private static final Comparator<Pair> COMPARATOR =
 			comparing((Function<Pair, Object>) Pair::getLeft, naturalOrderNullsFirst()).thenComparing(
 					(Function<Pair, Object>) Pair::getRight, naturalOrderNullsFirst());
@@ -185,7 +184,8 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 
 	/**
 	 * @return a {@code Pair} where the "left" component is shifted to the "right" component and replaced with the
-	 * given value.
+	 * given
+	 * value.
 	 */
 	public <LL> Pair<LL, L> shiftRight(LL replacement) {
 		return new Pair<LL, L>() {
@@ -203,7 +203,8 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 
 	/**
 	 * @return a {@code Pair} where the "right" component is shifted to the "left" component and replaced with the
-	 * given value.
+	 * given
+	 * value.
 	 */
 	public <RR> Pair<R, RR> shiftLeft(RR replacement) {
 		return new Pair<R, RR>() {
@@ -246,23 +247,24 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 
 	/**
 	 * @return a the result of applying the given {@link BiFunction} to the "left" and "right" components of this
-	 * {@code Pair}.
+	 * {@code
+	 * Pair}.
 	 */
 	public <T> T apply(BiFunction<? super L, ? super R, ? extends T> function) {
 		return function.apply(getLeft(), getRight());
 	}
 
 	/**
-	 * @return the result of testing the given {@link Predicate}s on the "left" and "right" components of this
-	 * {@code Pair}.
+	 * @return the result of testing the given {@link Predicate}s on the "left" and "right" components of this {@code
+	 * Pair}.
 	 */
 	public boolean test(Predicate<? super L> leftPredicate, Predicate<? super R> rightPredicate) {
 		return leftPredicate.test(getLeft()) && rightPredicate.test(getRight());
 	}
 
 	/**
-	 * @return the result of testing the given {@link BiPredicate}s on the "left" and "right" components of this
-	 * {@code Pair}.
+	 * @return the result of testing the given {@link BiPredicate}s on the "left" and "right" components of this {@code
+	 * Pair}.
 	 */
 	public boolean test(BiPredicate<? super L, ? super R> predicate) {
 		return predicate.test(getLeft(), getRight());
@@ -304,25 +306,30 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 	}
 
 	private static String format(Object o) {
+		String value = String.valueOf(o);
 		if (o instanceof String)
-			return '"' + (String) o + '"';
-
-		return String.valueOf(o);
+			return '"' + value + '"';
+		else if (o instanceof Character)
+			return '\'' + value + '\'';
+		else if (o instanceof Long)
+			return value + 'L';
+		else
+			return value;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "MethodDoesntCallSuperMethod"})
 	@Override
 	public Pair<L, R> clone() {
-		try {
-			return (Pair<L, R>) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException(e);
-		}
+		return Pair.of(getLeft(), getRight()); // To ensure that references to mutable Map.Entry aren't copied
 	}
 
 	@Override
 	public int compareTo(Pair<L, R> that) {
 		return COMPARATOR.compare(this, that);
+	}
+
+	public static <L, R> Comparator<? super Pair<? extends L, ? extends R>> comparator() {
+		return COMPARATOR;
 	}
 
 	private class PairIterator<T> implements Iterator<T> {
@@ -339,15 +346,11 @@ public abstract class Pair<L, R> implements Entry<L, R>, Comparable<Pair<L, R>>,
 			if (!hasNext())
 				throw new NoSuchElementException();
 
-			switch (++index) {
-				case 1:
-					return (T) getLeft();
-				case 2:
-					return (T) getRight();
-				default:
-					// Can't happen due to above check
-					throw new IllegalStateException();
-			}
+			if (++index == 1)
+				return (T) getLeft();
+			else
+				return (T) getRight();
 		}
 	}
 }
+

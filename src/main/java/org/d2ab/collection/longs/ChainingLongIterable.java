@@ -19,7 +19,6 @@ package org.d2ab.collection.longs;
 import org.d2ab.iterator.longs.ChainingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
@@ -28,41 +27,14 @@ import static java.util.Arrays.asList;
  * A {@link LongIterable} that can chain together several {@link LongIterable}s into one unbroken sequence.
  */
 public class ChainingLongIterable implements LongIterable {
-	private final Collection<LongIterable> iterables = new ArrayList<>();
+	private final Collection<LongIterable> iterables;
 
 	public ChainingLongIterable(LongIterable... iterables) {
-		asList(iterables).forEach(this.iterables::add);
-	}
-
-	public ChainingLongIterable append(LongIterable iterable) {
-		iterables.add(iterable);
-		return this;
+		this.iterables = asList(iterables);
 	}
 
 	@Override
 	public LongIterator iterator() {
 		return new ChainingLongIterator(iterables);
-	}
-
-	@Override
-	public int hashCode() {
-		return iterables.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if ((o == null) || (getClass() != o.getClass()))
-			return false;
-
-		ChainingLongIterable that = (ChainingLongIterable) o;
-
-		return iterables.equals(that.iterables);
-	}
-
-	@Override
-	public String toString() {
-		return "ChainingLongIterable" + iterables;
 	}
 }

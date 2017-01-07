@@ -15,25 +15,75 @@
  */
 package org.d2ab.test;
 
+import org.d2ab.collection.chars.CharIterable;
+import org.d2ab.collection.doubles.DoubleIterable;
+import org.d2ab.collection.ints.IntIterable;
+import org.d2ab.collection.longs.LongIterable;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.longs.LongIterator;
+
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class Tests {
+	@FunctionalInterface
+	public interface ThrowingRunnable {
+		void run() throws Exception;
+	}
+
 	private Tests() {
 	}
 
-	public static void expecting(Class<? extends Throwable> exceptionClass, Runnable action) {
+	public static void expecting(Class<? extends Exception> exceptionClass, ThrowingRunnable action) {
 		try {
 			action.run();
 			fail("Expected " + exceptionClass.getName());
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			if (!exceptionClass.isInstance(t))
-				throw t;
+				throw new AssertionError("Expected " + exceptionClass.getName() + " but got: " + t, t);
 		}
+	}
+
+	public static <T> T removeFirst(Iterable<T> iterable) {
+		Iterator<T> iterator = iterable.iterator();
+		T first = iterator.next();
+		iterator.remove();
+		return first;
+	}
+
+	public static char removeFirst(CharIterable iterable) {
+		CharIterator iterator = iterable.iterator();
+		char first = iterator.nextChar();
+		iterator.remove();
+		return first;
+	}
+
+	public static double removeFirst(DoubleIterable iterable) {
+		DoubleIterator iterator = iterable.iterator();
+		double first = iterator.nextDouble();
+		iterator.remove();
+		return first;
+	}
+
+	public static long removeFirst(LongIterable iterable) {
+		LongIterator iterator = iterable.iterator();
+		long first = iterator.nextLong();
+		iterator.remove();
+		return first;
+	}
+
+	public static int removeFirst(IntIterable iterable) {
+		IntIterator iterator = iterable.iterator();
+		int first = iterator.nextInt();
+		iterator.remove();
+		return first;
 	}
 
 	public static void twice(Runnable action) {
@@ -54,11 +104,11 @@ public class Tests {
 		});
 	}
 
-	public static void twiceIndexed(AtomicInteger index, int expectedIncrements, Runnable r) {
+	public static void twiceIndexed(AtomicInteger index, int expectedIncrement, Runnable r) {
 		int previousValue = index.get();
 		twice(() -> {
 			r.run();
-			assertThat(index.get(), is(previousValue + expectedIncrements));
+			assertThat(index.get(), is(previousValue + expectedIncrement));
 			index.set(previousValue);
 		});
 	}

@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 
 public class ForwardPeekingFilteringDoubleIterator extends
                                                    DelegatingTransformingDoubleIterator<Double, DoubleIterator> {
-	private double lastNext;
+	private final double lastNext;
 	private final DoubleBiPredicate predicate;
 
 	private double next;
@@ -31,7 +31,8 @@ public class ForwardPeekingFilteringDoubleIterator extends
 	private boolean hasFollowing;
 	private boolean started;
 
-	public ForwardPeekingFilteringDoubleIterator(DoubleIterator iterator, double lastNext, DoubleBiPredicate predicate) {
+	public ForwardPeekingFilteringDoubleIterator(DoubleIterator iterator, double lastNext,
+	                                             DoubleBiPredicate predicate) {
 		super(iterator);
 		this.lastNext = lastNext;
 		this.predicate = predicate;
@@ -68,5 +69,10 @@ public class ForwardPeekingFilteringDoubleIterator extends
 
 		hasNext = false;
 		return next;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

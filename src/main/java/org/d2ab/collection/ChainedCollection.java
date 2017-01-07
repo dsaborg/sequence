@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
 
 /**
  * A {@link Collection} of multiple {@link Collection}s strung together in a chain.
@@ -33,27 +32,11 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 	private final Collection<Collection<T>> collections;
 
 	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> empty() {
-		return from();
+	public static <T> Collection<T> concat(Collection<T>... collections) {
+		return concat(asList(collections));
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> of(T item) {
-		return from(singleton(item));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> of(T... items) {
-		return from(asList(items));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> from(Collection<T>... collections) {
-		return from(asList(collections));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> from(Collection<Collection<T>> collections) {
+	public static <T> Collection<T> concat(Collection<Collection<T>> collections) {
 		return new ChainedCollection<>(collections);
 	}
 

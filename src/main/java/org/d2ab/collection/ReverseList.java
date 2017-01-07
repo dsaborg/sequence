@@ -22,13 +22,13 @@ import java.util.*;
  * A {@link List} that presents a reverse view over a backing {@link List}.
  */
 public class ReverseList<T> extends AbstractList<T> {
-	private List<T> original;
+	private final List<T> original;
 
 	public static <T> List<T> from(List<T> original) {
 		return new ReverseList<>(original);
 	}
 
-	public ReverseList(List<T> original) {
+	private ReverseList(List<T> original) {
 		this.original = original;
 	}
 

@@ -33,7 +33,8 @@ public class CollectionSequenceAsListTest {
 	private final Sequence<Integer> empty = CollectionSequence.from(new ArrayDeque<>());
 	private final List<Integer> emptyList = empty.asList();
 
-	private final Sequence<Integer> sequence = CollectionSequence.from(new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	private final Sequence<Integer> sequence = CollectionSequence.from(
+			new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
 	private final List<Integer> list = sequence.asList();
 
 	@Test
@@ -118,15 +119,13 @@ public class CollectionSequenceAsListTest {
 
 	@Test
 	public void add() {
-		assertThat(emptyList.add(1), is(true));
-		assertThat(emptyList.add(2), is(true));
-		assertThat(emptyList, contains(1, 2));
-		assertThat(empty, contains(1, 2));
+		expecting(UnsupportedOperationException.class, () -> emptyList.add(1));
+		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.add(6), is(true));
-		assertThat(list.add(7), is(true));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7));
+		expecting(UnsupportedOperationException.class, () -> list.add(6));
+		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -152,16 +151,16 @@ public class CollectionSequenceAsListTest {
 
 	@Test
 	public void addAll() {
-		assertThat(emptyList.addAll(emptyList()), is(false));
+		emptyList.addAll(emptyList());
 		assertThat(emptyList, is(emptyIterable()));
 
-		assertThat(emptyList.addAll(asList(1, 2)), is(true));
-		assertThat(emptyList, contains(1, 2));
-		assertThat(empty, contains(1, 2));
+		expecting(UnsupportedOperationException.class, () -> emptyList.addAll(asList(1, 2)));
+		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.addAll(asList(6, 7, 8)), is(true));
-		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
-		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(6, 7, 8)));
+		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test

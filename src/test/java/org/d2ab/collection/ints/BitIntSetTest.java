@@ -28,9 +28,7 @@ import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class BitIntSetTest {
@@ -482,99 +480,10 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void addBoxed() {
-		empty.add(17);
-		assertThat(empty, containsInts(17));
-
-		set.add(17);
-		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17), is(false));
-
-		assertThat(set.contains(17), is(false));
-		assertThat(set.contains(new Object()), is(false));
-		for (int x = -5; x <= 4; x++)
-			assertThat(set.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(set.remove(17), is(false));
-		assertThat(set.remove(new Object()), is(false));
-		for (int x = -5; x <= 4; x++)
-			assertThat(set.remove(x), is(true));
-		assertThat(set.isEmpty(), is(true));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(asList(1, 2, 3)), is(true));
-		assertThat(empty, containsInts(1, 2, 3));
-
-		assertThat(set.addAll(asList(3, 4, 5, 6, 7)), is(true));
-		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void firstBoxed() {
-		expecting(NoSuchElementException.class, empty::first);
-		assertThat(set.first(), is(-5));
-	}
-
-	@Test
-	public void lastBoxed() {
-		expecting(NoSuchElementException.class, empty::last);
-		assertThat(set.last(), is(4));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList(1, 2, 3)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(asList(1, 2, 3)), is(true));
-		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 4));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList(1, 2, 3)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(asList(1, 2, 3)), is(true));
-		assertThat(set, containsInts(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeIf(x -> x > 3), is(true));
-		assertThat(set, containsInts(-5, -4, -3, -2, -1, 0, 1, 2, 3));
-	}
-
-	@Test
 	public void containsIntCollection() {
 		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
 		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
 		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));
-	}
-
-	@Test
-	public void forEachBoxed() {
-		empty.forEach(x -> {
-			throw new IllegalStateException("should not get called");
-		});
-
-		AtomicInteger value = new AtomicInteger(-5);
-		set.forEach(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(value.get(), is(5));
 	}
 
 	@Test
@@ -606,7 +515,7 @@ public class BitIntSetTest {
 
 	@Test
 	public void fuzz() {
-		int[] randomValues = new int[10000];
+		int[] randomValues = new int[1000];
 		Random random = new Random();
 		for (int i = 0; i < randomValues.length; i++) {
 			int randomValue;

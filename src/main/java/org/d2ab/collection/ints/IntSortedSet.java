@@ -20,6 +20,7 @@ import org.d2ab.iterator.ints.ExclusiveTerminalIntIterator;
 import org.d2ab.iterator.ints.InclusiveStartingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -28,6 +29,8 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code int} values.
  */
 public interface IntSortedSet extends SortedSet<Integer>, IntSet {
+	// TODO: Enable Strict checking
+
 	/**
 	 * @return a new empty mutable {@code IntSortedSet}.
 	 *
@@ -47,7 +50,7 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 	}
 
 	@Override
-	default IntComparator comparator() {
+	default Comparator<Integer> comparator() {
 		return null;
 	}
 
@@ -148,8 +151,33 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 		                                Spliterator.NONNULL);
 	}
 
-	abstract class SubSet extends IntSet.Base implements IntSortedSet {
-		private IntSortedSet set;
+	abstract class Base extends IntSet.Base implements IntSortedSet {
+		public static IntSortedSet create(int... ints) {
+			return from(IntSortedSet.create(ints));
+		}
+
+		public static IntSortedSet from(final IntCollection collection) {
+			return new IntSortedSet.Base() {
+				@Override
+				public IntIterator iterator() {
+					return collection.iterator();
+				}
+
+				@Override
+				public int size() {
+					return collection.size();
+				}
+
+				@Override
+				public boolean addInt(int x) {
+					return collection.addInt(x);
+				}
+			};
+		}
+	}
+
+	abstract class SubSet extends Base {
+		private final IntSortedSet set;
 
 		public SubSet(IntSortedSet set) {
 			this.set = set;
@@ -157,7 +185,7 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 		@Override
 		public int size() {
-			return iterator().count();
+			return iterator().size();
 		}
 
 		@Override

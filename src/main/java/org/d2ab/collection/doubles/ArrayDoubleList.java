@@ -24,27 +24,17 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoublePredicate;
 import java.util.function.DoubleUnaryOperator;
 
-import static org.d2ab.collection.doubles.DoubleComparator.eq;
+import static org.d2ab.util.Doubles.eq;
 
 /**
- * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or replacing the
- * underlying array.
+ * A {@link DoubleList} backed by a double-array, supporting all {@link DoubleList}-methods by modifying and/or
+ * replacing the underlying array.
  */
-public class ArrayDoubleList extends DoubleList.Base implements DoubleList, RandomAccess {
+public class ArrayDoubleList extends DoubleList.Base implements RandomAccess {
 	private double[] contents;
 	private int size;
 
 	private int modCount;
-
-	/**
-	 * @return a new mutable {@code ArrayDoubleList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(double...)} instead.
-	 */
-	@Deprecated
-	public static ArrayDoubleList of(double... xs) {
-		return create(xs);
-	}
 
 	/**
 	 * Create a new empty mutable {@code ArrayDoubleList}. When possible, it's preferred to use
@@ -54,7 +44,6 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 	 *
 	 * @see DoubleList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayDoubleList create() {
@@ -69,7 +58,6 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 	 *
 	 * @see DoubleList#create(double...)
 	 * @see #ArrayDoubleList(DoubleCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayDoubleList create(double... xs) {
@@ -90,7 +78,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 	 *
 	 * @since 2.0
 	 */
-	public ArrayDoubleList() {
+	private ArrayDoubleList() {
 		this(10);
 	}
 
@@ -98,11 +86,8 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 	 * Create a new mutable {@code ArrayDoubleList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayDoubleList(int capacity) {
+	private ArrayDoubleList(int capacity) {
 		this.contents = new double[capacity];
 	}
 
@@ -463,10 +448,6 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 		}
 
 		private ListIter(int index, int from, int to) {
-			if (index < 0)
-				throw new ArrayIndexOutOfBoundsException(index);
-			if (index > to - from)
-				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
 			this.from = from;
@@ -564,7 +545,7 @@ public class ArrayDoubleList extends DoubleList.Base implements DoubleList, Rand
 		private int from;
 		private int to;
 
-		public SubList(int from, int to) {
+		private SubList(int from, int to) {
 			if (from < 0)
 				throw new ArrayIndexOutOfBoundsException(from);
 			if (to > size)

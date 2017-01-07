@@ -28,21 +28,11 @@ import java.util.function.LongUnaryOperator;
  * A {@link LongList} backed by a long-array, supporting all {@link LongList}-methods by modifying and/or replacing the
  * underlying array.
  */
-public class ArrayLongList extends LongList.Base implements LongList, RandomAccess {
+public class ArrayLongList extends LongList.Base implements RandomAccess {
 	private long[] contents;
 	private int size;
 
 	private int modCount;
-
-	/**
-	 * @return a new mutable {@code ArrayLongList} initialized with a copy of the given contents.
-	 *
-	 * @deprecated Use {@link #create(long...)} instead.
-	 */
-	@Deprecated
-	public static ArrayLongList of(long... xs) {
-		return create(xs);
-	}
 
 	/**
 	 * Create a new empty mutable {@code ArrayLongList}. When possible, it's preferred to use {@link LongList#create()}
@@ -52,7 +42,6 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 	 *
 	 * @see LongList#create()
 	 * @see #withCapacity(int)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayLongList create() {
@@ -67,7 +56,6 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 	 *
 	 * @see LongList#create(long...)
 	 * @see #ArrayLongList(LongCollection)
-	 *
 	 * @since 2.1
 	 */
 	public static ArrayLongList create(long... xs) {
@@ -88,7 +76,7 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 	 *
 	 * @since 2.0
 	 */
-	public ArrayLongList() {
+	private ArrayLongList() {
 		this(10);
 	}
 
@@ -96,11 +84,8 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 	 * Create a new mutable {@code ArrayLongList} with the given initial capacity.
 	 *
 	 * @since 2.0
-	 *
-	 * @deprecated Use {@link #withCapacity(int)} instead.
 	 */
-	@Deprecated
-	public ArrayLongList(int capacity) {
+	private ArrayLongList(int capacity) {
 		this.contents = new long[capacity];
 	}
 
@@ -422,10 +407,6 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 		}
 
 		private ListIter(int index, int from, int to) {
-			if (index < 0)
-				throw new ArrayIndexOutOfBoundsException(index);
-			if (index > to - from)
-				throw new ArrayIndexOutOfBoundsException(index);
 			this.nextIndex = index;
 			this.currentIndex = index - 1;
 			this.from = from;
@@ -523,7 +504,7 @@ public class ArrayLongList extends LongList.Base implements LongList, RandomAcce
 		private int from;
 		private int to;
 
-		public SubList(int from, int to) {
+		private SubList(int from, int to) {
 			if (from < 0)
 				throw new ArrayIndexOutOfBoundsException(from);
 			if (to > size)

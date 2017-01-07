@@ -29,7 +29,8 @@ public class BackPeekingFilteringDoubleIterator extends DelegatingTransformingDo
 	private double next;
 	private boolean hasNext;
 
-	public BackPeekingFilteringDoubleIterator(DoubleIterator iterator, double firstPrevious, DoubleBiPredicate predicate) {
+	public BackPeekingFilteringDoubleIterator(DoubleIterator iterator, double firstPrevious,
+	                                          DoubleBiPredicate predicate) {
 		super(iterator);
 		this.next = firstPrevious;
 		this.predicate = predicate;

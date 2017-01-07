@@ -20,10 +20,12 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -36,7 +38,15 @@ public class IterableCollectionTest {
 	@Test
 	public void iteration() {
 		assertThat(empty, is(emptyIterable()));
+		expecting(NoSuchElementException.class, () -> empty.iterator().next());
+
 		assertThat(single, contains(1));
+		Iterator<Integer> singleIterator = single.iterator();
+		assertThat(singleIterator.hasNext(), is(true));
+		assertThat(singleIterator.next(), is(1));
+		assertThat(singleIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, singleIterator::next);
+
 		assertThat(regular, contains(1, 2, 3, 4, 5));
 		assertThat(mutable, contains(1, 2, 3, 4, 5));
 	}
@@ -109,10 +119,10 @@ public class IterableCollectionTest {
 	}
 
 	@Test
-	public void containsAll() {
+	public void containsAllCollection() {
 		assertThat(empty.containsAll(asList(17, 18, 19)), is(false));
 
-		assertThat(single.containsAll(asList(1)), is(true));
+		assertThat(single.containsAll(singletonList(1)), is(true));
 		assertThat(single.containsAll(asList(1, 2)), is(false));
 
 		assertThat(regular.containsAll(asList(1, 2, 3, 4, 5)), is(true));
@@ -147,11 +157,11 @@ public class IterableCollectionTest {
 	public void retainAll() {
 		assertThat(empty.retainAll(asList(1, 2)), is(false));
 
-		assertThat(single.retainAll(asList(1)), is(false));
+		assertThat(single.retainAll(singletonList(1)), is(false));
 		assertThat(regular.retainAll(asList(1, 2, 3, 4, 5)), is(false));
 
-		expecting(UnsupportedOperationException.class, () -> single.retainAll(asList(2)));
-		expecting(UnsupportedOperationException.class, () -> regular.retainAll(asList(6)));
+		expecting(UnsupportedOperationException.class, () -> single.retainAll(singletonList(2)));
+		expecting(UnsupportedOperationException.class, () -> regular.retainAll(singletonList(6)));
 
 		assertThat(mutable.retainAll(asList(1, 2, 3, 4, 5)), is(false));
 		assertThat(mutable, contains(1, 2, 3, 4, 5));

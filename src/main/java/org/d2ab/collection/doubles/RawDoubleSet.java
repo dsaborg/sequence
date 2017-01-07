@@ -26,7 +26,7 @@ import java.util.PrimitiveIterator;
 /**
  * An implementation of {@link DoubleSet} backed by a {@link BitLongSet}s for raw double values.
  */
-public class RawDoubleSet extends DoubleSet.Base implements DoubleSet {
+public class RawDoubleSet extends DoubleSet.Base {
 	private final LongSet values = new BitLongSet();
 
 	public RawDoubleSet() {

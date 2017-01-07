@@ -379,6 +379,7 @@ public interface LongSequence extends LongCollection {
 	static LongSequence range(long start, long end, long step) {
 		if (step < 0)
 			throw new IllegalArgumentException("Require step >= 0");
+
 		return end >= start ?
 		       recurse(start, x -> x + step).endingAt(x -> x + step > end || x > Long.MAX_VALUE - step) :
 		       recurse(start, x -> x - step).endingAt(x -> x - step < end || x < Long.MIN_VALUE + step);
@@ -819,7 +820,6 @@ public interface LongSequence extends LongCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default LongSequence including(long... elements) {
 		return filter(e -> Arrayz.contains(elements, e));
 	}
@@ -829,7 +829,6 @@ public interface LongSequence extends LongCollection {
 	 *
 	 * @since 1.2
 	 */
-	@SuppressWarnings("unchecked")
 	default LongSequence excluding(long... elements) {
 		return filter(e -> !Arrayz.contains(elements, e));
 	}
@@ -905,27 +904,6 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return a {@link LongList} view of this {@code LongSequence}, which is updated in real time as the backing
-	 * store of the {@code LongSequence} changes. The list does not implement {@link RandomAccess} and is best
-	 * accessed in sequence.
-	 *
-	 * @since 2.1
-	 */
-	default LongList asList() {
-		return new LongList.Base() {
-			@Override
-			public LongIterator iterator() {
-				return LongSequence.this.iterator();
-			}
-
-			@Override
-			public int size() {
-				return LongSequence.this.size();
-			}
-		};
-	}
-
-	/**
 	 * Join this {@code LongSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
@@ -972,16 +950,16 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the first long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
-	 * longs in the {@code LongSequence}.
+	 * @return the first long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no longs in
+	 * the {@code LongSequence}.
 	 */
 	default OptionalLong first() {
 		return at(0);
 	}
 
 	/**
-	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no
-	 * longs in the {@code LongSequence}.
+	 * @return the last long of this {@code LongSequence} or an empty {@link OptionalLong} if there are no longs in the
+	 * {@code LongSequence}.
 	 */
 	default OptionalLong last() {
 		LongIterator iterator = iterator();
@@ -1012,8 +990,8 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the first long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
+	 * @return the first long of those in this {@code LongSequence} matching the given predicate, or an empty {@link
+	 * OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
 	 * @see #at(int, LongPredicate)
@@ -1024,8 +1002,8 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the last long of those in this {@code LongSequence} matching the given predicate, or an empty
-	 * {@link OptionalLong} if there are no matching longs in the {@code LongSequence}.
+	 * @return the last long of those in this {@code LongSequence} matching the given predicate, or an empty {@link
+	 * OptionalLong} if there are no matching longs in the {@code LongSequence}.
 	 *
 	 * @see #filter(LongPredicate)
 	 * @see #at(int, LongPredicate)
@@ -1036,8 +1014,8 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
-	 * @return the {@code long} at the given index out of longs matching the given predicate, or an empty
-	 * {@link OptionalLong} if the matching {@code LongSequence} is smaller than the index.
+	 * @return the {@code long} at the given index out of longs matching the given predicate, or an empty {@link
+	 * OptionalLong} if the matching {@code LongSequence} is smaller than the index.
 	 *
 	 * @see #filter(LongPredicate)
 	 * @since 1.2
@@ -1080,7 +1058,7 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default int size() {
-		return iterator().count();
+		return iterator().size();
 	}
 
 	/**
