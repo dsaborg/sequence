@@ -81,7 +81,7 @@ The Sequence test suite is now at over 1000 tests!
 ### Overview
 
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
-and with better integration with the rest of Java.
+and with better integration with the rest of Java. It has no external dependencies so it will not slow down your build.
 
 It aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for advanced
 traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
@@ -95,8 +95,7 @@ instead of a black box pipeline, and is built for convenience and compatibility 
 for programmers wanting to perform common data processing tasks on moderately sized collections. If you need parallel
 iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
-The `Sequence` library is protected by over 4500 tests, providing 100% line coverage of all classes in the project. It
-has no external dependencies so it will not slow down your build.
+The `Sequence` library is protected by over 4500 tests, providing 100% line coverage of all classes in the project.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
