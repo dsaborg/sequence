@@ -16,7 +16,6 @@
 
 package org.d2ab.collection;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.RandomAccess;
@@ -26,22 +25,6 @@ import java.util.RandomAccess;
  */
 public abstract class Collectionz {
 	Collectionz() {
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Collection<?> collection, T[] a) {
-		int size = collection.size();
-		if (a.length < size)
-			a = Arrays.copyOf(a, size);
-
-		int index = 0;
-		for (Object o : collection)
-			a[index++] = (T) o;
-
-		if (a.length > size)
-			a[size] = null;
-
-		return a;
 	}
 
 	/**

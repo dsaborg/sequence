@@ -19,6 +19,7 @@ package org.d2ab.collection.chars;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.chars.ExclusiveTerminalCharIterator;
 import org.d2ab.iterator.chars.InclusiveStartingCharIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -54,6 +55,8 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 	@Override
 	default CharSortedSet subSet(Character from, Character to) {
+		Strict.check();
+
 		return subSet((char) from, (char) to);
 	}
 
@@ -73,6 +76,8 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 	@Override
 	default CharSortedSet headSet(Character to) {
+		Strict.check();
+
 		return headSet((char) to);
 	}
 
@@ -97,6 +102,8 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 	@Override
 	default CharSortedSet tailSet(Character from) {
+		Strict.check();
+
 		return tailSet((char) from);
 	}
 
@@ -121,6 +128,8 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 	@Override
 	default Character first() {
+		Strict.check();
+
 		return firstChar();
 	}
 
@@ -130,6 +139,8 @@ public interface CharSortedSet extends SortedSet<Character>, CharSet {
 
 	@Override
 	default Character last() {
+		Strict.check();
+
 		return lastChar();
 	}
 

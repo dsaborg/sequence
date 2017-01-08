@@ -21,7 +21,10 @@ import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
@@ -117,18 +120,6 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void equalsHashCodeAgainstSet() {
-		Set<Character> set2 = new HashSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove('q');
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
-	}
-
-	@Test
 	public void equalsHashCodeAgainstCharSet() {
 		BitCharSet set2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
 		assertThat(set, is(not(equalTo(set2))));
@@ -151,7 +142,7 @@ public class BitCharSetTest {
 		assertThat(subSet.containsChar('e'), is(false));
 		assertThat(subSet.toString(), is("[b, c, d]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('b', 'c', 'd'));
+		CharSet equivalentSet = CharSet.create('b', 'c', 'd');
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -198,7 +189,7 @@ public class BitCharSetTest {
 		assertThat(subSet.containsChar('h'), is(false));
 		assertThat(subSet.toString(), is("[d, f]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('d', 'f'));
+		CharSet equivalentSet = CharSet.create('d', 'f');
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -214,7 +205,7 @@ public class BitCharSetTest {
 		assertThat(headSet.containsChar('d'), is(false));
 		assertThat(headSet.toString(), is("[a, b, c]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('a', 'b', 'c'));
+		CharSet equivalentSet = CharSet.create('a', 'b', 'c');
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -261,7 +252,7 @@ public class BitCharSetTest {
 		assertThat(headSet.containsChar('f'), is(false));
 		assertThat(headSet.toString(), is("[b, d]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('b', 'd'));
+		CharSet equivalentSet = CharSet.create('b', 'd');
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -277,7 +268,7 @@ public class BitCharSetTest {
 		assertThat(tailSet.containsChar('a'), is(false));
 		assertThat(tailSet.toString(), is("[c, d, e]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('c', 'd', 'e'));
+		CharSet equivalentSet = CharSet.create('c', 'd', 'e');
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -329,7 +320,7 @@ public class BitCharSetTest {
 		assertThat(tailSet.containsChar('d'), is(false));
 		assertThat(tailSet.toString(), is("[f, h]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('f', 'h'));
+		CharSet equivalentSet = CharSet.create('f', 'h');
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}

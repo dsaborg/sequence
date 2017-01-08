@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.chars;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.chars.CharIterator;
 
 import java.util.Collection;
@@ -38,19 +38,8 @@ public interface CharSet extends Set<Character>, CharCollection {
 		iterator().removeAll();
 	}
 
-	@Override
-	default boolean add(Character x) {
-		return addChar(x);
-	}
-
-	@Override
-	default boolean contains(Object o) {
-		return o instanceof Character && containsChar((char) o);
-	}
-
-	@Override
-	default boolean remove(Object o) {
-		return o instanceof Character && removeChar((char) o);
+	static CharSet create(char... chars) {
+		return BitCharSet.create(chars);
 	}
 
 	@Override
@@ -60,7 +49,22 @@ public interface CharSet extends Set<Character>, CharCollection {
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		return Collectionz.toArray(this, a);
+		return PrimitiveCollections.toArray(this, a);
+	}
+
+	@Override
+	default boolean add(Character x) {
+		return CharCollections.add(this, x);
+	}
+
+	@Override
+	default boolean contains(Object o) {
+		return CharCollections.contains(this, o);
+	}
+
+	@Override
+	default boolean remove(Object o) {
+		return CharCollections.remove(this, o);
 	}
 
 	@Override

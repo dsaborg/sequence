@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.doubles;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.doubles.DoubleIterator;
 
 import java.util.Collection;
@@ -57,8 +57,18 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 	}
 
 	@Override
+	default Double[] toArray() {
+		return toArray(new Double[size()]);
+	}
+
+	@Override
+	default <T> T[] toArray(T[] a) {
+		return PrimitiveCollections.toArray(this, a);
+	}
+
+	@Override
 	default boolean add(Double x) {
-		return addDoubleExactly(x);
+		return DoubleCollections.add(this, x);
 	}
 
 	@Override
@@ -68,22 +78,12 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Double && containsDoubleExactly((double) o);
+		return DoubleCollections.contains(this, o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Double && removeDoubleExactly((double) o);
-	}
-
-	@Override
-	default Double[] toArray() {
-		return toArray(new Double[size()]);
-	}
-
-	@Override
-	default <T> T[] toArray(T[] a) {
-		return Collectionz.toArray(this, a);
+		return DoubleCollections.remove(this, o);
 	}
 
 	@Override

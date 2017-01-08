@@ -20,11 +20,12 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -143,18 +144,6 @@ public class LongSetTest {
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(not(equalTo(null))));
 		assertThat(set, is(not(equalTo(new Object()))));
-	}
-
-	@Test
-	public void testEqualsHashCodeAgainstSet() {
-		Set<Long> set2 = new HashSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, 17L));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove(17L);
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test
@@ -307,72 +296,6 @@ public class LongSetTest {
 		AtomicLong value = new AtomicLong(-5);
 		set.forEachLong(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(5L));
-	}
-
-	@Test
-	public void addBoxed() {
-		empty.add(17L);
-		assertThat(empty, containsLongs(17));
-
-		set.add(17L);
-		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17L), is(false));
-
-		assertThat(set.contains(17L), is(false));
-		assertThat(set.contains(new Object()), is(false));
-		for (long x = -5; x <= 4; x++)
-			assertThat(set.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(set.remove(17), is(false));
-		assertThat(set.remove(new Object()), is(false));
-		for (long x = -5; x <= 4; x++)
-			assertThat(set.remove(x), is(true));
-		assertThat(set.isEmpty(), is(true));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(empty, containsLongs(1, 2, 3));
-
-		assertThat(set.addAll(asList(3L, 4L, 5L, 6L, 7L)), is(true));
-		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 4));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(set, containsLongs(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeIf(x -> x > 3), is(true));
-		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3));
 	}
 
 	@Test

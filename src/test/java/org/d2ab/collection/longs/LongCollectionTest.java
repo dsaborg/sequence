@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -229,74 +228,6 @@ public class LongCollectionTest {
 		AtomicLong value = new AtomicLong(1);
 		collection.forEachLong(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(6L));
-	}
-
-	@Test
-	public void addBoxed() {
-		assertThat(empty.add(17L), is(true));
-		assertThat(empty, containsLongs(17));
-
-		assertThat(collection.add(17L), is(true));
-		assertThat(collection, containsLongs(1, 2, 3, 4, 5, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17L), is(false));
-
-		assertThat(collection.contains(17L), is(false));
-		assertThat(collection.contains(new Object()), is(false));
-
-		for (long x = 1; x <= 5; x++)
-			assertThat(collection.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(collection.remove(17), is(false));
-		assertThat(collection.remove(new Object()), is(false));
-
-		for (long x = 1; x <= 5; x++)
-			assertThat(collection.remove(x), is(true));
-		assertThat(collection, is(emptyIterable()));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(empty, containsLongs(1, 2, 3));
-
-		assertThat(collection.addAll(asList(6L, 7L, 8L)), is(true));
-		assertThat(collection, containsLongs(1, 2, 3, 4, 5, 6, 7, 8));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.removeAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(collection, containsLongs(4, 5));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.retainAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(collection, containsLongs(1, 2, 3));
-	}
-
-	@Test
-	public void removeIfBoxed() {
-		assertThat(empty.removeIf(x -> x > 3), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(collection.removeIf(x -> x > 3), is(true));
-		assertThat(collection, containsLongs(1, 2, 3));
 	}
 
 	@Test

@@ -19,6 +19,7 @@ package org.d2ab.collection.longs;
 import org.d2ab.iterator.longs.ExclusiveTerminalLongIterator;
 import org.d2ab.iterator.longs.InclusiveStartingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -54,6 +55,8 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 	@Override
 	default LongSortedSet subSet(Long from, Long to) {
+		Strict.check();
+
 		return subSet((long) from, (long) to);
 	}
 
@@ -73,6 +76,8 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 	@Override
 	default LongSortedSet headSet(Long to) {
+		Strict.check();
+
 		return headSet((long) to);
 	}
 
@@ -97,6 +102,8 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 	@Override
 	default LongSortedSet tailSet(Long from) {
+		Strict.check();
+
 		return tailSet((long) from);
 	}
 
@@ -121,6 +128,8 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 	@Override
 	default Long first() {
+		Strict.check();
+
 		return firstLong();
 	}
 
@@ -130,6 +139,8 @@ public interface LongSortedSet extends SortedSet<Long>, LongSet {
 
 	@Override
 	default Long last() {
+		Strict.check();
+
 		return lastLong();
 	}
 

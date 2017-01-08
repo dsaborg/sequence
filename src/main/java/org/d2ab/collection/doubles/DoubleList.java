@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.doubles;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.doubles.*;
 import org.d2ab.util.Doubles;
 import org.d2ab.util.Strict;
@@ -93,38 +93,28 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 	}
 
 	@Override
-	default boolean contains(Object o) {
-		Strict.check();
-
-		return o instanceof Double && containsDoubleExactly((double) o);
-	}
-
-	@Override
 	default Double[] toArray() {
-		Strict.check();
-
 		return toArray(new Double[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		Strict.check();
-
-		return Collectionz.toArray(this, a);
-	}
-
-	@Override
-	default boolean remove(Object o) {
-		Strict.check();
-
-		return o instanceof Double && removeDoubleExactly((double) o);
+		return PrimitiveCollections.toArray(this, a);
 	}
 
 	@Override
 	default boolean add(Double x) {
-		Strict.check();
+		return DoubleCollections.add(this, x);
+	}
 
-		return addDoubleExactly(x);
+	@Override
+	default boolean contains(Object o) {
+		return DoubleCollections.contains(this, o);
+	}
+
+	@Override
+	default boolean remove(Object o) {
+		return DoubleCollections.remove(this, o);
 	}
 
 	@Override
@@ -201,11 +191,6 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
-		if (c instanceof DoubleCollection)
-			return addAllDoubles((DoubleCollection) c);
-
-		Strict.check();
-
 		return DoubleCollections.addAll(this, c);
 	}
 
@@ -246,21 +231,11 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		if (c instanceof DoubleIterable)
-			return containsAllDoublesExactly((DoubleIterable) c);
-
-		Strict.check();
-
 		return DoubleCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		if (c instanceof DoubleIterable)
-			return removeAllDoublesExactly((DoubleIterable) c);
-
-		Strict.check();
-
 		return DoubleCollections.removeAll(this, c);
 	}
 
@@ -273,11 +248,6 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		if (c instanceof DoubleIterable)
-			return retainAllDoublesExactly((DoubleIterable) c);
-
-		Strict.check();
-
 		return DoubleCollections.retainAll(this, c);
 	}
 

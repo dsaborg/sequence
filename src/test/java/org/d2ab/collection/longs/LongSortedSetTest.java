@@ -20,11 +20,13 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -134,18 +136,6 @@ public class LongSortedSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstSet() {
-		Set<Long> set2 = new HashSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, 17L));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove(17L);
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
-	}
-
-	@Test
 	public void testEqualsHashCodeAgainstLongSet() {
 		BitLongSet set2 = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
@@ -168,7 +158,7 @@ public class LongSortedSetTest {
 		assertThat(subSet.containsLong(3), is(false));
 		assertThat(subSet.toString(), is("[-3, -2, -1, 0, 1, 2]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(-3L, -2L, -1L, 0L, 1L, 2L));
+		LongSet equivalentSet = LongSet.create(-3L, -2L, -1L, 0L, 1L, 2L);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -214,7 +204,7 @@ public class LongSortedSetTest {
 		assertThat(subSet.containsLong(-3), is(false));
 		assertThat(subSet.toString(), is("[-1, 1]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(-1L, 1L));
+		LongSet equivalentSet = LongSet.create(-1L, 1L);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -230,7 +220,7 @@ public class LongSortedSetTest {
 		assertThat(headSet.containsLong(0), is(false));
 		assertThat(headSet.toString(), is("[-5, -4, -3, -2, -1]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(-5L, -4L, -3L, -2L, -1L));
+		LongSet equivalentSet = LongSet.create(-5L, -4L, -3L, -2L, -1L);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -281,7 +271,7 @@ public class LongSortedSetTest {
 		assertThat(headSet.containsLong(1), is(false));
 		assertThat(headSet.toString(), is("[-5, -3, -1]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(-5L, -3L, -1L));
+		LongSet equivalentSet = LongSet.create(-5L, -3L, -1L);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -297,7 +287,7 @@ public class LongSortedSetTest {
 		assertThat(tailSet.containsLong(-1), is(false));
 		assertThat(tailSet.toString(), is("[0, 1, 2, 3, 4]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(0L, 1L, 2L, 3L, 4L));
+		LongSet equivalentSet = LongSet.create(0L, 1L, 2L, 3L, 4L);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -348,7 +338,7 @@ public class LongSortedSetTest {
 		assertThat(tailSet.containsLong(-1), is(false));
 		assertThat(tailSet.toString(), is("[1, 3, 5]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(1L, 3L, 5L));
+		LongSet equivalentSet = LongSet.create(1L, 3L, 5L);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}

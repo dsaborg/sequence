@@ -21,7 +21,9 @@ import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
@@ -114,18 +116,6 @@ public class CharSetTest {
 		assertThat(set, is(not(equalTo(new Object()))));
 		assertThat(set, is(not(equalTo(asList('a', 'b', 'c', 'd', 'e')))));
 		assertThat(set, is(not(equalTo(CharList.create('a', 'b', 'c', 'd', 'e')))));
-	}
-
-	@Test
-	public void equalsHashCodeAgainstSet() {
-		Set<Character> set2 = new HashSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove('q');
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test

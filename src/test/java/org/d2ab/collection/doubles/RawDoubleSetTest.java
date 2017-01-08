@@ -21,7 +21,9 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Random;
 
 import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -130,7 +132,7 @@ public class RawDoubleSetTest extends BaseBoxingTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstSet() {
-		Set<Double> set2 = new HashSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		DoubleSet set2 = DoubleSet.create(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 

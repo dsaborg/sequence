@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.chars;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.util.Strict;
 
@@ -45,16 +45,12 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default Character[] toArray() {
-		Strict.check();
-
 		return toArray(new Character[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		Strict.check();
-
-		return Collectionz.toArray(this, a);
+		return PrimitiveCollections.toArray(this, a);
 	}
 
 	/**
@@ -76,9 +72,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean add(Character x) {
-		Strict.check();
-
-		return addChar(x);
+		return CharCollections.add(this, x);
 	}
 
 	default boolean addChar(char x) {
@@ -87,25 +81,16 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		Strict.check();
-
-		return o instanceof Character && containsChar((char) o);
+		return CharCollections.contains(this, o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		Strict.check();
-
-		return o instanceof Character && removeChar((char) o);
+		return CharCollections.remove(this, o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Character> c) {
-		if (c instanceof CharCollection)
-			return addAllChars((CharCollection) c);
-
-		Strict.check();
-
 		return CharCollections.addAll(this, c);
 	}
 
@@ -125,31 +110,16 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		if (c instanceof CharCollection)
-			return containsAllChars((CharCollection) c);
-
-		Strict.check();
-
 		return CharCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		if (c instanceof CharCollection)
-			return removeAllChars((CharCollection) c);
-
-		Strict.check();
-
 		return CharCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		if (c instanceof CharCollection)
-			return retainAllChars((CharCollection) c);
-
-		Strict.check();
-
 		return CharCollections.retainAll(this, c);
 	}
 

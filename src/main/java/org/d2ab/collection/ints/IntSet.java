@@ -16,11 +16,10 @@
 
 package org.d2ab.collection.ints;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.collection.chars.CharSet;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.IntIterator;
-import org.d2ab.util.Strict;
 
 import java.util.Collection;
 import java.util.Set;
@@ -49,76 +48,46 @@ public interface IntSet extends Set<Integer>, IntCollection {
 
 	@Override
 	default boolean add(Integer x) {
-		Strict.check();
-
-		return addInt(x);
+		return IntCollections.add(this, x);
 	}
 
 	@Override
 	default boolean contains(Object o) {
-		Strict.check();
-
-		return o instanceof Integer && containsInt((int) o);
+		return IntCollections.contains(this, o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		Strict.check();
-
-		return o instanceof Integer && removeInt((int) o);
+		return IntCollections.remove(this, o);
 	}
 
 	@Override
 	default Integer[] toArray() {
-		Strict.check();
-
 		return toArray(new Integer[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		Strict.check();
-
-		return Collectionz.toArray(this, a);
+		return PrimitiveCollections.toArray(this, a);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
-		if (c instanceof IntCollection)
-			return addAllInts((IntCollection) c);
-
-		Strict.check();
-
 		return IntCollections.addAll(this, c);
 	}
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		if (c instanceof IntIterable)
-			return containsAllInts((IntIterable) c);
-
-		Strict.check();
-
 		return IntCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		if (c instanceof IntIterable)
-			return removeAllInts((IntIterable) c);
-
-		Strict.check();
-
 		return IntCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		if (c instanceof IntIterable)
-			return retainAllInts((IntIterable) c);
-
-		Strict.check();
-
 		return IntCollections.retainAll(this, c);
 	}
 

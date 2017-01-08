@@ -1,6 +1,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.iterator.doubles.DoubleIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Collection;
 
@@ -11,9 +12,41 @@ public abstract class DoubleCollections {
 	DoubleCollections() {
 	}
 
-	public static boolean containsAll(DoubleCollection xs, Collection<?> c) {
+	public static boolean add(DoubleCollection xs, Double x) {
+		Strict.check();
+
+		return xs.addDoubleExactly(x);
+	}
+
+	public static boolean contains(DoubleCollection xs, Object o) {
+		Strict.check();
+
+		return o instanceof Double && xs.containsDoubleExactly((double) o);
+	}
+
+	public static boolean remove(DoubleCollection xs, Object o) {
+		Strict.check();
+
+		return o instanceof Double && xs.removeDoubleExactly((double) o);
+	}
+
+	public static boolean addAll(DoubleCollection xs, Collection<? extends Double> c) {
 		if (c instanceof DoubleCollection)
-			return xs.containsAllDoublesExactly((DoubleCollection) c);
+			return xs.addAllDoubles((DoubleCollection) c);
+
+		Strict.check();
+
+		boolean modified = false;
+		for (double x : c)
+			modified |= xs.addDoubleExactly(x);
+		return modified;
+	}
+
+	public static boolean containsAll(DoubleCollection xs, Collection<?> c) {
+		if (c instanceof DoubleIterable)
+			return xs.containsAllDoublesExactly((DoubleIterable) c);
+
+		Strict.check();
 
 		for (Object x : c)
 			if (!xs.contains(x))
@@ -22,19 +55,11 @@ public abstract class DoubleCollections {
 		return true;
 	}
 
-	public static boolean addAll(DoubleCollection xs, Collection<? extends Double> c) {
-		if (c instanceof DoubleCollection)
-			return xs.addAllDoubles((DoubleCollection) c);
-
-		boolean modified = false;
-		for (double x : c)
-			modified |= xs.addDoubleExactly(x);
-		return modified;
-	}
-
 	public static boolean retainAll(DoubleCollection xs, Collection<?> c) {
-		if (c instanceof DoubleCollection)
-			return xs.retainAllDoublesExactly((DoubleCollection) c);
+		if (c instanceof DoubleIterable)
+			return xs.retainAllDoublesExactly((DoubleIterable) c);
+
+		Strict.check();
 
 		boolean modified = false;
 		for (DoubleIterator iterator = xs.iterator(); iterator.hasNext(); ) {
@@ -47,8 +72,10 @@ public abstract class DoubleCollections {
 	}
 
 	public static boolean removeAll(DoubleCollection xs, Collection<?> c) {
-		if (c instanceof DoubleCollection)
-			return xs.removeAllDoublesExactly((DoubleCollection) c);
+		if (c instanceof DoubleIterable)
+			return xs.removeAllDoublesExactly((DoubleIterable) c);
+
+		Strict.check();
 
 		boolean modified = false;
 		for (DoubleIterator iterator = xs.iterator(); iterator.hasNext(); ) {

@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.longs;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.longs.*;
 import org.d2ab.util.Strict;
 
@@ -92,38 +92,28 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean contains(Object o) {
-		Strict.check();
-
-		return o instanceof Long && containsLong((long) o);
-	}
-
-	@Override
 	default Long[] toArray() {
-		Strict.check();
-
 		return toArray(new Long[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		Strict.check();
-
-		return Collectionz.toArray(this, a);
-	}
-
-	@Override
-	default boolean remove(Object o) {
-		Strict.check();
-
-		return o instanceof Long && removeLong((long) o);
+		return PrimitiveCollections.toArray(this, a);
 	}
 
 	@Override
 	default boolean add(Long x) {
-		Strict.check();
+		return LongCollections.add(x, this);
+	}
 
-		return addLong(x);
+	@Override
+	default boolean contains(Object o) {
+		return LongCollections.contains(o, this);
+	}
+
+	@Override
+	default boolean remove(Object o) {
+		return LongCollections.remove(o, this);
 	}
 
 	@Override
@@ -200,11 +190,6 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean addAll(Collection<? extends Long> c) {
-		if (c instanceof LongCollection)
-			return addAllLongs((LongCollection) c);
-
-		Strict.check();
-
 		return LongCollections.addAll(this, c);
 	}
 
@@ -240,21 +225,11 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		if (c instanceof LongIterable)
-			return containsAllLongs((LongIterable) c);
-
-		Strict.check();
-
 		return LongCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		if (c instanceof LongIterable)
-			return removeAllLongs((LongIterable) c);
-
-		Strict.check();
-
 		return LongCollections.removeAll(this, c);
 	}
 
@@ -267,11 +242,6 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		if (c instanceof LongIterable)
-			return retainAllLongs((LongIterable) c);
-
-		Strict.check();
-
 		return LongCollections.retainAll(this, c);
 	}
 

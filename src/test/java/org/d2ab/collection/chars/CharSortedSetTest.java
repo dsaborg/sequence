@@ -138,18 +138,6 @@ public class CharSortedSetTest {
 	}
 
 	@Test
-	public void equalsHashCodeAgainstSet() {
-		Set<Character> set2 = new HashSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove('q');
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
-	}
-
-	@Test
 	public void equalsHashCodeAgainstCharSet() {
 		BitCharSet set2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
 		assertThat(set, is(not(equalTo(set2))));
@@ -172,7 +160,7 @@ public class CharSortedSetTest {
 		assertThat(subSet.containsChar('e'), is(false));
 		assertThat(subSet.toString(), is("[b, c, d]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('b', 'c', 'd'));
+		Set<Character> equivalentSet = CharSet.create('b', 'c', 'd');
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -219,7 +207,7 @@ public class CharSortedSetTest {
 		assertThat(subSet.containsChar('h'), is(false));
 		assertThat(subSet.toString(), is("[d, f]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('d', 'f'));
+		Set<Character> equivalentSet = CharSet.create('d', 'f');
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -235,7 +223,7 @@ public class CharSortedSetTest {
 		assertThat(headSet.containsChar('d'), is(false));
 		assertThat(headSet.toString(), is("[a, b, c]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('a', 'b', 'c'));
+		Set<Character> equivalentSet = CharSet.create('a', 'b', 'c');
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -282,7 +270,7 @@ public class CharSortedSetTest {
 		assertThat(headSet.containsChar('f'), is(false));
 		assertThat(headSet.toString(), is("[b, d]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('b', 'd'));
+		Set<Character> equivalentSet = CharSet.create('b', 'd');
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -298,7 +286,7 @@ public class CharSortedSetTest {
 		assertThat(tailSet.containsChar('a'), is(false));
 		assertThat(tailSet.toString(), is("[c, d, e]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('c', 'd', 'e'));
+		Set<Character> equivalentSet = CharSet.create('c', 'd', 'e');
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -350,7 +338,7 @@ public class CharSortedSetTest {
 		assertThat(tailSet.containsChar('d'), is(false));
 		assertThat(tailSet.toString(), is("[f, h]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('f', 'h'));
+		Set<Character> equivalentSet = CharSet.create('f', 'h');
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -490,13 +478,6 @@ public class CharSortedSetTest {
 		AtomicInteger value = new AtomicInteger('a');
 		set.forEachChar(x -> assertThat(x, is((char) value.getAndIncrement())));
 		assertThat(value.get(), is((int) 'f'));
-	}
-
-	@Test
-	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
-		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));
 	}
 
 	@Test

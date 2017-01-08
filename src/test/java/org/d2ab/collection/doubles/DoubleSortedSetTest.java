@@ -20,11 +20,13 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -134,18 +136,6 @@ public class DoubleSortedSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstSet() {
-		Set<Double> set2 = new HashSet<>(Arrays.asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove(17.0);
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
-	}
-
-	@Test
 	public void testEqualsHashCodeAgainstDoubleSet() {
 		DoubleSet set2 = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
@@ -168,7 +158,7 @@ public class DoubleSortedSetTest {
 		assertThat(subSet.containsDoubleExactly(3), is(false));
 		assertThat(subSet.toString(), is("[-3.0, -2.0, -1.0, 0.0, 1.0, 2.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-3.0, -2.0, -1.0, 0.0, 1.0, 2.0));
+		DoubleSet equivalentSet = DoubleSet.create(-3.0, -2.0, -1.0, 0.0, 1.0, 2.0);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -215,7 +205,7 @@ public class DoubleSortedSetTest {
 		assertThat(subSet.containsDoubleExactly(-3), is(false));
 		assertThat(subSet.toString(), is("[-1.0, 1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-1.0, 1.0));
+		DoubleSet equivalentSet = DoubleSet.create(-1.0, 1.0);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -232,7 +222,7 @@ public class DoubleSortedSetTest {
 		assertThat(subSet.containsDouble(-3.2, 0.5), is(false));
 		assertThat(subSet.toString(), is("[-1.0, 1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-1.0, 1.0));
+		DoubleSet equivalentSet = DoubleSet.create(-1.0, 1.0);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -259,7 +249,7 @@ public class DoubleSortedSetTest {
 		assertThat(headSet.containsDoubleExactly(0), is(false));
 		assertThat(headSet.toString(), is("[-5.0, -4.0, -3.0, -2.0, -1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0));
+		DoubleSet equivalentSet = DoubleSet.create(-5.0, -4.0, -3.0, -2.0, -1.0);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -311,7 +301,7 @@ public class DoubleSortedSetTest {
 		assertThat(headSet.containsDoubleExactly(1), is(false));
 		assertThat(headSet.toString(), is("[-5.0, -3.0, -1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-5.0, -3.0, -1.0));
+		DoubleSet equivalentSet = DoubleSet.create(-5.0, -3.0, -1.0);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -328,7 +318,7 @@ public class DoubleSortedSetTest {
 		assertThat(headSet.containsDouble(1.2, 0.5), is(false));
 		assertThat(headSet.toString(), is("[-5.0, -3.0, -1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-5.0, -3.0, -1.0));
+		DoubleSet equivalentSet = DoubleSet.create(-5.0, -3.0, -1.0);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -355,7 +345,7 @@ public class DoubleSortedSetTest {
 		assertThat(tailSet.containsDoubleExactly(-1), is(false));
 		assertThat(tailSet.toString(), is("[0.0, 1.0, 2.0, 3.0, 4.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(0.0, 1.0, 2.0, 3.0, 4.0));
+		DoubleSet equivalentSet = DoubleSet.create(0.0, 1.0, 2.0, 3.0, 4.0);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -407,7 +397,7 @@ public class DoubleSortedSetTest {
 		assertThat(tailSet.containsDouble(-1.2, 0.5), is(false));
 		assertThat(tailSet.toString(), is("[1.0, 3.0, 5.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(1.0, 3.0, 5.0));
+		DoubleSet equivalentSet = DoubleSet.create(1.0, 3.0, 5.0);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -424,7 +414,7 @@ public class DoubleSortedSetTest {
 		assertThat(tailSet.containsDoubleExactly(-1), is(false));
 		assertThat(tailSet.toString(), is("[1.0, 3.0, 5.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(1.0, 3.0, 5.0));
+		DoubleSet equivalentSet = DoubleSet.create(1.0, 3.0, 5.0);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -600,75 +590,6 @@ public class DoubleSortedSetTest {
 		AtomicInteger value = new AtomicInteger(-5);
 		set.forEachDouble(x -> assertThat(x, is((double) value.getAndIncrement())));
 		assertThat(value.get(), is(5));
-	}
-
-	@Test
-	public void addBoxed() {
-		empty.add(17.0);
-		assertThat(empty, containsDoubles(17));
-
-		set.add(17.0);
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17.0), is(false));
-
-		assertThat(set.contains(17.0), is(false));
-		assertThat(set.contains(new Object()), is(false));
-		for (double x = -5; x <= 4; x++)
-			assertThat(set.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(set.remove(17), is(false));
-		assertThat(set.remove(new Object()), is(false));
-		for (double x = -5; x <= 4; x++)
-			assertThat(set.remove(x), is(true));
-		assertThat(set.isEmpty(), is(true));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(empty, containsDoubles(1, 2, 3));
-
-		assertThat(set.addAll(Arrays.asList(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void firstBoxed() {
-		expecting(NoSuchElementException.class, empty::first);
-		assertThat(set.first(), is(-5.0));
-	}
-
-	@Test
-	public void lastBoxed() {
-		expecting(NoSuchElementException.class, empty::last);
-		assertThat(set.last(), is(4.0));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 4));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set, containsDoubles(1, 2, 3));
 	}
 
 	@Test

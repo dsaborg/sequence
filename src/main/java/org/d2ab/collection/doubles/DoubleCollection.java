@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.doubles;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.util.Strict;
 
@@ -45,16 +45,12 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default Double[] toArray() {
-		Strict.check();
-
 		return toArray(new Double[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		Strict.check();
-
-		return Collectionz.toArray(this, a);
+		return PrimitiveCollections.toArray(this, a);
 	}
 
 	/**
@@ -76,9 +72,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean add(Double x) {
-		Strict.check();
-
-		return addDoubleExactly(x);
+		return DoubleCollections.add(this, x);
 	}
 
 	/**
@@ -99,25 +93,16 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		Strict.check();
-
-		return o instanceof Double && containsDoubleExactly((double) o);
+		return DoubleCollections.contains(this, o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		Strict.check();
-
-		return o instanceof Double && removeDoubleExactly((double) o);
+		return DoubleCollections.remove(this, o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Double> c) {
-		if (c instanceof DoubleCollection)
-			return addAllDoubles((DoubleCollection) c);
-
-		Strict.check();
-
 		return DoubleCollections.addAll(this, c);
 	}
 
@@ -137,31 +122,16 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		if (c instanceof DoubleCollection)
-			return containsAllDoublesExactly((DoubleCollection) c);
-
-		Strict.check();
-
 		return DoubleCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		if (c instanceof DoubleCollection)
-			return removeAllDoublesExactly((DoubleCollection) c);
-
-		Strict.check();
-
 		return DoubleCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		if (c instanceof DoubleCollection)
-			return retainAllDoublesExactly((DoubleCollection) c);
-
-		Strict.check();
-
 		return DoubleCollections.retainAll(this, c);
 	}
 

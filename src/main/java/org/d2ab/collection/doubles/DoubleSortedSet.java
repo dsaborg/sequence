@@ -20,6 +20,7 @@ import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.doubles.ExclusiveTerminalDoubleIterator;
 import org.d2ab.iterator.doubles.InclusiveStartingDoubleIterator;
 import org.d2ab.util.Doubles;
+import org.d2ab.util.Strict;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -55,6 +56,8 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default DoubleSortedSet subSet(Double from, Double to) {
+		Strict.check();
+
 		return subSetExactly(from, to);
 	}
 
@@ -88,6 +91,8 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default DoubleSortedSet headSet(Double to) {
+		Strict.check();
+
 		return headSetExactly(to);
 	}
 
@@ -131,6 +136,8 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default DoubleSortedSet tailSet(Double from) {
+		Strict.check();
+
 		return tailSetExactly(from);
 	}
 
@@ -174,6 +181,8 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default Double first() {
+		Strict.check();
+
 		return firstDouble();
 	}
 
@@ -183,6 +192,8 @@ public interface DoubleSortedSet extends SortedSet<Double>, DoubleSet {
 
 	@Override
 	default Double last() {
+		Strict.check();
+
 		return lastDouble();
 	}
 

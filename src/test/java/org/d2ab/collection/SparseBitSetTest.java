@@ -16,13 +16,16 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.longs.LongSet;
 import org.d2ab.collection.longs.LongSortedSet;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -320,7 +323,7 @@ public class SparseBitSetTest {
 		assertThat(subSet.containsLong(5), is(false));
 		assertThat(subSet.toString(), is("[3, 17, 42, 73, 1222]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(3L, 17L, 42L, 73L, 1222L));
+		LongSet equivalentSet = LongSet.create(3L, 17L, 42L, 73L, 1222L);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -378,7 +381,7 @@ public class SparseBitSetTest {
 		assertThat(headSet.containsLong(5), is(false));
 		assertThat(headSet.toString(), is("[0, 1, 2, 3, 17, 42, 73, 1222]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(0L, 1L, 2L, 3L, 17L, 42L, 73L, 1222L));
+		LongSet equivalentSet = LongSet.create(0L, 1L, 2L, 3L, 17L, 42L, 73L, 1222L);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -439,8 +442,8 @@ public class SparseBitSetTest {
 		           is("[1222, 58723484, 58723485, 58723486, 9223372036854775805, 9223372036854775806, " +
 		              "9223372036854775807]"));
 
-		Set<Long> equivalentSet = new HashSet<>(asList(1222L, 58723484L, 58723485L, 58723486L, Long.MAX_VALUE - 2,
-		                                               Long.MAX_VALUE - 1, Long.MAX_VALUE));
+		LongSet equivalentSet = LongSet.create(1222L, 58723484L, 58723485L, 58723486L, Long.MAX_VALUE - 2,
+		                                       Long.MAX_VALUE - 1, Long.MAX_VALUE);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 

@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.longs;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
@@ -28,6 +28,10 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code long} values.
  */
 public interface LongSet extends Set<Long>, LongCollection {
+	static LongSet create(long... longs) {
+		return BitLongSet.create(longs);
+	}
+
 	@Override
 	default boolean isEmpty() {
 		return size() == 0;
@@ -39,28 +43,28 @@ public interface LongSet extends Set<Long>, LongCollection {
 	}
 
 	@Override
-	default boolean add(Long x) {
-		return addLong(x);
-	}
-
-	@Override
-	default boolean contains(Object o) {
-		return o instanceof Long && containsLong((long) o);
-	}
-
-	@Override
-	default boolean remove(Object o) {
-		return o instanceof Long && removeLong((long) o);
-	}
-
-	@Override
 	default Long[] toArray() {
 		return toArray(new Long[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		return Collectionz.toArray(this, a);
+		return PrimitiveCollections.toArray(this, a);
+	}
+
+	@Override
+	default boolean add(Long x) {
+		return LongCollections.add(x, this);
+	}
+
+	@Override
+	default boolean contains(Object o) {
+		return LongCollections.contains(o, this);
+	}
+
+	@Override
+	default boolean remove(Object o) {
+		return LongCollections.remove(o, this);
 	}
 
 	@Override

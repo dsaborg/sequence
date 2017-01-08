@@ -20,7 +20,9 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -153,18 +155,6 @@ public class DoubleSetTest {
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(not(equalTo(null))));
 		assertThat(set, is(not(equalTo(new Object()))));
-	}
-
-	@Test
-	public void equalsHashCodeAgainstSet() {
-		Set<Double> set2 = new HashSet<>(Arrays.asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove(17.0);
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test
@@ -320,63 +310,6 @@ public class DoubleSetTest {
 		AtomicInteger value = new AtomicInteger(-5);
 		set.forEachDouble(x -> assertThat(x, is((double) value.getAndIncrement())));
 		assertThat(value.get(), is(5));
-	}
-
-	@Test
-	public void addBoxed() {
-		empty.add(17.0);
-		assertThat(empty, containsDoubles(17));
-
-		set.add(17.0);
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-	}
-
-	@Test
-	public void containsBoxed() {
-		assertThat(empty.contains(17.0), is(false));
-
-		assertThat(set.contains(17.0), is(false));
-		assertThat(set.contains(new Object()), is(false));
-		for (double x = -5; x <= 4; x++)
-			assertThat(set.contains(x), is(true));
-	}
-
-	@Test
-	public void removeBoxed() {
-		assertThat(empty.remove(17), is(false));
-
-		assertThat(set.remove(17), is(false));
-		assertThat(set.remove(new Object()), is(false));
-		for (double x = -5; x <= 4; x++)
-			assertThat(set.remove(x), is(true));
-		assertThat(set.isEmpty(), is(true));
-	}
-
-	@Test
-	public void addAllBoxed() {
-		assertThat(empty.addAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(empty, containsDoubles(1, 2, 3));
-
-		assertThat(set.addAll(Arrays.asList(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7));
-	}
-
-	@Test
-	public void removeAllBoxed() {
-		assertThat(empty.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.removeAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 4));
-	}
-
-	@Test
-	public void retainAllBoxed() {
-		assertThat(empty.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(empty, is(emptyIterable()));
-
-		assertThat(set.retainAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set, containsDoubles(1, 2, 3));
 	}
 
 	@Test

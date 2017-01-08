@@ -147,16 +147,16 @@ public interface DoubleIterable extends Iterable<Double> {
 	}
 
 	default boolean containsAllDoublesExactly(DoubleIterable c) {
-		for (double x : c)
-			if (!containsDoubleExactly(x))
+		for (DoubleIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsDoubleExactly(iterator.nextDouble()))
 				return false;
 
 		return true;
 	}
 
 	default boolean containsAllDoubles(DoubleIterable c, double precision) {
-		for (double x : c)
-			if (!containsDouble(x, precision))
+		for (DoubleIterator iterator = c.iterator(); iterator.hasNext(); )
+			if (!containsDouble(iterator.nextDouble(), precision))
 				return false;
 
 		return true;
@@ -166,8 +166,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * @return true if this {@code DoubleIterable} contains any of the given {@code doubles}, false otherwise.
 	 */
 	default boolean containsAnyDoublesExactly(double... xs) {
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (containsExactly(xs, iterator.nextDouble()))
 				return true;
 
@@ -179,8 +178,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * false otherwise.
 	 */
 	default boolean containsAnyDoubles(double[] xs, double precision) {
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (contains(xs, iterator.nextDouble(), precision))
 				return true;
 
@@ -192,8 +190,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * DoubleIterable}, false otherwise.
 	 */
 	default boolean containsAnyDoublesExactly(DoubleIterable xs) {
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (xs.containsDoubleExactly(iterator.nextDouble()))
 				return true;
 
@@ -205,8 +202,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 * DoubleIterable} to the given precision, false otherwise.
 	 */
 	default boolean containsAnyDoubles(DoubleIterable xs, double precision) {
-		DoubleIterator iterator = iterator();
-		while (iterator.hasNext())
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (xs.containsDouble(iterator.nextDouble(), precision))
 				return true;
 

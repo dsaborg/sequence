@@ -16,7 +16,7 @@
 
 package org.d2ab.collection.longs;
 
-import org.d2ab.collection.Collectionz;
+import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
@@ -59,7 +59,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		return Collectionz.toArray(this, a);
+		return PrimitiveCollections.toArray(this, a);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 
 	@Override
 	default boolean add(Long x) {
-		return addLong(x);
+		return LongCollections.add(x, this);
 	}
 
 	default boolean addLong(long x) {
@@ -80,12 +80,12 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		return o instanceof Long && containsLong((long) o);
+		return LongCollections.contains(o, this);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		return o instanceof Long && removeLong((long) o);
+		return LongCollections.remove(o, this);
 	}
 
 	@Override
