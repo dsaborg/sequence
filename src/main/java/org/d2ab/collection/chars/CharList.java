@@ -296,6 +296,8 @@ public interface CharList extends List<Character>, CharCollection {
 
 	default char removeCharAt(int index) {
 		CharListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		char previous = listIterator.nextChar();
 		listIterator.remove();
 		return previous;

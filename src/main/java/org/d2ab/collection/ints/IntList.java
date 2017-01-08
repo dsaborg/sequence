@@ -19,7 +19,10 @@ package org.d2ab.collection.ints;
 import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.iterator.chars.CharIterator;
-import org.d2ab.iterator.ints.*;
+import org.d2ab.iterator.ints.DelegatingUnaryIntIterator;
+import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.iterator.ints.LimitingIntIterator;
+import org.d2ab.iterator.ints.SkippingIntIterator;
 import org.d2ab.util.Strict;
 
 import java.util.*;
@@ -31,17 +34,15 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code int} values.
  */
 public interface IntList extends List<Integer>, IntCollection {
-	// TODO: Extract out relevant parts to IterableIntList
-
 	/**
 	 * Returns an immutable {@code IntList} of the given elements. The returned {@code IntList}'s
 	 * {@link IntListIterator} supports forward iteration only.
 	 */
 	static IntList of(int... xs) {
-		return new Base() {
+		return new IntList.Base() {
 			@Override
-			public IntIterator iterator() {
-				return new ArrayIntIterator(xs);
+			public IntListIterator listIterator(int index) {
+				return new ArrayIntListIterator(index, xs);
 			}
 
 			@Override
@@ -68,6 +69,12 @@ public interface IntList extends List<Integer>, IntCollection {
 	static IntList create(int... xs) {
 		return ArrayIntList.create(xs);
 	}
+
+	default IntIterator iterator() {
+		return listIterator();
+	}
+
+	IntListIterator listIterator(int index);
 
 	/**
 	 * @return an {@code IntList} initialized with the members of the given {@link PrimitiveIterator.OfInt}.
@@ -298,6 +305,8 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	default int removeIntAt(int index) {
 		IntListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		int previous = listIterator.nextInt();
 		listIterator.remove();
 		return previous;
@@ -343,11 +352,6 @@ public interface IntList extends List<Integer>, IntCollection {
 	}
 
 	@Override
-	default IntListIterator listIterator(int index) {
-		return IntListIterator.forwardOnly(iterator(), index);
-	}
-
-	@Override
 	default Spliterator.OfInt spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
@@ -372,48 +376,16 @@ public interface IntList extends List<Integer>, IntCollection {
 	 */
 	abstract class Base extends IntCollection.Base implements IntList {
 		public static IntList create(int... ints) {
-			return from(IntList.create(ints));
-		}
-
-		public static IntList from(final IntCollection collection) {
+			final IntList backing = IntList.create(ints);
 			return new IntList.Base() {
-				@Override
-				public IntIterator iterator() {
-					return collection.iterator();
-				}
-
-				@Override
-				public int size() {
-					return collection.size();
-				}
-
-				@Override
-				public boolean addInt(int x) {
-					return collection.addInt(x);
-				}
-			};
-		}
-
-		public static IntList from(final IntList list) {
-			return new IntList.Base() {
-				@Override
-				public IntIterator iterator() {
-					return list.iterator();
-				}
-
 				@Override
 				public IntListIterator listIterator(int index) {
-					return list.listIterator(index);
+					return backing.listIterator(index);
 				}
 
 				@Override
 				public int size() {
-					return list.size();
-				}
-
-				@Override
-				public boolean addInt(int x) {
-					return list.addInt(x);
+					return backing.size();
 				}
 			};
 		}
@@ -456,7 +428,8 @@ public interface IntList extends List<Integer>, IntCollection {
 		}
 	}
 
-	class SubList implements IntList {
+	// TODO make full-fledged IntList implementation
+	class SubList extends Base implements IterableIntList {
 		private final IntList list;
 
 		protected int from;

@@ -302,6 +302,8 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	default double removeDoubleAt(int index) {
 		DoubleListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		double previous = listIterator.nextDouble();
 		listIterator.remove();
 		return previous;

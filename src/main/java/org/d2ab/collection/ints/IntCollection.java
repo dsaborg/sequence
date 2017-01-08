@@ -69,7 +69,7 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 	 * @since 2.2
 	 */
 	default IntList asList() {
-		return IntList.Base.from(this);
+		return CollectionIntList.from(this);
 	}
 
 	@Override

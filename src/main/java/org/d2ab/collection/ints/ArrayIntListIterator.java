@@ -6,7 +6,14 @@ import java.util.NoSuchElementException;
 
 public class ArrayIntListIterator extends ArrayIntIterator implements IntListIterator {
 	public ArrayIntListIterator(int... xs) {
+		this(0, xs);
+	}
+
+	public ArrayIntListIterator(int index, int... xs) {
 		super(xs);
+		if (index < 0 || index > xs.length)
+			throw new IndexOutOfBoundsException("size: " + xs.length + " index: " + index);
+		this.index = index;
 	}
 
 	@Override

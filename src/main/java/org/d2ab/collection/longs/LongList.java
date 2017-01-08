@@ -296,6 +296,8 @@ public interface LongList extends List<Long>, LongCollection {
 
 	default long removeLongAt(int index) {
 		LongListIterator listIterator = listIterator(index);
+		if (!listIterator.hasNext())
+			throw new IndexOutOfBoundsException(String.valueOf(index));
 		long previous = listIterator.nextLong();
 		listIterator.remove();
 		return previous;

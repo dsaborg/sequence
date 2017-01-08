@@ -306,6 +306,11 @@ public class IntListTest {
 		assertThat(subList.size(), is(6));
 		twice(() -> assertThat(subList, containsInts(3, 4, 5, 6, 7, 8)));
 
+		IntList equivalentList = IntList.create(3, 4, 5, 6, 7, 8);
+		assertThat(subList, is(equalTo(equivalentList)));
+		assertThat(subList.hashCode(), is(equivalentList.hashCode()));
+		assertThat(subList.toString(), is("[3, 4, 5, 6, 7, 8]"));
+
 		assertThat(subList.removeIntAt(1), is(4));
 		twice(() -> assertThat(subList, containsInts(3, 5, 6, 7, 8)));
 		twice(() -> assertThat(list, containsInts(1, 2, 3, 5, 6, 7, 8, 9, 10)));
