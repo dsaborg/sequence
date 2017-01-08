@@ -18,7 +18,10 @@ package org.d2ab.collection.chars;
 
 import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.function.CharUnaryOperator;
-import org.d2ab.iterator.chars.*;
+import org.d2ab.iterator.chars.CharIterator;
+import org.d2ab.iterator.chars.DelegatingUnaryCharIterator;
+import org.d2ab.iterator.chars.LimitingCharIterator;
+import org.d2ab.iterator.chars.SkippingCharIterator;
 import org.d2ab.util.Strict;
 
 import java.util.*;
@@ -29,8 +32,6 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code char} values.
  */
 public interface CharList extends List<Character>, CharCollection {
-	// TODO: Extract out relevant parts to IterableCharList
-
 	/**
 	 * Returns an immutable {@code CharList} of the given elements. The returned {@code CharList}'s
 	 * {@link CharListIterator} supports forward iteration only.
@@ -38,8 +39,8 @@ public interface CharList extends List<Character>, CharCollection {
 	static CharList of(char... xs) {
 		return new CharList.Base() {
 			@Override
-			public CharIterator iterator() {
-				return new ArrayCharIterator(xs);
+			public CharListIterator listIterator(int index) {
+				return new ArrayCharListIterator(index, xs);
 			}
 
 			@Override
@@ -76,6 +77,19 @@ public interface CharList extends List<Character>, CharCollection {
 			copy.addChar(iterator.nextChar());
 		return copy;
 	}
+
+	@Override
+	default CharIterator iterator() {
+		return listIterator();
+	}
+
+	@Override
+	default CharListIterator listIterator() {
+		return listIterator(0);
+	}
+
+	@Override
+	CharListIterator listIterator(int index);
 
 	default void clear() {
 		iterator().removeAll();
@@ -338,16 +352,6 @@ public interface CharList extends List<Character>, CharCollection {
 	}
 
 	@Override
-	default CharListIterator listIterator() {
-		return listIterator(0);
-	}
-
-	@Override
-	default CharListIterator listIterator(int index) {
-		return CharListIterator.forwardOnly(iterator(), index);
-	}
-
-	@Override
 	default Spliterator.OfInt intSpliterator() {
 		return Spliterators.spliterator(intIterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
@@ -357,48 +361,16 @@ public interface CharList extends List<Character>, CharCollection {
 	 */
 	abstract class Base extends CharCollection.Base implements CharList {
 		public static CharList create(char... chars) {
-			return from(CharList.create(chars));
-		}
-
-		public static CharList from(final CharCollection collection) {
+			final CharList backing = CharList.create(chars);
 			return new CharList.Base() {
-				@Override
-				public CharIterator iterator() {
-					return collection.iterator();
-				}
-
-				@Override
-				public int size() {
-					return collection.size();
-				}
-
-				@Override
-				public boolean addChar(char x) {
-					return collection.addChar(x);
-				}
-			};
-		}
-
-		public static CharList from(final CharList list) {
-			return new CharList.Base() {
-				@Override
-				public CharIterator iterator() {
-					return list.iterator();
-				}
-
 				@Override
 				public CharListIterator listIterator(int index) {
-					return list.listIterator(index);
+					return backing.listIterator(index);
 				}
 
 				@Override
 				public int size() {
-					return list.size();
-				}
-
-				@Override
-				public boolean addChar(char x) {
-					return list.addChar(x);
+					return backing.size();
 				}
 			};
 		}
@@ -441,7 +413,7 @@ public interface CharList extends List<Character>, CharCollection {
 		}
 	}
 
-	class SubList implements CharList {
+	class SubList implements IterableCharList {
 		private final CharList list;
 
 		private int from;

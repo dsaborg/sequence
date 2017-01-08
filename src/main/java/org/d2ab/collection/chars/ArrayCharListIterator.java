@@ -9,6 +9,13 @@ public class ArrayCharListIterator extends ArrayCharIterator implements CharList
 		super(values);
 	}
 
+	public ArrayCharListIterator(int index, char... xs) {
+		super(xs);
+		if (index < 0 || index > xs.length)
+			throw new IndexOutOfBoundsException("size: " + xs.length + " index: " + index);
+		this.index = index;
+	}
+
 	@Override
 	public boolean hasPrevious() {
 		return index > 0;

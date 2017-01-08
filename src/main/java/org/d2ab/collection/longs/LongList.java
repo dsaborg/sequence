@@ -361,26 +361,26 @@ public interface LongList extends List<Long>, LongCollection {
 	 */
 	abstract class Base extends LongCollection.Base implements LongList {
 		public static LongList create(long... longs) {
-			final LongList list = LongList.create(longs);
+			final LongList backing = LongList.create(longs);
 			return new LongList.Base() {
 				@Override
 				public LongIterator iterator() {
-					return list.iterator();
+					return backing.iterator();
 				}
 
 				@Override
 				public LongListIterator listIterator(int index) {
-					return list.listIterator(index);
+					return backing.listIterator(index);
 				}
 
 				@Override
 				public int size() {
-					return list.size();
+					return backing.size();
 				}
 
 				@Override
 				public boolean addLong(long x) {
-					return list.addLong(x);
+					return backing.addLong(x);
 				}
 			};
 		}

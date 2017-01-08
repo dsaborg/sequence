@@ -67,7 +67,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	 * @since 2.2
 	 */
 	default CharList asList() {
-		return CharList.Base.from(this);
+		return CollectionCharList.from(this);
 	}
 
 	@Override

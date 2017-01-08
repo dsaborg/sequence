@@ -18,6 +18,7 @@ package org.d2ab.collection.ints;
 
 import org.d2ab.collection.PrimitiveCollections;
 import org.d2ab.collection.chars.CharList;
+import org.d2ab.collection.chars.IterableCharList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.DelegatingUnaryIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
@@ -70,6 +71,16 @@ public interface IntList extends List<Integer>, IntCollection {
 		return ArrayIntList.create(xs);
 	}
 
+	/**
+	 * @return an {@code IntList} initialized with the members of the given {@link PrimitiveIterator.OfInt}.
+	 */
+	static IntList copy(PrimitiveIterator.OfInt iterator) {
+		IntList copy = create();
+		while (iterator.hasNext())
+			copy.addInt(iterator.nextInt());
+		return copy;
+	}
+
 	@Override
 	default IntIterator iterator() {
 		return listIterator();
@@ -82,16 +93,6 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	IntListIterator listIterator(int index);
-
-	/**
-	 * @return an {@code IntList} initialized with the members of the given {@link PrimitiveIterator.OfInt}.
-	 */
-	static IntList copy(PrimitiveIterator.OfInt iterator) {
-		IntList copy = create();
-		while (iterator.hasNext())
-			copy.addInt(iterator.nextInt());
-		return copy;
-	}
 
 	default void clear() {
 		iterator().removeAll();
@@ -360,7 +361,7 @@ public interface IntList extends List<Integer>, IntCollection {
 
 	@Override
 	default CharList asChars() {
-		return new CharList() {
+		return new IterableCharList() {
 			@Override
 			public CharIterator iterator() {
 				return CharIterator.from(IntList.this.iterator());
