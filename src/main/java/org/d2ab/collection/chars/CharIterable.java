@@ -121,7 +121,7 @@ public interface CharIterable extends Iterable<Character> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Character> consumer) {
-		assert Strict.LENIENT : "CharIterable.forEach(Consumer)";
+		Strict.check();
 
 		forEachChar(consumer::accept);
 	}

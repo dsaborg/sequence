@@ -63,7 +63,7 @@ public interface DoubleIterable extends Iterable<Double> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Double> consumer) {
-		assert Strict.LENIENT : "DoubleIterable.forEach(Consumer)";
+		Strict.check();
 
 		forEachDouble(consumer::accept);
 	}

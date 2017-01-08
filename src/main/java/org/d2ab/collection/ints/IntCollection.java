@@ -47,14 +47,14 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default Integer[] toArray() {
-		assert Strict.LENIENT : "IntCollection.toArray()";
+		Strict.check();
 
 		return toArray(new Integer[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert Strict.LENIENT : "IntCollection.toArray(Object[])";
+		Strict.check();
 
 		return Collectionz.toArray(this, a);
 	}
@@ -78,7 +78,7 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean add(Integer x) {
-		assert Strict.LENIENT : "IntCollection.add(Integer)";
+		Strict.check();
 
 		return addInt(x);
 	}
@@ -89,21 +89,21 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		assert Strict.LENIENT : "IntCollection.contains(Object)";
+		Strict.check();
 
 		return o instanceof Integer && containsInt((int) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert Strict.LENIENT : "IntCollection.remove(Object)";
+		Strict.check();
 
 		return o instanceof Integer && removeInt((int) o);
 	}
 
 	@Override
 	default boolean addAll(Collection<? extends Integer> c) {
-		assert Strict.LENIENT : "IntCollection.add(Collection)";
+		Strict.check();
 
 		return IntCollections.addAll(this, c);
 	}
@@ -124,28 +124,28 @@ public interface IntCollection extends Collection<Integer>, IntIterable {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		assert Strict.LENIENT : "IntCollection.containsAll(Collection)";
+		Strict.check();
 
 		return IntCollections.containsAll(this, c);
 	}
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		assert Strict.LENIENT : "IntCollection.removeAll(Collection)";
+		Strict.check();
 
 		return IntCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean retainAll(Collection<?> c) {
-		assert Strict.LENIENT : "IntCollection.retainAll(Collection)";
+		Strict.check();
 
 		return IntCollections.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Integer> filter) {
-		assert Strict.LENIENT : "IntCollection.removeIf(Predicate)";
+		Strict.check();
 
 		return removeIntsIf(filter::test);
 	}

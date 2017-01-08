@@ -96,7 +96,7 @@ public interface IntIterable extends Iterable<Integer> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Integer> consumer) {
-		assert Strict.LENIENT : "IntIterable.forEach(Consumer)";
+		Strict.check();
 
 		forEachInt(consumer::accept);
 	}

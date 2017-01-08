@@ -93,35 +93,35 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default boolean contains(Object o) {
-		assert Strict.LENIENT : "LongList.contains(Object)";
+		Strict.check();
 
 		return o instanceof Long && containsLong((long) o);
 	}
 
 	@Override
 	default Long[] toArray() {
-		assert Strict.LENIENT : "LongList.toArray()";
+		Strict.check();
 
 		return toArray(new Long[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert Strict.LENIENT : "LongList.toArray(Object[])";
+		Strict.check();
 
 		return Collectionz.toArray(this, a);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert Strict.LENIENT : "LongList.remove(Object)";
+		Strict.check();
 
 		return o instanceof Long && removeLong((long) o);
 	}
 
 	@Override
 	default boolean add(Long x) {
-		assert Strict.LENIENT : "LongList.add(Long)";
+		Strict.check();
 
 		return addLong(x);
 	}
@@ -131,7 +131,7 @@ public interface LongList extends List<Long>, LongCollection {
 		if (c instanceof LongCollection)
 			return addAllLongsAt(index, (LongCollection) c);
 
-		assert Strict.LENIENT : "LongList.addAll(int, Collection)";
+		Strict.check();
 
 		if (c.isEmpty())
 			return false;
@@ -167,7 +167,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default void replaceAll(UnaryOperator<Long> operator) {
-		assert Strict.LENIENT : "LongList.replaceAll(UnaryOperator)";
+		Strict.check();
 
 		replaceAllLongs(operator::apply);
 	}
@@ -184,7 +184,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default void sort(Comparator<? super Long> c) {
-		assert Strict.LENIENT : "LongList.sort(Comparator)";
+		Strict.check();
 
 		throw new UnsupportedOperationException();
 	}
@@ -203,7 +203,7 @@ public interface LongList extends List<Long>, LongCollection {
 		if (c instanceof LongCollection)
 			return addAllLongs((LongCollection) c);
 
-		assert Strict.LENIENT : "LongList.addAll(Collection)";
+		Strict.check();
 
 		return LongCollections.addAll(this, c);
 	}
@@ -243,7 +243,7 @@ public interface LongList extends List<Long>, LongCollection {
 		if (c instanceof LongIterable)
 			return containsAllLongs((LongIterable) c);
 
-		assert Strict.LENIENT : "LongList.containsAll(Collection)";
+		Strict.check();
 
 		return LongCollections.containsAll(this, c);
 	}
@@ -253,14 +253,14 @@ public interface LongList extends List<Long>, LongCollection {
 		if (c instanceof LongIterable)
 			return removeAllLongs((LongIterable) c);
 
-		assert Strict.LENIENT : "LongList.removeAll(Collection)";
+		Strict.check();
 
 		return LongCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Long> filter) {
-		assert Strict.LENIENT : "LongList.removeIf(Predicate)";
+		Strict.check();
 
 		return removeLongsIf(filter::test);
 	}
@@ -270,14 +270,14 @@ public interface LongList extends List<Long>, LongCollection {
 		if (c instanceof LongIterable)
 			return retainAllLongs((LongIterable) c);
 
-		assert Strict.LENIENT : "LongList.retainAll(Collection)";
+		Strict.check();
 
 		return LongCollections.retainAll(this, c);
 	}
 
 	@Override
 	default Long get(int index) {
-		assert Strict.LENIENT : "LongList.get(int)";
+		Strict.check();
 
 		return getLong(index);
 	}
@@ -292,7 +292,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default Long set(int index, Long x) {
-		assert Strict.LENIENT : "LongList.set(int, Long)";
+		Strict.check();
 
 		return setLong(index, x);
 	}
@@ -308,7 +308,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default void add(int index, Long x) {
-		assert Strict.LENIENT : "LongList.add(int, Long)";
+		Strict.check();
 
 		addLongAt(index, x);
 	}
@@ -319,7 +319,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default Long remove(int index) {
-		assert Strict.LENIENT : "LongList.remove(int)";
+		Strict.check();
 
 		return removeLongAt(index);
 	}
@@ -333,7 +333,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
-		assert Strict.LENIENT : "LongList.lastIndexOf(Object)";
+		Strict.check();
 
 		return o instanceof Long ? lastIndexOfLong((long) o) : -1;
 	}
@@ -351,7 +351,7 @@ public interface LongList extends List<Long>, LongCollection {
 
 	@Override
 	default int indexOf(Object o) {
-		assert Strict.LENIENT : "LongList.indexOf(Object)";
+		Strict.check();
 
 		return o instanceof Long ? indexOfLong((long) o) : -1;
 	}

@@ -93,35 +93,35 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default boolean contains(Object o) {
-		assert Strict.LENIENT : "CharList.contains(Object)";
+		Strict.check();
 
 		return o instanceof Character && containsChar((char) o);
 	}
 
 	@Override
 	default Character[] toArray() {
-		assert Strict.LENIENT : "CharList.toArray()";
+		Strict.check();
 
 		return toArray(new Character[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert Strict.LENIENT : "CharList.toArray(Object[])";
+		Strict.check();
 
 		return Collectionz.toArray(this, a);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert Strict.LENIENT : "CharList.remove(Object)";
+		Strict.check();
 
 		return o instanceof Character && removeChar((char) o);
 	}
 
 	@Override
 	default boolean add(Character x) {
-		assert Strict.LENIENT : "CharList.add(Character)";
+		Strict.check();
 
 		return addChar(x);
 	}
@@ -131,7 +131,7 @@ public interface CharList extends List<Character>, CharCollection {
 		if (c instanceof CharCollection)
 			return addAllCharsAt(index, (CharCollection) c);
 
-		assert Strict.LENIENT : "CharList.addAll(int, Collection)";
+		Strict.check();
 
 		if (c.isEmpty())
 			return false;
@@ -167,7 +167,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default void replaceAll(UnaryOperator<Character> operator) {
-		assert Strict.LENIENT : "CharList.replaceAll(UnaryOperator)";
+		Strict.check();
 
 		replaceAllChars(operator::apply);
 	}
@@ -180,7 +180,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default void sort(Comparator<? super Character> c) {
-		assert Strict.LENIENT : "CharList.sort(Comparator)";
+		Strict.check();
 
 		throw new UnsupportedOperationException();
 	}
@@ -203,7 +203,7 @@ public interface CharList extends List<Character>, CharCollection {
 		if (c instanceof CharCollection)
 			return addAllChars((CharCollection) c);
 
-		assert Strict.LENIENT : "CharList.addAll(Collection)";
+		Strict.check();
 
 		return CharCollections.addAll(this, c);
 	}
@@ -243,7 +243,7 @@ public interface CharList extends List<Character>, CharCollection {
 		if (c instanceof CharIterable)
 			return containsAllChars((CharIterable) c);
 
-		assert Strict.LENIENT : "CharList.containsAll(Collection)";
+		Strict.check();
 
 		return CharCollections.containsAll(this, c);
 	}
@@ -253,14 +253,14 @@ public interface CharList extends List<Character>, CharCollection {
 		if (c instanceof CharIterable)
 			return removeAllChars((CharIterable) c);
 
-		assert Strict.LENIENT : "CharList.removeAll(Collection)";
+		Strict.check();
 
 		return CharCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Character> filter) {
-		assert Strict.LENIENT : "CharList.removeIf(Predicate)";
+		Strict.check();
 
 		return removeCharsIf(filter::test);
 	}
@@ -270,14 +270,14 @@ public interface CharList extends List<Character>, CharCollection {
 		if (c instanceof CharIterable)
 			return retainAllChars((CharIterable) c);
 
-		assert Strict.LENIENT : "CharList.retainAll(Collection)";
+		Strict.check();
 
 		return CharCollections.retainAll(this, c);
 	}
 
 	@Override
 	default Character get(int index) {
-		assert Strict.LENIENT : "CharList.get(int)";
+		Strict.check();
 
 		return getChar(index);
 	}
@@ -292,7 +292,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default Character set(int index, Character x) {
-		assert Strict.LENIENT : "CharList.set(int, Character)";
+		Strict.check();
 
 		return setChar(index, x);
 	}
@@ -308,7 +308,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default void add(int index, Character x) {
-		assert Strict.LENIENT : "CharList.add(int, Character)";
+		Strict.check();
 
 		addCharAt(index, x);
 	}
@@ -319,7 +319,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default Character remove(int index) {
-		assert Strict.LENIENT : "CharList.remove(int)";
+		Strict.check();
 
 		return removeCharAt(index);
 	}
@@ -333,7 +333,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
-		assert Strict.LENIENT : "CharList.lastIndexOf(Object)";
+		Strict.check();
 
 		return o instanceof Character ? lastIndexOfChar((char) o) : -1;
 	}
@@ -351,7 +351,7 @@ public interface CharList extends List<Character>, CharCollection {
 
 	@Override
 	default int indexOf(Object o) {
-		assert Strict.LENIENT : "CharList.indexOf(Object)";
+		Strict.check();
 
 		return o instanceof Character ? indexOfChar((char) o) : -1;
 	}

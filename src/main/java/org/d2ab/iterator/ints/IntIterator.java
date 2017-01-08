@@ -146,14 +146,14 @@ public interface IntIterator extends PrimitiveIterator.OfInt {
 
 	@Override
 	default Integer next() {
-		assert Strict.LENIENT : "IntIterator.next()";
+		Strict.check();
 
 		return nextInt();
 	}
 
 	@Override
 	default void forEachRemaining(Consumer<? super Integer> action) {
-		assert Strict.LENIENT : "IntIterator.forEachRemaining(Consumer)";
+		Strict.check();
 
 		forEachRemaining((IntConsumer) action::accept);
 	}

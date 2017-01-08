@@ -128,14 +128,14 @@ public interface DoubleIterator extends PrimitiveIterator.OfDouble {
 
 	@Override
 	default Double next() {
-		assert Strict.LENIENT : "DoubleIterator.next()";
+		Strict.check();
 
 		return nextDouble();
 	}
 
 	@Override
 	default void forEachRemaining(Consumer<? super Double> action) {
-		assert Strict.LENIENT : "DoubleIterator.forEachRemaining(Consumer)";
+		Strict.check();
 
 		forEachRemaining((DoubleConsumer) action::accept);
 	}

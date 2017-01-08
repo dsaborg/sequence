@@ -94,35 +94,35 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default boolean contains(Object o) {
-		assert Strict.LENIENT : "DoubleList.contains(Object)";
+		Strict.check();
 
 		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
 	default Double[] toArray() {
-		assert Strict.LENIENT : "DoubleList.toArray()";
+		Strict.check();
 
 		return toArray(new Double[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert Strict.LENIENT : "DoubleList.toArray(Object[])";
+		Strict.check();
 
 		return Collectionz.toArray(this, a);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert Strict.LENIENT : "DoubleList.remove(Object)";
+		Strict.check();
 
 		return o instanceof Double && removeDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean add(Double x) {
-		assert Strict.LENIENT : "DoubleList.add(Double)";
+		Strict.check();
 
 		return addDoubleExactly(x);
 	}
@@ -132,7 +132,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		if (c instanceof DoubleCollection)
 			return addAllDoublesAt(index, (DoubleCollection) c);
 
-		assert Strict.LENIENT : "DoubleList.contains(Object)";
+		Strict.check();
 
 		if (c.isEmpty())
 			return false;
@@ -168,7 +168,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default void replaceAll(UnaryOperator<Double> operator) {
-		assert Strict.LENIENT : "DoubleList.replaceAll(UnaryOperator)";
+		Strict.check();
 
 		replaceAllDoubles(operator::apply);
 	}
@@ -189,7 +189,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default void sort(Comparator<? super Double> c) {
-		assert Strict.LENIENT : "DoubleList.sort(Comparator)";
+		Strict.check();
 
 		throw new UnsupportedOperationException();
 	}
@@ -204,7 +204,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		if (c instanceof DoubleCollection)
 			return addAllDoubles((DoubleCollection) c);
 
-		assert Strict.LENIENT : "DoubleList.addAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.addAll(this, c);
 	}
@@ -249,7 +249,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		if (c instanceof DoubleIterable)
 			return containsAllDoublesExactly((DoubleIterable) c);
 
-		assert Strict.LENIENT : "DoubleList.containsAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.containsAll(this, c);
 	}
@@ -259,14 +259,14 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		if (c instanceof DoubleIterable)
 			return removeAllDoublesExactly((DoubleIterable) c);
 
-		assert Strict.LENIENT : "DoubleList.removeAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.removeAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Double> filter) {
-		assert Strict.LENIENT : "DoubleList.removeIf(Predicate)";
+		Strict.check();
 
 		return removeDoublesIf(filter::test);
 	}
@@ -276,14 +276,14 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 		if (c instanceof DoubleIterable)
 			return retainAllDoublesExactly((DoubleIterable) c);
 
-		assert Strict.LENIENT : "DoubleList.retainAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.retainAll(this, c);
 	}
 
 	@Override
 	default Double get(int index) {
-		assert Strict.LENIENT : "DoubleList.get(int)";
+		Strict.check();
 
 		return getDouble(index);
 	}
@@ -298,7 +298,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default Double set(int index, Double x) {
-		assert Strict.LENIENT : "DoubleList.set(int, Double)";
+		Strict.check();
 
 		return setDouble(index, x);
 	}
@@ -314,7 +314,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default void add(int index, Double x) {
-		assert Strict.LENIENT : "DoubleList.add(int, Double)";
+		Strict.check();
 
 		addDoubleAt(index, x);
 	}
@@ -325,7 +325,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default Double remove(int index) {
-		assert Strict.LENIENT : "DoubleList.remove(int)";
+		Strict.check();
 
 		return removeDoubleAt(index);
 	}
@@ -339,7 +339,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default int lastIndexOf(Object o) {
-		assert Strict.LENIENT : "DoubleList.lastIndexOf(Object)";
+		Strict.check();
 
 		return o instanceof Double ? lastIndexOfDoubleExactly((double) o) : -1;
 	}
@@ -368,7 +368,7 @@ public interface DoubleList extends List<Double>, DoubleCollection {
 
 	@Override
 	default int indexOf(Object o) {
-		assert Strict.LENIENT : "DoubleList.indexOf(Object)";
+		Strict.check();
 
 		return o instanceof Double ? indexOfDoubleExactly((double) o) : -1;
 	}

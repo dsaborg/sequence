@@ -45,14 +45,14 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default Double[] toArray() {
-		assert Strict.LENIENT : "DoubleCollection.toArray()";
+		Strict.check();
 
 		return toArray(new Double[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert Strict.LENIENT : "DoubleCollection.toArray(Object[])";
+		Strict.check();
 
 		return Collectionz.toArray(this, a);
 	}
@@ -76,7 +76,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean add(Double x) {
-		assert Strict.LENIENT : "DoubleCollection.add(Double)";
+		Strict.check();
 
 		return addDoubleExactly(x);
 	}
@@ -99,14 +99,14 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		assert Strict.LENIENT : "DoubleCollection.contains(Object)";
+		Strict.check();
 
 		return o instanceof Double && containsDoubleExactly((double) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert Strict.LENIENT : "DoubleCollection.remove(Object)";
+		Strict.check();
 
 		return o instanceof Double && removeDoubleExactly((double) o);
 	}
@@ -116,7 +116,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 		if (c instanceof DoubleCollection)
 			return addAllDoubles((DoubleCollection) c);
 
-		assert Strict.LENIENT : "DoubleCollection.addAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.addAll(this, c);
 	}
@@ -140,7 +140,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 		if (c instanceof DoubleCollection)
 			return containsAllDoublesExactly((DoubleCollection) c);
 
-		assert Strict.LENIENT : "DoubleCollection.containsAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.containsAll(this, c);
 	}
@@ -150,7 +150,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 		if (c instanceof DoubleCollection)
 			return removeAllDoublesExactly((DoubleCollection) c);
 
-		assert Strict.LENIENT : "DoubleCollection.removeAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.removeAll(this, c);
 	}
@@ -160,14 +160,14 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 		if (c instanceof DoubleCollection)
 			return retainAllDoublesExactly((DoubleCollection) c);
 
-		assert Strict.LENIENT : "DoubleCollection.retainAll(Collection)";
+		Strict.check();
 
 		return DoubleCollections.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Double> filter) {
-		assert Strict.LENIENT : "DoubleCollection.removeIf(Predicate)";
+		Strict.check();
 
 		return removeDoublesIf(filter::test);
 	}

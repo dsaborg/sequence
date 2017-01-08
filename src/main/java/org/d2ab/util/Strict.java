@@ -20,4 +20,8 @@ public abstract class Strict {
 	public static void reset() {
 		LENIENT = state.pop();
 	}
+
+	public static void check() {
+		assert LENIENT : "Strict checking enabled";
+	}
 }

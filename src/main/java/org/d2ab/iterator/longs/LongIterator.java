@@ -126,14 +126,14 @@ public interface LongIterator extends PrimitiveIterator.OfLong {
 
 	@Override
 	default Long next() {
-		assert Strict.LENIENT : "LongIterator.next()";
+		Strict.check();
 
 		return nextLong();
 	}
 
 	@Override
 	default void forEachRemaining(Consumer<? super Long> action) {
-		assert Strict.LENIENT : "LongIterator.forEachRemaining(Consumer)";
+		Strict.check();
 
 		forEachRemaining((LongConsumer) action::accept);
 	}

@@ -124,7 +124,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default Character next() {
-		assert Strict.LENIENT : "CharIterator.next()";
+		Strict.check();
 
 		return nextChar();
 	}
@@ -143,7 +143,7 @@ public interface CharIterator extends PrimitiveIterator<Character, CharConsumer>
 	 */
 	@Override
 	default void forEachRemaining(Consumer<? super Character> consumer) {
-		assert Strict.LENIENT : "CharIterator.forEachRemaining(Consumer)";
+		Strict.check();
 
 		forEachRemaining((CharConsumer) consumer::accept);
 	}

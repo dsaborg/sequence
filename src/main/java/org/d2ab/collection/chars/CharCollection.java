@@ -45,14 +45,14 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default Character[] toArray() {
-		assert Strict.LENIENT : "CharCollection.toArray()";
+		Strict.check();
 
 		return toArray(new Character[size()]);
 	}
 
 	@Override
 	default <T> T[] toArray(T[] a) {
-		assert Strict.LENIENT : "CharCollection.toArray(Object[])";
+		Strict.check();
 
 		return Collectionz.toArray(this, a);
 	}
@@ -76,7 +76,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean add(Character x) {
-		assert Strict.LENIENT : "CharCollection.add(Character)";
+		Strict.check();
 
 		return addChar(x);
 	}
@@ -87,14 +87,14 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 
 	@Override
 	default boolean contains(Object o) {
-		assert Strict.LENIENT : "CharCollection.contains(Object)";
+		Strict.check();
 
 		return o instanceof Character && containsChar((char) o);
 	}
 
 	@Override
 	default boolean remove(Object o) {
-		assert Strict.LENIENT : "CharCollection.remove(Character)";
+		Strict.check();
 
 		return o instanceof Character && removeChar((char) o);
 	}
@@ -104,7 +104,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 		if (c instanceof CharCollection)
 			return addAllChars((CharCollection) c);
 
-		assert Strict.LENIENT : "CharCollection.addAll(Collection)";
+		Strict.check();
 
 		return CharCollections.addAll(this, c);
 	}
@@ -128,7 +128,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 		if (c instanceof CharCollection)
 			return containsAllChars((CharCollection) c);
 
-		assert Strict.LENIENT : "CharCollection.containsAll(Collection)";
+		Strict.check();
 
 		return CharCollections.containsAll(this, c);
 	}
@@ -138,7 +138,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 		if (c instanceof CharCollection)
 			return removeAllChars((CharCollection) c);
 
-		assert Strict.LENIENT : "CharCollection.removeAll(Collection)";
+		Strict.check();
 
 		return CharCollections.removeAll(this, c);
 	}
@@ -148,14 +148,14 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 		if (c instanceof CharCollection)
 			return retainAllChars((CharCollection) c);
 
-		assert Strict.LENIENT : "CharCollection.retainAll(Collection)";
+		Strict.check();
 
 		return CharCollections.retainAll(this, c);
 	}
 
 	@Override
 	default boolean removeIf(Predicate<? super Character> filter) {
-		assert Strict.LENIENT : "CharCollection.removeIf(Predicate)";
+		Strict.check();
 
 		return removeCharsIf(filter::test);
 	}

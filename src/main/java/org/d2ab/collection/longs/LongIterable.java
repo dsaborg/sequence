@@ -60,7 +60,7 @@ public interface LongIterable extends Iterable<Long> {
 	 */
 	@Override
 	default void forEach(Consumer<? super Long> consumer) {
-		assert Strict.LENIENT : "LongIterable.forEach(Consumer)";
+		Strict.check();
 
 		forEachLong(consumer::accept);
 	}
