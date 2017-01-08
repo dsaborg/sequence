@@ -17,7 +17,10 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.PrimitiveCollections;
-import org.d2ab.iterator.longs.*;
+import org.d2ab.iterator.longs.DelegatingUnaryLongIterator;
+import org.d2ab.iterator.longs.LimitingLongIterator;
+import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.iterator.longs.SkippingLongIterator;
 import org.d2ab.util.Strict;
 
 import java.util.*;
@@ -29,8 +32,6 @@ import java.util.function.UnaryOperator;
  * A primitive specialization of {@link List} for {@code long} values.
  */
 public interface LongList extends List<Long>, LongCollection {
-	// TODO: Extract out relevant parts to IterableLongList
-
 	/**
 	 * Returns an immutable {@code LongList} of the given elements. The returned {@code LongList}'s
 	 * {@link LongListIterator} supports forward iteration only.
@@ -38,8 +39,8 @@ public interface LongList extends List<Long>, LongCollection {
 	static LongList of(long... xs) {
 		return new LongList.Base() {
 			@Override
-			public LongIterator iterator() {
-				return new ArrayLongIterator(xs);
+			public LongListIterator listIterator(int index) {
+				return new ArrayLongListIterator(index, xs);
 			}
 
 			@Override
@@ -76,6 +77,19 @@ public interface LongList extends List<Long>, LongCollection {
 			copy.addLong(iterator.nextLong());
 		return copy;
 	}
+
+	@Override
+	default LongIterator iterator() {
+		return listIterator();
+	}
+
+	@Override
+	default LongListIterator listIterator() {
+		return listIterator(0);
+	}
+
+	@Override
+	LongListIterator listIterator(int index);
 
 	default void clear() {
 		iterator().removeAll();
@@ -338,16 +352,6 @@ public interface LongList extends List<Long>, LongCollection {
 	}
 
 	@Override
-	default LongListIterator listIterator() {
-		return listIterator(0);
-	}
-
-	@Override
-	default LongListIterator listIterator(int index) {
-		return LongListIterator.forwardOnly(iterator(), index);
-	}
-
-	@Override
 	default Spliterator.OfLong spliterator() {
 		return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED | Spliterator.NONNULL);
 	}
@@ -357,29 +361,7 @@ public interface LongList extends List<Long>, LongCollection {
 	 */
 	abstract class Base extends LongCollection.Base implements LongList {
 		public static LongList create(long... longs) {
-			return from(LongList.create(longs));
-		}
-
-		public static LongList from(final LongCollection collection) {
-			return new LongList.Base() {
-				@Override
-				public LongIterator iterator() {
-					return collection.iterator();
-				}
-
-				@Override
-				public int size() {
-					return collection.size();
-				}
-
-				@Override
-				public boolean addLong(long x) {
-					return collection.addLong(x);
-				}
-			};
-		}
-
-		public static LongList from(final LongList list) {
+			final LongList list = LongList.create(longs);
 			return new LongList.Base() {
 				@Override
 				public LongIterator iterator() {
@@ -441,7 +423,8 @@ public interface LongList extends List<Long>, LongCollection {
 		}
 	}
 
-	class SubList implements LongList {
+	// TODO make full-fledged LongList implementation
+	class SubList implements IterableLongList {
 		private final LongList list;
 
 		private int from;

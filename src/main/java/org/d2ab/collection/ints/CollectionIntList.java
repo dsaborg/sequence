@@ -38,10 +38,12 @@ public class CollectionIntList extends IntList.Base implements IterableIntList {
 		return collection.addAll(c);
 	}
 
+	@Override
 	public boolean addAllInts(int... xs) {
 		return collection.addAllInts(xs);
 	}
 
+	@Override
 	public boolean addAllInts(IntCollection xs) {
 		return collection.addAllInts(xs);
 	}

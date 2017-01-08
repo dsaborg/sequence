@@ -271,15 +271,17 @@ public class LongListOfTest {
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+
 		expecting(NoSuchElementException.class, emptyIterator::nextLong);
-		expecting(UnsupportedOperationException.class, emptyIterator::previousLong);
+		expecting(NoSuchElementException.class, emptyIterator::previousLong);
 
 		expecting(UnsupportedOperationException.class, () -> emptyIterator.add(17));
 		assertThat(emptyIterator.hasNext(), is(false));
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
+
 		expecting(NoSuchElementException.class, emptyIterator::nextLong);
-		expecting(UnsupportedOperationException.class, emptyIterator::previousLong);
+		expecting(NoSuchElementException.class, emptyIterator::previousLong);
 
 		assertThat(empty, is(emptyIterable()));
 	}

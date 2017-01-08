@@ -49,7 +49,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	 * @since 2.2
 	 */
 	default LongList asList() {
-		return LongList.Base.from(this);
+		return CollectionLongList.from(this);
 	}
 
 	@Override

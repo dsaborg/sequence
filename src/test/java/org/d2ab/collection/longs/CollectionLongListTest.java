@@ -32,9 +32,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class LongCollectionAsListTest {
-	private final LongList emptyList = LongCollection.Base.from(LongList.create()).asList();
-	private final LongList list = LongCollection.Base.from(LongList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)).asList();
+public class CollectionLongListTest {
+	private final LongList empty = CollectionLongList.from(LongList.create());
+	private final LongList list = CollectionLongList.from(LongList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 
 	@Test
 	public void subList() {
@@ -62,19 +62,19 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void size() {
-		assertThat(emptyList.size(), is(0));
+		assertThat(empty.size(), is(0));
 		assertThat(list.size(), is(10));
 	}
 
 	@Test
 	public void isEmpty() {
-		assertThat(emptyList.isEmpty(), is(true));
+		assertThat(empty.isEmpty(), is(true));
 		assertThat(list.isEmpty(), is(false));
 	}
 
 	@Test
 	public void containsLong() {
-		assertThat(emptyList.containsLong(2), is(false));
+		assertThat(empty.containsLong(2), is(false));
 		for (long i = 1; i < 5; i++)
 			assertThat(list.containsLong(i), is(true));
 		assertThat(list.containsLong(17), is(false));
@@ -82,7 +82,7 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void iterator() {
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty, is(emptyIterable()));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
@@ -100,14 +100,14 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void toLongArray() {
-		assertArrayEquals(new long[0], emptyList.toLongArray());
+		assertArrayEquals(new long[0], empty.toLongArray());
 		assertArrayEquals(new long[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toLongArray());
 	}
 
 	@Test
 	public void addLong() {
-		assertThat(emptyList.addLong(1), is(true));
-		assertThat(emptyList, containsLongs(1));
+		assertThat(empty.addLong(1), is(true));
+		assertThat(empty, containsLongs(1));
 
 		assertThat(list.addLong(6), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6));
@@ -115,7 +115,7 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void removeLong() {
-		assertThat(emptyList.removeLong(17), is(false));
+		assertThat(empty.removeLong(17), is(false));
 
 		assertThat(list.removeLong(2), is(true));
 		assertThat(list, containsLongs(1, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -126,7 +126,7 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void containsAllLongs() {
-		assertThat(emptyList.containsAllLongs(LongList.create(2, 3)), is(false));
+		assertThat(empty.containsAllLongs(LongList.create(2, 3)), is(false));
 
 		assertThat(list.containsAllLongs(LongList.create(2, 3)), is(true));
 		assertThat(list.containsAllLongs(LongList.create(2, 17)), is(false));
@@ -134,23 +134,23 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void addAllLongs() {
-		assertThat(emptyList.addAllLongs(LongList.create()), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.addAllLongs(LongList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAllLongs(LongList.create(1, 2)));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.addAllLongs(LongList.create(1, 2)), is(true));
+		assertThat(empty, containsLongs(1, 2));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAllLongs(LongList.create(6, 7, 8)));
-		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list.addAllLongs(LongList.create(6, 7, 8)), is(true));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllLongsAt() {
-		assertThat(emptyList.addAllLongsAt(0, LongList.create()), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.addAllLongsAt(0, LongList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAllLongsAt(0, LongList.create(1, 2)));
-		assertThat(emptyList, is(emptyIterable()));
+		expecting(UnsupportedOperationException.class, () -> empty.addAllLongsAt(0, LongList.create(1, 2)));
+		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> list.addAllLongsAt(2, LongList.create(17, 18, 19)));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -158,8 +158,8 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void removeAllLongs() {
-		assertThat(emptyList.removeAllLongs(LongList.create(1, 2)), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.removeAllLongs(LongList.create(1, 2)), is(false));
+		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeAllLongs(LongList.create(1, 2, 5)), is(true));
 		assertThat(list, containsLongs(3, 4, 3, 4));
@@ -167,8 +167,8 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void retainAllLongs() {
-		assertThat(emptyList.retainAllLongs(LongList.create(1, 2)), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.retainAllLongs(LongList.create(1, 2)), is(false));
+		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.retainAllLongs(LongList.create(1, 2, 3)), is(true));
 		assertThat(list, containsLongs(1, 2, 3, 1, 2, 3));
@@ -176,8 +176,8 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void replaceAllLongs() {
-		emptyList.replaceAllLongs(x -> x + 1);
-		assertThat(emptyList, is(emptyIterable()));
+		empty.replaceAllLongs(x -> x + 1);
+		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> list.replaceAllLongs(x -> x + 1));
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -185,8 +185,8 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void sortLongs() {
-		expecting(UnsupportedOperationException.class, emptyList::sortLongs);
-		assertThat(emptyList, is(emptyIterable()));
+		expecting(UnsupportedOperationException.class, empty::sortLongs);
+		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, list::sortLongs);
 		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -194,8 +194,8 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void clear() {
-		emptyList.clear();
-		assertThat(emptyList, is(emptyIterable()));
+		empty.clear();
+		assertThat(empty, is(emptyIterable()));
 
 		list.clear();
 		assertThat(list, is(emptyIterable()));
@@ -203,8 +203,8 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(emptyList.equals(emptyList()), is(true));
-		assertThat(emptyList.equals(asList(1L, 2L)), is(false));
+		assertThat(empty.equals(emptyList()), is(true));
+		assertThat(empty.equals(asList(1L, 2L)), is(false));
 
 		assertThat(list.equals(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L)), is(true));
 		assertThat(list.equals(asList(5L, 4L, 3L, 2L, 1L, 5L, 4L, 3L, 2L, 1L)), is(false));
@@ -212,13 +212,13 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
+		assertThat(empty.hashCode(), is(emptyList().hashCode()));
 		assertThat(list.hashCode(), is(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L).hashCode()));
 	}
 
 	@Test
 	public void testToString() {
-		assertThat(emptyList.toString(), is("[]"));
+		assertThat(empty.toString(), is("[]"));
 		assertThat(list.toString(), is("[1, 2, 3, 4, 5, 1, 2, 3, 4, 5]"));
 	}
 
@@ -246,7 +246,7 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void indexOfLong() {
-		assertThat(emptyList.indexOfLong(17), is(-1));
+		assertThat(empty.indexOfLong(17), is(-1));
 
 		assertThat(list.indexOfLong(1), is(0));
 		assertThat(list.indexOfLong(3), is(2));
@@ -255,7 +255,7 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void lastIndexOfLong() {
-		assertThat(emptyList.lastIndexOfLong(17), is(-1));
+		assertThat(empty.lastIndexOfLong(17), is(-1));
 
 		assertThat(list.lastIndexOfLong(1), is(5));
 		assertThat(list.lastIndexOfLong(3), is(7));
@@ -263,8 +263,79 @@ public class LongCollectionAsListTest {
 	}
 
 	@Test
+	public void listIterator() {
+		LongListIterator listIterator = list.listIterator();
+
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(32));
+		expecting(UnsupportedOperationException.class, listIterator::previousLong);
+		assertThat(listIterator.hasNext(), is(true));
+		expecting(UnsupportedOperationException.class, listIterator::hasPrevious);
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(33));
+
+		assertThat(listIterator.nextLong(), is(1L));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
+		assertThat(listIterator.nextLong(), is(2L));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		assertThat(listIterator.nextLong(), is(3L));
+		listIterator.remove();
+		expecting(IllegalStateException.class, listIterator::remove);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		expecting(UnsupportedOperationException.class, listIterator::previousLong);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		assertThat(listIterator.nextLong(), is(4L));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(18));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
+
+		assertThat(listIterator.nextLong(), is(5L));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
+
+		assertThat(list, containsLongs(1, 2, 4, 5, 1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void iteratorRemoveAll() {
+		LongIterator iterator = list.iterator();
+
+		int i = 0;
+		while (iterator.hasNext()) {
+			assertThat(iterator.nextLong(), is((long) i % 5 + 1));
+			iterator.remove();
+			i++;
+		}
+		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, iterator::nextLong);
+
+		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
 	public void listIteratorEmpty() {
-		LongListIterator emptyIterator = emptyList.listIterator();
+		LongListIterator emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		expecting(NoSuchElementException.class, emptyIterator::nextLong);
 		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
@@ -277,36 +348,7 @@ public class LongCollectionAsListTest {
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
-		assertThat(emptyList, is(emptyIterable()));
-	}
-
-	@Test
-	public void listIterator() {
-		LongListIterator listIterator = list.listIterator();
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(0));
-		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.nextLong(), is(1L));
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextLong(), is(2L));
-
-		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.nextLong(), is(3L));
-
-		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(3));
-		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.nextLong(), is(4L));
-
-		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(empty, is(emptyIterable()));
 	}
 
 	@Test
@@ -361,21 +403,21 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void stream() {
-		assertThat(emptyList.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.stream().collect(Collectors.toList()), contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
 	}
 
 	@Test
 	public void parallelStream() {
-		assertThat(emptyList.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.parallelStream().collect(Collectors.toList()),
 		           contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
 	}
 
 	@Test
 	public void removeLongsIf() {
-		emptyList.removeLongsIf(x -> x == 1);
-		assertThat(emptyList, is(emptyIterable()));
+		empty.removeLongsIf(x -> x == 1);
+		assertThat(empty, is(emptyIterable()));
 
 		list.removeLongsIf(x -> x == 1);
 		assertThat(list, containsLongs(2, 3, 4, 5, 2, 3, 4, 5));
@@ -383,7 +425,7 @@ public class LongCollectionAsListTest {
 
 	@Test
 	public void forEachLong() {
-		emptyList.forEachLong(x -> {
+		empty.forEachLong(x -> {
 			throw new IllegalStateException("Should not get called");
 		});
 

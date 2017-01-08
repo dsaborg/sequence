@@ -9,6 +9,13 @@ public class ArrayLongListIterator extends ArrayLongIterator implements LongList
 		super(xs);
 	}
 
+	public ArrayLongListIterator(int index, long... xs) {
+		super(xs);
+		if (index < 0 || index > xs.length)
+			throw new IndexOutOfBoundsException("size: " + xs.length + " index: " + index);
+		this.index = index;
+	}
+
 	@Override
 	public boolean hasPrevious() {
 		return index > 0;

@@ -70,10 +70,17 @@ public interface IntList extends List<Integer>, IntCollection {
 		return ArrayIntList.create(xs);
 	}
 
+	@Override
 	default IntIterator iterator() {
 		return listIterator();
 	}
 
+	@Override
+	default IntListIterator listIterator() {
+		return listIterator(0);
+	}
+
+	@Override
 	IntListIterator listIterator(int index);
 
 	/**
@@ -344,11 +351,6 @@ public interface IntList extends List<Integer>, IntCollection {
 				return index;
 
 		return -1;
-	}
-
-	@Override
-	default IntListIterator listIterator() {
-		return listIterator(0);
 	}
 
 	@Override
