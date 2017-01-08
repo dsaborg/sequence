@@ -30,8 +30,6 @@ import java.util.Spliterators;
  * A primitive specialization of {@link Set} for {@code int} values.
  */
 public interface IntSet extends Set<Integer>, IntCollection {
-	// TODO: Enable Strict checking
-
 	static IntSet create(int... ints) {
 		return BitIntSet.create(ints);
 	}

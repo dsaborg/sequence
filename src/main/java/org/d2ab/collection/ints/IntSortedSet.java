@@ -30,8 +30,6 @@ import java.util.Spliterators;
  * A primitive specialization of {@link SortedSet} for {@code int} values.
  */
 public interface IntSortedSet extends SortedSet<Integer>, IntSet {
-	// TODO: Enable Strict checking
-
 	/**
 	 * @return a new empty mutable {@code IntSortedSet}.
 	 *
