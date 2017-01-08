@@ -21,11 +21,12 @@ import org.d2ab.collection.chars.CharSet;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -114,18 +115,6 @@ public class IntSetTest {
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(not(equalTo(null))));
 		assertThat(set, is(not(equalTo(new Object()))));
-	}
-
-	@Test
-	public void equalsHashCodeAgainstSet() {
-		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove(17);
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
 	}
 
 	@Test
@@ -275,13 +264,6 @@ public class IntSetTest {
 		AtomicInteger value = new AtomicInteger(-5);
 		set.forEachInt(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(5));
-	}
-
-	@Test
-	public void containsIntCollection() {
-		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
-		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
-		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));
 	}
 
 	@Test

@@ -472,13 +472,6 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void containsCharCollection() {
-		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
-		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));
-	}
-
-	@Test
 	public void boundaries() {
 		BitCharSet charSet = new BitCharSet();
 		assertThat(charSet.addChar(Character.MIN_VALUE), is(true));

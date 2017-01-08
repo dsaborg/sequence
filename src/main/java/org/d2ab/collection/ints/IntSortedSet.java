@@ -19,6 +19,7 @@ package org.d2ab.collection.ints;
 import org.d2ab.iterator.ints.ExclusiveTerminalIntIterator;
 import org.d2ab.iterator.ints.InclusiveStartingIntIterator;
 import org.d2ab.iterator.ints.IntIterator;
+import org.d2ab.util.Strict;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -56,6 +57,8 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 	@Override
 	default IntSortedSet subSet(Integer from, Integer to) {
+		Strict.check();
+
 		return subSet((int) from, (int) to);
 	}
 
@@ -75,6 +78,8 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 	@Override
 	default IntSortedSet headSet(Integer to) {
+		Strict.check();
+
 		return headSet((int) to);
 	}
 
@@ -99,6 +104,8 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 	@Override
 	default IntSortedSet tailSet(Integer from) {
+		Strict.check();
+
 		return tailSet((int) from);
 	}
 
@@ -123,6 +130,8 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 	@Override
 	default Integer first() {
+		Strict.check();
+
 		return firstInt();
 	}
 
@@ -132,6 +141,8 @@ public interface IntSortedSet extends SortedSet<Integer>, IntSet {
 
 	@Override
 	default Integer last() {
+		Strict.check();
+
 		return lastInt();
 	}
 

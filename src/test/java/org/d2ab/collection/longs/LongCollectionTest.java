@@ -300,13 +300,6 @@ public class LongCollectionTest {
 	}
 
 	@Test
-	public void containsLongCollection() {
-		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(collection.containsAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(collection.containsAll(asList(1L, 2L, 3L, 17L)), is(false));
-	}
-
-	@Test
 	public void fuzz() {
 		long[] randomValues = new long[1000];
 		Random random = new Random();

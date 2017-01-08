@@ -493,7 +493,7 @@ public class CharSortedSetTest {
 	}
 
 	@Test
-	public void containsCharCollection() {
+	public void containsAllCollection() {
 		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
 		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
 		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));

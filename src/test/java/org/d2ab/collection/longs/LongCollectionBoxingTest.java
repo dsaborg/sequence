@@ -241,7 +241,7 @@ public class LongCollectionBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void containsLongCollection() {
+	public void containsAllCollection() {
 		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
 		assertThat(collection.containsAll(asList(1L, 2L, 3L)), is(true));
 		assertThat(collection.containsAll(asList(1L, 2L, 3L, 17L)), is(false));

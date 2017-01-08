@@ -420,7 +420,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void containsIntCollection() {
+	public void containsAllCollection() {
 		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
 		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
 		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));

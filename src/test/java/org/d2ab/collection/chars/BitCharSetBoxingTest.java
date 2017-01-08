@@ -408,13 +408,6 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void containsCharCollection() {
-		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
-		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));
-	}
-
-	@Test
 	public void forEach() {
 		empty.forEach(x -> {
 			throw new IllegalStateException("should not get called");

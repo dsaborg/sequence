@@ -380,13 +380,6 @@ public class DoubleSetTest {
 	}
 
 	@Test
-	public void containsDoubleCollection() {
-		assertThat(empty.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(Arrays.asList(1.0, 2.0, 3.0, 17.0)), is(false));
-	}
-
-	@Test
 	public void boundaries() {
 		SortedListDoubleSet intSet = new SortedListDoubleSet();
 		assertThat(intSet.addDoubleExactly(0), is(true));

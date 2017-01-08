@@ -614,13 +614,6 @@ public class BitLongSetTest {
 	}
 
 	@Test
-	public void containsLongCollection() {
-		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(set.containsAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(set.containsAll(asList(1L, 2L, 3L, 17L)), is(false));
-	}
-
-	@Test
 	public void boundaries() {
 		BitLongSet set = new BitLongSet();
 		assertThat(set.addLong(Long.MIN_VALUE), is(true));

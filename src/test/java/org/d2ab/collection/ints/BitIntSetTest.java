@@ -20,11 +20,13 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -109,11 +111,11 @@ public class BitIntSetTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstSet() {
-		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		IntSet set2 = IntSet.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
-		set2.remove(17);
+		set2.removeInt(17);
 
 		assertThat(set, is(equalTo(set2)));
 		assertThat(set.hashCode(), is(set2.hashCode()));
@@ -142,7 +144,7 @@ public class BitIntSetTest {
 		assertThat(subSet.containsInt(3), is(false));
 		assertThat(subSet.toString(), is("[-3, -2, -1, 0, 1, 2]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-3, -2, -1, 0, 1, 2));
+		IntSet equivalentSet = IntSet.create(-3, -2, -1, 0, 1, 2);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -189,7 +191,7 @@ public class BitIntSetTest {
 		assertThat(subSet.containsInt(-3), is(false));
 		assertThat(subSet.toString(), is("[-1, 1]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-1, 1));
+		IntSet equivalentSet = IntSet.create(-1, 1);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -205,7 +207,7 @@ public class BitIntSetTest {
 		assertThat(headSet.containsInt(0), is(false));
 		assertThat(headSet.toString(), is("[-5, -4, -3, -2, -1]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-5, -4, -3, -2, -1));
+		IntSet equivalentSet = IntSet.create(-5, -4, -3, -2, -1);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -257,7 +259,7 @@ public class BitIntSetTest {
 		assertThat(headSet.containsInt(1), is(false));
 		assertThat(headSet.toString(), is("[-5, -3, -1]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-5, -3, -1));
+		IntSet equivalentSet = IntSet.create(-5, -3, -1);
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -273,7 +275,7 @@ public class BitIntSetTest {
 		assertThat(tailSet.containsInt(-1), is(false));
 		assertThat(tailSet.toString(), is("[0, 1, 2, 3, 4]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(0, 1, 2, 3, 4));
+		IntSet equivalentSet = IntSet.create(0, 1, 2, 3, 4);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -325,7 +327,7 @@ public class BitIntSetTest {
 		assertThat(tailSet.containsInt(-1), is(false));
 		assertThat(tailSet.toString(), is("[1, 3, 5]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(1, 3, 5));
+		IntSet equivalentSet = IntSet.create(1, 3, 5);
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -477,13 +479,6 @@ public class BitIntSetTest {
 		AtomicInteger value = new AtomicInteger(-5);
 		set.forEachInt(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(5));
-	}
-
-	@Test
-	public void containsIntCollection() {
-		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
-		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
-		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
