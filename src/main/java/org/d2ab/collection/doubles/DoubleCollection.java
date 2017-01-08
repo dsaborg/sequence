@@ -67,7 +67,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	 * @since 2.2
 	 */
 	default DoubleList asList() {
-		return DoubleList.Base.from(this);
+		return CollectionDoubleList.from(this);
 	}
 
 	@Override

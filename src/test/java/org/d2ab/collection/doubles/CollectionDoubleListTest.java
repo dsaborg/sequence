@@ -32,10 +32,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
-public class DoubleCollectionAsListTest {
-	private final DoubleList emptyList = DoubleCollection.Base.from(DoubleList.create()).asList();
-	private final DoubleList list = DoubleCollection.Base.from(DoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))
-	                                                     .asList();
+public class CollectionDoubleListTest {
+	private final DoubleList empty = CollectionDoubleList.from(DoubleList.create());
+	private final DoubleList list = CollectionDoubleList.from(DoubleList.create(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 
 	@Test
 	public void subList() {
@@ -63,19 +62,19 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void size() {
-		assertThat(emptyList.size(), is(0));
+		assertThat(empty.size(), is(0));
 		assertThat(list.size(), is(10));
 	}
 
 	@Test
 	public void isEmpty() {
-		assertThat(emptyList.isEmpty(), is(true));
+		assertThat(empty.isEmpty(), is(true));
 		assertThat(list.isEmpty(), is(false));
 	}
 
 	@Test
 	public void containsDoubleExactly() {
-		assertThat(emptyList.containsDoubleExactly(2), is(false));
+		assertThat(empty.containsDoubleExactly(2), is(false));
 		for (double i = 1; i < 5; i++)
 			assertThat(list.containsDoubleExactly(i), is(true));
 		assertThat(list.containsDoubleExactly(17), is(false));
@@ -83,7 +82,7 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void iterator() {
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty, is(emptyIterable()));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
@@ -101,14 +100,14 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void toDoubleArray() {
-		assertArrayEquals(new double[0], emptyList.toDoubleArray(), 0.0);
+		assertArrayEquals(new double[0], empty.toDoubleArray(), 0.0);
 		assertArrayEquals(new double[]{1, 2, 3, 4, 5, 1, 2, 3, 4, 5}, list.toDoubleArray(), 0.0);
 	}
 
 	@Test
 	public void addDoubleExactly() {
-		assertThat(emptyList.addDoubleExactly(1), is(true));
-		assertThat(emptyList, containsDoubles(1));
+		assertThat(empty.addDoubleExactly(1), is(true));
+		assertThat(empty, containsDoubles(1));
 
 		assertThat(list.addDoubleExactly(6), is(true));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6));
@@ -116,7 +115,7 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void removeDoubleExactly() {
-		assertThat(emptyList.removeDoubleExactly(17), is(false));
+		assertThat(empty.removeDoubleExactly(17), is(false));
 
 		assertThat(list.removeDoubleExactly(2), is(true));
 		assertThat(list, containsDoubles(1, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -127,7 +126,7 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void containsAllDoublesExactly() {
-		assertThat(emptyList.containsAllDoublesExactly(DoubleList.create(2, 3)), is(false));
+		assertThat(empty.containsAllDoublesExactly(DoubleList.create(2, 3)), is(false));
 
 		assertThat(list.containsAllDoublesExactly(DoubleList.create(2, 3)), is(true));
 		assertThat(list.containsAllDoublesExactly(DoubleList.create(2, 17)), is(false));
@@ -135,23 +134,23 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void addAllDoubles() {
-		assertThat(emptyList.addAllDoubles(DoubleList.create()), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.addAllDoubles(DoubleList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAllDoubles(DoubleList.create(1, 2)));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.addAllDoubles(DoubleList.create(1, 2)), is(true));
+		assertThat(empty, containsDoubles(1, 2));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAllDoubles(DoubleList.create(6, 7, 8)));
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(list.addAllDoubles(DoubleList.create(6, 7, 8)), is(true));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 	}
 
 	@Test
 	public void addAllDoublesAt() {
-		assertThat(emptyList.addAllDoublesAt(0, DoubleList.create()), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.addAllDoublesAt(0, DoubleList.create()), is(false));
+		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAllDoublesAt(0, DoubleList.create(1, 2)));
-		assertThat(emptyList, is(emptyIterable()));
+		expecting(UnsupportedOperationException.class, () -> empty.addAllDoublesAt(0, DoubleList.create(1, 2)));
+		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> list.addAllDoublesAt(2, DoubleList.create(17, 18, 19)));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -159,8 +158,8 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void removeAllDoublesExactly() {
-		assertThat(emptyList.removeAllDoublesExactly(DoubleList.create(1, 2)), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.removeAllDoublesExactly(DoubleList.create(1, 2)), is(false));
+		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.removeAllDoublesExactly(DoubleList.create(1, 2, 5)), is(true));
 		assertThat(list, containsDoubles(3, 4, 3, 4));
@@ -168,8 +167,8 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void retainAllDoublesExactly() {
-		assertThat(emptyList.retainAllDoublesExactly(DoubleList.create(1, 2)), is(false));
-		assertThat(emptyList, is(emptyIterable()));
+		assertThat(empty.retainAllDoublesExactly(DoubleList.create(1, 2)), is(false));
+		assertThat(empty, is(emptyIterable()));
 
 		assertThat(list.retainAllDoublesExactly(DoubleList.create(1, 2, 3)), is(true));
 		assertThat(list, containsDoubles(1, 2, 3, 1, 2, 3));
@@ -177,8 +176,8 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void replaceAllDoubles() {
-		emptyList.replaceAllDoubles(x -> x + 1);
-		assertThat(emptyList, is(emptyIterable()));
+		empty.replaceAllDoubles(x -> x + 1);
+		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, () -> list.replaceAllDoubles(x -> x + 1));
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -186,8 +185,8 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void sortDoubles() {
-		expecting(UnsupportedOperationException.class, emptyList::sortDoubles);
-		assertThat(emptyList, is(emptyIterable()));
+		expecting(UnsupportedOperationException.class, empty::sortDoubles);
+		assertThat(empty, is(emptyIterable()));
 
 		expecting(UnsupportedOperationException.class, list::sortDoubles);
 		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
@@ -195,8 +194,8 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void clear() {
-		emptyList.clear();
-		assertThat(emptyList, is(emptyIterable()));
+		empty.clear();
+		assertThat(empty, is(emptyIterable()));
 
 		list.clear();
 		assertThat(list, is(emptyIterable()));
@@ -204,8 +203,8 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(emptyList.equals(emptyList()), is(true));
-		assertThat(emptyList.equals(asList(1.0, 2.0)), is(false));
+		assertThat(empty.equals(emptyList()), is(true));
+		assertThat(empty.equals(asList(1.0, 2.0)), is(false));
 
 		assertThat(list.equals(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0)), is(true));
 		assertThat(list.equals(asList(5.0, 4.0, 3.0, 2.0, 1.0, 5.0, 4.0, 3.0, 2.0, 1.0)), is(false));
@@ -213,13 +212,13 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
+		assertThat(empty.hashCode(), is(emptyList().hashCode()));
 		assertThat(list.hashCode(), is(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0).hashCode()));
 	}
 
 	@Test
 	public void testToString() {
-		assertThat(emptyList.toString(), is("[]"));
+		assertThat(empty.toString(), is("[]"));
 		assertThat(list.toString(), is("[1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0]"));
 	}
 
@@ -247,7 +246,7 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void indexOfDoubleExactly() {
-		assertThat(emptyList.indexOfDoubleExactly(17), is(-1));
+		assertThat(empty.indexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.indexOfDoubleExactly(1), is(0));
 		assertThat(list.indexOfDoubleExactly(3), is(2));
@@ -256,7 +255,7 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void lastIndexOfDoubleExactly() {
-		assertThat(emptyList.lastIndexOfDoubleExactly(17), is(-1));
+		assertThat(empty.lastIndexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.lastIndexOfDoubleExactly(1), is(5));
 		assertThat(list.lastIndexOfDoubleExactly(3), is(7));
@@ -264,8 +263,91 @@ public class DoubleCollectionAsListTest {
 	}
 
 	@Test
+	public void listIteratorAtEnd() {
+		DoubleListIterator listIterator = list.listIterator(10);
+		assertThat(listIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, listIterator::nextDouble);
+	}
+
+	@Test
+	public void listIteratorAfterEnd() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
+	}
+
+	@Test
+	public void listIterator() {
+		DoubleListIterator listIterator = list.listIterator();
+
+		expecting(IllegalStateException.class, listIterator::remove);
+		expecting(UnsupportedOperationException.class, () -> listIterator.set('p'));
+		expecting(UnsupportedOperationException.class, listIterator::previousDouble);
+		assertThat(listIterator.hasNext(), is(true));
+		expecting(UnsupportedOperationException.class, listIterator::hasPrevious);
+		assertThat(listIterator.nextIndex(), is(0));
+		assertThat(listIterator.previousIndex(), is(-1));
+
+		expecting(UnsupportedOperationException.class, () -> listIterator.add('q'));
+
+		assertThat(listIterator.nextDouble(), is(1.0));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(1));
+		assertThat(listIterator.previousIndex(), is(0));
+
+		assertThat(listIterator.nextDouble(), is(2.0));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		assertThat(listIterator.nextDouble(), is(3.0));
+		listIterator.remove();
+		expecting(IllegalStateException.class, listIterator::remove);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		expecting(UnsupportedOperationException.class, listIterator::previousDouble);
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		expecting(UnsupportedOperationException.class, () -> listIterator.set('r'));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(2));
+		assertThat(listIterator.previousIndex(), is(1));
+
+		assertThat(listIterator.nextDouble(), is(4.0));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add('s'));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(3));
+		assertThat(listIterator.previousIndex(), is(2));
+
+		assertThat(listIterator.nextDouble(), is(5.0));
+		assertThat(listIterator.hasNext(), is(true));
+		assertThat(listIterator.nextIndex(), is(4));
+		assertThat(listIterator.previousIndex(), is(3));
+
+		assertThat(list, containsDoubles(1, 2, 4, 5, 1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void iteratorRemoveAll() {
+		DoubleIterator iterator = list.iterator();
+
+		int i = 0;
+		while (iterator.hasNext()) {
+			assertThat(iterator.nextDouble(), is((double) (i % 5 + 1)));
+			iterator.remove();
+			i++;
+		}
+		assertThat(i, is(10));
+		expecting(NoSuchElementException.class, iterator::nextDouble);
+
+		assertThat(list, is(emptyIterable()));
+	}
+
+	@Test
 	public void listIteratorEmpty() {
-		DoubleListIterator emptyIterator = emptyList.listIterator();
+		DoubleListIterator emptyIterator = empty.listIterator();
 		assertThat(emptyIterator.hasNext(), is(false));
 		expecting(NoSuchElementException.class, emptyIterator::nextDouble);
 		expecting(UnsupportedOperationException.class, emptyIterator::hasPrevious);
@@ -278,36 +360,7 @@ public class DoubleCollectionAsListTest {
 		assertThat(emptyIterator.nextIndex(), is(0));
 		assertThat(emptyIterator.previousIndex(), is(-1));
 
-		assertThat(emptyList, is(emptyIterable()));
-	}
-
-	@Test
-	public void listIterator() {
-		DoubleListIterator listIterator = list.listIterator();
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(0));
-		assertThat(listIterator.previousIndex(), is(-1));
-		assertThat(listIterator.nextDouble(), is(1.0));
-
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(1));
-		assertThat(listIterator.previousIndex(), is(0));
-		assertThat(listIterator.nextDouble(), is(2.0));
-
-		expecting(UnsupportedOperationException.class, () -> listIterator.add(17));
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(2));
-		assertThat(listIterator.previousIndex(), is(1));
-		assertThat(listIterator.nextDouble(), is(3.0));
-
-		expecting(UnsupportedOperationException.class, () -> listIterator.set(17));
-		assertThat(listIterator.hasNext(), is(true));
-		assertThat(listIterator.nextIndex(), is(3));
-		assertThat(listIterator.previousIndex(), is(2));
-		assertThat(listIterator.nextDouble(), is(4.0));
-
-		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
+		assertThat(empty, is(emptyIterable()));
 	}
 
 	@Test
@@ -362,22 +415,22 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void stream() {
-		assertThat(emptyList.stream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.stream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.stream().collect(Collectors.toList()),
 		           contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void parallelStream() {
-		assertThat(emptyList.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
+		assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
 		assertThat(list.parallelStream().collect(Collectors.toList()),
 		           contains(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0));
 	}
 
 	@Test
 	public void removeDoublesIf() {
-		emptyList.removeDoublesIf(x -> x == 1);
-		assertThat(emptyList, is(emptyIterable()));
+		empty.removeDoublesIf(x -> x == 1);
+		assertThat(empty, is(emptyIterable()));
 
 		list.removeDoublesIf(x -> x == 1);
 		assertThat(list, containsDoubles(2, 3, 4, 5, 2, 3, 4, 5));
@@ -385,7 +438,7 @@ public class DoubleCollectionAsListTest {
 
 	@Test
 	public void forEachDouble() {
-		emptyList.forEachDouble(x -> {
+		empty.forEachDouble(x -> {
 			throw new IllegalStateException("Should not get called");
 		});
 
