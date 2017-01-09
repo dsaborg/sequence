@@ -22,6 +22,11 @@ Javadoc for the entire project is available at the
 
 ### News
 
+**2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
+code coverage of the entire project to 100% line coverage. Fixes minor bugs and inconsistencies under error conditions,
+such as correct exceptions being thrown for index out of bounds in primitive collections, as well as several cases of
+unnecessary boxing in primitive collections and sequences.
+
 **2016-12-11 - Sequence v2.1** with `Sequence` backtracking from implementing the `List` interface to 
 implementing just `Collection`, due to the general inability to fulfill `List`'s `equals` and `hashCode` contract.
 It is still possible to get a full-fledged `List` view of a `Sequence` through `Sequence#asList()`. Also improves 
@@ -76,7 +81,7 @@ The Sequence test suite is now at over 1000 tests!
 ### Overview
 
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
-and with better integration with the rest of Java.
+and with better integration with the rest of Java. It has no external dependencies so it will not slow down your build.
 
 It aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for advanced
 traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
@@ -124,7 +129,7 @@ To install in maven, use the maven central dependency:
 <dependency>
   <groupId>org.d2ab</groupId>
   <artifactId>sequence</artifactId>
-  <version>[2.1.1,3.0)</version>
+  <version>[2.2,3.0)</version>
 </dependency>
 ```
 
@@ -138,7 +143,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.d2ab:sequence:[2.1.1,3.0)'
+    compile 'org.d2ab:sequence:[2.2,3.0)'
 }
 ```
 
