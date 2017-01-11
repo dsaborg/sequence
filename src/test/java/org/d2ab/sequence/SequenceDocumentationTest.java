@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Character.isSpaceChar;
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
 import static org.hamcrest.Matchers.*;
@@ -199,8 +200,9 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 		Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
 		                                                   .map(Pair::from)
-		                                                   .filter(p -> p.test((s, i) -> i != 2))
-		                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+		                                                   .filter(pair -> pair.test((s, i) -> i != 2))
+		                                                   .map(pair -> pair.map((s, i) -> Pair.of(s + " x 2", i *
+		                                                                                                       2)));
 
 		assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 	}
@@ -258,7 +260,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 	@Test
 	public void capitalize() {
 		CharSeq titleCase = CharSeq.from("hello_lexicon")
-		                           .mapBack('_', (p, c) -> p == '_' ? toUpperCase(c) : c)
+		                           .mapBack('_', (prev, x) -> prev == '_' ? toUpperCase(x) : x)
 		                           .map(c -> (c == '_') ? ' ' : c);
 
 		assertThat(titleCase.asString(), is("Hello Lexicon"));
@@ -278,8 +280,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 		String vowels = "aeoiuy";
 
 		Sequence<String> consonantsVowels = CharSeq.from("terrain")
-		                                           .batch((a, b) -> (vowels.indexOf(a) == -1) !=
-		                                                            (vowels.indexOf(b) == -1))
+		                                           .batch((a, b) -> (vowels.indexOf(a) < 0) != (vowels.indexOf(b) < 0))
 		                                           .map(CharSeq::asString);
 
 		assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
@@ -290,28 +291,26 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 		Reader reader = new StringReader("hello world\ngoodbye world\n");
 
 		Sequence<String> titleCase = CharSeq.read(reader)
-		                                    .mapBack('\n', (p, n) -> p == '\n' || p == ' ' ?
-		                                                             Character.toUpperCase(n) : n)
+		                                    .mapBack('\n', (prev, x) -> isSpaceChar(prev) ? toUpperCase(x) : x)
 		                                    .split('\n')
 		                                    .map(phrase -> phrase.append('!'))
 		                                    .map(CharSeq::asString);
 
 		assertThat(titleCase, contains("Hello World!", "Goodbye World!"));
 
-		reader.close();
+		reader.close(); // sequence does not close reader
 	}
 
 	@Test
 	public void filterReader() throws IOException {
-		Reader original = new StringReader("hello world\ngoodbye world\n");
+		String original = "hello world\ngoodbye world\n";
 
-		BufferedReader transformed = new BufferedReader(CharSeq.read(original).map(Character::toUpperCase).asReader());
+		BufferedReader transformed = new BufferedReader(CharSeq.from(original).map(Character::toUpperCase).asReader());
 
 		assertThat(transformed.readLine(), is("HELLO WORLD"));
 		assertThat(transformed.readLine(), is("GOODBYE WORLD"));
 
 		transformed.close();
-		original.close();
 	}
 
 	@Test
