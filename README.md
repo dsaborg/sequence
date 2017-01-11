@@ -209,7 +209,7 @@ See also:
 
 #### Foreach
 
-Also because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
+Because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
 
 ```Java
 Sequence<Integer> sequence = Sequence.ints().limit(5);
