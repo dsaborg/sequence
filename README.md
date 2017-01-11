@@ -1,19 +1,7 @@
 # Sequence
 ## A lightweight alternative to Java 8 sequential Stream
 
-##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
-
 [![Build Status](https://travis-ci.org/d2aborg/sequence.svg?branch=master)](https://travis-ci.org/d2aborg/sequence)
-
-Follow me on Twitter ([@d2aborg](http://twitter.com/d2aborg)) to receive updates about Sequence.
-
-Your feedback is welcome! For comments, feature requests or bug reports,
-use the [GitHub Issues Page](https://github.com/d2ab/sequence/issues),
-email me at [daniel@d2ab.org](mailto:daniel@d2ab.org),
-or send me a message on [twitter](http://twitter.com/daniel2aborg).
-
-Javadoc for the entire project is available at the
-[Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
 
 * [News](#news)
 * [Overview](#overview)
@@ -23,6 +11,8 @@ Javadoc for the entire project is available at the
 * [Conclusion](#conclusion)
 
 ### News
+
+Follow me on Twitter [@d2aborg](http://twitter.com/d2aborg) to receive updates.
 
 **2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
 code coverage of the entire project to 100% line coverage. Fixes minor bugs and inconsistencies under error conditions,
@@ -97,8 +87,6 @@ instead of a black box pipeline, and is built for convenience and compatibility 
 for programmers wanting to perform common data processing tasks on moderately sized collections. If you need parallel
 iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
 
-The `Sequence` library is protected by over 4500 tests, providing 100% line coverage of all classes in the project.
-
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
                              .filter(x -> x % 2 == 0)
@@ -115,13 +103,18 @@ See also:
 [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-),
 [Sequence#toList()](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#toList--)
 
+The `Sequence` library is protected by over 4500 tests providing 100% line coverage of all classes in the project.
+
+Javadoc for the entire project is available at the
+[Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
+
 ### Install
 
 The Sequence library is available for manual install or as a maven central dependency for maven and gradle.
 
 #### Manual
 
-For manually installable releases, check out the [GitHub Releases Page](https://github.com/d2ab/sequence/releases).
+For manually installable releases, check out the [GitHub Releases Page](https://github.com/d2aborg/sequence/releases).
 
 #### Maven
 
@@ -637,4 +630,11 @@ See also:
 
 Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
 
-Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/). :heart:
+Copyright &copy; 2016-2017 Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/)).
+Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+Your feedback is welcome! For comments, feature requests or bug reports,
+use the [GitHub Issues Page](https://github.com/d2aborg/sequence/issues) or
+email me at [daniel@d2ab.org](mailto:daniel@d2ab.org).
+
+Developed with [IntelliJ IDEA](https://www.jetbrains.com/idea/). :heart:
