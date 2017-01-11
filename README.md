@@ -289,19 +289,15 @@ assertThat(list, contains(2, 4));
 
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+Sequence<String> evenStrings = Sequence.from(list)
+                                       .filter(x -> x % 2 == 0)
+                                       // biMap allows adding back to underlying collection
+                                       .biMap(Object::toString, Integer::parseInt);
+assertThat(evenStrings, contains("2", "4"));
 
-Sequence<String> evensAsStrings = Sequence.from(list)
-                                          .filter(x -> x % 2 == 0)
-                                          .biMap(Object::toString, Integer::parseInt); // biMap allows add
-assertThat(evensAsStrings, contains("2", "4"));
+evenStrings.add("6");
 
-evensAsStrings.add("6");
-assertThat(evensAsStrings, contains("2", "4", "6"));
-assertThat(list, contains(1, 2, 3, 4, 5, 6));
-
-expecting(IllegalArgumentException.class,
-          () -> evensAsStrings.add("7")); // cannot add filtered out item to sequence
-assertThat(evensAsStrings, contains("2", "4", "6"));
+assertThat(evenStrings, contains("2", "4", "6"));
 assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 
