@@ -263,6 +263,18 @@ public class CollectionLongListTest {
 	}
 
 	@Test
+	public void listIteratorAtEnd() {
+		LongListIterator listIterator = list.listIterator(10);
+		assertThat(listIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, listIterator::nextLong);
+	}
+
+	@Test
+	public void listIteratorAfterEnd() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
+	}
+
+	@Test
 	public void listIterator() {
 		LongListIterator listIterator = list.listIterator();
 

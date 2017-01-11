@@ -559,9 +559,12 @@ public class LongListTest {
 
 	@Test
 	public void removeLongAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(0));
 		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(2));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(10));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(12));
 		assertThat(list.removeLongAt(2), is(3L));
 		assertThat(list, containsLongs(1, 2, 4, 5));
 	}

@@ -565,9 +565,12 @@ public class IntListTest {
 
 	@Test
 	public void removeIntAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(0));
 		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(2));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.removeIntAt(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeIntAt(12));
 		assertThat(list.removeIntAt(2), is(3));
 		assertThat(list, containsInts(1, 2, 4, 5));
 	}

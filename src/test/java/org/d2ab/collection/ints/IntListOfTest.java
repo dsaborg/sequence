@@ -19,6 +19,7 @@ package org.d2ab.collection.ints;
 import org.d2ab.iterator.ints.IntIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -261,6 +262,18 @@ public class IntListOfTest {
 		assertThat(list.lastIndexOfInt(1), is(5));
 		assertThat(list.lastIndexOfInt(3), is(7));
 		assertThat(list.lastIndexOfInt(5), is(9));
+	}
+
+	@Test
+	public void listIteratorAtEnd() {
+		IntListIterator listIterator = list.listIterator(10);
+		assertThat(listIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, listIterator::nextInt);
+	}
+
+	@Test
+	public void listIteratorAfterEnd() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
 	}
 
 	@Test

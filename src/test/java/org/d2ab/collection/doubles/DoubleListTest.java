@@ -567,9 +567,12 @@ public class DoubleListTest {
 
 	@Test
 	public void removeDoubleAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(0));
 		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(2));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.removeDoubleAt(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeDoubleAt(12));
 		assertThat(list.removeDoubleAt(2), is(3.0));
 		assertThat(list, containsDoubles(1, 2, 4, 5, 1, 2, 3, 4, 5));
 	}

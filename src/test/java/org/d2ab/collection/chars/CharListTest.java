@@ -560,9 +560,12 @@ public class CharListTest {
 
 	@Test
 	public void removeCharAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeCharAt(0));
 		expecting(IndexOutOfBoundsException.class, () -> empty.removeCharAt(2));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.removeCharAt(10));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeCharAt(12));
 		assertThat(list.removeCharAt(2), is('c'));
 		assertThat(list, containsChars('a', 'b', 'd', 'e', 'a', 'b', 'c', 'd', 'e'));
 	}

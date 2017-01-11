@@ -19,6 +19,7 @@ package org.d2ab.collection.doubles;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -261,6 +262,18 @@ public class DoubleListOfTest {
 		assertThat(list.lastIndexOfDoubleExactly(1), is(5));
 		assertThat(list.lastIndexOfDoubleExactly(3), is(7));
 		assertThat(list.lastIndexOfDoubleExactly(5), is(9));
+	}
+
+	@Test
+	public void listIteratorAtEnd() {
+		DoubleListIterator listIterator = list.listIterator(10);
+		assertThat(listIterator.hasNext(), is(false));
+		expecting(NoSuchElementException.class, listIterator::nextDouble);
+	}
+
+	@Test
+	public void listIteratorAfterEnd() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
 	}
 
 	@Test
