@@ -19,6 +19,7 @@ apply plugin: 'java-library-distribution'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'distribution'
+apply plugin: 'jacoco'
 
 version = '2.3.0-SNAPSHOT'
 group = 'org.d2ab'
@@ -28,6 +29,18 @@ archivesBaseName = project.name
 
 repositories {
     jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:[4.12,5)'
+    testCompile 'org.hamcrest:java-hamcrest:[2,3)'
+    testCompile 'org.mockito:mockito-core:[2.5,3)'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
 }
 
 javadoc {
@@ -52,12 +65,6 @@ artifacts {
 
 signing {
     sign configurations.archives
-}
-
-dependencies {
-    testCompile 'junit:junit:[4.12,5)'
-    testCompile 'org.hamcrest:java-hamcrest:[2,3)'
-    testCompile 'org.mockito:mockito-core:[2.5,3)'
 }
 
 distributions {
