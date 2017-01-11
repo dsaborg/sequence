@@ -12,7 +12,7 @@
 
 ### News
 
-Follow me on Twitter [@d2aborg](http://twitter.com/d2aborg) to receive updates.
+Follow [@SequenceLibrary](http://twitter.com/SequenceLibrary) on Twitter to receive updates.
 
 **2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
 code coverage of the entire project to 100% line coverage. Fixes minor bugs and inconsistencies under error conditions,
