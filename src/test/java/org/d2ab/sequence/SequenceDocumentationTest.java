@@ -46,14 +46,14 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void reuseOfSequence() {
-		Sequence<Integer> singulars = Sequence.range(1, 9); // Digits 1..9
+		Sequence<Integer> digits = Sequence.ints(); // all integer digits starting at 1
 
-		// using sequence of ints 1..9 first time to get odd numbers between 1 and 9
-		Sequence<Integer> odds = singulars.step(2);
+		// using sequence of ints first time to get 5 odd numbers
+		Sequence<Integer> odds = digits.step(2).limit(5);
 		assertThat(odds, contains(1, 3, 5, 7, 9));
 
-		// re-using the same sequence again to get squares of numbers between 4 and 8
-		Sequence<Integer> squares = singulars.startingFrom(4).endingAt(8).map(i -> i * i);
+		// re-using the same sequence of digits again to get squares of numbers between 4 and 8
+		Sequence<Integer> squares = digits.startingFrom(4).endingAt(8).map(i -> i * i);
 		assertThat(squares, contains(16, 25, 36, 49, 64));
 	}
 
