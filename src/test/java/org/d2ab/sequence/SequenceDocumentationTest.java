@@ -134,11 +134,9 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void fibonacci() {
-		Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j))
-		                                        .toSequence((i, j) -> i)
-		                                        .endingAt(34);
+		Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j)).toSequence((i, j) -> i);
 
-		assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+		assertThat(fibonacci.endingAt(34), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -151,10 +149,6 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 		assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
 		                                        instanceOf(IllegalArgumentException.class),
 		                                        instanceOf(NullPointerException.class)));
-
-		StringBuilder builder = new StringBuilder();
-		exceptionAndCauses.last(IllegalArgumentException.class).ifPresent(builder::append);
-		assertThat(builder.toString(), is("java.lang.IllegalArgumentException: java.lang.NullPointerException"));
 	}
 
 	@Test
