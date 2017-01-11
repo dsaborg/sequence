@@ -1,11 +1,6 @@
-language: java
-install: true
-jdk:
-  - oraclejdk8
-notifications:
-  email:
-    - daniel@d2ab.org
 test:
   post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - if [ -e ./gradlew ]; then ./gradlew jacocoTestReport; else gradle jacocoTestReport; fi
     - bash <(curl -s https://codecov.io/bash)

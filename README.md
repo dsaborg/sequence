@@ -1,17 +1,7 @@
 # Sequence
 ## A lightweight alternative to Java 8 sequential Stream
 
-##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
-
-Follow me on Twitter ([@d2aborg](http://twitter.com/d2aborg)) to receive updates about Sequence.
-
-Your feedback is welcome! For comments, feature requests or bug reports,
-use the [GitHub Issues Page](https://github.com/d2ab/sequence/issues),
-email me at [daniel@d2ab.org](mailto:daniel@d2ab.org),
-or send me a message on [twitter](http://twitter.com/daniel2aborg).
-
-Javadoc for the entire project is available at the
-[Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
+[![Build Status](https://travis-ci.org/d2aborg/sequence.svg?branch=master)](https://travis-ci.org/d2aborg/sequence)
 
 * [News](#news)
 * [Overview](#overview)
@@ -21,6 +11,8 @@ Javadoc for the entire project is available at the
 * [Conclusion](#conclusion)
 
 ### News
+
+Follow [@SequenceLibrary](http://twitter.com/SequenceLibrary) on Twitter to receive updates.
 
 **2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
 code coverage of the entire project to 100% line coverage. Fixes minor bugs and inconsistencies under error conditions,
@@ -81,7 +73,7 @@ The Sequence test suite is now at over 1000 tests!
 ### Overview
 
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
-and with better integration with the rest of Java. It has no external dependencies so it will not slow down your build.
+and with better integration with the rest of Java. It has no external dependencies and will not slow down your build.
 
 It aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for advanced
 traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
@@ -92,10 +84,9 @@ to be as lazy and late-evaluating as possible, with minimal overhead.
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables`
 instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
-for programmers wanting to perform common data processing tasks on moderately sized collections. If you need parallel
-iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream` instead.
-
-The `Sequence` library is protected by over 4500 tests, providing 100% line coverage of all classes in the project.
+for programmers wanting to perform every day data processing tasks on moderately sized collections. If you need
+parallel iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream`
+instead.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -113,13 +104,18 @@ See also:
 [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-),
 [Sequence#toList()](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#toList--)
 
+The `Sequence` library is protected by over 4500 tests providing 100% line coverage of all classes in the project.
+
+Javadoc for the entire project is available at the
+[Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
+
 ### Install
 
 The Sequence library is available for manual install or as a maven central dependency for maven and gradle.
 
 #### Manual
 
-For manually installable releases, check out the [GitHub Releases Page](https://github.com/d2ab/sequence/releases).
+For manually installable releases, check out the [GitHub Releases Page](https://github.com/d2aborg/sequence/releases).
 
 #### Maven
 
@@ -188,14 +184,14 @@ Because each `Sequence` is an `Iterable` you can re-use them safely after you ha
 they're not backed by an `Iterator` or `Stream` which can only be traversed once.
 
 ```Java
-Sequence<Integer> singulars = Sequence.range(1, 9); // Digits 1..9
+Sequence<Integer> digits = Sequence.ints(); // all integer digits starting at 1
 
-// using sequence of ints 1..9 first time to get odd numbers between 1 and 9
-Sequence<Integer> odds = singulars.step(2);
+// using sequence of ints first time to get 5 odd numbers
+Sequence<Integer> odds = digits.step(2).limit(5);
 assertThat(odds, contains(1, 3, 5, 7, 9));
 
-// re-using the same sequence again to get squares of numbers between 4 and 8
-Sequence<Integer> squares = singulars.startingFrom(4).endingAt(8).map(i -> i * i);
+// re-using the same sequence of digits again to get squares of numbers between 4 and 8
+Sequence<Integer> squares = digits.startingFrom(4).endingAt(8).map(i -> i * i);
 assertThat(squares, contains(16, 25, 36, 49, 64));
 ```
 
@@ -213,7 +209,7 @@ See also:
 
 #### Foreach
 
-Also because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
+Because each `Sequence` is an `Iterable` they work beautifully in foreach loops:
 
 ```Java
 Sequence<Integer> sequence = Sequence.ints().limit(5);
@@ -294,19 +290,15 @@ assertThat(list, contains(2, 4));
 
 ```Java
 List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+Sequence<String> evenStrings = Sequence.from(list)
+                                       .filter(x -> x % 2 == 0)
+                                       // biMap allows adding back to underlying collection
+                                       .biMap(Object::toString, Integer::parseInt);
+assertThat(evenStrings, contains("2", "4"));
 
-Sequence<String> evensAsStrings = Sequence.from(list)
-                                          .filter(x -> x % 2 == 0)
-                                          .biMap(Object::toString, Integer::parseInt); // biMap allows add
-assertThat(evensAsStrings, contains("2", "4"));
+evenStrings.add("6");
 
-evensAsStrings.add("6");
-assertThat(evensAsStrings, contains("2", "4", "6"));
-assertThat(list, contains(1, 2, 3, 4, 5, 6));
-
-expecting(IllegalArgumentException.class,
-          () -> evensAsStrings.add("7")); // cannot add filtered out item to sequence
-assertThat(evensAsStrings, contains("2", "4", "6"));
+assertThat(evenStrings, contains("2", "4", "6"));
 assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 
@@ -330,11 +322,9 @@ See also:
 There is full support for infinite recursive `Sequences`, including termination at a known value.
 
 ```Java
-Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j))
-                                        .toSequence((i, j) -> i)
-                                        .endingAt(34);
+Sequence<Integer> fibonacci = BiSequence.recurse(0, 1, (i, j) -> Pair.of(j, i + j)).toSequence((i, j) -> i);
 
-assertThat(fibonacci, contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
+assertThat(fibonacci.endingAt(34), contains(0, 1, 1, 2, 3, 5, 8, 13, 21, 34));
 ```
 
 ```Java
@@ -345,10 +335,6 @@ Sequence<Throwable> exceptionAndCauses = Sequence.recurse(exception, Throwable::
 assertThat(exceptionAndCauses, contains(instanceOf(IllegalStateException.class),
                                         instanceOf(IllegalArgumentException.class),
                                         instanceOf(NullPointerException.class)));
-
-StringBuilder builder = new StringBuilder();
-exceptionAndCauses.last(IllegalArgumentException.class).ifPresent(builder::append);
-assertThat(builder.toString(), is("java.lang.IllegalArgumentException: java.lang.NullPointerException"));
 ```
 
 ```Java
@@ -434,8 +420,8 @@ Map<String, Integer> map = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4",
 
 Sequence<Pair<String, Integer>> sequence = Sequence.from(map)
                                                    .map(Pair::from)
-                                                   .filter(p -> p.test((s, i) -> i != 2))
-                                                   .map(p -> p.map((s, i) -> Pair.of(s + " x 2", i * 2)));
+                                                   .filter(pair -> pair.test((s, i) -> i != 2))
+                                                   .map(pair -> pair.map((s, i) -> Pair.of(s + " x 2", i * 2)));
 
 assertThat(sequence.toMap(), is(equalTo(Maps.builder("1 x 2", 2).put("3 x 2", 6).put("4 x 2", 8).build())));
 ```
@@ -535,7 +521,7 @@ See also:
 
 ```Java
 CharSeq titleCase = CharSeq.from("hello_lexicon")
-                           .mapBack('_', (p, c) -> p == '_' ? toUpperCase(c) : c)
+                           .mapBack('_', (prev, x) -> prev == '_' ? toUpperCase(x) : x)
                            .map(c -> (c == '_') ? ' ' : c);
 
 assertThat(titleCase.asString(), is("Hello Lexicon"));
@@ -552,8 +538,8 @@ See also:
 #### Partitioning
 
 Both regular and primitive `Sequences` have advanced windowing and partitioning methods, allowing you to divide up
-`Sequences` in various ways, including a partitioning method that uses a `BiPredicate` to determine which two
-elements to create a batch between.
+`Sequences` in various ways, including a partitioning method that uses a binary predicate to determine which elements
+to create a batch between.
 
 ```Java
 Sequence<Sequence<Integer>> batched = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9).batch(3);
@@ -565,8 +551,7 @@ assertThat(batched, contains(contains(1, 2, 3), contains(4, 5, 6), contains(7, 8
 String vowels = "aeoiuy";
 
 Sequence<String> consonantsVowels = CharSeq.from("terrain")
-                                           .batch((a, b) -> (vowels.indexOf(a) == -1) !=
-                                                            (vowels.indexOf(b) == -1))
+                                           .batch((a, b) -> (vowels.indexOf(a) < 0) != (vowels.indexOf(b) < 0))
                                            .map(CharSeq::asString);
 
 assertThat(consonantsVowels, contains("t", "e", "rr", "ai", "n"));
@@ -590,28 +575,25 @@ these streams.
 Reader reader = new StringReader("hello world\ngoodbye world\n");
 
 Sequence<String> titleCase = CharSeq.read(reader)
-                                    .mapBack('\n',
-                                             (p, n) -> p == '\n' || p == ' ' ?
-                                                       Character.toUpperCase(n) : n)
+                                    .mapBack('\n', (prev, x) -> isWhitespace(prev) ? toUpperCase(x) : x)
                                     .split('\n')
                                     .map(phrase -> phrase.append('!'))
                                     .map(CharSeq::asString);
 
 assertThat(titleCase, contains("Hello World!", "Goodbye World!"));
 
-reader.close();
+reader.close(); // sequence does not close reader
 ```
 
 ```Java
-Reader original = new StringReader("hello world\ngoodbye world\n");
+String original = "hello world\ngoodbye world\n";
 
-BufferedReader transformed = new BufferedReader(CharSeq.read(original).map(Character::toUpperCase).asReader());
+BufferedReader transformed = new BufferedReader(CharSeq.from(original).map(Character::toUpperCase).asReader());
 
 assertThat(transformed.readLine(), is("HELLO WORLD"));
 assertThat(transformed.readLine(), is("GOODBYE WORLD"));
 
 transformed.close();
-original.close();
 ```
 
 ```Java
@@ -635,4 +617,11 @@ See also:
 
 Go ahead and give it a try and experience a leaner way to `Stream` your `Sequences`! :bowtie:
 
-Developed with [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/). :heart:
+Copyright &copy; 2016-2017 Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/)).
+Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+Your feedback is welcome! For comments, feature requests or bug reports,
+use the [GitHub Issues Page](https://github.com/d2aborg/sequence/issues) or
+email me at [daniel@d2ab.org](mailto:daniel@d2ab.org).
+
+Developed with [IntelliJ IDEA](https://www.jetbrains.com/idea/). :heart:
