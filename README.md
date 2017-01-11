@@ -574,7 +574,7 @@ these streams.
 Reader reader = new StringReader("hello world\ngoodbye world\n");
 
 Sequence<String> titleCase = CharSeq.read(reader)
-                                    .mapBack('\n', (prev, x) -> isSpaceChar(prev) ? toUpperCase(x) : x)
+                                    .mapBack('\n', (prev, x) -> isWhitespace(prev) ? toUpperCase(x) : x)
                                     .split('\n')
                                     .map(phrase -> phrase.append('!'))
                                     .map(CharSeq::asString);

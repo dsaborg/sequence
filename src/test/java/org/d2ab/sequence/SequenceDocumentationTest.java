@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.lang.Character.isSpaceChar;
+import static java.lang.Character.isWhitespace;
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
 import static org.hamcrest.Matchers.*;
@@ -291,7 +291,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 		Reader reader = new StringReader("hello world\ngoodbye world\n");
 
 		Sequence<String> titleCase = CharSeq.read(reader)
-		                                    .mapBack('\n', (prev, x) -> isSpaceChar(prev) ? toUpperCase(x) : x)
+		                                    .mapBack('\n', (prev, x) -> isWhitespace(prev) ? toUpperCase(x) : x)
 		                                    .split('\n')
 		                                    .map(phrase -> phrase.append('!'))
 		                                    .map(CharSeq::asString);
