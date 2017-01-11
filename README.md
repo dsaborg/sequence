@@ -3,6 +3,8 @@
 
 ##### By Daniel Skogquist Åborg ([d2ab.org](http://d2ab.org/))
 
+[![Build Status](https://travis-ci.org/d2aborg/sequence.svg?branch=master)](https://travis-ci.org/d2aborg/sequence)
+
 Follow me on Twitter ([@d2aborg](http://twitter.com/d2aborg)) to receive updates about Sequence.
 
 Your feedback is welcome! For comments, feature requests or bug reports,
