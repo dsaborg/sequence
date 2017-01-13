@@ -143,4 +143,15 @@ public class MapsTest {
 		assertThat(_1, is(not(equalTo(new Object()))));
 		assertThat(_1, is(not(equalTo(null))));
 	}
+
+	@Test
+	public void entryHashCode() {
+		assertThat(Maps.entry(1, "2").hashCode(), is(81));
+		assertThat(Maps.entry(1, "3").hashCode(), is(82));
+		assertThat(Maps.entry(2, "2").hashCode(), is(112));
+		assertThat(Maps.entry(2, "3").hashCode(), is(113));
+		assertThat(Maps.entry(1, null).hashCode(), is(31));
+		assertThat(Maps.entry(null, "2").hashCode(), is(50));
+		assertThat(Maps.entry(null, null).hashCode(), is(0));
+	}
 }

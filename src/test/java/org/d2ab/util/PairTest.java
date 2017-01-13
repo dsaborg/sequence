@@ -115,10 +115,13 @@ public class PairTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(pair.hashCode(), is(Pair.of(1, "2").hashCode()));
-		assertThat(pair.hashCode(), is(not(Pair.of(1, "3").hashCode())));
-		assertThat(pair.hashCode(), is(not(Pair.of(2, "2").hashCode())));
-		assertThat(pair.hashCode(), is(not(Pair.of(2, "3").hashCode())));
+		assertThat(pair.hashCode(), is(81));
+		assertThat(Pair.of(1, "3").hashCode(), is(82));
+		assertThat(Pair.of(2, "2").hashCode(), is(112));
+		assertThat(Pair.of(2, "3").hashCode(), is(113));
+		assertThat(Pair.of(1, null).hashCode(), is(31));
+		assertThat(Pair.of(null, "2").hashCode(), is(50));
+		assertThat(Pair.of(null, null).hashCode(), is(0));
 	}
 
 	@Test

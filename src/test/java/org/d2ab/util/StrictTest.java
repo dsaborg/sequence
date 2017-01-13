@@ -15,9 +15,9 @@ public class StrictTest {
 
 	@Test
 	public void unsetReset() {
-		boolean original = !Boolean.getBoolean(Strict.STRICT_PROPERTY);
+		boolean lenient = !Boolean.getBoolean(Strict.STRICT_PROPERTY);
 
-		assertThat(Strict.LENIENT, is(original));
+		assertThat(Strict.LENIENT, is(lenient));
 
 		Strict.unset();
 		assertThat(Strict.LENIENT, is(true));
@@ -29,6 +29,6 @@ public class StrictTest {
 		assertThat(Strict.LENIENT, is(true));
 
 		Strict.reset();
-		assertThat(Strict.LENIENT, is(original));
+		assertThat(Strict.LENIENT, is(lenient));
 	}
 }
