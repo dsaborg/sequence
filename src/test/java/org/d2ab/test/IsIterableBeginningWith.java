@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterable<? extends E>> {
@@ -109,6 +109,7 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 	 *
 	 * @param items the items that must equal the items provided by an examined {@link Iterable}
 	 */
+	@SafeVarargs
 	public static <E> Matcher<Iterable<? extends E>> beginsWith(E... items) {
 		List<Matcher<? super E>> matchers = new ArrayList<>();
 		for (E item : items) {
@@ -129,7 +130,7 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 	 */
 	@SuppressWarnings("unchecked")
 	public static <E> Matcher<Iterable<? extends E>> beginsWith(final Matcher<? super E> itemMatcher) {
-		return beginsWith(new ArrayList<>(asList(itemMatcher)));
+		return beginsWith(new ArrayList<>(singletonList(itemMatcher)));
 	}
 
 	/**
@@ -141,6 +142,7 @@ public class IsIterableBeginningWith<E> extends TypeSafeDiagnosingMatcher<Iterab
 	 *
 	 * @param itemMatchers the matchers that must be satisfied by the items provided by an examined {@link Iterable}
 	 */
+	@SafeVarargs
 	public static <E> Matcher<Iterable<? extends E>> beginsWith(Matcher<? super E>... itemMatchers) {
 		// required for JDK 1.6
 		final List<Matcher<? super E>> nullSafeWithExplicitTypeMatchers = NullSafety.nullSafe(itemMatchers);
