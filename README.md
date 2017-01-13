@@ -2,6 +2,7 @@
 ## A lightweight alternative to Java 8 sequential Stream
 
 [![Build Status](https://travis-ci.org/d2aborg/sequence.svg?branch=master)](https://travis-ci.org/d2aborg/sequence)
+[![Maven Central](https://img.shields.io/maven-central/v/org.d2ab/sequence.svg)](http://search.maven.org/#artifactdetails%7Corg.d2ab%7Csequence%7C2.2.0%7C)
 
 * [News](#news)
 * [Overview](#overview)
