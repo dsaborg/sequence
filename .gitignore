@@ -6,6 +6,3 @@ out
 *.iws
 .gradle
 .shelf
-gradle
-gradlew
-gradlew.bat

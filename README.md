@@ -1,7 +1,10 @@
 # Sequence
 ## A lightweight alternative to Java 8 sequential Stream
 
+[![Maven Central](https://img.shields.io/maven-central/v/org.d2ab/sequence.svg)](http://search.maven.org/#artifactdetails%7Corg.d2ab%7Csequence%7C2.2.0%7C)
 [![Build Status](https://travis-ci.org/d2aborg/sequence.svg?branch=master)](https://travis-ci.org/d2aborg/sequence)
+[![Codecov](https://img.shields.io/codecov/c/github/d2aborg/sequence.svg)](https://codecov.io/gh/d2aborg/sequence)
+[![Gitter](https://img.shields.io/gitter/room/d2aborg/sequence.svg)](https://gitter.im/d2aborg-sequence)
 
 * [News](#news)
 * [Overview](#overview)
@@ -12,63 +15,13 @@
 
 ### News
 
-Follow [@SequenceLibrary](http://twitter.com/SequenceLibrary) on Twitter to receive updates.
-
 **2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
 code coverage of the entire project to 100% line coverage. Fixes minor bugs and inconsistencies under error conditions,
 such as correct exceptions being thrown for index out of bounds in primitive collections, as well as several cases of
 unnecessary boxing in primitive collections and sequences.
 
-**2016-12-11 - Sequence v2.1** with `Sequence` backtracking from implementing the `List` interface to 
-implementing just `Collection`, due to the general inability to fulfill `List`'s `equals` and `hashCode` contract.
-It is still possible to get a full-fledged `List` view of a `Sequence` through `Sequence#asList()`. Also improves 
-primitive collections with fail-fast iteration.
-
-**2016-11-22 - Sequence v2.0** with `Sequence` implementing the `List` interface. *NOTE: Using
-a `Sequence` as a `List` has been deprecated in 2.1 in favor of using `Sequence#asList()`*. Also adds primitive 
-collection interfaces and classes for implementing List-like interfaces on primitive Sequences. 
-
-To upgrade, first 
-upgrade to 1.3 and take note of deprecated methods, replacing them with corresponding method calls as per the javadoc. 
-Then upgrade to 2.0, which should be compatible with non-deprecated methods in 1.3.
-
-**2016-11-21 - Sequence v1.3** as a transitional release to prepare for 2.0. To prepare for upgrading to 
-2.0, upgrade to 1.3 and take note of deprecated methods, replacing them with corresponding method calls as per the 
-javadoc.
-
-**2016-05-09 - Sequence v1.2.2** with bugfixes against 1.2,
-[List view of Sequence](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#asList--),
-[Reader view of CharSeq](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/iterable/chars/CharIterable.html#asReader--),
-[InputStream view of IntSequence](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/iterable/ints/IntIterable.html#asInputStream--),
-filtered ordinal retrieval through
-[first](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#first-java.util.function.Predicate-),
-[last](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#last-java.util.function.Predicate-), and
-[at](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#at-long-java.util.function.Predicate-),
-[filtering on class](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#filter-java.lang.Class-),
-indexed
-[mapping](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#mapIndexed-org.d2ab.function.ObjLongFunction-),
-[filtering](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#filterIndexed-org.d2ab.function.ObjLongPredicate-),
-[peeking](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#peekIndexed-java.util.function.ObjLongConsumer-), and
-[forEach](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#forEachIndexed-java.util.function.ObjLongConsumer-),
-[inclusion](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#including-T...-) and
-[exclusion](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#excluding-T...-),
-[min](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#min--) and
-[max](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#max--) by natural order,
-[random sequence generation](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/CharSeq.html#random-char-char-), and
-[containment checks](http://static.javadoc.io/org.d2ab/sequence/1.2.2/org/d2ab/sequence/Sequence.html#contains-T-).
-
-**2016-04-25 - Sequence v1.1.1** with
-[updated javadoc](http://www.javadoc.io/doc/org.d2ab/sequence/1.1.1),
-[dedicated concatenation methods](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/Sequence.html#concat-java.lang.Iterable...-),
-and [enhanced conversion to primitives](http://static.javadoc.io/org.d2ab/sequence/1.1.1/org/d2ab/sequence/BiSequence.html#toChars-org.d2ab.function.chars.ToCharBiFunction-).
-
-**2016-04-23 - Sequence v1.1** with
-[caching](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#cache-java.util.Iterator-),
-[splitting](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#split-T-),
-[skipping at tail](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#skipTail-long-),
-[starting in middle](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#startingFrom-T-)
-and [emptiness check](http://static.javadoc.io/org.d2ab/sequence/1.1/org/d2ab/sequence/Sequence.html#isEmpty--).
-The Sequence test suite is now at over 1000 tests!
+* See the [Sequence wiki](https://github.com/d2aborg/sequence/wiki) for older news.
+* Follow [@SequenceLibrary](http://twitter.com/SequenceLibrary) on Twitter to receive updates.
 
 ### Overview
 
