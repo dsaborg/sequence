@@ -97,12 +97,12 @@ if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')
                     packaging 'jar'
                     // optionally artifactId can be defined here
                     description 'A lightweight alternative to Java 8 sequential Stream'
-                    url 'http://github.com/d2ab/sequence'
+                    url 'http://github.com/d2aborg/sequence'
 
                     scm {
-                        connection 'scm:git:https://github.com/d2ab/sequence.git'
-                        developerConnection 'scm:git:https://github.com/d2ab/sequence.git'
-                        url 'https://github.com/d2ab/sequence'
+                        connection 'scm:git:https://github.com/d2aborg/sequence.git'
+                        developerConnection 'scm:git:https://github.com/d2aborg/sequence.git'
+                        url 'https://github.com/d2aborg/sequence'
                     }
 
                     licenses {
@@ -114,7 +114,7 @@ if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')
 
                     developers {
                         developer {
-                            id 'd2ab'
+                            id 'd2aborg'
                             name 'Daniel Skogquist Åborg'
                             email 'daniel@d2ab.org'
                         }
