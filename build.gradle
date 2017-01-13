@@ -37,6 +37,10 @@ dependencies {
     testCompile 'org.mockito:mockito-core:[2.5,3)'
 }
 
+test {
+    systemProperty "org.d2ab.sequence.strict", "true"
+}
+
 jacocoTestReport {
     reports {
         xml.enabled true
