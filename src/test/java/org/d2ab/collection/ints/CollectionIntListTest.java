@@ -133,7 +133,19 @@ public class CollectionIntListTest {
 	}
 
 	@Test
-	public void addAllInts() {
+	public void addAllIntsVarargs() {
+		assertThat(empty.addAllInts(), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllInts(1, 2), is(true));
+		assertThat(empty, containsInts(1, 2));
+
+		assertThat(list.addAllInts(6, 7, 8), is(true));
+		assertThat(list, containsInts(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllIntsIntList() {
 		assertThat(empty.addAllInts(IntList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 

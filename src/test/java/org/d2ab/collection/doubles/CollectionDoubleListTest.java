@@ -105,6 +105,15 @@ public class CollectionDoubleListTest {
 	}
 
 	@Test
+	public void addDouble() {
+		assertThat(empty.addDouble(1, 0.5), is(true));
+		assertThat(empty, containsDoubles(1));
+
+		assertThat(list.addDouble(6, 0.5), is(true));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6));
+	}
+
+	@Test
 	public void addDoubleExactly() {
 		assertThat(empty.addDoubleExactly(1), is(true));
 		assertThat(empty, containsDoubles(1));
@@ -133,7 +142,19 @@ public class CollectionDoubleListTest {
 	}
 
 	@Test
-	public void addAllDoubles() {
+	public void addAllDoublesVarargs() {
+		assertThat(empty.addAllDoubles(), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllDoubles(1, 2), is(true));
+		assertThat(empty, containsDoubles(1, 2));
+
+		assertThat(list.addAllDoubles(6, 7, 8), is(true));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllDoublesDoubleList() {
 		assertThat(empty.addAllDoubles(DoubleList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -248,6 +269,7 @@ public class CollectionDoubleListTest {
 	public void indexOfDoubleExactly() {
 		assertThat(empty.indexOfDoubleExactly(17), is(-1));
 
+		assertThat(list.indexOfDoubleExactly(17), is(-1));
 		assertThat(list.indexOfDoubleExactly(1), is(0));
 		assertThat(list.indexOfDoubleExactly(3), is(2));
 		assertThat(list.indexOfDoubleExactly(5), is(4));
@@ -257,6 +279,7 @@ public class CollectionDoubleListTest {
 	public void lastIndexOfDoubleExactly() {
 		assertThat(empty.lastIndexOfDoubleExactly(17), is(-1));
 
+		assertThat(list.lastIndexOfDoubleExactly(17), is(-1));
 		assertThat(list.lastIndexOfDoubleExactly(1), is(5));
 		assertThat(list.lastIndexOfDoubleExactly(3), is(7));
 		assertThat(list.lastIndexOfDoubleExactly(5), is(9));
@@ -279,14 +302,14 @@ public class CollectionDoubleListTest {
 		DoubleListIterator listIterator = list.listIterator();
 
 		expecting(IllegalStateException.class, listIterator::remove);
-		expecting(UnsupportedOperationException.class, () -> listIterator.set('p'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(17.0));
 		expecting(UnsupportedOperationException.class, listIterator::previousDouble);
 		assertThat(listIterator.hasNext(), is(true));
 		expecting(UnsupportedOperationException.class, listIterator::hasPrevious);
 		assertThat(listIterator.nextIndex(), is(0));
 		assertThat(listIterator.previousIndex(), is(-1));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.add('q'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(18.0));
 
 		assertThat(listIterator.nextDouble(), is(1.0));
 		assertThat(listIterator.hasNext(), is(true));
@@ -310,13 +333,13 @@ public class CollectionDoubleListTest {
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
-		expecting(UnsupportedOperationException.class, () -> listIterator.set('r'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.set(19.0));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(2));
 		assertThat(listIterator.previousIndex(), is(1));
 
 		assertThat(listIterator.nextDouble(), is(4.0));
-		expecting(UnsupportedOperationException.class, () -> listIterator.add('s'));
+		expecting(UnsupportedOperationException.class, () -> listIterator.add(20.0));
 		assertThat(listIterator.hasNext(), is(true));
 		assertThat(listIterator.nextIndex(), is(3));
 		assertThat(listIterator.previousIndex(), is(2));

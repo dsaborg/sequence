@@ -133,7 +133,19 @@ public class CollectionLongListTest {
 	}
 
 	@Test
-	public void addAllLongs() {
+	public void addAllLongsVarargs() {
+		assertThat(empty.addAllLongs(), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllLongs(1, 2), is(true));
+		assertThat(empty, containsLongs(1, 2));
+
+		assertThat(list.addAllLongs(6, 7, 8), is(true));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
+	}
+
+	@Test
+	public void addAllLongsLongList() {
 		assertThat(empty.addAllLongs(LongList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 

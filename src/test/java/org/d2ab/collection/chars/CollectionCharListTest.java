@@ -134,7 +134,19 @@ public class CollectionCharListTest {
 	}
 
 	@Test
-	public void addAllChars() {
+	public void addAllCharsVarargs() {
+		assertThat(empty.addAllChars(), is(false));
+		assertThat(empty, is(emptyIterable()));
+
+		assertThat(empty.addAllChars('a', 'b'), is(true));
+		assertThat(empty, containsChars('a', 'b'));
+
+		assertThat(list.addAllChars('f', 'g', 'h'), is(true));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+	}
+
+	@Test
+	public void addAllCharsCharList() {
 		assertThat(empty.addAllChars(CharList.create()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
@@ -249,6 +261,7 @@ public class CollectionCharListTest {
 	public void indexOfChar() {
 		assertThat(empty.indexOfChar('q'), is(-1));
 
+		assertThat(list.indexOfChar('q'), is(-1));
 		assertThat(list.indexOfChar('a'), is(0));
 		assertThat(list.indexOfChar('c'), is(2));
 		assertThat(list.indexOfChar('e'), is(4));
@@ -258,6 +271,7 @@ public class CollectionCharListTest {
 	public void lastIndexOfChar() {
 		assertThat(empty.lastIndexOfChar('q'), is(-1));
 
+		assertThat(list.lastIndexOfChar('q'), is(-1));
 		assertThat(list.lastIndexOfChar('a'), is(5));
 		assertThat(list.lastIndexOfChar('c'), is(7));
 		assertThat(list.lastIndexOfChar('e'), is(9));
