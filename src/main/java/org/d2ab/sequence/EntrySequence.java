@@ -1514,7 +1514,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * @return true if this {@code EntrySequence} contains the given pair, false otherwise.
+	 * @return true if this {@code EntrySequence} contains the given entry, false otherwise.
 	 *
 	 * @since 1.2
 	 */

@@ -16,7 +16,6 @@
 
 package org.d2ab.collection;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.*;
@@ -59,7 +58,7 @@ public class MapsTest {
 		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
 		Entry<Integer, String> deserialized = (Entry<Integer, String>) in.readObject();
 
-		assertThat(deserialized, Matchers.is(equalTo(original)));
+		assertThat(deserialized, is(equalTo(original)));
 	}
 
 	@Test

@@ -2351,6 +2351,8 @@ public class BiSequenceTest {
 		assertThat(_12345.contains(Pair.of("1", 1)), is(true));
 		assertThat(_12345.contains(Pair.of("3", 3)), is(true));
 		assertThat(_12345.contains(Pair.of("5", 5)), is(true));
+		assertThat(_12345.contains(Pair.of("1", 2)), is(false));
+		assertThat(_12345.contains(Pair.of("2", 1)), is(false));
 		assertThat(_12345.contains(Pair.of("17", 17)), is(false));
 	}
 
@@ -2361,6 +2363,8 @@ public class BiSequenceTest {
 		assertThat(_12345.contains("1", 1), is(true));
 		assertThat(_12345.contains("3", 3), is(true));
 		assertThat(_12345.contains("5", 5), is(true));
+		assertThat(_12345.contains("1", 2), is(false));
+		assertThat(_12345.contains("2", 1), is(false));
 		assertThat(_12345.contains("17", 17), is(false));
 	}
 

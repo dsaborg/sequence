@@ -6,12 +6,11 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.d2ab.test.Tests.expecting;
-import static org.d2ab.util.OptionalChar.empty;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class OptionalCharTest {
-	private final OptionalChar empty = empty();
+	private final OptionalChar empty = OptionalChar.empty();
 	private final OptionalChar set = OptionalChar.of('q');
 
 	@Test
@@ -59,13 +58,14 @@ public class OptionalCharTest {
 	@Test
 	public void testEquals() {
 		assertThat(empty, is(equalTo(empty)));
-		assertThat(empty, is(equalTo(empty())));
+		assertThat(empty, is(equalTo(OptionalChar.empty())));
 		assertThat(empty, is(not(equalTo(set))));
 		assertThat(empty, is(not(equalTo(new Object()))));
 		assertThat(empty, is(not(equalTo(null))));
 
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(equalTo(OptionalChar.of('q'))));
+		assertThat(set, is(not(equalTo(OptionalChar.of('p')))));
 		assertThat(set, is(not(equalTo(empty))));
 		assertThat(set, is(not(equalTo(new Object()))));
 		assertThat(set, is(not(equalTo(null))));

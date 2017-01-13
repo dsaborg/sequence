@@ -2414,6 +2414,8 @@ public class EntrySequenceTest {
 		assertThat(_12345.contains(Maps.entry("1", 1)), is(true));
 		assertThat(_12345.contains(Maps.entry("3", 3)), is(true));
 		assertThat(_12345.contains(Maps.entry("5", 5)), is(true));
+		assertThat(_12345.contains(Maps.entry("1", 2)), is(false));
+		assertThat(_12345.contains(Maps.entry("2", 1)), is(false));
 		assertThat(_12345.contains(Maps.entry("17", 17)), is(false));
 	}
 
@@ -2424,6 +2426,8 @@ public class EntrySequenceTest {
 		assertThat(_12345.contains("1", 1), is(true));
 		assertThat(_12345.contains("3", 3), is(true));
 		assertThat(_12345.contains("5", 5), is(true));
+		assertThat(_12345.contains("1", 2), is(false));
+		assertThat(_12345.contains("2", 1), is(false));
 		assertThat(_12345.contains("17", 17), is(false));
 	}
 

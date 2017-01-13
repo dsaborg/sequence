@@ -42,9 +42,9 @@ public class DelimitingIterator<U, V> extends DelegatingUnaryIterator<U> {
 
 	@Override
 	public boolean hasNext() {
-		return prefix.isPresent() && !prefixDone ||
+		return !prefixDone && prefix.isPresent() ||
 		       iterator.hasNext() ||
-		       suffix.isPresent() && !suffixDone;
+		       !suffixDone && suffix.isPresent();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,7 +58,7 @@ public class DelimitingIterator<U, V> extends DelegatingUnaryIterator<U> {
 			return (U) prefix.get();
 		}
 
-		if (!iterator.hasNext() && suffix.isPresent() && !suffixDone) {
+		if (!iterator.hasNext() && !suffixDone && suffix.isPresent()) {
 			suffixDone = true;
 			return (U) suffix.get();
 		}

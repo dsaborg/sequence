@@ -17,7 +17,6 @@
 package org.d2ab.util;
 
 import org.d2ab.collection.Maps;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.*;
@@ -29,8 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.d2ab.test.Tests.expecting;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class PairTest {
@@ -117,22 +115,25 @@ public class PairTest {
 
 	@Test
 	public void testHashCode() {
-		assertThat(pair.hashCode(), Matchers.is(pair.hashCode()));
+		assertThat(pair.hashCode(), is(Pair.of(1, "2").hashCode()));
+		assertThat(pair.hashCode(), is(not(Pair.of(1, "3").hashCode())));
+		assertThat(pair.hashCode(), is(not(Pair.of(2, "2").hashCode())));
+		assertThat(pair.hashCode(), is(not(Pair.of(2, "3").hashCode())));
 	}
 
 	@Test
 	public void hashCodeAcrossTypes() {
 		Pair<Integer, String> pairFromEntry = Pair.from(Maps.entry(1, "2"));
-		assertThat(pair.hashCode(), Matchers.is(pairFromEntry.hashCode()));
-		assertThat(pair.hashCode(), is(Matchers.not(Pair.from(Maps.entry(1, "3")).hashCode())));
-		assertThat(pair.hashCode(), is(Matchers.not(Pair.from(Maps.entry(3, "2")).hashCode())));
-		assertThat(pair.hashCode(), is(Matchers.not(Pair.from(Maps.entry(3, "4")).hashCode())));
+		assertThat(pair.hashCode(), is(pairFromEntry.hashCode()));
+		assertThat(pair.hashCode(), is(not(Pair.from(Maps.entry(1, "3")).hashCode())));
+		assertThat(pair.hashCode(), is(not(Pair.from(Maps.entry(3, "2")).hashCode())));
+		assertThat(pair.hashCode(), is(not(Pair.from(Maps.entry(3, "4")).hashCode())));
 
 		Pair<Integer, Integer> unaryPair = Pair.unary(1);
-		assertThat(Pair.of(1, 1).hashCode(), Matchers.is(unaryPair.hashCode()));
-		assertThat(Pair.of(1, 2).hashCode(), is(Matchers.not(unaryPair.hashCode())));
-		assertThat(Pair.of(2, 1).hashCode(), is(Matchers.not(unaryPair.hashCode())));
-		assertThat(Pair.of(2, 2).hashCode(), is(Matchers.not(unaryPair.hashCode())));
+		assertThat(Pair.of(1, 1).hashCode(), is(unaryPair.hashCode()));
+		assertThat(Pair.of(1, 2).hashCode(), is(not(unaryPair.hashCode())));
+		assertThat(Pair.of(2, 1).hashCode(), is(not(unaryPair.hashCode())));
+		assertThat(Pair.of(2, 2).hashCode(), is(not(unaryPair.hashCode())));
 	}
 
 	@Test
@@ -252,27 +253,27 @@ public class PairTest {
 
 	@Test
 	public void swapped() {
-		assertThat(pair.swap(), Matchers.is(Pair.of("2", 1)));
+		assertThat(pair.swap(), is(Pair.of("2", 1)));
 	}
 
 	@Test
 	public void shiftLeft() {
-		assertThat(pair.shiftLeft(17), Matchers.is(Pair.of("2", 17)));
+		assertThat(pair.shiftLeft(17), is(Pair.of("2", 17)));
 	}
 
 	@Test
 	public void shiftRight() {
-		assertThat(pair.shiftRight("17"), Matchers.is(Pair.of("17", 1)));
+		assertThat(pair.shiftRight("17"), is(Pair.of("17", 1)));
 	}
 
 	@Test
 	public void withFirst() {
-		assertThat(pair.withLeft(17), Matchers.is(Pair.of(17, "2")));
+		assertThat(pair.withLeft(17), is(Pair.of(17, "2")));
 	}
 
 	@Test
 	public void withSecond() {
-		assertThat(pair.withRight("17"), Matchers.is(Pair.of(1, "17")));
+		assertThat(pair.withRight("17"), is(Pair.of(1, "17")));
 	}
 
 	@Test
