@@ -54,19 +54,18 @@ public class PredicatePartitioningLongIterator extends
 			throw new NoSuchElementException();
 
 		LongList buffer = LongList.create();
-		int size = 0;
-		do {
+		for (boolean split = false; !split; ) {
 			buffer.addLong(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
+
 			long following = iterator.nextLong();
-			boolean split = predicate.test(next, following);
+			split = predicate.test(next, following);
 			next = following;
-			if (split)
-				break;
-		} while (hasNext);
+		}
+
 		return LongSequence.from(buffer);
 	}
 

@@ -55,7 +55,7 @@ public class PredicatePartitioningDoubleIterator extends
 			throw new NoSuchElementException();
 
 		DoubleList buffer = DoubleList.create();
-		do {
+		for (boolean split = false; !split; ) {
 			buffer.addDoubleExactly(next);
 
 			hasNext = iterator.hasNext();
@@ -63,11 +63,9 @@ public class PredicatePartitioningDoubleIterator extends
 				break;
 
 			double following = iterator.nextDouble();
-			boolean split = predicate.test(next, following);
+			split = predicate.test(next, following);
 			next = following;
-			if (split)
-				break;
-		} while (hasNext);
+		}
 
 		return DoubleSequence.from(buffer);
 	}

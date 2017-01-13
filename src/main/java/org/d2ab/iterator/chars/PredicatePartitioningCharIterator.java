@@ -53,18 +53,17 @@ public class PredicatePartitioningCharIterator extends
 			throw new NoSuchElementException();
 
 		CharList buffer = CharList.create();
-		do {
+		for (boolean split = false; !split; ) {
 			buffer.addChar(next);
 
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
+
 			char following = iterator.nextChar();
-			boolean split = predicate.test(next, following);
+			split = predicate.test(next, following);
 			next = following;
-			if (split)
-				break;
-		} while (hasNext);
+		}
 
 		return CharSeq.from(buffer);
 	}

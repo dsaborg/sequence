@@ -54,7 +54,7 @@ public class PredicatePartitioningIntIterator extends
 			throw new NoSuchElementException();
 
 		IntList buffer = IntList.create();
-		do {
+		for (boolean split = false; !split; ) {
 			buffer.addInt(next);
 
 			hasNext = iterator.hasNext();
@@ -62,11 +62,10 @@ public class PredicatePartitioningIntIterator extends
 				break;
 
 			int following = iterator.nextInt();
-			boolean split = predicate.test(next, following);
+			split = predicate.test(next, following);
 			next = following;
-			if (split)
-				break;
-		} while (hasNext);
+		}
+
 		return IntSequence.from(buffer);
 	}
 

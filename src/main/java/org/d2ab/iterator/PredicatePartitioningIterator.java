@@ -51,17 +51,17 @@ public abstract class PredicatePartitioningIterator<T, S> extends DelegatingMapp
 			throw new NoSuchElementException();
 
 		List<T> buffer = new ArrayList<>();
-		do {
+		for (boolean split = false; !split; ) {
 			buffer.add(next);
+
 			hasNext = iterator.hasNext();
 			if (!hasNext)
 				break;
+
 			T following = iterator.next();
-			boolean split = predicate.test(next, following);
+			split = predicate.test(next, following);
 			next = following;
-			if (split)
-				break;
-		} while (hasNext);
+		}
 
 		return toSequence(buffer);
 	}
