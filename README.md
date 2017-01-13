@@ -3,7 +3,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/org.d2ab/sequence.svg)](http://search.maven.org/#artifactdetails%7Corg.d2ab%7Csequence%7C2.2.0%7C)
 [![Build Status](https://travis-ci.org/d2aborg/sequence.svg?branch=master)](https://travis-ci.org/d2aborg/sequence)
-[![Codecov](https://img.shields.io/codecov/c/github/d2aborg/sequence.svg)](https://codecov.io/gh/d2aborg/sequence)
+[![Codecov](https://img.shields.io/codecov/c/github/d2aborg/sequence/master.svg)](https://codecov.io/gh/d2aborg/sequence)
 [![Gitter](https://img.shields.io/gitter/room/d2aborg/sequence.svg)](https://gitter.im/d2aborg-sequence)
 
 * [News](#news)
