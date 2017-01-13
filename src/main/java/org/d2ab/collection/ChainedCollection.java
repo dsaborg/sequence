@@ -83,7 +83,7 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 				target = collection;
 		}
 
-		assert target != null;
+		//noinspection ConstantConditions
 		return target.add(t);
 	}
 }
