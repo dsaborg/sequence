@@ -138,6 +138,25 @@ public class DoubleSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
+	public void equalsHashCodeAgainstTreeSet() {
+		Set<Double> larger = new TreeSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
+
+		Set<Double> smaller = new TreeSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0));
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
+
+		Set<Double> dissimilar = new TreeSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 5.0));
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		Set<Double> same = new TreeSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0));
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
+	}
+
+	@Test
 	public void addAllDoubleCollection() {
 		assertThat(empty.addAll(DoubleList.create(1, 2, 3)), is(true));
 		assertThat(empty, contains(1.0, 2.0, 3.0));

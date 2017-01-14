@@ -158,15 +158,22 @@ public class DoubleSetTest {
 	}
 
 	@Test
-	public void equalsHashCodeAgainstDoubleSet() {
-		DoubleSet set2 = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
+	public void equalsHashCodeAgainstSortedListDoubleSet() {
+		DoubleSet larger = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		set2.removeDoubleExactly(17);
+		DoubleSet smaller = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3);
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
+		DoubleSet dissimilar = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5);
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		DoubleSet same = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
 	}
 
 	@Test

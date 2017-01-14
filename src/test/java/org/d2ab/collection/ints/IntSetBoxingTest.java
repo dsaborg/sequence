@@ -136,6 +136,25 @@ public class IntSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
+	public void equalsHashCodeAgainstTreeSet() {
+		Set<Integer> larger = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
+
+		Set<Integer> smaller = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3));
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
+
+		Set<Integer> dissimilar = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5));
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		Set<Integer> same = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
+	}
+
+	@Test
 	public void addAllIntCollection() {
 		assertThat(empty.addAll(IntList.create(1, 2, 3)), is(true));
 		assertThat(empty, contains(1, 2, 3));

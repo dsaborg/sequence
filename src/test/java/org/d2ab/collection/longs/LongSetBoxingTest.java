@@ -136,6 +136,25 @@ public class LongSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
+	public void equalsHashCodeAgainstTreeSet() {
+		Set<Long> larger = new TreeSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L, 17L));
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
+
+		Set<Long> smaller = new TreeSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L));
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
+
+		Set<Long> dissimilar = new TreeSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 5L));
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		Set<Long> same = new TreeSet<>(asList(-5L, -4L, -3L, -2L, -1L, 0L, 1L, 2L, 3L, 4L));
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
+	}
+
+	@Test
 	public void addAllLongCollection() {
 		assertThat(empty.addAll(LongList.create(1, 2, 3)), is(true));
 		assertThat(empty, contains(1L, 2L, 3L));

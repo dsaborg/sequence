@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
+import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -78,9 +79,22 @@ public class CharSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void toArrayWithType() {
-		assertArrayEquals(new Character[0], empty.toArray(new Character[0]));
+	public void toArrayEmptyTarget() {
+		Character[] emptyTarget = new Character[0];
+		assertThat(empty.toArray(emptyTarget), is(sameInstance(emptyTarget)));
 		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e'}, set.toArray(new Character[0]));
+	}
+
+	@Test
+	public void toArraySmallerTarget() {
+		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e'}, set.toArray(new Character[4]));
+	}
+
+	@Test
+	public void toArrayBiggerTarget() {
+		assertArrayEquals(new Character[]{null, 'q'}, empty.toArray(fill(new Character[2], 'q')));
+		assertArrayEquals(new Character[]{'a', 'b', 'c', 'd', 'e', null, 'q'},
+		                  set.toArray(fill(new Character[7], 'q')));
 	}
 
 	@Test
@@ -127,27 +141,22 @@ public class CharSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void equalsHashCodeAgainstSet() {
-		Set<Character> set2 = new HashSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
+	public void equalsHashCodeAgainstTreeSet() {
+		Set<Character> larger = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		set2.remove('q');
+		Set<Character> smaller = new TreeSet<>(asList('a', 'b', 'c', 'd'));
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
-	}
+		Set<Character> dissimilar = new TreeSet<>(asList('a', 'b', 'c', 'd', 'f'));
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
 
-	@Test
-	public void equalsHashCodeAgainstCharSet() {
-		BitCharSet set2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove('q');
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
+		Set<Character> same = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'));
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
 	}
 
 	@Test
