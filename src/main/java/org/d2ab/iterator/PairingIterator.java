@@ -41,7 +41,7 @@ public abstract class PairingIterator<T, E> extends DelegatingMappingIterator<T,
 			throw new NoSuchElementException();
 
 		// First time, get the first element so we have a base for the first pair
-		if (!hasPrevious && iterator.hasNext()) {
+		if (!hasPrevious) {
 			previous = iterator.next();
 			hasPrevious = true;
 		}
@@ -56,6 +56,7 @@ public abstract class PairingIterator<T, E> extends DelegatingMappingIterator<T,
 		for (int i = 1; i < step && hasPrevious; i++) {
 			if (iterator.hasNext()) {
 				previous = iterator.next();
+				hasPrevious = true;
 			} else {
 				previous = null;
 				hasPrevious = false;
