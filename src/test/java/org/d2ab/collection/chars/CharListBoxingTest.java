@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Comparator.naturalOrder;
 import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
@@ -362,32 +363,15 @@ public class CharListBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstList() {
+	public void equalsHashCodeAgainstList() {
 		assertThat(list, is(equalTo(list)));
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
-		assertThat(list, is(not(equalTo(new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(new Object()))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(null))))));
 		assertThat(list, is(not(equalTo(new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd'))))));
 
 		List<Character> list2 = new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q'));
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
-
-		list2.remove((Character) 'q');
-
-		assertThat(list, is(equalTo(list2)));
-		assertThat(list.hashCode(), is(list2.hashCode()));
-
-		Lists.reverse(list2);
-		assertThat(list, is(not(equalTo(list2))));
-		assertThat(list.hashCode(), is(not(list2.hashCode())));
-	}
-
-	@Test
-	public void testEqualsHashCodeAgainstCharList() {
-		assertThat(list, is(not(equalTo(CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd')))));
-
-		CharList list2 = CharList.create('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q');
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

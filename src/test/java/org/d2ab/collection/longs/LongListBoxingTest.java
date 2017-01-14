@@ -16,13 +16,11 @@
 
 package org.d2ab.collection.longs;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -291,6 +289,29 @@ public class LongListBoxingTest extends BaseBoxingTest {
 
 		list.add(2, 17L);
 		assertThat(list, contains(1L, 2L, 17L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
+	}
+
+	@Test
+	public void equalsHashCodeAgainstList() {
+		assertThat(list, is(equalTo(list)));
+		assertThat(list, is(not(equalTo(null))));
+		assertThat(list, is(not(equalTo(new Object()))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(new Object()))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(null))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1L, 2L, 3L, 4L))))));
+
+		List<Long> list2 = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L, 17L));
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
+
+		list2.remove(17L);
+
+		assertThat(list, is(equalTo(list2)));
+		assertThat(list.hashCode(), is(list2.hashCode()));
+
+		Lists.reverse(list2);
+		assertThat(list, is(not(equalTo(list2))));
+		assertThat(list.hashCode(), is(not(list2.hashCode())));
 	}
 
 	@Test
