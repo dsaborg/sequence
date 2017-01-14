@@ -404,17 +404,29 @@ public class CharListBoxingTest extends BaseBoxingTest {
 	@Test
 	public void lastIndexOf() {
 		assertThat(empty.lastIndexOf('q'), is(-1));
+		assertThat(empty.lastIndexOf(new Object()), is(-1));
+		assertThat(empty.lastIndexOf(null), is(-1));
 
 		assertThat(list.lastIndexOf('q'), is(-1));
-		assertThat(list.lastIndexOf('b'), is(6));
+		assertThat(list.lastIndexOf(new Object()), is(-1));
+		assertThat(list.lastIndexOf(null), is(-1));
+		assertThat(list.lastIndexOf('a'), is(5));
+		assertThat(list.lastIndexOf('c'), is(7));
+		assertThat(list.lastIndexOf('e'), is(9));
 	}
 
 	@Test
 	public void indexOf() {
 		assertThat(empty.indexOf('q'), is(-1));
+		assertThat(empty.indexOf(new Object()), is(-1));
+		assertThat(empty.indexOf(null), is(-1));
 
 		assertThat(list.indexOf('q'), is(-1));
-		assertThat(list.indexOf('b'), is(1));
+		assertThat(list.indexOf(new Object()), is(-1));
+		assertThat(list.indexOf(null), is(-1));
+		assertThat(list.indexOf('a'), is(0));
+		assertThat(list.indexOf('c'), is(2));
+		assertThat(list.indexOf('e'), is(4));
 	}
 
 	@Test

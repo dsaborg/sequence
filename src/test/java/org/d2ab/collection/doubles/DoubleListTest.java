@@ -419,7 +419,9 @@ public class DoubleListTest {
 		assertThat(empty.lastIndexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.lastIndexOfDoubleExactly(17), is(-1));
-		assertThat(list.lastIndexOfDoubleExactly(2), is(6));
+		assertThat(list.lastIndexOfDoubleExactly(1), is(5));
+		assertThat(list.lastIndexOfDoubleExactly(3), is(7));
+		assertThat(list.lastIndexOfDoubleExactly(5), is(9));
 	}
 
 	@Test
@@ -427,7 +429,9 @@ public class DoubleListTest {
 		assertThat(empty.indexOfDoubleExactly(17), is(-1));
 
 		assertThat(list.indexOfDoubleExactly(17), is(-1));
-		assertThat(list.indexOfDoubleExactly(2), is(1));
+		assertThat(list.indexOfDoubleExactly(1), is(0));
+		assertThat(list.indexOfDoubleExactly(3), is(2));
+		assertThat(list.indexOfDoubleExactly(5), is(4));
 	}
 
 	@Test

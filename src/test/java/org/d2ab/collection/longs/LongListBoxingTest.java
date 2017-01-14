@@ -296,25 +296,27 @@ public class LongListBoxingTest extends BaseBoxingTest {
 	@Test
 	public void indexOf() {
 		assertThat(empty.indexOf(17L), is(-1));
+		assertThat(empty.indexOf(new Object()), is(-1));
+		assertThat(empty.indexOf(null), is(-1));
 
-		assertThat(list.indexOf(1L), is(0));
-		assertThat(list.indexOf(3L), is(2));
-		assertThat(list.indexOf(5L), is(4));
 		assertThat(list.indexOf(17L), is(-1));
 		assertThat(list.indexOf(new Object()), is(-1));
 		assertThat(list.indexOf(null), is(-1));
+		assertThat(list.indexOf(1L), is(0));
+		assertThat(list.indexOf(3L), is(2));
+		assertThat(list.indexOf(5L), is(4));
 	}
 
 	@Test
 	public void lastIndexOf() {
 		assertThat(empty.lastIndexOf(17L), is(-1));
 
-		assertThat(list.lastIndexOf(1L), is(5));
-		assertThat(list.lastIndexOf(3L), is(7));
-		assertThat(list.lastIndexOf(5L), is(9));
 		assertThat(list.lastIndexOf(17L), is(-1));
 		assertThat(list.lastIndexOf(new Object()), is(-1));
 		assertThat(list.lastIndexOf(null), is(-1));
+		assertThat(list.lastIndexOf(1L), is(5));
+		assertThat(list.lastIndexOf(3L), is(7));
+		assertThat(list.lastIndexOf(5L), is(9));
 	}
 
 	@Test

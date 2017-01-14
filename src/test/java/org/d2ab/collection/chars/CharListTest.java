@@ -421,7 +421,9 @@ public class CharListTest {
 		assertThat(empty.lastIndexOfChar('q'), is(-1));
 
 		assertThat(list.lastIndexOfChar('q'), is(-1));
-		assertThat(list.lastIndexOfChar('b'), is(6));
+		assertThat(list.lastIndexOfChar('a'), is(5));
+		assertThat(list.lastIndexOfChar('c'), is(7));
+		assertThat(list.lastIndexOfChar('e'), is(9));
 	}
 
 	@Test
@@ -429,7 +431,9 @@ public class CharListTest {
 		assertThat(empty.indexOfChar('q'), is(-1));
 
 		assertThat(list.indexOfChar('q'), is(-1));
-		assertThat(list.indexOfChar('b'), is(1));
+		assertThat(list.indexOfChar('a'), is(0));
+		assertThat(list.indexOfChar('c'), is(2));
+		assertThat(list.indexOfChar('e'), is(4));
 	}
 
 	@Test

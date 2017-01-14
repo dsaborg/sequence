@@ -402,17 +402,29 @@ public class DoubleListBoxingTest extends BaseBoxingTest {
 	@Test
 	public void lastIndexOf() {
 		assertThat(empty.lastIndexOf(17.0), is(-1));
+		assertThat(empty.lastIndexOf(new Object()), is(-1));
+		assertThat(empty.lastIndexOf(null), is(-1));
 
 		assertThat(list.lastIndexOf(17.0), is(-1));
-		assertThat(list.lastIndexOf(2.0), is(6));
+		assertThat(list.lastIndexOf(new Object()), is(-1));
+		assertThat(list.lastIndexOf(null), is(-1));
+		assertThat(list.lastIndexOf(1.0), is(5));
+		assertThat(list.lastIndexOf(3.0), is(7));
+		assertThat(list.lastIndexOf(5.0), is(9));
 	}
 
 	@Test
 	public void indexOf() {
 		assertThat(empty.indexOf(17.0), is(-1));
+		assertThat(empty.indexOf(new Object()), is(-1));
+		assertThat(empty.indexOf(null), is(-1));
 
 		assertThat(list.indexOf(17.0), is(-1));
-		assertThat(list.indexOf(2.0), is(1));
+		assertThat(list.indexOf(new Object()), is(-1));
+		assertThat(list.indexOf(null), is(-1));
+		assertThat(list.indexOf(1.0), is(0));
+		assertThat(list.indexOf(3.0), is(2));
+		assertThat(list.indexOf(5.0), is(4));
 	}
 
 	@Test
