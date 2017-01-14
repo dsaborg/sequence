@@ -100,6 +100,25 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
+	public void equalsHashCodeAgainstTreeSet() {
+		Set<Character> larger = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
+
+		Set<Character> smaller = new TreeSet<>(asList('a', 'b', 'c', 'd'));
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
+
+		Set<Character> dissimilar = new TreeSet<>(asList('a', 'b', 'c', 'd', 'f'));
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		Set<Character> same = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'));
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
+	}
+
+	@Test
 	public void subSet() {
 		SortedSet<Character> subSet = set.subSet('b', 'e');
 		assertThat(subSet, contains('b', 'c', 'd'));

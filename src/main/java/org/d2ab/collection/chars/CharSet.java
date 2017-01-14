@@ -125,8 +125,13 @@ public interface CharSet extends Set<Character>, CharCollection {
 			if (!(o instanceof Set))
 				return false;
 
-			Set<?> that = (Set<?>) o;
-			return size() == that.size() && containsAll(that);
+			if (o instanceof CharSet) {
+				CharSet that = (CharSet) o;
+				return size() == that.size() && containsAllChars(that);
+			} else {
+				Set<?> that = (Set<?>) o;
+				return size() == that.size() && containsAll(that);
+			}
 		}
 
 		public int hashCode() {

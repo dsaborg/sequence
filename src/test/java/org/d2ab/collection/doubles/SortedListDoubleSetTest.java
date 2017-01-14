@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -130,15 +131,31 @@ public class SortedListDoubleSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstDoubleSet() {
-		DoubleSet set2 = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
+	public void equalsEdgeCases() {
+		assertThat(set, is(equalTo(set)));
+		assertThat(set, is(not(equalTo(null))));
+		assertThat(set, is(not(equalTo(new Object()))));
+		assertThat(set, is(not(equalTo(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0)))));
+		assertThat(set, is(not(equalTo(DoubleList.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4)))));
+	}
 
-		set2.removeDoubleExactly(17);
+	@Test
+	public void testEqualsHashCodeAgainstSortedListDoubleSet() {
+		DoubleSet larger = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
+		DoubleSet smaller = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3);
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
+
+		DoubleSet dissimilar = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5);
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		DoubleSet same = new SortedListDoubleSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
 	}
 
 	@Test

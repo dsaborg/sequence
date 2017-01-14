@@ -144,8 +144,13 @@ public interface DoubleSet extends Set<Double>, DoubleCollection {
 			if (!(o instanceof Set))
 				return false;
 
-			Set<?> that = (Set<?>) o;
-			return size() == that.size() && containsAll(that);
+			if (o instanceof DoubleSet) {
+				DoubleSet that = (DoubleSet) o;
+				return size() == that.size() && containsAllDoublesExactly(that);
+			} else {
+				Set<?> that = (Set<?>) o;
+				return size() == that.size() && containsAll(that);
+			}
 		}
 
 		public int hashCode() {

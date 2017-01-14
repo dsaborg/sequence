@@ -106,27 +106,22 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstSet() {
-		Set<Integer> set2 = new HashSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
+	public void equalsHashCodeAgainstTreeSet() {
+		Set<Integer> larger = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		set2.remove(17);
+		Set<Integer> smaller = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3));
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
-	}
+		Set<Integer> dissimilar = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5));
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
 
-	@Test
-	public void testEqualsHashCodeAgainstIntSet() {
-		IntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
-
-		set2.remove(17);
-
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
+		Set<Integer> same = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
 	}
 
 	@Test

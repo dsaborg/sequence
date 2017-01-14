@@ -110,15 +110,22 @@ public class BitIntSetTest {
 	}
 
 	@Test
-	public void testEqualsHashCodeAgainstIntSet() {
-		IntSet set2 = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
+	public void equalsHashCodeAgainstBitIntSet() {
+		IntSet larger = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17);
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		set2.removeInt(17);
+		IntSet smaller = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3);
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
+		IntSet dissimilar = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5);
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		IntSet same = new BitIntSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
 	}
 
 	@Test

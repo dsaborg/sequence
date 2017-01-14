@@ -120,15 +120,22 @@ public class BitCharSetTest {
 	}
 
 	@Test
-	public void equalsHashCodeAgainstCharSet() {
-		BitCharSet set2 = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
-		assertThat(set, is(not(equalTo(set2))));
-		assertThat(set.hashCode(), is(not(set2.hashCode())));
+	public void equalsHashCodeAgainstBitCharSet() {
+		CharSet larger = new BitCharSet('a', 'b', 'c', 'd', 'e', 'q');
+		assertThat(set, is(not(equalTo(larger))));
+		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		set2.removeChar('q');
+		CharSet smaller = new BitCharSet('a', 'b', 'c', 'd');
+		assertThat(set, is(not(equalTo(smaller))));
+		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		assertThat(set, is(equalTo(set2)));
-		assertThat(set.hashCode(), is(set2.hashCode()));
+		CharSet dissimilar = new BitCharSet('a', 'b', 'c', 'd', 'f');
+		assertThat(set, is(not(equalTo(dissimilar))));
+		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
+
+		CharSet same = new BitCharSet('a', 'b', 'c', 'd', 'e');
+		assertThat(set, is(equalTo(same)));
+		assertThat(set.hashCode(), is(same.hashCode()));
 	}
 
 	@Test
