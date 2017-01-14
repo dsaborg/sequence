@@ -50,21 +50,22 @@ public class DelimitingIterator<U, V> extends DelegatingUnaryIterator<U> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public U next() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-
 		if (!prefixDone && prefix.isPresent()) {
 			prefixDone = true;
 			return (U) prefix.get();
 		}
 
-		if (!iterator.hasNext() && !suffixDone && suffix.isPresent()) {
+		if (iterator.hasNext()) {
+			boolean sendDelimiter = delimiter.isPresent() && !(delimiterNext = !delimiterNext);
+			return sendDelimiter ? (U) delimiter.get() : iterator.next();
+		}
+
+		if (!suffixDone && suffix.isPresent()) {
 			suffixDone = true;
 			return (U) suffix.get();
 		}
 
-		boolean sendDelimiter = delimiter.isPresent() && !(delimiterNext = !delimiterNext);
-		return sendDelimiter ? (U) delimiter.get() : iterator.next();
+		throw new NoSuchElementException();
 	}
 
 	@Override
