@@ -235,8 +235,11 @@ public class CharIterableTest {
 		assertThat(reader.read(cbuf, 0, 0), is(0));
 		assertArrayEquals(new char[]{'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'}, cbuf);
 
-		assertThat(reader.read(cbuf, 2, 8), is(5));
-		assertArrayEquals(new char[]{'\0', '\0', 'a', 'b', 'c', 'd', 'e', '\0', '\0', '\0'}, cbuf);
+		assertThat(reader.read(cbuf, 2, 3), is(3));
+		assertArrayEquals(new char[]{'\0', '\0', 'a', 'b', 'c', '\0', '\0', '\0', '\0', '\0'}, cbuf);
+
+		assertThat(reader.read(cbuf, 6, 8), is(2));
+		assertArrayEquals(new char[]{'\0', '\0', 'a', 'b', 'c', '\0', 'd', 'e', '\0', '\0'}, cbuf);
 
 		assertThat(reader.read(cbuf, 0, 2), is(-1));
 
