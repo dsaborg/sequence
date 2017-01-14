@@ -391,14 +391,27 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(-1, 17L));
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(1, 17L));
 		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 17L));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.add(0, 17L);
 		assertThat(empty, contains(17L));
 
-		list.add(2, 17L);
-		assertThat(list, contains(1L, 2L, 17L, 3L, 4L, 5L));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(-1, 17L));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(6, 17L));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(7, 17L));
+		assertThat(list, contains(1L, 2L, 3L, 4L, 5L));
+
+		list.add(0, 16L);
+		assertThat(list, contains(16L, 1L, 2L, 3L, 4L, 5L));
+
+		list.add(3, 17L);
+		assertThat(list, contains(16L, 1L, 2L, 17L, 3L, 4L, 5L));
+
+		list.add(7, 18L);
+		assertThat(list, contains(16L, 1L, 2L, 17L, 3L, 4L, 5L, 18L));
 	}
 
 	@Test

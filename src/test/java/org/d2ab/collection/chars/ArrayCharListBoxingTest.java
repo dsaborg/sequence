@@ -337,18 +337,28 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void addAt() {
+	public void addCharAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(-1, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(1, 'q'));
 		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 'q'));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.add(0, 'q');
 		assertThat(empty, contains('q'));
 
-		list.add(2, 'q');
-		assertThat(list, contains('a', 'b', 'q', 'c', 'd', 'e'));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(-1, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(6, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(7, 'q'));
+		assertThat(list, contains('a', 'b', 'c', 'd', 'e'));
 
-		expecting(NullPointerException.class, () -> list.add(2, null));
-		assertThat(list, contains('a', 'b', 'q', 'c', 'd', 'e'));
+		list.add(0, 'p');
+		assertThat(list, contains('p', 'a', 'b', 'c', 'd', 'e'));
+
+		list.add(3, 'q');
+		assertThat(list, contains('p', 'a', 'b', 'q', 'c', 'd', 'e'));
+
+		list.add(7, 'r');
+		assertThat(list, contains('p', 'a', 'b', 'q', 'c', 'd', 'e', 'r'));
 	}
 
 	@Test

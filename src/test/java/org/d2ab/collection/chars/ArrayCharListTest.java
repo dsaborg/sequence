@@ -438,14 +438,27 @@ public class ArrayCharListTest {
 
 	@Test
 	public void addCharAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.addCharAt(-1, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> empty.addCharAt(1, 'q'));
 		expecting(IndexOutOfBoundsException.class, () -> empty.addCharAt(2, 'q'));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.addCharAt(0, 'q');
 		assertThat(empty, containsChars('q'));
 
-		list.addCharAt(2, 'q');
-		assertThat(list, containsChars('a', 'b', 'q', 'c', 'd', 'e'));
+		expecting(IndexOutOfBoundsException.class, () -> list.addCharAt(-1, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> list.addCharAt(6, 'q'));
+		expecting(IndexOutOfBoundsException.class, () -> list.addCharAt(7, 'q'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		list.addCharAt(0, 'p');
+		assertThat(list, containsChars('p', 'a', 'b', 'c', 'd', 'e'));
+
+		list.addCharAt(3, 'q');
+		assertThat(list, containsChars('p', 'a', 'b', 'q', 'c', 'd', 'e'));
+
+		list.addCharAt(7, 'r');
+		assertThat(list, containsChars('p', 'a', 'b', 'q', 'c', 'd', 'e', 'r'));
 	}
 
 	@Test

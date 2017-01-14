@@ -391,14 +391,27 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(-1, 17.0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.add(1, 17.0));
 		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 17.0));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.add(0, 17.0);
 		assertThat(empty, contains(17.0));
 
-		list.add(2, 17.0);
-		assertThat(list, contains(1.0, 2.0, 17.0, 3.0, 4.0, 5.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(-1, 17.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(6, 17.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.add(7, 17.0));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0));
+
+		list.add(0, 16.0);
+		assertThat(list, contains(16.0, 1.0, 2.0, 3.0, 4.0, 5.0));
+
+		list.add(3, 17.0);
+		assertThat(list, contains(16.0, 1.0, 2.0, 17.0, 3.0, 4.0, 5.0));
+
+		list.add(7, 18.0);
+		assertThat(list, contains(16.0, 1.0, 2.0, 17.0, 3.0, 4.0, 5.0, 18.0));
 	}
 
 	@Test

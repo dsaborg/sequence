@@ -435,14 +435,27 @@ public class ArrayIntListTest {
 
 	@Test
 	public void addIntAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.addIntAt(-1, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.addIntAt(1, 17));
 		expecting(IndexOutOfBoundsException.class, () -> empty.addIntAt(2, 17));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.addIntAt(0, 17);
 		assertThat(empty, containsInts(17));
 
-		list.addIntAt(2, 17);
-		assertThat(list, containsInts(1, 2, 17, 3, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.addIntAt(-1, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.addIntAt(6, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.addIntAt(7, 17));
+		assertThat(list, containsInts(1, 2, 3, 4, 5));
+
+		list.addIntAt(0, 16);
+		assertThat(list, containsInts(16, 1, 2, 3, 4, 5));
+
+		list.addIntAt(3, 17);
+		assertThat(list, containsInts(16, 1, 2, 17, 3, 4, 5));
+
+		list.addIntAt(7, 18);
+		assertThat(list, containsInts(16, 1, 2, 17, 3, 4, 5, 18));
 	}
 
 	@Test

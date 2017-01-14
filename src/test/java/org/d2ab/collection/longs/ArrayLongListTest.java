@@ -434,14 +434,27 @@ public class ArrayLongListTest {
 
 	@Test
 	public void addLongAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.addLongAt(-1, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.addLongAt(1, 17));
 		expecting(IndexOutOfBoundsException.class, () -> empty.addLongAt(2, 17));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.addLongAt(0, 17);
 		assertThat(empty, containsLongs(17));
 
-		list.addLongAt(2, 17);
-		assertThat(list, containsLongs(1, 2, 17, 3, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.addLongAt(-1, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.addLongAt(6, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.addLongAt(7, 17));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5));
+
+		list.addLongAt(0, 16);
+		assertThat(list, containsLongs(16, 1, 2, 3, 4, 5));
+
+		list.addLongAt(3, 17);
+		assertThat(list, containsLongs(16, 1, 2, 17, 3, 4, 5));
+
+		list.addLongAt(7, 18);
+		assertThat(list, containsLongs(16, 1, 2, 17, 3, 4, 5, 18));
 	}
 
 	@Test

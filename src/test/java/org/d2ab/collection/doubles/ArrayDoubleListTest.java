@@ -463,14 +463,27 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void addDoubleAt() {
+		expecting(IndexOutOfBoundsException.class, () -> empty.addDoubleAt(-1, 17));
+		expecting(IndexOutOfBoundsException.class, () -> empty.addDoubleAt(1, 17));
 		expecting(IndexOutOfBoundsException.class, () -> empty.addDoubleAt(2, 17));
 		assertThat(empty, is(emptyIterable()));
 
 		empty.addDoubleAt(0, 17);
 		assertThat(empty, containsDoubles(17));
 
-		list.addDoubleAt(2, 17);
-		assertThat(list, containsDoubles(1, 2, 17, 3, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.addDoubleAt(-1, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.addDoubleAt(6, 17));
+		expecting(IndexOutOfBoundsException.class, () -> list.addDoubleAt(7, 17));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5));
+
+		list.addDoubleAt(0, 16);
+		assertThat(list, containsDoubles(16, 1, 2, 3, 4, 5));
+
+		list.addDoubleAt(3, 17);
+		assertThat(list, containsDoubles(16, 1, 2, 17, 3, 4, 5));
+
+		list.addDoubleAt(7, 18);
+		assertThat(list, containsDoubles(16, 1, 2, 17, 3, 4, 5, 18));
 	}
 
 	@Test
