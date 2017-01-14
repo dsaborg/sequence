@@ -211,6 +211,8 @@ public class LongSortedSetTest {
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
+		assertThat(subSet.removeLong(3), is(false));
+		assertThat(subSet.removeLong(2), is(false));
 		assertThat(subSet.removeLong(1), is(true));
 		assertThat(subSet, containsLongs(-1));
 		assertThat(subSet.size(), is(1));

@@ -193,6 +193,8 @@ public class IntSortedSetTest {
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
+		assertThat(subSet.removeInt(3), is(false));
+		assertThat(subSet.removeInt(2), is(false));
 		assertThat(subSet.removeInt(1), is(true));
 		assertThat(subSet, containsInts(-1));
 		assertThat(subSet.size(), is(1));

@@ -213,6 +213,8 @@ public class CharSortedSetTest {
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
+		assertThat(subSet.removeChar('h'), is(false));
+		assertThat(subSet.removeChar('g'), is(false));
 		assertThat(subSet.removeChar('f'), is(true));
 		assertThat(subSet, containsChars('d'));
 		assertThat(subSet.size(), is(1));

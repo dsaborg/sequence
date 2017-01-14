@@ -217,6 +217,8 @@ public class DoubleSortedSetTest {
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
+		assertThat(subSet.removeDoubleExactly(3), is(false));
+		assertThat(subSet.removeDoubleExactly(2), is(false));
 		assertThat(subSet.removeDoubleExactly(1), is(true));
 		assertThat(subSet, containsDoubles(-1));
 		assertThat(subSet.size(), is(1));
