@@ -35,11 +35,15 @@ import static org.junit.Assert.assertThat;
 public class BitLongSetTest {
 	private final BitLongSet empty = new BitLongSet();
 	private final BitLongSet set = new BitLongSet(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4);
+	private final BitLongSet negatives = new BitLongSet(-5, -4, -3, -2, -1);
+	private final BitLongSet positives = new BitLongSet(0, 1, 2, 3, 4);
 
 	@Test
 	public void size() {
 		assertThat(empty.size(), is(0));
 		assertThat(set.size(), is(10));
+		assertThat(negatives.size(), is(5));
+		assertThat(positives.size(), is(5));
 	}
 
 	@Test
@@ -63,6 +67,8 @@ public class BitLongSetTest {
 	public void iterator() {
 		assertThat(empty, is(emptyIterable()));
 		assertThat(set, containsLongs(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		assertThat(negatives, containsLongs(-5, -4, -3, -2, -1));
+		assertThat(positives, containsLongs(0, 1, 2, 3, 4));
 	}
 
 	@Test
@@ -95,6 +101,8 @@ public class BitLongSetTest {
 	public void isEmpty() {
 		assertThat(empty.isEmpty(), is(true));
 		assertThat(set.isEmpty(), is(false));
+		assertThat(negatives.isEmpty(), is(false));
+		assertThat(positives.isEmpty(), is(false));
 	}
 
 	@Test
