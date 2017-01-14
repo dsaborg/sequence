@@ -272,7 +272,8 @@ public class DoubleListOfTest {
 	}
 
 	@Test
-	public void listIteratorAfterEnd() {
+	public void listIteratorEdgeCases() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(-1));
 		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
 	}
 

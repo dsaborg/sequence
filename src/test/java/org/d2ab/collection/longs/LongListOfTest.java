@@ -274,6 +274,7 @@ public class LongListOfTest {
 
 	@Test
 	public void listIteratorAfterEnd() {
+		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(-1));
 		expecting(IndexOutOfBoundsException.class, () -> list.listIterator(11));
 	}
 
