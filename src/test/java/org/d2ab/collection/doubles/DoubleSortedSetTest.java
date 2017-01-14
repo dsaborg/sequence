@@ -201,8 +201,16 @@ public class DoubleSortedSetTest {
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.firstDouble(), is(-1.0));
 		assertThat(subSet.lastDouble(), is(1.0));
-		assertThat(subSet.containsDoubleExactly(1), is(true));
 		assertThat(subSet.containsDoubleExactly(-3), is(false));
+		assertThat(subSet.containsDoubleExactly(-2), is(false));
+		assertThat(subSet.containsDoubleExactly(0), is(false));
+		assertThat(subSet.containsDoubleExactly(1), is(true));
+		assertThat(subSet.containsDoubleExactly(2), is(false));
+		assertThat(subSet.containsDouble(-3, 0.5), is(false));
+		assertThat(subSet.containsDouble(-2, 0.5), is(false));
+		assertThat(subSet.containsDouble(0, 0.5), is(false));
+		assertThat(subSet.containsDouble(1, 0.5), is(true));
+		assertThat(subSet.containsDouble(2, 0.5), is(false));
 		assertThat(subSet.toString(), is("[-1.0, 1.0]"));
 
 		DoubleSet equivalentSet = DoubleSet.create(-1.0, 1.0);
@@ -219,6 +227,11 @@ public class DoubleSortedSetTest {
 		assertThat(subSet.containsDoubleExactly(0), is(false));
 		assertThat(subSet.containsDoubleExactly(1), is(false));
 		assertThat(subSet.containsDoubleExactly(2), is(false));
+		assertThat(subSet.containsDouble(-3, 0.5), is(false));
+		assertThat(subSet.containsDouble(-2, 0.5), is(false));
+		assertThat(subSet.containsDouble(0, 0.5), is(false));
+		assertThat(subSet.containsDouble(1, 0.5), is(false));
+		assertThat(subSet.containsDouble(2, 0.5), is(false));
 		assertThat(subSet.toString(), is("[-1.0]"));
 
 		assertThat(subSet.addDoubleExactly(-2), is(true));
@@ -231,6 +244,11 @@ public class DoubleSortedSetTest {
 		assertThat(subSet.containsDoubleExactly(0), is(false));
 		assertThat(subSet.containsDoubleExactly(1), is(false));
 		assertThat(subSet.containsDoubleExactly(2), is(false));
+		assertThat(subSet.containsDouble(-3, 0.5), is(false));
+		assertThat(subSet.containsDouble(-2, 0.5), is(true));
+		assertThat(subSet.containsDouble(0, 0.5), is(false));
+		assertThat(subSet.containsDouble(1, 0.5), is(false));
+		assertThat(subSet.containsDouble(2, 0.5), is(false));
 		assertThat(subSet.toString(), is("[-2.0, -1.0]"));
 	}
 

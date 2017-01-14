@@ -182,8 +182,11 @@ public class IntSortedSetTest {
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.firstInt(), is(-1));
 		assertThat(subSet.lastInt(), is(1));
-		assertThat(subSet.containsInt(1), is(true));
 		assertThat(subSet.containsInt(-3), is(false));
+		assertThat(subSet.containsInt(-2), is(false));
+		assertThat(subSet.containsInt(0), is(false));
+		assertThat(subSet.containsInt(1), is(true));
+		assertThat(subSet.containsInt(2), is(false));
 		assertThat(subSet.toString(), is("[-1, 1]"));
 
 		IntSet equivalentSet = IntSet.create(-1, 1);
