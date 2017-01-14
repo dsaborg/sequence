@@ -545,11 +545,24 @@ public class ArrayCharListTest {
 
 	@Test
 	public void removeCharAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.removeCharAt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeCharAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeCharAt(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeCharAt(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeCharAt(2), is('c'));
-		assertThat(list, containsChars('a', 'b', 'd', 'e'));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeCharAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeCharAt(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeCharAt(6));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(list.removeCharAt(0), is('a'));
+		assertThat(list, containsChars('b', 'c', 'd', 'e'));
+
+		assertThat(list.removeCharAt(1), is('c'));
+		assertThat(list, containsChars('b', 'd', 'e'));
+
+		assertThat(list.removeCharAt(2), is('e'));
+		assertThat(list, containsChars('b', 'd'));
 	}
 
 	@Test

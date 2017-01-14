@@ -337,7 +337,7 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 	}
 
 	@Test
-	public void addCharAt() {
+	public void addAt() {
 		expecting(IndexOutOfBoundsException.class, () -> empty.add(-1, 'q'));
 		expecting(IndexOutOfBoundsException.class, () -> empty.add(1, 'q'));
 		expecting(IndexOutOfBoundsException.class, () -> empty.add(2, 'q'));
@@ -447,11 +447,24 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.remove(2), is('c'));
-		assertThat(list, contains('a', 'b', 'd', 'e'));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(6));
+		assertThat(list, contains('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(list.remove(0), is('a'));
+		assertThat(list, contains('b', 'c', 'd', 'e'));
+
+		assertThat(list.remove(1), is('c'));
+		assertThat(list, contains('b', 'd', 'e'));
+
+		assertThat(list.remove(2), is('e'));
+		assertThat(list, contains('b', 'd'));
 	}
 
 	@Test

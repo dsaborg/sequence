@@ -542,11 +542,24 @@ public class ArrayIntListTest {
 
 	@Test
 	public void removeIntAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeIntAt(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeIntAt(2), is(3));
-		assertThat(list, containsInts(1, 2, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeIntAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeIntAt(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeIntAt(6));
+		assertThat(list, containsInts(1, 2, 3, 4, 5));
+
+		assertThat(list.removeIntAt(0), is(1));
+		assertThat(list, containsInts(2, 3, 4, 5));
+
+		assertThat(list.removeIntAt(1), is(3));
+		assertThat(list, containsInts(2, 4, 5));
+
+		assertThat(list.removeIntAt(2), is(5));
+		assertThat(list, containsInts(2, 4));
 	}
 
 	@Test

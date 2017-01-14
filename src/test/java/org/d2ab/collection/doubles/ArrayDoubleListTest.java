@@ -580,11 +580,24 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void removeDoubleAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeDoubleAt(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeDoubleAt(2), is(3.0));
-		assertThat(list, containsDoubles(1, 2, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeDoubleAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeDoubleAt(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeDoubleAt(6));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5));
+
+		assertThat(list.removeDoubleAt(0), is(1.0));
+		assertThat(list, containsDoubles(2, 3, 4, 5));
+
+		assertThat(list.removeDoubleAt(1), is(3.0));
+		assertThat(list, containsDoubles(2, 4, 5));
+
+		assertThat(list.removeDoubleAt(2), is(5.0));
+		assertThat(list, containsDoubles(2, 4));
 	}
 
 	@Test

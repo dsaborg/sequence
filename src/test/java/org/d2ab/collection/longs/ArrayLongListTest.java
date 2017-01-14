@@ -541,11 +541,24 @@ public class ArrayLongListTest {
 
 	@Test
 	public void removeLongAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.removeLongAt(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeLongAt(2), is(3L));
-		assertThat(list, containsLongs(1, 2, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeLongAt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeLongAt(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.removeLongAt(6));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5));
+
+		assertThat(list.removeLongAt(0), is(1L));
+		assertThat(list, containsLongs(2, 3, 4, 5));
+
+		assertThat(list.removeLongAt(1), is(3L));
+		assertThat(list, containsLongs(2, 4, 5));
+
+		assertThat(list.removeLongAt(2), is(5L));
+		assertThat(list, containsLongs(2, 4));
 	}
 
 	@Test

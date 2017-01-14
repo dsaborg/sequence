@@ -500,11 +500,24 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.remove(2), is(3.0));
-		assertThat(list, contains(1.0, 2.0, 4.0, 5.0));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(6));
+		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0));
+
+		assertThat(list.remove(0), is(1.0));
+		assertThat(list, contains(2.0, 3.0, 4.0, 5.0));
+
+		assertThat(list.remove(1), is(3.0));
+		assertThat(list, contains(2.0, 4.0, 5.0));
+
+		assertThat(list.remove(2), is(5.0));
+		assertThat(list, contains(2.0, 4.0));
 	}
 
 	@Test

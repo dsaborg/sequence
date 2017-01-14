@@ -500,11 +500,24 @@ public class ArrayIntListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.remove(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.remove(1));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.remove(2), is(3));
-		assertThat(list, contains(1, 2, 4, 5));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(6));
+		assertThat(list, contains(1, 2, 3, 4, 5));
+
+		assertThat(list.remove(0), is(1));
+		assertThat(list, contains(2, 3, 4, 5));
+
+		assertThat(list.remove(1), is(3));
+		assertThat(list, contains(2, 4, 5));
+
+		assertThat(list.remove(2), is(5));
+		assertThat(list, contains(2, 4));
 	}
 
 	@Test
