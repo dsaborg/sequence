@@ -306,10 +306,20 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void get() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.get(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(1));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.get(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(6));
+		assertThat(list, contains('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(list.get(0), is('a'));
 		assertThat(list.get(2), is('c'));
+		assertThat(list.get(4), is('e'));
+		assertThat(list, contains('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

@@ -412,10 +412,20 @@ public class ArrayCharListTest {
 
 	@Test
 	public void getChar() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.getChar(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getChar(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getChar(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getChar(1));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.getChar(6));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
+
+		assertThat(list.getChar(0), is('a'));
 		assertThat(list.getChar(2), is('c'));
+		assertThat(list.getChar(4), is('e'));
+		assertThat(list, containsChars('a', 'b', 'c', 'd', 'e'));
 	}
 
 	@Test

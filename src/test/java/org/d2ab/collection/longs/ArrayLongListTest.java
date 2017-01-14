@@ -408,10 +408,20 @@ public class ArrayLongListTest {
 
 	@Test
 	public void getLong() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getLong(1));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.getLong(6));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5));
+
+		assertThat(list.getLong(0), is(1L));
 		assertThat(list.getLong(2), is(3L));
+		assertThat(list.getLong(4), is(5L));
+		assertThat(list, containsLongs(1, 2, 3, 4, 5));
 	}
 
 	@Test

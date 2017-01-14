@@ -365,10 +365,20 @@ public class ArrayIntListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void get() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.get(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.get(1));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.get(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.get(6));
+		assertThat(list, contains(1, 2, 3, 4, 5));
+
+		assertThat(list.get(0), is(1));
 		assertThat(list.get(2), is(3));
+		assertThat(list.get(4), is(5));
+		assertThat(list, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test

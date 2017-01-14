@@ -409,10 +409,20 @@ public class ArrayIntListTest {
 
 	@Test
 	public void getInt() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getInt(1));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.getInt(6));
+		assertThat(list, containsInts(1, 2, 3, 4, 5));
+
+		assertThat(list.getInt(0), is(1));
 		assertThat(list.getInt(2), is(3));
+		assertThat(list.getInt(4), is(5));
+		assertThat(list, containsInts(1, 2, 3, 4, 5));
 	}
 
 	@Test

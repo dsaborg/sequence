@@ -428,10 +428,20 @@ public class ArrayDoubleListTest {
 
 	@Test
 	public void getDouble() {
-		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(2));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(-1));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(0));
+		expecting(IndexOutOfBoundsException.class, () -> empty.getDouble(1));
 		assertThat(empty, is(emptyIterable()));
 
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(-1));
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(5));
+		expecting(IndexOutOfBoundsException.class, () -> list.getDouble(6));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5));
+
+		assertThat(list.getDouble(0), is(1.0));
 		assertThat(list.getDouble(2), is(3.0));
+		assertThat(list.getDouble(4), is(5.0));
+		assertThat(list, containsDoubles(1, 2, 3, 4, 5));
 	}
 
 	@Test
