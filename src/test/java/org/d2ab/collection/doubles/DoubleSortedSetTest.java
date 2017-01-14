@@ -208,6 +208,30 @@ public class DoubleSortedSetTest {
 		DoubleSet equivalentSet = DoubleSet.create(-1.0, 1.0);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(subSet.removeDoubleExactly(1), is(true));
+		assertThat(subSet, containsDoubles(-1));
+		assertThat(subSet.size(), is(1));
+		assertThat(subSet.firstDouble(), is(-1.0));
+		assertThat(subSet.lastDouble(), is(-1.0));
+		assertThat(subSet.containsDoubleExactly(-3), is(false));
+		assertThat(subSet.containsDoubleExactly(-2), is(false));
+		assertThat(subSet.containsDoubleExactly(0), is(false));
+		assertThat(subSet.containsDoubleExactly(1), is(false));
+		assertThat(subSet.containsDoubleExactly(2), is(false));
+		assertThat(subSet.toString(), is("[-1.0]"));
+
+		assertThat(subSet.addDoubleExactly(-2), is(true));
+		assertThat(subSet, containsDoubles(-2, -1));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstDouble(), is(-2.0));
+		assertThat(subSet.lastDouble(), is(-1.0));
+		assertThat(subSet.containsDoubleExactly(-3), is(false));
+		assertThat(subSet.containsDoubleExactly(-2), is(true));
+		assertThat(subSet.containsDoubleExactly(0), is(false));
+		assertThat(subSet.containsDoubleExactly(1), is(false));
+		assertThat(subSet.containsDoubleExactly(2), is(false));
+		assertThat(subSet.toString(), is("[-2.0, -1.0]"));
 	}
 
 	@Test

@@ -197,19 +197,45 @@ public class CharSortedSetTest {
 
 	@Test
 	public void sparseSubSet() {
-		BitCharSet set = new BitCharSet('b', 'd', 'f', 'h');
-		CharSortedSet subSet = set.subSet('c', 'g');
+		CharSortedSet subSet = new BitCharSet('b', 'd', 'f', 'h').subSet('c', 'g');
 		assertThat(subSet, containsChars('d', 'f'));
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.firstChar(), is('d'));
 		assertThat(subSet.lastChar(), is('f'));
+		assertThat(subSet.containsChar('b'), is(false));
+		assertThat(subSet.containsChar('c'), is(false));
 		assertThat(subSet.containsChar('d'), is(true));
-		assertThat(subSet.containsChar('h'), is(false));
+		assertThat(subSet.containsChar('f'), is(true));
+		assertThat(subSet.containsChar('g'), is(false));
 		assertThat(subSet.toString(), is("[d, f]"));
 
 		Set<Character> equivalentSet = CharSet.create('d', 'f');
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(subSet.removeChar('f'), is(true));
+		assertThat(subSet, containsChars('d'));
+		assertThat(subSet.size(), is(1));
+		assertThat(subSet.firstChar(), is('d'));
+		assertThat(subSet.lastChar(), is('d'));
+		assertThat(subSet.containsChar('b'), is(false));
+		assertThat(subSet.containsChar('c'), is(false));
+		assertThat(subSet.containsChar('d'), is(true));
+		assertThat(subSet.containsChar('f'), is(false));
+		assertThat(subSet.containsChar('g'), is(false));
+		assertThat(subSet.toString(), is("[d]"));
+
+		assertThat(subSet.addChar('c'), is(true));
+		assertThat(subSet, containsChars('c', 'd'));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstChar(), is('c'));
+		assertThat(subSet.lastChar(), is('d'));
+		assertThat(subSet.containsChar('b'), is(false));
+		assertThat(subSet.containsChar('c'), is(true));
+		assertThat(subSet.containsChar('d'), is(true));
+		assertThat(subSet.containsChar('f'), is(false));
+		assertThat(subSet.containsChar('g'), is(false));
+		assertThat(subSet.toString(), is("[c, d]"));
 	}
 
 	@Test

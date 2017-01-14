@@ -177,8 +177,7 @@ public class IntSortedSetTest {
 
 	@Test
 	public void sparseSubSet() {
-		IntSortedSet set = IntSortedSet.Base.create(-5, -3, -1, 1, 3, 5);
-		IntSortedSet subSet = set.subSet(-2, 2);
+		IntSortedSet subSet = IntSortedSet.Base.create(-5, -3, -1, 1, 3, 5).subSet(-2, 2);
 		assertThat(subSet, containsInts(-1, 1));
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.firstInt(), is(-1));
@@ -190,6 +189,30 @@ public class IntSortedSetTest {
 		IntSet equivalentSet = IntSet.create(-1, 1);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(subSet.removeInt(1), is(true));
+		assertThat(subSet, containsInts(-1));
+		assertThat(subSet.size(), is(1));
+		assertThat(subSet.firstInt(), is(-1));
+		assertThat(subSet.lastInt(), is(-1));
+		assertThat(subSet.containsInt(-3), is(false));
+		assertThat(subSet.containsInt(-2), is(false));
+		assertThat(subSet.containsInt(0), is(false));
+		assertThat(subSet.containsInt(1), is(false));
+		assertThat(subSet.containsInt(2), is(false));
+		assertThat(subSet.toString(), is("[-1]"));
+
+		assertThat(subSet.addInt(-2), is(true));
+		assertThat(subSet, containsInts(-2, -1));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstInt(), is(-2));
+		assertThat(subSet.lastInt(), is(-1));
+		assertThat(subSet.containsInt(-3), is(false));
+		assertThat(subSet.containsInt(-2), is(true));
+		assertThat(subSet.containsInt(0), is(false));
+		assertThat(subSet.containsInt(1), is(false));
+		assertThat(subSet.containsInt(2), is(false));
+		assertThat(subSet.toString(), is("[-2, -1]"));
 	}
 
 	@Test

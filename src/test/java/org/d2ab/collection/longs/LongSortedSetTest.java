@@ -200,13 +200,40 @@ public class LongSortedSetTest {
 		assertThat(subSet.size(), is(2));
 		assertThat(subSet.firstLong(), is(-1L));
 		assertThat(subSet.lastLong(), is(1L));
-		assertThat(subSet.containsLong(1), is(true));
 		assertThat(subSet.containsLong(-3), is(false));
+		assertThat(subSet.containsLong(-2), is(false));
+		assertThat(subSet.containsLong(0), is(false));
+		assertThat(subSet.containsLong(1), is(true));
+		assertThat(subSet.containsLong(2), is(false));
 		assertThat(subSet.toString(), is("[-1, 1]"));
 
 		LongSet equivalentSet = LongSet.create(-1L, 1L);
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
+
+		assertThat(subSet.removeLong(1), is(true));
+		assertThat(subSet, containsLongs(-1));
+		assertThat(subSet.size(), is(1));
+		assertThat(subSet.firstLong(), is(-1L));
+		assertThat(subSet.lastLong(), is(-1L));
+		assertThat(subSet.containsLong(-3), is(false));
+		assertThat(subSet.containsLong(-2), is(false));
+		assertThat(subSet.containsLong(0), is(false));
+		assertThat(subSet.containsLong(1), is(false));
+		assertThat(subSet.containsLong(2), is(false));
+		assertThat(subSet.toString(), is("[-1]"));
+
+		assertThat(subSet.addLong(-2), is(true));
+		assertThat(subSet, containsLongs(-2, -1));
+		assertThat(subSet.size(), is(2));
+		assertThat(subSet.firstLong(), is(-2L));
+		assertThat(subSet.lastLong(), is(-1L));
+		assertThat(subSet.containsLong(-3), is(false));
+		assertThat(subSet.containsLong(-2), is(true));
+		assertThat(subSet.containsLong(0), is(false));
+		assertThat(subSet.containsLong(1), is(false));
+		assertThat(subSet.containsLong(2), is(false));
+		assertThat(subSet.toString(), is("[-2, -1]"));
 	}
 
 	@Test
