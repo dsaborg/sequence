@@ -37,7 +37,7 @@ public abstract class WindowingIterator<T, S> extends DelegatingMappingIterator<
 			partition.add(iterator.next());
 
 		return partition.size() == window ||
-		       !partition.isEmpty() && (!started || partition.size() > window - step && !iterator.hasNext());
+		       !partition.isEmpty() && (!started || partition.size() > window - step);
 	}
 
 	@Override

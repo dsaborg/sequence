@@ -42,7 +42,7 @@ public class WindowingDoubleIterator extends DelegatingTransformingIterator<Doub
 		while (size < window && iterator.hasNext())
 			partition[size++] = iterator.nextDouble();
 
-		return size == window || size > 0 && (!started || size > window - step && !iterator.hasNext());
+		return size == window || size > 0 && (!started || size > window - step);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class WindowingIntIterator extends DelegatingTransformingIterator<Integer
 		while (size < window && iterator.hasNext())
 			partition[size++] = iterator.nextInt();
 
-		return size == window || size > 0 && (!started || size > window - step && !iterator.hasNext());
+		return size == window || size > 0 && (!started || size > window - step);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class WindowingLongIterator extends DelegatingTransformingIterator<Long, 
 		while (size < window && iterator.hasNext())
 			partition[size++] = iterator.nextLong();
 
-		return size == window || size > 0 && (!started || size > window - step && !iterator.hasNext());
+		return size == window || size > 0 && (!started || size > window - step);
 	}
 
 	@Override

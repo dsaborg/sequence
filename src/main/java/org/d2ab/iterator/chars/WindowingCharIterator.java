@@ -42,7 +42,7 @@ public class WindowingCharIterator extends DelegatingTransformingIterator<Charac
 		while (size < window && iterator.hasNext())
 			partition[size++] = iterator.nextChar();
 
-		return size == window || size > 0 && (!started || size > window - step && !iterator.hasNext());
+		return size == window || size > 0 && (!started || size > window - step);
 	}
 
 	@Override
