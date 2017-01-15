@@ -124,6 +124,25 @@ public class DoubleSetTest {
 
 		assertThat(set.addDouble(17.1, 0.5), is(false));
 		assertThat(set, containsDoubles(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+
+		DoubleSet backingBad = DoubleSet.create(1, 2, 3, 4, 5);
+		DoubleSet badSet = new DoubleSet.Base() {
+			@Override
+			public DoubleIterator iterator() {
+				return backingBad.iterator();
+			}
+
+			@Override
+			public int size() {
+				return backingBad.size();
+			}
+
+			@Override
+			public boolean addDoubleExactly(double x) {
+				return false; // should always return true when called by addDouble(double, double)
+			}
+		};
+		assertThat(backingBad.addDouble(2.1, 0.5), is(false)); // test degenerate behaviour
 	}
 
 	@Test
