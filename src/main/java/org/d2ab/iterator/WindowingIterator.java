@@ -48,7 +48,7 @@ public abstract class WindowingIterator<T, S> extends DelegatingMappingIterator<
 		List<T> next = new ArrayList<>(partition);
 
 		if (step < partition.size()) {
-			for (int i = 0; i < step && !partition.isEmpty(); i++)
+			for (int i = 0; i < step; i++)
 				partition.removeFirst();
 		} else {
 			for (int i = partition.size(); i < step && iterator.hasNext(); i++)
