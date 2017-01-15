@@ -142,7 +142,7 @@ public class DoubleSetTest {
 				return false; // should always return true when called by addDouble(double, double)
 			}
 		};
-		assertThat(badSet.addDouble(2.1, 0.5), is(false)); // test degenerate behaviour
+		assertThat(badSet.addDouble(6.1, 0.5), is(false)); // test degenerate behaviour
 	}
 
 	@Test
