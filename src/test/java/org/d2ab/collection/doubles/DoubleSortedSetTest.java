@@ -255,6 +255,7 @@ public class DoubleSortedSetTest {
 
 		assertThat(subSet.removeDouble(-2.9, 0.5), is(false));
 		assertThat(subSet.removeDouble(-1.9, 0.5), is(true));
+		assertThat(subSet.removeDouble(-0.1, 0.5), is(false));
 		assertThat(subSet, containsDoubles(-1));
 		assertThat(subSet.size(), is(1));
 		assertThat(subSet.firstDouble(), is(-1.0));
