@@ -2,26 +2,57 @@ package org.d2ab.util;
 
 import java.util.Stack;
 
-public abstract class Strict {
+public class Strict {
 	Strict() {
 	}
 
-	static final String STRICT_PROPERTY = "org.d2ab.sequence.strict";
+	public static final String PROPERTY = "org.d2ab.sequence.strict";
 
-	public static boolean LENIENT = !Boolean.getBoolean(STRICT_PROPERTY);
+	public static State STATE;
 
-	private static final Stack<Boolean> state = new Stack<>();
+	static {
+		init();
+	}
+
+	public static void init() {
+		STATE = new State(!Boolean.getBoolean(PROPERTY));
+	}
+
+	public static boolean isLenient() {
+		return STATE.isLenient();
+	}
 
 	public static void unset() {
-		state.push(LENIENT);
-		LENIENT = true;
+		STATE.unset();
 	}
 
 	public static void reset() {
-		LENIENT = state.pop();
+		STATE.reset();
 	}
 
 	public static void check() {
-		assert LENIENT : "Strict checking enabled";
+		assert isLenient() : "Strict checking enabled";
+	}
+
+	static final class State {
+		private boolean lenient;
+		private final Stack<Boolean> history = new Stack<>();
+
+		public State(boolean lenient) {
+			this.lenient = lenient;
+		}
+
+		public boolean isLenient() {
+			return lenient;
+		}
+
+		public void unset() {
+			history.push(lenient);
+			lenient = true;
+		}
+
+		public void reset() {
+			lenient = history.pop();
+		}
 	}
 }
