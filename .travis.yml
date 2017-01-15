@@ -1,11 +1,16 @@
 language: java
 install: true
+sudo: false # faster builds
 jdk:
   - oraclejdk8
-notifications:
-  email:
-    - daniel@d2ab.org
+
 test:
   post:
     - if [ -e ./gradlew ]; then ./gradlew jacocoTestReport; else gradle jacocoTestReport; fi
-    - bash <(curl -s https://codecov.io/bash)
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email:
+    - daniel@d2ab.org
