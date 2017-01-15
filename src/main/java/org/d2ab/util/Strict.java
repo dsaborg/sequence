@@ -2,32 +2,32 @@ package org.d2ab.util;
 
 import java.util.Stack;
 
-public class Strict {
-	Strict() {
-	}
-
+public abstract class Strict {
 	public static final String PROPERTY = "org.d2ab.sequence.strict";
 
-	public static State STATE;
+	public static State state;
+
+	Strict() {
+	}
 
 	static {
 		init();
 	}
 
 	public static void init() {
-		STATE = new State(!Boolean.getBoolean(PROPERTY));
+		state = new State(!Boolean.getBoolean(PROPERTY));
 	}
 
 	public static boolean isLenient() {
-		return STATE.isLenient();
+		return state.isLenient();
 	}
 
 	public static void unset() {
-		STATE.unset();
+		state.unset();
 	}
 
 	public static void reset() {
-		STATE.reset();
+		state.reset();
 	}
 
 	public static void check() {
