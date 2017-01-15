@@ -3,13 +3,12 @@ package org.d2ab.util;
 import java.util.Stack;
 
 public abstract class Strict {
-	public static final String PROPERTY = "org.d2ab.sequence.strict";
-
-	public static State state;
-
 	Strict() {
 	}
 
+	public static final String PROPERTY = "org.d2ab.sequence.strict";
+
+	private static State state;
 	static {
 		init();
 	}
@@ -34,7 +33,7 @@ public abstract class Strict {
 		assert isLenient() : "Strict checking enabled";
 	}
 
-	static final class State {
+	private static final class State {
 		private boolean lenient;
 		private final Stack<Boolean> history = new Stack<>();
 
