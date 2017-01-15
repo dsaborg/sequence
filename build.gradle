@@ -44,8 +44,11 @@ test {
 jacocoTestReport {
     reports {
         xml.enabled true
+        html.enabled true
     }
 }
+
+check.dependsOn jacocoTestReport
 
 javadoc {
     options.overview = "src/main/java/overview.html"
