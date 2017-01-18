@@ -4,10 +4,6 @@ sudo: false # faster builds
 jdk:
   - oraclejdk8
 
-test:
-  post:
-    - if [ -e ./gradlew ]; then ./gradlew jacocoTestReport; else gradle jacocoTestReport; fi
-
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
