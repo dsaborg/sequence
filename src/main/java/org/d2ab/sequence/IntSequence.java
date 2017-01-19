@@ -1043,17 +1043,39 @@ public interface IntSequence extends IntCollection {
 	}
 
 	/**
-	 * @return the smallest int in this {@code IntSequence}.
+	 * @return the smallest {@code int} in this {@code IntSequence}.
 	 */
 	default OptionalInt min() {
 		return reduce(Math::min);
 	}
 
 	/**
-	 * @return the greatest int in this {@code IntSequence}.
+	 * @return the greatest {@code int} in this {@code IntSequence}.
 	 */
 	default OptionalInt max() {
 		return reduce(Math::max);
+	}
+
+	/**
+	 * @return the sum of the {@code ints} in this {@code IntSequence}, as a {@code long} value.
+	 */
+	default long sum() {
+		long result = 0;
+		for (IntIterator it = iterator(); it.hasNext(); )
+			result += it.nextInt();
+		return result;
+	}
+
+	default OptionalDouble average() {
+		long count = 0, sum = 0;
+		for (IntIterator iterator = iterator(); iterator.hasNext(); count++)
+			sum += iterator.nextInt();
+
+		return count > 0 ? OptionalDouble.of((double) sum / count) : OptionalDouble.empty();
+	}
+
+	default IntSummaryStatistics statistics() {
+		return collect(IntSummaryStatistics::new, IntSummaryStatistics::accept);
 	}
 
 	/**
