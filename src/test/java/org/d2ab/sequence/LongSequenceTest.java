@@ -1024,6 +1024,73 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void sum() {
+		twice(() -> assertThat(empty.sum(), is(0L)));
+		twice(() -> assertThat(_12345.sum(), is(15L)));
+		twice(() -> assertThat(oneRandom.sum(), is(17L)));
+		twice(() -> assertThat(twoRandom.sum(), is(49L)));
+		twice(() -> assertThat(nineRandom.sum(), is(35L)));
+
+		LongSequence fiveMaxValues = LongSequence.of(Long.MAX_VALUE).repeat(5);
+		twice(() -> assertThat(fiveMaxValues.sum(), is(Long.MAX_VALUE * 5)));
+	}
+
+	@Test
+	public void average() {
+		twice(() -> assertThat(empty.average(), is(OptionalDouble.empty())));
+		twice(() -> assertThat(_12345.average(), is(OptionalDouble.of(3))));
+		twice(() -> assertThat(oneRandom.average(), is(OptionalDouble.of(17))));
+		twice(() -> assertThat(twoRandom.average(), is(OptionalDouble.of(24.5))));
+		twice(() -> assertThat(nineRandom.average(), is(OptionalDouble.of(35.0 / 9))));
+
+		LongSequence fiveMaxValues = LongSequence.of(Long.MAX_VALUE).repeat(5);
+		twice(() -> assertThat(fiveMaxValues.average(), is(OptionalDouble.of(Long.MAX_VALUE))));
+	}
+
+	@Test
+	public void statistics() {
+		twice(() -> {
+			LongSummaryStatistics emptyStatistics = empty.statistics();
+			assertThat(emptyStatistics.getCount(), is(0L));
+			assertThat(emptyStatistics.getMin(), is(Long.MAX_VALUE));
+			assertThat(emptyStatistics.getMax(), is(Long.MIN_VALUE));
+			assertThat(emptyStatistics.getAverage(), is(0.0));
+		});
+
+		twice(() -> {
+			LongSummaryStatistics fiveStatistics = _12345.statistics();
+			assertThat(fiveStatistics.getCount(), is(5L));
+			assertThat(fiveStatistics.getMin(), is(1L));
+			assertThat(fiveStatistics.getMax(), is(5L));
+			assertThat(fiveStatistics.getAverage(), is(3.0));
+		});
+
+		twice(() -> {
+			LongSummaryStatistics oneRandomStatistics = oneRandom.statistics();
+			assertThat(oneRandomStatistics.getCount(), is(1L));
+			assertThat(oneRandomStatistics.getMin(), is(17L));
+			assertThat(oneRandomStatistics.getMax(), is(17L));
+			assertThat(oneRandomStatistics.getAverage(), is(17.0));
+		});
+
+		twice(() -> {
+			LongSummaryStatistics twoRandomStatistics = twoRandom.statistics();
+			assertThat(twoRandomStatistics.getCount(), is(2L));
+			assertThat(twoRandomStatistics.getMin(), is(17L));
+			assertThat(twoRandomStatistics.getMax(), is(32L));
+			assertThat(twoRandomStatistics.getAverage(), is(24.5));
+		});
+
+		twice(() -> {
+			LongSummaryStatistics nineRandomStatistics = nineRandom.statistics();
+			assertThat(nineRandomStatistics.getCount(), is(9L));
+			assertThat(nineRandomStatistics.getMin(), is(-7L));
+			assertThat(nineRandomStatistics.getMax(), is(17L));
+			assertThat(nineRandomStatistics.getAverage(), is(35.0 / 9));
+		});
+	}
+
+	@Test
 	public void size() {
 		twice(() -> assertThat(empty.size(), is(0)));
 		twice(() -> assertThat(_1.size(), is(1)));

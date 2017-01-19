@@ -1080,6 +1080,67 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void sum() {
+		twice(() -> assertThat(empty.sum(), is(0.0)));
+		twice(() -> assertThat(_12345.sum(), is(15.0)));
+		twice(() -> assertThat(oneRandom.sum(), is(17.0)));
+		twice(() -> assertThat(twoRandom.sum(), is(49.0)));
+		twice(() -> assertThat(nineRandom.sum(), is(35.0)));
+	}
+
+	@Test
+	public void average() {
+		twice(() -> assertThat(empty.average(), is(OptionalDouble.empty())));
+		twice(() -> assertThat(_12345.average(), is(OptionalDouble.of(3))));
+		twice(() -> assertThat(oneRandom.average(), is(OptionalDouble.of(17))));
+		twice(() -> assertThat(twoRandom.average(), is(OptionalDouble.of(24.5))));
+		twice(() -> assertThat(nineRandom.average(), is(OptionalDouble.of(35.0 / 9))));
+	}
+
+	@Test
+	public void statistics() {
+		twice(() -> {
+			DoubleSummaryStatistics emptyStatistics = empty.statistics();
+			assertThat(emptyStatistics.getCount(), is(0L));
+			assertThat(emptyStatistics.getMin(), is(Double.POSITIVE_INFINITY));
+			assertThat(emptyStatistics.getMax(), is(Double.NEGATIVE_INFINITY));
+			assertThat(emptyStatistics.getAverage(), is(0.0));
+		});
+
+		twice(() -> {
+			DoubleSummaryStatistics fiveStatistics = _12345.statistics();
+			assertThat(fiveStatistics.getCount(), is(5L));
+			assertThat(fiveStatistics.getMin(), is(1.0));
+			assertThat(fiveStatistics.getMax(), is(5.0));
+			assertThat(fiveStatistics.getAverage(), is(3.0));
+		});
+
+		twice(() -> {
+			DoubleSummaryStatistics oneRandomStatistics = oneRandom.statistics();
+			assertThat(oneRandomStatistics.getCount(), is(1L));
+			assertThat(oneRandomStatistics.getMin(), is(17.0));
+			assertThat(oneRandomStatistics.getMax(), is(17.0));
+			assertThat(oneRandomStatistics.getAverage(), is(17.0));
+		});
+
+		twice(() -> {
+			DoubleSummaryStatistics twoRandomStatistics = twoRandom.statistics();
+			assertThat(twoRandomStatistics.getCount(), is(2L));
+			assertThat(twoRandomStatistics.getMin(), is(17.0));
+			assertThat(twoRandomStatistics.getMax(), is(32.0));
+			assertThat(twoRandomStatistics.getAverage(), is(24.5));
+		});
+
+		twice(() -> {
+			DoubleSummaryStatistics nineRandomStatistics = nineRandom.statistics();
+			assertThat(nineRandomStatistics.getCount(), is(9L));
+			assertThat(nineRandomStatistics.getMin(), is(-7.0));
+			assertThat(nineRandomStatistics.getMax(), is(17.0));
+			assertThat(nineRandomStatistics.getAverage(), is(35.0 / 9));
+		});
+	}
+
+	@Test
 	public void size() {
 		twice(() -> assertThat(empty.size(), is(0)));
 		twice(() -> assertThat(_1.size(), is(1)));

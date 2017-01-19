@@ -1054,6 +1054,29 @@ public interface LongSequence extends LongCollection {
 	}
 
 	/**
+	 * @return the sum of the {@code longs} in this {@code LongSequence}.
+	 */
+	default long sum() {
+		long result = 0;
+		for (LongIterator it = iterator(); it.hasNext(); )
+			result += it.nextLong();
+		return result;
+	}
+
+	default OptionalDouble average() {
+		long count = 0;
+		double sum = 0;
+		for (LongIterator iterator = iterator(); iterator.hasNext(); count++)
+			sum += iterator.nextLong();
+
+		return count > 0 ? OptionalDouble.of(sum / count) : OptionalDouble.empty();
+	}
+
+	default LongSummaryStatistics statistics() {
+		return collect(LongSummaryStatistics::new, LongSummaryStatistics::accept);
+	}
+
+	/**
 	 * @return the number of longs in this {@code LongSequence}.
 	 *
 	 * @since 1.2

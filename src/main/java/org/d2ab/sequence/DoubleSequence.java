@@ -929,6 +929,29 @@ public interface DoubleSequence extends DoubleCollection {
 	}
 
 	/**
+	 * @return the sum of the {@code doubles} in this {@code DoubleSequence}.
+	 */
+	default double sum() {
+		double result = 0;
+		for (DoubleIterator it = iterator(); it.hasNext(); )
+			result += it.nextDouble();
+		return result;
+	}
+
+	default OptionalDouble average() {
+		long count = 0;
+		double sum = 0;
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); count++)
+			sum += iterator.nextDouble();
+
+		return count > 0 ? OptionalDouble.of(sum / count) : OptionalDouble.empty();
+	}
+
+	default DoubleSummaryStatistics statistics() {
+		return collect(DoubleSummaryStatistics::new, DoubleSummaryStatistics::accept);
+	}
+
+	/**
 	 * @return the number of doubles in this {@code DoubleSequence}.
 	 *
 	 * @since 1.2
