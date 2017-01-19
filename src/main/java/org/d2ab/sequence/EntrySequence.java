@@ -42,6 +42,8 @@ import static java.util.function.BinaryOperator.minBy;
  */
 @FunctionalInterface
 public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
+	// TODO: Add toMap with custom value merger
+
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
 	 *

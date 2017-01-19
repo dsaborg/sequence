@@ -43,6 +43,8 @@ import static java.util.Collections.emptyIterator;
  */
 @FunctionalInterface
 public interface IntSequence extends IntCollection {
+	// TODO: Add sum(), average() and statistics()
+
 	/**
 	 * Create empty {@code IntSequence} with no contents.
 	 */

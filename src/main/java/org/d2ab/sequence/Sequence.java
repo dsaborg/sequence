@@ -43,6 +43,9 @@ import static java.util.function.BinaryOperator.minBy;
  */
 @FunctionalInterface
 public interface Sequence<T> extends IterableCollection<T> {
+	// TODO: Add size() pass-through and document limitations
+	// TODO: Add groupBy
+
 	/**
 	 * Create an empty {@code Sequence} with no items.
 	 *
