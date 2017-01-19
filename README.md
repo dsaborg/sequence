@@ -37,9 +37,15 @@ to be as lazy and late-evaluating as possible, with minimal overhead.
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables`
 instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
-for programmers wanting to perform every day data processing tasks on moderately sized collections. If you need
-parallel iteration or are processing over 1 million or so entries, you might benefit from using a parallel `Stream`
-instead.
+for programmers wanting to perform every day data processing tasks on moderately sized collections. Not being parallel
+in nature allows more advanced operations on the sequence which rely on traversing elements in `Iterator` order. If you
+need parallel iteration or are processing over 1 million or so entries, you might benefit from using a parallel
+`Stream` instead.
+
+Unlike `Stream`, `Sequences` are directly backed by the underlying storage, allowing direct manipulation of the
+`Collection` the sequence is based on to the extend permitted by the combination of operations applied on the sequence,
+as well as directly reflecting outside changes to the underlying collection. See [Updating](#updating) for more
+information.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
