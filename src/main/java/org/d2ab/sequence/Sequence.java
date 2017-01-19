@@ -44,7 +44,6 @@ import static java.util.function.BinaryOperator.minBy;
 @FunctionalInterface
 public interface Sequence<T> extends IterableCollection<T> {
 	// TODO: Add size() pass-through and document limitations
-	// TODO: Add groupBy
 
 	/**
 	 * Create an empty {@code Sequence} with no items.
@@ -1033,10 +1032,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
 	 */
-	@SuppressWarnings("unchecked")
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
 		M result = constructor.get();
-		for (Entry<K, V> t : (Sequence<Entry<K, V>>) this)
+		@SuppressWarnings("unchecked")
+		Sequence<Entry<K, V>> entries = (Sequence<Entry<K, V>>) this;
+		for (Entry<K, V> t : entries)
 			result.put(t.getKey(), t.getValue());
 		return result;
 	}
@@ -1061,6 +1061,65 @@ public interface Sequence<T> extends IterableCollection<T> {
 	                                            Function<? super T, ? extends V> valueMapper) {
 		return collect(constructor,
 		               (result, element) -> result.put(keyMapper.apply(element), valueMapper.apply(element)));
+	}
+
+	/**
+	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
+	 * classification function and returning the results in a {@code Map}.
+	 */
+	default <K> Map<K, List<T>> groupBy(Function<? super T, ? extends K> classifier) {
+		return groupBy(classifier, HashMap::new);
+	}
+
+	/**
+	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
+	 * classification function and returning the results in a {@code Map} whose type is determined by the given {@code
+	 * constructor}.
+	 */
+	default <M extends Map<K, List<T>>, K> M groupBy(Function<? super T, ? extends K> classifier,
+	                                                 Supplier<? extends M> constructor) {
+		return groupBy(classifier, constructor, ArrayList::new);
+	}
+
+	/**
+	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
+	 * classification function and returning the results in a {@code Map} whose type is determined by the given {@code
+	 * constructor}, using the given {@code groupConstructor} to create the target {@link Collection} of the grouped
+	 * values.
+	 */
+	default <M extends Map<K, C>, C extends Collection<T>, K> M groupBy(
+			Function<? super T, ? extends K> classifier, Supplier<? extends M> mapConstructor,
+			Supplier<C> groupConstructor) {
+		return groupBy(classifier, mapConstructor, Collectors.toCollection(groupConstructor));
+	}
+
+	/**
+	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
+	 * classification function and returning the results in a {@code Map} whose type is determined by the given {@code
+	 * constructor}, using the given group {@link Collector} to collect the grouped values.
+	 */
+	default <M extends Map<K, C>, C extends Collection<T>, K, A> M groupBy(
+			Function<? super T, ? extends K> classifier, Supplier<? extends M> mapConstructor,
+			Collector<? super T, A, C> groupCollector) {
+		Supplier<? extends A> groupConstructor = groupCollector.supplier();
+		BiConsumer<? super A, ? super T> groupAccumulator = groupCollector.accumulator();
+
+		@SuppressWarnings("unchecked")
+		Map<K, A> result = (Map<K, A>) mapConstructor.get();
+		for (T t : this)
+			groupAccumulator.accept(result.computeIfAbsent(classifier.apply(t), k -> groupConstructor.get()), t);
+
+		if (!groupCollector.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+			@SuppressWarnings("unchecked")
+			Function<? super A, ? extends A> groupFinisher = (Function<? super A, ? extends A>) groupCollector
+					.finisher();
+			result.replaceAll((k, v) -> groupFinisher.apply(v));
+		}
+
+		@SuppressWarnings("unchecked")
+		M castResult = (M) result;
+
+		return castResult;
 	}
 
 	/**

@@ -1580,7 +1580,7 @@ public class SequenceTest {
 	public void toLinkedList() {
 		twice(() -> {
 			List<Integer> list = _12345.toList(LinkedList::new);
-			assertThat(list, instanceOf(LinkedList.class));
+			assertThat(list, is(instanceOf(LinkedList.class)));
 			assertThat(list, contains(1, 2, 3, 4, 5));
 		});
 	}
@@ -1589,7 +1589,7 @@ public class SequenceTest {
 	public void toSet() {
 		twice(() -> {
 			Set<Integer> set = _12345.toSet();
-			assertThat(set, instanceOf(HashSet.class));
+			assertThat(set, is(instanceOf(HashSet.class)));
 			assertThat(set, containsInAnyOrder(1, 2, 3, 4, 5));
 		});
 	}
@@ -1598,7 +1598,7 @@ public class SequenceTest {
 	public void toSortedSet() {
 		twice(() -> {
 			SortedSet<Integer> sortedSet = _12345.toSortedSet();
-			assertThat(sortedSet, instanceOf(TreeSet.class));
+			assertThat(sortedSet, is(instanceOf(TreeSet.class)));
 			assertThat(sortedSet, contains(1, 2, 3, 4, 5));
 		});
 	}
@@ -1607,7 +1607,7 @@ public class SequenceTest {
 	public void toSetWithType() {
 		twice(() -> {
 			Set<Integer> set = _12345.toSet(LinkedHashSet::new);
-			assertThat(set, instanceOf(LinkedHashSet.class));
+			assertThat(set, is(instanceOf(LinkedHashSet.class)));
 			assertThat(set, contains(1, 2, 3, 4, 5));
 		});
 	}
@@ -1616,7 +1616,7 @@ public class SequenceTest {
 	public void toCollection() {
 		twice(() -> {
 			Deque<Integer> deque = _12345.toCollection(ArrayDeque::new);
-			assertThat(deque, instanceOf(ArrayDeque.class));
+			assertThat(deque, is(instanceOf(ArrayDeque.class)));
 			assertThat(deque, contains(1, 2, 3, 4, 5));
 		});
 	}
@@ -1640,11 +1640,11 @@ public class SequenceTest {
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toMap();
-			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(instanceOf(HashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
 
 			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
-			assertThat(linkedMap, instanceOf(HashMap.class));
+			assertThat(linkedMap, is(instanceOf(HashMap.class)));
 			assertThat(linkedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
 		});
 	}
@@ -1654,18 +1654,102 @@ public class SequenceTest {
 		twice(() -> {
 			Map<String, Integer> map = _123.toMap(Object::toString, Function.identity());
 
-			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(instanceOf(HashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
 
 	@Test
-	public void toMapWithType() {
+	public void toMapWithConstructor() {
 		twice(() -> {
 			Map<String, Integer> map = _123.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
-			assertThat(map, instanceOf(LinkedHashMap.class));
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
+		});
+	}
+
+	@Test
+	public void groupBy() {
+		twice(() -> {
+			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3);
+
+			assertThat(map, is(instanceOf(HashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder()
+			                               .put(1, new ArrayList<>(asList(1, 4, 7)))
+			                               .put(2, new ArrayList<>(asList(2, 5, 8)))
+			                               .put(null, new ArrayList<>(asList(3, 6, 9)))
+			                               .build())));
+		});
+	}
+
+	@Test
+	public void groupByWithMapConstructor() {
+		twice(() -> {
+			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
+			                                                     LinkedHashMap::new);
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, new ArrayList<>(asList(1, 4, 7)))
+			                               .put(2, new ArrayList<>(asList(2, 5, 8)))
+			                               .put(null, new ArrayList<>(asList(3, 6, 9)))
+			                               .build())));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
+		});
+	}
+
+	@Test
+	public void groupByWithMapConstructorAndGroupConstructor() {
+		twice(() -> {
+			Map<Integer, SortedSet<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
+			                                                          LinkedHashMap::new,
+			                                                          TreeSet::new);
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, new TreeSet<>(asList(1, 4, 7)))
+			                               .put(2, new TreeSet<>(asList(2, 5, 8)))
+			                               .put(null, new TreeSet<>(asList(3, 6, 9)))
+			                               .build())));
+
+			assertThat(map.get(1), is(instanceOf(TreeSet.class)));
+			assertThat(map.get(2), is(instanceOf(TreeSet.class)));
+			assertThat(map.get(null), is(instanceOf(TreeSet.class)));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
+		});
+	}
+
+	@Test
+	public void groupByWithMapConstructorAndCollector() {
+		twice(() -> {
+			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
+			                                                     LinkedHashMap::new,
+			                                                     Collectors.toCollection(LinkedList::new));
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, new LinkedList<>(asList(1, 4, 7)))
+			                               .put(2, new LinkedList<>(asList(2, 5, 8)))
+			                               .put(null, new LinkedList<>(asList(3, 6, 9)))
+			                               .build())));
+
+			assertThat(map.get(1), is(instanceOf(LinkedList.class)));
+			assertThat(map.get(2), is(instanceOf(LinkedList.class)));
+			assertThat(map.get(null), is(instanceOf(LinkedList.class)));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
 		});
 	}
 
@@ -1677,7 +1761,7 @@ public class SequenceTest {
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toSortedMap();
-			assertThat(map, instanceOf(TreeMap.class));
+			assertThat(map, is(instanceOf(TreeMap.class)));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
 		});
 	}
@@ -1687,7 +1771,7 @@ public class SequenceTest {
 		twice(() -> {
 			SortedMap<String, Integer> sortedMap = threeRandom.toSortedMap(Object::toString, Function.identity());
 
-			assertThat(sortedMap, instanceOf(TreeMap.class));
+			assertThat(sortedMap, is(instanceOf(TreeMap.class)));
 			assertThat(sortedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
 		});
 	}
@@ -1697,7 +1781,7 @@ public class SequenceTest {
 		twice(() -> {
 			Deque<Integer> deque = _12345.collect(ArrayDeque::new, ArrayDeque::add);
 
-			assertThat(deque, instanceOf(ArrayDeque.class));
+			assertThat(deque, is(instanceOf(ArrayDeque.class)));
 			assertThat(deque, contains(1, 2, 3, 4, 5));
 		});
 	}
