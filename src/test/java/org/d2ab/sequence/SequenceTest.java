@@ -1699,25 +1699,25 @@ public class SequenceTest {
 		});
 	}
 
-	public static final Supplier<Map<Integer, List<Integer>>> LINKED_HASH_MAP_SUPPLIER = LinkedHashMap::new;
-
 	@Test
 	public void groupByWithMapConstructor() {
-		twice(() -> assertThat(empty.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER), is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER),
-		                       is(singletonMap(1, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER), is(Maps.builder()
-		                                                                             .put(1, singletonList(1))
-		                                                                             .put(2, singletonList(2))
-		                                                                             .build())));
+		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
 
-		twice(() -> assertThat(empty.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap),
+		                       is(singletonMap(1, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap), is(Maps.builder()
+		                                                                        .put(1, singletonList(1))
+		                                                                        .put(2, singletonList(2))
+		                                                                        .build())));
+
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap),
 		                       is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap),
 		                       is(singletonMap(0, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap),
 		                       is(singletonMap(0, asList(1, 2)))));
-		twice(() -> assertThat(_12345.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap),
 		                       is(Maps.builder()
 		                              .put(0, asList(1, 2))
 		                              .put(1, asList(3, 4, 5))
@@ -1742,22 +1742,24 @@ public class SequenceTest {
 
 	@Test
 	public void groupByWithMapConstructorAndGroupConstructor() {
-		twice(() -> assertThat(empty.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, LinkedList::new), is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
+
+		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap, LinkedList::new), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap, LinkedList::new),
 		                       is(singletonMap(1, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap, LinkedList::new),
 		                       is(Maps.builder()
 		                              .put(1, singletonList(1))
 		                              .put(2, singletonList(2))
 		                              .build())));
 
-		twice(() -> assertThat(empty.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
 		                       is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
 		                       is(singletonMap(0, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
 		                       is(singletonMap(0, asList(1, 2)))));
-		twice(() -> assertThat(_12345.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
 		                       is(Maps.builder()
 		                              .put(0, asList(1, 2))
 		                              .put(1, asList(3, 4, 5))
@@ -1787,24 +1789,25 @@ public class SequenceTest {
 
 	@Test
 	public void groupByWithMapConstructorAndCollector() {
+		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
 		Collector<Integer, ?, List<Integer>> toLinkedList = Collectors.toCollection(LinkedList::new);
 
-		twice(() -> assertThat(empty.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, toLinkedList), is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap, toLinkedList), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap, toLinkedList),
 		                       is(singletonMap(1, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap, toLinkedList),
 		                       is(Maps.builder()
 		                              .put(1, singletonList(1))
 		                              .put(2, singletonList(2))
 		                              .build())));
 
-		twice(() -> assertThat(empty.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
 		                       is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
 		                       is(singletonMap(0, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
 		                       is(singletonMap(0, asList(1, 2)))));
-		twice(() -> assertThat(_12345.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
 		                       is(Maps.builder()
 		                              .put(0, asList(1, 2))
 		                              .put(1, asList(3, 4, 5))
@@ -1834,28 +1837,27 @@ public class SequenceTest {
 
 	@Test
 	public void groupByWithMapConstructorAndCollectorWithFinisher() {
+		Supplier<Map<Integer, String>> createLinkedHashMap = LinkedHashMap::new;
 		Collector<Integer, StringBuilder, String> toStringWithBuilder = new SequentialCollector<>(
 				StringBuilder::new, StringBuilder::append, StringBuilder::toString);
 
-		Supplier<Map<Integer, String>> linkedHashMapSupplier = LinkedHashMap::new;
-
-		twice(() -> assertThat(empty.groupBy(x -> x, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap, toStringWithBuilder),
 		                       is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap, toStringWithBuilder),
 		                       is(singletonMap(1, "1"))));
-		twice(() -> assertThat(_12.groupBy(x -> x, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap, toStringWithBuilder),
 		                       is(Maps.builder()
 		                              .put(1, "1")
 		                              .put(2, "2")
 		                              .build())));
 
-		twice(() -> assertThat(empty.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap, toStringWithBuilder),
 		                       is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap, toStringWithBuilder),
 		                       is(singletonMap(0, "1"))));
-		twice(() -> assertThat(_12.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap, toStringWithBuilder),
 		                       is(singletonMap(0, "12"))));
-		twice(() -> assertThat(_12345.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap, toStringWithBuilder),
 		                       is(Maps.builder()
 		                              .put(0, "12")
 		                              .put(1, "345")

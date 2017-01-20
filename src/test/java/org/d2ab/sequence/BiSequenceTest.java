@@ -29,12 +29,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
+import static java.util.Collections.*;
 import static java.util.Comparator.reverseOrder;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -1172,6 +1173,24 @@ public class BiSequenceTest {
 
 	@Test
 	public void toGroupedMap() {
+		twice(() -> assertThat(empty.toGroupedMap(), is(emptyMap())));
+		twice(() -> assertThat(_1.toGroupedMap(), is(singletonMap("1", singletonList(1)))));
+		twice(() -> assertThat(_12.toGroupedMap(), is(Maps.builder()
+		                                                  .put("1", singletonList(1))
+		                                                  .put("2", singletonList(2))
+		                                                  .build())));
+
+		twice(() -> assertThat(empty.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(), is(emptyMap())));
+		twice(() -> assertThat(_1.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(),
+		                       is(Maps.builder()
+		                              .put(0, asList(1, 2))
+		                              .put(1, asList(3, 4, 5))
+		                              .build())));
+
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
 			                                            .toGroupedMap();
@@ -1187,6 +1206,27 @@ public class BiSequenceTest {
 
 	@Test
 	public void toGroupedMapWithMapConstructor() {
+		Supplier<Map<String, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
+		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap), is(emptyMap())));
+		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap), is(singletonMap("1", singletonList(1)))));
+		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap), is(Maps.builder()
+		                                                                     .put("1", singletonList(1))
+		                                                                     .put("2", singletonList(2))
+		                                                                     .build())));
+
+		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap2 = LinkedHashMap::new;
+		twice(() -> assertThat(empty.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2),
+		                       is(Maps.builder()
+		                              .put(0, asList(1, 2))
+		                              .put(1, asList(3, 4, 5))
+		                              .build())));
+
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
 			                                            .toGroupedMap(LinkedHashMap::new);
@@ -1207,6 +1247,33 @@ public class BiSequenceTest {
 
 	@Test
 	public void toGroupedMapWithMapConstructorAndGroupConstructor() {
+		Supplier<Map<String, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
+		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap, LinkedList::new), is(emptyMap())));
+		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap, LinkedList::new),
+		                       is(singletonMap("1", singletonList(1)))));
+		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap, LinkedList::new),
+		                       is(Maps.builder()
+		                              .put("1", singletonList(1))
+		                              .put("2", singletonList(2))
+		                              .build())));
+
+		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap2 = LinkedHashMap::new;
+		twice(() -> assertThat(empty.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                           LinkedList::new),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                        LinkedList::new),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                         LinkedList::new),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                            LinkedList::new),
+		                       is(Maps.builder()
+		                              .put(0, asList(1, 2))
+		                              .put(1, asList(3, 4, 5))
+		                              .build())));
+
 		twice(() -> {
 			Map<Integer, SortedSet<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
 			                                                 .toGroupedMap(LinkedHashMap::new, TreeSet::new);
@@ -1231,10 +1298,34 @@ public class BiSequenceTest {
 
 	@Test
 	public void toGroupedMapWithMapConstructorAndCollector() {
+		Collector<Integer, ?, List<Integer>> toLinkedList = Collectors.toCollection(LinkedList::new);
+
+		Supplier<Map<String, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
+		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap, toLinkedList), is(emptyMap())));
+		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap, toLinkedList),
+		                       is(singletonMap("1", singletonList(1)))));
+		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap, toLinkedList),
+		                       is(Maps.builder()
+		                              .put("1", singletonList(1))
+		                              .put("2", singletonList(2))
+		                              .build())));
+
+		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap2 = LinkedHashMap::new;
+		twice(() -> assertThat(
+				empty.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2, toLinkedList),
+				is(emptyMap())));
+		twice(() -> assertThat(_1.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2, toLinkedList),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                         toLinkedList),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(
+				_12345.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2, toLinkedList),
+				is(Maps.builder().put(0, asList(1, 2)).put(1, asList(3, 4, 5)).build())));
+
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
-			                                            .toGroupedMap(LinkedHashMap::new,
-			                                                          Collectors.toCollection(LinkedList::new));
+			                                            .toGroupedMap(LinkedHashMap::new, toLinkedList);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
@@ -1256,12 +1347,33 @@ public class BiSequenceTest {
 
 	@Test
 	public void toGroupedMapWithMapConstructorAndCollectorWithFinisher() {
+		Collector<Integer, StringBuilder, String> toStringWithBuilder = new SequentialCollector<>(
+				StringBuilder::new, StringBuilder::append, StringBuilder::toString);
+
+		Supplier<Map<String, String>> createLinkedHashMap = LinkedHashMap::new;
+		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap, toStringWithBuilder), is(emptyMap())));
+		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap, toStringWithBuilder),
+		                       is(singletonMap("1", "1"))));
+		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap, toStringWithBuilder),
+		                       is(Maps.builder().put("1", "1").put("2", "2").build())));
+
+		Supplier<Map<Integer, String>> createLinkedHashMap2 = LinkedHashMap::new;
+		twice(() -> assertThat(empty.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                           toStringWithBuilder),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                        toStringWithBuilder),
+		                       is(singletonMap(0, "1"))));
+		twice(() -> assertThat(_12.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                         toStringWithBuilder),
+		                       is(singletonMap(0, "12"))));
+		twice(() -> assertThat(_12345.map((l, r) -> Pair.of(r / 3, r)).toGroupedMap(createLinkedHashMap2,
+		                                                                            toStringWithBuilder),
+		                       is(Maps.builder().put(0, "12").put(1, "345").build())));
+
 		twice(() -> {
 			Map<Integer, String> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
-			                                     .toGroupedMap(LinkedHashMap::new,
-			                                                   new SequentialCollector<>(StringBuilder::new,
-			                                                                             StringBuilder::append,
-			                                                                             StringBuilder::toString));
+			                                     .toGroupedMap(LinkedHashMap::new, toStringWithBuilder);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
