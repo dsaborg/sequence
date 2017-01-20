@@ -21,6 +21,7 @@ import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.function.QuaternaryFunction;
 import org.d2ab.iterator.Iterators;
+import org.d2ab.test.SequentialCollector;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
@@ -1166,6 +1167,113 @@ public class BiSequenceTest {
 			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
 			assertThat(linkedMap, instanceOf(HashMap.class));
 			assertThat(linkedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
+
+	@Test
+	public void toGroupedMap() {
+		twice(() -> {
+			Map<Integer, List<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
+			                                            .toGroupedMap();
+
+			assertThat(map, is(instanceOf(HashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder()
+			                               .put(1, new ArrayList<>(asList(1, 4, 7)))
+			                               .put(2, new ArrayList<>(asList(2, 5, 8)))
+			                               .put(null, new ArrayList<>(asList(3, 6, 9)))
+			                               .build())));
+		});
+	}
+
+	@Test
+	public void toGroupedMapWithMapConstructor() {
+		twice(() -> {
+			Map<Integer, List<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
+			                                            .toGroupedMap(LinkedHashMap::new);
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, new ArrayList<>(asList(1, 4, 7)))
+			                               .put(2, new ArrayList<>(asList(2, 5, 8)))
+			                               .put(null, new ArrayList<>(asList(3, 6, 9)))
+			                               .build())));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
+		});
+	}
+
+	@Test
+	public void toGroupedMapWithMapConstructorAndGroupConstructor() {
+		twice(() -> {
+			Map<Integer, SortedSet<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
+			                                                 .toGroupedMap(LinkedHashMap::new, TreeSet::new);
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, new TreeSet<>(asList(1, 4, 7)))
+			                               .put(2, new TreeSet<>(asList(2, 5, 8)))
+			                               .put(null, new TreeSet<>(asList(3, 6, 9)))
+			                               .build())));
+
+			assertThat(map.get(1), is(instanceOf(TreeSet.class)));
+			assertThat(map.get(2), is(instanceOf(TreeSet.class)));
+			assertThat(map.get(null), is(instanceOf(TreeSet.class)));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
+		});
+	}
+
+	@Test
+	public void toGroupedMapWithMapConstructorAndCollector() {
+		twice(() -> {
+			Map<Integer, List<Integer>> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
+			                                            .toGroupedMap(LinkedHashMap::new,
+			                                                          Collectors.toCollection(LinkedList::new));
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, new LinkedList<>(asList(1, 4, 7)))
+			                               .put(2, new LinkedList<>(asList(2, 5, 8)))
+			                               .put(null, new LinkedList<>(asList(3, 6, 9)))
+			                               .build())));
+
+			assertThat(map.get(1), is(instanceOf(LinkedList.class)));
+			assertThat(map.get(2), is(instanceOf(LinkedList.class)));
+			assertThat(map.get(null), is(instanceOf(LinkedList.class)));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
+		});
+	}
+
+	@Test
+	public void toGroupedMapWithMapConstructorAndCollectorWithFinisher() {
+		twice(() -> {
+			Map<Integer, String> map = _123456789.map((l, r) -> Pair.of(r % 3 == 0 ? null : r % 3, r))
+			                                     .toGroupedMap(LinkedHashMap::new,
+			                                                   new SequentialCollector<>(StringBuilder::new,
+			                                                                             StringBuilder::append,
+			                                                                             StringBuilder::toString));
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, "147")
+			                               .put(2, "258")
+			                               .put(null, "369")
+			                               .build())));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains("147", "258", "369"));
 		});
 	}
 

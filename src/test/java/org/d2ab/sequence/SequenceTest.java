@@ -19,6 +19,7 @@ package org.d2ab.sequence;
 import org.d2ab.collection.Iterables;
 import org.d2ab.collection.Maps;
 import org.d2ab.iterator.Iterators;
+import org.d2ab.test.SequentialCollector;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1686,8 +1687,7 @@ public class SequenceTest {
 	@Test
 	public void groupByWithMapConstructor() {
 		twice(() -> {
-			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
-			                                                     LinkedHashMap::new);
+			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3, LinkedHashMap::new);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
@@ -1707,8 +1707,7 @@ public class SequenceTest {
 	public void groupByWithMapConstructorAndGroupConstructor() {
 		twice(() -> {
 			Map<Integer, SortedSet<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
-			                                                          LinkedHashMap::new,
-			                                                          TreeSet::new);
+			                                                          LinkedHashMap::new, TreeSet::new);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
@@ -1731,8 +1730,7 @@ public class SequenceTest {
 	@Test
 	public void groupByWithMapConstructorAndCollector() {
 		twice(() -> {
-			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
-			                                                     LinkedHashMap::new,
+			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3, LinkedHashMap::new,
 			                                                     Collectors.toCollection(LinkedList::new));
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
@@ -1750,6 +1748,29 @@ public class SequenceTest {
 			assertThat(map.keySet(), contains(1, 2, null));
 			//noinspection unchecked
 			assertThat(map.values(), contains(contains(1, 4, 7), contains(2, 5, 8), contains(3, 6, 9)));
+		});
+	}
+
+	@Test
+	public void groupByWithMapConstructorAndCollectorWithFinisher() {
+
+		twice(() -> {
+			Map<Integer, String> map = _123456789.groupBy(x -> x % 3 == 0 ? null : x % 3, LinkedHashMap::new,
+			                                              new SequentialCollector<>(StringBuilder::new,
+			                                                                        StringBuilder::append,
+			                                                                        StringBuilder::toString));
+
+			assertThat(map, is(instanceOf(LinkedHashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
+			                               .put(1, "147")
+			                               .put(2, "258")
+			                               .put(null, "369")
+			                               .build())));
+
+			// check order
+			assertThat(map.keySet(), contains(1, 2, null));
+			//noinspection unchecked
+			assertThat(map.values(), contains("147", "258", "369"));
 		});
 	}
 

@@ -832,6 +832,61 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	}
 
 	/**
+	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
+	 * value and returning the results in a {@link Map}.
+	 */
+	default Map<L, List<R>> toGroupedMap() {
+		return toGroupedMap(HashMap::new);
+	}
+
+	/**
+	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
+	 * value and returning the results in a {@link Map} whose type is determined by the given {@code constructor}.
+	 */
+	default <M extends Map<L, List<R>>> M toGroupedMap(Supplier<? extends M> constructor) {
+		return toGroupedMap(constructor, ArrayList::new);
+	}
+
+	/**
+	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
+	 * value and returning the results in a {@link Map} whose type is determined by the given {@code constructor},
+	 * using the given {@code groupConstructor} to create the target {@link Collection} of the grouped values.
+	 */
+	default <M extends Map<L, C>, C extends Collection<R>> M toGroupedMap(
+			Supplier<? extends M> mapConstructor, Supplier<C> groupConstructor) {
+		return toGroupedMap(mapConstructor, Collectors.toCollection(groupConstructor));
+	}
+
+	/**
+	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
+	 * value and returning the results in a {@link Map} whose type is determined by the given {@code constructor},
+	 * using the given group {@link Collector} to collect the grouped values.
+	 */
+	default <M extends Map<L, C>, C, A> M toGroupedMap(
+			Supplier<? extends M> mapConstructor, Collector<? super R, A, C> groupCollector) {
+		Supplier<? extends A> groupConstructor = groupCollector.supplier();
+		BiConsumer<? super A, ? super R> groupAccumulator = groupCollector.accumulator();
+
+		@SuppressWarnings("unchecked")
+		Map<L, A> result = (Map<L, A>) mapConstructor.get();
+		for (Pair<L, R> pair : this)
+			groupAccumulator.accept(result.computeIfAbsent(pair.getLeft(), k -> groupConstructor.get()),
+			                        pair.getRight());
+
+		if (!groupCollector.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+			@SuppressWarnings("unchecked")
+			Function<? super A, ? extends A> groupFinisher = (Function<? super A, ? extends A>) groupCollector
+					.finisher();
+			result.replaceAll((k, v) -> groupFinisher.apply(v));
+		}
+
+		@SuppressWarnings("unchecked")
+		M castResult = (M) result;
+
+		return castResult;
+	}
+
+	/**
 	 * Collect the pairs in this {@code BiSequence} into a {@link SortedMap}.
 	 */
 	default SortedMap<L, R> toSortedMap() {

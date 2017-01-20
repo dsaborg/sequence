@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
+import static java.util.stream.Collector.Characteristics.IDENTITY_FINISH;
 
 /**
  * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and collating
@@ -1065,7 +1066,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
-	 * classification function and returning the results in a {@code Map}.
+	 * classification function and returning the results in a {@link Map}.
 	 */
 	default <K> Map<K, List<T>> groupBy(Function<? super T, ? extends K> classifier) {
 		return groupBy(classifier, HashMap::new);
@@ -1073,7 +1074,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
-	 * classification function and returning the results in a {@code Map} whose type is determined by the given {@code
+	 * classification function and returning the results in a {@link Map} whose type is determined by the given {@code
 	 * constructor}.
 	 */
 	default <M extends Map<K, List<T>>, K> M groupBy(Function<? super T, ? extends K> classifier,
@@ -1083,24 +1084,24 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
-	 * classification function and returning the results in a {@code Map} whose type is determined by the given {@code
+	 * classification function and returning the results in a {@link Map} whose type is determined by the given {@code
 	 * constructor}, using the given {@code groupConstructor} to create the target {@link Collection} of the grouped
 	 * values.
 	 */
-	default <M extends Map<K, C>, C extends Collection<T>, K> M groupBy(
-			Function<? super T, ? extends K> classifier, Supplier<? extends M> mapConstructor,
-			Supplier<C> groupConstructor) {
+	default <M extends Map<K, C>, C extends Collection<T>, K> M groupBy(Function<? super T, ? extends K> classifier,
+	                                                                    Supplier<? extends M> mapConstructor,
+	                                                                    Supplier<C> groupConstructor) {
 		return groupBy(classifier, mapConstructor, Collectors.toCollection(groupConstructor));
 	}
 
 	/**
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
-	 * classification function and returning the results in a {@code Map} whose type is determined by the given {@code
+	 * classification function and returning the results in a {@link Map} whose type is determined by the given {@code
 	 * constructor}, using the given group {@link Collector} to collect the grouped values.
 	 */
-	default <M extends Map<K, C>, C extends Collection<T>, K, A> M groupBy(
-			Function<? super T, ? extends K> classifier, Supplier<? extends M> mapConstructor,
-			Collector<? super T, A, C> groupCollector) {
+	default <M extends Map<K, C>, C, K, A> M groupBy(Function<? super T, ? extends K> classifier,
+	                                                 Supplier<M> mapConstructor,
+	                                                 Collector<? super T, A, C> groupCollector) {
 		Supplier<? extends A> groupConstructor = groupCollector.supplier();
 		BiConsumer<? super A, ? super T> groupAccumulator = groupCollector.accumulator();
 
@@ -1109,7 +1110,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 		for (T t : this)
 			groupAccumulator.accept(result.computeIfAbsent(classifier.apply(t), k -> groupConstructor.get()), t);
 
-		if (!groupCollector.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+		if (!groupCollector.characteristics().contains(IDENTITY_FINISH)) {
 			@SuppressWarnings("unchecked")
 			Function<? super A, ? extends A> groupFinisher = (Function<? super A, ? extends A>) groupCollector
 					.finisher();

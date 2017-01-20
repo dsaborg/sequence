@@ -830,6 +830,61 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
+	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
+	 * returning the results in a {@link Map}.
+	 */
+	default Map<K, List<V>> toGroupedMap() {
+		return toGroupedMap(HashMap::new);
+	}
+
+	/**
+	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
+	 * returning the results in a {@link Map} whose type is determined by the given {@code constructor}.
+	 */
+	default <M extends Map<K, List<V>>> M toGroupedMap(Supplier<? extends M> constructor) {
+		return toGroupedMap(constructor, ArrayList::new);
+	}
+
+	/**
+	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
+	 * returning the results in a {@link Map} whose type is determined by the given {@code constructor}, using the
+	 * given {@code groupConstructor} to create the target {@link Collection} of the grouped values.
+	 */
+	default <M extends Map<K, C>, C extends Collection<V>> M toGroupedMap(
+			Supplier<? extends M> mapConstructor, Supplier<C> groupConstructor) {
+		return toGroupedMap(mapConstructor, Collectors.toCollection(groupConstructor));
+	}
+
+	/**
+	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
+	 * returning the results in a {@link Map} whose type is determined by the given {@code constructor}, using the
+	 * given group {@link Collector} to collect the grouped values.
+	 */
+	default <M extends Map<K, C>, C, A> M toGroupedMap(
+			Supplier<? extends M> mapConstructor, Collector<? super V, A, C> groupCollector) {
+		Supplier<? extends A> groupConstructor = groupCollector.supplier();
+		BiConsumer<? super A, ? super V> groupAccumulator = groupCollector.accumulator();
+
+		@SuppressWarnings("unchecked")
+		Map<K, A> result = (Map<K, A>) mapConstructor.get();
+		for (Entry<K, V> entry : this)
+			groupAccumulator.accept(result.computeIfAbsent(entry.getKey(), k -> groupConstructor.get()),
+			                        entry.getValue());
+
+		if (!groupCollector.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+			@SuppressWarnings("unchecked")
+			Function<? super A, ? extends A> groupFinisher = (Function<? super A, ? extends A>) groupCollector
+					.finisher();
+			result.replaceAll((k, v) -> groupFinisher.apply(v));
+		}
+
+		@SuppressWarnings("unchecked")
+		M castResult = (M) result;
+
+		return castResult;
+	}
+
+	/**
 	 * Collect the entries in this {@code EntrySequence} into a {@link SortedMap}.
 	 */
 	default SortedMap<K, V> toSortedMap() {
