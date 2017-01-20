@@ -32,7 +32,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyIterator;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
 
@@ -54,7 +53,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> EntrySequence<K, V> empty() {
-		return once(emptyIterator());
+		return Iterables.<Entry<K, V>>empty()::iterator;
 	}
 
 	/**
@@ -396,6 +395,9 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Skip a set number of steps in this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
@@ -415,7 +417,22 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Limit the maximum number of results returned by this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingIterator<>(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code EntrySequence} to the last {@code limit} entries.
+	 *
+	 * @since 2.3
+	 */
+	default EntrySequence<K, V> limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingIterator<>(iterator(), limit);
 	}
 
 	/**
@@ -832,6 +849,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	/**
 	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
 	 * returning the results in a {@link Map}.
+	 *
+	 * @since 2.3
 	 */
 	default Map<K, List<V>> toGroupedMap() {
 		return toGroupedMap(HashMap::new);
@@ -840,6 +859,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	/**
 	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
 	 * returning the results in a {@link Map} whose type is determined by the given {@code constructor}.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<K, List<V>>> M toGroupedMap(Supplier<? extends M> constructor) {
 		return toGroupedMap(constructor, ArrayList::new);
@@ -849,6 +870,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
 	 * returning the results in a {@link Map} whose type is determined by the given {@code constructor}, using the
 	 * given {@code groupConstructor} to create the target {@link Collection} of the grouped values.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<K, C>, C extends Collection<V>> M toGroupedMap(
 			Supplier<? extends M> mapConstructor, Supplier<C> groupConstructor) {
@@ -859,6 +882,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Performs a "group by" operation on the entries in this sequence, grouping elements according to their key and
 	 * returning the results in a {@link Map} whose type is determined by the given {@code constructor}, using the
 	 * given group {@link Collector} to collect the grouped values.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<K, C>, C, A> M toGroupedMap(
 			Supplier<? extends M> mapConstructor, Collector<? super V, A, C> groupCollector) {

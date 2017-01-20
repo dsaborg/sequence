@@ -31,7 +31,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyIterator;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
 
@@ -51,7 +50,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	static <L, R> BiSequence<L, R> empty() {
-		return once(emptyIterator());
+		return Iterables.<Pair<L, R>>empty()::iterator;
 	}
 
 	/**
@@ -399,6 +398,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Skip a set number of steps in this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
@@ -418,7 +420,22 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Limit the maximum number of results returned by this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingIterator<>(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code BiSequence} to the last {@code limit} pairs.
+	 *
+	 * @since 2.3
+	 */
+	default BiSequence<L, R> limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingIterator<>(iterator(), limit);
 	}
 
 	/**
@@ -834,6 +851,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
 	 * value and returning the results in a {@link Map}.
+	 *
+	 * @since 2.3
 	 */
 	default Map<L, List<R>> toGroupedMap() {
 		return toGroupedMap(HashMap::new);
@@ -842,6 +861,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
 	 * value and returning the results in a {@link Map} whose type is determined by the given {@code constructor}.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<L, List<R>>> M toGroupedMap(Supplier<? extends M> constructor) {
 		return toGroupedMap(constructor, ArrayList::new);
@@ -851,6 +872,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
 	 * value and returning the results in a {@link Map} whose type is determined by the given {@code constructor},
 	 * using the given {@code groupConstructor} to create the target {@link Collection} of the grouped values.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<L, C>, C extends Collection<R>> M toGroupedMap(
 			Supplier<? extends M> mapConstructor, Supplier<C> groupConstructor) {
@@ -861,6 +884,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Performs a "group by" operation on the pairs in this sequence, grouping right values according to their left
 	 * value and returning the results in a {@link Map} whose type is determined by the given {@code constructor},
 	 * using the given group {@link Collector} to collect the grouped values.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<L, C>, C, A> M toGroupedMap(
 			Supplier<? extends M> mapConstructor, Collector<? super R, A, C> groupCollector) {

@@ -32,13 +32,16 @@ import static java.util.Collections.*;
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
 public class ListSequence<T> implements Sequence<T> {
+	private static final Sequence<?> EMPTY = from(emptyList());
+
 	private final List<T> list;
 
 	/**
 	 * @return an immutable empty {@code ListSequence}.
 	 */
+	@SuppressWarnings("unchecked")
 	static <T> Sequence<T> empty() {
-		return from(emptyList());
+		return (Sequence<T>) EMPTY;
 	}
 
 	/**

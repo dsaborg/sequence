@@ -288,7 +288,7 @@ public class BiSequenceTest {
 	@Test
 	public void skip() {
 		BiSequence<String, Integer> threeSkipNone = _123.skip(0);
-		twice(() -> assertThat(threeSkipNone, contains(pairs123)));
+		twice(() -> assertThat(threeSkipNone, is(sameInstance(_123))));
 
 		BiSequence<String, Integer> threeSkipOne = _123.skip(1);
 		twice(() -> assertThat(threeSkipOne, contains(Pair.of("2", 2), Pair.of("3", 3))));
@@ -302,17 +302,18 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> threeSkipFour = _123.skip(4);
 		twice(() -> assertThat(threeSkipFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipThree.iterator().next());
 		expecting(NoSuchElementException.class, () -> threeSkipFour.iterator().next());
 
-		assertThat(removeFirst(threeSkipNone), is(Pair.of("1", 1)));
-		twice(() -> assertThat(threeSkipNone, contains(Pair.of("2", 2), Pair.of("3", 3))));
-		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		assertThat(removeFirst(threeSkipOne), is(Pair.of("2", 2)));
+		twice(() -> assertThat(threeSkipOne, contains(Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("1", 1), Pair.of("3", 3))));
 	}
 
 	@Test
 	public void skipTail() {
 		BiSequence<String, Integer> threeSkipTailNone = _123.skipTail(0);
-		twice(() -> assertThat(threeSkipTailNone, contains(pairs123)));
+		twice(() -> assertThat(threeSkipTailNone, is(sameInstance(_123))));
 
 		BiSequence<String, Integer> threeSkipTailOne = _123.skipTail(1);
 		twice(() -> assertThat(threeSkipTailOne, contains(Pair.of("1", 1), Pair.of("2", 2))));
@@ -326,11 +327,35 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> threeSkipTailFour = _123.skipTail(4);
 		twice(() -> assertThat(threeSkipTailFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipTailThree.iterator().next());
 		expecting(NoSuchElementException.class, () -> threeSkipTailFour.iterator().next());
 
-		assertThat(removeFirst(threeSkipTailNone), is(Pair.of("1", 1)));
-		twice(() -> assertThat(threeSkipTailNone, contains(Pair.of("2", 2), Pair.of("3", 3))));
-		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeSkipTailOne));
+		twice(() -> assertThat(threeSkipTailOne, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		twice(() -> assertThat(_123, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> nineSkipTailNone = _123456789.skipTail(0);
+		twice(() -> assertThat(nineSkipTailNone, is(sameInstance(_123456789))));
+
+		BiSequence<String, Integer> nineSkipTailOne = _123456789.skipTail(1);
+		twice(() -> assertThat(nineSkipTailOne,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8))));
+
+		BiSequence<String, Integer> nineSkipTailTwo = _123456789.skipTail(2);
+		twice(() -> assertThat(nineSkipTailTwo,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7))));
+
+		BiSequence<String, Integer> nineSkipTailThree = _123456789.skipTail(3);
+		twice(() -> assertThat(nineSkipTailThree,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                Pair.of("5", 5), Pair.of("6", 6))));
+
+		BiSequence<String, Integer> nineSkipTailFour = _123456789.skipTail(4);
+		twice(() -> assertThat(nineSkipTailFour,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                Pair.of("5", 5))));
 	}
 
 	@Test
@@ -341,6 +366,9 @@ public class BiSequenceTest {
 
 		BiSequence<String, Integer> threeLimitedToOne = _123.limit(1);
 		twice(() -> assertThat(threeLimitedToOne, contains(Pair.of("1", 1))));
+		Iterator<Pair<String, Integer>> iterator = threeLimitedToOne.iterator();
+		iterator.next();
+		expecting(NoSuchElementException.class, iterator::next);
 
 		BiSequence<String, Integer> threeLimitedToTwo = _123.limit(2);
 		twice(() -> assertThat(threeLimitedToTwo, contains(Pair.of("1", 1), Pair.of("2", 2))));
@@ -354,6 +382,51 @@ public class BiSequenceTest {
 		assertThat(removeFirst(threeLimitedToFour), is(Pair.of("1", 1)));
 		twice(() -> assertThat(threeLimitedToFour, contains(Pair.of("2", 2), Pair.of("3", 3))));
 		twice(() -> assertThat(_123, contains(Pair.of("2", 2), Pair.of("3", 3))));
+	}
+
+	@Test
+	public void limitTail() {
+		BiSequence<String, Integer> threeLimitTailToNone = _123.limitTail(0);
+		twice(() -> assertThat(threeLimitTailToNone, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> threeLimitTailToNone.iterator().next());
+
+		BiSequence<String, Integer> threeLimitTailToOne = _123.limitTail(1);
+		twice(() -> assertThat(threeLimitTailToOne, contains(Pair.of("3", 3))));
+		Iterator<Pair<String, Integer>> iterator = threeLimitTailToOne.iterator();
+		iterator.next();
+		expecting(NoSuchElementException.class, iterator::next);
+
+		BiSequence<String, Integer> threeLimitTailToTwo = _123.limitTail(2);
+		twice(() -> assertThat(threeLimitTailToTwo, contains(Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> threeLimitTailToThree = _123.limitTail(3);
+		twice(() -> assertThat(threeLimitTailToThree,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> threeLimitTailToFour = _123.limitTail(4);
+		twice(() -> assertThat(threeLimitTailToFour,
+		                       contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeLimitTailToFour));
+		twice(() -> assertThat(threeLimitTailToFour, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+		twice(() -> assertThat(_123, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+
+		BiSequence<String, Integer> nineLimitTailToNone = _123456789.limitTail(0);
+		twice(() -> assertThat(nineLimitTailToNone, is(emptyIterable())));
+
+		BiSequence<String, Integer> nineLimitTailToOne = _123456789.limitTail(1);
+		twice(() -> assertThat(nineLimitTailToOne, contains(Pair.of("9", 9))));
+
+		BiSequence<String, Integer> nineLimitTailToTwo = _123456789.limitTail(2);
+		twice(() -> assertThat(nineLimitTailToTwo, contains(Pair.of("8", 8), Pair.of("9", 9))));
+
+		BiSequence<String, Integer> nineLimitTailToThree = _123456789.limitTail(3);
+		twice(() -> assertThat(nineLimitTailToThree,
+		                       contains(Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9))));
+
+		BiSequence<String, Integer> nineLimitTailToFour = _123456789.limitTail(4);
+		twice(() -> assertThat(nineLimitTailToFour,
+		                       contains(Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8), Pair.of("9", 9))));
 	}
 
 	@Test

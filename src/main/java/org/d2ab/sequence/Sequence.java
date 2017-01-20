@@ -758,6 +758,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */
 	default Sequence<T> skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingIterator<>(iterator(), skip);
 	}
 
@@ -777,7 +780,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Limit the maximum number of results returned by this {@code Sequence}.
 	 */
 	default Sequence<T> limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingIterator<>(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code Sequence} to the last {@code limit} items.
+	 *
+	 * @since 2.3
+	 */
+	default Sequence<T> limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingIterator<>(iterator(), limit);
 	}
 
 	/**
@@ -1067,6 +1085,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
 	 * classification function and returning the results in a {@link Map}.
+	 *
+	 * @since 2.3
 	 */
 	default <K> Map<K, List<T>> groupBy(Function<? super T, ? extends K> classifier) {
 		return groupBy(classifier, HashMap::new);
@@ -1076,6 +1096,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
 	 * classification function and returning the results in a {@link Map} whose type is determined by the given {@code
 	 * constructor}.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<K, List<T>>, K> M groupBy(Function<? super T, ? extends K> classifier,
 	                                                 Supplier<? extends M> constructor) {
@@ -1087,6 +1109,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * classification function and returning the results in a {@link Map} whose type is determined by the given {@code
 	 * constructor}, using the given {@code groupConstructor} to create the target {@link Collection} of the grouped
 	 * values.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<K, C>, C extends Collection<T>, K> M groupBy(Function<? super T, ? extends K> classifier,
 	                                                                    Supplier<? extends M> mapConstructor,
@@ -1098,6 +1122,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Performs a "group by" operation on the elements in this sequence, grouping elements according to a
 	 * classification function and returning the results in a {@link Map} whose type is determined by the given {@code
 	 * constructor}, using the given group {@link Collector} to collect the grouped values.
+	 *
+	 * @since 2.3
 	 */
 	default <M extends Map<K, C>, C, K, A> M groupBy(Function<? super T, ? extends K> classifier,
 	                                                 Supplier<? extends M> mapConstructor,

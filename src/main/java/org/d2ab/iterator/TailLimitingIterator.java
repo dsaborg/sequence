@@ -22,29 +22,37 @@ import java.util.NoSuchElementException;
 /**
  * An iterator that skips a set number of steps at the end of another iterator.
  */
-public class TailSkippingIterator<T> extends DelegatingUnaryIterator<T> {
-	private final int skip;
+public class TailLimitingIterator<T> extends DelegatingUnaryIterator<T> {
+	private final int limit;
 
 	private boolean started;
 	private Object[] buffer;
-	private int position;
+	private int offset;
+	private int index;
+	private int size;
 
-	public TailSkippingIterator(Iterator<T> iterator, int skip) {
+	public TailLimitingIterator(Iterator<T> iterator, int limit) {
 		super(iterator);
-		this.skip = skip;
+		this.limit = limit;
 	}
 
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			buffer = new Object[skip];
-			while (position < skip && iterator.hasNext())
-				buffer[position++] = iterator.next();
-			position = 0;
+			buffer = new Object[limit];
+			int i = 0;
+			while (iterator.hasNext()) {
+				buffer[i] = iterator.next();
+				i = ++i % limit;
+				if (size < limit)
+					size++;
+			}
 
+			offset = i % size;
 			started = true;
 		}
-		return super.hasNext();
+
+		return index < size;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,10 +61,7 @@ public class TailSkippingIterator<T> extends DelegatingUnaryIterator<T> {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		T next = (T) buffer[position];
-		buffer[position] = iterator.next();
-		position = ++position % skip;
-		return next;
+		return (T) buffer[(offset + index++) % limit];
 	}
 
 	@Override

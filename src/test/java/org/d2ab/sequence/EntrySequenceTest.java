@@ -308,7 +308,7 @@ public class EntrySequenceTest {
 	@Test
 	public void skip() {
 		EntrySequence<String, Integer> threeSkipNone = _123.skip(0);
-		twice(() -> assertThat(threeSkipNone, contains(entries123)));
+		twice(() -> assertThat(threeSkipNone, is(sameInstance(_123))));
 
 		EntrySequence<String, Integer> threeSkipOne = _123.skip(1);
 		twice(() -> assertThat(threeSkipOne, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
@@ -322,17 +322,18 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> threeSkipFour = _123.skip(4);
 		twice(() -> assertThat(threeSkipFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipThree.iterator().next());
 		expecting(NoSuchElementException.class, () -> threeSkipFour.iterator().next());
 
-		assertThat(removeFirst(threeSkipNone), is(Maps.entry("1", 1)));
-		twice(() -> assertThat(threeSkipNone, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
-		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+		assertThat(removeFirst(threeSkipOne), is(Maps.entry("2", 2)));
+		twice(() -> assertThat(threeSkipOne, contains(Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("1", 1), Maps.entry("3", 3))));
 	}
 
 	@Test
 	public void skipTail() {
 		EntrySequence<String, Integer> threeSkipTailNone = _123.skipTail(0);
-		twice(() -> assertThat(threeSkipTailNone, contains(entries123)));
+		twice(() -> assertThat(threeSkipTailNone, is(sameInstance(_123))));
 
 		EntrySequence<String, Integer> threeSkipTailOne = _123.skipTail(1);
 		twice(() -> assertThat(threeSkipTailOne, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
@@ -346,11 +347,36 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> threeSkipTailFour = _123.skipTail(4);
 		twice(() -> assertThat(threeSkipTailFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipTailThree.iterator().next());
 		expecting(NoSuchElementException.class, () -> threeSkipTailFour.iterator().next());
 
-		assertThat(removeFirst(threeSkipTailNone), is(Maps.entry("1", 1)));
-		twice(() -> assertThat(threeSkipTailNone, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
-		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeSkipTailOne));
+		twice(() -> assertThat(threeSkipTailOne, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
+		twice(() -> assertThat(_123, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		EntrySequence<String, Integer> nineSkipTailNone = _123456789.skipTail(0);
+		twice(() -> assertThat(nineSkipTailNone, is(sameInstance(_123456789))));
+
+		EntrySequence<String, Integer> nineSkipTailOne = _123456789.skipTail(1);
+		twice(() -> assertThat(nineSkipTailOne,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7),
+		                                Maps.entry("8", 8))));
+
+		EntrySequence<String, Integer> nineSkipTailTwo = _123456789.skipTail(2);
+		twice(() -> assertThat(nineSkipTailTwo,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7))));
+
+		EntrySequence<String, Integer> nineSkipTailThree = _123456789.skipTail(3);
+		twice(() -> assertThat(nineSkipTailThree,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5), Maps.entry("6", 6))));
+
+		EntrySequence<String, Integer> nineSkipTailFour = _123456789.skipTail(4);
+		twice(() -> assertThat(nineSkipTailFour,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5))));
 	}
 
 	@Test
@@ -361,6 +387,9 @@ public class EntrySequenceTest {
 
 		EntrySequence<String, Integer> threeLimitedToOne = _123.limit(1);
 		twice(() -> assertThat(threeLimitedToOne, contains(Maps.entry("1", 1))));
+		Iterator<Entry<String, Integer>> iterator = threeLimitedToOne.iterator();
+		iterator.next();
+		expecting(NoSuchElementException.class, iterator::next);
 
 		EntrySequence<String, Integer> threeLimitedToTwo = _123.limit(2);
 		twice(() -> assertThat(threeLimitedToTwo, contains(Maps.entry("1", 1), Maps.entry("2", 2))));
@@ -376,6 +405,52 @@ public class EntrySequenceTest {
 		assertThat(removeFirst(threeLimitedToFour), is(Maps.entry("1", 1)));
 		twice(() -> assertThat(threeLimitedToFour, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
 		twice(() -> assertThat(_123, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+	}
+
+	@Test
+	public void limitTail() {
+		EntrySequence<String, Integer> threeLimitTailToNone = _123.limitTail(0);
+		twice(() -> assertThat(threeLimitTailToNone, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> threeLimitTailToNone.iterator().next());
+
+		EntrySequence<String, Integer> threeLimitTailToOne = _123.limitTail(1);
+		twice(() -> assertThat(threeLimitTailToOne, contains(Maps.entry("3", 3))));
+		Iterator<Entry<String, Integer>> iterator = threeLimitTailToOne.iterator();
+		iterator.next();
+		expecting(NoSuchElementException.class, iterator::next);
+
+		EntrySequence<String, Integer> threeLimitTailToTwo = _123.limitTail(2);
+		twice(() -> assertThat(threeLimitTailToTwo, contains(Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		EntrySequence<String, Integer> threeLimitTailToThree = _123.limitTail(3);
+		twice(() -> assertThat(threeLimitTailToThree,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		EntrySequence<String, Integer> threeLimitTailToFour = _123.limitTail(4);
+		twice(() -> assertThat(threeLimitTailToFour,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeLimitTailToFour));
+		twice(() -> assertThat(threeLimitTailToFour, contains(Maps.entry("1", 1), Maps.entry("2", 2),
+		                                                      Maps.entry("3", 3))));
+		twice(() -> assertThat(_123, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+
+		EntrySequence<String, Integer> nineLimitTailToNone = _123456789.limitTail(0);
+		twice(() -> assertThat(nineLimitTailToNone, is(emptyIterable())));
+
+		EntrySequence<String, Integer> nineLimitTailToOne = _123456789.limitTail(1);
+		twice(() -> assertThat(nineLimitTailToOne, contains(Maps.entry("9", 9))));
+
+		EntrySequence<String, Integer> nineLimitTailToTwo = _123456789.limitTail(2);
+		twice(() -> assertThat(nineLimitTailToTwo, contains(Maps.entry("8", 8), Maps.entry("9", 9))));
+
+		EntrySequence<String, Integer> nineLimitTailToThree = _123456789.limitTail(3);
+		twice(() -> assertThat(nineLimitTailToThree,
+		                       contains(Maps.entry("7", 7), Maps.entry("8", 8), Maps.entry("9", 9))));
+
+		EntrySequence<String, Integer> nineLimitTailToFour = _123456789.limitTail(4);
+		twice(() -> assertThat(nineLimitTailToFour, contains(Maps.entry("6", 6), Maps.entry("7", 7),
+		                                                     Maps.entry("8", 8), Maps.entry("9", 9))));
 	}
 
 	@Test
