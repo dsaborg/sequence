@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -63,62 +65,55 @@ public class MapsTest {
 
 	@Test
 	public void builderFromEmpty() {
-		assertThat(Maps.<Integer, String>builder().build(), is(equalTo(new HashMap<Integer, String>())));
+		assertThat(Maps.builder().build(), is(emptyMap()));
 
-		Map<Integer, String> expectedSingleton = new HashMap<>();
-		expectedSingleton.put(1, "2");
-		assertThat(Maps.builder().put(1, "2").build(), is(equalTo(expectedSingleton)));
+		assertThat(Maps.builder().put(1, "2").build(), is(singletonMap(1, "2")));
 
 		Map<Integer, String> expectedTwo = new HashMap<>();
 		expectedTwo.put(1, "2");
 		expectedTwo.put(3, "4");
-		assertThat(Maps.builder().put(1, "2").put(3, "4").build(), is(equalTo(expectedTwo)));
+		assertThat(Maps.builder().put(1, "2").put(3, "4").build(), is(expectedTwo));
 
 		Map<Integer, String> expectedThree = new HashMap<>();
 		expectedThree.put(1, "2");
 		expectedThree.put(3, "4");
 		expectedThree.put(5, "6");
-		assertThat(Maps.builder().put(1, "2").put(3, "4").put(5, "6").build(), is(equalTo(expectedThree)));
+		assertThat(Maps.builder().put(1, "2").put(3, "4").put(5, "6").build(), is(expectedThree));
 	}
 
 	@Test
 	public void builderFromCapacityConstructor() {
-		assertThat(Maps.<Integer, String>builder(HashMap::new, 17).build(),
-		           is(equalTo(new HashMap<Integer, String>())));
+		assertThat(Maps.builder(HashMap::new, 17).build(), is(emptyMap()));
 
-		Map<Integer, String> expectedSingleton = new HashMap<>();
-		expectedSingleton.put(1, "2");
-		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").build(), is(equalTo(expectedSingleton)));
+		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").build(), is(singletonMap(1, "2")));
 
 		Map<Integer, String> expectedTwo = new HashMap<>();
 		expectedTwo.put(1, "2");
 		expectedTwo.put(3, "4");
-		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").put(3, "4").build(), is(equalTo(expectedTwo)));
+		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").put(3, "4").build(), is(expectedTwo));
 
 		Map<Integer, String> expectedThree = new HashMap<>();
 		expectedThree.put(1, "2");
 		expectedThree.put(3, "4");
 		expectedThree.put(5, "6");
 		assertThat(Maps.builder(HashMap::new, 17).put(1, "2").put(3, "4").put(5, "6").build(),
-		           is(equalTo(expectedThree)));
+		           is(expectedThree));
 	}
 
 	@Test
 	public void builderFromSingleton() {
-		Map<Integer, String> expectedSingleton = new HashMap<>();
-		expectedSingleton.put(1, "2");
-		assertThat(Maps.builder(1, "2").build(), is(equalTo(expectedSingleton)));
+		assertThat(Maps.builder(1, "2").build(), is(singletonMap(1, "2")));
 
 		Map<Integer, String> expectedTwo = new HashMap<>();
 		expectedTwo.put(1, "2");
 		expectedTwo.put(3, "4");
-		assertThat(Maps.builder(1, "2").put(3, "4").build(), is(equalTo(expectedTwo)));
+		assertThat(Maps.builder(1, "2").put(3, "4").build(), is(expectedTwo));
 
 		Map<Integer, String> expectedThree = new HashMap<>();
 		expectedThree.put(1, "2");
 		expectedThree.put(3, "4");
 		expectedThree.put(5, "6");
-		assertThat(Maps.builder(1, "2").put(3, "4").put(5, "6").build(), is(equalTo(expectedThree)));
+		assertThat(Maps.builder(1, "2").put(3, "4").put(5, "6").build(), is(expectedThree));
 	}
 
 	@Test

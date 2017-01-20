@@ -31,14 +31,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static java.util.Comparator.reverseOrder;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -1672,28 +1672,65 @@ public class SequenceTest {
 
 	@Test
 	public void groupBy() {
+		twice(() -> assertThat(empty.groupBy(x -> x), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x), is(singletonMap(1, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x), is(Maps.builder()
+		                                                   .put(1, singletonList(1))
+		                                                   .put(2, singletonList(2))
+		                                                   .build())));
+
+		twice(() -> assertThat(empty.groupBy(x -> x / 3), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x / 3), is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x / 3), is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3), is(Maps.builder()
+		                                                          .put(0, asList(1, 2))
+		                                                          .put(1, asList(3, 4, 5))
+		                                                          .build())));
+
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3);
 
 			assertThat(map, is(instanceOf(HashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, new ArrayList<>(asList(1, 4, 7)))
-			                               .put(2, new ArrayList<>(asList(2, 5, 8)))
-			                               .put(null, new ArrayList<>(asList(3, 6, 9)))
+			                               .put(1, asList(1, 4, 7))
+			                               .put(2, asList(2, 5, 8))
+			                               .put(null, asList(3, 6, 9))
 			                               .build())));
 		});
 	}
 
+	public static final Supplier<Map<Integer, List<Integer>>> LINKED_HASH_MAP_SUPPLIER = LinkedHashMap::new;
+
 	@Test
 	public void groupByWithMapConstructor() {
+		twice(() -> assertThat(empty.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER),
+		                       is(singletonMap(1, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER), is(Maps.builder()
+		                                                                             .put(1, singletonList(1))
+		                                                                             .put(2, singletonList(2))
+		                                                                             .build())));
+
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER),
+		                       is(Maps.builder()
+		                              .put(0, asList(1, 2))
+		                              .put(1, asList(3, 4, 5))
+		                              .build())));
+
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3, LinkedHashMap::new);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
-			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
-			                               .put(1, new ArrayList<>(asList(1, 4, 7)))
-			                               .put(2, new ArrayList<>(asList(2, 5, 8)))
-			                               .put(null, new ArrayList<>(asList(3, 6, 9)))
+			assertThat(map, is(equalTo(Maps.builder()
+			                               .put(1, asList(1, 4, 7))
+			                               .put(2, asList(2, 5, 8))
+			                               .put(null, asList(3, 6, 9))
 			                               .build())));
 
 			// check order
@@ -1705,16 +1742,37 @@ public class SequenceTest {
 
 	@Test
 	public void groupByWithMapConstructorAndGroupConstructor() {
+		twice(() -> assertThat(empty.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, LinkedList::new), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		                       is(singletonMap(1, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		                       is(Maps.builder()
+		                              .put(1, singletonList(1))
+		                              .put(2, singletonList(2))
+		                              .build())));
+
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, LinkedList::new),
+		                       is(Maps.builder()
+		                              .put(0, asList(1, 2))
+		                              .put(1, asList(3, 4, 5))
+		                              .build())));
+
 		twice(() -> {
 			Map<Integer, SortedSet<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3,
 			                                                          LinkedHashMap::new, TreeSet::new);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
-			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
-			                               .put(1, new TreeSet<>(asList(1, 4, 7)))
-			                               .put(2, new TreeSet<>(asList(2, 5, 8)))
-			                               .put(null, new TreeSet<>(asList(3, 6, 9)))
-			                               .build())));
+			assertThat(map, is(Maps.builder()
+			                       .put(1, new TreeSet<>(asList(1, 4, 7)))
+			                       .put(2, new TreeSet<>(asList(2, 5, 8)))
+			                       .put(null, new TreeSet<>(asList(3, 6, 9)))
+			                       .build()));
 
 			assertThat(map.get(1), is(instanceOf(TreeSet.class)));
 			assertThat(map.get(2), is(instanceOf(TreeSet.class)));
@@ -1729,16 +1787,39 @@ public class SequenceTest {
 
 	@Test
 	public void groupByWithMapConstructorAndCollector() {
+		Collector<Integer, ?, List<Integer>> toLinkedList = Collectors.toCollection(LinkedList::new);
+
+		twice(() -> assertThat(empty.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, toLinkedList), is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		                       is(singletonMap(1, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		                       is(Maps.builder()
+		                              .put(1, singletonList(1))
+		                              .put(2, singletonList(2))
+		                              .build())));
+
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		                       is(singletonMap(0, singletonList(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		                       is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, LINKED_HASH_MAP_SUPPLIER, toLinkedList),
+		                       is(Maps.builder()
+		                              .put(0, asList(1, 2))
+		                              .put(1, asList(3, 4, 5))
+		                              .build())));
+
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.groupBy(i -> i % 3 == 0 ? null : i % 3, LinkedHashMap::new,
-			                                                     Collectors.toCollection(LinkedList::new));
+			                                                     toLinkedList);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
-			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
-			                               .put(1, new LinkedList<>(asList(1, 4, 7)))
-			                               .put(2, new LinkedList<>(asList(2, 5, 8)))
-			                               .put(null, new LinkedList<>(asList(3, 6, 9)))
-			                               .build())));
+			assertThat(map, is(Maps.builder()
+			                       .put(1, asList(1, 4, 7))
+			                       .put(2, asList(2, 5, 8))
+			                       .put(null, asList(3, 6, 9))
+			                       .build()));
 
 			assertThat(map.get(1), is(instanceOf(LinkedList.class)));
 			assertThat(map.get(2), is(instanceOf(LinkedList.class)));
@@ -1753,19 +1834,39 @@ public class SequenceTest {
 
 	@Test
 	public void groupByWithMapConstructorAndCollectorWithFinisher() {
+		Collector<Integer, StringBuilder, String> toStringWithBuilder = new SequentialCollector<>(
+				StringBuilder::new, StringBuilder::append, StringBuilder::toString);
+
+		Supplier<Map<Integer, String>> linkedHashMapSupplier = LinkedHashMap::new;
+
+		twice(() -> assertThat(empty.groupBy(x -> x, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(singletonMap(1, "1"))));
+		twice(() -> assertThat(_12.groupBy(x -> x, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(Maps.builder()
+		                              .put(1, "1")
+		                              .put(2, "2")
+		                              .build())));
+
+		twice(() -> assertThat(empty.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(emptyMap())));
+		twice(() -> assertThat(_1.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(singletonMap(0, "1"))));
+		twice(() -> assertThat(_12.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(singletonMap(0, "12"))));
+		twice(() -> assertThat(_12345.groupBy(x -> x / 3, linkedHashMapSupplier, toStringWithBuilder),
+		                       is(Maps.builder()
+		                              .put(0, "12")
+		                              .put(1, "345")
+		                              .build())));
 
 		twice(() -> {
 			Map<Integer, String> map = _123456789.groupBy(x -> x % 3 == 0 ? null : x % 3, LinkedHashMap::new,
-			                                              new SequentialCollector<>(StringBuilder::new,
-			                                                                        StringBuilder::append,
-			                                                                        StringBuilder::toString));
+			                                              toStringWithBuilder);
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
-			assertThat(map, is(equalTo(Maps.builder(LinkedHashMap::new)
-			                               .put(1, "147")
-			                               .put(2, "258")
-			                               .put(null, "369")
-			                               .build())));
+			assertThat(map, is(Maps.builder().put(1, "147").put(2, "258").put(null, "369").build()));
 
 			// check order
 			assertThat(map.keySet(), contains(1, 2, null));

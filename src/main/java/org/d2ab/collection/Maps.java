@@ -37,19 +37,20 @@ public abstract class Maps {
 			comparing((Function<Entry, Object>) Entry::getKey, naturalOrderNullsFirst()).thenComparing(
 					(Function<Entry, Object>) Entry::getValue, naturalOrderNullsFirst());
 
-	public static <K, V> Builder<K, V> builder(IntFunction<Map<K, V>> constructor, int initialCapacity) {
+	public static <K, V, M extends Map<K, V>> Builder<K, V, M> builder(IntFunction<? extends M> constructor,
+	                                                                   int initialCapacity) {
 		return new Builder<>(() -> constructor.apply(initialCapacity));
 	}
 
-	public static <K, V> Builder<K, V> builder(K key, V value) {
+	public static <K, V> Builder<K, V, Map<K, V>> builder(K key, V value) {
 		return Maps.<K, V>builder().put(key, value);
 	}
 
-	public static <K, V> Builder<K, V> builder() {
+	public static <K, V> Builder<K, V, Map<K, V>> builder() {
 		return builder(HashMap::new);
 	}
 
-	public static <K, V> Builder<K, V> builder(Supplier<Map<K, V>> constructor) {
+	public static <K, V, M extends Map<K, V>> Builder<K, V, M> builder(Supplier<? extends M> constructor) {
 		return new Builder<>(constructor);
 	}
 
@@ -69,23 +70,23 @@ public abstract class Maps {
 		return COMPARATOR;
 	}
 
-	public static class Builder<K, V> {
-		private final Supplier<Map<K, V>> constructor;
-		private Map<K, V> map;
+	public static class Builder<K, V, M extends Map<K, V>> {
+		private final Supplier<? extends M> constructor;
+		private M map;
 
-		private Builder(Supplier<Map<K, V>> constructor) {
+		private Builder(Supplier<? extends M> constructor) {
 			this.constructor = constructor;
 		}
 
-		public Builder<K, V> put(K key, V value) {
+		public Builder<K, V, M> put(K key, V value) {
 			if (map == null)
 				map = constructor.get();
 			map.put(key, value);
 			return this;
 		}
 
-		public Map<K, V> build() {
-			Map<K, V> result = map == null ? constructor.get() : map;
+		public M build() {
+			M result = map == null ? constructor.get() : map;
 			map = null;
 			return result;
 		}

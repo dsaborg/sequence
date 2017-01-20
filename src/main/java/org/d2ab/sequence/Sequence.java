@@ -1100,7 +1100,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * constructor}, using the given group {@link Collector} to collect the grouped values.
 	 */
 	default <M extends Map<K, C>, C, K, A> M groupBy(Function<? super T, ? extends K> classifier,
-	                                                 Supplier<M> mapConstructor,
+	                                                 Supplier<? extends M> mapConstructor,
 	                                                 Collector<? super T, A, C> groupCollector) {
 		Supplier<? extends A> groupConstructor = groupCollector.supplier();
 		BiConsumer<? super A, ? super T> groupAccumulator = groupCollector.accumulator();
