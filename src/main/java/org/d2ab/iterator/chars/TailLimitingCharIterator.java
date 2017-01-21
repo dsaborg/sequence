@@ -14,47 +14,53 @@
  * limitations under the License.
  */
 
-package org.d2ab.iterator.ints;
+package org.d2ab.iterator.chars;
 
 import java.util.NoSuchElementException;
 
 /**
- * An iterator that skips a set number of steps at the end of another iterator.
+ * An {@link CharIterator} that limits the results to a set number of {@code chars} at the end of another
+ * {@link CharIterator}.
  */
-public class TailSkippingIntIterator extends DelegatingUnaryIntIterator {
-	private final int skip;
+public class TailLimitingCharIterator extends DelegatingUnaryCharIterator {
+	private final int limit;
 
 	private boolean started;
-	private int[] buffer;
-	private int position;
+	private char[] buffer;
+	private int offset;
+	private int index;
+	private int size;
 
-	public TailSkippingIntIterator(IntIterator iterator, int skip) {
+	public TailLimitingCharIterator(CharIterator iterator, int limit) {
 		super(iterator);
-		this.skip = skip;
+		this.limit = limit;
 	}
 
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			buffer = new int[skip];
-			while (position < skip && iterator.hasNext())
-				buffer[position++] = iterator.nextInt();
-			position = 0;
+			buffer = new char[limit];
+			int i = 0;
+			while (iterator.hasNext()) {
+				buffer[i] = iterator.nextChar();
+				i = ++i % limit;
+				if (size < limit)
+					size++;
+			}
 
+			offset = i % size;
 			started = true;
 		}
-		return super.hasNext();
+
+		return index < size;
 	}
 
 	@Override
-	public int nextInt() {
+	public char nextChar() {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int next = buffer[position];
-		buffer[position++] = iterator.nextInt();
-		position = position % skip;
-		return next;
+		return buffer[(offset + index++) % limit];
 	}
 
 	@Override

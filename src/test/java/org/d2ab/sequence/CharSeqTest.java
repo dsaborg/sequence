@@ -319,7 +319,7 @@ public class CharSeqTest {
 	@Test
 	public void skip() {
 		CharSeq threeSkipNone = abc.skip(0);
-		twice(() -> assertThat(threeSkipNone, containsChars('a', 'b', 'c')));
+		twice(() -> assertThat(threeSkipNone, is(sameInstance(abc))));
 
 		CharSeq threeSkipOne = abc.skip(1);
 		twice(() -> assertThat(threeSkipOne, containsChars('b', 'c')));
@@ -333,17 +333,18 @@ public class CharSeqTest {
 		CharSeq threeSkipFour = abc.skip(4);
 		twice(() -> assertThat(threeSkipFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipThree.iterator().nextChar());
 		expecting(NoSuchElementException.class, () -> threeSkipFour.iterator().nextChar());
 
-		assertThat(removeFirst(threeSkipNone), is('a'));
-		twice(() -> assertThat(threeSkipNone, containsChars('b', 'c')));
-		twice(() -> assertThat(abc, containsChars('b', 'c')));
+		assertThat(removeFirst(threeSkipOne), is('b'));
+		twice(() -> assertThat(threeSkipOne, containsChars('c')));
+		twice(() -> assertThat(abc, containsChars('a', 'c')));
 	}
 
 	@Test
 	public void skipTail() {
 		CharSeq threeSkipTailNone = abc.skipTail(0);
-		twice(() -> assertThat(threeSkipTailNone, containsChars('a', 'b', 'c')));
+		twice(() -> assertThat(threeSkipTailNone, is(sameInstance(abc))));
 
 		CharSeq threeSkipTailOne = abc.skipTail(1);
 		twice(() -> assertThat(threeSkipTailOne, containsChars('a', 'b')));
@@ -357,11 +358,27 @@ public class CharSeqTest {
 		CharSeq threeSkipTailFour = abc.skipTail(4);
 		twice(() -> assertThat(threeSkipTailFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipTailThree.iterator().nextChar());
 		expecting(NoSuchElementException.class, () -> threeSkipTailFour.iterator().nextChar());
 
-		assertThat(removeFirst(threeSkipTailNone), is('a'));
-		twice(() -> assertThat(threeSkipTailNone, containsChars('b', 'c')));
-		twice(() -> assertThat(abc, containsChars('b', 'c')));
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeSkipTailOne));
+		twice(() -> assertThat(threeSkipTailOne, containsChars('a', 'b')));
+		twice(() -> assertThat(abc, containsChars('a', 'b', 'c')));
+
+		CharSeq nineSkipTailNone = abcdefghi.skipTail(0);
+		twice(() -> assertThat(nineSkipTailNone, is(sameInstance(abcdefghi))));
+
+		CharSeq nineSkipTailOne = abcdefghi.skipTail(1);
+		twice(() -> assertThat(nineSkipTailOne, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')));
+
+		CharSeq nineSkipTailTwo = abcdefghi.skipTail(2);
+		twice(() -> assertThat(nineSkipTailTwo, containsChars('a', 'b', 'c', 'd', 'e', 'f', 'g')));
+
+		CharSeq nineSkipTailThree = abcdefghi.skipTail(3);
+		twice(() -> assertThat(nineSkipTailThree, containsChars('a', 'b', 'c', 'd', 'e', 'f')));
+
+		CharSeq nineSkipTailFour = abcdefghi.skipTail(4);
+		twice(() -> assertThat(nineSkipTailFour, containsChars('a', 'b', 'c', 'd', 'e')));
 	}
 
 	@Test
@@ -372,6 +389,9 @@ public class CharSeqTest {
 
 		CharSeq threeLimitedToOne = abc.limit(1);
 		twice(() -> assertThat(threeLimitedToOne, containsChars('a')));
+		CharIterator iterator = threeLimitedToOne.iterator();
+		iterator.nextChar();
+		expecting(NoSuchElementException.class, iterator::nextChar);
 
 		CharSeq threeLimitedToTwo = abc.limit(2);
 		twice(() -> assertThat(threeLimitedToTwo, containsChars('a', 'b')));
@@ -385,6 +405,47 @@ public class CharSeqTest {
 		assertThat(removeFirst(threeLimitedToFour), is('a'));
 		twice(() -> assertThat(threeLimitedToFour, containsChars('b', 'c')));
 		twice(() -> assertThat(abc, containsChars('b', 'c')));
+	}
+
+	@Test
+	public void limitTail() {
+		CharSeq threeLimitTailToNone = abc.limitTail(0);
+		twice(() -> assertThat(threeLimitTailToNone, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> threeLimitTailToNone.iterator().nextChar());
+
+		CharSeq threeLimitTailToOne = abc.limitTail(1);
+		twice(() -> assertThat(threeLimitTailToOne, containsChars('c')));
+		CharIterator iterator = threeLimitTailToOne.iterator();
+		iterator.nextChar();
+		expecting(NoSuchElementException.class, iterator::nextChar);
+
+		CharSeq threeLimitTailToTwo = abc.limitTail(2);
+		twice(() -> assertThat(threeLimitTailToTwo, containsChars('b', 'c')));
+
+		CharSeq threeLimitTailToThree = abc.limitTail(3);
+		twice(() -> assertThat(threeLimitTailToThree, containsChars('a', 'b', 'c')));
+
+		CharSeq threeLimitTailToFour = abc.limitTail(4);
+		twice(() -> assertThat(threeLimitTailToFour, containsChars('a', 'b', 'c')));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeLimitTailToFour));
+		twice(() -> assertThat(threeLimitTailToFour, containsChars('a', 'b', 'c')));
+		twice(() -> assertThat(abc, containsChars('a', 'b', 'c')));
+
+		CharSeq nineLimitTailToNone = abcdefghi.limitTail(0);
+		twice(() -> assertThat(nineLimitTailToNone, is(emptyIterable())));
+
+		CharSeq nineLimitTailToOne = abcdefghi.limitTail(1);
+		twice(() -> assertThat(nineLimitTailToOne, containsChars('i')));
+
+		CharSeq nineLimitTailToTwo = abcdefghi.limitTail(2);
+		twice(() -> assertThat(nineLimitTailToTwo, containsChars('h', 'i')));
+
+		CharSeq nineLimitTailToThree = abcdefghi.limitTail(3);
+		twice(() -> assertThat(nineLimitTailToThree, containsChars('g', 'h', 'i')));
+
+		CharSeq nineLimitTailToFour = abcdefghi.limitTail(4);
+		twice(() -> assertThat(nineLimitTailToFour, containsChars('f', 'g', 'h', 'i')));
 	}
 
 	@Test

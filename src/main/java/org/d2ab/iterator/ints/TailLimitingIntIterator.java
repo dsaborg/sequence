@@ -19,31 +19,40 @@ package org.d2ab.iterator.ints;
 import java.util.NoSuchElementException;
 
 /**
- * An iterator that skips a set number of steps at the end of another iterator.
+ * An {@link IntIterator} that limits the results to a set number of {@code ints} at the end of another
+ * {@link IntIterator}.
  */
-public class TailSkippingIntIterator extends DelegatingUnaryIntIterator {
-	private final int skip;
+public class TailLimitingIntIterator extends DelegatingUnaryIntIterator {
+	private final int limit;
 
 	private boolean started;
 	private int[] buffer;
-	private int position;
+	private int offset;
+	private int index;
+	private int size;
 
-	public TailSkippingIntIterator(IntIterator iterator, int skip) {
+	public TailLimitingIntIterator(IntIterator iterator, int limit) {
 		super(iterator);
-		this.skip = skip;
+		this.limit = limit;
 	}
 
 	@Override
 	public boolean hasNext() {
 		if (!started) {
-			buffer = new int[skip];
-			while (position < skip && iterator.hasNext())
-				buffer[position++] = iterator.nextInt();
-			position = 0;
+			buffer = new int[limit];
+			int i = 0;
+			while (iterator.hasNext()) {
+				buffer[i] = iterator.nextInt();
+				i = ++i % limit;
+				if (size < limit)
+					size++;
+			}
 
+			offset = i % size;
 			started = true;
 		}
-		return super.hasNext();
+
+		return index < size;
 	}
 
 	@Override
@@ -51,10 +60,7 @@ public class TailSkippingIntIterator extends DelegatingUnaryIntIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 
-		int next = buffer[position];
-		buffer[position++] = iterator.nextInt();
-		position = position % skip;
-		return next;
+		return buffer[(offset + index++) % limit];
 	}
 
 	@Override

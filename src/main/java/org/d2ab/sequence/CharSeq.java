@@ -32,8 +32,6 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyIterator;
-
 /**
  * An {@link Iterable} sequence of {@code char} values with {@link Stream}-like operations for refining,
  * transforming and collating the list of characters.
@@ -44,7 +42,7 @@ public interface CharSeq extends CharCollection {
 	 * Create an empty {@code CharSeq} with no characters.
 	 */
 	static CharSeq empty() {
-		return once(emptyIterator());
+		return CharIterator::empty;
 	}
 
 	/**
@@ -603,6 +601,9 @@ public interface CharSeq extends CharCollection {
 	 * Skip a set number of {@code chars} in this {@code CharSeq}.
 	 */
 	default CharSeq skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingCharIterator(iterator(), skip);
 	}
 
@@ -622,7 +623,22 @@ public interface CharSeq extends CharCollection {
 	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
 	 */
 	default CharSeq limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingCharIterator(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code CharSequence} to the last {@code limit} {@code chars}.
+	 *
+	 * @since 2.3
+	 */
+	default CharSeq limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingCharIterator(iterator(), limit);
 	}
 
 	/**

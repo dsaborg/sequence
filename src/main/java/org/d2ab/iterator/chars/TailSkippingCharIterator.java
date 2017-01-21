@@ -37,7 +37,6 @@ public class TailSkippingCharIterator extends DelegatingUnaryCharIterator {
 	public boolean hasNext() {
 		if (!started) {
 			buffer = new char[skip];
-			position = 0;
 			while (position < skip && iterator.hasNext())
 				buffer[position++] = iterator.nextChar();
 			position = 0;
@@ -56,5 +55,10 @@ public class TailSkippingCharIterator extends DelegatingUnaryCharIterator {
 		buffer[position++] = iterator.nextChar();
 		position = position % skip;
 		return next;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

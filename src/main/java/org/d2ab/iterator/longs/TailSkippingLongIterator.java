@@ -37,7 +37,6 @@ public class TailSkippingLongIterator extends DelegatingUnaryLongIterator {
 	public boolean hasNext() {
 		if (!started) {
 			buffer = new long[skip];
-			position = 0;
 			while (position < skip && iterator.hasNext())
 				buffer[position++] = iterator.nextLong();
 			position = 0;
@@ -56,5 +55,10 @@ public class TailSkippingLongIterator extends DelegatingUnaryLongIterator {
 		buffer[position++] = iterator.nextLong();
 		position = position % skip;
 		return next;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }

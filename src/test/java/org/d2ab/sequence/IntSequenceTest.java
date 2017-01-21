@@ -302,7 +302,7 @@ public class IntSequenceTest {
 	@Test
 	public void skip() {
 		IntSequence threeSkipNone = _123.skip(0);
-		twice(() -> assertThat(threeSkipNone, containsInts(1, 2, 3)));
+		twice(() -> assertThat(threeSkipNone, is(sameInstance(_123))));
 
 		IntSequence threeSkipOne = _123.skip(1);
 		twice(() -> assertThat(threeSkipOne, containsInts(2, 3)));
@@ -316,17 +316,18 @@ public class IntSequenceTest {
 		IntSequence threeSkipFour = _123.skip(4);
 		twice(() -> assertThat(threeSkipFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipThree.iterator().nextInt());
 		expecting(NoSuchElementException.class, () -> threeSkipFour.iterator().nextInt());
 
-		assertThat(removeFirst(threeSkipNone), is(1));
-		twice(() -> assertThat(threeSkipNone, containsInts(2, 3)));
-		twice(() -> assertThat(_123, containsInts(2, 3)));
+		assertThat(removeFirst(threeSkipOne), is(2));
+		twice(() -> assertThat(threeSkipOne, containsInts(3)));
+		twice(() -> assertThat(_123, containsInts(1, 3)));
 	}
 
 	@Test
 	public void skipTail() {
 		IntSequence threeSkipTailNone = _123.skipTail(0);
-		twice(() -> assertThat(threeSkipTailNone, containsInts(1, 2, 3)));
+		twice(() -> assertThat(threeSkipTailNone, is(sameInstance(_123))));
 
 		IntSequence threeSkipTailOne = _123.skipTail(1);
 		twice(() -> assertThat(threeSkipTailOne, containsInts(1, 2)));
@@ -340,11 +341,27 @@ public class IntSequenceTest {
 		IntSequence threeSkipTailFour = _123.skipTail(4);
 		twice(() -> assertThat(threeSkipTailFour, is(emptyIterable())));
 
+		expecting(NoSuchElementException.class, () -> threeSkipTailThree.iterator().nextInt());
 		expecting(NoSuchElementException.class, () -> threeSkipTailFour.iterator().nextInt());
 
-		assertThat(removeFirst(threeSkipTailNone), is(1));
-		twice(() -> assertThat(threeSkipTailNone, containsInts(2, 3)));
-		twice(() -> assertThat(_123, containsInts(2, 3)));
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeSkipTailOne));
+		twice(() -> assertThat(threeSkipTailOne, containsInts(1, 2)));
+		twice(() -> assertThat(_123, containsInts(1, 2, 3)));
+
+		IntSequence nineSkipTailNone = _123456789.skipTail(0);
+		twice(() -> assertThat(nineSkipTailNone, is(sameInstance(_123456789))));
+
+		IntSequence nineSkipTailOne = _123456789.skipTail(1);
+		twice(() -> assertThat(nineSkipTailOne, containsInts(1, 2, 3, 4, 5, 6, 7, 8)));
+
+		IntSequence nineSkipTailTwo = _123456789.skipTail(2);
+		twice(() -> assertThat(nineSkipTailTwo, containsInts(1, 2, 3, 4, 5, 6, 7)));
+
+		IntSequence nineSkipTailThree = _123456789.skipTail(3);
+		twice(() -> assertThat(nineSkipTailThree, containsInts(1, 2, 3, 4, 5, 6)));
+
+		IntSequence nineSkipTailFour = _123456789.skipTail(4);
+		twice(() -> assertThat(nineSkipTailFour, containsInts(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -355,6 +372,9 @@ public class IntSequenceTest {
 
 		IntSequence threeLimitedToOne = _123.limit(1);
 		twice(() -> assertThat(threeLimitedToOne, containsInts(1)));
+		IntIterator iterator = threeLimitedToOne.iterator();
+		iterator.nextInt();
+		expecting(NoSuchElementException.class, iterator::nextInt);
 
 		IntSequence threeLimitedToTwo = _123.limit(2);
 		twice(() -> assertThat(threeLimitedToTwo, containsInts(1, 2)));
@@ -368,6 +388,47 @@ public class IntSequenceTest {
 		assertThat(removeFirst(threeLimitedToFour), is(1));
 		twice(() -> assertThat(threeLimitedToFour, containsInts(2, 3)));
 		twice(() -> assertThat(_123, containsInts(2, 3)));
+	}
+
+	@Test
+	public void limitTail() {
+		IntSequence threeLimitTailToNone = _123.limitTail(0);
+		twice(() -> assertThat(threeLimitTailToNone, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> threeLimitTailToNone.iterator().nextInt());
+
+		IntSequence threeLimitTailToOne = _123.limitTail(1);
+		twice(() -> assertThat(threeLimitTailToOne, containsInts(3)));
+		IntIterator iterator = threeLimitTailToOne.iterator();
+		iterator.nextInt();
+		expecting(NoSuchElementException.class, iterator::nextInt);
+
+		IntSequence threeLimitTailToTwo = _123.limitTail(2);
+		twice(() -> assertThat(threeLimitTailToTwo, containsInts(2, 3)));
+
+		IntSequence threeLimitTailToThree = _123.limitTail(3);
+		twice(() -> assertThat(threeLimitTailToThree, containsInts(1, 2, 3)));
+
+		IntSequence threeLimitTailToFour = _123.limitTail(4);
+		twice(() -> assertThat(threeLimitTailToFour, containsInts(1, 2, 3)));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(threeLimitTailToFour));
+		twice(() -> assertThat(threeLimitTailToFour, containsInts(1, 2, 3)));
+		twice(() -> assertThat(_123, containsInts(1, 2, 3)));
+
+		IntSequence nineLimitTailToNone = _123456789.limitTail(0);
+		twice(() -> assertThat(nineLimitTailToNone, is(emptyIterable())));
+
+		IntSequence nineLimitTailToOne = _123456789.limitTail(1);
+		twice(() -> assertThat(nineLimitTailToOne, containsInts(9)));
+
+		IntSequence nineLimitTailToTwo = _123456789.limitTail(2);
+		twice(() -> assertThat(nineLimitTailToTwo, containsInts(8, 9)));
+
+		IntSequence nineLimitTailToThree = _123456789.limitTail(3);
+		twice(() -> assertThat(nineLimitTailToThree, containsInts(7, 8, 9)));
+
+		IntSequence nineLimitTailToFour = _123456789.limitTail(4);
+		twice(() -> assertThat(nineLimitTailToFour, containsInts(6, 7, 8, 9)));
 	}
 
 	@Test

@@ -30,8 +30,6 @@ import java.util.function.*;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyIterator;
-
 /**
  * An {@link Iterable} sequence of {@code long} values with {@link Stream}-like operations for refining,
  * transforming and collating the list of longs.
@@ -42,7 +40,7 @@ public interface LongSequence extends LongCollection {
 	 * Create empty {@code LongSequence} with no contents.
 	 */
 	static LongSequence empty() {
-		return once(emptyIterator());
+		return LongIterator::empty;
 	}
 
 	/**
@@ -695,6 +693,9 @@ public interface LongSequence extends LongCollection {
 	 * Skip a set number of {@code longs} in this {@code LongSequence}.
 	 */
 	default LongSequence skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingLongIterator(iterator(), skip);
 	}
 
@@ -714,7 +715,22 @@ public interface LongSequence extends LongCollection {
 	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
 	 */
 	default LongSequence limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingLongIterator(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code LongSequence} to the last {@code limit} {@code longs}.
+	 *
+	 * @since 2.3
+	 */
+	default LongSequence limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingLongIterator(iterator(), limit);
 	}
 
 	/**

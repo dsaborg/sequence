@@ -149,7 +149,7 @@ public class SequenceTest {
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
 		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 2)));
 		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
-		expecting(UnsupportedOperationException.class, () -> list.remove(0));
+		expecting(IndexOutOfBoundsException.class, () -> list.remove(0));
 	}
 
 	@Test

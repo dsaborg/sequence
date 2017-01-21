@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * An iterator that skips a set number of steps at the end of another iterator.
+ * An iterator that limits the results to a set number of items at the end of another iterator.
  */
 public class TailLimitingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final int limit;

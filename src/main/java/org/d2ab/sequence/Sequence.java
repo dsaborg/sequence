@@ -54,7 +54,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #from(Iterable)
 	 */
 	static <T> Sequence<T> empty() {
-		return ListSequence.empty();
+		return Iterators::empty;
 	}
 
 	/**

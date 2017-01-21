@@ -35,8 +35,6 @@ import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyIterator;
-
 /**
  * An {@link Iterable} sequence of {@code int} values with {@link Stream}-like operations for refining,
  * transforming and collating the list of ints.
@@ -47,7 +45,7 @@ public interface IntSequence extends IntCollection {
 	 * Create empty {@code IntSequence} with no contents.
 	 */
 	static IntSequence empty() {
-		return once(emptyIterator());
+		return IntIterator::empty;
 	}
 
 	/**
@@ -687,6 +685,9 @@ public interface IntSequence extends IntCollection {
 	 * Skip a set number of {@code ints} in this {@code IntSequence}.
 	 */
 	default IntSequence skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingIntIterator(iterator(), skip);
 	}
 
@@ -706,7 +707,22 @@ public interface IntSequence extends IntCollection {
 	 * Limit the maximum number of {@code ints} returned by this {@code IntSequence}.
 	 */
 	default IntSequence limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingIntIterator(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code IntSequence} to the last {@code limit} {@code ints}.
+	 *
+	 * @since 2.3
+	 */
+	default IntSequence limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingIntIterator(iterator(), limit);
 	}
 
 	/**

@@ -33,7 +33,6 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import static java.lang.Math.round;
-import static java.util.Collections.emptyIterator;
 
 /**
  * An {@link Iterable} sequence of {@code double} values with {@link Stream}-like operations for refining,
@@ -45,7 +44,7 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Create empty {@code DoubleSequence} with no contents.
 	 */
 	static DoubleSequence empty() {
-		return once(emptyIterator());
+		return DoubleIterator::empty;
 	}
 
 	/**
@@ -532,6 +531,9 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
 	 */
 	default DoubleSequence skip(int skip) {
+		if (skip == 0)
+			return this;
+
 		return () -> new SkippingDoubleIterator(iterator(), skip);
 	}
 
@@ -551,7 +553,22 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
 	default DoubleSequence limit(int limit) {
+		if (limit == 0)
+			return empty();
+
 		return () -> new LimitingDoubleIterator(iterator(), limit);
+	}
+
+	/**
+	 * Limit the results returned by this {@code DoubleSequence} to the last {@code limit} {@code doubles}.
+	 *
+	 * @since 2.3
+	 */
+	default DoubleSequence limitTail(int limit) {
+		if (limit == 0)
+			return empty();
+
+		return () -> new TailLimitingDoubleIterator(iterator(), limit);
 	}
 
 	/**

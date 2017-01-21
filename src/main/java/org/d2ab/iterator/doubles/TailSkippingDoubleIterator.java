@@ -37,7 +37,6 @@ public class TailSkippingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	public boolean hasNext() {
 		if (!started) {
 			buffer = new double[skip];
-			position = 0;
 			while (position < skip && iterator.hasNext())
 				buffer[position++] = iterator.nextDouble();
 			position = 0;
@@ -56,5 +55,10 @@ public class TailSkippingDoubleIterator extends DelegatingUnaryDoubleIterator {
 		buffer[position++] = iterator.nextDouble();
 		position = position % skip;
 		return next;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 }
