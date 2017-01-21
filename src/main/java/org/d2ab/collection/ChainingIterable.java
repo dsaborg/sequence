@@ -22,29 +22,40 @@ import org.d2ab.iterator.MappingIterator;
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class ChainingIterable<T> implements Iterable<T> {
+public class ChainingIterable<T> implements SizedIterable<T> {
 	private final Iterable<Iterable<T>> iterables;
+
+	public static <T> SizedIterable<T> empty() {
+		return new ChainingIterable<>(Iterables.empty());
+	}
+
+	@SafeVarargs
+	public static <T> SizedIterable<T> concat(Iterable<T>... iterables) {
+		return new ChainingIterable<>(Iterables.of(iterables));
+	}
+
+	public static <T, U> SizedIterable<U> flatten(Iterable<? extends T> containers,
+	                                              Function<? super T, ? extends Iterable<U>> mapper) {
+		return new ChainingIterable<>(() -> new MappingIterator<>(containers.iterator(), mapper));
+	}
 
 	public ChainingIterable(Iterable<Iterable<T>> iterables) {
 		this.iterables = iterables;
 	}
 
-	public static <T> Iterable<T> empty() {
-		return new ChainingIterable<>(Iterables.empty());
-	}
-
-	@SafeVarargs
-	public static <T> Iterable<T> concat(Iterable<T>... iterables) {
-		return new ChainingIterable<>(Iterables.of(iterables));
-	}
-
-	public static <T, U> Iterable<U> flatten(Iterable<? extends T> containers,
-	                                         Function<? super T, ? extends Iterable<U>> mapper) {
-		return new ChainingIterable<>(() -> new MappingIterator<>(containers.iterator(), mapper));
-	}
-
 	@Override
 	public Iterator<T> iterator() {
 		return new ChainingIterator<>(iterables);
+	}
+
+	public int size() {
+		long size = 0;
+		for (Iterable<T> iterable : iterables)
+			size += Iterables.size(iterable);
+
+		if (size > Integer.MAX_VALUE)
+			throw new IllegalStateException("size > Integer.MAX_VALUE: " + size);
+
+		return (int) size;
 	}
 }

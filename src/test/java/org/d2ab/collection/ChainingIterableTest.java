@@ -27,14 +27,14 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ChainingIterableTest {
-	private final Iterable<String> empty = ChainingIterable.empty();
+	private final SizedIterable<String> empty = ChainingIterable.empty();
 
-	private final Iterable<String> abc = ChainingIterable.concat(asList("a", "b", "c"));
+	private final SizedIterable<String> abc = ChainingIterable.concat(asList("a", "b", "c"));
 
-	private final Iterable<String> abc_def =
+	private final SizedIterable<String> abc_def =
 			ChainingIterable.concat(asList("a", "b", "c"), asList("d", "e", "f"));
 
-	private final Iterable<String> abc_def_ghi =
+	private final SizedIterable<String> abc_def_ghi =
 			ChainingIterable.concat(asList("a", "b", "c"), asList("d", "e", "f"), asList("g", "h", "i"));
 
 	@Test
@@ -71,5 +71,31 @@ public class ChainingIterableTest {
 
 		// Exception not thrown until iterator is encountered
 		expecting(IllegalStateException.class, iterator::hasNext);
+	}
+
+	@Test
+	public void size() {
+		assertThat(empty.size(), is(0));
+		assertThat(abc.size(), is(3));
+		assertThat(abc_def.size(), is(6));
+		assertThat(abc_def_ghi.size(), is(9));
+
+		SizedIterable<Integer> maxIntegerSize = new SizedIterable<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int size() {
+				return Integer.MAX_VALUE;
+			}
+		};
+
+		SizedIterable onceMaxIntegerSize = ChainingIterable.concat(maxIntegerSize);
+		assertThat(onceMaxIntegerSize.size(), is(Integer.MAX_VALUE));
+
+		SizedIterable twiceMaxIntegerSize = ChainingIterable.concat(maxIntegerSize, maxIntegerSize);
+		expecting(IllegalStateException.class, twiceMaxIntegerSize::size);
 	}
 }

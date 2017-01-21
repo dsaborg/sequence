@@ -28,9 +28,9 @@ import java.util.function.Predicate;
  * {@link Iterable}. All methods are supported except {@link #add(Object)} and {@link #addAll(Collection)}.
  */
 @FunctionalInterface
-public interface IterableCollection<T> extends Collection<T> {
+public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 	static <T> IterableCollection<T> empty() {
-		return Iterators::empty;
+		return from(Iterables.empty());
 	}
 
 	static <T> IterableCollection<T> of(T t) {
@@ -43,7 +43,34 @@ public interface IterableCollection<T> extends Collection<T> {
 	}
 
 	static <T> IterableCollection<T> from(Iterable<T> iterable) {
-		return iterable::iterator;
+		if (iterable instanceof SizedIterable)
+			return from((SizedIterable<T>) iterable);
+
+		return new IterableCollection<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return iterable.iterator();
+			}
+
+			@Override
+			public int size() {
+				return Iterables.size(iterable);
+			}
+		};
+	}
+
+	static <T> IterableCollection<T> from(SizedIterable<T> iterable) {
+		return new IterableCollection<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return iterable.iterator();
+			}
+
+			@Override
+			public int size() {
+				return iterable.size();
+			}
+		};
 	}
 
 	@Override

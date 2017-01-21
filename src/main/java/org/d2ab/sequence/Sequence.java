@@ -41,24 +41,43 @@ import static java.util.stream.Collector.Characteristics.IDENTITY_FINISH;
 /**
  * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and collating
  * the list of elements.
+ * <p>
+ * {@code Sequence} is fundamentally built on {@link Iterator}, however it implements {@link Collection} on a
+ * best-effort basis, providing native mutation and querying operations supplied by {@link Collection} to the best
+ * degree possible based on the backing storage of the {@code Sequence} and the combination of operations applied on it.
+ * Be aware that this means that some methods on {@link Collection} has degraded performance similar to that of
+ * {@link LinkedList}. In addition, {@link #size()} may degrade to {@code O(n)} performance under certain combinations
+ * of operations where knowing the size in advance is not possible. Take caution when using the {@code Sequence} as a
+ * {@link Collection}.
  */
 @FunctionalInterface
 public interface Sequence<T> extends IterableCollection<T> {
-	// TODO: Add size() pass-through and document limitations
+	Sequence EMPTY = new Sequence() {
+		@Override
+		public Iterator iterator() {
+			return Iterators.empty();
+		}
+
+		@Override
+		public int size() {
+			return 0;
+		}
+	};
 
 	/**
-	 * Create an empty {@code Sequence} with no items.
+	 * @return an empty immutable {@code Sequence} with no items.
 	 *
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
 	 */
+	@SuppressWarnings("unchecked")
 	static <T> Sequence<T> empty() {
-		return Iterators::empty;
+		return EMPTY;
 	}
 
 	/**
-	 * Create a {@code Sequence} with one item.
+	 * @return an immutable {@code Sequence} with one item.
 	 *
 	 * @see #of(Object...)
 	 * @see #from(Iterable)
@@ -68,7 +87,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} with the given items.
+	 * @return an immutable {@code Sequence} with the given items.
 	 *
 	 * @see #of(Object)
 	 * @see #from(Iterable)
@@ -79,8 +98,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Create a {@code Sequence} from an {@link Iterable} of items.
+	 * Create a {@code Sequence} backed by an {@link Iterable} of items. Mutation is supported to whatever extent
+	 * supported by the given {@link Iterable} and the combination of operators applied to the resulting {@code
+	 * Sequence}.
 	 *
+	 * @see #from(SizedIterable)
 	 * @see #of(Object)
 	 * @see #of(Object...)
 	 * @see #once(Iterator)
@@ -92,7 +114,35 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (iterable instanceof Collection)
 			return CollectionSequence.from((Collection<T>) iterable);
 
+		if (iterable instanceof SizedIterable) {
+			return from((SizedIterable<T>) iterable);
+		}
+
 		return iterable::iterator;
+	}
+
+	/**
+	 * Create a {@code Sequence} backed by a {@link SizedIterable} of items. Mutation is supported to whatever extent
+	 * supported by the given {@link SizedIterable} and the combination of operators applied to the resulting {@code
+	 * Sequence}.
+	 *
+	 * @see #from(Iterable)
+	 * @see #of(Object)
+	 * @see #of(Object...)
+	 * @see #once(Iterator)
+	 */
+	static <T> Sequence<T> from(SizedIterable<T> iterable) {
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return iterable.iterator();
+			}
+
+			@Override
+			public int size() {
+				return iterable.size();
+			}
+		};
 	}
 
 	/**
@@ -126,7 +176,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (iterablesSequence.all(Collection.class))
 			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable).asList());
 
-		return ChainingIterable.concat(iterables)::iterator;
+		return from(ChainingIterable.concat(iterables));
 	}
 
 	/**
@@ -147,7 +197,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (iterablesSequence.all(Collection.class))
 			return CollectionSequence.concat(iterablesSequence.map(iterable -> (Collection<T>) iterable));
 
-		return new ChainingIterable<>(iterables)::iterator;
+		return from(new ChainingIterable<>(iterables));
 	}
 
 	/**
@@ -423,7 +473,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T> Sequence<T> generate(Supplier<? extends T> supplier) {
-		return () -> (InfiniteIterator<T>) supplier::get;
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return (InfiniteIterator<T>) supplier::get;
+			}
+
+			@Override
+			public int size() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	/**
@@ -436,9 +496,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T> Sequence<T> multiGenerate(Supplier<? extends Supplier<? extends T>> supplierSupplier) {
-		return () -> {
-			Supplier<? extends T> supplier = supplierSupplier.get();
-			return (InfiniteIterator<T>) supplier::get;
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				Supplier<? extends T> supplier = supplierSupplier.get();
+				return (InfiniteIterator<T>) supplier::get;
+			}
+
+			@Override
+			public int size() {
+				throw new UnsupportedOperationException();
+			}
 		};
 	}
 
@@ -455,7 +523,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
-		return () -> new RecursiveIterator<>(seed, f);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new RecursiveIterator<>(seed, f);
+			}
+
+			@Override
+			public int size() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	/**
@@ -484,7 +562,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return an immutable view of this {@code Sequence}.
 	 */
 	default Sequence<T> immutable() {
-		return () -> new ImmutableIterator<>(iterator());
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new ImmutableIterator<>(Sequence.this.iterator());
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -646,7 +734,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
-		return () -> new MappingIterator<>(iterator(), mapper);
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new MappingIterator<>(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -659,7 +757,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
 			backMapper) {
-		return () -> new MappingIterator<>(iterator(), mapper);
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new MappingIterator<>(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -688,7 +796,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
-		return () -> new IndexingMappingIterator<>(iterator(), mapper);
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new IndexingMappingIterator<>(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -724,10 +842,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapBack(BiFunction)
 	 */
 	default <U> Sequence<U> mapBack(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return () -> new BackPeekingMappingIterator<T, U>(iterator(), replacement) {
+		return new Sequence<U>() {
 			@Override
-			protected U map(T previous, T next) {
-				return mapper.apply(previous, next);
+			public Iterator<U> iterator() {
+				return new BackPeekingMappingIterator<T, U>(Sequence.this.iterator(), replacement) {
+					@Override
+					protected U map(T previous, T next) {
+						return mapper.apply(previous, next);
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
 			}
 		};
 	}
@@ -741,15 +869,25 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapForward(BiFunction)
 	 */
 	default <U> Sequence<U> mapForward(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return () -> new ForwardPeekingMappingIterator<T, U>(iterator(), replacement) {
+		return new Sequence<U>() {
 			@Override
-			protected T mapFollowing(boolean hasFollowing, T following) {
-				return following;
+			public Iterator<U> iterator() {
+				return new ForwardPeekingMappingIterator<T, U>(Sequence.this.iterator(), replacement) {
+					@Override
+					protected T mapFollowing(boolean hasFollowing, T following) {
+						return following;
+					}
+
+					@Override
+					protected U mapNext(T next, T following) {
+						return mapper.apply(next, following);
+					}
+				};
 			}
 
 			@Override
-			protected U mapNext(T next, T following) {
-				return mapper.apply(next, following);
+			public int size() {
+				return Sequence.this.size();
 			}
 		};
 	}
@@ -812,7 +950,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 */
 	default Sequence<T> append(Iterable<T> iterable) {
-		return ChainingIterable.concat(this, iterable)::iterator;
+		return from(ChainingIterable.concat(this, iterable));
 	}
 
 	/**
@@ -969,7 +1107,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	// TODO: Add flattenIterator, flattenArray, etc
 	default <U> Sequence<U> flatten(Function<? super T, ? extends Iterable<U>> mapper) {
-		return ChainingIterable.flatten(this, mapper)::iterator;
+		return from(ChainingIterable.flatten(this, mapper));
 	}
 
 	/**
@@ -987,7 +1125,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> flatten() {
-		return ChainingIterable.<T, U>flatten(this, Iterables::from)::iterator;
+		return from(ChainingIterable.flatten(this, Iterables::from));
 	}
 
 	/**
@@ -1363,10 +1501,21 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * first entry returned has that item as a key and null as the value.
 	 */
 	default Sequence<Entry<T, T>> entries() {
-		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 1) {
+		return new Sequence<Entry<T, T>>() {
 			@Override
-			protected Entry<T, T> pair(T first, T second) {
-				return Maps.entry(first, second);
+			public Iterator<Entry<T, T>> iterator() {
+				return new PairingIterator<T, Entry<T, T>>(Sequence.this.iterator(), 1) {
+					@Override
+					protected Entry<T, T> pair(T first, T second) {
+						return Maps.entry(first, second);
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				int originalSize = Sequence.this.size();
+				return originalSize == 0 ? 0 : Math.max(1, originalSize - 1);
 			}
 		};
 	}
@@ -1377,10 +1526,21 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * has a null as the second item.
 	 */
 	default Sequence<Pair<T, T>> pairs() {
-		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 1) {
+		return new Sequence<Pair<T, T>>() {
 			@Override
-			protected Pair<T, T> pair(T first, T second) {
-				return Pair.of(first, second);
+			public Iterator<Pair<T, T>> iterator() {
+				return new PairingIterator<T, Pair<T, T>>(Sequence.this.iterator(), 1) {
+					@Override
+					protected Pair<T, T> pair(T first, T second) {
+						return Pair.of(first, second);
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				int originalSize = Sequence.this.size();
+				return originalSize == 0 ? 0 : Math.max(1, originalSize - 1);
 			}
 		};
 	}
@@ -1391,10 +1551,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * value item.
 	 */
 	default Sequence<Entry<T, T>> adjacentEntries() {
-		return () -> new PairingIterator<T, Entry<T, T>>(iterator(), 2) {
+		return new Sequence<Entry<T, T>>() {
 			@Override
-			protected Entry<T, T> pair(T first, T second) {
-				return Maps.entry(first, second);
+			public Iterator<Entry<T, T>> iterator() {
+				return new PairingIterator<T, Entry<T, T>>(Sequence.this.iterator(), 2) {
+					@Override
+					protected Entry<T, T> pair(T first, T second) {
+						return Maps.entry(first, second);
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				return (Sequence.this.size() + 1) / 2;
 			}
 		};
 	}
@@ -1405,10 +1575,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * second item.
 	 */
 	default Sequence<Pair<T, T>> adjacentPairs() {
-		return () -> new PairingIterator<T, Pair<T, T>>(iterator(), 2) {
+		return new Sequence<Pair<T, T>>() {
 			@Override
-			protected Pair<T, T> pair(T first, T second) {
-				return Pair.of(first, second);
+			public Iterator<Pair<T, T>> iterator() {
+				return new PairingIterator<T, Pair<T, T>>(Sequence.this.iterator(), 2) {
+					@Override
+					protected Pair<T, T> pair(T first, T second) {
+						return Pair.of(first, second);
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				return (Sequence.this.size() + 1) / 2;
 			}
 		};
 	}
@@ -1449,10 +1629,28 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * skipped in between windows.
 	 */
 	default Sequence<Sequence<T>> window(int window, int step) {
-		return () -> new WindowingIterator<T, Sequence<T>>(iterator(), window, step) {
+		return new Sequence<Sequence<T>>() {
 			@Override
-			protected Sequence<T> toSequence(List<T> list) {
-				return ListSequence.from(list);
+			public Iterator<Sequence<T>> iterator() {
+				return new WindowingIterator<T, Sequence<T>>(Sequence.this.iterator(), window, step) {
+					@Override
+					protected Sequence<T> toSequence(List<T> list) {
+						return ListSequence.from(list);
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				if (step == 1) {
+					int originalSize = Sequence.this.size();
+					return originalSize == 0 ? 0 : Math.max(1, originalSize - window + 1);
+				} else if (step == window) {
+					return (Sequence.this.size() + step - 1) / step;
+				} else {
+					// TODO: Add size pass-through
+					return Iterators.size(iterator());
+				}
 			}
 		};
 	}
@@ -1514,7 +1712,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
 	default Sequence<T> step(int step) {
-		return () -> new SteppingIterator<>(iterator(), step);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new SteppingIterator<>(Sequence.this.iterator(), step);
+			}
+
+			@Override
+			public int size() {
+				return (Sequence.this.size() + step - 1) / step;
+			}
+		};
 	}
 
 	/**
@@ -1531,14 +1739,34 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> sorted() {
-		return () -> Iterators.unmodifiable(Lists.sort((List) toList()));
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return Iterators.unmodifiable(Lists.sort((List) Sequence.this.toList()));
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
 	 * @return this {@code Sequence} sorted according to the given {@link Comparator}.
 	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
-		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return Iterators.unmodifiable(Lists.sort(Sequence.this.toList(), comparator));
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -1629,7 +1857,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Allow the given {@link Consumer} to see each element in this {@code Sequence} as it is traversed.
 	 */
 	default Sequence<T> peek(Consumer<? super T> action) {
-		return () -> new PeekingIterator<>(iterator(), action);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new PeekingIterator<>(Sequence.this.iterator(), action);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -1639,7 +1877,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2.2
 	 */
 	default Sequence<T> peekIndexed(ObjIntConsumer<? super T> action) {
-		return () -> new IndexPeekingIterator<>(iterator(), action);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new IndexPeekingIterator<>(Sequence.this.iterator(), action);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -1669,16 +1917,26 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekForward(BiConsumer)
 	 */
 	default Sequence<T> peekForward(T replacement, BiConsumer<? super T, ? super T> action) {
-		return () -> new ForwardPeekingMappingIterator<T, T>(iterator(), replacement) {
+		return new Sequence<T>() {
 			@Override
-			protected T mapNext(T next, T following) {
-				action.accept(next, following);
-				return next;
+			public Iterator<T> iterator() {
+				return new ForwardPeekingMappingIterator<T, T>(Sequence.this.iterator(), replacement) {
+					@Override
+					protected T mapNext(T next, T following) {
+						action.accept(next, following);
+						return next;
+					}
+
+					@Override
+					protected T mapFollowing(boolean hasFollowing, T following) {
+						return following;
+					}
+				};
 			}
 
 			@Override
-			protected T mapFollowing(boolean hasFollowing, T following) {
-				return following;
+			public int size() {
+				return Sequence.this.size();
 			}
 		};
 	}
@@ -1690,11 +1948,21 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekBack(BiConsumer)
 	 */
 	default Sequence<T> peekBack(T replacement, BiConsumer<? super T, ? super T> action) {
-		return () -> new BackPeekingMappingIterator<T, T>(iterator(), replacement) {
+		return new Sequence<T>() {
 			@Override
-			protected T map(T previous, T next) {
-				action.accept(previous, next);
-				return next;
+			public Iterator<T> iterator() {
+				return new BackPeekingMappingIterator<T, T>(Sequence.this.iterator(), replacement) {
+					@Override
+					protected T map(T previous, T next) {
+						action.accept(previous, next);
+						return next;
+					}
+				};
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
 			}
 		};
 	}
@@ -1704,8 +1972,19 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U, V> Sequence<U> delimit(V delimiter) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.of(delimiter),
-		                                      Optional.empty());
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new DelimitingIterator<>((Iterator<U>) Sequence.this.iterator(), Optional.empty(),
+				                                Optional.of(delimiter),
+				                                Optional.empty());
+			}
+
+			@Override
+			public int size() {
+				return Math.max(0, Sequence.this.size() * 2 - 1);
+			}
+		};
 	}
 
 	/**
@@ -1713,8 +1992,19 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U, V> Sequence<U> delimit(V prefix, V delimiter, V suffix) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.of(delimiter),
-		                                      Optional.of(suffix));
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new DelimitingIterator<>((Iterator<U>) Sequence.this.iterator(), Optional.of(prefix),
+				                                Optional.of(delimiter),
+				                                Optional.of(suffix));
+			}
+
+			@Override
+			public int size() {
+				return Math.max(0, Sequence.this.size() * 2 - 1) + 2;
+			}
+		};
 	}
 
 	/**
@@ -1722,8 +2012,19 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U, V> Sequence<U> prefix(V prefix) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.of(prefix), Optional.empty(),
-		                                      Optional.empty());
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new DelimitingIterator<>((Iterator<U>) Sequence.this.iterator(), Optional.of(prefix),
+				                                Optional.empty(),
+				                                Optional.empty());
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size() + 1;
+			}
+		};
 	}
 
 	/**
@@ -1731,31 +2032,74 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U, V> Sequence<U> suffix(V suffix) {
-		return () -> new DelimitingIterator<>((Iterator<U>) iterator(), Optional.empty(), Optional.empty(),
-		                                      Optional.of(suffix));
+		return new Sequence<U>() {
+			@Override
+			public Iterator<U> iterator() {
+				return new DelimitingIterator<>((Iterator<U>) Sequence.this.iterator(), Optional.empty(),
+				                                Optional.empty(),
+				                                Optional.of(suffix));
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size() + 1;
+			}
+		};
 	}
 
 	/**
-	 * Interleave the elements in this {@code Sequence} with those of the given {@link Iterable}, stopping when either
-	 * sequence finishes. The result is a {@code Sequence} of pairs of items, the left entry coming from this
-	 * sequence and the right entry from the given iterable.
+	 * Interleave the elements in this {@code Sequence} with those of the given {@link Iterable}, inserting {@code
+	 * null} values if either sequence finishes before the other. The result is a {@code Sequence} of pairs of items,
+	 * the left entry coming from this sequence and the right entry from the given iterable.
 	 */
 	default <U> Sequence<Pair<T, U>> interleave(Iterable<U> that) {
-		return () -> new InterleavingPairingIterator<>(iterator(), that.iterator());
+		return new Sequence<Pair<T, U>>() {
+			@Override
+			public Iterator<Pair<T, U>> iterator() {
+				return new InterleavingPairingIterator<>(Sequence.this.iterator(), that.iterator());
+			}
+
+			@Override
+			public int size() {
+				return Math.max(Sequence.this.size(), Iterables.size(that));
+			}
+		};
 	}
+
+	// TODO: Add interleaveShortest
 
 	/**
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.
 	 */
 	default Sequence<T> reverse() {
-		return () -> new ReverseIterator<>(iterator());
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new ReverseIterator<>(Sequence.this.iterator());
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order.
 	 */
 	default Sequence<T> shuffle() {
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList()));
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList()));
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -1763,7 +2107,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * random generator.
 	 */
 	default Sequence<T> shuffle(Random random) {
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList(), random));
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -1774,7 +2128,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Sequence<T> shuffle(Supplier<? extends Random> randomSupplier) {
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList(), randomSupplier.get()));
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
@@ -1856,19 +2220,39 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Tests each pair of items in the sequence and swaps any two items which match the given predicate.
 	 */
 	default Sequence<T> swap(BiPredicate<? super T, ? super T> swapper) {
-		return () -> new SwappingIterator<>(iterator(), swapper);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new SwappingIterator<>(Sequence.this.iterator(), swapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+		};
 	}
 
 	/**
 	 * @return a {@link BiSequence} of this sequence paired up with the index of each element.
 	 */
 	default BiSequence<Integer, T> index() {
-		return () -> new DelegatingMappingIterator<T, Pair<Integer, T>>(iterator()) {
-			private int index;
+		return new BiSequence<Integer, T>() {
+			@Override
+			public Iterator<Pair<Integer, T>> iterator() {
+				return new DelegatingMappingIterator<T, Pair<Integer, T>>(Sequence.this.iterator()) {
+					private int index;
+
+					@Override
+					public Pair<Integer, T> next() {
+						return Pair.of(index++, iterator.next());
+					}
+				};
+			}
 
 			@Override
-			public Pair<Integer, T> next() {
-				return Pair.of(index++, iterator.next());
+			public int size() {
+				return Sequence.this.size();
 			}
 		};
 	}

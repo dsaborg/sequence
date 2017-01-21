@@ -28,29 +28,63 @@ import java.util.stream.Stream;
  * Utility methods for {@link Iterable} instances.
  */
 public abstract class Iterables {
+	private static final SizedIterable EMPTY = new SizedIterable() {
+		@SuppressWarnings("unchecked")
+		@Override
+		public Iterator iterator() {
+			return Iterators.empty();
+		}
+
+		@Override
+		public int size() {
+			return 0;
+		}
+	};
+
 	Iterables() {
 	}
 
 	/**
 	 * @return an unmodifiable empty {@link Iterable}.
 	 */
-	public static <T> Iterable<T> empty() {
-		return Iterators::empty;
+	@SuppressWarnings("unchecked")
+	public static <T> SizedIterable<T> empty() {
+		return EMPTY;
 	}
 
 	/**
 	 * @return an unmodifiable singleton {@link Iterable} containing the given object.
 	 */
-	public static <T> Iterable<T> of(T object) {
-		return () -> new SingletonIterator<>(object);
+	public static <T> SizedIterable<T> of(T object) {
+		return new SizedIterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new SingletonIterator<>(object);
+			}
+
+			@Override
+			public int size() {
+				return 1;
+			}
+		};
 	}
 
 	/**
 	 * @return an unmodifiable {@link Iterable} containing the given objects.
 	 */
 	@SafeVarargs
-	public static <T> Iterable<T> of(T... objects) {
-		return () -> new ArrayIterator<>(objects);
+	public static <T> SizedIterable<T> of(T... objects) {
+		return new SizedIterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new ArrayIterator<>(objects);
+			}
+
+			@Override
+			public int size() {
+				return objects.length;
+			}
+		};
 	}
 
 	/**
@@ -86,12 +120,40 @@ public abstract class Iterables {
 		else if (container instanceof Object[])
 			return of((T[]) container);
 		else if (container instanceof Pair)
-			return ((Pair<T, T>) container)::iterator;
+			return from((Pair<T, T>) container);
 		else if (container instanceof Map.Entry)
-			return () -> Maps.iterator((Map.Entry<T, T>) container);
+			return from((Map.Entry<T, T>) container);
 		else
 			throw new ClassCastException(
 					"Required an Iterable, Iterator, Array, Stream, Pair or Entry but got: " + container.getClass());
+	}
+
+	public static <T> SizedIterable<T> from(final Pair<T, T> pair) {
+		return new SizedIterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return pair.iterator();
+			}
+
+			@Override
+			public int size() {
+				return 2;
+			}
+		};
+	}
+
+	public static <T> SizedIterable<T> from(final Map.Entry<T, T> entry) {
+		return new SizedIterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return Maps.iterator(entry);
+			}
+
+			@Override
+			public int size() {
+				return 2;
+			}
+		};
 	}
 
 	/**
@@ -179,11 +241,12 @@ public abstract class Iterables {
 	 */
 	public static boolean retainAll(Iterable<?> iterable, Iterable<?> items) {
 		boolean modified = false;
-		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); )
+		for (Iterator<?> iterator = iterable.iterator(); iterator.hasNext(); ) {
 			if (!contains(items, iterator.next())) {
 				iterator.remove();
 				modified = true;
 			}
+		}
 		return modified;
 	}
 
@@ -191,9 +254,8 @@ public abstract class Iterables {
 	 * @return the given {@link Iterable} collected into a {@link List}.
 	 */
 	public static <T> List<T> toList(Iterable<T> iterable) {
-		if (iterable instanceof Collection) {
+		if (iterable instanceof Collection)
 			return new ArrayList<>((Collection<T>) iterable);
-		}
 
 		List<T> list = new ArrayList<>();
 		for (T t : iterable)
@@ -270,6 +332,15 @@ public abstract class Iterables {
 				return true;
 
 		return false;
+	}
+
+	public static int size(Iterable<?> iterable) {
+		if (iterable instanceof Collection)
+			return ((Collection<?>) iterable).size();
+		if (iterable instanceof SizedIterable)
+			return ((SizedIterable<?>) iterable).size();
+
+		return Iterators.size(iterable.iterator());
 	}
 
 	private static class SingletonIterator<T> implements Iterator<T> {
