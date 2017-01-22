@@ -83,6 +83,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #once(Iterator)
 	 */
 	static <T> Sequence<T> from(Iterable<T> iterable) {
+		Objects.requireNonNull(iterable);
+
 		if (iterable instanceof List)
 			return ListSequence.from((List<T>) iterable);
 
@@ -101,6 +103,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> Sequence<Entry<K, V>> from(Map<K, V> map) {
+		Objects.requireNonNull(map);
+
 		return from(map.entrySet());
 	}
 
@@ -116,6 +120,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SafeVarargs
 	static <T> Sequence<T> concat(Iterable<T>... iterables) {
+		Objects.requireNonNull(iterables);
+		for (Iterable<T> iterable : iterables)
+			Objects.requireNonNull(iterable);
+
 		Sequence<Iterable<T>> iterablesSequence = Sequence.of(iterables);
 		if (iterablesSequence.all(List.class))
 			return ListSequence.concat(iterablesSequence.map(iterable -> (List<T>) iterable).asList());
@@ -137,6 +145,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1.1
 	 */
 	static <T> Sequence<T> concat(Iterable<Iterable<T>> iterables) {
+		Objects.requireNonNull(iterables);
+		for (Iterable<T> iterable : iterables)
+			Objects.requireNonNull(iterable);
+
 		Sequence<Iterable<T>> iterablesSequence = Sequence.from(iterables);
 		if (iterablesSequence.all(List.class))
 			return ListSequence.concat(iterablesSequence.map(iterable -> (List<T>) iterable).asList());
@@ -161,6 +173,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Iterator<T> iterator) {
+		Objects.requireNonNull(iterator);
+
 		return from(Iterables.once(iterator));
 	}
 
@@ -179,6 +193,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> once(Stream<T> stream) {
+		Objects.requireNonNull(stream);
+
 		return once(stream.iterator());
 	}
 
@@ -191,6 +207,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterable<T> iterable) {
+		Objects.requireNonNull(iterable);
+
 		return from(Iterables.toList(iterable));
 	}
 
@@ -203,6 +221,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Iterator<T> iterator) {
+		Objects.requireNonNull(iterator);
+
 		return from(Iterators.toList(iterator));
 	}
 
@@ -215,6 +235,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	static <T> Sequence<T> cache(Stream<T> stream) {
+		Objects.requireNonNull(stream);
+
 		return from(stream.collect(Collectors.toList()));
 	}
 
@@ -237,6 +259,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SafeVarargs
 	static <T> Sequence<T> createOf(T... ts) {
+		Objects.requireNonNull(ts);
+
 		return ListSequence.createOf(ts);
 	}
 
@@ -244,6 +268,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return a new mutable {@code Sequence} initialized with the elements in the given {@link Collection}.
 	 */
 	static <T> Sequence<T> createFrom(Collection<? extends T> c) {
+		Objects.requireNonNull(c);
+
 		return ListSequence.createFrom(c);
 	}
 
@@ -252,6 +278,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	static <T> Sequence<T> createFrom(Iterable<? extends T> iterable) {
+		Objects.requireNonNull(iterable);
+
 		if (iterable instanceof Collection)
 			return createFrom((Collection<T>) iterable);
 
@@ -262,6 +290,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return a new mutable {@code Sequence} initialized with the remaining elements in the given {@link Iterator}.
 	 */
 	static <T> Sequence<T> createFrom(Iterator<? extends T> iterator) {
+		Objects.requireNonNull(iterator);
+
 		return ListSequence.createFrom(iterator);
 	}
 
@@ -272,7 +302,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #intsFromZero()
 	 * @see #intsFrom(int)
 	 * @see #range(int, int)
+	 * @deprecated Use {@link IntSequence#positive()} instead.
 	 */
+	@Deprecated
 	static Sequence<Integer> ints() {
 		return range(1, Integer.MAX_VALUE);
 	}
@@ -284,7 +316,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #ints()
 	 * @see #intsFrom(int)
 	 * @see #range(int, int)
+	 * @deprecated Use {@link IntSequence#positiveFromZero()} instead.
 	 */
+	@Deprecated
 	static Sequence<Integer> intsFromZero() {
 		return range(0, Integer.MAX_VALUE);
 	}
@@ -299,7 +333,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #ints()
 	 * @see #range(int, int)
 	 * @since 1.1
+	 * @deprecated Use {@link IntSequence#increasingFrom(int)} instead.
 	 */
+	@Deprecated
 	static Sequence<Integer> intsFrom(int start) {
 		return range(start, Integer.MAX_VALUE);
 	}
@@ -312,7 +348,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #ints()
 	 * @see #intsFromZero()
 	 * @see #intsFrom(int)
+	 *
+	 * @deprecated Use {@link IntSequence#range(int, int)} instead.
 	 */
+	@Deprecated
 	static Sequence<Integer> range(int start, int end) {
 		UnaryOperator<Integer> next = (end > start) ? i -> ++i : i -> --i;
 		return recurse(start, next).endingAt(end);
@@ -325,7 +364,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #longsFromZero()
 	 * @see #longsFrom(long)
 	 * @see #range(long, long)
+	 *
+	 * @deprecated Use {@link LongSequence#positive()} instead.
 	 */
+	@Deprecated
 	static Sequence<Long> longs() {
 		return range(1, Long.MAX_VALUE);
 	}
@@ -337,7 +379,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #longs()
 	 * @see #longsFrom(long)
 	 * @see #range(long, long)
+	 *
+	 * @deprecated Use {@link LongSequence#positiveFromZero()} instead.
 	 */
+	@Deprecated
 	static Sequence<Long> longsFromZero() {
 		return range(0, Long.MAX_VALUE);
 	}
@@ -353,7 +398,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #longsFromZero()
 	 * @see #range(long, long)
 	 * @since 1.1
+	 *
+	 * @deprecated Use {@link LongSequence#increasingFrom(long)} instead.
 	 */
+	@Deprecated
 	static Sequence<Long> longsFrom(long start) {
 		return range(start, Long.MAX_VALUE);
 	}
@@ -366,7 +414,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #longs()
 	 * @see #longsFromZero()
 	 * @see #longsFrom(long)
+	 *
+	 * @deprecated Use {@link LongSequence#range(long, long)} instead.
 	 */
+	@Deprecated
 	static Sequence<Long> range(long start, long end) {
 		UnaryOperator<Long> next = (end > start) ? i -> ++i : i -> --i;
 		return recurse(start, next).endingAt(end);
@@ -378,7 +429,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #charsFrom(char)
 	 * @see #range(char, char)
+	 *
+	 * @deprecated Use {@link CharSeq#all()} instead.
 	 */
+	@Deprecated
 	static Sequence<Character> chars() {
 		return range(Character.MIN_VALUE, Character.MAX_VALUE);
 	}
@@ -390,7 +444,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #chars()
 	 * @see #range(char, char)
 	 * @since 1.1
+	 *
+	 * @deprecated Use {@link CharSeq#startingAt(char)} instead.
 	 */
+	@Deprecated
 	static Sequence<Character> charsFrom(char start) {
 		return range(start, Character.MAX_VALUE);
 	}
@@ -402,7 +459,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #chars()
 	 * @see #charsFrom(char)
+	 *
+	 * @deprecated Use {@link CharSeq#range(char, char)} instead.
 	 */
+	@Deprecated
 	static Sequence<Character> range(char start, char end) {
 		UnaryOperator<Character> next = (end > start) ? c -> (char) (c + 1) : c -> (char) (c - 1);
 		return recurse(start, next).endingAt(end);
@@ -420,6 +480,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T> Sequence<T> generate(Supplier<? extends T> supplier) {
+		Objects.requireNonNull(supplier);
+
 		return () -> (InfiniteIterator<T>) supplier::get;
 	}
 
@@ -433,8 +495,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T> Sequence<T> multiGenerate(Supplier<? extends Supplier<? extends T>> supplierSupplier) {
+		Objects.requireNonNull(supplierSupplier);
+
 		return () -> {
-			Supplier<? extends T> supplier = supplierSupplier.get();
+			Supplier<? extends T> supplier = Objects.requireNonNull(supplierSupplier.get());
 			return (InfiniteIterator<T>) supplier::get;
 		};
 	}
@@ -452,6 +516,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T> Sequence<T> recurse(T seed, UnaryOperator<T> f) {
+		Objects.requireNonNull(f);
+
 		return () -> new RecursiveIterator<>(seed, f);
 	}
 
@@ -474,6 +540,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #until(Object)
 	 */
 	static <T, S> Sequence<S> recurse(T seed, Function<? super T, ? extends S> f, Function<? super S, ? extends T> g) {
+		Objects.requireNonNull(f);
+		Objects.requireNonNull(g);
+
 		return recurse(f.apply(seed), f.compose(g)::apply);
 	}
 
@@ -643,6 +712,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
@@ -654,8 +725,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @see #map(Function)
 	 */
-	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
-			backMapper) {
+	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper,
+	                              Function<? super U, ? extends T> backMapper) {
+		Objects.requireNonNull(mapper);
+		Objects.requireNonNull(backMapper);
+
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
@@ -685,6 +759,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -697,6 +773,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapBack(Object, BiFunction)
 	 */
 	default <U> Sequence<U> mapBack(BiFunction<? super T, ? super T, ? extends U> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return mapBack(null, mapper);
 	}
 
@@ -709,6 +787,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapForward(Object, BiFunction)
 	 */
 	default <U> Sequence<U> mapForward(BiFunction<? super T, ? super T, ? extends U> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return mapForward(null, mapper);
 	}
 
@@ -721,6 +801,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapBack(BiFunction)
 	 */
 	default <U> Sequence<U> mapBack(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> new BackPeekingMappingIterator<T, U>(iterator(), replacement) {
 			@Override
 			protected U map(T previous, T next) {
@@ -738,6 +820,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapForward(BiFunction)
 	 */
 	default <U> Sequence<U> mapForward(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> new ForwardPeekingMappingIterator<T, U>(iterator(), replacement) {
 			@Override
 			protected T mapFollowing(boolean hasFollowing, T following) {
@@ -782,6 +866,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> append(T... items) {
+		Objects.requireNonNull(items);
+
 		return append(Iterables.of(items));
 	}
 
@@ -791,6 +877,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterable)
 	 */
 	default Sequence<T> append(Iterable<T> iterable) {
+		Objects.requireNonNull(iterable);
+
 		return ChainingIterable.concat(this, iterable)::iterator;
 	}
 
@@ -802,6 +890,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Iterator)
 	 */
 	default Sequence<T> append(Iterator<T> iterator) {
+		Objects.requireNonNull(iterator);
+
 		return append(Iterables.once(iterator));
 	}
 
@@ -813,6 +903,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #cache(Stream)
 	 */
 	default Sequence<T> append(Stream<T> stream) {
+		Objects.requireNonNull(stream);
+
 		return append(stream.iterator());
 	}
 
@@ -820,6 +912,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given {@link Predicate}.
 	 */
 	default Sequence<T> filter(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
@@ -830,6 +924,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Sequence<T> filterIndexed(ObjIntPredicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
 	}
 
@@ -841,6 +937,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U> Sequence<U> filter(Class<? extends U> target) {
+		Objects.requireNonNull(target);
+
 		return (Sequence<U>) filter(target::isInstance);
 	}
 
@@ -854,6 +952,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #filterBack(Object, BiPredicate)
 	 */
 	default Sequence<T> filterBack(BiPredicate<? super T, ? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return filterBack(null, predicate);
 	}
 
@@ -867,6 +967,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #filterBack(BiPredicate)
 	 */
 	default Sequence<T> filterBack(T replacement, BiPredicate<? super T, ? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return () -> new BackPeekingFilteringIterator<>(iterator(), replacement, predicate);
 	}
 
@@ -880,6 +982,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #filterForward(Object, BiPredicate)
 	 */
 	default Sequence<T> filterForward(BiPredicate<? super T, ? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return filterForward(null, predicate);
 	}
 
@@ -893,6 +997,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #filterForward(BiPredicate)
 	 */
 	default Sequence<T> filterForward(T replacement, BiPredicate<? super T, ? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return () -> new ForwardPeekingFilteringIterator<>(iterator(), replacement, predicate);
 	}
 
@@ -903,6 +1009,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> including(T... elements) {
+		Objects.requireNonNull(elements);
+
 		return filter(e -> Arrayz.contains(elements, e));
 	}
 
@@ -912,6 +1020,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Sequence<T> including(Iterable<? extends T> elements) {
+		Objects.requireNonNull(elements);
+
 		return filter(e -> Iterables.contains(elements, e));
 	}
 
@@ -922,6 +1032,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> excluding(T... elements) {
+		Objects.requireNonNull(elements);
+
 		return filter(e -> !Arrayz.contains(elements, e));
 	}
 
@@ -931,6 +1043,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Sequence<T> excluding(Iterable<? extends T> elements) {
+		Objects.requireNonNull(elements);
+
 		return filter(e -> !Iterables.contains(elements, e));
 	}
 
@@ -948,6 +1062,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	// TODO: Add flattenIterator, flattenArray, etc
 	default <U> Sequence<U> flatten(Function<? super T, ? extends Iterable<U>> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return ChainingIterable.flatten(this, mapper)::iterator;
 	}
 
@@ -974,6 +1090,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * constructor.
 	 */
 	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
+		Objects.requireNonNull(constructor);
+
 		List<T> list = toList();
 		return list.toArray(constructor.apply(list.size()));
 	}
@@ -990,6 +1108,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * constructor.
 	 */
 	default List<T> toList(Supplier<? extends List<T>> constructor) {
+		Objects.requireNonNull(constructor);
+
 		return toCollection(constructor);
 	}
 
@@ -1005,6 +1125,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * constructor.
 	 */
 	default <S extends Set<T>> S toSet(Supplier<? extends S> constructor) {
+		Objects.requireNonNull(constructor);
+
 		return toCollection(constructor);
 	}
 
@@ -1032,6 +1154,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
+		Objects.requireNonNull(constructor);
+
 		M result = constructor.get();
 		for (Entry<K, V> t : (Sequence<Entry<K, V>>) this)
 			result.put(t.getKey(), t.getValue());
@@ -1045,6 +1169,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
 	                               Function<? super T, ? extends V> valueMapper) {
+		Objects.requireNonNull(keyMapper);
+		Objects.requireNonNull(valueMapper);
+
 		return toMap(HashMap::new, keyMapper, valueMapper);
 	}
 
@@ -1056,6 +1183,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
 	                                            Function<? super T, ? extends K> keyMapper,
 	                                            Function<? super T, ? extends V> valueMapper) {
+		Objects.requireNonNull(constructor);
+		Objects.requireNonNull(keyMapper);
+		Objects.requireNonNull(valueMapper);
+
 		return collect(constructor,
 		               (result, element) -> result.put(keyMapper.apply(element), valueMapper.apply(element)));
 	}
@@ -1075,6 +1206,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
 	                                           Function<? super T, ? extends V> valueMapper) {
+		Objects.requireNonNull(keyMapper);
+		Objects.requireNonNull(valueMapper);
+
 		return toMap(TreeMap::new, keyMapper, valueMapper);
 	}
 
@@ -1082,6 +1216,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into a {@link Collection} of the type determined by the given constructor.
 	 */
 	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
+		Objects.requireNonNull(constructor);
+
 		return collectInto(constructor.get());
 	}
 
@@ -1089,6 +1225,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
+		Objects.requireNonNull(constructor);
+		Objects.requireNonNull(adder);
+
 		return collectInto(constructor.get(), adder);
 	}
 
@@ -1096,6 +1235,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into an arbitrary container using the given {@link Collector}.
 	 */
 	default <R, A> R collect(Collector<T, A, R> collector) {
+		Objects.requireNonNull(collector);
+
 		A container = collect(collector.supplier(), collector.accumulator());
 		return collector.finisher().apply(container);
 	}
@@ -1104,6 +1245,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into the given {@link Collection}.
 	 */
 	default <U extends Collection<T>> U collectInto(U collection) {
+		Objects.requireNonNull(collection);
+
 		collection.addAll(this);
 		return collection;
 	}
@@ -1112,6 +1255,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super T> adder) {
+		Objects.requireNonNull(adder);
+
 		for (T t : this)
 			adder.accept(result, t);
 		return result;
@@ -1142,6 +1287,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Join this {@code Sequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
+		Objects.requireNonNull(delimiter);
+
 		return join("", delimiter, "");
 	}
 
@@ -1149,6 +1296,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Join this {@code Sequence} into a string separated by the given delimiter, with the given prefix and suffix.
 	 */
 	default String join(String prefix, String delimiter, String suffix) {
+		Objects.requireNonNull(prefix);
+		Objects.requireNonNull(delimiter);
+		Objects.requireNonNull(suffix);
+
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
 		boolean started = false;
@@ -1168,6 +1319,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * the current result and each element in this sequence.
 	 */
 	default Optional<T> reduce(BinaryOperator<T> operator) {
+		Objects.requireNonNull(operator);
+
 		return Iterators.reduce(iterator(), operator);
 	}
 
@@ -1176,6 +1329,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * the current result and each element in this sequence, starting with the given identity as the initial result.
 	 */
 	default T reduce(T identity, BinaryOperator<T> operator) {
+		Objects.requireNonNull(operator);
+
 		return Iterators.reduce(iterator(), identity, operator);
 	}
 
@@ -1213,6 +1368,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Optional<T> first(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return at(0, predicate);
 	}
 
@@ -1223,6 +1380,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Optional<T> last(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return filter(predicate).last();
 	}
 
@@ -1233,6 +1392,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Optional<T> at(int index, Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return filter(predicate).at(index);
 	}
 
@@ -1243,6 +1404,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default <U> Optional<U> first(Class<? extends U> target) {
+		Objects.requireNonNull(target);
+
 		return at(0, target);
 	}
 
@@ -1254,6 +1417,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U> Optional<U> last(Class<? extends U> target) {
+		Objects.requireNonNull(target);
+
 		return (Optional<U>) last(target::isInstance);
 	}
 
@@ -1265,6 +1430,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U> Optional<U> at(int index, Class<? extends U> target) {
+		Objects.requireNonNull(target);
+
 		return (Optional<U>) at(index, target::isInstance);
 	}
 
@@ -1382,6 +1549,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<Sequence<T>> batch(BiPredicate<? super T, ? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return () -> new PredicatePartitioningIterator<T, Sequence<T>>(iterator(), predicate) {
 			@Override
 			protected Sequence<T> toSequence(List<T> list) {
@@ -1413,6 +1582,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	default Sequence<Sequence<T>> split(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), predicate) {
 			@Override
 			protected Sequence<T> toSequence(List<T> list) {
@@ -1442,11 +1613,12 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default Sequence<T> sorted() {
-		return () -> Iterators.unmodifiable(Lists.sort((List) toList()));
+		return sorted(null);
 	}
 
 	/**
-	 * @return this {@code Sequence} sorted according to the given {@link Comparator}.
+	 * @return this {@code Sequence} sorted according to the given {@link Comparator}, or natural order if the
+	 * comparator is {@code null}.
 	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
 		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
@@ -1478,6 +1650,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return the minimal element in this {@code Sequence} according to the given {@link Comparator}.
 	 */
 	default Optional<T> min(Comparator<? super T> comparator) {
+		Objects.requireNonNull(comparator);
+
 		return reduce(minBy(comparator));
 	}
 
@@ -1485,6 +1659,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return the maximum element in this {@code Sequence} according to the given {@link Comparator}.
 	 */
 	default Optional<T> max(Comparator<? super T> comparator) {
+		Objects.requireNonNull(comparator);
+
 		return reduce(maxBy(comparator));
 	}
 
@@ -1492,6 +1668,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return true if all elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return Iterables.all(this, predicate);
 	}
 
@@ -1499,6 +1677,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return true if no elements in this {@code Sequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return Iterables.none(this, predicate);
 	}
 
@@ -1506,6 +1686,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return true if any element in this {@code Sequence} satisfies the given predicate, false otherwise.
 	 */
 	default boolean any(Predicate<? super T> predicate) {
+		Objects.requireNonNull(predicate);
+
 		return Iterables.any(this, predicate);
 	}
 
@@ -1515,6 +1697,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default boolean all(Class<?> target) {
+		Objects.requireNonNull(target);
+
 		return all(target::isInstance);
 	}
 
@@ -1524,6 +1708,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default boolean none(Class<?> target) {
+		Objects.requireNonNull(target);
+
 		return none(target::isInstance);
 	}
 
@@ -1533,6 +1719,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default boolean any(Class<?> target) {
+		Objects.requireNonNull(target);
+
 		return any(target::isInstance);
 	}
 
@@ -1540,6 +1728,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Allow the given {@link Consumer} to see each element in this {@code Sequence} as it is traversed.
 	 */
 	default Sequence<T> peek(Consumer<? super T> action) {
+		Objects.requireNonNull(action);
+
 		return () -> new PeekingIterator<>(iterator(), action);
 	}
 
@@ -1550,6 +1740,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2.2
 	 */
 	default Sequence<T> peekIndexed(ObjIntConsumer<? super T> action) {
+		Objects.requireNonNull(action);
+
 		return () -> new IndexPeekingIterator<>(iterator(), action);
 	}
 
@@ -1560,6 +1752,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekForward(Object, BiConsumer)
 	 */
 	default Sequence<T> peekForward(BiConsumer<? super T, ? super T> action) {
+		Objects.requireNonNull(action);
+
 		return peekForward(null, action);
 	}
 
@@ -1570,6 +1764,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekBack(Object, BiConsumer)
 	 */
 	default Sequence<T> peekBack(BiConsumer<? super T, ? super T> action) {
+		Objects.requireNonNull(action);
+
 		return peekBack(null, action);
 	}
 
@@ -1580,6 +1776,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekForward(BiConsumer)
 	 */
 	default Sequence<T> peekForward(T replacement, BiConsumer<? super T, ? super T> action) {
+		Objects.requireNonNull(action);
+
 		return () -> new ForwardPeekingMappingIterator<T, T>(iterator(), replacement) {
 			@Override
 			protected T mapNext(T next, T following) {
@@ -1601,6 +1799,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekBack(BiConsumer)
 	 */
 	default Sequence<T> peekBack(T replacement, BiConsumer<? super T, ? super T> action) {
+		Objects.requireNonNull(action);
+
 		return () -> new BackPeekingMappingIterator<T, T>(iterator(), replacement) {
 			@Override
 			protected T map(T previous, T next) {
@@ -1652,6 +1852,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * sequence and the right entry from the given iterable.
 	 */
 	default <U> Sequence<Pair<T, U>> interleave(Iterable<U> that) {
+		Objects.requireNonNull(that);
+
 		return () -> new InterleavingPairingIterator<>(iterator(), that.iterator());
 	}
 
@@ -1674,6 +1876,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * random generator.
 	 */
 	default Sequence<T> shuffle(Random random) {
+		Objects.requireNonNull(random);
+
 		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
 	}
 
@@ -1685,6 +1889,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Sequence<T> shuffle(Supplier<? extends Random> randomSupplier) {
+		Objects.requireNonNull(randomSupplier);
+
 		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
 	}
 
@@ -1700,6 +1906,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #flatten()
 	 */
 	default CharSeq toChars(ToCharFunction<? super T> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> CharIterator.from(iterator(), mapper);
 	}
 
@@ -1715,6 +1923,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #flatten()
 	 */
 	default IntSequence toInts(ToIntFunction<? super T> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> IntIterator.from(iterator(), mapper);
 	}
 
@@ -1730,6 +1940,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #flatten()
 	 */
 	default LongSequence toLongs(ToLongFunction<? super T> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> LongIterator.from(iterator(), mapper);
 	}
 
@@ -1745,6 +1957,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #flatten()
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super T> mapper) {
+		Objects.requireNonNull(mapper);
+
 		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
@@ -1767,6 +1981,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Tests each pair of items in the sequence and swaps any two items which match the given predicate.
 	 */
 	default Sequence<T> swap(BiPredicate<? super T, ? super T> swapper) {
+		Objects.requireNonNull(swapper);
+
 		return () -> new SwappingIterator<>(iterator(), swapper);
 	}
 
@@ -1791,6 +2007,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default void forEachIndexed(ObjIntConsumer<? super T> action) {
+		Objects.requireNonNull(action);
+
 		int index = 0;
 		for (T each : this)
 			action.accept(each, index++);
