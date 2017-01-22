@@ -58,4 +58,12 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 
 		return (int) size;
 	}
+
+	public boolean isEmpty() {
+		for (Iterable<T> iterable : iterables)
+			if (!Iterables.isEmpty(iterable))
+				return false;
+
+		return true;
+	}
 }

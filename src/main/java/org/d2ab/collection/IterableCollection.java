@@ -56,6 +56,11 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 			public int size() {
 				return Iterables.size(iterable);
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Iterables.isEmpty(iterable);
+			}
 		};
 	}
 
@@ -69,6 +74,11 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 			@Override
 			public int size() {
 				return iterable.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return iterable.isEmpty();
 			}
 		};
 	}

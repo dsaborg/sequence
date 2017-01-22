@@ -62,6 +62,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 		public int size() {
 			return 0;
 		}
+
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
 	};
 
 	/**
@@ -141,6 +146,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return iterable.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return iterable.isEmpty();
 			}
 		};
 	}
@@ -483,6 +493,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				throw new UnsupportedOperationException();
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
 		};
 	}
 
@@ -506,6 +521,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
 			}
 		};
 	}
@@ -532,6 +552,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
 			}
 		};
 	}
@@ -562,17 +587,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return an immutable view of this {@code Sequence}.
 	 */
 	default Sequence<T> immutable() {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new ImmutableIterator<>(Sequence.this.iterator());
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, ImmutableIterator::new);
 	}
 
 	/**
@@ -734,40 +749,19 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #toDoubles(ToDoubleFunction)
 	 */
 	default <U> Sequence<U> map(Function<? super T, ? extends U> mapper) {
-		return new Sequence<U>() {
-			@Override
-			public Iterator<U> iterator() {
-				return new MappingIterator<>(Sequence.this.iterator(), mapper);
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, it -> new MappingIterator<>(it, mapper));
 	}
 
 	/**
 	 * Map the values in this {@code Sequence} to another set of values specified by the given {@code mapper}
-	 * functions,
-	 * allowing for backwards mapping using {@code backMapper} so elements can be added to underlying
+	 * functions, allowing for backwards mapping using {@code backMapper} so elements can be added to underlying
 	 * {@link Collection}s after being mapped.
 	 *
 	 * @see #map(Function)
 	 */
-	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper, Function<? super U, ? extends T>
-			backMapper) {
-		return new Sequence<U>() {
-			@Override
-			public Iterator<U> iterator() {
-				return new MappingIterator<>(Sequence.this.iterator(), mapper);
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+	default <U> Sequence<U> biMap(Function<? super T, ? extends U> mapper,
+	                              Function<? super U, ? extends T> backMapper) {
+		return new EquivalentSizeSequence<>(this, it -> new MappingIterator<>(it, mapper));
 	}
 
 	/**
@@ -796,17 +790,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default <U> Sequence<U> mapIndexed(ObjIntFunction<? super T, ? extends U> mapper) {
-		return new Sequence<U>() {
-			@Override
-			public Iterator<U> iterator() {
-				return new IndexingMappingIterator<>(Sequence.this.iterator(), mapper);
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, it -> new IndexingMappingIterator<>(it, mapper));
 	}
 
 	/**
@@ -842,22 +826,12 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapBack(BiFunction)
 	 */
 	default <U> Sequence<U> mapBack(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return new Sequence<U>() {
+		return new EquivalentSizeSequence<>(this, it -> new BackPeekingMappingIterator<T, U>(it, replacement) {
 			@Override
-			public Iterator<U> iterator() {
-				return new BackPeekingMappingIterator<T, U>(Sequence.this.iterator(), replacement) {
-					@Override
-					protected U map(T previous, T next) {
-						return mapper.apply(previous, next);
-					}
-				};
+			protected U map(T previous, T next) {
+				return mapper.apply(previous, next);
 			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		});
 	}
 
 	/**
@@ -869,27 +843,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #mapForward(BiFunction)
 	 */
 	default <U> Sequence<U> mapForward(T replacement, BiFunction<? super T, ? super T, ? extends U> mapper) {
-		return new Sequence<U>() {
+		return new EquivalentSizeSequence<>(this, it -> new ForwardPeekingMappingIterator<T, U>(it, replacement) {
 			@Override
-			public Iterator<U> iterator() {
-				return new ForwardPeekingMappingIterator<T, U>(Sequence.this.iterator(), replacement) {
-					@Override
-					protected T mapFollowing(boolean hasFollowing, T following) {
-						return following;
-					}
-
-					@Override
-					protected U mapNext(T next, T following) {
-						return mapper.apply(next, following);
-					}
-				};
+			protected T mapFollowing(boolean hasFollowing, T following) {
+				return following;
 			}
 
 			@Override
-			public int size() {
-				return Sequence.this.size();
+			protected U mapNext(T next, T following) {
+				return mapper.apply(next, following);
 			}
-		};
+		});
 	}
 
 	/**
@@ -899,7 +863,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (skip == 0)
 			return this;
 
-		return () -> new SkippingIterator<>(iterator(), skip);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new SkippingIterator<>(Sequence.this.iterator(), skip);
+			}
+
+			@Override
+			public int size() {
+				return Math.max(0, Sequence.this.size() - skip);
+			}
+		};
 	}
 
 	/**
@@ -911,7 +885,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (skip == 0)
 			return this;
 
-		return () -> new TailSkippingIterator<>(iterator(), skip);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new TailSkippingIterator<>(Sequence.this.iterator(), skip);
+			}
+
+			@Override
+			public int size() {
+				return Math.max(0, Sequence.this.size() - skip);
+			}
+		};
 	}
 
 	/**
@@ -921,7 +905,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (limit == 0)
 			return empty();
 
-		return () -> new LimitingIterator<>(iterator(), limit);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new LimitingIterator<>(Sequence.this.iterator(), limit);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -933,7 +927,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (limit == 0)
 			return empty();
 
-		return () -> new TailLimitingIterator<>(iterator(), limit);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new TailLimitingIterator<>(Sequence.this.iterator(), limit);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -1517,6 +1521,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 				int originalSize = Sequence.this.size();
 				return originalSize == 0 ? 0 : Math.max(1, originalSize - 1);
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
 		};
 	}
 
@@ -1542,6 +1551,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 				int originalSize = Sequence.this.size();
 				return originalSize == 0 ? 0 : Math.max(1, originalSize - 1);
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
 		};
 	}
 
@@ -1565,6 +1579,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return (Sequence.this.size() + 1) / 2;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -1590,6 +1609,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				return (Sequence.this.size() + 1) / 2;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
 		};
 	}
 
@@ -1600,7 +1624,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	@SuppressWarnings("unchecked")
 	default <L, R> BiSequence<L, R> toBiSequence() {
 		Sequence<Pair<L, R>> pairSequence = (Sequence<Pair<L, R>>) this;
-		return BiSequence.from(pairSequence);
+		return new BiSequence<L, R>() {
+			@Override
+			public Iterator<Pair<L, R>> iterator() {
+				return pairSequence.iterator();
+			}
+
+			@Override
+			public int size() {
+				return pairSequence.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return pairSequence.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -1610,7 +1649,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	@SuppressWarnings("unchecked")
 	default <K, V> EntrySequence<K, V> toEntrySequence() {
 		Sequence<Entry<K, V>> entrySequence = (Sequence<Entry<K, V>>) this;
-		return EntrySequence.from(entrySequence);
+		return new EntrySequence<K, V>() {
+			@Override
+			public Iterator<Entry<K, V>> iterator() {
+				return entrySequence.iterator();
+			}
+
+			@Override
+			public int size() {
+				return entrySequence.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return entrySequence.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -1652,6 +1706,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 					return Iterators.size(iterator());
 				}
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
 		};
 	}
 
@@ -1669,10 +1728,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<Sequence<T>> batch(BiPredicate<? super T, ? super T> predicate) {
-		return () -> new PredicatePartitioningIterator<T, Sequence<T>>(iterator(), predicate) {
+		return new Sequence<Sequence<T>>() {
 			@Override
-			protected Sequence<T> toSequence(List<T> list) {
-				return ListSequence.from(list);
+			public Iterator<Sequence<T>> iterator() {
+				return new PredicatePartitioningIterator<T, Sequence<T>>(Sequence.this.iterator(), predicate) {
+					@Override
+					protected Sequence<T> toSequence(List<T> list) {
+						return ListSequence.from(list);
+					}
+				};
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -1684,10 +1753,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	default Sequence<Sequence<T>> split(T element) {
-		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), element) {
+		return new Sequence<Sequence<T>>() {
 			@Override
-			protected Sequence<T> toSequence(List<T> list) {
-				return ListSequence.from(list);
+			public Iterator<Sequence<T>> iterator() {
+				return new SplittingIterator<T, Sequence<T>>(Sequence.this.iterator(), element) {
+					@Override
+					protected Sequence<T> toSequence(List<T> list) {
+						return ListSequence.from(list);
+					}
+				};
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -1700,10 +1779,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	default Sequence<Sequence<T>> split(Predicate<? super T> predicate) {
-		return () -> new SplittingIterator<T, Sequence<T>>(iterator(), predicate) {
+		return new Sequence<Sequence<T>>() {
 			@Override
-			protected Sequence<T> toSequence(List<T> list) {
-				return ListSequence.from(list);
+			public Iterator<Sequence<T>> iterator() {
+				return new SplittingIterator<T, Sequence<T>>(Sequence.this.iterator(), predicate) {
+					@Override
+					protected Sequence<T> toSequence(List<T> list) {
+						return ListSequence.from(list);
+					}
+				};
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -1722,6 +1811,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				return (Sequence.this.size() + step - 1) / step;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
 		};
 	}
 
@@ -1730,7 +1824,17 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * encountered.
 	 */
 	default Sequence<T> distinct() {
-		return () -> new DistinctIterator<>(iterator());
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new DistinctIterator<>(Sequence.this.iterator());
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -1749,6 +1853,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				return Sequence.this.size();
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
 		};
 	}
 
@@ -1765,6 +1874,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -1857,17 +1971,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Allow the given {@link Consumer} to see each element in this {@code Sequence} as it is traversed.
 	 */
 	default Sequence<T> peek(Consumer<? super T> action) {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new PeekingIterator<>(Sequence.this.iterator(), action);
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, it -> new PeekingIterator<>(it, action));
 	}
 
 	/**
@@ -1877,17 +1981,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2.2
 	 */
 	default Sequence<T> peekIndexed(ObjIntConsumer<? super T> action) {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new IndexPeekingIterator<>(Sequence.this.iterator(), action);
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, it -> new IndexPeekingIterator<>(it, action));
 	}
 
 	/**
@@ -1917,28 +2011,18 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekForward(BiConsumer)
 	 */
 	default Sequence<T> peekForward(T replacement, BiConsumer<? super T, ? super T> action) {
-		return new Sequence<T>() {
+		return new EquivalentSizeSequence<>(this, it -> new ForwardPeekingMappingIterator<T, T>(it, replacement) {
 			@Override
-			public Iterator<T> iterator() {
-				return new ForwardPeekingMappingIterator<T, T>(Sequence.this.iterator(), replacement) {
-					@Override
-					protected T mapNext(T next, T following) {
-						action.accept(next, following);
-						return next;
-					}
-
-					@Override
-					protected T mapFollowing(boolean hasFollowing, T following) {
-						return following;
-					}
-				};
+			protected T mapNext(T next, T following) {
+				action.accept(next, following);
+				return next;
 			}
 
 			@Override
-			public int size() {
-				return Sequence.this.size();
+			protected T mapFollowing(boolean hasFollowing, T following) {
+				return following;
 			}
-		};
+		});
 	}
 
 	/**
@@ -1948,23 +2032,13 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @see #peekBack(BiConsumer)
 	 */
 	default Sequence<T> peekBack(T replacement, BiConsumer<? super T, ? super T> action) {
-		return new Sequence<T>() {
+		return new EquivalentSizeSequence<>(this, it -> new BackPeekingMappingIterator<T, T>(it, replacement) {
 			@Override
-			public Iterator<T> iterator() {
-				return new BackPeekingMappingIterator<T, T>(Sequence.this.iterator(), replacement) {
-					@Override
-					protected T map(T previous, T next) {
-						action.accept(previous, next);
-						return next;
-					}
-				};
+			protected T map(T previous, T next) {
+				action.accept(previous, next);
+				return next;
 			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		});
 	}
 
 	/**
@@ -1983,6 +2057,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Math.max(0, Sequence.this.size() * 2 - 1);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -2004,6 +2083,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				return Math.max(0, Sequence.this.size() * 2 - 1) + 2;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
 		};
 	}
 
@@ -2023,6 +2107,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Sequence.this.size() + 1;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
 			}
 		};
 	}
@@ -2044,6 +2133,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				return Sequence.this.size() + 1;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
 		};
 	}
 
@@ -2063,6 +2157,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				return Math.max(Sequence.this.size(), Iterables.size(that));
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty() && Iterables.isEmpty(that);
+			}
 		};
 	}
 
@@ -2072,17 +2171,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.
 	 */
 	default Sequence<T> reverse() {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new ReverseIterator<>(Sequence.this.iterator());
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, ReverseIterator::new);
 	}
 
 	/**
@@ -2098,6 +2187,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -2116,6 +2210,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -2137,6 +2236,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}
@@ -2206,31 +2310,44 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * empty in which case the resulting sequence is also empty.
 	 */
 	default Sequence<T> repeat() {
-		return () -> new RepeatingIterator<>(this, -1);
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new RepeatingIterator<>(Sequence.this, -1);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
 	 * Repeat this {@code Sequence} the given number of times.
 	 */
 	default Sequence<T> repeat(int times) {
-		return () -> new RepeatingIterator<>(this, times);
+		if (times == 0)
+			return empty();
+
+		return new Sequence<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new RepeatingIterator<>(Sequence.this, times);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
 	 * Tests each pair of items in the sequence and swaps any two items which match the given predicate.
 	 */
 	default Sequence<T> swap(BiPredicate<? super T, ? super T> swapper) {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new SwappingIterator<>(Sequence.this.iterator(), swapper);
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-		};
+		return new EquivalentSizeSequence<>(this, it -> new SwappingIterator<>(it, swapper));
 	}
 
 	/**
@@ -2253,6 +2370,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
 			}
 		};
 	}

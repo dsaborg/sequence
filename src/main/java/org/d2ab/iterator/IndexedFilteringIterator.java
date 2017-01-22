@@ -41,9 +41,9 @@ public class IndexedFilteringIterator<T> extends DelegatingUnaryIterator<T> {
 
 		do {
 			// find next matching, bail out if EOF
-			hasNext = iterator.hasNext();
-			if (!hasNext)
+			if (!(hasNext = iterator.hasNext()))
 				return false;
+
 			next = iterator.next();
 		} while (!predicate.test(next, index++));
 

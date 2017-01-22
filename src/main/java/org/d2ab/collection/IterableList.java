@@ -50,7 +50,7 @@ public class IterableList<T> extends AbstractSequentialList<T> {
 
 	@Override
 	public boolean isEmpty() {
-		return !iterator().hasNext();
+		return Iterables.isEmpty(iterable);
 	}
 
 	@Override

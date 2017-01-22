@@ -39,6 +39,11 @@ public abstract class Iterables {
 		public int size() {
 			return 0;
 		}
+
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
 	};
 
 	Iterables() {
@@ -66,6 +71,11 @@ public abstract class Iterables {
 			public int size() {
 				return 1;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
 		};
 	}
 
@@ -83,6 +93,11 @@ public abstract class Iterables {
 			@Override
 			public int size() {
 				return objects.length;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return objects.length == 0;
 			}
 		};
 	}
@@ -139,6 +154,11 @@ public abstract class Iterables {
 			public int size() {
 				return 2;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
 		};
 	}
 
@@ -152,6 +172,11 @@ public abstract class Iterables {
 			@Override
 			public int size() {
 				return 2;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
 			}
 		};
 	}
@@ -341,6 +366,15 @@ public abstract class Iterables {
 			return ((SizedIterable<?>) iterable).size();
 
 		return Iterators.size(iterable.iterator());
+	}
+
+	public static <T> boolean isEmpty(Iterable<T> iterable) {
+		if (iterable instanceof Collection)
+			return ((Collection<?>) iterable).isEmpty();
+		if (iterable instanceof SizedIterable)
+			return ((SizedIterable<?>) iterable).isEmpty();
+
+		return !iterable.iterator().hasNext();
 	}
 
 	private static class SingletonIterator<T> implements Iterator<T> {
