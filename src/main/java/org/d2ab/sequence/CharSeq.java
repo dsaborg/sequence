@@ -317,6 +317,8 @@ public interface CharSeq extends CharCollection {
 		return recurse(start, next).endingAt(end);
 	}
 
+	// TODO: Add open ranges
+
 	/**
 	 * Returns a {@code CharSeq} sequence produced by recursively applying the given operation to the given seed, which
 	 * forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on. The returned

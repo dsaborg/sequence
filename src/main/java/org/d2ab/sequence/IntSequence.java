@@ -400,6 +400,8 @@ public interface IntSequence extends IntCollection {
 		       recurse(start, x -> x - step).endingAt(x -> (long) x - step < end);
 	}
 
+	// TODO: Add open ranges
+
 	/**
 	 * Returns an {@code IntSequence} sequence produced by recursively applying the given operation to the given
 	 * seed, which forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on.

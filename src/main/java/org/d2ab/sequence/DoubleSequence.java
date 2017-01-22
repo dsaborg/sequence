@@ -255,6 +255,8 @@ public interface DoubleSequence extends DoubleCollection {
 		       recurse(start, d -> d - step).until(d -> d + accuracy <= end);
 	}
 
+	// TODO: Add open ranges
+
 	static DoubleSequence recurse(double seed, DoubleUnaryOperator op) {
 		return () -> new InfiniteDoubleIterator() {
 			private double previous;

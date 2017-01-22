@@ -383,6 +383,8 @@ public interface LongSequence extends LongCollection {
 		       recurse(start, x -> x - step).endingAt(x -> x - step < end || x < Long.MIN_VALUE + step);
 	}
 
+	// TODO: Add open ranges
+
 	/**
 	 * Returns a {@code LongSequence} sequence produced by recursively applying the given operation to the given
 	 * seed, which forms the first element of the sequence, the second being f(seed), the third f(f(seed)) and so on.
