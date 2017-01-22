@@ -90,12 +90,71 @@ public class ChainingIterableTest {
 			public int size() {
 				return Integer.MAX_VALUE;
 			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
 		};
 
-		SizedIterable onceMaxIntegerSize = ChainingIterable.concat(maxIntegerSize);
-		assertThat(onceMaxIntegerSize.size(), is(Integer.MAX_VALUE));
+		SizedIterable concatMaxIntegerSize = ChainingIterable.concat(maxIntegerSize);
+		assertThat(concatMaxIntegerSize.size(), is(Integer.MAX_VALUE));
 
-		SizedIterable twiceMaxIntegerSize = ChainingIterable.concat(maxIntegerSize, maxIntegerSize);
-		expecting(IllegalStateException.class, twiceMaxIntegerSize::size);
+		SizedIterable concatMaxIntegerSizePlusOne = ChainingIterable.concat(maxIntegerSize, Iterables.of(1));
+		expecting(IllegalStateException.class, concatMaxIntegerSizePlusOne::size);
+	}
+
+	@Test
+	public void isEmpty() {
+		assertThat(empty.isEmpty(), is(true));
+		assertThat(abc.isEmpty(), is(false));
+		assertThat(abc_def.isEmpty(), is(false));
+		assertThat(abc_def_ghi.isEmpty(), is(false));
+
+		SizedIterable<Integer> empty = new SizedIterable<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int size() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return true;
+			}
+		};
+
+		SizedIterable<Integer> nonEmpty = new SizedIterable<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int size() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+		};
+
+		SizedIterable concatEmptyEmpty = ChainingIterable.concat(empty, empty);
+		assertThat(concatEmptyEmpty.isEmpty(), is(true));
+
+		SizedIterable concatEmptyNonEmpty = ChainingIterable.concat(empty, nonEmpty);
+		assertThat(concatEmptyNonEmpty.isEmpty(), is(false));
+
+		SizedIterable concatNonEmptyEmpty = ChainingIterable.concat(nonEmpty, empty);
+		assertThat(concatNonEmptyEmpty.isEmpty(), is(false));
+
+		SizedIterable concatNonEmptyNonEmpty = ChainingIterable.concat(nonEmpty, nonEmpty);
+		assertThat(concatNonEmptyNonEmpty.isEmpty(), is(false));
 	}
 }

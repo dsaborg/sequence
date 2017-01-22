@@ -6,7 +6,5 @@ package org.d2ab.collection;
 public interface SizedIterable<T> extends Iterable<T> {
 	int size();
 
-	default boolean isEmpty() {
-		return !iterator().hasNext();
-	}
+	boolean isEmpty();
 }

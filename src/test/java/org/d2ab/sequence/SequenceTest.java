@@ -3329,6 +3329,10 @@ public class SequenceTest {
 		Sequence<Sequence<Integer>> sizePassThroughBatched = sizePassThrough.batch(3);
 		twice(() -> assertThat(sizePassThroughBatched.size(), is(4)));
 		twice(() -> assertThat(sizePassThroughBatched.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> emptySizePassThroughBatched = emptySizePassThrough.batch(3);
+		twice(() -> assertThat(emptySizePassThroughBatched.size(), is(0)));
+		twice(() -> assertThat(emptySizePassThroughBatched.isEmpty(), is(true)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -3336,26 +3340,46 @@ public class SequenceTest {
 	public void batchOnPredicate() {
 		Sequence<Sequence<Integer>> emptyBatched = empty.batch((a, b) -> a > b);
 		twice(() -> assertThat(emptyBatched, is(emptyIterable())));
+		twice(() -> assertThat(emptyBatched.size(), is(0)));
+		twice(() -> assertThat(emptyBatched.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptyBatched.iterator().next());
 
 		Sequence<Sequence<Integer>> oneBatched = _1.batch((a, b) -> a > b);
 		twice(() -> assertThat(oneBatched, contains(contains(1))));
+		twice(() -> assertThat(oneBatched.size(), is(1)));
+		twice(() -> assertThat(oneBatched.isEmpty(), is(false)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
 		twice(() -> assertThat(oneBatched, contains(contains(1))));
+		twice(() -> assertThat(oneBatched.size(), is(1)));
+		twice(() -> assertThat(oneBatched.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> twoBatched = _12.batch((a, b) -> a > b);
 		twice(() -> assertThat(twoBatched, contains(contains(1, 2))));
+		twice(() -> assertThat(twoBatched.size(), is(1)));
+		twice(() -> assertThat(twoBatched.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> threeBatched = _123.batch((a, b) -> a > b);
 		twice(() -> assertThat(threeBatched, contains(contains(1, 2, 3))));
+		twice(() -> assertThat(threeBatched.size(), is(1)));
+		twice(() -> assertThat(threeBatched.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> threeRandomBatched = threeRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(threeRandomBatched, contains(contains(2, 3), contains(1))));
+		twice(() -> assertThat(threeRandomBatched.size(), is(2)));
+		twice(() -> assertThat(threeRandomBatched.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> nineRandomBatched = nineRandom.batch((a, b) -> a > b);
 		twice(() -> assertThat(nineRandomBatched,
 		                       contains(contains(67), contains(5, 43), contains(3, 5, 7, 24), contains(5, 67))));
+		twice(() -> assertThat(nineRandomBatched.size(), is(4)));
+		twice(() -> assertThat(nineRandomBatched.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> sizePassThroughBatched = sizePassThrough.batch((a, b) -> a > b);
+		twice(() -> assertThat(sizePassThroughBatched.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> emptySizePassThroughBatched = emptySizePassThrough.batch((a, b) -> a > b);
+		twice(() -> assertThat(emptySizePassThroughBatched.isEmpty(), is(true)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -3363,52 +3387,110 @@ public class SequenceTest {
 	public void splitAroundElement() {
 		Sequence<Sequence<Integer>> emptySplit = empty.split(3);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		twice(() -> assertThat(emptySplit.size(), is(0)));
+		twice(() -> assertThat(emptySplit.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<Sequence<Integer>> oneSplit = _1.split(3);
 		twice(() -> assertThat(oneSplit, contains(contains(1))));
+		twice(() -> assertThat(oneSplit.size(), is(1)));
+		twice(() -> assertThat(oneSplit.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> oneSplitOnFirst = _1.split(1);
+		twice(() -> assertThat(oneSplitOnFirst, contains(emptyIterable())));
+		twice(() -> assertThat(oneSplitOnFirst.size(), is(1)));
+		twice(() -> assertThat(oneSplitOnFirst.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> splitOnAll = newSequence(17, 17, 17).split(17);
+		twice(() -> assertThat(splitOnAll, contains(emptyIterable(), emptyIterable(), emptyIterable())));
+		twice(() -> assertThat(splitOnAll.size(), is(3)));
+		twice(() -> assertThat(splitOnAll.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> twoSplit = _12.split(3);
 		twice(() -> assertThat(twoSplit, contains(contains(1, 2))));
+		twice(() -> assertThat(twoSplit.size(), is(1)));
+		twice(() -> assertThat(twoSplit.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> twoSplitOnFirst = _12.split(1);
+		twice(() -> assertThat(twoSplitOnFirst, contains(emptyIterable(), contains(2))));
+		twice(() -> assertThat(twoSplitOnFirst.size(), is(2)));
+		twice(() -> assertThat(twoSplitOnFirst.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> threeSplit = _123.split(3);
 		twice(() -> assertThat(threeSplit, contains(contains(1, 2))));
+		twice(() -> assertThat(threeSplit.size(), is(1)));
+		twice(() -> assertThat(threeSplit.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> fiveSplit = _12345.split(3);
 		twice(() -> assertThat(fiveSplit, contains(contains(1, 2), contains(4, 5))));
+		twice(() -> assertThat(fiveSplit.size(), is(2)));
+		twice(() -> assertThat(fiveSplit.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> nineSplit = _123456789.split(3);
 		twice(() -> assertThat(nineSplit, contains(contains(1, 2), contains(4, 5, 6, 7, 8, 9))));
+		twice(() -> assertThat(nineSplit.size(), is(2)));
+		twice(() -> assertThat(nineSplit.isEmpty(), is(false)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(nineSplit));
 		twice(() -> assertThat(nineSplit, contains(contains(1, 2), contains(4, 5, 6, 7, 8, 9))));
+		twice(() -> assertThat(nineSplit.size(), is(2)));
+		twice(() -> assertThat(nineSplit.isEmpty(), is(false)));
 		twice(() -> assertThat(_123456789, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void splitPredicate() {
+	public void splitOnPredicate() {
 		Sequence<Sequence<Integer>> emptySplit = empty.split(x -> x % 3 == 0);
 		twice(() -> assertThat(emptySplit, is(emptyIterable())));
+		twice(() -> assertThat(emptySplit.size(), is(0)));
+		twice(() -> assertThat(emptySplit.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptySplit.iterator().next());
 
 		Sequence<Sequence<Integer>> oneSplit = _1.split(x -> x % 3 == 0);
 		twice(() -> assertThat(oneSplit, contains(contains(1))));
+		twice(() -> assertThat(oneSplit.size(), is(1)));
+		twice(() -> assertThat(oneSplit.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> oneSplitOnFirst = _1.split(x -> x % 3 == 1);
+		twice(() -> assertThat(oneSplitOnFirst, contains(emptyIterable())));
+		twice(() -> assertThat(oneSplitOnFirst.size(), is(1)));
+		twice(() -> assertThat(oneSplitOnFirst.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> splitOnAll = newSequence(17, 17, 17).split(x -> x == 17);
+		twice(() -> assertThat(splitOnAll, contains(emptyIterable(), emptyIterable(), emptyIterable())));
+		twice(() -> assertThat(splitOnAll.size(), is(3)));
+		twice(() -> assertThat(splitOnAll.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> twoSplit = _12.split(x -> x % 3 == 0);
 		twice(() -> assertThat(twoSplit, contains(contains(1, 2))));
+		twice(() -> assertThat(twoSplit.size(), is(1)));
+		twice(() -> assertThat(twoSplit.isEmpty(), is(false)));
+
+		Sequence<Sequence<Integer>> twoSplitOnFirst = _12.split(x -> x % 3 == 1);
+		twice(() -> assertThat(twoSplitOnFirst, contains(emptyIterable(), contains(2))));
+		twice(() -> assertThat(twoSplitOnFirst.size(), is(2)));
+		twice(() -> assertThat(twoSplitOnFirst.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> threeSplit = _123.split(x -> x % 3 == 0);
 		twice(() -> assertThat(threeSplit, contains(contains(1, 2))));
+		twice(() -> assertThat(threeSplit.size(), is(1)));
+		twice(() -> assertThat(threeSplit.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> fiveSplit = _12345.split(x -> x % 3 == 0);
 		twice(() -> assertThat(fiveSplit, contains(contains(1, 2), contains(4, 5))));
+		twice(() -> assertThat(fiveSplit.size(), is(2)));
+		twice(() -> assertThat(fiveSplit.isEmpty(), is(false)));
 
 		Sequence<Sequence<Integer>> nineSplit = _123456789.split(x -> x % 3 == 0);
 		twice(() -> assertThat(nineSplit, contains(contains(1, 2), contains(4, 5), contains(7, 8))));
+		twice(() -> assertThat(nineSplit.size(), is(3)));
+		twice(() -> assertThat(nineSplit.isEmpty(), is(false)));
 
 		expecting(UnsupportedOperationException.class, () -> removeFirst(nineSplit));
 		twice(() -> assertThat(nineSplit, contains(contains(1, 2), contains(4, 5), contains(7, 8))));
+		twice(() -> assertThat(nineSplit.size(), is(3)));
+		twice(() -> assertThat(nineSplit.isEmpty(), is(false)));
 		twice(() -> assertThat(_123456789, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
@@ -3460,20 +3542,36 @@ public class SequenceTest {
 	public void distinct() {
 		Sequence<Integer> emptyDistinct = empty.distinct();
 		twice(() -> assertThat(emptyDistinct, is(emptyIterable())));
+		twice(() -> assertThat(emptyDistinct.size(), is(0)));
+		twice(() -> assertThat(emptyDistinct.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptyDistinct.iterator().next());
 
 		Sequence<Integer> oneDistinct = oneRandom.distinct();
 		twice(() -> assertThat(oneDistinct, contains(17)));
+		twice(() -> assertThat(oneDistinct.size(), is(1)));
+		twice(() -> assertThat(oneDistinct.isEmpty(), is(false)));
 
 		Sequence<Integer> twoDuplicatesDistinct = newSequence(17, 17).distinct();
 		twice(() -> assertThat(twoDuplicatesDistinct, contains(17)));
+		twice(() -> assertThat(twoDuplicatesDistinct.size(), is(1)));
+		twice(() -> assertThat(twoDuplicatesDistinct.isEmpty(), is(false)));
 
 		Sequence<Integer> nineDistinct = nineRandom.distinct();
 		twice(() -> assertThat(nineDistinct, contains(67, 5, 43, 3, 7, 24)));
+		twice(() -> assertThat(nineDistinct.size(), is(6)));
+		twice(() -> assertThat(nineDistinct.isEmpty(), is(false)));
 
 		assertThat(removeFirst(nineDistinct), is(67));
 		twice(() -> assertThat(nineDistinct, contains(5, 43, 3, 7, 24, 67)));
+		twice(() -> assertThat(nineDistinct.size(), is(6)));
+		twice(() -> assertThat(nineDistinct.isEmpty(), is(false)));
 		twice(() -> assertThat(nineRandom, contains(5, 43, 3, 5, 7, 24, 5, 67)));
+
+		Sequence<Integer> sizePassThroughDistinct = sizePassThrough.distinct();
+		assertThat(sizePassThroughDistinct.isEmpty(), is(false));
+
+		Sequence<Integer> emptySizePassThroughDistinct = emptySizePassThrough.distinct();
+		assertThat(emptySizePassThroughDistinct.isEmpty(), is(true));
 	}
 
 	@Test
