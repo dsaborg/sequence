@@ -63,7 +63,7 @@ See also:
 [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-),
 [Sequence#toList()](http://static.javadoc.io/org.d2ab/sequence/2.1.0/org/d2ab/sequence/Sequence.html#toList--)
 
-The `Sequence` library is protected by over 4500 tests providing 98% line coverage of all classes in the project.
+The `Sequence` library is protected by over 5000 tests providing 100% line coverage of all classes in the project.
 
 Javadoc for the entire project is available at the
 [Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
