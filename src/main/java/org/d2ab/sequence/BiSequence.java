@@ -31,8 +31,11 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
+import static org.d2ab.util.Preconditions.requireOneOrGreater;
+import static org.d2ab.util.Preconditions.requireZeroOrGreater;
 
 /**
  * An {@link Iterable} sequence of {@link Pair}s with {@link Stream}-like operations for refining, transforming and
@@ -78,6 +81,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> of(Pair<L, R>... items) {
+		requireNonNull(items, "items");
+
 		return from(Lists.of(items));
 	}
 
@@ -104,13 +109,14 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	@SuppressWarnings("unchecked")
-	static <T, U> BiSequence<T, U> ofPairs(Object... os) {
-		if (os.length % 2 != 0)
-			throw new IllegalArgumentException("Expected an even set of objects, but got: " + os.length);
+	static <T, U> BiSequence<T, U> ofPairs(Object... items) {
+		requireNonNull(items, "items");
+		if (items.length % 2 != 0)
+			throw new IllegalArgumentException("Expected an even number of items: " + items.length);
 
 		List<Pair<T, U>> pairs = new ArrayList<>();
-		for (int i = 0; i < os.length; i += 2)
-			pairs.add(Pair.of((T) os[i], (U) os[i + 1]));
+		for (int i = 0; i < items.length; i += 2)
+			pairs.add(Pair.of((T) items[i], (U) items[i + 1]));
 		return from(pairs);
 	}
 
@@ -123,7 +129,25 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #cache(Iterable)
 	 */
 	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return iterable::iterator;
+	}
+
+	/**
+	 * Create a concatenated {@code BiSequence} from several {@link Iterable}s of pairs which are concatenated together
+	 * to form the stream of pairs in the {@code BiSequence}.
+	 *
+	 * @see #of(Pair)
+	 * @see #of(Pair...)
+	 * @see #from(Iterable)
+	 *
+	 * @deprecated Use {@link #concat(Iterable[])} instead.
+	 */
+	@SafeVarargs
+	@Deprecated
+	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>>... iterables) {
+		return concat(iterables);
 	}
 
 	/**
@@ -135,7 +159,11 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	@SafeVarargs
-	static <L, R> BiSequence<L, R> from(Iterable<Pair<L, R>>... iterables) {
+	static <L, R> BiSequence<L, R> concat(Iterable<Pair<L, R>>... iterables) {
+		requireNonNull(iterables, "iterables");
+		for (Iterable<Pair<L, R>> iterable : iterables)
+			requireNonNull(iterable, "each iterable");
+
 		return () -> new ChainingIterator<>(iterables);
 	}
 
@@ -151,6 +179,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> once(Iterator<Pair<L, R>> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(Iterables.once(iterator));
 	}
 
@@ -167,6 +197,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> once(Stream<Pair<L, R>> stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -179,6 +211,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #from(Iterable)
 	 */
 	static <K, V> BiSequence<K, V> from(Map<K, V> map) {
+		requireNonNull(map, "map");
+
 		return from(Sequence.from(map.entrySet()).map(Pair::from));
 	}
 
@@ -191,6 +225,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> cache(Iterable<Pair<L, R>> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return from(Iterables.toList(iterable));
 	}
 
@@ -203,6 +239,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> cache(Iterator<Pair<L, R>> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(Iterators.toList(iterator));
 	}
 
@@ -215,6 +253,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	static <L, R> BiSequence<L, R> cache(Stream<Pair<L, R>> stream) {
+		requireNonNull(stream, "stream");
+
 		return from(stream.collect(Collectors.toList()));
 	}
 
@@ -227,6 +267,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #until(Pair)
 	 */
 	static <L, R> BiSequence<L, R> generate(Supplier<Pair<L, R>> supplier) {
+		requireNonNull(supplier, "supplier");
+
 		return () -> (InfiniteIterator<Pair<L, R>>) supplier::get;
 	}
 
@@ -239,9 +281,12 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #endingAt(Pair)
 	 * @see #until(Pair)
 	 */
-	static <L, R> BiSequence<L, R> multiGenerate(Supplier<? extends Supplier<? extends Pair<L, R>>> supplierSupplier) {
+	static <L, R> BiSequence<L, R> multiGenerate(Supplier<? extends Supplier<? extends Pair<L, R>>> multiSupplier) {
+		requireNonNull(multiSupplier, "multiSupplier");
+
 		return () -> {
-			Supplier<? extends Pair<L, R>> supplier = supplierSupplier.get();
+			Supplier<? extends Pair<L, R>> supplier = requireNonNull(
+					multiSupplier.get(), "multiSupplier.get()");
 			return (InfiniteIterator<Pair<L, R>>) supplier::get;
 		};
 	}
@@ -259,8 +304,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #until(Pair)
 	 */
 	static <L, R> BiSequence<L, R> recurse(L leftSeed, R rightSeed,
-	                                       BiFunction<? super L, ? super R, ? extends Pair<L, R>> op) {
-		return recurse(Pair.of(leftSeed, rightSeed), p -> op.apply(p.getLeft(), p.getRight()));
+	                                       BiFunction<? super L, ? super R, ? extends Pair<L, R>> operator) {
+		requireNonNull(operator, "operator");
+
+		return recurse(Pair.of(leftSeed, rightSeed), p -> operator.apply(p.getLeft(), p.getRight()));
 	}
 
 	/**
@@ -275,8 +322,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #endingAt(Pair)
 	 * @see #until(Pair)
 	 */
-	static <L, R> BiSequence<L, R> recurse(Pair<L, R> seed, UnaryOperator<Pair<L, R>> op) {
-		return () -> new RecursiveIterator<>(seed, op);
+	static <L, R> BiSequence<L, R> recurse(Pair<L, R> seed, UnaryOperator<Pair<L, R>> operator) {
+		requireNonNull(operator, "operator");
+
+		return () -> new RecursiveIterator<>(seed, operator);
 	}
 
 	/**
@@ -300,6 +349,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	static <L, R, LL, RR> BiSequence<LL, RR> recurse(L leftSeed, R rightSeed,
 	                                                 BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> f,
 	                                                 BiFunction<? super LL, ? super RR, ? extends Pair<L, R>> g) {
+		requireNonNull(f, "f");
+		requireNonNull(g, "g");
+
 		Function<Pair<L, R>, Pair<LL, RR>> f1 = asPairFunction(f);
 		Function<Pair<LL, RR>, Pair<L, R>> g1 = asPairFunction(g);
 		return recurse(f.apply(leftSeed, rightSeed), f1.compose(g1)::apply);
@@ -308,8 +360,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	/**
 	 * @return the given doubly bi-valued function converted to a pair-based binary operator.
 	 */
-	static <L, R> BinaryOperator<Pair<L, R>> asPairBinaryOperator(QuaternaryFunction<L, R, L, R, Pair<L, R>>
-			                                                              f) {
+	static <L, R> BinaryOperator<Pair<L, R>> asPairBinaryOperator(QuaternaryFunction<L, R, L, R, Pair<L, R>> f) {
 		return (p1, p2) -> f.apply(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight());
 	}
 
@@ -343,6 +394,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 */
 	default <LL, RR> BiSequence<LL, RR> map(BiFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return map(asPairFunction(mapper));
 	}
 
@@ -355,6 +408,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 */
 	default <LL, RR> BiSequence<LL, RR> map(Function<? super Pair<L, R>, ? extends Pair<LL, RR>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
@@ -368,6 +423,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default <LL, RR> BiSequence<LL, RR> map(Function<? super L, ? extends LL> leftMapper,
 	                                        Function<? super R, ? extends RR> rightMapper) {
+		requireNonNull(leftMapper, "leftMapper");
+		requireNonNull(rightMapper, "rightMapper");
+
 		return map(p -> p.map(leftMapper, rightMapper));
 	}
 
@@ -379,8 +437,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 * @since 1.2
 	 */
-	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjIntFunction<? super Pair<L, R>, ? extends Pair<LL, RR>>
-			                                               mapper) {
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(
+			ObjIntFunction<? super Pair<L, R>, ? extends Pair<LL, RR>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new IndexingMappingIterator<>(iterator(), mapper);
 	}
 
@@ -392,8 +452,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #flatten(Function)
 	 * @since 1.2
 	 */
-	default <LL, RR> BiSequence<LL, RR> mapIndexed(ObjObjIntFunction<? super L, ? super R, ? extends Pair<LL, RR>>
-			                                               mapper) {
+	default <LL, RR> BiSequence<LL, RR> mapIndexed(
+			ObjObjIntFunction<? super L, ? super R, ? extends Pair<LL, RR>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return mapIndexed((p, i) -> mapper.apply(p.getLeft(), p.getRight(), i));
 	}
 
@@ -401,6 +463,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Skip a set number of steps in this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> skip(int skip) {
+		requireZeroOrGreater(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -413,6 +477,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> skipTail(int skip) {
+		requireZeroOrGreater(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -423,6 +489,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Limit the maximum number of results returned by this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> limit(int limit) {
+		requireZeroOrGreater(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -435,6 +503,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 2.3
 	 */
 	default BiSequence<L, R> limitTail(int limit) {
+		requireZeroOrGreater(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -446,6 +516,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * {@link BiPredicate}.
 	 */
 	default BiSequence<L, R> filter(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return filter(asPairPredicate(predicate));
 	}
 
@@ -454,6 +526,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * {@link Predicate}.
 	 */
 	default BiSequence<L, R> filter(Predicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new FilteringIterator<>(iterator(), predicate);
 	}
 
@@ -464,6 +538,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default BiSequence<L, R> filterIndexed(ObjIntPredicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new IndexedFilteringIterator<>(iterator(), predicate);
 	}
 
@@ -474,6 +550,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default BiSequence<L, R> filterIndexed(ObjObjIntPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return filterIndexed((p, i) -> predicate.test(p.getLeft(), p.getRight(), i));
 	}
 
@@ -484,6 +562,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> including(Pair<L, R>... pairs) {
+		requireNonNull(pairs, "pairs");
+
 		return filter(p -> Arrayz.contains(pairs, p));
 	}
 
@@ -493,6 +573,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default BiSequence<L, R> including(Iterable<? extends Pair<L, R>> pairs) {
+		requireNonNull(pairs, "pairs");
+
 		return filter(p -> Iterables.contains(pairs, p));
 	}
 
@@ -503,6 +585,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	@SuppressWarnings("unchecked")
 	default BiSequence<L, R> excluding(Pair<L, R>... pairs) {
+		requireNonNull(pairs, "pairs");
+
 		return filter(p -> !Arrayz.contains(pairs, p));
 	}
 
@@ -512,6 +596,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default BiSequence<L, R> excluding(Iterable<? extends Pair<L, R>> pairs) {
+		requireNonNull(pairs, "pairs");
+
 		return filter(p -> !Iterables.contains(pairs, p));
 	}
 
@@ -520,7 +606,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * components and strung together.
 	 */
 	default <T> Sequence<T> flatten() {
-		return toSequence().flatten();
+		return toSequence().flatten(pair -> Iterables.fromPair((Pair) pair));
 	}
 
 	/**
@@ -536,6 +622,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			BiFunction<? super L, ? super R, ? extends Iterable<Pair<LL, RR>>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function = asPairFunction(mapper);
 		return flatten(function);
 	}
@@ -552,8 +640,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #map(Function)
 	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
-			Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function) {
-		return ChainingIterable.concat(toSequence(function))::iterator;
+			Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> mapper) {
+		requireNonNull(mapper, "mapper");
+
+		return ChainingIterable.concat(toSequence(mapper))::iterator;
 	}
 
 	/**
@@ -565,6 +655,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #flatten(BiFunction)
 	 */
 	default <LL> BiSequence<LL, R> flattenLeft(Function<? super Pair<L, R>, ? extends Iterable<LL>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new LeftFlatteningPairIterator<>(iterator(), mapper);
 	}
 
@@ -577,6 +669,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #flatten(BiFunction)
 	 */
 	default <RR> BiSequence<L, RR> flattenRight(Function<? super Pair<L, R>, ? extends Iterable<RR>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new RightFlatteningPairIterator<>(iterator(), mapper);
 	}
 
@@ -652,8 +746,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #recurse(Pair, UnaryOperator)
 	 * @see #repeat()
 	 */
-	default BiSequence<L, R> until(BiPredicate<? super L, ? super R> terminal) {
-		return until(asPairPredicate(terminal));
+	default BiSequence<L, R> until(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return until(asPairPredicate(predicate));
 	}
 
 	/**
@@ -668,8 +764,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #recurse(Pair, UnaryOperator)
 	 * @see #repeat()
 	 */
-	default BiSequence<L, R> endingAt(BiPredicate<? super L, ? super R> terminal) {
-		return endingAt(asPairPredicate(terminal));
+	default BiSequence<L, R> endingAt(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return endingAt(asPairPredicate(predicate));
 	}
 
 	/**
@@ -683,8 +781,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #recurse(Pair, UnaryOperator)
 	 * @see #repeat()
 	 */
-	default BiSequence<L, R> until(Predicate<? super Pair<L, R>> terminal) {
-		return () -> new ExclusiveTerminalIterator<>(iterator(), terminal);
+	default BiSequence<L, R> until(Predicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new ExclusiveTerminalIterator<>(iterator(), predicate);
 	}
 
 	/**
@@ -698,8 +798,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #recurse(Pair, UnaryOperator)
 	 * @see #repeat()
 	 */
-	default BiSequence<L, R> endingAt(Predicate<? super Pair<L, R>> terminal) {
-		return () -> new InclusiveTerminalIterator<>(iterator(), terminal);
+	default BiSequence<L, R> endingAt(Predicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new InclusiveTerminalIterator<>(iterator(), predicate);
 	}
 
 	/**
@@ -738,6 +840,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingAfter(Predicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ExclusiveStartingIterator<>(iterator(), predicate);
 	}
 
@@ -751,6 +855,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingFrom(Predicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new InclusiveStartingIterator<>(iterator(), predicate);
 	}
 
@@ -764,6 +870,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingAfter(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return startingAfter(asPairPredicate(predicate));
 	}
 
@@ -777,6 +885,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> startingFrom(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return startingFrom(asPairPredicate(predicate));
 	}
 
@@ -792,6 +902,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * constructor.
 	 */
 	default Pair<L, R>[] toArray(IntFunction<Pair<L, R>[]> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		List<Pair<L, R>> list = toList();
 		return list.toArray(constructor.apply(list.size()));
 	}
@@ -808,6 +920,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * constructor.
 	 */
 	default List<Pair<L, R>> toList(Supplier<List<Pair<L, R>>> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -823,6 +937,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * constructor.
 	 */
 	default <S extends Set<Pair<L, R>>> S toSet(Supplier<? extends S> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -845,6 +961,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * constructor.
 	 */
 	default <M extends Map<L, R>> M toMap(Supplier<? extends M> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		M result = constructor.get();
 		for (Pair<L, R> each : this)
 			result.put(each.getLeft(), each.getRight());
@@ -868,6 +986,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 2.3
 	 */
 	default <M extends Map<L, List<R>>> M toGroupedMap(Supplier<? extends M> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toGroupedMap(constructor, ArrayList::new);
 	}
 
@@ -880,6 +1000,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default <M extends Map<L, C>, C extends Collection<R>> M toGroupedMap(
 			Supplier<? extends M> mapConstructor, Supplier<C> groupConstructor) {
+		requireNonNull(mapConstructor, "mapConstructor");
+		requireNonNull(groupConstructor, "groupConstructor");
+
 		return toGroupedMap(mapConstructor, Collectors.toCollection(groupConstructor));
 	}
 
@@ -892,6 +1015,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default <M extends Map<L, C>, C, A> M toGroupedMap(
 			Supplier<? extends M> mapConstructor, Collector<? super R, A, C> groupCollector) {
+		requireNonNull(mapConstructor, "mapConstructor");
+		requireNonNull(groupCollector, "groupCollector");
+
 		Supplier<? extends A> groupConstructor = groupCollector.supplier();
 		BiConsumer<? super A, ? super R> groupAccumulator = groupCollector.accumulator();
 
@@ -925,6 +1051,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code BiSequence} into a {@link Collection} of the type determined by the given constructor.
 	 */
 	default <C extends Collection<Pair<L, R>>> C toCollection(Supplier<? extends C> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return collectInto(constructor.get());
 	}
 
@@ -932,6 +1060,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code BiSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super Pair<L, R>> adder) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(adder, "adder");
+
 		return collectInto(constructor.get(), adder);
 	}
 
@@ -939,6 +1070,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code BiSequence} into an arbitrary container using the given {@link Collector}.
 	 */
 	default <S, C> S collect(Collector<Pair<L, R>, C, S> collector) {
+		requireNonNull(collector, "collector");
+
 		C intermediary = collect(collector.supplier(), collector.accumulator());
 		return collector.finisher().apply(intermediary);
 	}
@@ -947,6 +1080,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code BiSequence} into the given {@link Collection}.
 	 */
 	default <U extends Collection<Pair<L, R>>> U collectInto(U collection) {
+		requireNonNull(collection, "collection");
+
 		for (Pair<L, R> t : this)
 			collection.add(t);
 		return collection;
@@ -956,6 +1091,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code Sequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super Pair<L, R>> adder) {
+		requireNonNull(adder, "adder");
+
 		for (Pair<L, R> t : this)
 			adder.accept(result, t);
 		return result;
@@ -977,6 +1114,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Join this {@code BiSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
+		requireNonNull(delimiter, "delimiter");
+
 		return join("", delimiter, "");
 	}
 
@@ -984,6 +1123,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Join this {@code BiSequence} into a string separated by the given delimiter, with the given prefix and suffix.
 	 */
 	default String join(String prefix, String delimiter, String suffix) {
+		requireNonNull(prefix, "prefix");
+		requireNonNull(delimiter, "delimiter");
+		requireNonNull(suffix, "suffix");
+
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
 		boolean first = true;
@@ -1003,6 +1146,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * the current result and each pair in this sequence.
 	 */
 	default Optional<Pair<L, R>> reduce(BinaryOperator<Pair<L, R>> operator) {
+		requireNonNull(operator, "operator");
+
 		return Iterators.reduce(iterator(), operator);
 	}
 
@@ -1012,6 +1157,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * the result pair, followed by the left and right components of the current pair, respectively.
 	 */
 	default Optional<Pair<L, R>> reduce(QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
+		requireNonNull(operator, "operator");
+
 		return reduce(asPairBinaryOperator(operator));
 	}
 
@@ -1020,6 +1167,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * the current result and each pair in this sequence, starting with the given identity as the initial result.
 	 */
 	default Pair<L, R> reduce(Pair<L, R> identity, BinaryOperator<Pair<L, R>> operator) {
+		requireNonNull(operator, "operator");
+
 		return Iterators.reduce(iterator(), identity, operator);
 	}
 
@@ -1030,6 +1179,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * the current entry, respectively.
 	 */
 	default Pair<L, R> reduce(L left, R right, QuaternaryFunction<L, R, L, R, Pair<L, R>> operator) {
+		requireNonNull(operator, "operator");
+
 		return reduce(Pair.of(left, right), asPairBinaryOperator(operator));
 	}
 
@@ -1056,6 +1207,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default Optional<Pair<L, R>> at(int index) {
+		requireZeroOrGreater(index, "index");
+
 		return Iterators.get(iterator(), index);
 	}
 
@@ -1086,6 +1239,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default Optional<Pair<L, R>> at(int index, Predicate<? super Pair<L, R>> predicate) {
+		requireZeroOrGreater(index, "index");
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).at(index);
 	}
 
@@ -1116,6 +1272,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default Optional<Pair<L, R>> at(int index, BiPredicate<? super L, ? super R> predicate) {
+		requireZeroOrGreater(index, "index");
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).at(index);
 	}
 
@@ -1125,6 +1284,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * The final sequence may be shorter than the window. This method is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<BiSequence<L, R>> window(int window) {
+		requireOneOrGreater(window, "window");
+
 		return window(window, 1);
 	}
 
@@ -1135,6 +1296,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * skipped in between windows.
 	 */
 	default Sequence<BiSequence<L, R>> window(int window, int step) {
+		requireOneOrGreater(window, "window");
+		requireOneOrGreater(step, "step");
+
 		return () -> new WindowingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), window, step) {
 			@Override
 			protected BiSequence<L, R> toSequence(List<Pair<L, R>> list) {
@@ -1148,6 +1312,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * with the given batch size. This method is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<BiSequence<L, R>> batch(int size) {
+		requireOneOrGreater(size, "size");
+
 		return window(size, size);
 	}
 
@@ -1157,6 +1323,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<BiSequence<L, R>> batch(BiPredicate<? super Pair<L, R>, ? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new PredicatePartitioningIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), predicate) {
 			@Override
 			protected BiSequence<L, R> toSequence(List<Pair<L, R>> list) {
@@ -1173,6 +1341,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default Sequence<BiSequence<L, R>> batch(
 			QuaternaryPredicate<? super L, ? super R, ? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return batch((p1, p2) -> predicate.test(p1.getLeft(), p1.getRight(), p2.getLeft(), p2.getRight()));
 	}
 
@@ -1199,6 +1369,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default Sequence<BiSequence<L, R>> split(Predicate<? super Pair<L, R>> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new SplittingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), predicate) {
 			@Override
 			protected BiSequence<L, R> toSequence(List<Pair<L, R>> list) {
@@ -1215,6 +1387,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default Sequence<BiSequence<L, R>> split(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return split(asPairPredicate(predicate));
 	}
 
@@ -1222,6 +1396,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> step(int step) {
+		requireOneOrGreater(step, "step");
+
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
 
@@ -1269,6 +1445,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @return the minimal element in this {@code BiSequence} according to the given {@link Comparator}.
 	 */
 	default Optional<Pair<L, R>> min(Comparator<? super Pair<L, R>> comparator) {
+		requireNonNull(comparator, "comparator");
+
 		return reduce(minBy(comparator));
 	}
 
@@ -1276,28 +1454,36 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @return the maximum element in this {@code BiSequence} according to the given {@link Comparator}.
 	 */
 	default Optional<Pair<L, R>> max(Comparator<? super Pair<L, R>> comparator) {
+		requireNonNull(comparator, "comparator");
+
 		return reduce(maxBy(comparator));
 	}
 
 	/**
 	 * @return true if all elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
 	 */
-	default boolean all(BiPredicate<? super L, ? super R> biPredicate) {
-		return Iterables.all(this, asPairPredicate(biPredicate));
+	default boolean all(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return Iterables.all(this, asPairPredicate(predicate));
 	}
 
 	/**
 	 * @return true if no elements in this {@code BiSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return Iterables.none(this, asPairPredicate(predicate));
 	}
 
 	/**
 	 * @return true if any element in this {@code BiSequence} satisfies the given predicate, false otherwise.
 	 */
-	default boolean any(BiPredicate<? super L, ? super R> biPredicate) {
-		return Iterables.any(this, asPairPredicate(biPredicate));
+	default boolean any(BiPredicate<? super L, ? super R> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return Iterables.any(this, asPairPredicate(predicate));
 	}
 
 	/**
@@ -1305,6 +1491,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * traversed.
 	 */
 	default BiSequence<L, R> peek(BiConsumer<? super L, ? super R> action) {
+		requireNonNull(action, "action");
+
 		return peek(asPairConsumer(action));
 	}
 
@@ -1313,8 +1501,10 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 *
 	 * @since 1.2.2
 	 */
-	default BiSequence<L, R> peek(Consumer<? super Pair<L, R>> consumer) {
-		return () -> new PeekingIterator<>(iterator(), consumer);
+	default BiSequence<L, R> peek(Consumer<? super Pair<L, R>> action) {
+		requireNonNull(action, "action");
+
+		return () -> new PeekingIterator<>(iterator(), action);
 	}
 
 	/**
@@ -1324,6 +1514,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2.2
 	 */
 	default BiSequence<L, R> peekIndexed(ObjObjIntConsumer<? super L, ? super R> action) {
+		requireNonNull(action, "action");
+
 		return peekIndexed((p, x) -> action.accept(p.getLeft(), p.getRight(), x));
 	}
 
@@ -1334,6 +1526,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2.2
 	 */
 	default BiSequence<L, R> peekIndexed(ObjIntConsumer<? super Pair<L, R>> action) {
+		requireNonNull(action, "action");
+
 		return () -> new IndexPeekingIterator<>(iterator(), action);
 	}
 
@@ -1343,22 +1537,28 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * The appended elements will only be available on the first traversal of the resulting {@code Sequence}.
 	 */
 	default BiSequence<L, R> append(Iterator<Pair<L, R>> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(Iterables.once(iterator));
 	}
 
 	/**
 	 * Append the elements of the given {@link Iterable} to the end of this {@code BiSequence}.
 	 */
-	default BiSequence<L, R> append(Iterable<Pair<L, R>> that) {
-		return ChainingIterable.concat(this, that)::iterator;
+	default BiSequence<L, R> append(Iterable<Pair<L, R>> iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return ChainingIterable.concat(this, iterable)::iterator;
 	}
 
 	/**
 	 * Append the given elements to the end of this {@code BiSequence}.
 	 */
 	@SuppressWarnings("unchecked")
-	default BiSequence<L, R> append(Pair<L, R>... entries) {
-		return append(Iterables.of(entries));
+	default BiSequence<L, R> append(Pair<L, R>... pairs) {
+		requireNonNull(pairs, "pairs");
+
+		return append(Iterables.of(pairs));
 	}
 
 	/**
@@ -1375,6 +1575,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * The appended elements will only be available on the first traversal of the resulting {@code BiSequence}.
 	 */
 	default BiSequence<L, R> append(Stream<Pair<L, R>> stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -1389,6 +1591,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Convert this {@code BiSequence} to a {@link Sequence} where each item is generated by the given mapper.
 	 */
 	default <T> Sequence<T> toSequence(BiFunction<? super L, ? super R, ? extends T> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return toSequence(asPairFunction(mapper));
 	}
 
@@ -1396,14 +1600,17 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Convert this {@code BiSequence} to a {@link Sequence} where each item is generated by the given mapper.
 	 */
 	default <T> Sequence<T> toSequence(Function<? super Pair<L, R>, ? extends T> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new MappingIterator<>(iterator(), mapper);
 	}
 
 	/**
 	 * Convert this {@code BiSequence} to a {@link EntrySequence} of {@link Map.Entry} elements.
 	 */
+	@SuppressWarnings("unchecked")
 	default EntrySequence<L, R> toEntrySequence() {
-		return EntrySequence.from(Sequence.from(this).map(p -> (Map.Entry<L, R>) p));
+		return EntrySequence.from((Iterable) this);
 	}
 
 	/**
@@ -1420,6 +1627,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharBiFunction<? super L, ? super R> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return toChars(p -> mapper.applyAsChar(p.getLeft(), p.getRight()));
 	}
 
@@ -1437,6 +1646,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntBiFunction<? super L, ? super R> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return toInts(p -> mapper.applyAsInt(p.getLeft(), p.getRight()));
 	}
 
@@ -1454,6 +1665,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongBiFunction<? super L, ? super R> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return toLongs(p -> mapper.applyAsLong(p.getLeft(), p.getRight()));
 	}
 
@@ -1471,6 +1684,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleBiFunction<? super L, ? super R> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return toDoubles(p -> mapper.applyAsDouble(p.getLeft(), p.getRight()));
 	}
 
@@ -1488,6 +1703,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default CharSeq toChars(ToCharFunction<? super Pair<L, R>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> CharIterator.from(iterator(), mapper);
 	}
 
@@ -1505,6 +1722,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default IntSequence toInts(ToIntFunction<? super Pair<L, R>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> IntIterator.from(iterator(), mapper);
 	}
 
@@ -1522,6 +1741,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default LongSequence toLongs(ToLongFunction<? super Pair<L, R>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> LongIterator.from(iterator(), mapper);
 	}
 
@@ -1539,6 +1760,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1.1
 	 */
 	default DoubleSequence toDoubles(ToDoubleFunction<? super Pair<L, R>> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
@@ -1554,6 +1777,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Repeat this {@code BiSequence} the given number of times.
 	 */
 	default BiSequence<L, R> repeat(int times) {
+		requireZeroOrGreater(times, "times");
+
 		return () -> new RepeatingIterator<>(this, times);
 	}
 
@@ -1576,6 +1801,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * given random generator.
 	 */
 	default BiSequence<L, R> shuffle(Random random) {
+		requireNonNull(random, "random");
+
 		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
 	}
 
@@ -1587,7 +1814,12 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default BiSequence<L, R> shuffle(Supplier<? extends Random> randomSupplier) {
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), randomSupplier.get()));
+		requireNonNull(randomSupplier, "randomSupplier");
+
+		return () -> {
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
+			return Iterators.unmodifiable(Lists.shuffle(toList(), random));
+		};
 	}
 
 	/**
@@ -1618,6 +1850,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default void forEach(BiConsumer<? super L, ? super R> action) {
+		requireNonNull(action, "action");
+
 		forEach(asPairConsumer(action));
 	}
 }

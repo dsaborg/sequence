@@ -38,6 +38,7 @@ public class ChainingIterator<T> extends DelegatingUnaryIterator<T> {
 	public boolean hasNext() {
 		while (!iterator.hasNext() && iterables.hasNext())
 			this.iterator = iterables.next().iterator();
+
 		return iterator.hasNext();
 	}
 

@@ -21,6 +21,7 @@ import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -117,12 +118,12 @@ public abstract class Iterables {
 	 * Converts a container of some kind into a possibly once-only {@link Iterable}.
 	 *
 	 * @param container the non-null container to turn into an {@link Iterable}, can be one of {@link Iterable}, {@link
-	 *                  Iterator}, {@link Stream}, {@code Array}, {@link Pair} or {@link Map.Entry}.
+	 *                  Iterator}, {@link Stream}, {@code Array}, {@link Pair} or {@link Entry}.
 	 *
 	 * @return the container as an iterable.
 	 *
 	 * @throws ClassCastException if the container is not one of {@link Iterable}, {@link Iterator}, {@link Stream},
-	 *                            {@code Array}, {@link Pair} or {@link Map.Entry}
+	 *                            {@code Array}, {@link Pair} or {@link Entry}
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Iterable<T> from(Object container) {
@@ -135,15 +136,15 @@ public abstract class Iterables {
 		else if (container instanceof Object[])
 			return of((T[]) container);
 		else if (container instanceof Pair)
-			return from((Pair<T, T>) container);
-		else if (container instanceof Map.Entry)
-			return from((Map.Entry<T, T>) container);
+			return fromPair((Pair<T, T>) container);
+		else if (container instanceof Entry)
+			return fromEntry((Entry<T, T>) container);
 		else
-			throw new ClassCastException(
-					"Required an Iterable, Iterator, Array, Stream, Pair or Entry but got: " + container.getClass());
+			throw new ClassCastException("Required an Iterable, Iterator, Array, Stream, Pair or Entry but got: " +
+			                             container.getClass());
 	}
 
-	public static <T> SizedIterable<T> from(final Pair<T, T> pair) {
+	public static <T> SizedIterable<T> fromPair(final Pair<? extends T, ? extends T> pair) {
 		return new SizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
@@ -162,7 +163,7 @@ public abstract class Iterables {
 		};
 	}
 
-	public static <T> SizedIterable<T> from(final Map.Entry<T, T> entry) {
+	public static <T> SizedIterable<T> fromEntry(final Entry<? extends T, ? extends T> entry) {
 		return new SizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
