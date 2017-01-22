@@ -4393,52 +4393,76 @@ public class SequenceTest {
 	public void toChars() {
 		CharSeq emptyChars = empty.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));
+		twice(() -> assertThat(emptyChars.size(), is(0)));
+		twice(() -> assertThat(emptyChars.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptyChars.iterator().nextChar());
 
 		CharSeq charSeq = _12345.toChars(x -> (char) (x + 'a' - 1));
 		twice(() -> assertThat(charSeq, containsChars('a', 'b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq.size(), is(5)));
+		twice(() -> assertThat(charSeq.isEmpty(), is(false)));
 
 		assertThat(removeFirst(charSeq), is('a'));
 		twice(() -> assertThat(charSeq, containsChars('b', 'c', 'd', 'e')));
+		twice(() -> assertThat(charSeq.size(), is(4)));
+		twice(() -> assertThat(charSeq.isEmpty(), is(false)));
 	}
 
 	@Test
 	public void toInts() {
 		IntSequence emptyInts = empty.toInts(x -> x + 1);
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));
+		twice(() -> assertThat(emptyInts.size(), is(0)));
+		twice(() -> assertThat(emptyInts.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptyInts.iterator().nextInt());
 
 		IntSequence intSequence = _12345.toInts(x -> x + 1);
 		twice(() -> assertThat(intSequence, containsInts(2, 3, 4, 5, 6)));
+		twice(() -> assertThat(intSequence.size(), is(5)));
+		twice(() -> assertThat(intSequence.isEmpty(), is(false)));
 
 		assertThat(removeFirst(intSequence), is(2));
 		twice(() -> assertThat(intSequence, containsInts(3, 4, 5, 6)));
+		twice(() -> assertThat(intSequence.size(), is(4)));
+		twice(() -> assertThat(intSequence.isEmpty(), is(false)));
 	}
 
 	@Test
 	public void toLongs() {
 		LongSequence emptyLongs = empty.toLongs(x -> x + 1);
 		twice(() -> assertThat(emptyLongs, is(emptyIterable())));
+		twice(() -> assertThat(emptyLongs.size(), is(0)));
+		twice(() -> assertThat(emptyLongs.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptyLongs.iterator().nextLong());
 
 		LongSequence longSequence = _12345.toLongs(x -> x + 1);
 		twice(() -> assertThat(longSequence, containsLongs(2, 3, 4, 5, 6)));
+		twice(() -> assertThat(longSequence.size(), is(5)));
+		twice(() -> assertThat(longSequence.isEmpty(), is(false)));
 
 		assertThat(removeFirst(longSequence), is(2L));
 		twice(() -> assertThat(longSequence, containsLongs(3, 4, 5, 6)));
+		twice(() -> assertThat(longSequence.size(), is(4)));
+		twice(() -> assertThat(longSequence.isEmpty(), is(false)));
 	}
 
 	@Test
 	public void toDoubles() {
 		DoubleSequence emptyDoubles = empty.toDoubles(x -> x + 1);
 		twice(() -> assertThat(emptyDoubles, is(emptyIterable())));
+		twice(() -> assertThat(emptyDoubles.size(), is(0)));
+		twice(() -> assertThat(emptyDoubles.isEmpty(), is(true)));
 		expecting(NoSuchElementException.class, () -> emptyDoubles.iterator().nextDouble());
 
 		DoubleSequence doubleSequence = _12345.toDoubles(x -> x + 1);
 		twice(() -> assertThat(doubleSequence, containsDoubles(2, 3, 4, 5, 6)));
+		twice(() -> assertThat(doubleSequence.size(), is(5)));
+		twice(() -> assertThat(doubleSequence.isEmpty(), is(false)));
 
 		assertThat(removeFirst(doubleSequence), is(2.0));
 		twice(() -> assertThat(doubleSequence, containsDoubles(3, 4, 5, 6)));
+		twice(() -> assertThat(doubleSequence.size(), is(4)));
+		twice(() -> assertThat(doubleSequence.isEmpty(), is(false)));
 	}
 
 	@Test

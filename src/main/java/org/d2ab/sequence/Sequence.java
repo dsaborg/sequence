@@ -2484,7 +2484,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default CharSeq toChars(ToCharFunction<? super T> mapper) {
 		Objects.requireNonNull(mapper, "mapper");
 
-		return () -> CharIterator.from(iterator(), mapper);
+		return new CharSeq() {
+			@Override
+			public CharIterator iterator() {
+				return CharIterator.from(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -2501,7 +2516,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default IntSequence toInts(ToIntFunction<? super T> mapper) {
 		Objects.requireNonNull(mapper, "mapper");
 
-		return () -> IntIterator.from(iterator(), mapper);
+		return new IntSequence() {
+			@Override
+			public IntIterator iterator() {
+				return IntIterator.from(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -2518,7 +2548,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default LongSequence toLongs(ToLongFunction<? super T> mapper) {
 		Objects.requireNonNull(mapper, "mapper");
 
-		return () -> LongIterator.from(iterator(), mapper);
+		return new LongSequence() {
+			@Override
+			public LongIterator iterator() {
+				return LongIterator.from(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**
@@ -2535,7 +2580,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default DoubleSequence toDoubles(ToDoubleFunction<? super T> mapper) {
 		Objects.requireNonNull(mapper, "mapper");
 
-		return () -> DoubleIterator.from(iterator(), mapper);
+		return new DoubleSequence() {
+			@Override
+			public DoubleIterator iterator() {
+				return DoubleIterator.from(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty();
+			}
+		};
 	}
 
 	/**

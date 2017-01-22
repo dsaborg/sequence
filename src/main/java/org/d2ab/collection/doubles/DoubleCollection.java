@@ -17,6 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.PrimitiveCollections;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.util.Strict;
 
@@ -30,7 +31,7 @@ import java.util.function.Predicate;
  * A primitive specialization of {@link Collection} for {code double} values. Supplements all {@link Double}-valued
  * methods with corresponding {@code double}-valued methods.
  */
-public interface DoubleCollection extends Collection<Double>, DoubleIterable {
+public interface DoubleCollection extends Collection<Double>, DoubleIterable, SizedIterable<Double> {
 	// TODO: Extract out relevant parts to IterableDoubleCollection
 
 	@Override

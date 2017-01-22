@@ -17,6 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.PrimitiveCollections;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.util.Strict;
 
@@ -30,7 +31,7 @@ import java.util.function.Predicate;
  * A primitive specialization of {@link Collection} for {code char} values. Supplements all {@link Character}-valued
  * methods with corresponding {@code char}-valued methods.
  */
-public interface CharCollection extends Collection<Character>, CharIterable {
+public interface CharCollection extends Collection<Character>, CharIterable, SizedIterable<Character> {
 	// TODO: Extract out relevant parts to IterableCharCollection
 
 	@Override

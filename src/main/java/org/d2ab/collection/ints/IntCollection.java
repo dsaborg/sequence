@@ -17,6 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.PrimitiveCollections;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.collection.chars.CharCollection;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.ints.IntIterator;
@@ -32,7 +33,7 @@ import java.util.function.Predicate;
  * A primitive specialization of {@link Collection} for {code int} values. Supplements all {@link Integer}-valued
  * methods with corresponding {@code int}-valued methods.
  */
-public interface IntCollection extends Collection<Integer>, IntIterable {
+public interface IntCollection extends Collection<Integer>, IntIterable, SizedIterable<Integer> {
 	// TODO: Extract out relevant parts to IterableIntCollection
 
 	@Override

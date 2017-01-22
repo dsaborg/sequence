@@ -17,6 +17,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.PrimitiveCollections;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.iterator.longs.LongIterator;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ import java.util.function.Predicate;
  * A primitive specialization of {@link Collection} for {code long} values. Supplements all {@link Long}-valued
  * methods with corresponding {@code long}-valued methods.
  */
-public interface LongCollection extends Collection<Long>, LongIterable {
+public interface LongCollection extends Collection<Long>, LongIterable, SizedIterable<Long> {
 	// TODO: Extract out relevant parts to IterableLongCollection
 
 	@Override
