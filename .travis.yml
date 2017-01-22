@@ -1,6 +1,6 @@
 language: java
 install: true
-sudo: false # faster builds
+sudo: false # faster builds and enables caching
 jdk:
   - oraclejdk8
 

@@ -4007,6 +4007,14 @@ public class SequenceTest {
 		Sequence<Pair<Integer, Integer>> interleavedSizePassThroughLonger = _123.interleave(sizePassThrough);
 		twice(() -> assertThat(interleavedSizePassThroughLonger.size(), is(10)));
 		twice(() -> assertThat(interleavedSizePassThroughLonger.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedEmptySizePassThrough1 = emptySizePassThrough.interleave(_123);
+		twice(() -> assertThat(interleavedEmptySizePassThrough1.size(), is(3)));
+		twice(() -> assertThat(interleavedEmptySizePassThrough1.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedEmptySizePassThrough2 = _123.interleave(emptySizePassThrough);
+		twice(() -> assertThat(interleavedEmptySizePassThrough2.size(), is(3)));
+		twice(() -> assertThat(interleavedEmptySizePassThrough2.isEmpty(), is(false)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -4048,6 +4056,11 @@ public class SequenceTest {
 				Iterables.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 		twice(() -> assertThat(interleavedSizePassThroughLonger.size(), is(12)));
 		twice(() -> assertThat(interleavedSizePassThroughLonger.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedEmptySizePassThrough = emptySizePassThrough.interleave(
+				Iterables.of(1, 2, 3));
+		twice(() -> assertThat(interleavedEmptySizePassThrough.size(), is(3)));
+		twice(() -> assertThat(interleavedEmptySizePassThrough.isEmpty(), is(false)));
 	}
 
 	@Test

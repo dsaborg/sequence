@@ -19,6 +19,7 @@ package org.d2ab.collection;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -33,8 +34,51 @@ public class IterableCollectionTest {
 	private final IterableCollection<Integer> empty = IterableCollection.empty();
 	private final IterableCollection<Integer> single = IterableCollection.of(1);
 	private final IterableCollection<Integer> regular = IterableCollection.of(1, 2, 3, 4, 5);
-	private final IterableCollection<Integer> mutable = IterableCollection.from(new ArrayList<>(asList(1, 2, 3, 4,
-	                                                                                                   5)));
+	private final IterableCollection<Integer> mutable = IterableCollection.from(
+			new ArrayList<>(asList(1, 2, 3, 4, 5)));
+	private final IterableCollection<Integer> sized = IterableCollection.from(
+			Iterables.of(1, 2, 3, 4, 5));
+
+	@Test
+	public void sizedAsIterable() {
+		Collection<Integer> empty = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int size() {
+				return 0;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return true;
+			}
+		});
+		assertThat(empty.size(), is(0));
+		assertThat(empty.isEmpty(), is(true));
+
+		Collection<Integer> regular = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int size() {
+				return 10;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+		});
+		assertThat(regular.size(), is(10));
+		assertThat(regular.isEmpty(), is(false));
+	}
 
 	@Test
 	public void iteration() {
@@ -50,6 +94,7 @@ public class IterableCollectionTest {
 
 		assertThat(regular, contains(1, 2, 3, 4, 5));
 		assertThat(mutable, contains(1, 2, 3, 4, 5));
+		assertThat(sized, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
@@ -58,6 +103,7 @@ public class IterableCollectionTest {
 		assertThat(single.size(), is(1));
 		assertThat(regular.size(), is(5));
 		assertThat(mutable.size(), is(5));
+		assertThat(sized.size(), is(5));
 	}
 
 	@Test
@@ -66,6 +112,7 @@ public class IterableCollectionTest {
 		assertThat(single.isEmpty(), is(false));
 		assertThat(regular.isEmpty(), is(false));
 		assertThat(mutable.isEmpty(), is(false));
+		assertThat(sized.isEmpty(), is(false));
 	}
 
 	@Test
@@ -82,6 +129,10 @@ public class IterableCollectionTest {
 		assertThat(mutable.contains(17), is(false));
 		for (int i = 1; i <= 5; i++)
 			assertThat(mutable.contains(i), is(true));
+
+		assertThat(sized.contains(17), is(false));
+		for (int i = 1; i <= 5; i++)
+			assertThat(sized.contains(i), is(true));
 	}
 
 	@Test
@@ -90,6 +141,7 @@ public class IterableCollectionTest {
 		assertThat(single.toArray(), is(arrayContaining(1)));
 		assertThat(regular.toArray(), is(arrayContaining(1, 2, 3, 4, 5)));
 		assertThat(mutable.toArray(), is(arrayContaining(1, 2, 3, 4, 5)));
+		assertThat(sized.toArray(), is(arrayContaining(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -98,6 +150,7 @@ public class IterableCollectionTest {
 		assertThat(single.toArray(new Integer[0]), is(arrayContaining(1)));
 		assertThat(regular.toArray(new Integer[0]), is(arrayContaining(1, 2, 3, 4, 5)));
 		assertThat(mutable.toArray(new Integer[0]), is(arrayContaining(1, 2, 3, 4, 5)));
+		assertThat(sized.toArray(new Integer[0]), is(arrayContaining(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -106,6 +159,7 @@ public class IterableCollectionTest {
 		expecting(UnsupportedOperationException.class, () -> single.add(17));
 		expecting(UnsupportedOperationException.class, () -> regular.add(17));
 		expecting(UnsupportedOperationException.class, () -> mutable.add(17));
+		expecting(UnsupportedOperationException.class, () -> sized.add(17));
 	}
 
 	@Test
@@ -117,6 +171,8 @@ public class IterableCollectionTest {
 
 		assertThat(mutable.remove(1), is(true));
 		assertThat(mutable, contains(2, 3, 4, 5));
+
+		expecting(UnsupportedOperationException.class, () -> sized.remove(1));
 	}
 
 	@Test
@@ -131,6 +187,9 @@ public class IterableCollectionTest {
 
 		assertThat(mutable.containsAll(asList(1, 2, 3, 4, 5)), is(true));
 		assertThat(mutable.containsAll(asList(1, 2, 3, 4, 5, 6)), is(false));
+
+		assertThat(sized.containsAll(asList(1, 2, 3, 4, 5)), is(true));
+		assertThat(sized.containsAll(asList(1, 2, 3, 4, 5, 6)), is(false));
 	}
 
 	@Test
@@ -138,6 +197,8 @@ public class IterableCollectionTest {
 		expecting(UnsupportedOperationException.class, () -> empty.addAll(asList(17, 18, 19)));
 		expecting(UnsupportedOperationException.class, () -> single.addAll(asList(17, 18, 19)));
 		expecting(UnsupportedOperationException.class, () -> regular.addAll(asList(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> mutable.addAll(asList(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> sized.addAll(asList(17, 18, 19)));
 	}
 
 	@Test
@@ -152,6 +213,8 @@ public class IterableCollectionTest {
 
 		assertThat(mutable.removeAll(asList(1, 2)), is(true));
 		assertThat(mutable, contains(3, 4, 5));
+
+		expecting(UnsupportedOperationException.class, () -> sized.removeAll(asList(1, 2)));
 	}
 
 	@Test
@@ -169,6 +232,8 @@ public class IterableCollectionTest {
 
 		assertThat(mutable.retainAll(asList(1, 2)), is(true));
 		assertThat(mutable, contains(1, 2));
+
+		expecting(UnsupportedOperationException.class, () -> sized.retainAll(singletonList(6)));
 	}
 
 	@Test
@@ -199,5 +264,7 @@ public class IterableCollectionTest {
 
 		mutable.clear();
 		assertThat(mutable, is(emptyIterable()));
+
+		expecting(UnsupportedOperationException.class, sized::clear);
 	}
 }
