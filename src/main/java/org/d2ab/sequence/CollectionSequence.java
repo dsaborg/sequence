@@ -42,8 +42,16 @@ public class CollectionSequence<T> implements Sequence<T> {
 
 	/**
 	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s. Updates to
-	 * the
-	 * backing collections is reflected in the returned {@link CollectionSequence}.
+	 * the backing collections is reflected in the returned {@link CollectionSequence}.
+	 */
+	@SafeVarargs
+	static <T> Sequence<T> concat(Collection<T>... collections) {
+		return from(ChainedCollection.concat(collections));
+	}
+
+	/**
+	 * @return a {@code CollectionSequence} backed by the concatenation of the given {@link Collection}s. Updates to
+	 * the backing collections is reflected in the returned {@link CollectionSequence}.
 	 */
 	static <T> Sequence<T> concat(Collection<Collection<T>> collections) {
 		return from(ChainedCollection.concat(collections));

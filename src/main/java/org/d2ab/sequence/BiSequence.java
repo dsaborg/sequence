@@ -40,6 +40,9 @@ import static java.util.function.BinaryOperator.minBy;
  */
 @FunctionalInterface
 public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
+	// TODO: Add toMap with custom value merger
+	// TODO: Add mapLeft and mapRight
+
 	/**
 	 * Create an empty {@code BiSequence} with no items.
 	 *
@@ -550,7 +553,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	default <LL, RR> BiSequence<LL, RR> flatten(
 			Function<? super Pair<L, R>, ? extends Iterable<Pair<LL, RR>>> function) {
-		return new ChainingIterable<>(toSequence(function))::iterator;
+		return ChainingIterable.concat(toSequence(function))::iterator;
 	}
 
 	/**

@@ -34,12 +34,16 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 		return new ChainingIterable<>(Iterables.of(iterables));
 	}
 
+	public static <T> SizedIterable<T> concat(Iterable<Iterable<T>> iterables) {
+		return new ChainingIterable<>(iterables);
+	}
+
 	public static <T, U> SizedIterable<U> flatten(Iterable<? extends T> containers,
 	                                              Function<? super T, ? extends Iterable<U>> mapper) {
 		return new ChainingIterable<>(() -> new MappingIterator<>(containers.iterator(), mapper));
 	}
 
-	public ChainingIterable(Iterable<Iterable<T>> iterables) {
+	private ChainingIterable(Iterable<Iterable<T>> iterables) {
 		this.iterables = iterables;
 	}
 

@@ -21,6 +21,7 @@ import org.d2ab.util.Doubles;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Utilities for arrays, similar to {@link Arrays} with a few extras like iterators and {@link #forEach}.
@@ -206,5 +207,16 @@ public abstract class Arrayz {
 	public static <T> T[] fill(T[] array, T value) {
 		Arrays.fill(array, value);
 		return array;
+	}
+
+	/**
+	 * @return true if all the items in the given array satisfy the given predicate.
+	 */
+	public static <T> boolean all(T[] items, Predicate<? super T> predicate) {
+		for (T each : Objects.requireNonNull(items, "items"))
+			if (!predicate.test(each))
+				return false;
+
+		return true;
 	}
 }

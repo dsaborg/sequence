@@ -20,10 +20,7 @@ import java.util.*;
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Comparator.naturalOrder;
+import static java.util.Collections.*;
 
 /**
  * Utility methods for {@link List}s.
@@ -68,16 +65,6 @@ public abstract class Lists {
 	public static <T> List<T> shuffle(List<T> list, Random random) {
 		Collections.shuffle(list, random);
 		return list;
-	}
-
-	/**
-	 * A pass-through version of {@link List#sort(Comparator)} sorted using
-	 * {@link Comparator#naturalOrder()}.
-	 *
-	 * @return the given list sorted using {@link List#sort(Comparator)} with {@link Comparator#naturalOrder()}.
-	 */
-	public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
-		return sort(list, naturalOrder());
 	}
 
 	/**

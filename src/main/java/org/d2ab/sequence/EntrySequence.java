@@ -42,6 +42,7 @@ import static java.util.function.BinaryOperator.minBy;
 @FunctionalInterface
 public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	// TODO: Add toMap with custom value merger
+	// TODO: Add mapKeys and mapValues
 
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
@@ -546,7 +547,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 */
 	default <KK, VV> EntrySequence<KK, VV> flatten(
 			Function<? super Entry<K, V>, ? extends Iterable<Entry<KK, VV>>> mapper) {
-		return new ChainingIterable<>(toSequence(mapper))::iterator;
+		return ChainingIterable.concat(toSequence(mapper))::iterator;
 	}
 
 	/**
