@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -354,7 +353,7 @@ public class ArrayLongListTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstList() {
-		List<Long> list2 = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L, 17L));
+		List<Long> list2 = new ArrayList<>(Lists.of(1L, 2L, 3L, 4L, 5L, 17L));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

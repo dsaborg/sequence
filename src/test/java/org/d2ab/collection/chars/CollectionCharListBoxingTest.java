@@ -16,6 +16,7 @@
 
 package org.d2ab.collection.chars;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -26,8 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.naturalOrder;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -143,13 +142,13 @@ public class CollectionCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllCollection() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(asList('a', 'b')), is(true));
+		assertThat(empty.addAll(Lists.of('a', 'b')), is(true));
 		assertThat(empty, contains('a', 'b'));
 
-		assertThat(list.addAll(asList('f', 'g', 'h')), is(true));
+		assertThat(list.addAll(Lists.of('f', 'g', 'h')), is(true));
 		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
@@ -212,17 +211,17 @@ public class CollectionCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(empty.equals(emptyList()), is(true));
-		assertThat(empty.equals(asList('a', 'b')), is(false));
+		assertThat(empty.equals(Lists.of()), is(true));
+		assertThat(empty.equals(Lists.of('a', 'b')), is(false));
 
-		assertThat(list.equals(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')), is(true));
-		assertThat(list.equals(asList('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a')), is(false));
+		assertThat(list.equals(Lists.of('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')), is(true));
+		assertThat(list.equals(Lists.of('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a')), is(false));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertThat(empty.hashCode(), is(emptyList().hashCode()));
-		assertThat(list.hashCode(), is(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e').hashCode()));
+		assertThat(empty.hashCode(), is(Lists.of().hashCode()));
+		assertThat(list.hashCode(), is(Lists.of('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e').hashCode()));
 	}
 
 	@Test

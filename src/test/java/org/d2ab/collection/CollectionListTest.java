@@ -22,8 +22,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -33,7 +31,7 @@ public class CollectionListTest {
 	private final Collection<Integer> originalEmpty = new ArrayDeque<>();
 	private final List<Integer> listEmpty = new CollectionList<>(originalEmpty);
 
-	private final Collection<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+	private final Collection<Integer> original = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 	private final List<Integer> list = new CollectionList<>(original);
 
 	@Test
@@ -115,51 +113,51 @@ public class CollectionListTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(listEmpty.containsAll(asList(17, 18)), is(false));
+		assertThat(listEmpty.containsAll(Lists.of(17, 18)), is(false));
 
-		assertThat(list.containsAll(asList(1, 3)), is(true));
-		assertThat(list.containsAll(asList(1, 17)), is(false));
+		assertThat(list.containsAll(Lists.of(1, 3)), is(true));
+		assertThat(list.containsAll(Lists.of(1, 17)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(asList(1, 3)));
+		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(Lists.of(1, 3)));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 3)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(Lists.of(1, 3)));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllAtIndex() {
-		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(0, asList(1, 3)));
+		expecting(UnsupportedOperationException.class, () -> listEmpty.addAll(0, Lists.of(1, 3)));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(1, 3)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, Lists.of(1, 3)));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(listEmpty.removeAll(asList(1, 3)), is(false));
+		assertThat(listEmpty.removeAll(Lists.of(1, 3)), is(false));
 		assertThat(listEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.removeAll(emptyList()), is(false));
+		assertThat(list.removeAll(Lists.of()), is(false));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 
-		assertThat(list.removeAll(asList(1, 2, 3)), is(true));
+		assertThat(list.removeAll(Lists.of(1, 2, 3)), is(true));
 		assertThat(list, contains(4, 5));
 		assertThat(original, contains(4, 5));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(listEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(listEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(listEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(list.retainAll(asList(1, 2, 3)), is(true));
+		assertThat(list.retainAll(Lists.of(1, 2, 3)), is(true));
 		assertThat(list, contains(1, 2, 3));
 		assertThat(original, contains(1, 2, 3));
 	}

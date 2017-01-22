@@ -16,14 +16,13 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -34,10 +33,9 @@ public class ChainedListSequenceAsListTest {
 	private final Sequence<Integer> empty = ListSequence.concat(emptyBackingList1, emptyBackingList2);
 	private final List<Integer> emptyList = empty.asList();
 
-	private final ArrayList<Integer> backingList1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-	private final ArrayList<Integer> backingList2 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-	private final Sequence<Integer> sequence = ListSequence.concat(backingList1,
-	                                                               backingList2);
+	private final List<Integer> backingList1 = Lists.create(1, 2, 3, 4, 5);
+	private final List<Integer> backingList2 = Lists.create(1, 2, 3, 4, 5);
+	private final Sequence<Integer> sequence = ListSequence.concat(backingList1, backingList2);
 	private final List<Integer> list = sequence.asList();
 
 	@Test
@@ -158,26 +156,26 @@ public class ChainedListSequenceAsListTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(emptyList.containsAll(asList(2, 3)), is(false));
+		assertThat(emptyList.containsAll(Lists.of(2, 3)), is(false));
 
-		assertThat(list.containsAll(asList(2, 3)), is(true));
-		assertThat(list.containsAll(asList(2, 17)), is(false));
+		assertThat(list.containsAll(Lists.of(2, 3)), is(true));
+		assertThat(list.containsAll(Lists.of(2, 17)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		assertThat(emptyList.addAll(emptyList()), is(false));
+		assertThat(emptyList.addAll(Lists.of()), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 		assertThat(emptyBackingList1, is(emptyIterable()));
 		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		assertThat(emptyList.addAll(asList(1, 2)), is(true));
+		assertThat(emptyList.addAll(Lists.of(1, 2)), is(true));
 		assertThat(emptyList, contains(1, 2));
 		assertThat(empty, contains(1, 2));
 		assertThat(emptyBackingList1, contains(1, 2));
 		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		assertThat(list.addAll(asList(6, 7, 8)), is(true));
+		assertThat(list.addAll(Lists.of(6, 7, 8)), is(true));
 		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8));
 		assertThat(backingList1, contains(1, 2, 3, 4, 5));
@@ -186,17 +184,17 @@ public class ChainedListSequenceAsListTest {
 
 	@Test
 	public void addAllAtIndex() {
-		assertThat(emptyList.addAll(0, emptyList()), is(false));
+		assertThat(emptyList.addAll(0, Lists.of()), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 		assertThat(emptyBackingList1, is(emptyIterable()));
 		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		assertThat(emptyList.addAll(0, asList(1, 2)), is(true));
+		assertThat(emptyList.addAll(0, Lists.of(1, 2)), is(true));
 		assertThat(emptyList, contains(1, 2));
 		assertThat(emptyBackingList1, contains(1, 2));
 		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		assertThat(list.addAll(2, asList(17, 18, 19)), is(true));
+		assertThat(list.addAll(2, Lists.of(17, 18, 19)), is(true));
 		assertThat(list, contains(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 2, 17, 18, 19, 3, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(backingList1, contains(1, 2, 17, 18, 19, 3, 4, 5));
@@ -205,12 +203,12 @@ public class ChainedListSequenceAsListTest {
 
 	@Test
 	public void removeAll() {
-		assertThat(emptyList.removeAll(asList(1, 2)), is(false));
+		assertThat(emptyList.removeAll(Lists.of(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 		assertThat(emptyBackingList1, is(emptyIterable()));
 		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList(1, 2, 5)), is(true));
+		assertThat(list.removeAll(Lists.of(1, 2, 5)), is(true));
 		assertThat(list, contains(3, 4, 3, 4));
 		assertThat(sequence, contains(3, 4, 3, 4));
 		assertThat(backingList1, contains(3, 4));
@@ -219,12 +217,12 @@ public class ChainedListSequenceAsListTest {
 
 	@Test
 	public void retainAll() {
-		assertThat(emptyList.retainAll(asList(1, 2)), is(false));
+		assertThat(emptyList.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 		assertThat(emptyBackingList1, is(emptyIterable()));
 		assertThat(emptyBackingList2, is(emptyIterable()));
 
-		assertThat(list.retainAll(asList(1, 2, 3)), is(true));
+		assertThat(list.retainAll(Lists.of(1, 2, 3)), is(true));
 		assertThat(list, contains(1, 2, 3, 1, 2, 3));
 		assertThat(sequence, contains(1, 2, 3, 1, 2, 3));
 		assertThat(backingList1, contains(1, 2, 3));
@@ -275,11 +273,11 @@ public class ChainedListSequenceAsListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(emptyList.equals(emptyList()), is(true));
-		assertThat(emptyList.equals(asList(1, 2)), is(false));
+		assertThat(emptyList.equals(Lists.of()), is(true));
+		assertThat(emptyList.equals(Lists.of(1, 2)), is(false));
 
-		assertThat(list.equals(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)), is(true));
-		assertThat(list.equals(asList(5, 4, 3, 2, 1, 5, 4, 3, 2, 1)), is(false));
+		assertThat(list.equals(Lists.of(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)), is(true));
+		assertThat(list.equals(Lists.of(5, 4, 3, 2, 1, 5, 4, 3, 2, 1)), is(false));
 	}
 
 	@Test

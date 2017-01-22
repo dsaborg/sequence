@@ -146,6 +146,6 @@ public class CollectionSequence<T> implements Sequence<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Sequence<T> append(T... items) {
-		return append(Arrays.asList(items));
+		return append(Lists.of(items));
 	}
 }

@@ -17,6 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -107,19 +107,19 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void equalsHashCodeAgainstTreeSet() {
-		Set<Integer> larger = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		Set<Integer> larger = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 		assertThat(set, is(not(equalTo(larger))));
 		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		Set<Integer> smaller = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3));
+		Set<Integer> smaller = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3));
 		assertThat(set, is(not(equalTo(smaller))));
 		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		Set<Integer> dissimilar = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5));
+		Set<Integer> dissimilar = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5));
 		assertThat(set, is(not(equalTo(dissimilar))));
 		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
 
-		Set<Integer> same = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		Set<Integer> same = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 		assertThat(set, is(equalTo(same)));
 		assertThat(set.hashCode(), is(same.hashCode()));
 	}
@@ -135,7 +135,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(subSet.contains(3), is(false));
 		assertThat(subSet.toString(), is("[-3, -2, -1, 0, 1, 2]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-3, -2, -1, 0, 1, 2));
+		Set<Integer> equivalentSet = new HashSet<>(Lists.of(-3, -2, -1, 0, 1, 2));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -182,7 +182,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(subSet.contains(-3), is(false));
 		assertThat(subSet.toString(), is("[-1, 1]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-1, 1));
+		Set<Integer> equivalentSet = new HashSet<>(Lists.of(-1, 1));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -198,7 +198,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(headSet.contains(0), is(false));
 		assertThat(headSet.toString(), is("[-5, -4, -3, -2, -1]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-5, -4, -3, -2, -1));
+		Set<Integer> equivalentSet = new HashSet<>(Lists.of(-5, -4, -3, -2, -1));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -250,7 +250,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(headSet.contains(1), is(false));
 		assertThat(headSet.toString(), is("[-5, -3, -1]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(-5, -3, -1));
+		Set<Integer> equivalentSet = new HashSet<>(Lists.of(-5, -3, -1));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -266,7 +266,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(tailSet.contains(-1), is(false));
 		assertThat(tailSet.toString(), is("[0, 1, 2, 3, 4]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(0, 1, 2, 3, 4));
+		Set<Integer> equivalentSet = new HashSet<>(Lists.of(0, 1, 2, 3, 4));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -318,7 +318,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(tailSet.contains(-1), is(false));
 		assertThat(tailSet.toString(), is("[1, 3, 5]"));
 
-		Set<Integer> equivalentSet = new HashSet<>(asList(1, 3, 5));
+		Set<Integer> equivalentSet = new HashSet<>(Lists.of(1, 3, 5));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -416,9 +416,9 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
-		assertThat(set.containsAll(asList(1, 2, 3)), is(true));
-		assertThat(set.containsAll(asList(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(Lists.of(1, 2, 3)), is(false));
+		assertThat(set.containsAll(Lists.of(1, 2, 3)), is(true));
+		assertThat(set.containsAll(Lists.of(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -463,7 +463,7 @@ public class BitIntSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (int randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

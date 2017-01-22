@@ -16,19 +16,17 @@
 
 package org.d2ab.iterator.longs;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.longs.LongIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.util.Arrays.asList;
-
 public class ChainingLongIterator extends DelegatingUnaryLongIterator {
-
 	private final Iterator<LongIterable> iterables;
 
 	public ChainingLongIterator(LongIterable... iterables) {
-		this(asList(iterables));
+		this(Iterables.of(iterables));
 	}
 
 	public ChainingLongIterator(Iterable<LongIterable> iterables) {

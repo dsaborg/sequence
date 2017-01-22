@@ -24,8 +24,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.naturalOrder;
 import static java.util.stream.Collectors.toList;
 import static org.d2ab.test.Tests.expecting;
@@ -317,7 +315,7 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstList() {
-		List<Long> list2 = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L, 17L));
+		List<Long> list2 = new ArrayList<>(Lists.of(1L, 2L, 3L, 4L, 5L, 17L));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 
@@ -426,13 +424,13 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAll() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(Arrays.asList(1L, 2L, 3L)), is(true));
+		assertThat(empty.addAll(Lists.of(1L, 2L, 3L)), is(true));
 		assertThat(empty, contains(1L, 2L, 3L));
 
-		assertThat(list.addAll(Arrays.asList(6L, 7L, 8L)), is(true));
+		assertThat(list.addAll(Lists.of(6L, 7L, 8L)), is(true));
 		assertThat(list, contains(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
 	}
 
@@ -462,13 +460,13 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllAt() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty.addAll(0, Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(0, Arrays.asList(1L, 2L, 3L)), is(true));
+		assertThat(empty.addAll(0, Lists.of(1L, 2L, 3L)), is(true));
 		assertThat(empty, contains(1L, 2L, 3L));
 
-		assertThat(list.addAll(2, Arrays.asList(17L, 18L, 19L)), is(true));
+		assertThat(list.addAll(2, Lists.of(17L, 18L, 19L)), is(true));
 		assertThat(list, contains(1L, 2L, 17L, 18L, 19L, 3L, 4L, 5L));
 	}
 
@@ -542,10 +540,10 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(Arrays.asList(17L, 18L, 19L, new Object())), is(false));
+		assertThat(empty.containsAll(Lists.of(17L, 18L, 19L, new Object())), is(false));
 
-		assertThat(list.containsAll(Arrays.asList(17L, 18L, 19L, new Object())), is(false));
-		assertThat(list.containsAll(Arrays.asList(1L, 2L, 3L)), is(true));
+		assertThat(list.containsAll(Lists.of(17L, 18L, 19L, new Object())), is(false));
+		assertThat(list.containsAll(Lists.of(1L, 2L, 3L)), is(true));
 	}
 
 	@Test
@@ -558,11 +556,11 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(Arrays.asList(1L, 2L, 3L, 17L)), is(false));
+		assertThat(empty.removeAll(Lists.of(1L, 2L, 3L, 17L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(Arrays.asList(17L, 18L, 19L)), is(false));
-		assertThat(list.removeAll(Arrays.asList(1L, 2L, 3L, 17L)), is(true));
+		assertThat(list.removeAll(Lists.of(17L, 18L, 19L)), is(false));
+		assertThat(list.removeAll(Lists.of(1L, 2L, 3L, 17L)), is(true));
 		assertThat(list, contains(4L, 5L));
 	}
 
@@ -588,10 +586,10 @@ public class ArrayLongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(Arrays.asList(1L, 2L, 3L, 17L)), is(false));
+		assertThat(empty.retainAll(Lists.of(1L, 2L, 3L, 17L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(Arrays.asList(1L, 2L, 3L, 17L)), is(true));
+		assertThat(list.retainAll(Lists.of(1L, 2L, 3L, 17L)), is(true));
 		assertThat(list, contains(1L, 2L, 3L));
 	}
 

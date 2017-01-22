@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -355,7 +354,7 @@ public class ArrayIntListTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstList() {
-		List<Integer> list2 = new ArrayList<>(asList(1, 2, 3, 4, 5, 17));
+		List<Integer> list2 = new ArrayList<>(Lists.of(1, 2, 3, 4, 5, 17));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

@@ -22,8 +22,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -33,7 +31,7 @@ public class ReverseListTest {
 	private final List<Integer> originalEmpty = new ArrayList<>();
 	private final List<Integer> reverseEmpty = ReverseList.from(originalEmpty);
 
-	private final List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4, 5));
+	private final List<Integer> original = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 	private final List<Integer> reverse = ReverseList.from(original);
 
 	@Test
@@ -135,60 +133,60 @@ public class ReverseListTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(reverseEmpty.containsAll(asList(2, 3)), is(false));
+		assertThat(reverseEmpty.containsAll(Lists.of(2, 3)), is(false));
 
-		assertThat(reverse.containsAll(asList(2, 3)), is(true));
-		assertThat(reverse.containsAll(asList(2, 17)), is(false));
+		assertThat(reverse.containsAll(Lists.of(2, 3)), is(true));
+		assertThat(reverse.containsAll(Lists.of(2, 17)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		assertThat(reverseEmpty.addAll(emptyList()), is(false));
+		assertThat(reverseEmpty.addAll(Lists.of()), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 
-		assertThat(reverseEmpty.addAll(asList(1, 2)), is(true));
+		assertThat(reverseEmpty.addAll(Lists.of(1, 2)), is(true));
 		assertThat(reverseEmpty, contains(1, 2));
 		assertThat(originalEmpty, contains(2, 1));
 
-		assertThat(reverse.addAll(asList(0, -1, -2)), is(true));
+		assertThat(reverse.addAll(Lists.of(0, -1, -2)), is(true));
 		assertThat(reverse, contains(5, 4, 3, 2, 1, 0, -1, -2));
 		assertThat(original, contains(-2, -1, 0, 1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllAtIndex() {
-		assertThat(reverseEmpty.addAll(0, emptyList()), is(false));
+		assertThat(reverseEmpty.addAll(0, Lists.of()), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 
-		assertThat(reverseEmpty.addAll(0, asList(1, 2)), is(true));
+		assertThat(reverseEmpty.addAll(0, Lists.of(1, 2)), is(true));
 		assertThat(reverseEmpty, contains(1, 2));
 		assertThat(originalEmpty, contains(2, 1));
 
-		assertThat(reverse.addAll(2, asList(17, 18, 19)), is(true));
+		assertThat(reverse.addAll(2, Lists.of(17, 18, 19)), is(true));
 		assertThat(reverse, contains(5, 4, 17, 18, 19, 3, 2, 1));
 		assertThat(original, contains(1, 2, 3, 19, 18, 17, 4, 5));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(reverseEmpty.removeAll(asList(1, 2)), is(false));
+		assertThat(reverseEmpty.removeAll(Lists.of(1, 2)), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 
-		original.addAll(4, asList(1, 2));
+		original.addAll(4, Lists.of(1, 2));
 
-		assertThat(reverse.removeAll(asList(1, 2, 5)), is(true));
+		assertThat(reverse.removeAll(Lists.of(1, 2, 5)), is(true));
 		assertThat(reverse, contains(4, 3));
 		assertThat(original, contains(3, 4));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(reverseEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(reverseEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(reverseEmpty, is(emptyIterable()));
 
-		original.addAll(4, asList(1, 2));
+		original.addAll(4, Lists.of(1, 2));
 
-		assertThat(reverse.retainAll(asList(1, 2, 3)), is(true));
+		assertThat(reverse.retainAll(Lists.of(1, 2, 3)), is(true));
 		assertThat(reverse, contains(2, 1, 3, 2, 1));
 		assertThat(original, contains(1, 2, 3, 1, 2));
 	}
@@ -225,11 +223,11 @@ public class ReverseListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(reverseEmpty.equals(emptyList()), is(true));
-		assertThat(reverseEmpty.equals(asList(1, 2)), is(false));
+		assertThat(reverseEmpty.equals(Lists.of()), is(true));
+		assertThat(reverseEmpty.equals(Lists.of(1, 2)), is(false));
 
-		assertThat(reverse.equals(asList(5, 4, 3, 2, 1)), is(true));
-		assertThat(reverse.equals(asList(1, 2, 3, 4, 5)), is(false));
+		assertThat(reverse.equals(Lists.of(5, 4, 3, 2, 1)), is(true));
+		assertThat(reverse.equals(Lists.of(1, 2, 3, 4, 5)), is(false));
 	}
 
 	@Test
@@ -264,7 +262,7 @@ public class ReverseListTest {
 	public void indexOf() {
 		assertThat(reverseEmpty.indexOf(17), is(-1));
 
-		original.addAll(3, asList(1, 2));
+		original.addAll(3, Lists.of(1, 2));
 
 		assertThat(reverse.indexOf(1), is(3));
 	}
@@ -273,7 +271,7 @@ public class ReverseListTest {
 	public void lastIndexOf() {
 		assertThat(reverseEmpty.lastIndexOf(17), is(-1));
 
-		original.addAll(3, asList(1, 2));
+		original.addAll(3, Lists.of(1, 2));
 
 		assertThat(reverse.lastIndexOf(1), is(6));
 	}
@@ -433,14 +431,14 @@ public class ReverseListTest {
 	@Test
 	public void subList() {
 		List<Integer> emptySubList = reverseEmpty.subList(0, 0);
-		emptySubList.addAll(asList(1, 2));
+		emptySubList.addAll(Lists.of(1, 2));
 		assertThat(reverseEmpty, contains(1, 2));
 		assertThat(originalEmpty, contains(2, 1));
 
 		List<Integer> reverseSubList = reverse.subList(2, 4);
 		assertThat(reverseSubList, contains(3, 2));
 
-		reverseSubList.addAll(asList(17, 18));
+		reverseSubList.addAll(Lists.of(17, 18));
 		assertThat(reverseSubList, contains(3, 2, 17, 18));
 		assertThat(reverse, contains(5, 4, 3, 2, 17, 18, 1));
 	}
@@ -462,7 +460,7 @@ public class ReverseListTest {
 		reverseEmpty.removeIf(x -> x == 1);
 		assertThat(reverseEmpty, is(emptyIterable()));
 
-		original.addAll(4, asList(1, 2));
+		original.addAll(4, Lists.of(1, 2));
 
 		reverse.removeIf(x -> x == 1);
 		assertThat(reverse, contains(5, 2, 4, 3, 2));

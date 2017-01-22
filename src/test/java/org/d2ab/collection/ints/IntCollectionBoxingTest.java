@@ -1,6 +1,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -9,7 +10,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
@@ -155,9 +155,9 @@ public class IntCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsIntCollection() {
-		assertThat(empty.containsAll(asList(1, 2, 3)), is(false));
-		assertThat(collection.containsAll(asList(1, 2, 3)), is(true));
-		assertThat(collection.containsAll(asList(1, 2, 3, 17)), is(false));
+		assertThat(empty.containsAll(Lists.of(1, 2, 3)), is(false));
+		assertThat(collection.containsAll(Lists.of(1, 2, 3)), is(true));
+		assertThat(collection.containsAll(Lists.of(1, 2, 3, 17)), is(false));
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class IntCollectionBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (int randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

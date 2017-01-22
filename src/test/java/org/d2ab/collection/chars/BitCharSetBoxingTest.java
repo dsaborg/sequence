@@ -17,6 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -101,19 +101,19 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void equalsHashCodeAgainstTreeSet() {
-		Set<Character> larger = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
+		Set<Character> larger = new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'e', 'q'));
 		assertThat(set, is(not(equalTo(larger))));
 		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		Set<Character> smaller = new TreeSet<>(asList('a', 'b', 'c', 'd'));
+		Set<Character> smaller = new TreeSet<>(Lists.of('a', 'b', 'c', 'd'));
 		assertThat(set, is(not(equalTo(smaller))));
 		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		Set<Character> dissimilar = new TreeSet<>(asList('a', 'b', 'c', 'd', 'f'));
+		Set<Character> dissimilar = new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'f'));
 		assertThat(set, is(not(equalTo(dissimilar))));
 		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
 
-		Set<Character> same = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'));
+		Set<Character> same = new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'e'));
 		assertThat(set, is(equalTo(same)));
 		assertThat(set.hashCode(), is(same.hashCode()));
 	}
@@ -129,7 +129,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(subSet.contains('e'), is(false));
 		assertThat(subSet.toString(), is("[b, c, d]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('b', 'c', 'd'));
+		Set<Character> equivalentSet = new HashSet<>(Lists.of('b', 'c', 'd'));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -176,7 +176,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(subSet.contains('h'), is(false));
 		assertThat(subSet.toString(), is("[d, f]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('d', 'f'));
+		Set<Character> equivalentSet = new HashSet<>(Lists.of('d', 'f'));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -192,7 +192,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(headSet.contains('d'), is(false));
 		assertThat(headSet.toString(), is("[a, b, c]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('a', 'b', 'c'));
+		Set<Character> equivalentSet = new HashSet<>(Lists.of('a', 'b', 'c'));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -239,7 +239,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(headSet.contains('f'), is(false));
 		assertThat(headSet.toString(), is("[b, d]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('b', 'd'));
+		Set<Character> equivalentSet = new HashSet<>(Lists.of('b', 'd'));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -255,7 +255,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(tailSet.contains('a'), is(false));
 		assertThat(tailSet.toString(), is("[c, d, e]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('c', 'd', 'e'));
+		Set<Character> equivalentSet = new HashSet<>(Lists.of('c', 'd', 'e'));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -307,7 +307,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(tailSet.contains('d'), is(false));
 		assertThat(tailSet.toString(), is("[f, h]"));
 
-		Set<Character> equivalentSet = new HashSet<>(asList('f', 'h'));
+		Set<Character> equivalentSet = new HashSet<>(Lists.of('f', 'h'));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -385,35 +385,35 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
-		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.containsAll(Lists.of('a', 'b', 'c')), is(false));
+		assertThat(set.containsAll(Lists.of('a', 'b', 'c')), is(true));
+		assertThat(set.containsAll(Lists.of('a', 'b', 'c', 'q')), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		assertThat(empty.addAll(asList('a', 'b', 'c')), is(true));
+		assertThat(empty.addAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(empty, contains('a', 'b', 'c'));
 
-		assertThat(set.addAll(asList('c', 'd', 'e', 'f', 'g')), is(true));
+		assertThat(set.addAll(Lists.of('c', 'd', 'e', 'f', 'g')), is(true));
 		assertThat(set, contains('a', 'b', 'c', 'd', 'e', 'f', 'g'));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(asList('a', 'b', 'c')), is(false));
+		assertThat(empty.removeAll(Lists.of('a', 'b', 'c')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(asList('a', 'b', 'c')), is(true));
+		assertThat(set.removeAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(set, contains('d', 'e'));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(asList('a', 'b', 'c')), is(false));
+		assertThat(empty.retainAll(Lists.of('a', 'b', 'c')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(asList('a', 'b', 'c')), is(true));
+		assertThat(set.retainAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(set, contains('a', 'b', 'c'));
 	}
 
@@ -475,7 +475,7 @@ public class BitCharSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (char randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

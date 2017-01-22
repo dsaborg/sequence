@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 import static java.util.Comparator.reverseOrder;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -183,7 +183,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheCollection() {
-		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(Lists.of(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list);
 		list.set(0, Maps.entry("17", 17));
 
@@ -195,7 +195,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(Lists.of(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list::iterator);
 		list.set(0, Maps.entry("17", 17));
 
@@ -207,7 +207,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(Lists.of(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list.iterator());
 		list.set(0, Maps.entry("17", 17));
 
@@ -219,7 +219,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Entry<String, Integer>> list = new ArrayList<>(asList(entries12345));
+		List<Entry<String, Integer>> list = new ArrayList<>(Lists.of(entries12345));
 		EntrySequence<String, Integer> cached = EntrySequence.cache(list.stream());
 		list.set(0, Maps.entry("17", 17));
 
@@ -1287,21 +1287,21 @@ public class EntrySequenceTest {
 	@Test
 	public void toGroupedMap() {
 		twice(() -> assertThat(empty.toGroupedMap(), is(emptyMap())));
-		twice(() -> assertThat(_1.toGroupedMap(), is(singletonMap("1", singletonList(1)))));
+		twice(() -> assertThat(_1.toGroupedMap(), is(singletonMap("1", Lists.of(1)))));
 		twice(() -> assertThat(_12.toGroupedMap(), is(Maps.builder()
-		                                                  .put("1", singletonList(1))
-		                                                  .put("2", singletonList(2))
+		                                                  .put("1", Lists.of(1))
+		                                                  .put("2", Lists.of(2))
 		                                                  .build())));
 
 		twice(() -> assertThat(empty.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(), is(emptyMap())));
 		twice(() -> assertThat(_1.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(),
 		                       is(Maps.builder()
-		                              .put(0, asList(1, 2))
-		                              .put(1, asList(3, 4, 5))
+		                              .put(0, Lists.of(1, 2))
+		                              .put(1, Lists.of(3, 4, 5))
 		                              .build())));
 
 		twice(() -> {
@@ -1310,9 +1310,9 @@ public class EntrySequenceTest {
 
 			assertThat(map, is(instanceOf(HashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, asList(1, 4, 7))
-			                               .put(2, asList(2, 5, 8))
-			                               .put(null, asList(3, 6, 9))
+			                               .put(1, Lists.of(1, 4, 7))
+			                               .put(2, Lists.of(2, 5, 8))
+			                               .put(null, Lists.of(3, 6, 9))
 			                               .build())));
 		});
 	}
@@ -1321,23 +1321,23 @@ public class EntrySequenceTest {
 	public void toGroupedMapWithMapConstructor() {
 		Supplier<Map<String, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
 		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap), is(emptyMap())));
-		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap), is(singletonMap("1", singletonList(1)))));
+		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap), is(singletonMap("1", Lists.of(1)))));
 		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap), is(Maps.builder()
-		                                                                     .put("1", singletonList(1))
-		                                                                     .put("2", singletonList(2))
+		                                                                     .put("1", Lists.of(1))
+		                                                                     .put("2", Lists.of(2))
 		                                                                     .build())));
 
 		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap2 = LinkedHashMap::new;
 		twice(() -> assertThat(empty.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2),
 		                       is(emptyMap())));
 		twice(() -> assertThat(_1.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2),
 		                       is(Maps.builder()
-		                              .put(0, asList(1, 2))
-		                              .put(1, asList(3, 4, 5))
+		                              .put(0, Lists.of(1, 2))
+		                              .put(1, Lists.of(3, 4, 5))
 		                              .build())));
 
 		twice(() -> {
@@ -1346,9 +1346,9 @@ public class EntrySequenceTest {
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, asList(1, 4, 7))
-			                               .put(2, asList(2, 5, 8))
-			                               .put(null, asList(3, 6, 9))
+			                               .put(1, Lists.of(1, 4, 7))
+			                               .put(2, Lists.of(2, 5, 8))
+			                               .put(null, Lists.of(3, 6, 9))
 			                               .build())));
 
 			// check order
@@ -1363,11 +1363,11 @@ public class EntrySequenceTest {
 		Supplier<Map<String, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
 		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap, LinkedList::new), is(emptyMap())));
 		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap, LinkedList::new),
-		                       is(singletonMap("1", singletonList(1)))));
+		                       is(singletonMap("1", Lists.of(1)))));
 		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap, LinkedList::new),
 		                       is(Maps.builder()
-		                              .put("1", singletonList(1))
-		                              .put("2", singletonList(2))
+		                              .put("1", Lists.of(1))
+		                              .put("2", Lists.of(2))
 		                              .build())));
 
 		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap2 = LinkedHashMap::new;
@@ -1376,15 +1376,15 @@ public class EntrySequenceTest {
 		                       is(emptyMap())));
 		twice(() -> assertThat(_1.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2,
 		                                                                           LinkedList::new),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2,
 		                                                                            LinkedList::new),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2,
 		                                                                               LinkedList::new),
 		                       is(Maps.builder()
-		                              .put(0, asList(1, 2))
-		                              .put(1, asList(3, 4, 5))
+		                              .put(0, Lists.of(1, 2))
+		                              .put(1, Lists.of(3, 4, 5))
 		                              .build())));
 
 		twice(() -> {
@@ -1393,9 +1393,9 @@ public class EntrySequenceTest {
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, new TreeSet<>(asList(1, 4, 7)))
-			                               .put(2, new TreeSet<>(asList(2, 5, 8)))
-			                               .put(null, new TreeSet<>(asList(3, 6, 9)))
+			                               .put(1, new TreeSet<>(Lists.of(1, 4, 7)))
+			                               .put(2, new TreeSet<>(Lists.of(2, 5, 8)))
+			                               .put(null, new TreeSet<>(Lists.of(3, 6, 9)))
 			                               .build())));
 
 			assertThat(map.get(1), is(instanceOf(TreeSet.class)));
@@ -1416,11 +1416,11 @@ public class EntrySequenceTest {
 		Supplier<Map<String, List<Integer>>> createLinkedHashMap = LinkedHashMap::new;
 		twice(() -> assertThat(empty.toGroupedMap(createLinkedHashMap, toLinkedList), is(emptyMap())));
 		twice(() -> assertThat(_1.toGroupedMap(createLinkedHashMap, toLinkedList),
-		                       is(singletonMap("1", singletonList(1)))));
+		                       is(singletonMap("1", Lists.of(1)))));
 		twice(() -> assertThat(_12.toGroupedMap(createLinkedHashMap, toLinkedList),
 		                       is(Maps.builder()
-		                              .put("1", singletonList(1))
-		                              .put("2", singletonList(2))
+		                              .put("1", Lists.of(1))
+		                              .put("2", Lists.of(2))
 		                              .build())));
 
 		Supplier<Map<Integer, List<Integer>>> createLinkedHashMap2 = LinkedHashMap::new;
@@ -1428,13 +1428,13 @@ public class EntrySequenceTest {
 				empty.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2, toLinkedList),
 				is(emptyMap())));
 		twice(() -> assertThat(_1.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2, toLinkedList),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2,
 		                                                                            toLinkedList),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(
 				_12345.map((k, v) -> Maps.entry(v / 3, v)).toGroupedMap(createLinkedHashMap2, toLinkedList),
-				is(Maps.builder().put(0, asList(1, 2)).put(1, asList(3, 4, 5)).build())));
+				is(Maps.builder().put(0, Lists.of(1, 2)).put(1, Lists.of(3, 4, 5)).build())));
 
 		twice(() -> {
 			Map<Integer, List<Integer>> map = _123456789.map((k, v) -> Maps.entry(v % 3 == 0 ? null : v % 3, v))
@@ -1443,9 +1443,9 @@ public class EntrySequenceTest {
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, new LinkedList<>(asList(1, 4, 7)))
-			                               .put(2, new LinkedList<>(asList(2, 5, 8)))
-			                               .put(null, new LinkedList<>(asList(3, 6, 9)))
+			                               .put(1, new LinkedList<>(Lists.of(1, 4, 7)))
+			                               .put(2, new LinkedList<>(Lists.of(2, 5, 8)))
+			                               .put(null, new LinkedList<>(Lists.of(3, 6, 9)))
 			                               .build())));
 
 			assertThat(map.get(1), is(instanceOf(LinkedList.class)));
@@ -2379,7 +2379,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> varyingLengthRepeated = EntrySequence.from(
 				new Iterable<Entry<String, Integer>>() {
 					private List<Entry<String, Integer>> list =
-							asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+							Lists.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
 					int end = list.size();
 
 					@Override
@@ -2421,7 +2421,7 @@ public class EntrySequenceTest {
 		EntrySequence<String, Integer> varyingLengthRepeatedTwice = EntrySequence.from(
 				new Iterable<Entry<String, Integer>>() {
 					private List<Entry<String, Integer>> list =
-							asList(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
+							Lists.of(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3));
 					int end = list.size();
 
 					@Override
@@ -2453,7 +2453,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Entry<String, Integer>> queue = new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2),
+		Queue<Entry<String, Integer>> queue = new ArrayDeque<>(Lists.of(Maps.entry("1", 1), Maps.entry("2", 2),
 		                                                              Maps.entry("3", 3), Maps.entry("4", 4),
 		                                                              Maps.entry("5", 5)));
 		EntrySequence<String, Integer> sequence = EntrySequence.generate(queue::poll);
@@ -2466,7 +2466,7 @@ public class EntrySequenceTest {
 	@Test
 	public void multiGenerate() {
 		EntrySequence<String, Integer> sequence = EntrySequence.multiGenerate(() -> {
-			Queue<Entry<String, Integer>> queue = new ArrayDeque<>(asList(Maps.entry("1", 1), Maps.entry("2", 2),
+			Queue<Entry<String, Integer>> queue = new ArrayDeque<>(Lists.of(Maps.entry("1", 1), Maps.entry("2", 2),
 			                                                              Maps.entry("3", 3), Maps.entry("4", 4),
 			                                                              Maps.entry("5", 5)));
 			return queue::poll;
@@ -2845,10 +2845,10 @@ public class EntrySequenceTest {
 
 	@Test
 	public void removeAllCollection() {
-		assertThat(empty.removeAll(asList(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
+		assertThat(empty.removeAll(Lists.of(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		assertThat(_12345.removeAll(asList(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))), is(true));
+		assertThat(_12345.removeAll(Lists.of(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))), is(true));
 		twice(() -> assertThat(_12345, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("5", 5))));
 	}
 
@@ -2873,10 +2873,10 @@ public class EntrySequenceTest {
 
 	@Test
 	public void retainAllCollection() {
-		assertThat(empty.retainAll(asList(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
+		assertThat(empty.retainAll(Lists.of(Maps.entry("3", 3), Maps.entry("4", 4))), is(false));
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		assertThat(_12345.retainAll(asList(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))), is(true));
+		assertThat(_12345.retainAll(Lists.of(Maps.entry("3", 3), Maps.entry("4", 4), Maps.entry("7", 7))), is(true));
 		twice(() -> assertThat(_12345, contains(Maps.entry("3", 3), Maps.entry("4", 4))));
 	}
 
@@ -2901,7 +2901,7 @@ public class EntrySequenceTest {
 
 	@Test
 	public void testAsList() {
-		assertThat(empty.asList(), is(equalTo(emptyList())));
-		assertThat(_12345.asList(), is(equalTo(asList(entries12345))));
+		assertThat(empty.asList(), is(equalTo(Lists.of())));
+		assertThat(_12345.asList(), is(equalTo(Lists.of(entries12345))));
 	}
 }

@@ -17,6 +17,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.iterator.chars.CharIterator;
 import org.junit.Test;
@@ -27,7 +28,6 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -115,7 +115,7 @@ public class BitCharSetTest {
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(not(equalTo(null))));
 		assertThat(set, is(not(equalTo(new Object()))));
-		assertThat(set, is(not(equalTo(asList('a', 'b', 'c', 'd', 'e')))));
+		assertThat(set, is(not(equalTo(Lists.of('a', 'b', 'c', 'd', 'e')))));
 		assertThat(set, is(not(equalTo(CharList.create('a', 'b', 'c', 'd', 'e')))));
 	}
 

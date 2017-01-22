@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.doubles.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.doubles.DelegatingTransformingDoubleIterator;
@@ -30,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
@@ -1117,7 +1117,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Double> backing = new ArrayList<>(asList(2.0, 3.0, 1.0));
+		List<Double> backing = new ArrayList<>(Lists.of(2.0, 3.0, 1.0));
 		DoubleSequence sorted = DoubleSequence.from(backing).sorted();
 
 		backing.add(4.0);
@@ -1446,7 +1446,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Double> backing = new ArrayList<>(asList(1.0, 2.0, 3.0));
+		List<Double> backing = new ArrayList<>(Lists.of(1.0, 2.0, 3.0));
 		DoubleSequence reversed = DoubleSequence.from(backing).reverse();
 
 		backing.add(4.0);
@@ -1646,7 +1646,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_123, containsDoubles(2, 3)));
 
 		DoubleSequence varyingLengthRepeated = DoubleSequence.from(new DoubleIterable() {
-			private List<Double> list = asList(1.0, 2.0, 3.0);
+			private List<Double> list = Lists.of(1.0, 2.0, 3.0);
 			int end = list.size();
 
 			@Override
@@ -1685,7 +1685,7 @@ public class DoubleSequenceTest {
 		twice(() -> assertThat(_123, containsDoubles(2, 3)));
 
 		DoubleSequence varyingLengthRepeatedTwice = DoubleSequence.from(new DoubleIterable() {
-			private List<Double> list = asList(1.0, 2.0, 3.0);
+			private List<Double> list = Lists.of(1.0, 2.0, 3.0);
 			int end = list.size();
 
 			@Override
@@ -1722,7 +1722,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
+		Queue<Double> queue = new ArrayDeque<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0));
 		DoubleSequence sequence = DoubleSequence.generate(queue::poll);
 
 		DoubleIterator iterator = sequence.iterator();
@@ -1740,7 +1740,7 @@ public class DoubleSequenceTest {
 	@Test
 	public void multiGenerate() {
 		DoubleSequence sequence = DoubleSequence.multiGenerate(() -> {
-			Queue<Double> queue = new ArrayDeque<>(asList(1.0, 2.0, 3.0, 4.0, 5.0));
+			Queue<Double> queue = new ArrayDeque<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0));
 			return queue::poll;
 		});
 
@@ -2059,7 +2059,7 @@ public class DoubleSequenceTest {
 
 	@Test
 	public void filterClear() {
-		List<Double> original = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0));
+		List<Double> original = new ArrayList<>(Lists.of(1.0, 2.0, 3.0, 4.0));
 
 		DoubleSequence filtered = DoubleSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.clear();

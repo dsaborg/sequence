@@ -17,6 +17,7 @@
 package org.d2ab.collection.ints;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -137,19 +137,19 @@ public class IntSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void equalsHashCodeAgainstTreeSet() {
-		Set<Integer> larger = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
+		Set<Integer> larger = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 17));
 		assertThat(set, is(not(equalTo(larger))));
 		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		Set<Integer> smaller = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3));
+		Set<Integer> smaller = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3));
 		assertThat(set, is(not(equalTo(smaller))));
 		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		Set<Integer> dissimilar = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5));
+		Set<Integer> dissimilar = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3, 5));
 		assertThat(set, is(not(equalTo(dissimilar))));
 		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
 
-		Set<Integer> same = new TreeSet<>(asList(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
+		Set<Integer> same = new TreeSet<>(Lists.of(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4));
 		assertThat(set, is(equalTo(same)));
 		assertThat(set.hashCode(), is(same.hashCode()));
 	}
@@ -275,7 +275,7 @@ public class IntSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (int randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

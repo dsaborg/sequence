@@ -17,8 +17,12 @@
 package org.d2ab.collection;
 
 import java.util.*;
+import java.util.Collections;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.naturalOrder;
 
 /**
@@ -26,6 +30,24 @@ import static java.util.Comparator.naturalOrder;
  */
 public abstract class Lists {
 	Lists() {
+	}
+
+	public static <T> List<T> of() {
+		return emptyList();
+	}
+
+	public static <T> List<T> of(T item) {
+		return singletonList(item);
+	}
+
+	@SafeVarargs
+	public static <T> List<T> of(T... items) {
+		return unmodifiableList(asList(items));
+	}
+
+	@SafeVarargs
+	public static <T> List<T> create(T... items) {
+		return new ArrayList<>(asList(items));
 	}
 
 	/**
@@ -87,10 +109,5 @@ public abstract class Lists {
 		for (int i = 0; i < list.size() / 2; i++)
 			swap(list, i, list.size() - i - 1);
 		return list;
-	}
-
-	@SafeVarargs
-	public static <T> List<T> create(T... items) {
-		return new ArrayList<>(asList(items));
 	}
 }

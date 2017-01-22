@@ -23,8 +23,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static java.util.Comparator.naturalOrder;
 import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
@@ -365,11 +363,11 @@ public class DoubleListBoxingTest extends BaseBoxingTest {
 		assertThat(list, is(equalTo(list)));
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(new Object()))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(null))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of(new Object()))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of((Object) null))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0))))));
 
-		List<Double> list2 = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
+		List<Double> list2 = new ArrayList<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

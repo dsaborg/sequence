@@ -16,6 +16,7 @@
 
 package org.d2ab.collection.longs;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
 import org.junit.Test;
 
@@ -24,8 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsLongIterableContainingInOrder.containsLongs;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -206,17 +205,17 @@ public class LongListOfTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(empty.equals(emptyList()), is(true));
-		assertThat(empty.equals(asList(1L, 2L)), is(false));
+		assertThat(empty.equals(Lists.of()), is(true));
+		assertThat(empty.equals(Lists.of(1L, 2L)), is(false));
 
-		assertThat(list.equals(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L)), is(true));
-		assertThat(list.equals(asList(5L, 4L, 3L, 2L, 1L, 5L, 4L, 3L, 2L, 1L)), is(false));
+		assertThat(list.equals(Lists.of(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L)), is(true));
+		assertThat(list.equals(Lists.of(5L, 4L, 3L, 2L, 1L, 5L, 4L, 3L, 2L, 1L)), is(false));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertThat(empty.hashCode(), is(emptyList().hashCode()));
-		assertThat(list.hashCode(), is(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L).hashCode()));
+		assertThat(empty.hashCode(), is(Lists.of().hashCode()));
+		assertThat(list.hashCode(), is(Lists.of(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L).hashCode()));
 	}
 
 	@Test

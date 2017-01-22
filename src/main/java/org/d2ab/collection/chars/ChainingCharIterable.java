@@ -16,21 +16,18 @@
 
 package org.d2ab.collection.chars;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.iterator.chars.ChainingCharIterator;
 import org.d2ab.iterator.chars.CharIterator;
-
-import java.util.Collection;
-
-import static java.util.Arrays.asList;
 
 /**
  * A {@link CharIterable} that can chain together several {@link CharIterable}s into one unbroken sequence.
  */
 public class ChainingCharIterable implements CharIterable {
-	private final Collection<CharIterable> iterables;
+	private final Iterable<CharIterable> iterables;
 
 	public ChainingCharIterable(CharIterable... iterables) {
-		this.iterables = asList(iterables);
+		this.iterables = Iterables.of(iterables);
 	}
 
 	@Override

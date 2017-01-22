@@ -27,9 +27,9 @@ import java.util.*;
 public class ChainedList<T> extends AbstractList<T> {
 	private final List<List<T>> lists;
 
-	@SuppressWarnings("unchecked")
+	@SafeVarargs
 	public static <T> List<T> concat(List<T>... lists) {
-		return concat(Arrays.asList(lists));
+		return concat(Lists.of(lists));
 	}
 
 	public static <T> List<T> concat(List<List<T>> lists) {

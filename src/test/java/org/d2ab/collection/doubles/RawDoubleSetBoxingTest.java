@@ -17,13 +17,13 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -112,7 +112,7 @@ public class RawDoubleSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstSet() {
-		Set<Double> set2 = new HashSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		Set<Double> set2 = new HashSet<>(Lists.of(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
@@ -212,9 +212,9 @@ public class RawDoubleSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.containsAll(Lists.of(1.0, 2.0, 3.0)), is(false));
+		assertThat(set.containsAll(Lists.of(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.containsAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(false));
 	}
 
 	@Test
@@ -268,7 +268,7 @@ public class RawDoubleSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (double randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

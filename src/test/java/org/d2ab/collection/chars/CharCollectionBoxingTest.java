@@ -1,6 +1,7 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
@@ -10,8 +11,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -115,13 +114,13 @@ public class CharCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllCollection() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(asList('a', 'b', 'c')), is(true));
+		assertThat(empty.addAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(empty, contains('a', 'b', 'c'));
 
-		assertThat(collection.addAll(asList('f', 'g', 'h')), is(true));
+		assertThat(collection.addAll(Lists.of('f', 'g', 'h')), is(true));
 		assertThat(collection, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
@@ -148,10 +147,10 @@ public class CharCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAllCollection() {
-		assertThat(empty.removeAll(asList('a', 'b', 'c')), is(false));
+		assertThat(empty.removeAll(Lists.of('a', 'b', 'c')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.removeAll(asList('a', 'b', 'c')), is(true));
+		assertThat(collection.removeAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(collection, contains('d', 'e'));
 	}
 
@@ -166,10 +165,10 @@ public class CharCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void retainAllCollection() {
-		assertThat(empty.retainAll(asList('a', 'b', 'c')), is(false));
+		assertThat(empty.retainAll(Lists.of('a', 'b', 'c')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.retainAll(asList('a', 'b', 'c')), is(true));
+		assertThat(collection.retainAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(collection, contains('a', 'b', 'c'));
 	}
 
@@ -221,7 +220,7 @@ public class CharCollectionBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (char randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

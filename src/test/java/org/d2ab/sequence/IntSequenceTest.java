@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.ints.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ints.DelegatingTransformingIntIterator;
@@ -33,7 +34,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -1091,7 +1091,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Integer> backing = new ArrayList<>(asList(2, 3, 1));
+		List<Integer> backing = new ArrayList<>(Lists.of(2, 3, 1));
 		IntSequence sorted = IntSequence.from(backing).sorted();
 
 		backing.add(4);
@@ -1425,7 +1425,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Integer> backing = new ArrayList<>(asList(1, 2, 3));
+		List<Integer> backing = new ArrayList<>(Lists.of(1, 2, 3));
 		IntSequence reversed = IntSequence.from(backing).reverse();
 
 		backing.add(4);
@@ -1676,7 +1676,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(_123, containsInts(2, 3)));
 
 		IntSequence varyingLengthRepeated = IntSequence.from(new IntIterable() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = Lists.of(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -1715,7 +1715,7 @@ public class IntSequenceTest {
 		twice(() -> assertThat(_123, containsInts(2, 3)));
 
 		IntSequence varyingLengthRepeatedTwice = IntSequence.from(new IntIterable() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = Lists.of(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -1752,7 +1752,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 		IntSequence sequence = IntSequence.generate(queue::poll);
 
 		IntIterator iterator = sequence.iterator();
@@ -1770,7 +1770,7 @@ public class IntSequenceTest {
 	@Test
 	public void multiGenerate() {
 		IntSequence sequence = IntSequence.multiGenerate(() -> {
-			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+			Queue<Integer> queue = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 			return queue::poll;
 		});
 
@@ -2084,7 +2084,7 @@ public class IntSequenceTest {
 
 	@Test
 	public void filterClear() {
-		List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4));
+		List<Integer> original = new ArrayList<>(Lists.of(1, 2, 3, 4));
 
 		IntSequence filtered = IntSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.clear();

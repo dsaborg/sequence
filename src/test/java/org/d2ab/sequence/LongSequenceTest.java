@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.longs.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.longs.DelegatingTransformingLongIterator;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
@@ -1061,7 +1061,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Long> backing = new ArrayList<>(asList(2L, 3L, 1L));
+		List<Long> backing = new ArrayList<>(Lists.of(2L, 3L, 1L));
 		LongSequence sorted = LongSequence.from(backing).sorted();
 
 		backing.add(4L);
@@ -1386,7 +1386,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Long> backing = new ArrayList<>(asList(1L, 2L, 3L));
+		List<Long> backing = new ArrayList<>(Lists.of(1L, 2L, 3L));
 		LongSequence reversed = LongSequence.from(backing).reverse();
 
 		backing.add(4L);
@@ -1633,7 +1633,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_123, containsLongs(2, 3)));
 
 		LongSequence varyingLengthRepeated = LongSequence.from(new LongIterable() {
-			private List<Long> list = asList(1L, 2L, 3L);
+			private List<Long> list = Lists.of(1L, 2L, 3L);
 			int end = list.size();
 
 			@Override
@@ -1672,7 +1672,7 @@ public class LongSequenceTest {
 		twice(() -> assertThat(_123, containsLongs(2, 3)));
 
 		LongSequence varyingLengthRepeatedTwice = LongSequence.from(new LongIterable() {
-			private List<Long> list = asList(1L, 2L, 3L);
+			private List<Long> list = Lists.of(1L, 2L, 3L);
 			int end = list.size();
 
 			@Override
@@ -1709,7 +1709,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
+		Queue<Long> queue = new ArrayDeque<>(Lists.of(1L, 2L, 3L, 4L, 5L));
 		LongSequence sequence = LongSequence.generate(queue::poll);
 
 		LongIterator iterator = sequence.iterator();
@@ -1727,7 +1727,7 @@ public class LongSequenceTest {
 	@Test
 	public void multiGenerate() {
 		LongSequence sequence = LongSequence.multiGenerate(() -> {
-			Queue<Long> queue = new ArrayDeque<>(asList(1L, 2L, 3L, 4L, 5L));
+			Queue<Long> queue = new ArrayDeque<>(Lists.of(1L, 2L, 3L, 4L, 5L));
 			return queue::poll;
 		});
 
@@ -2041,7 +2041,7 @@ public class LongSequenceTest {
 
 	@Test
 	public void filterClear() {
-		List<Long> original = new ArrayList<>(asList(1L, 2L, 3L, 4L));
+		List<Long> original = new ArrayList<>(Lists.of(1L, 2L, 3L, 4L));
 
 		LongSequence filtered = LongSequence.from(original).filter(x -> x % 2 != 0);
 		filtered.clear();

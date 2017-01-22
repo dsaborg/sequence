@@ -23,7 +23,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -373,10 +372,10 @@ public class DoubleListTest {
 		assertThat(list, is(equalTo(list)));
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
-		assertThat(list, is(not(equalTo(new TreeSet<>(asList(1.0, 2.0, 3.0, 4.0, 5.0))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0))))));
+		assertThat(list, is(not(equalTo(new TreeSet<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0))))));
 
-		List<Double> list2 = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
+		List<Double> list2 = new ArrayList<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

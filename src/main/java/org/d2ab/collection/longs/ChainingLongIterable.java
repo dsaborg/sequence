@@ -16,21 +16,18 @@
 
 package org.d2ab.collection.longs;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.iterator.longs.ChainingLongIterator;
 import org.d2ab.iterator.longs.LongIterator;
-
-import java.util.Collection;
-
-import static java.util.Arrays.asList;
 
 /**
  * A {@link LongIterable} that can chain together several {@link LongIterable}s into one unbroken sequence.
  */
 public class ChainingLongIterable implements LongIterable {
-	private final Collection<LongIterable> iterables;
+	private final Iterable<LongIterable> iterables;
 
 	public ChainingLongIterable(LongIterable... iterables) {
-		this.iterables = asList(iterables);
+		this.iterables = Iterables.of(iterables);
 	}
 
 	@Override

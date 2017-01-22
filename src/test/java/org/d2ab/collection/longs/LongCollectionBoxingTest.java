@@ -1,6 +1,7 @@
 package org.d2ab.collection.longs;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.longs.LongIterator;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -206,28 +206,28 @@ public class LongCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllBoxed() {
-		assertThat(empty.addAll(asList(1L, 2L, 3L)), is(true));
+		assertThat(empty.addAll(Lists.of(1L, 2L, 3L)), is(true));
 		assertThat(empty, contains(1L, 2L, 3L));
 
-		assertThat(collection.addAll(asList(6L, 7L, 8L)), is(true));
+		assertThat(collection.addAll(Lists.of(6L, 7L, 8L)), is(true));
 		assertThat(collection, contains(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
 	}
 
 	@Test
 	public void removeAllBoxed() {
-		assertThat(empty.removeAll(asList(1L, 2L, 3L)), is(false));
+		assertThat(empty.removeAll(Lists.of(1L, 2L, 3L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.removeAll(asList(1L, 2L, 3L)), is(true));
+		assertThat(collection.removeAll(Lists.of(1L, 2L, 3L)), is(true));
 		assertThat(collection, contains(4L, 5L));
 	}
 
 	@Test
 	public void retainAllBoxed() {
-		assertThat(empty.retainAll(asList(1L, 2L, 3L)), is(false));
+		assertThat(empty.retainAll(Lists.of(1L, 2L, 3L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.retainAll(asList(1L, 2L, 3L)), is(true));
+		assertThat(collection.retainAll(Lists.of(1L, 2L, 3L)), is(true));
 		assertThat(collection, contains(1L, 2L, 3L));
 	}
 
@@ -242,9 +242,9 @@ public class LongCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList(1L, 2L, 3L)), is(false));
-		assertThat(collection.containsAll(asList(1L, 2L, 3L)), is(true));
-		assertThat(collection.containsAll(asList(1L, 2L, 3L, 17L)), is(false));
+		assertThat(empty.containsAll(Lists.of(1L, 2L, 3L)), is(false));
+		assertThat(collection.containsAll(Lists.of(1L, 2L, 3L)), is(true));
+		assertThat(collection.containsAll(Lists.of(1L, 2L, 3L, 17L)), is(false));
 	}
 
 	@Test
@@ -265,7 +265,7 @@ public class LongCollectionBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (long randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

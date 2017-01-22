@@ -1,19 +1,19 @@
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ChainedListSequenceTest {
-	private final List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
-	private final List<Integer> list2 = new ArrayList<>(asList(4, 5));
+	private final List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+	private final List<Integer> list2 = new ArrayList<>(Lists.of(4, 5));
 	private final Sequence<Integer> listSequence = ListSequence.concat(list1, list2);
 	private final Sequence<Integer> odds = listSequence.filter(x -> x % 2 == 1);
 

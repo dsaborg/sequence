@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import java.util.Iterator;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -29,13 +28,13 @@ import static org.junit.Assert.assertThat;
 public class ChainingIterableTest {
 	private final SizedIterable<String> empty = ChainingIterable.empty();
 
-	private final SizedIterable<String> abc = ChainingIterable.concat(asList("a", "b", "c"));
+	private final SizedIterable<String> abc = ChainingIterable.concat(Lists.of("a", "b", "c"));
 
 	private final SizedIterable<String> abc_def =
-			ChainingIterable.concat(asList("a", "b", "c"), asList("d", "e", "f"));
+			ChainingIterable.concat(Lists.of("a", "b", "c"), Lists.of("d", "e", "f"));
 
 	private final SizedIterable<String> abc_def_ghi =
-			ChainingIterable.concat(asList("a", "b", "c"), asList("d", "e", "f"), asList("g", "h", "i"));
+			ChainingIterable.concat(Lists.of("a", "b", "c"), Lists.of("d", "e", "f"), Lists.of("g", "h", "i"));
 
 	@Test
 	public void empty() {

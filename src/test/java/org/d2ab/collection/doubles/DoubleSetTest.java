@@ -17,6 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.junit.Test;
 
@@ -26,7 +27,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -175,7 +175,7 @@ public class DoubleSetTest {
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(not(equalTo(null))));
 		assertThat(set, is(not(equalTo(new Object()))));
-		assertThat(set, is(not(equalTo(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0)))));
+		assertThat(set, is(not(equalTo(Lists.of(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0)))));
 		assertThat(set, is(not(equalTo(DoubleList.create(-5, -4, -3, -2, -1, 0, 1, 2, 3, 4)))));
 	}
 

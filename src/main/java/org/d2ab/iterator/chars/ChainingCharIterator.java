@@ -16,18 +16,17 @@
 
 package org.d2ab.iterator.chars;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.chars.CharIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.util.Arrays.asList;
-
 public class ChainingCharIterator extends DelegatingUnaryCharIterator {
 	private final Iterator<CharIterable> iterables;
 
 	public ChainingCharIterator(CharIterable... iterables) {
-		this(asList(iterables));
+		this(Iterables.of(iterables));
 	}
 
 	public ChainingCharIterator(Iterable<CharIterable> iterables) {

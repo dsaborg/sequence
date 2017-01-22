@@ -16,7 +16,8 @@
 
 package org.d2ab.iterator;
 
-import java.util.Collections;
+import org.d2ab.collection.Lists;
+
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -41,7 +42,7 @@ public class ChainedListIterator<T> implements ListIterator<T> {
 			index -= list.size();
 		}
 		if (listIterator == null)
-			listIterator = Collections.<T>emptyList().listIterator();
+			listIterator = Lists.<T>of().listIterator();
 	}
 
 	@Override

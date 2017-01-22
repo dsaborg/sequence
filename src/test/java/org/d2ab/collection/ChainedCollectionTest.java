@@ -25,8 +25,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -40,9 +38,9 @@ public class ChainedCollectionTest {
 	@SuppressWarnings("unchecked")
 	private Collection<Integer> chainedEmpty = ChainedCollection.concat(firstEmpty, secondEmpty, thirdEmpty);
 
-	private Collection<Integer> first = new ArrayDeque<>(asList(1, 2, 3));
-	private Collection<Integer> second = new ArrayDeque<>(asList(4, 5, 6));
-	private Collection<Integer> third = new ArrayDeque<>(asList(7, 8, 9, 10));
+	private Collection<Integer> first = new ArrayDeque<>(Lists.of(1, 2, 3));
+	private Collection<Integer> second = new ArrayDeque<>(Lists.of(4, 5, 6));
+	private Collection<Integer> third = new ArrayDeque<>(Lists.of(7, 8, 9, 10));
 	@SuppressWarnings("unchecked")
 	private Collection<Integer> chained = ChainedCollection.concat(first, second, third);
 
@@ -161,26 +159,26 @@ public class ChainedCollectionTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(chainedTotallyEmpty.containsAll(asList(17, 18)), is(false));
+		assertThat(chainedTotallyEmpty.containsAll(Lists.of(17, 18)), is(false));
 
-		assertThat(chainedEmpty.containsAll(asList(17, 18)), is(false));
+		assertThat(chainedEmpty.containsAll(Lists.of(17, 18)), is(false));
 
-		assertThat(chained.containsAll(asList(2, 3, 4)), is(true));
-		assertThat(chained.containsAll(asList(2, 3, 17)), is(false));
+		assertThat(chained.containsAll(Lists.of(2, 3, 4)), is(true));
+		assertThat(chained.containsAll(Lists.of(2, 3, 17)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		chainedTotallyEmpty.addAll(asList(1, 2));
+		chainedTotallyEmpty.addAll(Lists.of(1, 2));
 		assertThat(chainedTotallyEmpty, contains(1, 2));
 
-		chainedEmpty.addAll(asList(1, 2));
+		chainedEmpty.addAll(Lists.of(1, 2));
 		assertThat(chainedEmpty, contains(1, 2));
 		assertThat(firstEmpty, contains(1, 2));
 		assertThat(secondEmpty, is(emptyIterable()));
 		assertThat(thirdEmpty, is(emptyIterable()));
 
-		chained.addAll(asList(17, 18));
+		chained.addAll(Lists.of(17, 18));
 		assertThat(chained, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18));
 		assertThat(first, contains(1, 2, 3));
 		assertThat(second, contains(4, 5, 6));
@@ -189,22 +187,22 @@ public class ChainedCollectionTest {
 
 	@Test
 	public void removeAll() {
-		assertThat(chainedTotallyEmpty.removeAll(asList(1, 2)), is(false));
+		assertThat(chainedTotallyEmpty.removeAll(Lists.of(1, 2)), is(false));
 		assertThat(chainedTotallyEmpty, is(emptyIterable()));
 
-		assertThat(chainedEmpty.removeAll(asList(1, 2)), is(false));
+		assertThat(chainedEmpty.removeAll(Lists.of(1, 2)), is(false));
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
 		assertThat(secondEmpty, is(emptyIterable()));
 		assertThat(thirdEmpty, is(emptyIterable()));
 
-		assertThat(chained.removeAll(emptyList()), is(false));
+		assertThat(chained.removeAll(Lists.of()), is(false));
 		assertThat(chained, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 		assertThat(first, contains(1, 2, 3));
 		assertThat(second, contains(4, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10));
 
-		assertThat(chained.removeAll(asList(3, 4, 5)), is(true));
+		assertThat(chained.removeAll(Lists.of(3, 4, 5)), is(true));
 		assertThat(chained, contains(1, 2, 6, 7, 8, 9, 10));
 		assertThat(first, contains(1, 2));
 		assertThat(second, contains(6));
@@ -213,16 +211,16 @@ public class ChainedCollectionTest {
 
 	@Test
 	public void retainAll() {
-		assertThat(chainedTotallyEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(chainedTotallyEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(chainedTotallyEmpty, is(emptyIterable()));
 
-		assertThat(chainedEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(chainedEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(chainedEmpty, is(emptyIterable()));
 		assertThat(firstEmpty, is(emptyIterable()));
 		assertThat(secondEmpty, is(emptyIterable()));
 		assertThat(thirdEmpty, is(emptyIterable()));
 
-		assertThat(chained.retainAll(asList(2, 3, 4)), is(true));
+		assertThat(chained.retainAll(Lists.of(2, 3, 4)), is(true));
 		assertThat(chained, contains(2, 3, 4));
 		assertThat(first, contains(2, 3));
 		assertThat(second, contains(4));

@@ -25,9 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Comparator.naturalOrder;
 import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
@@ -163,77 +160,77 @@ public class LongListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(asList(2L, 3L)), is(false));
+		assertThat(empty.containsAll(Lists.of(2L, 3L)), is(false));
 
-		assertThat(list.containsAll(asList(2L, 3L)), is(true));
-		assertThat(list.containsAll(asList(2L, 17L)), is(false));
-		assertThat(list.containsAll(singletonList(new Object())), is(false));
-		assertThat(list.containsAll(singletonList(null)), is(false));
+		assertThat(list.containsAll(Lists.of(2L, 3L)), is(true));
+		assertThat(list.containsAll(Lists.of(2L, 17L)), is(false));
+		assertThat(list.containsAll(Lists.of(new Object())), is(false));
+		assertThat(list.containsAll(Lists.of((Object) null)), is(false));
 	}
 
 	@Test
 	public void addAllAt() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(empty.addAll(LongList.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(asList(1L, 2L)), is(true));
+		assertThat(empty.addAll(Lists.of(1L, 2L)), is(true));
 		assertThat(empty, contains(1L, 2L));
 
-		assertThat(list.addAll(asList(6L, 7L, 8L)), is(true));
+		assertThat(list.addAll(Lists.of(6L, 7L, 8L)), is(true));
 		assertThat(list, contains(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L));
 	}
 
 	@Test
 	public void addAll() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty.addAll(0, Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
 		assertThat(empty.addAll(0, LongList.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(0, asList(1L, 2L)), is(true));
+		assertThat(empty.addAll(0, Lists.of(1L, 2L)), is(true));
 		assertThat(empty, contains(1L, 2L));
 
-		assertThat(list.addAll(2, asList(17L, 18L, 19L)), is(true));
+		assertThat(list.addAll(2, Lists.of(17L, 18L, 19L)), is(true));
 		assertThat(list, contains(1L, 2L, 17L, 18L, 19L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(asList(1L, 2L)), is(false));
+		assertThat(empty.removeAll(Lists.of(1L, 2L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList(1L, 2L, 5L)), is(true));
+		assertThat(list.removeAll(Lists.of(1L, 2L, 5L)), is(true));
 		assertThat(list, contains(3L, 4L, 3L, 4L));
 
-		assertThat(list.removeAll(singletonList(new Object())), is(false));
+		assertThat(list.removeAll(Lists.of(new Object())), is(false));
 		assertThat(list, contains(3L, 4L, 3L, 4L));
 
-		assertThat(list.removeAll(singletonList(null)), is(false));
+		assertThat(list.removeAll(Lists.of((Object) null)), is(false));
 		assertThat(list, contains(3L, 4L, 3L, 4L));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(asList(1L, 2L)), is(false));
+		assertThat(empty.retainAll(Lists.of(1L, 2L)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(asList(1L, 2L, 3L)), is(true));
+		assertThat(list.retainAll(Lists.of(1L, 2L, 3L)), is(true));
 		assertThat(list, contains(1L, 2L, 3L, 1L, 2L, 3L));
 	}
 
 	@Test
 	public void retainAllObject() {
-		assertThat(list.retainAll(singletonList(new Object())), is(true));
+		assertThat(list.retainAll(Lists.of(new Object())), is(true));
 		assertThat(list, is(emptyIterable()));
 	}
 
 	@Test
 	public void retainAllNull() {
-		assertThat(list.retainAll(singletonList(new Object())), is(true));
+		assertThat(list.retainAll(Lists.of(new Object())), is(true));
 		assertThat(list, is(emptyIterable()));
 	}
 
@@ -296,11 +293,11 @@ public class LongListBoxingTest extends BaseBoxingTest {
 		assertThat(list, is(equalTo(list)));
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(new Object()))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(singletonList(null))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(asList(1L, 2L, 3L, 4L))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of(new Object()))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of((Object) null))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of(1L, 2L, 3L, 4L))))));
 
-		List<Long> list2 = new ArrayList<>(asList(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L, 17L));
+		List<Long> list2 = new ArrayList<>(Lists.of(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L, 17L));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

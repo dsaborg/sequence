@@ -16,13 +16,17 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.test.BaseBoxingTest;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,7 +74,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void functionalInterface() {
-		List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
+		List<Integer> list = Lists.of(1, 2, 3, 4, 5);
 
 		// Sequence as @FunctionalInterface of list's iterator() method
 		Sequence<Integer> sequence = list::iterator;
@@ -83,7 +87,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void fromIterator() {
-		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
+		Iterator<Integer> iterator = Lists.of(1, 2, 3, 4, 5).iterator();
 
 		Sequence<Integer> sequence = Sequence.once(iterator);
 
@@ -93,7 +97,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void caching() {
-		Iterator<Integer> iterator = Arrays.asList(1, 2, 3, 4, 5).iterator();
+		Iterator<Integer> iterator = Lists.of(1, 2, 3, 4, 5).iterator();
 
 		Sequence<Integer> cached = Sequence.cache(iterator);
 
@@ -103,7 +107,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void clear() {
-		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 
 		Sequence.from(list).filter(x -> x % 2 != 0).clear();
 
@@ -112,7 +116,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 
 	@Test
 	public void updatingCollection() {
-		List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<String> evenStrings = Sequence.from(list)
 		                                       .filter(x -> x % 2 == 0)
 		                                       // biMap allows adding back to underlying collection
@@ -157,7 +161,7 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 		Iterator<String> delimiter = Sequence.of("").append(Sequence.of(", ").repeat()).iterator();
 
 		StringBuilder joined = new StringBuilder();
-		for (String number : Arrays.asList("One", "Two", "Three"))
+		for (String number : Lists.of("One", "Two", "Three"))
 			joined.append(delimiter.next()).append(number);
 
 		assertThat(joined.toString(), is("One, Two, Three"));

@@ -24,13 +24,12 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class MappedCollectionTest {
-	private Collection<Integer> original = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+	private Collection<Integer> original = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 	private Collection<String> mapped = MappedCollection.from(original, Object::toString);
 
 	private Collection<Integer> originalEmpty = new ArrayDeque<>();
@@ -113,43 +112,43 @@ public class MappedCollectionTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(mappedEmpty.containsAll(asList("17", "18")), is(false));
+		assertThat(mappedEmpty.containsAll(Lists.of("17", "18")), is(false));
 
-		assertThat(mapped.containsAll(asList("1", "2")), is(true));
-		assertThat(mapped.containsAll(asList("1", "17")), is(false));
+		assertThat(mapped.containsAll(Lists.of("1", "2")), is(true));
+		assertThat(mapped.containsAll(Lists.of("1", "17")), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		expecting(UnsupportedOperationException.class, () -> mappedEmpty.addAll(asList("1", "2")));
+		expecting(UnsupportedOperationException.class, () -> mappedEmpty.addAll(Lists.of("1", "2")));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> mapped.addAll(asList("1", "2")));
+		expecting(UnsupportedOperationException.class, () -> mapped.addAll(Lists.of("1", "2")));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(mappedEmpty.removeAll(asList("1", "2")), is(false));
+		assertThat(mappedEmpty.removeAll(Lists.of("1", "2")), is(false));
 		assertThat(mappedEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(mapped.removeAll(asList()), is(false));
+		assertThat(mapped.removeAll(Lists.of()), is(false));
 		assertThat(mapped, contains("1", "2", "3", "4", "5"));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 
-		assertThat(mapped.removeAll(asList("1", "2", "3")), is(true));
+		assertThat(mapped.removeAll(Lists.of("1", "2", "3")), is(true));
 		assertThat(mapped, contains("4", "5"));
 		assertThat(original, contains(4, 5));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(mappedEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(mappedEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(mappedEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(mapped.retainAll(asList("1", "2", "3")), is(true));
+		assertThat(mapped.retainAll(Lists.of("1", "2", "3")), is(true));
 		assertThat(mapped, contains("1", "2", "3"));
 		assertThat(original, contains(1, 2, 3));
 	}

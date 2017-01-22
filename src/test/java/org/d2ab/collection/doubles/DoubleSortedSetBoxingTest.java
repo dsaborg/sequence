@@ -17,6 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -138,7 +138,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstSet() {
-		Set<Double> set2 = new HashSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
+		Set<Double> set2 = new HashSet<>(Lists.of(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 17.0));
 		assertThat(set, is(not(equalTo(set2))));
 		assertThat(set.hashCode(), is(not(set2.hashCode())));
 
@@ -172,7 +172,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(subSet.contains(3.0), is(false));
 		assertThat(subSet.toString(), is("[-3.0, -2.0, -1.0, 0.0, 1.0, 2.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-3.0, -2.0, -1.0, 0.0, 1.0, 2.0));
+		Set<Double> equivalentSet = new HashSet<>(Lists.of(-3.0, -2.0, -1.0, 0.0, 1.0, 2.0));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -218,7 +218,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(subSet.contains(-3.0), is(false));
 		assertThat(subSet.toString(), is("[-1.0, 1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-1.0, 1.0));
+		Set<Double> equivalentSet = new HashSet<>(Lists.of(-1.0, 1.0));
 		assertThat(subSet, is(equalTo(equivalentSet)));
 		assertThat(subSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -234,7 +234,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(headSet.contains(0.0), is(false));
 		assertThat(headSet.toString(), is("[-5.0, -4.0, -3.0, -2.0, -1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-5.0, -4.0, -3.0, -2.0, -1.0));
+		Set<Double> equivalentSet = new HashSet<>(Lists.of(-5.0, -4.0, -3.0, -2.0, -1.0));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -285,7 +285,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(headSet.contains(1.0), is(false));
 		assertThat(headSet.toString(), is("[-5.0, -3.0, -1.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(-5.0, -3.0, -1.0));
+		Set<Double> equivalentSet = new HashSet<>(Lists.of(-5.0, -3.0, -1.0));
 		assertThat(headSet, is(equalTo(equivalentSet)));
 		assertThat(headSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -301,7 +301,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(tailSet.contains(-1.0), is(false));
 		assertThat(tailSet.toString(), is("[0.0, 1.0, 2.0, 3.0, 4.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(0.0, 1.0, 2.0, 3.0, 4.0));
+		Set<Double> equivalentSet = new HashSet<>(Lists.of(0.0, 1.0, 2.0, 3.0, 4.0));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 
@@ -352,7 +352,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(tailSet.contains(-1.0), is(false));
 		assertThat(tailSet.toString(), is("[1.0, 3.0, 5.0]"));
 
-		Set<Double> equivalentSet = new HashSet<>(asList(1.0, 3.0, 5.0));
+		Set<Double> equivalentSet = new HashSet<>(Lists.of(1.0, 3.0, 5.0));
 		assertThat(tailSet, is(equalTo(equivalentSet)));
 		assertThat(tailSet.hashCode(), is(equivalentSet.hashCode()));
 	}
@@ -452,36 +452,36 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAll() {
-		assertThat(empty.addAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(empty.addAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(empty, contains(1.0, 2.0, 3.0));
 
-		assertThat(set.addAll(asList(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
+		assertThat(set.addAll(Lists.of(3.0, 4.0, 5.0, 6.0, 7.0)), is(true));
 		assertThat(set, contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(empty.removeAll(Lists.of(1.0, 2.0, 3.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.removeAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.removeAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(set, contains(-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 4.0));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(empty.retainAll(Lists.of(1.0, 2.0, 3.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(set.retainAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.retainAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(set, contains(1.0, 2.0, 3.0));
 	}
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.containsAll(Lists.of(1.0, 2.0, 3.0)), is(false));
+		assertThat(set.containsAll(Lists.of(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.containsAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(false));
 	}
 
 	@Test
@@ -526,7 +526,7 @@ public class DoubleSortedSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (double randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

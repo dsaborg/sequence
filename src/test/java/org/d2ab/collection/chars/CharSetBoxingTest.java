@@ -17,13 +17,13 @@
 package org.d2ab.collection.chars;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.collection.Arrayz.fill;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -136,25 +136,25 @@ public class CharSetBoxingTest extends BaseBoxingTest {
 		assertThat(set, is(equalTo(set)));
 		assertThat(set, is(not(equalTo(null))));
 		assertThat(set, is(not(equalTo(new Object()))));
-		assertThat(set, is(not(equalTo(asList('a', 'b', 'c', 'd', 'e')))));
+		assertThat(set, is(not(equalTo(Lists.of('a', 'b', 'c', 'd', 'e')))));
 		assertThat(set, is(not(equalTo(CharList.create('a', 'b', 'c', 'd', 'e')))));
 	}
 
 	@Test
 	public void equalsHashCodeAgainstTreeSet() {
-		Set<Character> larger = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e', 'q'));
+		Set<Character> larger = new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'e', 'q'));
 		assertThat(set, is(not(equalTo(larger))));
 		assertThat(set.hashCode(), is(not(larger.hashCode())));
 
-		Set<Character> smaller = new TreeSet<>(asList('a', 'b', 'c', 'd'));
+		Set<Character> smaller = new TreeSet<>(Lists.of('a', 'b', 'c', 'd'));
 		assertThat(set, is(not(equalTo(smaller))));
 		assertThat(set.hashCode(), is(not(smaller.hashCode())));
 
-		Set<Character> dissimilar = new TreeSet<>(asList('a', 'b', 'c', 'd', 'f'));
+		Set<Character> dissimilar = new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'f'));
 		assertThat(set, is(not(equalTo(dissimilar))));
 		assertThat(set.hashCode(), is(not(dissimilar.hashCode())));
 
-		Set<Character> same = new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'));
+		Set<Character> same = new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'e'));
 		assertThat(set, is(equalTo(same)));
 		assertThat(set.hashCode(), is(same.hashCode()));
 	}
@@ -228,9 +228,9 @@ public class CharSetBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList('a', 'b', 'c')), is(false));
-		assertThat(set.containsAll(asList('a', 'b', 'c')), is(true));
-		assertThat(set.containsAll(asList('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.containsAll(Lists.of('a', 'b', 'c')), is(false));
+		assertThat(set.containsAll(Lists.of('a', 'b', 'c')), is(true));
+		assertThat(set.containsAll(Lists.of('a', 'b', 'c', 'q')), is(false));
 	}
 
 	@Test
@@ -272,7 +272,7 @@ public class CharSetBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (char randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

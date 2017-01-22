@@ -75,7 +75,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 */
 	@SafeVarargs
 	static <L, R> BiSequence<L, R> of(Pair<L, R>... items) {
-		return from(Arrays.asList(items));
+		return from(Lists.of(items));
 	}
 
 	/**

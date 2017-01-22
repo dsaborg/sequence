@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.chars.*;
 import org.d2ab.collection.ints.IntList;
 import org.d2ab.function.CharBinaryOperator;
@@ -35,7 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.*;
@@ -1113,7 +1113,7 @@ public class CharSeqTest {
 
 	@Test
 	public void sortedWithUpdates() {
-		List<Character> backing = new ArrayList<>(asList('b', 'c', 'a'));
+		List<Character> backing = new ArrayList<>(Lists.of('b', 'c', 'a'));
 		CharSeq sorted = CharSeq.from(backing).sorted();
 
 		backing.add('d');
@@ -1356,7 +1356,7 @@ public class CharSeqTest {
 
 	@Test
 	public void reverseWithUpdates() {
-		List<Character> backing = new ArrayList<>(asList('a', 'b', 'c'));
+		List<Character> backing = new ArrayList<>(Lists.of('a', 'b', 'c'));
 		CharSeq reversed = CharSeq.from(backing).reverse();
 
 		backing.add('d');
@@ -1466,7 +1466,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(abc, containsChars('b', 'c')));
 
 		CharSeq varyingLengthRepeated = CharSeq.from(new CharIterable() {
-			private List<Character> list = asList('a', 'b', 'c');
+			private List<Character> list = Lists.of('a', 'b', 'c');
 			int end = list.size();
 
 			@Override
@@ -1505,7 +1505,7 @@ public class CharSeqTest {
 		twice(() -> assertThat(abc, containsChars('b', 'c')));
 
 		CharSeq varyingLengthRepeatedTwice = CharSeq.from(new CharIterable() {
-			private List<Character> list = asList('a', 'b', 'c');
+			private List<Character> list = Lists.of('a', 'b', 'c');
 			int end = list.size();
 
 			@Override
@@ -1541,7 +1541,7 @@ public class CharSeqTest {
 
 	@Test
 	public void generate() {
-		Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
+		Queue<Character> queue = new ArrayDeque<>(Lists.of('a', 'b', 'c', 'd', 'e'));
 		CharSeq sequence = CharSeq.generate(queue::poll);
 
 		CharIterator iterator = sequence.iterator();
@@ -1559,7 +1559,7 @@ public class CharSeqTest {
 	@Test
 	public void multiGenerate() {
 		CharSeq sequence = CharSeq.multiGenerate(() -> {
-			Queue<Character> queue = new ArrayDeque<>(asList('a', 'b', 'c', 'd', 'e'));
+			Queue<Character> queue = new ArrayDeque<>(Lists.of('a', 'b', 'c', 'd', 'e'));
 			return queue::poll;
 		});
 
@@ -1885,7 +1885,7 @@ public class CharSeqTest {
 
 	@Test
 	public void filterClear() {
-		List<Character> original = new ArrayList<>(asList('a', 'b', 'c', 'd'));
+		List<Character> original = new ArrayList<>(Lists.of('a', 'b', 'c', 'd'));
 
 		CharSeq filtered = CharSeq.from(original).filter(x -> x == 'b');
 		filtered.clear();

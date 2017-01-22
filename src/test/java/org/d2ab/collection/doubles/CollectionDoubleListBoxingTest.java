@@ -16,6 +16,7 @@
 
 package org.d2ab.collection.doubles;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
@@ -26,8 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.naturalOrder;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -211,17 +210,17 @@ public class CollectionDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(empty.equals(emptyList()), is(true));
-		assertThat(empty.equals(asList(1.0, 2.0)), is(false));
+		assertThat(empty.equals(Lists.of()), is(true));
+		assertThat(empty.equals(Lists.of(1.0, 2.0)), is(false));
 
-		assertThat(list.equals(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0)), is(true));
-		assertThat(list.equals(asList(5.0, 4.0, 3.0, 2.0, 1.0, 5.0, 4.0, 3.0, 2.0, 1.0)), is(false));
+		assertThat(list.equals(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0)), is(true));
+		assertThat(list.equals(Lists.of(5.0, 4.0, 3.0, 2.0, 1.0, 5.0, 4.0, 3.0, 2.0, 1.0)), is(false));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertThat(empty.hashCode(), is(emptyList().hashCode()));
-		assertThat(list.hashCode(), is(asList(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0).hashCode()));
+		assertThat(empty.hashCode(), is(Lists.of().hashCode()));
+		assertThat(list.hashCode(), is(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0).hashCode()));
 	}
 
 	@Test

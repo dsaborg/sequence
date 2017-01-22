@@ -16,6 +16,7 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.chars.CharList;
 import org.d2ab.collection.chars.CharListIterator;
 import org.d2ab.iterator.chars.CharIterator;
@@ -25,8 +26,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -226,17 +225,17 @@ public class CharSeqAsListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(emptyList.equals(emptyList()), is(true));
-		assertThat(emptyList.equals(asList('a', 'b')), is(false));
+		assertThat(emptyList.equals(Lists.of()), is(true));
+		assertThat(emptyList.equals(Lists.of('a', 'b')), is(false));
 
-		assertThat(list.equals(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')), is(true));
-		assertThat(list.equals(asList('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a')), is(false));
+		assertThat(list.equals(Lists.of('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e')), is(true));
+		assertThat(list.equals(Lists.of('e', 'd', 'c', 'b', 'a', 'e', 'd', 'c', 'b', 'a')), is(false));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
-		assertThat(list.hashCode(), is(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e').hashCode()));
+		assertThat(emptyList.hashCode(), is(Lists.of().hashCode()));
+		assertThat(list.hashCode(), is(Lists.of('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e').hashCode()));
 	}
 
 	@Test

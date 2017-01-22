@@ -1,6 +1,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
@@ -10,8 +11,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -115,13 +114,13 @@ public class DoubleCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllCollection() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(empty.addAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(empty, contains(1.0, 2.0, 3.0));
 
-		assertThat(collection.addAll(asList(6.0, 7.0, 8.0)), is(true));
+		assertThat(collection.addAll(Lists.of(6.0, 7.0, 8.0)), is(true));
 		assertThat(collection, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
 	}
 
@@ -148,10 +147,10 @@ public class DoubleCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAllCollection() {
-		assertThat(empty.removeAll(asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(empty.removeAll(Lists.of(1.0, 2.0, 3.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.removeAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(collection.removeAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(collection, contains(4.0, 5.0));
 	}
 
@@ -166,10 +165,10 @@ public class DoubleCollectionBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void retainAllCollection() {
-		assertThat(empty.retainAll(asList(1.0, 2.0, 3.0)), is(false));
+		assertThat(empty.retainAll(Lists.of(1.0, 2.0, 3.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(collection.retainAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(collection.retainAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(collection, contains(1.0, 2.0, 3.0));
 	}
 
@@ -221,7 +220,7 @@ public class DoubleCollectionBoxingTest extends BaseBoxingTest {
 		assertThat(empty.size(), is(randomValues.length));
 
 		// Containment checks
-		assertThat(empty.containsAll(asList(randomValues)), is(true));
+		assertThat(empty.containsAll(Lists.of(randomValues)), is(true));
 
 		for (double randomValue : randomValues)
 			assertThat(empty.contains(randomValue), is(true));

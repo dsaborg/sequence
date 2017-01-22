@@ -16,14 +16,13 @@
 
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Lists;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -34,7 +33,7 @@ public class SequenceAsListTest {
 	private final List<Integer> emptyList = empty.asList();
 
 	private final Sequence<Integer> sequence = Sequence.from(
-			new ArrayDeque<>(Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))::iterator);
+			new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5, 1, 2, 3, 4, 5))::iterator);
 	private final List<Integer> list = sequence.asList();
 
 	@Test
@@ -143,55 +142,55 @@ public class SequenceAsListTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(emptyList.containsAll(asList(2, 3)), is(false));
+		assertThat(emptyList.containsAll(Lists.of(2, 3)), is(false));
 
-		assertThat(list.containsAll(asList(2, 3)), is(true));
-		assertThat(list.containsAll(asList(2, 17)), is(false));
+		assertThat(list.containsAll(Lists.of(2, 3)), is(true));
+		assertThat(list.containsAll(Lists.of(2, 17)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		assertThat(emptyList.addAll(emptyList()), is(false));
+		assertThat(emptyList.addAll(Lists.of()), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAll(asList(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> emptyList.addAll(Lists.of(1, 2)));
 		assertThat(emptyList, is(emptyIterable()));
 		assertThat(empty, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(6, 7, 8)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(Lists.of(6, 7, 8)));
 		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void addAllAtIndex() {
-		assertThat(emptyList.addAll(0, emptyList()), is(false));
+		assertThat(emptyList.addAll(0, Lists.of()), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> emptyList.addAll(0, asList(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> emptyList.addAll(0, Lists.of(1, 2)));
 		assertThat(emptyList, is(emptyIterable()));
 
-		expecting(UnsupportedOperationException.class, () -> list.addAll(2, asList(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(2, Lists.of(17, 18, 19)));
 		assertThat(list, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 2, 3, 4, 5, 1, 2, 3, 4, 5));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(emptyList.removeAll(asList(1, 2)), is(false));
+		assertThat(emptyList.removeAll(Lists.of(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList(1, 2, 5)), is(true));
+		assertThat(list.removeAll(Lists.of(1, 2, 5)), is(true));
 		assertThat(list, contains(3, 4, 3, 4));
 		assertThat(sequence, contains(3, 4, 3, 4));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(emptyList.retainAll(asList(1, 2)), is(false));
+		assertThat(emptyList.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(emptyList, is(emptyIterable()));
 
-		assertThat(list.retainAll(asList(1, 2, 3)), is(true));
+		assertThat(list.retainAll(Lists.of(1, 2, 3)), is(true));
 		assertThat(list, contains(1, 2, 3, 1, 2, 3));
 		assertThat(sequence, contains(1, 2, 3, 1, 2, 3));
 	}
@@ -228,17 +227,17 @@ public class SequenceAsListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(emptyList.equals(emptyList()), is(true));
-		assertThat(emptyList.equals(asList(1, 2)), is(false));
+		assertThat(emptyList.equals(Lists.of()), is(true));
+		assertThat(emptyList.equals(Lists.of(1, 2)), is(false));
 
-		assertThat(list.equals(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)), is(true));
-		assertThat(list.equals(asList(5, 4, 3, 2, 1, 5, 4, 3, 2, 1)), is(false));
+		assertThat(list.equals(Lists.of(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)), is(true));
+		assertThat(list.equals(Lists.of(5, 4, 3, 2, 1, 5, 4, 3, 2, 1)), is(false));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertThat(emptyList.hashCode(), is(emptyList().hashCode()));
-		assertThat(list.hashCode(), is(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5).hashCode()));
+		assertThat(emptyList.hashCode(), is(Lists.of().hashCode()));
+		assertThat(list.hashCode(), is(Lists.of(1, 2, 3, 4, 5, 1, 2, 3, 4, 5).hashCode()));
 	}
 
 	@Test

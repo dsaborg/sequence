@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -35,7 +33,7 @@ public class IterableCollectionTest {
 	private final IterableCollection<Integer> single = IterableCollection.of(1);
 	private final IterableCollection<Integer> regular = IterableCollection.of(1, 2, 3, 4, 5);
 	private final IterableCollection<Integer> mutable = IterableCollection.from(
-			new ArrayList<>(asList(1, 2, 3, 4, 5)));
+			new ArrayList<>(Lists.of(1, 2, 3, 4, 5)));
 	private final IterableCollection<Integer> sized = IterableCollection.from(
 			Iterables.of(1, 2, 3, 4, 5));
 
@@ -177,63 +175,63 @@ public class IterableCollectionTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList(17, 18, 19)), is(false));
+		assertThat(empty.containsAll(Lists.of(17, 18, 19)), is(false));
 
-		assertThat(single.containsAll(singletonList(1)), is(true));
-		assertThat(single.containsAll(asList(1, 2)), is(false));
+		assertThat(single.containsAll(Lists.of(1)), is(true));
+		assertThat(single.containsAll(Lists.of(1, 2)), is(false));
 
-		assertThat(regular.containsAll(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(regular.containsAll(asList(1, 2, 3, 4, 5, 6)), is(false));
+		assertThat(regular.containsAll(Lists.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(regular.containsAll(Lists.of(1, 2, 3, 4, 5, 6)), is(false));
 
-		assertThat(mutable.containsAll(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(mutable.containsAll(asList(1, 2, 3, 4, 5, 6)), is(false));
+		assertThat(mutable.containsAll(Lists.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(mutable.containsAll(Lists.of(1, 2, 3, 4, 5, 6)), is(false));
 
-		assertThat(sized.containsAll(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(sized.containsAll(asList(1, 2, 3, 4, 5, 6)), is(false));
+		assertThat(sized.containsAll(Lists.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(sized.containsAll(Lists.of(1, 2, 3, 4, 5, 6)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		expecting(UnsupportedOperationException.class, () -> empty.addAll(asList(17, 18, 19)));
-		expecting(UnsupportedOperationException.class, () -> single.addAll(asList(17, 18, 19)));
-		expecting(UnsupportedOperationException.class, () -> regular.addAll(asList(17, 18, 19)));
-		expecting(UnsupportedOperationException.class, () -> mutable.addAll(asList(17, 18, 19)));
-		expecting(UnsupportedOperationException.class, () -> sized.addAll(asList(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> empty.addAll(Lists.of(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> single.addAll(Lists.of(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> regular.addAll(Lists.of(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> mutable.addAll(Lists.of(17, 18, 19)));
+		expecting(UnsupportedOperationException.class, () -> sized.addAll(Lists.of(17, 18, 19)));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(asList(1, 2)), is(false));
+		assertThat(empty.removeAll(Lists.of(1, 2)), is(false));
 
-		expecting(UnsupportedOperationException.class, () -> single.removeAll(asList(1, 2)));
-		expecting(UnsupportedOperationException.class, () -> regular.removeAll(asList(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> single.removeAll(Lists.of(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> regular.removeAll(Lists.of(1, 2)));
 
-		assertThat(mutable.removeAll(asList(17, 18)), is(false));
+		assertThat(mutable.removeAll(Lists.of(17, 18)), is(false));
 		assertThat(mutable, contains(1, 2, 3, 4, 5));
 
-		assertThat(mutable.removeAll(asList(1, 2)), is(true));
+		assertThat(mutable.removeAll(Lists.of(1, 2)), is(true));
 		assertThat(mutable, contains(3, 4, 5));
 
-		expecting(UnsupportedOperationException.class, () -> sized.removeAll(asList(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> sized.removeAll(Lists.of(1, 2)));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(asList(1, 2)), is(false));
+		assertThat(empty.retainAll(Lists.of(1, 2)), is(false));
 
-		assertThat(single.retainAll(singletonList(1)), is(false));
-		assertThat(regular.retainAll(asList(1, 2, 3, 4, 5)), is(false));
+		assertThat(single.retainAll(Lists.of(1)), is(false));
+		assertThat(regular.retainAll(Lists.of(1, 2, 3, 4, 5)), is(false));
 
-		expecting(UnsupportedOperationException.class, () -> single.retainAll(singletonList(2)));
-		expecting(UnsupportedOperationException.class, () -> regular.retainAll(singletonList(6)));
+		expecting(UnsupportedOperationException.class, () -> single.retainAll(Lists.of(2)));
+		expecting(UnsupportedOperationException.class, () -> regular.retainAll(Lists.of(6)));
 
-		assertThat(mutable.retainAll(asList(1, 2, 3, 4, 5)), is(false));
+		assertThat(mutable.retainAll(Lists.of(1, 2, 3, 4, 5)), is(false));
 		assertThat(mutable, contains(1, 2, 3, 4, 5));
 
-		assertThat(mutable.retainAll(asList(1, 2)), is(true));
+		assertThat(mutable.retainAll(Lists.of(1, 2)), is(true));
 		assertThat(mutable, contains(1, 2));
 
-		expecting(UnsupportedOperationException.class, () -> sized.retainAll(singletonList(6)));
+		expecting(UnsupportedOperationException.class, () -> sized.retainAll(Lists.of(6)));
 	}
 
 	@Test

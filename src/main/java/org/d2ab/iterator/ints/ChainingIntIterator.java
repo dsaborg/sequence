@@ -16,18 +16,17 @@
 
 package org.d2ab.iterator.ints;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.ints.IntIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.util.Arrays.asList;
-
 public class ChainingIntIterator extends DelegatingUnaryIntIterator {
 	private final Iterator<IntIterable> iterables;
 
 	public ChainingIntIterator(IntIterable... iterables) {
-		this(asList(iterables));
+		this(Iterables.of(iterables));
 	}
 
 	public ChainingIntIterator(Iterable<IntIterable> iterables) {

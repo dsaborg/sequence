@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Iterables;
+import org.d2ab.collection.Lists;
 import org.d2ab.collection.Maps;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.test.SequentialCollector;
@@ -37,8 +38,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 import static java.util.Comparator.reverseOrder;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -157,17 +158,17 @@ public class SequenceTest {
 
 	@SafeVarargs
 	public static <T> Sequence<T> newListSequence(T... is) {
-		return ListSequence.from(new ArrayList<>(asList(is)));
+		return ListSequence.from(new ArrayList<>(Lists.of(is)));
 	}
 
 	@SafeVarargs
 	public static <T> Sequence<T> newCollectionSequence(T... is) {
-		return CollectionSequence.from(new ArrayDeque<>(asList(is)));
+		return CollectionSequence.from(new ArrayDeque<>(Lists.of(is)));
 	}
 
 	@SafeVarargs
 	public static <T> Sequence<T> newStandardSequence(T... is) {
-		return Sequence.from(new ArrayDeque<>(asList(is))::iterator);
+		return Sequence.from(new ArrayDeque<>(Lists.of(is))::iterator);
 	}
 
 	@Test
@@ -183,8 +184,8 @@ public class SequenceTest {
 		List<Integer> list = Sequence.<Integer>empty().asList();
 		expecting(UnsupportedOperationException.class, () -> list.add(1));
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 2)));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(Lists.of(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, Lists.of(-1, 0)));
 		expecting(IndexOutOfBoundsException.class, () -> list.remove(0));
 	}
 
@@ -201,8 +202,8 @@ public class SequenceTest {
 		List<Integer> list = Sequence.<Integer>of().asList();
 		expecting(UnsupportedOperationException.class, () -> list.add(1));
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(1, 2)));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(Lists.of(1, 2)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, Lists.of(-1, 0)));
 		expecting(UnsupportedOperationException.class, () -> list.remove(0));
 	}
 
@@ -219,8 +220,8 @@ public class SequenceTest {
 		List<Integer> list = Sequence.of(1).asList();
 		expecting(UnsupportedOperationException.class, () -> list.add(2));
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(2, 3)));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(Lists.of(2, 3)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, Lists.of(-1, 0)));
 		expecting(UnsupportedOperationException.class, () -> list.remove(0));
 		expecting(UnsupportedOperationException.class, () -> list.set(0, 17));
 	}
@@ -238,8 +239,8 @@ public class SequenceTest {
 		List<Integer> list = Sequence.of(1, 2, 3, 4, 5).asList();
 		expecting(UnsupportedOperationException.class, () -> list.add(6));
 		expecting(UnsupportedOperationException.class, () -> list.add(0, 0));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(asList(6, 7)));
-		expecting(UnsupportedOperationException.class, () -> list.addAll(0, asList(-1, 0)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(Lists.of(6, 7)));
+		expecting(UnsupportedOperationException.class, () -> list.addAll(0, Lists.of(-1, 0)));
 		expecting(UnsupportedOperationException.class, () -> list.remove(0));
 		expecting(UnsupportedOperationException.class, () -> list.set(0, 17));
 	}
@@ -261,7 +262,23 @@ public class SequenceTest {
 
 	@Test
 	public void fromIterable() {
+		Sequence<Integer> sequence = Sequence.from(Iterables.of(1, 2, 3)::iterator);
+		twice(() -> assertThat(sequence, contains(1, 2, 3)));
+		twice(() -> assertThat(sequence.size(), is(3)));
+		twice(() -> assertThat(sequence.isEmpty(), is(false)));
+	}
+
+	@Test
+	public void fromSizedIterable() {
 		Sequence<Integer> sequence = Sequence.from(Iterables.of(1, 2, 3));
+		twice(() -> assertThat(sequence, contains(1, 2, 3)));
+		twice(() -> assertThat(sequence.size(), is(3)));
+		twice(() -> assertThat(sequence.isEmpty(), is(false)));
+	}
+
+	@Test
+	public void fromSizedIterableAsIterable() {
+		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) Iterables.of(1, 2, 3));
 		twice(() -> assertThat(sequence, contains(1, 2, 3)));
 		twice(() -> assertThat(sequence.size(), is(3)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -324,9 +341,9 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfIterables() {
-		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
-		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
-		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(Lists.of(7, 8, 9));
 
 		Sequence<Integer> sequence = Sequence.concat(list1::iterator, list2::iterator, list3::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -346,9 +363,9 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfCollections() {
-		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
-		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
-		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		ArrayDeque<Integer> collection1 = new ArrayDeque<>(Lists.of(1, 2, 3));
+		ArrayDeque<Integer> collection2 = new ArrayDeque<>(Lists.of(4, 5, 6));
+		ArrayDeque<Integer> collection3 = new ArrayDeque<>(Lists.of(7, 8, 9));
 
 		Sequence<Integer> sequence = Sequence.concat(collection1, collection2, collection3);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -368,9 +385,9 @@ public class SequenceTest {
 
 	@Test
 	public void concatArrayOfLists() {
-		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
-		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
-		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
+		List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(Lists.of(7, 8, 9));
 
 		Sequence<Integer> sequence = Sequence.concat(list1, list2, list3);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -398,10 +415,10 @@ public class SequenceTest {
 
 	@Test
 	public void concatIterableOfIterables() {
-		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
-		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
-		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		List<Iterable<Integer>> listList = new ArrayList<>(asList(list1::iterator, list2::iterator, list3::iterator));
+		List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(Lists.of(7, 8, 9));
+		List<Iterable<Integer>> listList = new ArrayList<>(Lists.of(list1::iterator, list2::iterator, list3::iterator));
 
 		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) listList::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -418,7 +435,7 @@ public class SequenceTest {
 		twice(() -> assertThat(sequence.size(), is(9)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
 
-		listList.add(new ArrayList<>(asList(10, 11, 12)));
+		listList.add(new ArrayList<>(Lists.of(10, 11, 12)));
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 		twice(() -> assertThat(sequence.size(), is(12)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -426,11 +443,11 @@ public class SequenceTest {
 
 	@Test
 	public void concatIterableOfCollections() {
-		ArrayDeque<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
-		ArrayDeque<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
-		ArrayDeque<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		ArrayDeque<Integer> collection1 = new ArrayDeque<>(Lists.of(1, 2, 3));
+		ArrayDeque<Integer> collection2 = new ArrayDeque<>(Lists.of(4, 5, 6));
+		ArrayDeque<Integer> collection3 = new ArrayDeque<>(Lists.of(7, 8, 9));
 		Collection<Iterable<Integer>> collectionCollection = new ArrayDeque<>(
-				asList(collection1, collection2, collection3));
+				Lists.of(collection1, collection2, collection3));
 
 		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) collectionCollection::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -447,7 +464,7 @@ public class SequenceTest {
 		twice(() -> assertThat(sequence.size(), is(9)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
 
-		collectionCollection.add(new ArrayDeque<>(asList(10, 11, 12)));
+		collectionCollection.add(new ArrayDeque<>(Lists.of(10, 11, 12)));
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 		twice(() -> assertThat(sequence.size(), is(12)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -455,10 +472,10 @@ public class SequenceTest {
 
 	@Test
 	public void concatIterableOfLists() {
-		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
-		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
-		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		List<Iterable<Integer>> listList = new ArrayList<>(asList(list1, list2, list3));
+		List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(Lists.of(7, 8, 9));
+		List<Iterable<Integer>> listList = new ArrayList<>(Lists.of(list1, list2, list3));
 
 		Sequence<Integer> sequence = Sequence.concat((Iterable<Iterable<Integer>>) listList::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -475,7 +492,7 @@ public class SequenceTest {
 		twice(() -> assertThat(sequence.size(), is(9)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
 
-		listList.add(new ArrayList<>(asList(10, 11, 12)));
+		listList.add(new ArrayList<>(Lists.of(10, 11, 12)));
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 		twice(() -> assertThat(sequence.size(), is(12)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -491,10 +508,10 @@ public class SequenceTest {
 
 	@Test
 	public void concatListOfLists() {
-		List<Integer> list1 = new ArrayList<>(asList(1, 2, 3));
-		List<Integer> list2 = new ArrayList<>(asList(4, 5, 6));
-		List<Integer> list3 = new ArrayList<>(asList(7, 8, 9));
-		List<Iterable<Integer>> listList = new ArrayList<>(asList(list1, list2, list3));
+		List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(Lists.of(7, 8, 9));
+		List<Iterable<Integer>> listList = new ArrayList<>(Lists.of(list1, list2, list3));
 
 		Sequence<Integer> sequence = Sequence.concat(listList);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -511,7 +528,35 @@ public class SequenceTest {
 		twice(() -> assertThat(sequence.size(), is(9)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
 
-		listList.add(new ArrayList<>(asList(10, 11, 12)));
+		listList.add(new ArrayList<>(Lists.of(10, 11, 12)));
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
+		twice(() -> assertThat(sequence.size(), is(12)));
+		twice(() -> assertThat(sequence.isEmpty(), is(false)));
+	}
+
+	@Test
+	public void concatCollectionOfLists() {
+		List<Integer> list1 = new ArrayList<>(Lists.of(1, 2, 3));
+		List<Integer> list2 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> list3 = new ArrayList<>(Lists.of(7, 8, 9));
+		Collection<Iterable<Integer>> listCollection = new ArrayDeque<>(Lists.of(list1, list2, list3));
+
+		Sequence<Integer> sequence = Sequence.concat(listCollection);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence.size(), is(9)));
+		twice(() -> assertThat(sequence.isEmpty(), is(false)));
+
+		sequence.add(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 17)));
+		twice(() -> assertThat(sequence.size(), is(10)));
+		twice(() -> assertThat(sequence.isEmpty(), is(false)));
+
+		sequence.remove(17);
+		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+		twice(() -> assertThat(sequence.size(), is(9)));
+		twice(() -> assertThat(sequence.isEmpty(), is(false)));
+
+		listCollection.add(new ArrayList<>(Lists.of(10, 11, 12)));
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 		twice(() -> assertThat(sequence.size(), is(12)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -519,11 +564,11 @@ public class SequenceTest {
 
 	@Test
 	public void concatCollectionOfCollections() {
-		Collection<Integer> collection1 = new ArrayDeque<>(asList(1, 2, 3));
-		Collection<Integer> collection2 = new ArrayDeque<>(asList(4, 5, 6));
-		Collection<Integer> collection3 = new ArrayDeque<>(asList(7, 8, 9));
+		Collection<Integer> collection1 = new ArrayDeque<>(Lists.of(1, 2, 3));
+		Collection<Integer> collection2 = new ArrayDeque<>(Lists.of(4, 5, 6));
+		Collection<Integer> collection3 = new ArrayDeque<>(Lists.of(7, 8, 9));
 		Collection<Iterable<Integer>> collectionCollection = new ArrayDeque<>(
-				asList(collection1, collection2, collection3));
+				Lists.of(collection1, collection2, collection3));
 
 		Sequence<Integer> sequence = Sequence.concat(collectionCollection);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9)));
@@ -540,7 +585,7 @@ public class SequenceTest {
 		twice(() -> assertThat(sequence.size(), is(9)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
 
-		collectionCollection.add(new ArrayDeque<>(asList(10, 11, 12)));
+		collectionCollection.add(new ArrayDeque<>(Lists.of(10, 11, 12)));
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)));
 		twice(() -> assertThat(sequence.size(), is(12)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -548,7 +593,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheCollection() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list);
 		list.set(0, 17);
 
@@ -564,7 +609,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheIterable() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list::iterator);
 		list.set(0, 17);
 
@@ -580,7 +625,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheIterator() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list.iterator());
 		list.set(0, 17);
 
@@ -596,7 +641,7 @@ public class SequenceTest {
 
 	@Test
 	public void cacheStream() {
-		List<Integer> list = new ArrayList<>(asList(1, 2, 3, 4, 5));
+		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> cached = Sequence.cache(list.stream());
 		list.set(0, 17);
 
@@ -630,7 +675,7 @@ public class SequenceTest {
 		twice(() -> assertThat(sequence.size(), is(0)));
 		twice(() -> assertThat(sequence.isEmpty(), is(true)));
 
-		sequence.addAll(asList(1, 2, 3, 4, 5));
+		sequence.addAll(Lists.of(1, 2, 3, 4, 5));
 		assertThat(sequence, contains(1, 2, 3, 4, 5));
 		twice(() -> assertThat(sequence.size(), is(5)));
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -690,7 +735,7 @@ public class SequenceTest {
 
 	@Test
 	public void createFromCollectionAsIterable() {
-		Collection<Integer> backing = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Collection<Integer> backing = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.createFrom((Iterable<Integer>) backing);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(sequence.size(), is(5)));
@@ -705,7 +750,7 @@ public class SequenceTest {
 
 	@Test
 	public void createFromIterable() {
-		Collection<Integer> backing = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Collection<Integer> backing = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.createFrom(backing::iterator);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(sequence.size(), is(5)));
@@ -720,7 +765,7 @@ public class SequenceTest {
 
 	@Test
 	public void createFromCollection() {
-		Collection<Integer> backing = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Collection<Integer> backing = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.createFrom(backing);
 		twice(() -> assertThat(sequence, contains(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(sequence.size(), is(5)));
@@ -1038,8 +1083,8 @@ public class SequenceTest {
 
 	@Test
 	public void appendCollection() {
-		Sequence<Integer> appended = _123.append(new ArrayList<>(asList(4, 5, 6)))
-		                                 .append(new ArrayList<>(asList(7, 8)));
+		Sequence<Integer> appended = _123.append(new ArrayList<>(Lists.of(4, 5, 6)))
+		                                 .append(new ArrayList<>(Lists.of(7, 8)));
 		twice(() -> assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8)));
 		twice(() -> assertThat(appended.size(), is(8)));
 		twice(() -> assertThat(appended.isEmpty(), is(false)));
@@ -1091,8 +1136,8 @@ public class SequenceTest {
 
 	@Test
 	public void appendCollectionIterator() {
-		List<Integer> _456 = new ArrayList<>(asList(4, 5, 6));
-		List<Integer> _78 = new ArrayList<>(asList(7, 8));
+		List<Integer> _456 = new ArrayList<>(Lists.of(4, 5, 6));
+		List<Integer> _78 = new ArrayList<>(Lists.of(7, 8));
 
 		Sequence<Integer> appended = _123.append(_456.iterator()).append(_78.iterator());
 		assertThat(appended, contains(1, 2, 3, 4, 5, 6, 7, 8));
@@ -1449,7 +1494,7 @@ public class SequenceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void flatMapCollections() {
-		Function<Integer, List<Integer>> appendZero = x -> asList(x, 0);
+		Function<Integer, List<Integer>> appendZero = x -> Lists.of(x, 0);
 
 		Sequence<Integer> emptyFlatMapped = empty.flatten(appendZero);
 		twice(() -> assertThat(emptyFlatMapped, is(emptyIterable())));
@@ -2483,18 +2528,18 @@ public class SequenceTest {
 	@Test
 	public void groupBy() {
 		twice(() -> assertThat(empty.groupBy(x -> x), is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x), is(singletonMap(1, singletonList(1)))));
+		twice(() -> assertThat(_1.groupBy(x -> x), is(singletonMap(1, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x), is(Maps.builder()
-		                                                   .put(1, singletonList(1))
-		                                                   .put(2, singletonList(2))
+		                                                   .put(1, Lists.of(1))
+		                                                   .put(2, Lists.of(2))
 		                                                   .build())));
 
 		twice(() -> assertThat(empty.groupBy(x -> x / 3), is(emptyMap())));
-		twice(() -> assertThat(_1.groupBy(x -> x / 3), is(singletonMap(0, singletonList(1)))));
-		twice(() -> assertThat(_12.groupBy(x -> x / 3), is(singletonMap(0, asList(1, 2)))));
+		twice(() -> assertThat(_1.groupBy(x -> x / 3), is(singletonMap(0, Lists.of(1)))));
+		twice(() -> assertThat(_12.groupBy(x -> x / 3), is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.groupBy(x -> x / 3), is(Maps.builder()
-		                                                          .put(0, asList(1, 2))
-		                                                          .put(1, asList(3, 4, 5))
+		                                                          .put(0, Lists.of(1, 2))
+		                                                          .put(1, Lists.of(3, 4, 5))
 		                                                          .build())));
 
 		twice(() -> {
@@ -2502,9 +2547,9 @@ public class SequenceTest {
 
 			assertThat(map, is(instanceOf(HashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, asList(1, 4, 7))
-			                               .put(2, asList(2, 5, 8))
-			                               .put(null, asList(3, 6, 9))
+			                               .put(1, Lists.of(1, 4, 7))
+			                               .put(2, Lists.of(2, 5, 8))
+			                               .put(null, Lists.of(3, 6, 9))
 			                               .build())));
 		});
 	}
@@ -2515,22 +2560,22 @@ public class SequenceTest {
 
 		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap), is(emptyMap())));
 		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap),
-		                       is(singletonMap(1, singletonList(1)))));
+		                       is(singletonMap(1, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap), is(Maps.builder()
-		                                                                        .put(1, singletonList(1))
-		                                                                        .put(2, singletonList(2))
+		                                                                        .put(1, Lists.of(1))
+		                                                                        .put(2, Lists.of(2))
 		                                                                        .build())));
 
 		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap),
 		                       is(emptyMap())));
 		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap),
 		                       is(Maps.builder()
-		                              .put(0, asList(1, 2))
-		                              .put(1, asList(3, 4, 5))
+		                              .put(0, Lists.of(1, 2))
+		                              .put(1, Lists.of(3, 4, 5))
 		                              .build())));
 
 		twice(() -> {
@@ -2538,9 +2583,9 @@ public class SequenceTest {
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder()
-			                               .put(1, asList(1, 4, 7))
-			                               .put(2, asList(2, 5, 8))
-			                               .put(null, asList(3, 6, 9))
+			                               .put(1, Lists.of(1, 4, 7))
+			                               .put(2, Lists.of(2, 5, 8))
+			                               .put(null, Lists.of(3, 6, 9))
 			                               .build())));
 
 			// check order
@@ -2556,23 +2601,23 @@ public class SequenceTest {
 
 		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap, LinkedList::new), is(emptyMap())));
 		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap, LinkedList::new),
-		                       is(singletonMap(1, singletonList(1)))));
+		                       is(singletonMap(1, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap, LinkedList::new),
 		                       is(Maps.builder()
-		                              .put(1, singletonList(1))
-		                              .put(2, singletonList(2))
+		                              .put(1, Lists.of(1))
+		                              .put(2, Lists.of(2))
 		                              .build())));
 
 		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
 		                       is(emptyMap())));
 		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap, LinkedList::new),
 		                       is(Maps.builder()
-		                              .put(0, asList(1, 2))
-		                              .put(1, asList(3, 4, 5))
+		                              .put(0, Lists.of(1, 2))
+		                              .put(1, Lists.of(3, 4, 5))
 		                              .build())));
 
 		twice(() -> {
@@ -2581,9 +2626,9 @@ public class SequenceTest {
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(Maps.builder()
-			                       .put(1, new TreeSet<>(asList(1, 4, 7)))
-			                       .put(2, new TreeSet<>(asList(2, 5, 8)))
-			                       .put(null, new TreeSet<>(asList(3, 6, 9)))
+			                       .put(1, new TreeSet<>(Lists.of(1, 4, 7)))
+			                       .put(2, new TreeSet<>(Lists.of(2, 5, 8)))
+			                       .put(null, new TreeSet<>(Lists.of(3, 6, 9)))
 			                       .build()));
 
 			assertThat(map.get(1), is(instanceOf(TreeSet.class)));
@@ -2604,23 +2649,23 @@ public class SequenceTest {
 
 		twice(() -> assertThat(empty.groupBy(x -> x, createLinkedHashMap, toLinkedList), is(emptyMap())));
 		twice(() -> assertThat(_1.groupBy(x -> x, createLinkedHashMap, toLinkedList),
-		                       is(singletonMap(1, singletonList(1)))));
+		                       is(singletonMap(1, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x, createLinkedHashMap, toLinkedList),
 		                       is(Maps.builder()
-		                              .put(1, singletonList(1))
-		                              .put(2, singletonList(2))
+		                              .put(1, Lists.of(1))
+		                              .put(2, Lists.of(2))
 		                              .build())));
 
 		twice(() -> assertThat(empty.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
 		                       is(emptyMap())));
 		twice(() -> assertThat(_1.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
-		                       is(singletonMap(0, singletonList(1)))));
+		                       is(singletonMap(0, Lists.of(1)))));
 		twice(() -> assertThat(_12.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
-		                       is(singletonMap(0, asList(1, 2)))));
+		                       is(singletonMap(0, Lists.of(1, 2)))));
 		twice(() -> assertThat(_12345.groupBy(x -> x / 3, createLinkedHashMap, toLinkedList),
 		                       is(Maps.builder()
-		                              .put(0, asList(1, 2))
-		                              .put(1, asList(3, 4, 5))
+		                              .put(0, Lists.of(1, 2))
+		                              .put(1, Lists.of(3, 4, 5))
 		                              .build())));
 
 		twice(() -> {
@@ -2629,9 +2674,9 @@ public class SequenceTest {
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(Maps.builder()
-			                       .put(1, asList(1, 4, 7))
-			                       .put(2, asList(2, 5, 8))
-			                       .put(null, asList(3, 6, 9))
+			                       .put(1, Lists.of(1, 4, 7))
+			                       .put(2, Lists.of(2, 5, 8))
+			                       .put(null, Lists.of(3, 6, 9))
 			                       .build()));
 
 			assertThat(map.get(1), is(instanceOf(LinkedList.class)));
@@ -4421,7 +4466,7 @@ public class SequenceTest {
 		twice(() -> assertThat(_123, contains(2, 3)));
 
 		Sequence<Integer> varyingLengthRepeated = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = Lists.of(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -4464,7 +4509,7 @@ public class SequenceTest {
 		twice(() -> assertThat(_123, contains(2, 3)));
 
 		Sequence<Integer> varyingLengthRepeatedTwice = Sequence.from(new Iterable<Integer>() {
-			private List<Integer> list = asList(1, 2, 3);
+			private List<Integer> list = Lists.of(1, 2, 3);
 			int end = list.size();
 
 			@Override
@@ -4503,7 +4548,7 @@ public class SequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+		Queue<Integer> queue = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 		Sequence<Integer> sequence = Sequence.generate(queue::poll);
 		expecting(UnsupportedOperationException.class, sequence::size);
 		twice(() -> assertThat(sequence.isEmpty(), is(false)));
@@ -4515,7 +4560,7 @@ public class SequenceTest {
 	@Test
 	public void multiGenerate() {
 		Sequence<Integer> sequence = Sequence.multiGenerate(() -> {
-			Queue<Integer> queue = new ArrayDeque<>(asList(1, 2, 3, 4, 5));
+			Queue<Integer> queue = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
 			return queue::poll;
 		});
 		expecting(UnsupportedOperationException.class, sequence::size);
@@ -4590,7 +4635,7 @@ public class SequenceTest {
 
 	@Test
 	public void appendClear() {
-		Sequence<Integer> appended = _1.append(new ArrayList<>(singletonList(2)));
+		Sequence<Integer> appended = _1.append(new ArrayList<>(Lists.of(2)));
 		appended.clear();
 
 		twice(() -> assertThat(appended, is(emptyIterable())));
@@ -4632,14 +4677,14 @@ public class SequenceTest {
 	public void containsAllIterable() {
 		assertThat(empty.containsAll(Iterables.of()), is(true));
 		assertThat(empty.containsAll(Iterables.of(17, 18, 19)), is(false));
-		assertThat(empty.containsAll((Iterable<?>) emptyList()), is(true));
-		assertThat(empty.containsAll((Iterable<?>) asList(17, 18, 19)), is(false));
+		assertThat(empty.containsAll((Iterable<?>) Lists.of()), is(true));
+		assertThat(empty.containsAll((Iterable<?>) Lists.of(17, 18, 19)), is(false));
 
 		assertThat(_12345.containsAll(Iterables.of()), is(true));
-		assertThat(_12345.containsAll((Iterable<?>) emptyList()), is(true));
+		assertThat(_12345.containsAll((Iterable<?>) Lists.of()), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1)), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1, 3, 5)), is(true));
-		assertThat(_12345.containsAll((Iterable<?>) asList(1, 3, 5)), is(true));
+		assertThat(_12345.containsAll((Iterable<?>) Lists.of(1, 3, 5)), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1, 2, 3, 4, 5)), is(true));
 		assertThat(_12345.containsAll(Iterables.of(1, 2, 3, 4, 5, 17)), is(false));
 		assertThat(_12345.containsAll(Iterables.of(17, 18, 19)), is(false));
@@ -4647,15 +4692,15 @@ public class SequenceTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(emptyList()), is(true));
-		assertThat(empty.containsAll(asList(17, 18, 19)), is(false));
+		assertThat(empty.containsAll(Lists.of()), is(true));
+		assertThat(empty.containsAll(Lists.of(17, 18, 19)), is(false));
 
-		assertThat(_12345.containsAll(emptyList()), is(true));
-		assertThat(_12345.containsAll(singletonList(1)), is(true));
-		assertThat(_12345.containsAll(asList(1, 3, 5)), is(true));
-		assertThat(_12345.containsAll(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(_12345.containsAll(asList(1, 2, 3, 4, 5, 17)), is(false));
-		assertThat(_12345.containsAll(asList(17, 18, 19)), is(false));
+		assertThat(_12345.containsAll(Lists.of()), is(true));
+		assertThat(_12345.containsAll(Lists.of(1)), is(true));
+		assertThat(_12345.containsAll(Lists.of(1, 3, 5)), is(true));
+		assertThat(_12345.containsAll(Lists.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(_12345.containsAll(Lists.of(1, 2, 3, 4, 5, 17)), is(false));
+		assertThat(_12345.containsAll(Lists.of(17, 18, 19)), is(false));
 	}
 
 	@Test
@@ -4686,15 +4731,15 @@ public class SequenceTest {
 
 	@Test
 	public void containsAnyCollection() {
-		assertThat(empty.containsAny(emptyList()), is(false));
-		assertThat(empty.containsAny(asList(17, 18, 19)), is(false));
+		assertThat(empty.containsAny(Lists.of()), is(false));
+		assertThat(empty.containsAny(Lists.of(17, 18, 19)), is(false));
 
-		assertThat(_12345.containsAny(emptyList()), is(false));
-		assertThat(_12345.containsAny(singletonList(1)), is(true));
-		assertThat(_12345.containsAny(asList(1, 3, 5)), is(true));
-		assertThat(_12345.containsAny(asList(1, 2, 3, 4, 5)), is(true));
-		assertThat(_12345.containsAny(asList(1, 2, 3, 4, 5, 17)), is(true));
-		assertThat(_12345.containsAny(asList(17, 18, 19)), is(false));
+		assertThat(_12345.containsAny(Lists.of()), is(false));
+		assertThat(_12345.containsAny(Lists.of(1)), is(true));
+		assertThat(_12345.containsAny(Lists.of(1, 3, 5)), is(true));
+		assertThat(_12345.containsAny(Lists.of(1, 2, 3, 4, 5)), is(true));
+		assertThat(_12345.containsAny(Lists.of(1, 2, 3, 4, 5, 17)), is(true));
+		assertThat(_12345.containsAny(Lists.of(17, 18, 19)), is(false));
 	}
 
 	@Test
@@ -4776,10 +4821,10 @@ public class SequenceTest {
 
 	@Test
 	public void removeAllCollection() {
-		assertThat(empty.removeAll(asList(3, 4)), is(false));
+		assertThat(empty.removeAll(Lists.of(3, 4)), is(false));
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		assertThat(_12345.removeAll(asList(3, 4, 7)), is(true));
+		assertThat(_12345.removeAll(Lists.of(3, 4, 7)), is(true));
 		twice(() -> assertThat(_12345, contains(1, 2, 5)));
 	}
 
@@ -4803,10 +4848,10 @@ public class SequenceTest {
 
 	@Test
 	public void retainAllCollection() {
-		assertThat(empty.retainAll(asList(3, 4)), is(false));
+		assertThat(empty.retainAll(Lists.of(3, 4)), is(false));
 		twice(() -> assertThat(empty, is(emptyIterable())));
 
-		assertThat(_12345.retainAll(asList(3, 4, 7)), is(true));
+		assertThat(_12345.retainAll(Lists.of(3, 4, 7)), is(true));
 		twice(() -> assertThat(_12345, contains(3, 4)));
 	}
 

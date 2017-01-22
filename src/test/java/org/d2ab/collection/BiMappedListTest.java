@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -52,7 +51,7 @@ public class BiMappedListTest {
 		mappedEmpty = BiMappedList.from(originalEmpty, Object::toString, Integer::parseInt);
 
 		original = constructor.get();
-		original.addAll(asList(1, 2, 3, 4, 5));
+		original.addAll(Lists.of(1, 2, 3, 4, 5));
 		mapped = BiMappedList.from(original, Object::toString, Integer::parseInt);
 	}
 
@@ -140,56 +139,56 @@ public class BiMappedListTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(mappedEmpty.containsAll(asList("17", "18")), is(false));
+		assertThat(mappedEmpty.containsAll(Lists.of("17", "18")), is(false));
 
-		assertThat(mapped.containsAll(asList("1", "2")), is(true));
-		assertThat(mapped.containsAll(asList("1", "17")), is(false));
+		assertThat(mapped.containsAll(Lists.of("1", "2")), is(true));
+		assertThat(mapped.containsAll(Lists.of("1", "17")), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		mappedEmpty.addAll(asList("1", "2"));
+		mappedEmpty.addAll(Lists.of("1", "2"));
 		assertThat(mappedEmpty, contains("1", "2"));
 		assertThat(originalEmpty, contains(1, 2));
 
-		mapped.addAll(asList("6", "7"));
+		mapped.addAll(Lists.of("6", "7"));
 		assertThat(mapped, contains("1", "2", "3", "4", "5", "6", "7"));
 		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7));
 	}
 
 	@Test
 	public void addAllAtIndex() {
-		mappedEmpty.addAll(0, asList("1", "2"));
+		mappedEmpty.addAll(0, Lists.of("1", "2"));
 		assertThat(mappedEmpty, contains("1", "2"));
 		assertThat(originalEmpty, contains(1, 2));
 
-		mapped.addAll(2, asList("17", "18"));
+		mapped.addAll(2, Lists.of("17", "18"));
 		assertThat(mapped, contains("1", "2", "17", "18", "3", "4", "5"));
 		assertThat(original, contains(1, 2, 17, 18, 3, 4, 5));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(mappedEmpty.removeAll(asList("1", "2")), is(false));
+		assertThat(mappedEmpty.removeAll(Lists.of("1", "2")), is(false));
 		assertThat(mappedEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(mapped.removeAll(asList()), is(false));
+		assertThat(mapped.removeAll(Lists.of()), is(false));
 		assertThat(mapped, contains("1", "2", "3", "4", "5"));
 		assertThat(original, contains(1, 2, 3, 4, 5));
 
-		assertThat(mapped.removeAll(asList("1", "2", "3")), is(true));
+		assertThat(mapped.removeAll(Lists.of("1", "2", "3")), is(true));
 		assertThat(mapped, contains("4", "5"));
 		assertThat(original, contains(4, 5));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(mappedEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(mappedEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(mappedEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(mapped.retainAll(asList("1", "2", "3")), is(true));
+		assertThat(mapped.retainAll(Lists.of("1", "2", "3")), is(true));
 		assertThat(mapped, contains("1", "2", "3"));
 		assertThat(original, contains(1, 2, 3));
 	}
@@ -229,11 +228,11 @@ public class BiMappedListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(mappedEmpty.equals(asList()), is(true));
-		assertThat(mappedEmpty.equals(asList("1", "2")), is(false));
+		assertThat(mappedEmpty.equals(Lists.of()), is(true));
+		assertThat(mappedEmpty.equals(Lists.of("1", "2")), is(false));
 
-		assertThat(mapped.equals(asList("1", "2", "3", "4", "5")), is(true));
-		assertThat(mapped.equals(asList("1", "17", "3", "4", "5")), is(false));
+		assertThat(mapped.equals(Lists.of("1", "2", "3", "4", "5")), is(true));
+		assertThat(mapped.equals(Lists.of("1", "17", "3", "4", "5")), is(false));
 	}
 
 	@Test

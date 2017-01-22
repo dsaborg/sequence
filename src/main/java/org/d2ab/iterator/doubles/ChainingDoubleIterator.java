@@ -16,18 +16,17 @@
 
 package org.d2ab.iterator.doubles;
 
+import org.d2ab.collection.Iterables;
 import org.d2ab.collection.doubles.DoubleIterable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.util.Arrays.asList;
-
 public class ChainingDoubleIterator extends DelegatingUnaryDoubleIterator {
 	private final Iterator<DoubleIterable> iterables;
 
 	public ChainingDoubleIterator(DoubleIterable... iterables) {
-		this(asList(iterables));
+		this(Iterables.of(iterables));
 	}
 
 	public ChainingDoubleIterator(Iterable<DoubleIterable> iterables) {

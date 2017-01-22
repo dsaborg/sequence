@@ -24,7 +24,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsIntIterableContainingInOrder.containsInts;
 import static org.d2ab.test.Tests.expecting;
@@ -375,10 +374,10 @@ public class CharListTest {
 		assertThat(list, is(equalTo(list)));
 		assertThat(list, is(not(equalTo(null))));
 		assertThat(list, is(not(equalTo(new Object()))));
-		assertThat(list, is(not(equalTo(new TreeSet<>(asList('a', 'b', 'c', 'd', 'e'))))));
-		assertThat(list, is(not(equalTo(new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd'))))));
+		assertThat(list, is(not(equalTo(new TreeSet<>(Lists.of('a', 'b', 'c', 'd', 'e'))))));
+		assertThat(list, is(not(equalTo(new ArrayList<>(Lists.of('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd'))))));
 
-		List<Character> list2 = new ArrayList<>(asList('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q'));
+		List<Character> list2 = new ArrayList<>(Lists.of('a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e', 'q'));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 

@@ -23,8 +23,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.naturalOrder;
 import static java.util.stream.Collectors.toList;
 import static org.d2ab.test.Tests.expecting;
@@ -317,7 +315,7 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void testEqualsHashCodeAgainstList() {
-		List<Double> list2 = new ArrayList<>(asList(1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
+		List<Double> list2 = new ArrayList<>(Lists.of(1.0, 2.0, 3.0, 4.0, 5.0, 17.0));
 		assertThat(list, is(not(equalTo(list2))));
 		assertThat(list.hashCode(), is(not(list2.hashCode())));
 
@@ -426,13 +424,13 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAll() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(empty.addAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(empty, contains(1.0, 2.0, 3.0));
 
-		assertThat(list.addAll(asList(6.0, 7.0, 8.0)), is(true));
+		assertThat(list.addAll(Lists.of(6.0, 7.0, 8.0)), is(true));
 		assertThat(list, contains(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
 	}
 
@@ -462,13 +460,13 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllAt() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty.addAll(0, Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(0, asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(empty.addAll(0, Lists.of(1.0, 2.0, 3.0)), is(true));
 		assertThat(empty, contains(1.0, 2.0, 3.0));
 
-		assertThat(list.addAll(2, asList(17.0, 18.0, 19.0)), is(true));
+		assertThat(list.addAll(2, Lists.of(17.0, 18.0, 19.0)), is(true));
 		assertThat(list, contains(1.0, 2.0, 17.0, 18.0, 19.0, 3.0, 4.0, 5.0));
 	}
 
@@ -542,10 +540,10 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(asList(17.0, 18.0, 19.0, new Object())), is(false));
+		assertThat(empty.containsAll(Lists.of(17.0, 18.0, 19.0, new Object())), is(false));
 
-		assertThat(list.containsAll(asList(17.0, 18.0, 19.0, new Object())), is(false));
-		assertThat(list.containsAll(asList(1.0, 2.0, 3.0)), is(true));
+		assertThat(list.containsAll(Lists.of(17.0, 18.0, 19.0, new Object())), is(false));
+		assertThat(list.containsAll(Lists.of(1.0, 2.0, 3.0)), is(true));
 	}
 
 	@Test
@@ -558,11 +556,11 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.removeAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(asList(17.0, 18.0, 19.0)), is(false));
-		assertThat(list.removeAll(asList(1.0, 2.0, 3.0, 17.0)), is(true));
+		assertThat(list.removeAll(Lists.of(17.0, 18.0, 19.0)), is(false));
+		assertThat(list.removeAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(true));
 		assertThat(list, contains(4.0, 5.0));
 	}
 
@@ -588,10 +586,10 @@ public class ArrayDoubleListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.retainAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(asList(1.0, 2.0, 3.0, 17.0)), is(true));
+		assertThat(list.retainAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(true));
 		assertThat(list, contains(1.0, 2.0, 3.0));
 	}
 

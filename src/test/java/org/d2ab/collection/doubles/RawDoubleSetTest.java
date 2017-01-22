@@ -17,6 +17,7 @@
 package org.d2ab.collection.doubles;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
@@ -25,7 +26,6 @@ import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Random;
 
-import static java.util.Arrays.asList;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
@@ -280,9 +280,9 @@ public class RawDoubleSetTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAllCollection() {
-		assertThat(empty.containsAll(asList(1.0, 2.0, 3.0)), is(false));
-		assertThat(set.containsAll(asList(1.0, 2.0, 3.0)), is(true));
-		assertThat(set.containsAll(asList(1.0, 2.0, 3.0, 17.0)), is(false));
+		assertThat(empty.containsAll(Lists.of(1.0, 2.0, 3.0)), is(false));
+		assertThat(set.containsAll(Lists.of(1.0, 2.0, 3.0)), is(true));
+		assertThat(set.containsAll(Lists.of(1.0, 2.0, 3.0, 17.0)), is(false));
 	}
 
 	@Test

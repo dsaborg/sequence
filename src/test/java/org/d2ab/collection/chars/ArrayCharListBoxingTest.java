@@ -16,13 +16,13 @@
 
 package org.d2ab.collection.chars;
 
+import org.d2ab.collection.Lists;
 import org.d2ab.test.BaseBoxingTest;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -373,13 +373,13 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAll() {
-		assertThat(empty.addAll(emptyList()), is(false));
+		assertThat(empty.addAll(Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(Arrays.asList('a', 'b', 'c')), is(true));
+		assertThat(empty.addAll(Lists.of('a', 'b', 'c')), is(true));
 		assertThat(empty, contains('a', 'b', 'c'));
 
-		assertThat(list.addAll(Arrays.asList('f', 'g', 'h')), is(true));
+		assertThat(list.addAll(Lists.of('f', 'g', 'h')), is(true));
 		assertThat(list, contains('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
 	}
 
@@ -409,13 +409,13 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void addAllAt() {
-		assertThat(empty.addAll(0, emptyList()), is(false));
+		assertThat(empty.addAll(0, Lists.of()), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(empty.addAll(0, Arrays.asList('a', 'b', 'c')), is(true));
+		assertThat(empty.addAll(0, Lists.of('a', 'b', 'c')), is(true));
 		assertThat(empty, contains('a', 'b', 'c'));
 
-		assertThat(list.addAll(2, Arrays.asList('q', 'r', 's')), is(true));
+		assertThat(list.addAll(2, Lists.of('q', 'r', 's')), is(true));
 		assertThat(list, contains('a', 'b', 'q', 'r', 's', 'c', 'd', 'e'));
 	}
 
@@ -489,10 +489,10 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(empty.containsAll(Arrays.asList('q', 'r', 's', new Object())), is(false));
+		assertThat(empty.containsAll(Lists.of('q', 'r', 's', new Object())), is(false));
 
-		assertThat(list.containsAll(Arrays.asList('q', 'r', 's', new Object())), is(false));
-		assertThat(list.containsAll(Arrays.asList('a', 'b', 'c')), is(true));
+		assertThat(list.containsAll(Lists.of('q', 'r', 's', new Object())), is(false));
+		assertThat(list.containsAll(Lists.of('a', 'b', 'c')), is(true));
 	}
 
 	@Test
@@ -505,11 +505,11 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void removeAll() {
-		assertThat(empty.removeAll(Arrays.asList('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.removeAll(Lists.of('a', 'b', 'c', 'q')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.removeAll(Arrays.asList('q', 'r', 's')), is(false));
-		assertThat(list.removeAll(Arrays.asList('a', 'b', 'c', 'q')), is(true));
+		assertThat(list.removeAll(Lists.of('q', 'r', 's')), is(false));
+		assertThat(list.removeAll(Lists.of('a', 'b', 'c', 'q')), is(true));
 		assertThat(list, contains('d', 'e'));
 	}
 
@@ -535,10 +535,10 @@ public class ArrayCharListBoxingTest extends BaseBoxingTest {
 
 	@Test
 	public void retainAll() {
-		assertThat(empty.retainAll(Arrays.asList('a', 'b', 'c', 'q')), is(false));
+		assertThat(empty.retainAll(Lists.of('a', 'b', 'c', 'q')), is(false));
 		assertThat(empty, is(emptyIterable()));
 
-		assertThat(list.retainAll(Arrays.asList('a', 'b', 'c', 'q')), is(true));
+		assertThat(list.retainAll(Lists.of('a', 'b', 'c', 'q')), is(true));
 		assertThat(list, contains('a', 'b', 'c'));
 	}
 

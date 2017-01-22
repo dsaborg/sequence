@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static java.util.Arrays.asList;
-
 /**
  * A {@link Collection} of multiple {@link Collection}s strung together in a chain.
  */
@@ -33,7 +31,7 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Collection<T> concat(Collection<T>... collections) {
-		return concat(asList(collections));
+		return concat(Lists.of(collections));
 	}
 
 	public static <T> Collection<T> concat(Collection<Collection<T>> collections) {

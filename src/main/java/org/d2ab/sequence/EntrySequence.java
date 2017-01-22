@@ -78,7 +78,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 */
 	@SafeVarargs
 	static <K, V> EntrySequence<K, V> of(Entry<K, V>... items) {
-		return from(Arrays.asList(items));
+		return from(Lists.of(items));
 	}
 
 	/**

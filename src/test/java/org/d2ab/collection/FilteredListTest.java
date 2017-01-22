@@ -23,8 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -37,7 +35,7 @@ public class FilteredListTest {
 	private final List<Integer> filteredEmpty = FilteredList.from(originalEmpty,
 	                                                              (Predicate<? super Integer>) predicate);
 
-	private final List<Integer> original = new ArrayList<>(asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+	private final List<Integer> original = new ArrayList<>(Lists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 	private final List<Integer> filtered = FilteredList.from(original, (Predicate<? super Integer>) predicate);
 
 	@Test
@@ -131,72 +129,72 @@ public class FilteredListTest {
 
 	@Test
 	public void containsAll() {
-		assertThat(filteredEmpty.containsAll(asList(17, 18)), is(false));
+		assertThat(filteredEmpty.containsAll(Lists.of(17, 18)), is(false));
 
-		assertThat(filtered.containsAll(asList(2, 3)), is(false));
-		assertThat(filtered.containsAll(asList(1, 3)), is(true));
-		assertThat(filtered.containsAll(asList(1, 17)), is(false));
+		assertThat(filtered.containsAll(Lists.of(2, 3)), is(false));
+		assertThat(filtered.containsAll(Lists.of(1, 3)), is(true));
+		assertThat(filtered.containsAll(Lists.of(1, 17)), is(false));
 	}
 
 	@Test
 	public void addAll() {
-		assertThat(filteredEmpty.addAll(asList(1, 3)), is(true));
+		assertThat(filteredEmpty.addAll(Lists.of(1, 3)), is(true));
 		assertThat(filteredEmpty, contains(1, 3));
 		assertThat(originalEmpty, contains(1, 3));
 
-		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(asList(1, 2)));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(Lists.of(1, 2)));
 		assertThat(filteredEmpty, contains(1, 3, 1));
 		assertThat(originalEmpty, contains(1, 3, 1));
 
-		assertThat(filtered.addAll(asList(1, 3)), is(true));
+		assertThat(filtered.addAll(Lists.of(1, 3)), is(true));
 		assertThat(filtered, contains(1, 3, 5, 7, 9, 1, 3));
 		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3));
 
-		expecting(IllegalArgumentException.class, () -> filtered.addAll(asList(1, 2)));
+		expecting(IllegalArgumentException.class, () -> filtered.addAll(Lists.of(1, 2)));
 		assertThat(filtered, contains(1, 3, 5, 7, 9, 1, 3, 1));
 		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3, 1));
 	}
 
 	@Test
 	public void addAllAtIndex() {
-		assertThat(filteredEmpty.addAll(0, asList(1, 3)), is(true));
+		assertThat(filteredEmpty.addAll(0, Lists.of(1, 3)), is(true));
 		assertThat(filteredEmpty, contains(1, 3));
 		assertThat(originalEmpty, contains(1, 3));
 
-		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(0, asList(5, 2)));
+		expecting(IllegalArgumentException.class, () -> filteredEmpty.addAll(0, Lists.of(5, 2)));
 		assertThat(filteredEmpty, contains(5, 1, 3));
 		assertThat(originalEmpty, contains(5, 1, 3));
 
-		assertThat(filtered.addAll(0, asList(1, 3)), is(true));
+		assertThat(filtered.addAll(0, Lists.of(1, 3)), is(true));
 		assertThat(filtered, contains(1, 3, 1, 3, 5, 7, 9));
 		assertThat(original, contains(1, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-		expecting(IllegalArgumentException.class, () -> filtered.addAll(0, asList(5, 2)));
+		expecting(IllegalArgumentException.class, () -> filtered.addAll(0, Lists.of(5, 2)));
 		assertThat(filtered, contains(5, 1, 3, 1, 3, 5, 7, 9));
 		assertThat(original, contains(5, 1, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 	}
 
 	@Test
 	public void removeAll() {
-		assertThat(filteredEmpty.removeAll(asList(1, 3)), is(false));
+		assertThat(filteredEmpty.removeAll(Lists.of(1, 3)), is(false));
 		assertThat(filteredEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(filtered.removeAll(emptyList()), is(false));
+		assertThat(filtered.removeAll(Lists.of()), is(false));
 		assertThat(original, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-		assertThat(filtered.removeAll(asList(1, 2, 3, 4, 5)), is(true));
+		assertThat(filtered.removeAll(Lists.of(1, 2, 3, 4, 5)), is(true));
 		assertThat(filtered, contains(7, 9));
 		assertThat(original, contains(2, 4, 6, 7, 8, 9, 10));
 	}
 
 	@Test
 	public void retainAll() {
-		assertThat(filteredEmpty.retainAll(asList(1, 2)), is(false));
+		assertThat(filteredEmpty.retainAll(Lists.of(1, 2)), is(false));
 		assertThat(filteredEmpty, is(emptyIterable()));
 		assertThat(originalEmpty, is(emptyIterable()));
 
-		assertThat(filtered.retainAll(asList(1, 2, 3)), is(true));
+		assertThat(filtered.retainAll(Lists.of(1, 2, 3)), is(true));
 		assertThat(filtered, contains(1, 3));
 		assertThat(original, contains(1, 2, 3, 4, 6, 8, 10));
 	}
@@ -240,11 +238,11 @@ public class FilteredListTest {
 
 	@Test
 	public void testEquals() {
-		assertThat(filteredEmpty.equals(emptyList()), is(true));
-		assertThat(filteredEmpty.equals(asList(1, 3)), is(false));
+		assertThat(filteredEmpty.equals(Lists.of()), is(true));
+		assertThat(filteredEmpty.equals(Lists.of(1, 3)), is(false));
 
-		assertThat(filtered.equals(asList(1, 3, 5, 7, 9)), is(true));
-		assertThat(filtered.equals(asList(1, 17, 5, 7, 9)), is(false));
+		assertThat(filtered.equals(Lists.of(1, 3, 5, 7, 9)), is(true));
+		assertThat(filtered.equals(Lists.of(1, 17, 5, 7, 9)), is(false));
 	}
 
 	@Test

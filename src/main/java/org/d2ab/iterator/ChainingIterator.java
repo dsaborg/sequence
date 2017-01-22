@@ -16,17 +16,17 @@
 
 package org.d2ab.iterator;
 
+import org.d2ab.collection.Iterables;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import static java.util.Arrays.asList;
 
 public class ChainingIterator<T> extends DelegatingUnaryIterator<T> {
 	private final Iterator<? extends Iterable<? extends T>> iterables;
 
 	@SafeVarargs
 	public ChainingIterator(Iterable<? extends T>... iterables) {
-		this(asList(iterables));
+		this(Iterables.of(iterables));
 	}
 
 	public ChainingIterator(Iterable<? extends Iterable<? extends T>> iterables) {

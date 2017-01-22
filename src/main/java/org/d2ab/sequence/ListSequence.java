@@ -24,15 +24,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Collections.*;
-
 /**
  * A {@link Sequence} backed by a {@link List}. Implements certain operations on {@link Sequence} in a more performant
  * way due to the {@link List} backing. This class should normally not be used directly as e.g.
  * {@link Sequence#from(Iterable)} and other methods return this class directly where appropriate.
  */
 public class ListSequence<T> implements Sequence<T> {
-	private static final Sequence<?> EMPTY = from(emptyList());
+	private static final Sequence<?> EMPTY = from(Lists.of());
 
 	private final List<T> list;
 
@@ -48,7 +46,7 @@ public class ListSequence<T> implements Sequence<T> {
 	 * @return an immutable {@code ListSequence} of the given element.
 	 */
 	static <T> Sequence<T> of(T item) {
-		return from(singletonList(item));
+		return from(Lists.of(item));
 	}
 
 	/**
@@ -56,7 +54,7 @@ public class ListSequence<T> implements Sequence<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	static <T> Sequence<T> of(T... items) {
-		return from(unmodifiableList(Arrays.asList(items)));
+		return from(Lists.of(items));
 	}
 
 	/**
@@ -104,7 +102,7 @@ public class ListSequence<T> implements Sequence<T> {
 	@SafeVarargs
 	static <T> Sequence<T> createOf(T... ts) {
 		ListSequence<T> result = new ListSequence<>(ts.length);
-		result.addAll(Arrays.asList(ts));
+		result.addAll(Lists.of(ts));
 		return result;
 	}
 
@@ -307,6 +305,6 @@ public class ListSequence<T> implements Sequence<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Sequence<T> append(T... items) {
-		return append(Arrays.asList(items));
+		return append(Lists.of(items));
 	}
 }
