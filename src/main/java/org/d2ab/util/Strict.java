@@ -30,7 +30,8 @@ public abstract class Strict {
 	}
 
 	public static void check() {
-		assert isLenient() : "Strict checking enabled";
+		if (!isLenient())
+			throw new UnsupportedOperationException("Strict checking enabled");
 	}
 
 	private static final class State {

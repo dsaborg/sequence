@@ -52,7 +52,7 @@ public class StrictTest {
 			try {
 				Strict.check();
 				failed = false;
-			} catch (AssertionError expected) {
+			} catch (UnsupportedOperationException expected) {
 				failed = true;
 			}
 
