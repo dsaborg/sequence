@@ -35,8 +35,8 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
-import static org.d2ab.util.Preconditions.requireOneOrGreater;
-import static org.d2ab.util.Preconditions.requireZeroOrGreater;
+import static org.d2ab.util.Preconditions.requireAtLeastOne;
+import static org.d2ab.util.Preconditions.requireAtLeastZero;
 
 /**
  * An {@link Iterable} sequence of {@link Entry} elements with {@link Stream}-like operations for refining,
@@ -456,7 +456,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Skip a set number of steps in this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> skip(int skip) {
-		requireZeroOrGreater(skip, "skip");
+		requireAtLeastZero(skip, "skip");
 
 		if (skip == 0)
 			return this;
@@ -470,7 +470,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @since 1.1
 	 */
 	default EntrySequence<K, V> skipTail(int skip) {
-		requireZeroOrGreater(skip, "skip");
+		requireAtLeastZero(skip, "skip");
 
 		if (skip == 0)
 			return this;
@@ -482,7 +482,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Limit the maximum number of results returned by this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> limit(int limit) {
-		requireZeroOrGreater(limit, "limit");
+		requireAtLeastZero(limit, "limit");
 
 		if (limit == 0)
 			return empty();
@@ -496,7 +496,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @since 2.3
 	 */
 	default EntrySequence<K, V> limitTail(int limit) {
-		requireZeroOrGreater(limit, "limit");
+		requireAtLeastZero(limit, "limit");
 
 		if (limit == 0)
 			return empty();
@@ -1082,6 +1082,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Collect this {@code EntrySequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super Entry<K, V>> adder) {
+		requireNonNull(result, "result");
 		requireNonNull(adder, "adder");
 
 		for (Entry<K, V> t : this)
@@ -1198,7 +1199,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * the index.
 	 */
 	default Optional<Entry<K, V>> at(int index) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 
 		return Iterators.get(iterator(), index);
 	}
@@ -1234,7 +1235,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @since 1.3
 	 */
 	default Optional<Entry<K, V>> at(int index, Predicate<? super Entry<K, V>> predicate) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 		requireNonNull(predicate, "predicate");
 
 		return filter(predicate).at(index);
@@ -1271,7 +1272,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @since 1.3
 	 */
 	default Optional<Entry<K, V>> at(int index, BiPredicate<? super K, ? super V> predicate) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 		requireNonNull(predicate, "predicate");
 
 		return filter(predicate).at(index);
@@ -1284,7 +1285,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * {@code window(window, 1)}.
 	 */
 	default Sequence<EntrySequence<K, V>> window(int window) {
-		requireOneOrGreater(window, "window");
+		requireAtLeastOne(window, "window");
 
 		return window(window, 1);
 	}
@@ -1296,8 +1297,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * will be skipped in between windows.
 	 */
 	default Sequence<EntrySequence<K, V>> window(int window, int step) {
-		requireOneOrGreater(window, "window");
-		requireOneOrGreater(step, "step");
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
 
 		return () -> new WindowingIterator<Entry<K, V>, EntrySequence<K, V>>(iterator(), window, step) {
 			@Override
@@ -1312,7 +1313,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * each with the given batch size. This method is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<EntrySequence<K, V>> batch(int size) {
-		requireOneOrGreater(size, "size");
+		requireAtLeastOne(size, "size");
 
 		return window(size, size);
 	}
@@ -1390,7 +1391,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code EntrySequence}.
 	 */
 	default EntrySequence<K, V> step(int step) {
-		requireOneOrGreater(step, "step");
+		requireAtLeastOne(step, "step");
 
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
@@ -1780,7 +1781,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * Repeat this {@code EntrySequence} the given number of times.
 	 */
 	default EntrySequence<K, V> repeat(int times) {
-		requireZeroOrGreater(times, "times");
+		requireAtLeastZero(times, "times");
 
 		return () -> new RepeatingIterator<>(this, times);
 	}

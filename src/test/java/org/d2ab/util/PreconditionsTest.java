@@ -17,26 +17,26 @@ public class PreconditionsTest {
 
 	@Test
 	public void requireZeroOrGreater() {
-		Preconditions.requireZeroOrGreater(0, "zero");
-		Preconditions.requireZeroOrGreater(1, "one");
-		Preconditions.requireZeroOrGreater(2, "two");
-		Preconditions.requireZeroOrGreater(Integer.MAX_VALUE, "max");
+		Preconditions.requireAtLeastZero(0, "zero");
+		Preconditions.requireAtLeastZero(1, "one");
+		Preconditions.requireAtLeastZero(2, "two");
+		Preconditions.requireAtLeastZero(Integer.MAX_VALUE, "max");
 
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireZeroOrGreater(-1, "minus one"));
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireZeroOrGreater(-2, "minus two"));
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireZeroOrGreater(Integer.MIN_VALUE, "min"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastZero(-1, "minus one"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastZero(-2, "minus two"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastZero(Integer.MIN_VALUE, "min"));
 	}
 
 	@Test
 	public void requireOneOrGreater() {
-		Preconditions.requireOneOrGreater(1, "one");
-		Preconditions.requireOneOrGreater(2, "two");
-		Preconditions.requireOneOrGreater(3, "three");
-		Preconditions.requireOneOrGreater(Integer.MAX_VALUE, "max");
+		Preconditions.requireAtLeastOne(1, "one");
+		Preconditions.requireAtLeastOne(2, "two");
+		Preconditions.requireAtLeastOne(3, "three");
+		Preconditions.requireAtLeastOne(Integer.MAX_VALUE, "max");
 
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireOneOrGreater(0, "zero"));
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireOneOrGreater(-1, "minus one"));
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireOneOrGreater(-2, "minus two"));
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireOneOrGreater(Integer.MIN_VALUE, "min"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastOne(0, "zero"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastOne(-1, "minus one"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastOne(-2, "minus two"));
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireAtLeastOne(Integer.MIN_VALUE, "min"));
 	}
 }

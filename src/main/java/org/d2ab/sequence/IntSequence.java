@@ -27,6 +27,7 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.*;
 import org.d2ab.iterator.longs.LongIterator;
+import org.d2ab.util.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,9 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.*;
 
 /**
  * An {@link Iterable} sequence of {@code int} values with {@link Stream}-like operations for refining,
@@ -51,23 +55,30 @@ public interface IntSequence extends IntCollection {
 	/**
 	 * Create an {@code IntSequence} with the given {@code ints}.
 	 */
-	static IntSequence of(int... is) {
-		return () -> IntIterator.of(is);
+	static IntSequence of(int... array) {
+		return from(array, 0, array.length);
 	}
 
 	/**
 	 * Create an {@code IntSequence} with the given {@code ints}, limited to the given size.
 	 */
-	static IntSequence from(int[] is, int size) {
-		return () -> IntIterator.from(is, size);
+	static IntSequence from(int[] array, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(array.length, "array.length", size, "size");
+
+		return from(array, 0, size);
 	}
 
 	/**
 	 * Create an {@code IntSequence} with the given {@code ints}, reading from the given offset and limited to the
 	 * given size.
 	 */
-	static IntSequence from(int[] is, int offset, int size) {
-		return () -> IntIterator.from(is, offset, size);
+	static IntSequence from(int[] array, int offset, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
+		requireSizeWithinBounds(array.length, "array.length", offset + size, "offset + size");
+
+		return () -> IntIterator.from(array, offset, size);
 	}
 
 	/**
@@ -76,6 +87,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #cache(IntIterable)
 	 */
 	static IntSequence from(IntIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return iterable::iterator;
 	}
 
@@ -85,6 +98,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #cache(Iterable)
 	 */
 	static IntSequence from(Iterable<Integer> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return from(IntIterable.from(iterable));
 	}
 
@@ -97,6 +112,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence once(PrimitiveIterator.OfInt iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(IntIterable.once(iterator));
 	}
 
@@ -109,6 +126,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence once(Iterator<Integer> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return once(IntIterator.from(iterator));
 	}
 
@@ -122,6 +141,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence once(IntStream stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -135,6 +156,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence once(Stream<Integer> stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -149,6 +172,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence read(InputStream inputStream) {
+		requireNonNull(inputStream, "inputStream");
+
 		return IntIterable.read(inputStream)::iterator;
 	}
 
@@ -164,6 +189,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence cache(IntIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -179,6 +206,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence cache(PrimitiveIterator.OfInt iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(IntList.copy(iterator));
 	}
 
@@ -194,6 +223,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence cache(Iterator<Integer> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return cache(IntIterator.from(iterator));
 	}
 
@@ -209,6 +240,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence cache(IntStream stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -224,6 +257,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence cache(Stream<Integer> stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -239,6 +274,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	static IntSequence cache(Iterable<Integer> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -359,6 +396,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #negativeFromZero()
 	 */
 	static IntSequence steppingFrom(int start, int step) {
+		Preconditions.requireNotEqual(0, step, "step");
+
 		return recurse(start, x -> x + step);
 	}
 
@@ -393,8 +432,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #negativeFromZero()
 	 */
 	static IntSequence range(int start, int end, int step) {
-		if (step < 0)
-			throw new IllegalArgumentException("Require step >= 0");
+		requireAtLeastOne(step, "step");
+
 		return end >= start ?
 		       recurse(start, x -> x + step).endingAt(x -> (long) x + step > end) :
 		       recurse(start, x -> x - step).endingAt(x -> (long) x - step < end);
@@ -413,14 +452,16 @@ public interface IntSequence extends IntCollection {
 	 * @see #endingAt(int)
 	 * @see #until(int)
 	 */
-	static IntSequence recurse(int seed, IntUnaryOperator op) {
+	static IntSequence recurse(int seed, IntUnaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return () -> new InfiniteIntIterator() {
 			private int previous;
 			private boolean hasPrevious;
 
 			@Override
 			public int nextInt() {
-				previous = hasPrevious ? op.applyAsInt(previous) : seed;
+				previous = hasPrevious ? operator.applyAsInt(previous) : seed;
 				hasPrevious = true;
 				return previous;
 			}
@@ -435,6 +476,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #until(int)
 	 */
 	static IntSequence generate(IntSupplier supplier) {
+		requireNonNull(supplier, "supplier");
+
 		return once((InfiniteIntIterator) supplier::getAsInt);
 	}
 
@@ -446,9 +489,11 @@ public interface IntSequence extends IntCollection {
 	 * @see #endingAt(int)
 	 * @see #until(int)
 	 */
-	static IntSequence multiGenerate(Supplier<? extends IntSupplier> supplierSupplier) {
+	static IntSequence multiGenerate(Supplier<? extends IntSupplier> multiSupplier) {
+		requireNonNull(multiSupplier, "multiSupplier");
+
 		return () -> {
-			IntSupplier intSupplier = supplierSupplier.get();
+			IntSupplier intSupplier = multiSupplier.get();
 			return (InfiniteIntIterator) intSupplier::getAsInt;
 		};
 	}
@@ -475,8 +520,10 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier) {
+		requireNonNull(randomSupplier, "randomSupplier");
+
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
 			return random::nextInt;
 		});
 	}
@@ -504,6 +551,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier, int upper) {
+		requireNonNull(randomSupplier, "randomSupplier");
+
 		return random(randomSupplier, 0, upper);
 	}
 
@@ -530,8 +579,10 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier, int lower, int upper) {
+		requireNonNull(randomSupplier, "randomSupplier");
+
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
 			int bound = upper - lower;
 			return () -> random.nextInt(bound) + lower;
 		});
@@ -574,8 +625,10 @@ public interface IntSequence extends IntCollection {
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
-	default IntSequence until(IntPredicate terminal) {
-		return () -> new ExclusiveTerminalIntIterator(iterator(), terminal);
+	default IntSequence until(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new ExclusiveTerminalIntIterator(iterator(), predicate);
 	}
 
 	/**
@@ -587,8 +640,10 @@ public interface IntSequence extends IntCollection {
 	 * @see #generate(IntSupplier)
 	 * @see #recurse(int, IntUnaryOperator)
 	 */
-	default IntSequence endingAt(IntPredicate terminal) {
-		return () -> new InclusiveTerminalIntIterator(iterator(), terminal);
+	default IntSequence endingAt(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new InclusiveTerminalIntIterator(iterator(), predicate);
 	}
 
 	/**
@@ -624,6 +679,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	default IntSequence startingAfter(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ExclusiveStartingIntIterator(iterator(), predicate);
 	}
 
@@ -636,6 +693,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	default IntSequence startingFrom(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new InclusiveStartingIntIterator(iterator(), predicate);
 	}
 
@@ -644,6 +703,8 @@ public interface IntSequence extends IntCollection {
 	 * mapper} function.
 	 */
 	default IntSequence map(IntUnaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
@@ -659,6 +720,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default IntSequence mapIndexed(IntBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			private int index;
 
@@ -680,6 +743,8 @@ public interface IntSequence extends IntCollection {
 	 * Map the {@code ints} in this {@code IntSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(IntFunction<T> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> Iterators.from(iterator(), mapper);
 	}
 
@@ -687,6 +752,8 @@ public interface IntSequence extends IntCollection {
 	 * Skip a set number of {@code ints} in this {@code IntSequence}.
 	 */
 	default IntSequence skip(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -699,6 +766,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	default IntSequence skipTail(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -709,6 +778,8 @@ public interface IntSequence extends IntCollection {
 	 * Limit the maximum number of {@code ints} returned by this {@code IntSequence}.
 	 */
 	default IntSequence limit(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -721,6 +792,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 2.3
 	 */
 	default IntSequence limitTail(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -730,21 +803,27 @@ public interface IntSequence extends IntCollection {
 	/**
 	 * Append the given {@code ints} to the end of this {@code IntSequence}.
 	 */
-	default IntSequence append(int... ints) {
-		return append(IntIterable.of(ints));
+	default IntSequence append(int... array) {
+		requireNonNull(array, "array");
+
+		return append(IntIterable.of(array));
 	}
 
 	/**
 	 * Append the {@code ints} in the given {@link IntIterable} to the end of this {@code IntSequence}.
 	 */
-	default IntSequence append(IntIterable that) {
-		return new ChainingIntIterable(this, that)::iterator;
+	default IntSequence append(IntIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return new ChainingIntIterable(this, iterable)::iterator;
 	}
 
 	/**
 	 * Append the {@link Integer}s in the given {@link Iterable} to the end of this {@code IntSequence}.
 	 */
 	default IntSequence append(Iterable<Integer> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return append(IntIterable.from(iterable));
 	}
 
@@ -756,6 +835,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #cache(PrimitiveIterator.OfInt)
 	 */
 	default IntSequence append(PrimitiveIterator.OfInt iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(IntIterable.once(iterator));
 	}
 
@@ -768,6 +849,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #cache(Iterator)
 	 */
 	default IntSequence append(Iterator<Integer> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(IntIterator.from(iterator));
 	}
 
@@ -779,6 +862,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #cache(IntStream)
 	 */
 	default IntSequence append(IntStream stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -791,6 +876,8 @@ public interface IntSequence extends IntCollection {
 	 * @see #cache(Stream)
 	 */
 	default IntSequence append(Stream<Integer> stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -799,6 +886,8 @@ public interface IntSequence extends IntCollection {
 	 * {@link IntPredicate}.
 	 */
 	default IntSequence filter(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new FilteringIntIterator(iterator(), predicate);
 	}
 
@@ -809,6 +898,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default IntSequence filterIndexed(IntBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new IndexedFilteringIntIterator(iterator(), predicate);
 	}
 
@@ -821,6 +912,8 @@ public interface IntSequence extends IntCollection {
 	 * the first previous value.
 	 */
 	default IntSequence filterBack(int firstPrevious, IntBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new BackPeekingFilteringIntIterator(iterator(), firstPrevious, predicate);
 	}
 
@@ -832,6 +925,8 @@ public interface IntSequence extends IntCollection {
 	 * the last next value.
 	 */
 	default IntSequence filterForward(int lastNext, IntBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ForwardPeekingFilteringIntIterator(iterator(), lastNext, predicate);
 	}
 
@@ -840,8 +935,10 @@ public interface IntSequence extends IntCollection {
 	 *
 	 * @since 1.2
 	 */
-	default IntSequence including(int... elements) {
-		return filter(e -> Arrayz.contains(elements, e));
+	default IntSequence including(int... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> Arrayz.contains(array, e));
 	}
 
 	/**
@@ -849,8 +946,10 @@ public interface IntSequence extends IntCollection {
 	 *
 	 * @since 1.2
 	 */
-	default IntSequence excluding(int... elements) {
-		return filter(e -> !Arrayz.contains(elements, e));
+	default IntSequence excluding(int... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> !Arrayz.contains(array, e));
 	}
 
 	/**
@@ -865,6 +964,8 @@ public interface IntSequence extends IntCollection {
 	 * constructor.
 	 */
 	default IntList toList(Supplier<? extends IntList> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -882,6 +983,8 @@ public interface IntSequence extends IntCollection {
 	 * constructor.
 	 */
 	default <S extends IntSet> S toSet(Supplier<? extends S> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -896,6 +999,8 @@ public interface IntSequence extends IntCollection {
 	 * Collect this {@code IntSequence} into an {@link IntCollection} of the type determined by the given constructor.
 	 */
 	default <U extends IntCollection> U toCollection(Supplier<? extends U> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return collectInto(constructor.get());
 	}
 
@@ -903,6 +1008,9 @@ public interface IntSequence extends IntCollection {
 	 * Collect this {@code IntSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjIntConsumer<? super C> adder) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(adder, "adder");
+
 		return collectInto(constructor.get(), adder);
 	}
 
@@ -910,6 +1018,8 @@ public interface IntSequence extends IntCollection {
 	 * Collect this {@code IntSequence} into the given {@link IntCollection}.
 	 */
 	default <U extends IntCollection> U collectInto(U collection) {
+		requireNonNull(collection, "collection");
+
 		collection.addAllInts(this);
 		return collection;
 	}
@@ -918,6 +1028,9 @@ public interface IntSequence extends IntCollection {
 	 * Collect this {@code IntSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjIntConsumer<? super C> adder) {
+		requireNonNull(result, "result");
+		requireNonNull(adder, "adder");
+
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			adder.accept(result, iterator.nextInt());
 		return result;
@@ -927,6 +1040,8 @@ public interface IntSequence extends IntCollection {
 	 * Join this {@code IntSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
+		requireNonNull(delimiter, "delimiter");
+
 		return join("", delimiter, "");
 	}
 
@@ -934,14 +1049,19 @@ public interface IntSequence extends IntCollection {
 	 * Join this {@code IntSequence} into a string separated by the given delimiter, with the given prefix and suffix.
 	 */
 	default String join(String prefix, String delimiter, String suffix) {
+		requireNonNull(prefix, "prefix");
+		requireNonNull(delimiter, "delimiter");
+		requireNonNull(suffix, "suffix");
+
 		StringBuilder result = new StringBuilder(prefix);
 
 		boolean started = false;
-		for (IntIterator iterator = iterator(); iterator.hasNext(); started = true) {
-			int each = iterator.nextInt();
+		for (IntIterator iterator = iterator(); iterator.hasNext(); ) {
 			if (started)
 				result.append(delimiter);
-			result.append(each);
+			else
+				started = true;
+			result.append(iterator.nextInt());
 		}
 
 		return result.append(suffix).toString();
@@ -952,6 +1072,8 @@ public interface IntSequence extends IntCollection {
 	 * the current result and each {@code int} in the sequence.
 	 */
 	default OptionalInt reduce(IntBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		IntIterator iterator = iterator();
 		if (!iterator.hasNext())
 			return OptionalInt.empty();
@@ -965,6 +1087,8 @@ public interface IntSequence extends IntCollection {
 	 * the current result and each {@code int} in the sequence, starting with the given identity as the initial result.
 	 */
 	default int reduce(int identity, IntBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return iterator().reduce(identity, operator);
 	}
 
@@ -1000,6 +1124,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default OptionalInt at(int index) {
+		requireAtLeastZero(index, "index");
+
 		IntIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -1018,6 +1144,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default OptionalInt first(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return at(0, predicate);
 	}
 
@@ -1030,6 +1158,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default OptionalInt last(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).last();
 	}
 
@@ -1041,6 +1171,9 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default OptionalInt at(int index, IntPredicate predicate) {
+		requireAtLeastZero(index, "index");
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).at(index);
 	}
 
@@ -1048,6 +1181,8 @@ public interface IntSequence extends IntCollection {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code IntSequence}.
 	 */
 	default IntSequence step(int step) {
+		requireAtLeastOne(step, "step");
+
 		return () -> new SteppingIntIterator(iterator(), step);
 	}
 
@@ -1118,6 +1253,8 @@ public interface IntSequence extends IntCollection {
 	 * @return true if all ints in this {@code IntSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextInt()))
 				return false;
@@ -1129,6 +1266,8 @@ public interface IntSequence extends IntCollection {
 	 * @return true if no ints in this {@code IntSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return !any(predicate);
 	}
 
@@ -1136,6 +1275,8 @@ public interface IntSequence extends IntCollection {
 	 * @return true if any int in this {@code IntSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextInt()))
 				return true;
@@ -1147,6 +1288,8 @@ public interface IntSequence extends IntCollection {
 	 * Allow the given {@link IntConsumer} to see each element in this {@code IntSequence} as it is traversed.
 	 */
 	default IntSequence peek(IntConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			@Override
 			public int nextInt() {
@@ -1164,6 +1307,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2.2
 	 */
 	default IntSequence peekIndexed(IntBiConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryIntIterator(iterator()) {
 			private int index;
 
@@ -1192,23 +1337,29 @@ public interface IntSequence extends IntCollection {
 	/**
 	 * Prefix the ints in this {@code IntSequence} with the given ints.
 	 */
-	default IntSequence prefix(int... cs) {
-		return () -> new ChainingIntIterator(IntIterable.of(cs), this);
+	default IntSequence prefix(int... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingIntIterator(IntIterable.of(array), this);
 	}
 
 	/**
 	 * Suffix the ints in this {@code IntSequence} with the given ints.
 	 */
-	default IntSequence suffix(int... cs) {
-		return () -> new ChainingIntIterator(this, IntIterable.of(cs));
+	default IntSequence suffix(int... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingIntIterator(this, IntIterable.of(array));
 	}
 
 	/**
 	 * Interleave the elements in this {@code IntSequence} with those of the given {@code IntIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default IntSequence interleave(IntIterable that) {
-		return () -> new InterleavingIntIterator(this, that);
+	default IntSequence interleave(IntIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return () -> new InterleavingIntIterator(this, iterable);
 	}
 
 	/**
@@ -1229,6 +1380,8 @@ public interface IntSequence extends IntCollection {
 	 * the first previous value.
 	 */
 	default IntSequence mapBack(int firstPrevious, IntBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new BackPeekingMappingIntIterator(iterator(), firstPrevious, mapper);
 	}
 
@@ -1240,6 +1393,8 @@ public interface IntSequence extends IntCollection {
 	 * the last next value.
 	 */
 	default IntSequence mapForward(int lastNext, IntBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new ForwardPeekingMappingIntIterator(iterator(), lastNext, mapper);
 	}
 
@@ -1268,6 +1423,8 @@ public interface IntSequence extends IntCollection {
 	 * Convert this sequence of ints to a sequence of chars using the given converter function.
 	 */
 	default CharSeq toChars(IntToCharFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> CharIterator.from(iterator(), mapper);
 	}
 
@@ -1275,6 +1432,8 @@ public interface IntSequence extends IntCollection {
 	 * Convert this sequence of ints to a sequence of longs using the given converter function.
 	 */
 	default LongSequence toLongs(IntToLongFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> LongIterator.from(iterator(), mapper);
 	}
 
@@ -1282,6 +1441,8 @@ public interface IntSequence extends IntCollection {
 	 * Convert this sequence of ints to a sequence of doubles using the given converter function.
 	 */
 	default DoubleSequence toDoubles(IntToDoubleFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
@@ -1298,6 +1459,8 @@ public interface IntSequence extends IntCollection {
 	 * Repeat this sequence of ints x times, looping back to the beginning when the iterator runs out of ints.
 	 */
 	default IntSequence repeat(int times) {
+		requireAtLeastZero(times, "times");
+
 		return () -> new RepeatingIntIterator(this, times);
 	}
 
@@ -1307,6 +1470,8 @@ public interface IntSequence extends IntCollection {
 	 * {@code IntSequence} may be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<IntSequence> window(int window) {
+		requireAtLeastOne(window, "window");
+
 		return window(window, 1);
 	}
 
@@ -1316,6 +1481,9 @@ public interface IntSequence extends IntCollection {
 	 * the window size, the windows will overlap each other.
 	 */
 	default Sequence<IntSequence> window(int window, int step) {
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
+
 		return () -> new WindowingIntIterator(iterator(), window, step);
 	}
 
@@ -1324,6 +1492,8 @@ public interface IntSequence extends IntCollection {
 	 * each with the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<IntSequence> batch(int size) {
+		requireAtLeastOne(size, "size");
+
 		return window(size, size);
 	}
 
@@ -1333,6 +1503,8 @@ public interface IntSequence extends IntCollection {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<IntSequence> batch(IntBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new PredicatePartitioningIntIterator(iterator(), predicate);
 	}
 
@@ -1354,6 +1526,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.1
 	 */
 	default Sequence<IntSequence> split(IntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new SplittingIntIterator(iterator(), predicate);
 	}
 
@@ -1373,6 +1547,8 @@ public interface IntSequence extends IntCollection {
 	 * @since 1.2
 	 */
 	default void forEachIntIndexed(IntBiConsumer action) {
+		requireNonNull(action, "action");
+
 		int index = 0;
 		for (IntIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextInt(), index++);

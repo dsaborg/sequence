@@ -38,8 +38,8 @@ import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
 import static java.util.stream.Collector.Characteristics.IDENTITY_FINISH;
-import static org.d2ab.util.Preconditions.requireOneOrGreater;
-import static org.d2ab.util.Preconditions.requireZeroOrGreater;
+import static org.d2ab.util.Preconditions.requireAtLeastOne;
+import static org.d2ab.util.Preconditions.requireAtLeastZero;
 
 /**
  * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and collating
@@ -326,7 +326,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return a new empty mutable {@code Sequence} with the given initial capacity.
 	 */
 	static <T> Sequence<T> withCapacity(int capacity) {
-		requireZeroOrGreater(capacity, "capacity");
+		requireAtLeastZero(capacity, "capacity");
 
 		return ListSequence.withCapacity(capacity);
 	}
@@ -958,7 +958,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Skip a set number of steps in this {@code Sequence}.
 	 */
 	default Sequence<T> skip(int skip) {
-		requireZeroOrGreater(skip, "skip");
+		requireAtLeastZero(skip, "skip");
 
 		if (skip == 0)
 			return this;
@@ -982,7 +982,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.1
 	 */
 	default Sequence<T> skipTail(int skip) {
-		requireZeroOrGreater(skip, "skip");
+		requireAtLeastZero(skip, "skip");
 
 		if (skip == 0)
 			return this;
@@ -1004,7 +1004,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Limit the maximum number of results returned by this {@code Sequence}.
 	 */
 	default Sequence<T> limit(int limit) {
-		requireZeroOrGreater(limit, "limit");
+		requireAtLeastZero(limit, "limit");
 
 		if (limit == 0)
 			return empty();
@@ -1028,7 +1028,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 2.3
 	 */
 	default Sequence<T> limitTail(int limit) {
-		requireZeroOrGreater(limit, "limit");
+		requireAtLeastZero(limit, "limit");
 
 		if (limit == 0)
 			return empty();
@@ -1508,6 +1508,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect this {@code Sequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super T> adder) {
+		requireNonNull(result, "result");
 		requireNonNull(adder, "adder");
 
 		for (T t : this)
@@ -1610,7 +1611,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Optional<T> at(int index) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 
 		return Iterators.get(iterator(), index);
 	}
@@ -1647,7 +1648,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	default Optional<T> at(int index, Predicate<? super T> predicate) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 		requireNonNull(predicate, "predicate");
 
 		return filter(predicate).at(index);
@@ -1686,7 +1687,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default <U> Optional<U> at(int index, Class<? extends U> target) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 		requireNonNull(target, "target");
 
 		return (Optional<U>) at(index, target::isInstance);
@@ -1866,7 +1867,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * sequence may be shorter than the window. This method is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<Sequence<T>> window(int window) {
-		requireOneOrGreater(window, "window");
+		requireAtLeastOne(window, "window");
 
 		return window(window, 1);
 	}
@@ -1878,8 +1879,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * skipped in between windows.
 	 */
 	default Sequence<Sequence<T>> window(int window, int step) {
-		requireOneOrGreater(window, "window");
-		requireOneOrGreater(step, "step");
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
 
 		return new Sequence<Sequence<T>>() {
 			@Override
@@ -1917,7 +1918,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * the given batch size. This method is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<Sequence<T>> batch(int size) {
-		requireOneOrGreater(size, "size");
+		requireAtLeastOne(size, "size");
 
 		return window(size, size);
 	}
@@ -2005,7 +2006,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code Sequence}.
 	 */
 	default Sequence<T> step(int step) {
-		requireOneOrGreater(step, "step");
+		requireAtLeastOne(step, "step");
 
 		return new Sequence<T>() {
 			@Override
@@ -2622,7 +2623,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Repeat this {@code Sequence} the given number of times.
 	 */
 	default Sequence<T> repeat(int times) {
-		requireZeroOrGreater(times, "times");
+		requireAtLeastZero(times, "times");
 
 		if (times == 0)
 			return empty();

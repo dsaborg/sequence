@@ -34,8 +34,8 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
-import static org.d2ab.util.Preconditions.requireOneOrGreater;
-import static org.d2ab.util.Preconditions.requireZeroOrGreater;
+import static org.d2ab.util.Preconditions.requireAtLeastOne;
+import static org.d2ab.util.Preconditions.requireAtLeastZero;
 
 /**
  * An {@link Iterable} sequence of {@link Pair}s with {@link Stream}-like operations for refining, transforming and
@@ -463,7 +463,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Skip a set number of steps in this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> skip(int skip) {
-		requireZeroOrGreater(skip, "skip");
+		requireAtLeastZero(skip, "skip");
 
 		if (skip == 0)
 			return this;
@@ -477,7 +477,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.1
 	 */
 	default BiSequence<L, R> skipTail(int skip) {
-		requireZeroOrGreater(skip, "skip");
+		requireAtLeastZero(skip, "skip");
 
 		if (skip == 0)
 			return this;
@@ -489,7 +489,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Limit the maximum number of results returned by this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> limit(int limit) {
-		requireZeroOrGreater(limit, "limit");
+		requireAtLeastZero(limit, "limit");
 
 		if (limit == 0)
 			return empty();
@@ -503,7 +503,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 2.3
 	 */
 	default BiSequence<L, R> limitTail(int limit) {
-		requireZeroOrGreater(limit, "limit");
+		requireAtLeastZero(limit, "limit");
 
 		if (limit == 0)
 			return empty();
@@ -1091,6 +1091,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Collect this {@code Sequence} into the given container, using the given adder.
 	 */
 	default <C> C collectInto(C result, BiConsumer<? super C, ? super Pair<L, R>> adder) {
+		requireNonNull(result, "result");
 		requireNonNull(adder, "adder");
 
 		for (Pair<L, R> t : this)
@@ -1207,7 +1208,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default Optional<Pair<L, R>> at(int index) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 
 		return Iterators.get(iterator(), index);
 	}
@@ -1239,7 +1240,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default Optional<Pair<L, R>> at(int index, Predicate<? super Pair<L, R>> predicate) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 		requireNonNull(predicate, "predicate");
 
 		return filter(predicate).at(index);
@@ -1272,7 +1273,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @since 1.2
 	 */
 	default Optional<Pair<L, R>> at(int index, BiPredicate<? super L, ? super R> predicate) {
-		requireZeroOrGreater(index, "index");
+		requireAtLeastZero(index, "index");
 		requireNonNull(predicate, "predicate");
 
 		return filter(predicate).at(index);
@@ -1284,7 +1285,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * The final sequence may be shorter than the window. This method is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<BiSequence<L, R>> window(int window) {
-		requireOneOrGreater(window, "window");
+		requireAtLeastOne(window, "window");
 
 		return window(window, 1);
 	}
@@ -1296,8 +1297,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * skipped in between windows.
 	 */
 	default Sequence<BiSequence<L, R>> window(int window, int step) {
-		requireOneOrGreater(window, "window");
-		requireOneOrGreater(step, "step");
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
 
 		return () -> new WindowingIterator<Pair<L, R>, BiSequence<L, R>>(iterator(), window, step) {
 			@Override
@@ -1312,7 +1313,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * with the given batch size. This method is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<BiSequence<L, R>> batch(int size) {
-		requireOneOrGreater(size, "size");
+		requireAtLeastOne(size, "size");
 
 		return window(size, size);
 	}
@@ -1396,7 +1397,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code BiSequence}.
 	 */
 	default BiSequence<L, R> step(int step) {
-		requireOneOrGreater(step, "step");
+		requireAtLeastOne(step, "step");
 
 		return () -> new SteppingIterator<>(iterator(), step);
 	}
@@ -1777,7 +1778,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * Repeat this {@code BiSequence} the given number of times.
 	 */
 	default BiSequence<L, R> repeat(int times) {
-		requireZeroOrGreater(times, "times");
+		requireAtLeastZero(times, "times");
 
 		return () -> new RepeatingIterator<>(this, times);
 	}
