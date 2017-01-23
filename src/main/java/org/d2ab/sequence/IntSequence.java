@@ -76,7 +76,7 @@ public interface IntSequence extends IntCollection {
 	static IntSequence from(int[] array, int offset, int size) {
 		requireNonNull(array, "array");
 		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
-		requireSizeWithinBounds(array.length, "array.length", offset + size, "offset + size");
+		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
 
 		return () -> IntIterator.from(array, offset, size);
 	}

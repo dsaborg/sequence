@@ -19,6 +19,9 @@ package org.d2ab.iterator.ints;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.requireSizeWithinBounds;
+
 /**
  * An {@link Iterator} over an array of items.
  */
@@ -37,10 +40,10 @@ public class ArrayIntIterator implements IntIterator {
 	}
 
 	public ArrayIntIterator(int[] array, int offset, int size) {
-		if (offset < 0 || offset > array.length)
-			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
-		if (size < 0 || offset + size > array.length)
-			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (array.length - offset));
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
+		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
+
 		this.array = array;
 		this.offset = offset;
 		this.size = size;
