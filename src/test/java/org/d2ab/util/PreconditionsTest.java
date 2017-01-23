@@ -4,9 +4,6 @@ import org.junit.Test;
 
 import static org.d2ab.test.Tests.expecting;
 
-/**
- * Created by Daniel on 2017-01-22.
- */
 public class PreconditionsTest {
 	@Test
 	public void constructor() {

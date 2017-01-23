@@ -32,6 +32,9 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.*;
+
 /**
  * An {@link Iterable} sequence of {@code char} values with {@link Stream}-like operations for refining,
  * transforming and collating the list of characters.
@@ -48,30 +51,41 @@ public interface CharSeq extends CharCollection {
 	/**
 	 * Create a {@code CharSeq} with the given characters.
 	 */
-	static CharSeq of(char... cs) {
-		return () -> CharIterator.of(cs);
+	static CharSeq of(char... array) {
+		requireNonNull(array, "array");
+
+		return () -> CharIterator.of(array);
 	}
 
 	/**
 	 * Create an {@code CharSeq} with the given {@code chars}, limited to the given size.
 	 */
-	static CharSeq from(char[] cs, int size) {
-		return () -> CharIterator.from(cs, size);
+	static CharSeq from(char[] array, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(size, "size", array.length, "array.length");
+
+		return () -> CharIterator.from(array, size);
 	}
 
 	/**
 	 * Create an {@code CharSeq} with the given {@code chars}, reading from the given offset and limited to the
 	 * given size.
 	 */
-	static CharSeq from(char[] is, int offset, int size) {
-		return () -> CharIterator.from(is, offset, size);
+	static CharSeq from(char[] array, int offset, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(offset, "offset", array.length, "array.length");
+		requireSizeWithinBounds(size, "size", array.length - offset, "array.length - offset");
+
+		return () -> CharIterator.from(array, offset, size);
 	}
 
 	/**
 	 * Create a {@code CharSeq} from a {@link CharSequence}.
 	 */
-	static CharSeq from(CharSequence csq) {
-		return () -> new CharSequenceCharIterator(csq);
+	static CharSeq from(CharSequence charSequence) {
+		requireNonNull(charSequence, "charSequence");
+
+		return () -> new CharSequenceCharIterator(charSequence);
 	}
 
 	/**
@@ -80,6 +94,8 @@ public interface CharSeq extends CharCollection {
 	 * @see #cache(CharIterable)
 	 */
 	static CharSeq from(CharIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return iterable::iterator;
 	}
 
@@ -89,6 +105,8 @@ public interface CharSeq extends CharCollection {
 	 * @see #cache(Iterable)
 	 */
 	static CharSeq from(Iterable<Character> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return from(CharIterable.from(iterable));
 	}
 
@@ -101,6 +119,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq once(CharIterator iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(CharIterable.once(iterator));
 	}
 
@@ -113,6 +133,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq once(PrimitiveIterator.OfInt iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return once(CharIterator.from(iterator));
 	}
 
@@ -125,6 +147,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq once(Iterator<Character> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return once(CharIterator.from(iterator));
 	}
 
@@ -137,6 +161,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq once(Stream<Character> stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -150,6 +176,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq once(IntStream stream) {
+		requireNonNull(stream, "stream");
+
 		return once(CharIterator.from(stream.iterator()));
 	}
 
@@ -163,6 +191,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq read(Reader reader) {
+		requireNonNull(reader, "reader");
+
 		return CharIterable.read(reader)::iterator;
 	}
 
@@ -179,6 +209,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterator iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(CharList.copy(iterator));
 	}
 
@@ -195,6 +227,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(PrimitiveIterator.OfInt iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return cache(CharIterator.from(iterator));
 	}
 
@@ -211,6 +245,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(Iterator<Character> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return cache(CharIterator.from(iterator));
 	}
 
@@ -227,6 +263,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(IntStream stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(CharIterator.from(stream.iterator()));
 	}
 
@@ -243,6 +281,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(Stream<Character> stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -259,6 +299,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(CharIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -275,6 +317,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	static CharSeq cache(Iterable<Character> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -330,14 +374,16 @@ public interface CharSeq extends CharCollection {
 	 * @see #endingAt(char)
 	 * @see #until(char)
 	 */
-	static CharSeq recurse(char seed, CharUnaryOperator op) {
+	static CharSeq recurse(char seed, CharUnaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return () -> new InfiniteCharIterator() {
 			private char previous;
 			private boolean hasPrevious;
 
 			@Override
 			public char nextChar() {
-				previous = hasPrevious ? op.applyAsChar(previous) : seed;
+				previous = hasPrevious ? operator.applyAsChar(previous) : seed;
 				hasPrevious = true;
 				return previous;
 			}
@@ -354,6 +400,8 @@ public interface CharSeq extends CharCollection {
 	 * @see #until(char)
 	 */
 	static CharSeq generate(CharSupplier supplier) {
+		requireNonNull(supplier, "supplier");
+
 		return once((InfiniteCharIterator) supplier::getAsChar);
 	}
 
@@ -366,9 +414,11 @@ public interface CharSeq extends CharCollection {
 	 * @see #until(char)
 	 * @since 1.2
 	 */
-	static CharSeq multiGenerate(Supplier<? extends CharSupplier> supplierSupplier) {
+	static CharSeq multiGenerate(Supplier<? extends CharSupplier> multiSupplier) {
+		requireNonNull(multiSupplier, "multiSupplier");
+
 		return () -> {
-			CharSupplier charSupplier = supplierSupplier.get();
+			CharSupplier charSupplier = requireNonNull(multiSupplier.get(), "multiSupplier.get()");
 			return (InfiniteCharIterator) charSupplier::getAsChar;
 		};
 	}
@@ -382,8 +432,8 @@ public interface CharSeq extends CharCollection {
 	 * @see #multiGenerate(Supplier)
 	 * @since 1.2
 	 */
-	static CharSeq random(char lower, char upper) {
-		return random(Random::new, lower, upper);
+	static CharSeq random(char lowerBound, char upperBound) {
+		return random(Random::new, lowerBound, upperBound);
 	}
 
 	/**
@@ -395,11 +445,14 @@ public interface CharSeq extends CharCollection {
 	 * @see #multiGenerate(Supplier)
 	 * @since 1.2
 	 */
-	static CharSeq random(Supplier<? extends Random> randomSupplier, char lower, char upper) {
+	static CharSeq random(Supplier<? extends Random> randomSupplier, char lowerBound, char upperBound) {
+		requireNonNull(randomSupplier, "multiSupplier");
+		requireAtLeast(upperBound, "upperBound", lowerBound, "lowerBound");
+
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
-			int bound = upper - lower + 1;
-			return () -> (char) (random.nextInt(bound) + lower);
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
+			int bound = upperBound - lowerBound + 1;
+			return () -> (char) (random.nextInt(bound) + lowerBound);
 		});
 	}
 
@@ -427,12 +480,16 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	static CharSeq random(Supplier<? extends Random> randomSupplier, String... ranges) {
+		requireNonNull(randomSupplier, "randomSupplier");
+		requireNonNull(ranges, "ranges");
+
 		if (ranges.length == 0)
 			return empty();
 
 		int[] bounds = new int[ranges.length];
 		for (int i = 0; i < ranges.length; i++) {
-			String range = ranges[i];
+			int index = i;
+			String range = requireNonNull(ranges[i], () -> "ranges[" + index + "]");
 			bounds[i] = range.charAt(2) - range.charAt(0) + 1;
 		}
 
@@ -442,7 +499,7 @@ public interface CharSeq extends CharCollection {
 		int finalTotalBound = totalBound;
 
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
 			return () -> {
 				int nextInt = random.nextInt(finalTotalBound);
 				for (int i = 0; i < bounds.length; i++) {
@@ -490,8 +547,10 @@ public interface CharSeq extends CharCollection {
 	 * @see #generate(CharSupplier)
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
-	default CharSeq until(CharPredicate terminal) {
-		return () -> new ExclusiveTerminalCharIterator(iterator(), terminal);
+	default CharSeq until(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new ExclusiveTerminalCharIterator(iterator(), predicate);
 	}
 
 	/**
@@ -503,8 +562,10 @@ public interface CharSeq extends CharCollection {
 	 * @see #generate(CharSupplier)
 	 * @see #recurse(char, CharUnaryOperator)
 	 */
-	default CharSeq endingAt(CharPredicate terminal) {
-		return () -> new InclusiveTerminalCharIterator(iterator(), terminal);
+	default CharSeq endingAt(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new InclusiveTerminalCharIterator(iterator(), predicate);
 	}
 
 	/**
@@ -540,6 +601,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	default CharSeq startingAfter(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ExclusiveStartingCharIterator(iterator(), predicate);
 	}
 
@@ -552,6 +615,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	default CharSeq startingFrom(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new InclusiveStartingCharIterator(iterator(), predicate);
 	}
 
@@ -560,6 +625,8 @@ public interface CharSeq extends CharCollection {
 	 * {@code mapper} function.
 	 */
 	default CharSeq map(CharUnaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			@Override
 			public char nextChar() {
@@ -575,6 +642,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default CharSeq mapIndexed(CharIntToCharFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			private int index;
 
@@ -596,6 +665,8 @@ public interface CharSeq extends CharCollection {
 	 * Map the {@code chars} in this {@code CharSeq} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(CharFunction<T> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> Iterators.from(iterator(), mapper);
 	}
 
@@ -603,6 +674,8 @@ public interface CharSeq extends CharCollection {
 	 * Skip a set number of {@code chars} in this {@code CharSeq}.
 	 */
 	default CharSeq skip(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -615,6 +688,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	default CharSeq skipTail(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -625,6 +700,8 @@ public interface CharSeq extends CharCollection {
 	 * Limit the maximum number of {@code chars} returned by this {@code CharSeq}.
 	 */
 	default CharSeq limit(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -637,6 +714,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 2.3
 	 */
 	default CharSeq limitTail(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -646,21 +725,27 @@ public interface CharSeq extends CharCollection {
 	/**
 	 * Append the given {@code chars} to the end of this {@code CharSeq}.
 	 */
-	default CharSeq append(char... characters) {
-		return append(CharIterable.of(characters));
+	default CharSeq append(char... array) {
+		requireNonNull(array, "array");
+
+		return append(CharIterable.of(array));
 	}
 
 	/**
 	 * Append the {@code chars} in the given {@link CharIterable} to the end of this {@code CharSeq}.
 	 */
-	default CharSeq append(CharIterable that) {
-		return new ChainingCharIterable(this, that)::iterator;
+	default CharSeq append(CharIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return new ChainingCharIterable(this, iterable)::iterator;
 	}
 
 	/**
 	 * Append the {@link Character}s in the given {@link Iterable} to the end of this {@code CharSeq}.
 	 */
 	default CharSeq append(Iterable<Character> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return append(CharIterable.from(iterable));
 	}
 
@@ -670,6 +755,8 @@ public interface CharSeq extends CharCollection {
 	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
 	 */
 	default CharSeq append(CharIterator iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(CharIterable.once(iterator));
 	}
 
@@ -679,6 +766,8 @@ public interface CharSeq extends CharCollection {
 	 * The appended {@code chars} will only be available on the first traversal of the resulting {@code CharSeq}.
 	 */
 	default CharSeq append(PrimitiveIterator.OfInt iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(CharIterator.from(iterator));
 	}
 
@@ -688,6 +777,8 @@ public interface CharSeq extends CharCollection {
 	 * The appended {@link Character}s will only be available on the first traversal of the resulting {@code CharSeq}.
 	 */
 	default CharSeq append(Iterator<Character> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(CharIterator.from(iterator));
 	}
 
@@ -699,6 +790,8 @@ public interface CharSeq extends CharCollection {
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	default CharSeq append(Stream<Character> stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -711,6 +804,8 @@ public interface CharSeq extends CharCollection {
 	 * @throws IllegalStateException if the {@link Stream} is exhausted.
 	 */
 	default CharSeq append(IntStream stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -719,6 +814,8 @@ public interface CharSeq extends CharCollection {
 	 * {@link CharPredicate}.
 	 */
 	default CharSeq filter(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new FilteringCharIterator(iterator(), predicate);
 	}
 
@@ -729,6 +826,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default CharSeq filterIndexed(CharIntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new IndexedFilteringCharIterator(iterator(), predicate);
 	}
 
@@ -741,6 +840,8 @@ public interface CharSeq extends CharCollection {
 	 * the first previous value.
 	 */
 	default CharSeq filterBack(char firstPrevious, CharBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new BackPeekingFilteringCharIterator(iterator(), firstPrevious, predicate);
 	}
 
@@ -752,6 +853,8 @@ public interface CharSeq extends CharCollection {
 	 * the last next value.
 	 */
 	default CharSeq filterForward(char lastNext, CharBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ForwardPeekingFilteringCharIterator(iterator(), lastNext, predicate);
 	}
 
@@ -760,8 +863,10 @@ public interface CharSeq extends CharCollection {
 	 *
 	 * @since 1.2
 	 */
-	default CharSeq including(char... elements) {
-		return filter(e -> Arrayz.contains(elements, e));
+	default CharSeq including(char... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> Arrayz.contains(array, e));
 	}
 
 	/**
@@ -769,8 +874,10 @@ public interface CharSeq extends CharCollection {
 	 *
 	 * @since 1.2
 	 */
-	default CharSeq excluding(char... elements) {
-		return filter(e -> !Arrayz.contains(elements, e));
+	default CharSeq excluding(char... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> !Arrayz.contains(array, e));
 	}
 
 	/**
@@ -785,6 +892,8 @@ public interface CharSeq extends CharCollection {
 	 * constructor.
 	 */
 	default CharList toList(Supplier<? extends CharList> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -802,6 +911,8 @@ public interface CharSeq extends CharCollection {
 	 * constructor.
 	 */
 	default <S extends CharSet> S toSet(Supplier<? extends S> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -816,6 +927,8 @@ public interface CharSeq extends CharCollection {
 	 * Collect this {@code CharSeq} into an {@link CharCollection} of the type determined by the given constructor.
 	 */
 	default <U extends CharCollection> U toCollection(Supplier<? extends U> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return collectInto(constructor.get());
 	}
 
@@ -823,6 +936,9 @@ public interface CharSeq extends CharCollection {
 	 * Collect this {@code CharSeq} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjCharConsumer<? super C> adder) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(adder, "adder");
+
 		return collectInto(constructor.get(), adder);
 	}
 
@@ -830,6 +946,8 @@ public interface CharSeq extends CharCollection {
 	 * Collect this {@code CharSeq} into the given {@link CharCollection}.
 	 */
 	default <U extends CharCollection> U collectInto(U collection) {
+		requireNonNull(collection, "collection");
+
 		collection.addAllChars(this);
 		return collection;
 	}
@@ -838,6 +956,9 @@ public interface CharSeq extends CharCollection {
 	 * Collect this {@code CharSeq} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjCharConsumer<? super C> adder) {
+		requireNonNull(result, "result");
+		requireNonNull(adder, "adder");
+
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			adder.accept(result, iterator.nextChar());
 		return result;
@@ -856,6 +977,8 @@ public interface CharSeq extends CharCollection {
 	 * Join this {@code CharSeq} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
+		requireNonNull(delimiter, "delimiter");
+
 		return join("", delimiter, "");
 	}
 
@@ -863,6 +986,10 @@ public interface CharSeq extends CharCollection {
 	 * Join this {@code CharSeq} into a string separated by the given delimiter, with the given prefix and suffix.
 	 */
 	default String join(String prefix, String delimiter, String suffix) {
+		requireNonNull(prefix, "prefix");
+		requireNonNull(delimiter, "delimiter");
+		requireNonNull(suffix, "suffix");
+
 		StringBuilder result = new StringBuilder(prefix);
 
 		boolean first = true;
@@ -882,6 +1009,8 @@ public interface CharSeq extends CharCollection {
 	 * the current result and each {@code char} in the sequence.
 	 */
 	default OptionalChar reduce(CharBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		CharIterator iterator = iterator();
 		if (!iterator.hasNext())
 			return OptionalChar.empty();
@@ -897,6 +1026,8 @@ public interface CharSeq extends CharCollection {
 	 * result.
 	 */
 	default char reduce(char identity, CharBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return iterator().reduce(identity, operator);
 	}
 
@@ -931,6 +1062,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default OptionalChar at(int index) {
+		requireAtLeastZero(index, "index");
+
 		CharIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -949,6 +1082,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default OptionalChar first(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return at(0, predicate);
 	}
 
@@ -961,6 +1096,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default OptionalChar last(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).last();
 	}
 
@@ -972,6 +1109,9 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default OptionalChar at(int index, CharPredicate predicate) {
+		requireAtLeastZero(index, "index");
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).at(index);
 	}
 
@@ -979,6 +1119,8 @@ public interface CharSeq extends CharCollection {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code CharSeq}.
 	 */
 	default CharSeq step(int step) {
+		requireAtLeastOne(step, "step");
+
 		return () -> new SteppingCharIterator(iterator(), step);
 	}
 
@@ -1036,6 +1178,8 @@ public interface CharSeq extends CharCollection {
 	 * @return true if all characters in this {@code CharSeq} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextChar()))
 				return false;
@@ -1046,6 +1190,8 @@ public interface CharSeq extends CharCollection {
 	 * @return true if no characters in this {@code CharSeq} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return !any(predicate);
 	}
 
@@ -1053,6 +1199,8 @@ public interface CharSeq extends CharCollection {
 	 * @return true if any character in this {@code CharSeq} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextChar()))
 				return true;
@@ -1063,6 +1211,8 @@ public interface CharSeq extends CharCollection {
 	 * Allow the given {@link CharConsumer} to see each element in this {@code CharSeq} as it is traversed.
 	 */
 	default CharSeq peek(CharConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			@Override
 			public char nextChar() {
@@ -1080,6 +1230,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2.2
 	 */
 	default CharSeq peekIndexed(CharIntConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryCharIterator(iterator()) {
 			private int index;
 
@@ -1108,23 +1260,29 @@ public interface CharSeq extends CharCollection {
 	/**
 	 * Prefix the characters in this {@code CharSeq} with the given characters.
 	 */
-	default CharSeq prefix(char... cs) {
-		return () -> new ChainingCharIterator(CharIterable.of(cs), this);
+	default CharSeq prefix(char... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingCharIterator(CharIterable.of(array), this);
 	}
 
 	/**
 	 * Suffix the characters in this {@code CharSeq} with the given characters.
 	 */
-	default CharSeq suffix(char... cs) {
-		return () -> new ChainingCharIterator(this, CharIterable.of(cs));
+	default CharSeq suffix(char... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingCharIterator(this, CharIterable.of(array));
 	}
 
 	/**
 	 * Interleave the elements in this {@code CharSeq} with those of the given {@code CharIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default CharSeq interleave(CharIterable that) {
-		return () -> new InterleavingCharIterator(this, that);
+	default CharSeq interleave(CharIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return () -> new InterleavingCharIterator(this, iterable);
 	}
 
 	/**
@@ -1156,6 +1314,8 @@ public interface CharSeq extends CharCollection {
 	 * the first previous value.
 	 */
 	default CharSeq mapBack(char firstPrevious, CharBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new BackPeekingMappingCharIterator(iterator(), firstPrevious, mapper);
 	}
 
@@ -1167,6 +1327,8 @@ public interface CharSeq extends CharCollection {
 	 * the last next value.
 	 */
 	default CharSeq mapForward(char lastNext, CharBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new ForwardPeekingMappingCharIterator(iterator(), lastNext, mapper);
 	}
 
@@ -1181,6 +1343,8 @@ public interface CharSeq extends CharCollection {
 	 * Convert this sequence of characters to a sequence of ints corresponding to the integer value of each character.
 	 */
 	default IntSequence toInts(CharToIntFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> IntIterator.from(iterator(), mapper);
 	}
 
@@ -1197,6 +1361,8 @@ public interface CharSeq extends CharCollection {
 	 * Repeat this sequence of characters x times, looping back to the beginning when the iterator runs out of chars.
 	 */
 	default CharSeq repeat(int times) {
+		requireAtLeastZero(times, "times");
+
 		return () -> new RepeatingCharIterator(this, times);
 	}
 
@@ -1206,6 +1372,8 @@ public interface CharSeq extends CharCollection {
 	 * be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<CharSeq> window(int window) {
+		requireAtLeastOne(window, "window");
+
 		return window(window, 1);
 	}
 
@@ -1215,6 +1383,9 @@ public interface CharSeq extends CharCollection {
 	 * window size, the windows will overlap each other.
 	 */
 	default Sequence<CharSeq> window(int window, int step) {
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
+
 		return () -> new WindowingCharIterator(iterator(), window, step);
 	}
 
@@ -1223,6 +1394,8 @@ public interface CharSeq extends CharCollection {
 	 * the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<CharSeq> batch(int size) {
+		requireAtLeastOne(size, "size");
+
 		return window(size, size);
 	}
 
@@ -1232,6 +1405,8 @@ public interface CharSeq extends CharCollection {
 	 * and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<CharSeq> batch(CharBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new PredicatePartitioningCharIterator(iterator(), predicate);
 	}
 
@@ -1253,6 +1428,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.1
 	 */
 	default Sequence<CharSeq> split(CharPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new SplittingCharIterator(iterator(), predicate);
 	}
 
@@ -1272,6 +1449,8 @@ public interface CharSeq extends CharCollection {
 	 * @since 1.2
 	 */
 	default void forEachCharIndexed(CharIntConsumer action) {
+		requireNonNull(action, "action");
+
 		int index = 0;
 		for (CharIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextChar(), index++);

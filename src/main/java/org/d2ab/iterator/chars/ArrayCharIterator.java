@@ -19,6 +19,9 @@ package org.d2ab.iterator.chars;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.requireSizeWithinBounds;
+
 /**
  * An {@link Iterator} over an array of items.
  */
@@ -37,10 +40,10 @@ public class ArrayCharIterator implements CharIterator {
 	}
 
 	public ArrayCharIterator(char[] array, int offset, int size) {
-		if (offset > array.length || offset < 0)
-			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + array.length);
-		if (offset + size > array.length || size < 0)
-			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (array.length - offset));
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(offset, "offset", array.length, "array.length");
+		requireSizeWithinBounds(size, "size", array.length - offset, "array.length - offset");
+
 		this.array = array;
 		this.offset = offset;
 		this.size = size;
