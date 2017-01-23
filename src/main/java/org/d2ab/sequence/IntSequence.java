@@ -579,9 +579,7 @@ public interface IntSequence extends IntCollection {
 	 */
 	static IntSequence random(Supplier<? extends Random> randomSupplier, int lowerBound, int upperBound) {
 		requireNonNull(randomSupplier, "randomSupplier");
-		requireAtLeastZero(lowerBound, "lowerBound");
-		requireAtLeastZero(upperBound, "upperBound");
-		requireBelow(lowerBound, "lowerBound", upperBound, "upperBound");
+		requireAbove(upperBound, "upperBound", lowerBound, "lowerBound");
 
 		return multiGenerate(() -> {
 			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");

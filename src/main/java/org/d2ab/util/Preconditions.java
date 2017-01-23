@@ -26,6 +26,28 @@ public abstract class Preconditions {
 			                                   thresholdName + " (" + threshold + "): " + value);
 	}
 
+	public static void requireAbove(double value, String name, double threshold) {
+		if (value <= threshold)
+			throw new IllegalArgumentException("Expected " + name + " to be > " + threshold + ": " + value);
+	}
+
+	public static void requireAbove(double value, String name, double threshold, String thresholdName) {
+		if (value <= threshold)
+			throw new IllegalArgumentException("Expected " + name + " to be > " +
+			                                   thresholdName + " (" + threshold + "): " + value);
+	}
+
+	public static void requireAbove(long value, String name, long threshold) {
+		if (value <= threshold)
+			throw new IllegalArgumentException("Expected " + name + " to be > " + threshold + ": " + value);
+	}
+
+	public static void requireAbove(long value, String name, long threshold, String thresholdName) {
+		if (value <= threshold)
+			throw new IllegalArgumentException("Expected " + name + " to be > " +
+			                                   thresholdName + " (" + threshold + "): " + value);
+	}
+
 	public static void requireBelow(long value, String name, long threshold) {
 		if (value >= threshold)
 			throw new IllegalArgumentException("Expected " + name + " to be < " +

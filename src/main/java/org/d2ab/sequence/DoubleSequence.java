@@ -33,6 +33,8 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import static java.lang.Math.round;
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.*;
 
 /**
  * An {@link Iterable} sequence of {@code double} values with {@link Stream}-like operations for refining,
@@ -50,15 +52,20 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * Create a {@code DoubleSequence} with the given doubles.
 	 */
-	static DoubleSequence of(double... ds) {
-		return () -> DoubleIterator.of(ds);
+	static DoubleSequence of(double... array) {
+		requireNonNull(array, "array");
+
+		return () -> DoubleIterator.of(array);
 	}
 
 	/**
 	 * Create an {@code DoubleSequence} with the given {@code doubles}, limited to the given size.
 	 */
-	static DoubleSequence from(double[] is, int size) {
-		return () -> DoubleIterator.from(is, size);
+	static DoubleSequence from(double[] array, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(size, "size", array.length, "array.length");
+
+		return () -> DoubleIterator.from(array, size);
 	}
 
 	/**
@@ -66,8 +73,12 @@ public interface DoubleSequence extends DoubleCollection {
 	 * the
 	 * given size.
 	 */
-	static DoubleSequence from(double[] is, int offset, int size) {
-		return () -> DoubleIterator.from(is, offset, size);
+	static DoubleSequence from(double[] array, int offset, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(offset, "offset", array.length, "array.length");
+		requireSizeWithinBounds(size, "size", array.length - offset, "array.length - offset");
+
+		return () -> DoubleIterator.from(array, offset, size);
 	}
 
 	/**
@@ -76,6 +87,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #cache(DoubleIterable)
 	 */
 	static DoubleSequence from(DoubleIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return iterable::iterator;
 	}
 
@@ -85,6 +98,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #cache(Iterable)
 	 */
 	static DoubleSequence from(Iterable<Double> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return from(DoubleIterable.from(iterable));
 	}
 
@@ -97,6 +112,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence once(PrimitiveIterator.OfDouble iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(DoubleIterable.once(iterator));
 	}
 
@@ -109,6 +126,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence once(Iterator<Double> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return once(DoubleIterator.from(iterator));
 	}
 
@@ -122,6 +141,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence once(DoubleStream stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -135,6 +156,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence once(Stream<Double> stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -150,6 +173,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(PrimitiveIterator.OfDouble iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(DoubleList.copy(iterator));
 	}
 
@@ -165,6 +190,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(Iterator<Double> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return cache(DoubleIterator.from(iterator));
 	}
 
@@ -180,6 +207,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(DoubleStream stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -195,6 +224,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(Stream<Double> stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -210,6 +241,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(DoubleIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -225,6 +258,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	static DoubleSequence cache(Iterable<Double> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -247,8 +282,7 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #steppingFrom(double, double)
 	 */
 	static DoubleSequence range(double start, double end, double step, double accuracy) {
-		if (step < 0)
-			throw new IllegalArgumentException("Require step to be >= 0");
+		requireAbove(step, "step", 0);
 
 		return end > start ?
 		       recurse(start, d -> d + step).until(d -> d - accuracy >= end) :
@@ -257,14 +291,16 @@ public interface DoubleSequence extends DoubleCollection {
 
 	// TODO: Add open ranges
 
-	static DoubleSequence recurse(double seed, DoubleUnaryOperator op) {
+	static DoubleSequence recurse(double seed, DoubleUnaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return () -> new InfiniteDoubleIterator() {
 			private double previous;
 			private boolean hasPrevious;
 
 			@Override
 			public double nextDouble() {
-				previous = hasPrevious ? op.applyAsDouble(previous) : seed;
+				previous = hasPrevious ? operator.applyAsDouble(previous) : seed;
 				hasPrevious = true;
 				return previous;
 			}
@@ -279,6 +315,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #until(double, double)
 	 */
 	static DoubleSequence generate(DoubleSupplier supplier) {
+		requireNonNull(supplier, "supplier");
+
 		return () -> (InfiniteDoubleIterator) supplier::getAsDouble;
 	}
 
@@ -290,9 +328,11 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #endingAt(double, double)
 	 * @see #until(double, double)
 	 */
-	static DoubleSequence multiGenerate(Supplier<? extends DoubleSupplier> supplierSupplier) {
+	static DoubleSequence multiGenerate(Supplier<? extends DoubleSupplier> multiSupplier) {
+		requireNonNull(multiSupplier, "multiSupplier");
+
 		return () -> {
-			DoubleSupplier doubleSupplier = supplierSupplier.get();
+			DoubleSupplier doubleSupplier = requireNonNull(multiSupplier.get(), "multiSupplier.get()");
 			return (InfiniteDoubleIterator) doubleSupplier::getAsDouble;
 		};
 	}
@@ -321,8 +361,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	static DoubleSequence random(Supplier<? extends Random> randomSupplier) {
+		requireNonNull(randomSupplier, "randomSupplier");
+
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
 			return random::nextDouble;
 		});
 	}
@@ -336,8 +378,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static DoubleSequence random(double upper) {
-		return random(0, upper);
+	static DoubleSequence random(double upperBound) {
+		return random(0, upperBound);
 	}
 
 	/**
@@ -350,8 +392,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static DoubleSequence random(Supplier<? extends Random> randomSupplier, double upper) {
-		return random(randomSupplier, 0, upper);
+	static DoubleSequence random(Supplier<? extends Random> randomSupplier, double upperBound) {
+		return random(randomSupplier, 0, upperBound);
 	}
 
 	/**
@@ -363,8 +405,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static DoubleSequence random(double lower, double upper) {
-		return random(Random::new, lower, upper);
+	static DoubleSequence random(double lowerBound, double upperBound) {
+		return random(Random::new, lowerBound, upperBound);
 	}
 
 	/**
@@ -376,11 +418,14 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static DoubleSequence random(Supplier<? extends Random> randomSupplier, double lower, double upper) {
+	static DoubleSequence random(Supplier<? extends Random> randomSupplier, double lowerBound, double upperBound) {
+		requireNonNull(randomSupplier, "randomSupplier");
+		requireAbove(upperBound, "upperBound", lowerBound, "lowerBound");
+
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
-			double bound = upper - lower;
-			return () -> random.nextDouble() * bound + lower;
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
+			double bound = upperBound - lowerBound;
+			return () -> random.nextDouble() * bound + lowerBound;
 		});
 	}
 
@@ -419,8 +464,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSequence until(DoublePredicate terminal) {
-		return () -> new ExclusiveTerminalDoubleIterator(iterator(), terminal);
+	default DoubleSequence until(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new ExclusiveTerminalDoubleIterator(iterator(), predicate);
 	}
 
 	/**
@@ -432,8 +479,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @see #generate(DoubleSupplier)
 	 * @see #recurse(double, DoubleUnaryOperator)
 	 */
-	default DoubleSequence endingAt(DoublePredicate terminal) {
-		return () -> new InclusiveTerminalDoubleIterator(iterator(), terminal);
+	default DoubleSequence endingAt(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new InclusiveTerminalDoubleIterator(iterator(), predicate);
 	}
 
 	/**
@@ -470,6 +519,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	default DoubleSequence startingAfter(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ExclusiveStartingDoubleIterator(iterator(), predicate);
 	}
 
@@ -482,6 +533,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	default DoubleSequence startingFrom(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new InclusiveStartingDoubleIterator(iterator(), predicate);
 	}
 
@@ -490,6 +543,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * {@code mapper} function.
 	 */
 	default DoubleSequence map(DoubleUnaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryDoubleIterator(iterator()) {
 			@Override
 			public double nextDouble() {
@@ -505,6 +560,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default DoubleSequence mapIndexed(DoubleIntToDoubleFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryDoubleIterator(iterator()) {
 			private int index;
 
@@ -526,6 +583,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Map the {@code doubles} in this {@code DoubleSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(DoubleFunction<T> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> Iterators.from(iterator(), mapper);
 	}
 
@@ -533,6 +592,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Skip a set number of {@code doubles} in this {@code DoubleSequence}.
 	 */
 	default DoubleSequence skip(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -545,6 +606,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	default DoubleSequence skipTail(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -555,6 +618,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Limit the maximum number of {@code doubles} returned by this {@code DoubleSequence}.
 	 */
 	default DoubleSequence limit(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -567,6 +632,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 2.3
 	 */
 	default DoubleSequence limitTail(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -576,21 +643,27 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * Append the given {@code doubles} to the end of this {@code DoubleSequence}.
 	 */
-	default DoubleSequence append(double... doubles) {
-		return append(DoubleIterable.of(doubles));
+	default DoubleSequence append(double... array) {
+		requireNonNull(array, "array");
+
+		return append(DoubleIterable.of(array));
 	}
 
 	/**
 	 * Append the {@code doubles} in the given {@link DoubleIterable} to the end of this {@code DoubleSequence}.
 	 */
-	default DoubleSequence append(DoubleIterable that) {
-		return new ChainingDoubleIterable(this, that)::iterator;
+	default DoubleSequence append(DoubleIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return new ChainingDoubleIterable(this, iterable)::iterator;
 	}
 
 	/**
 	 * Append the {@link Double}s in the given {@link Iterable} to the end of this {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(Iterable<Double> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return append(DoubleIterable.from(iterable));
 	}
 
@@ -602,6 +675,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * DoubleSequence}.
 	 */
 	default DoubleSequence append(PrimitiveIterator.OfDouble iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(DoubleIterable.once(iterator));
 	}
 
@@ -612,6 +687,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(Iterator<Double> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(DoubleIterator.from(iterator));
 	}
 
@@ -622,6 +699,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(DoubleStream stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -632,6 +711,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * {@code DoubleSequence}.
 	 */
 	default DoubleSequence append(Stream<Double> stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -640,6 +721,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * {@link DoublePredicate}.
 	 */
 	default DoubleSequence filter(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new FilteringDoubleIterator(iterator(), predicate);
 	}
 
@@ -650,6 +733,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default DoubleSequence filterIndexed(DoubleIntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new IndexedFilteringDoubleIterator(iterator(), predicate);
 	}
 
@@ -658,11 +743,12 @@ public interface DoubleSequence extends DoubleCollection {
 	 * sequence.
 	 * <p>
 	 * The predicate has access to the previous double and the current double in the iteration. If the current
-	 * double is
-	 * the first value in the sequence, and there is no previous value, the provided replacement value is used as
-	 * the first previous value.
+	 * double is the first value in the sequence, and there is no previous value, the provided replacement value is
+	 * used as the first previous value.
 	 */
 	default DoubleSequence filterBack(double firstPrevious, DoubleBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new BackPeekingFilteringDoubleIterator(iterator(), firstPrevious, predicate);
 	}
 
@@ -675,6 +761,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * the last next value.
 	 */
 	default DoubleSequence filterForward(double lastNext, DoubleBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ForwardPeekingFilteringDoubleIterator(iterator(), lastNext, predicate);
 	}
 
@@ -684,8 +772,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	default DoubleSequence includingExactly(double... elements) {
-		return filter(e -> Arrayz.containsExactly(elements, e));
+	default DoubleSequence includingExactly(double... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> Arrayz.containsExactly(array, e));
 	}
 
 	/**
@@ -694,8 +784,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	default DoubleSequence including(double[] elements, double precision) {
-		return filter(e -> Arrayz.contains(elements, e, precision));
+	default DoubleSequence including(double[] array, double precision) {
+		requireNonNull(array, "array");
+
+		return filter(e -> Arrayz.contains(array, e, precision));
 	}
 
 	/**
@@ -704,8 +796,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	default DoubleSequence excludingExactly(double... elements) {
-		return filter(e -> !Arrayz.containsExactly(elements, e));
+	default DoubleSequence excludingExactly(double... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> !Arrayz.containsExactly(array, e));
 	}
 
 	/**
@@ -714,8 +808,10 @@ public interface DoubleSequence extends DoubleCollection {
 	 *
 	 * @since 2.0
 	 */
-	default DoubleSequence excluding(double[] elements, double precision) {
-		return filter(e -> !Arrayz.contains(elements, e, precision));
+	default DoubleSequence excluding(double[] array, double precision) {
+		requireNonNull(array, "array");
+
+		return filter(e -> !Arrayz.contains(array, e, precision));
 	}
 
 	/**
@@ -730,6 +826,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * given constructor.
 	 */
 	default DoubleList toList(Supplier<? extends DoubleList> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -745,6 +843,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * given constructor.
 	 */
 	default <S extends DoubleSet> S toSet(Supplier<? extends S> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -760,6 +860,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * constructor.
 	 */
 	default <U extends DoubleCollection> U toCollection(Supplier<? extends U> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return collectInto(constructor.get());
 	}
 
@@ -767,6 +869,9 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Collect this {@code DoubleSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjDoubleConsumer<? super C> adder) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(adder, "adder");
+
 		return collectInto(constructor.get(), adder);
 	}
 
@@ -774,6 +879,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Collect this {@code DoubleSequence} into the given {@link DoubleCollection}.
 	 */
 	default <U extends DoubleCollection> U collectInto(U collection) {
+		requireNonNull(collection, "collection");
+
 		collection.addAllDoubles(this);
 		return collection;
 	}
@@ -782,6 +889,9 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Collect this {@code DoubleSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjDoubleConsumer<? super C> adder) {
+		requireNonNull(result, "result");
+		requireNonNull(adder, "adder");
+
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			adder.accept(result, iterator.nextDouble());
 		return result;
@@ -791,6 +901,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Join this {@code DoubleSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
+		requireNonNull(delimiter, "delimiter");
+
 		return join("", delimiter, "");
 	}
 
@@ -799,13 +911,19 @@ public interface DoubleSequence extends DoubleCollection {
 	 * suffix.
 	 */
 	default String join(String prefix, String delimiter, String suffix) {
+		requireNonNull(prefix, "prefix");
+		requireNonNull(delimiter, "delimiter");
+		requireNonNull(suffix, "suffix");
+
 		StringBuilder result = new StringBuilder(prefix);
 
 		boolean started = false;
-		for (DoubleIterator iterator = iterator(); iterator.hasNext(); started = true) {
+		for (DoubleIterator iterator = iterator(); iterator.hasNext(); ) {
 			double each = iterator.nextDouble();
 			if (started)
 				result.append(delimiter);
+			else
+				started = true;
 			result.append(each);
 		}
 
@@ -817,6 +935,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * operator to the current result and each {@code double} in the sequence.
 	 */
 	default OptionalDouble reduce(DoubleBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		DoubleIterator iterator = iterator();
 		if (!iterator.hasNext())
 			return OptionalDouble.empty();
@@ -831,6 +951,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * initial result.
 	 */
 	default double reduce(double identity, DoubleBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return iterator().reduce(identity, operator);
 	}
 
@@ -866,6 +988,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default OptionalDouble at(int index) {
+		requireAtLeastZero(index, "index");
+
 		DoubleIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -885,6 +1009,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default OptionalDouble first(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return at(0, predicate);
 	}
 
@@ -897,6 +1023,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default OptionalDouble last(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).last();
 	}
 
@@ -908,6 +1036,9 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default OptionalDouble at(int index, DoublePredicate predicate) {
+		requireAtLeastZero(index, "index");
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).at(index);
 	}
 
@@ -915,6 +1046,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code DoubleSequence}.
 	 */
 	default DoubleSequence step(int step) {
+		requireAtLeastOne(step, "step");
+
 		return () -> new SteppingDoubleIterator(iterator(), step);
 	}
 
@@ -993,6 +1126,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @return true if all doubles in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextDouble()))
 				return false;
@@ -1003,6 +1138,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @return true if no doubles in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return !any(predicate);
 	}
 
@@ -1010,6 +1147,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @return true if any double in this {@code DoubleSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextDouble()))
 				return true;
@@ -1020,6 +1159,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Allow the given {@link DoubleConsumer} to see each element in this {@code DoubleSequence} as it is traversed.
 	 */
 	default DoubleSequence peek(DoubleConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryDoubleIterator(iterator()) {
 			@Override
 			public double nextDouble() {
@@ -1037,6 +1178,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2.2
 	 */
 	default DoubleSequence peekIndexed(DoubleIntConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryDoubleIterator(iterator()) {
 			private int index;
 
@@ -1065,23 +1208,29 @@ public interface DoubleSequence extends DoubleCollection {
 	/**
 	 * Prefix the doubles in this {@code DoubleSequence} with the given doubles.
 	 */
-	default DoubleSequence prefix(double... xs) {
-		return () -> new ChainingDoubleIterator(DoubleIterable.of(xs), this);
+	default DoubleSequence prefix(double... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingDoubleIterator(DoubleIterable.of(array), this);
 	}
 
 	/**
 	 * Suffix the doubles in this {@code DoubleSequence} with the given doubles.
 	 */
-	default DoubleSequence suffix(double... xs) {
-		return () -> new ChainingDoubleIterator(this, DoubleIterable.of(xs));
+	default DoubleSequence suffix(double... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingDoubleIterator(this, DoubleIterable.of(array));
 	}
 
 	/**
 	 * Interleave the elements in this {@code DoubleSequence} with those of the given {@code DoubleIterable}, stopping
 	 * when either sequence finishes.
 	 */
-	default DoubleSequence interleave(DoubleIterable that) {
-		return () -> new InterleavingDoubleIterator(this, that);
+	default DoubleSequence interleave(DoubleIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return () -> new InterleavingDoubleIterator(this, iterable);
 	}
 
 	/**
@@ -1106,6 +1255,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * the first previous value.
 	 */
 	default DoubleSequence mapBack(double firstPrevious, DoubleBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new BackPeekingMappingDoubleIterator(iterator(), firstPrevious, mapper);
 	}
 
@@ -1118,6 +1269,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * the last next value.
 	 */
 	default DoubleSequence mapForward(double lastNext, DoubleBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new ForwardPeekingMappingDoubleIterator(iterator(), lastNext, mapper);
 	}
 
@@ -1149,6 +1302,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Convert this sequence of doubles to a sequence of ints using the given converter function.
 	 */
 	default IntSequence toInts(DoubleToIntFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> IntIterator.from(iterator(), mapper);
 	}
 
@@ -1164,6 +1319,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Convert this sequence of doubles to a sequence of longs using the given converter function.
 	 */
 	default LongSequence toLongs(DoubleToLongFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> LongIterator.from(iterator(), mapper);
 	}
 
@@ -1180,6 +1337,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * Repeat this sequence of doubles x times, looping back to the beginning when the iterator runs out of doubles.
 	 */
 	default DoubleSequence repeat(int times) {
+		requireAtLeastZero(times, "times");
+
 		return () -> new RepeatingDoubleIterator(this, times);
 	}
 
@@ -1190,6 +1349,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * {@code DoubleSequence} may be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<DoubleSequence> window(int window) {
+		requireAtLeastOne(window, "window");
+
 		return window(window, 1);
 	}
 
@@ -1200,6 +1361,9 @@ public interface DoubleSequence extends DoubleCollection {
 	 * the window size, the windows will overlap each other.
 	 */
 	default Sequence<DoubleSequence> window(int window, int step) {
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
+
 		return () -> new WindowingDoubleIterator(iterator(), window, step);
 	}
 
@@ -1209,6 +1373,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * each with the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<DoubleSequence> batch(int size) {
+		requireAtLeastOne(size, "size");
+
 		return window(size, size);
 	}
 
@@ -1219,6 +1385,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<DoubleSequence> batch(DoubleBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new PredicatePartitioningDoubleIterator(iterator(), predicate);
 	}
 
@@ -1242,6 +1410,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.1
 	 */
 	default Sequence<DoubleSequence> split(DoublePredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new SplittingDoubleIterator(iterator(), predicate);
 	}
 
@@ -1261,6 +1431,8 @@ public interface DoubleSequence extends DoubleCollection {
 	 * @since 1.2
 	 */
 	default void forEachDoubleIndexed(DoubleIntConsumer action) {
+		requireNonNull(action, "action");
+
 		int index = 0;
 		for (DoubleIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextDouble(), index++);

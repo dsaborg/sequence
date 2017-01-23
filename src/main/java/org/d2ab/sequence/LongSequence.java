@@ -559,9 +559,7 @@ public interface LongSequence extends LongCollection {
 	 */
 	static LongSequence random(Supplier<? extends Random> randomSupplier, long lowerBound, long upperBound) {
 		requireNonNull(randomSupplier, "randomSupplier");
-		requireAtLeastZero(lowerBound, "lowerBound");
-		requireAtLeastZero(upperBound, "upperBound");
-		requireAtMost(lowerBound, "lowerBound", upperBound, "upperBound");
+		requireAbove(upperBound, "upperBound", lowerBound, "lowerBound");
 
 		return multiGenerate(() -> {
 			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
@@ -1058,10 +1056,12 @@ public interface LongSequence extends LongCollection {
 		StringBuilder result = new StringBuilder(prefix);
 
 		boolean started = false;
-		for (LongIterator iterator = iterator(); iterator.hasNext(); started = true) {
+		for (LongIterator iterator = iterator(); iterator.hasNext(); ) {
 			long each = iterator.nextLong();
 			if (started)
 				result.append(delimiter);
+			else
+				started = true;
 			result.append(each);
 		}
 
