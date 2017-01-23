@@ -19,6 +19,9 @@ package org.d2ab.iterator.longs;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.requireSizeWithinBounds;
+
 /**
  * An {@link Iterator} over an array of items.
  */
@@ -33,16 +36,16 @@ public class ArrayLongIterator implements LongIterator {
 		this(values, values.length);
 	}
 
-	public ArrayLongIterator(long[] values, int size) {
-		this(values, 0, size);
+	public ArrayLongIterator(long[] array, int size) {
+		this(array, 0, size);
 	}
 
-	public ArrayLongIterator(long[] values, int offset, int size) {
-		if (offset > values.length || offset < 0)
-			throw new IndexOutOfBoundsException("offset: " + offset + ", length: " + values.length);
-		if (offset + size > values.length || size < 0)
-			throw new IndexOutOfBoundsException("size: " + size + ", length - offset: " + (values.length - offset));
-		this.values = values;
+	public ArrayLongIterator(long[] array, int offset, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
+		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
+
+		this.values = array;
 		this.offset = offset;
 		this.size = size;
 	}
