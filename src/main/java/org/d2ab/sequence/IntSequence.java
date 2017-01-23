@@ -27,7 +27,6 @@ import org.d2ab.iterator.chars.CharIterator;
 import org.d2ab.iterator.doubles.DoubleIterator;
 import org.d2ab.iterator.ints.*;
 import org.d2ab.iterator.longs.LongIterator;
-import org.d2ab.util.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +55,8 @@ public interface IntSequence extends IntCollection {
 	 * Create an {@code IntSequence} with the given {@code ints}.
 	 */
 	static IntSequence of(int... array) {
+		requireNonNull(array, "array");
+
 		return from(array, 0, array.length);
 	}
 
@@ -396,7 +397,7 @@ public interface IntSequence extends IntCollection {
 	 * @see #negativeFromZero()
 	 */
 	static IntSequence steppingFrom(int start, int step) {
-		Preconditions.requireNotEqual(0, step, "step");
+		requireNotEqual(0, step, "step");
 
 		return recurse(start, x -> x + step);
 	}
@@ -537,8 +538,8 @@ public interface IntSequence extends IntCollection {
 	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
-	static IntSequence random(int upper) {
-		return random(0, upper);
+	static IntSequence random(int upperBound) {
+		return random(0, upperBound);
 	}
 
 	/**
@@ -550,10 +551,8 @@ public interface IntSequence extends IntCollection {
 	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
-	static IntSequence random(Supplier<? extends Random> randomSupplier, int upper) {
-		requireNonNull(randomSupplier, "randomSupplier");
-
-		return random(randomSupplier, 0, upper);
+	static IntSequence random(Supplier<? extends Random> randomSupplier, int upperBound) {
+		return random(randomSupplier, 0, upperBound);
 	}
 
 	/**
@@ -565,8 +564,8 @@ public interface IntSequence extends IntCollection {
 	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
-	static IntSequence random(int lower, int upper) {
-		return random(Random::new, lower, upper);
+	static IntSequence random(int lowerBound, int upperBound) {
+		return random(Random::new, lowerBound, upperBound);
 	}
 
 	/**
@@ -578,13 +577,16 @@ public interface IntSequence extends IntCollection {
 	 * @see Random#nextInt(int)
 	 * @since 1.2
 	 */
-	static IntSequence random(Supplier<? extends Random> randomSupplier, int lower, int upper) {
+	static IntSequence random(Supplier<? extends Random> randomSupplier, int lowerBound, int upperBound) {
 		requireNonNull(randomSupplier, "randomSupplier");
+		requireAtLeastZero(lowerBound, "lowerBound");
+		requireAtLeastZero(upperBound, "upperBound");
+		requireAtMost(upperBound, "upperBound", lowerBound, "lowerBound");
 
 		return multiGenerate(() -> {
 			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
-			int bound = upper - lower;
-			return () -> random.nextInt(bound) + lower;
+			int bound = upperBound - lowerBound;
+			return () -> random.nextInt(bound) + lowerBound;
 		});
 	}
 

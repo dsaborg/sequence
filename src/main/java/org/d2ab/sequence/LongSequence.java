@@ -30,6 +30,9 @@ import java.util.function.*;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.util.Preconditions.*;
+
 /**
  * An {@link Iterable} sequence of {@code long} values with {@link Stream}-like operations for refining,
  * transforming and collating the list of longs.
@@ -46,23 +49,32 @@ public interface LongSequence extends LongCollection {
 	/**
 	 * Create a {@code LongSequence} with the given {@code longs}.
 	 */
-	static LongSequence of(long... ls) {
-		return () -> LongIterator.of(ls);
+	static LongSequence of(long... array) {
+		requireNonNull(array, "array");
+
+		return () -> LongIterator.of(array);
 	}
 
 	/**
 	 * Create a {@code LongSequence} with the given {@code longs}, limited to the given size.
 	 */
-	static LongSequence from(long[] ls, int size) {
-		return () -> LongIterator.from(ls, size);
+	static LongSequence from(long[] array, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(array.length, "array.length", size, "size");
+
+		return () -> LongIterator.from(array, size);
 	}
 
 	/**
 	 * Create a {@code LongSequence} with the given {@code longs}, reading from the given offset and limited to the
 	 * given size.
 	 */
-	static LongSequence from(long[] ls, int offset, int size) {
-		return () -> LongIterator.from(ls, offset, size);
+	static LongSequence from(long[] array, int offset, int size) {
+		requireNonNull(array, "array");
+		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
+		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
+
+		return () -> LongIterator.from(array, offset, size);
 	}
 
 	/**
@@ -71,6 +83,8 @@ public interface LongSequence extends LongCollection {
 	 * @see #cache(LongIterable)
 	 */
 	static LongSequence from(LongIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return iterable::iterator;
 	}
 
@@ -80,6 +94,8 @@ public interface LongSequence extends LongCollection {
 	 * @see #cache(Iterable)
 	 */
 	static LongSequence from(Iterable<Long> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return from(LongIterable.from(iterable));
 	}
 
@@ -92,6 +108,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence once(PrimitiveIterator.OfLong iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(LongIterable.once(iterator));
 	}
 
@@ -104,6 +122,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence once(Iterator<Long> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return once(LongIterator.from(iterator));
 	}
 
@@ -117,6 +137,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence once(LongStream stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -130,6 +152,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence once(Stream<Long> stream) {
+		requireNonNull(stream, "stream");
+
 		return once(stream.iterator());
 	}
 
@@ -145,6 +169,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence cache(PrimitiveIterator.OfLong iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return from(LongList.copy(iterator));
 	}
 
@@ -160,6 +186,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence cache(Iterator<Long> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return cache(LongIterator.from(iterator));
 	}
 
@@ -175,6 +203,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence cache(LongStream stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -190,6 +220,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence cache(Stream<Long> stream) {
+		requireNonNull(stream, "stream");
+
 		return cache(stream.iterator());
 	}
 
@@ -205,6 +237,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence cache(LongIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -220,6 +254,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	static LongSequence cache(Iterable<Long> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return cache(iterable.iterator());
 	}
 
@@ -340,6 +376,8 @@ public interface LongSequence extends LongCollection {
 	 * @see #negativeFromZero()
 	 */
 	static LongSequence steppingFrom(long start, long step) {
+		requireNotEqual(0, step, "step");
+
 		return recurse(start, x -> x + step);
 	}
 
@@ -375,8 +413,7 @@ public interface LongSequence extends LongCollection {
 	 * @see #negativeFromZero()
 	 */
 	static LongSequence range(long start, long end, long step) {
-		if (step < 0)
-			throw new IllegalArgumentException("Require step >= 0");
+		requireAtLeastOne(step, "step");
 
 		return end >= start ?
 		       recurse(start, x -> x + step).endingAt(x -> x + step > end || x > Long.MAX_VALUE - step) :
@@ -396,14 +433,16 @@ public interface LongSequence extends LongCollection {
 	 * @see #endingAt(long)
 	 * @see #until(long)
 	 */
-	static LongSequence recurse(long seed, LongUnaryOperator op) {
+	static LongSequence recurse(long seed, LongUnaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return () -> new InfiniteLongIterator() {
 			private long previous;
 			private boolean hasPrevious;
 
 			@Override
 			public long nextLong() {
-				previous = hasPrevious ? op.applyAsLong(previous) : seed;
+				previous = hasPrevious ? operator.applyAsLong(previous) : seed;
 				hasPrevious = true;
 				return previous;
 			}
@@ -418,6 +457,8 @@ public interface LongSequence extends LongCollection {
 	 * @see #until(long)
 	 */
 	static LongSequence generate(LongSupplier supplier) {
+		requireNonNull(supplier, "supplier");
+
 		return () -> (InfiniteLongIterator) supplier::getAsLong;
 	}
 
@@ -429,9 +470,11 @@ public interface LongSequence extends LongCollection {
 	 * @see #endingAt(long)
 	 * @see #until(long)
 	 */
-	static LongSequence multiGenerate(Supplier<? extends LongSupplier> supplierSupplier) {
+	static LongSequence multiGenerate(Supplier<? extends LongSupplier> multiSupplier) {
+		requireNonNull(multiSupplier, "multiSupplier");
+
 		return () -> {
-			LongSupplier longSupplier = supplierSupplier.get();
+			LongSupplier longSupplier = requireNonNull(multiSupplier.get(), "multiSupplier.get()");
 			return (InfiniteLongIterator) longSupplier::getAsLong;
 		};
 	}
@@ -458,6 +501,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	static LongSequence random(Supplier<? extends Random> randomSupplier) {
+		requireNonNull(randomSupplier, "randomSupplier");
+
 		return multiGenerate(() -> {
 			Random random = randomSupplier.get();
 			return random::nextLong;
@@ -473,8 +518,8 @@ public interface LongSequence extends LongCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static LongSequence random(long upper) {
-		return random(0, upper);
+	static LongSequence random(long upperBound) {
+		return random(0, upperBound);
 	}
 
 	/**
@@ -486,8 +531,8 @@ public interface LongSequence extends LongCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static LongSequence random(Supplier<? extends Random> randomSupplier, long upper) {
-		return random(randomSupplier, 0, upper);
+	static LongSequence random(Supplier<? extends Random> randomSupplier, long upperBound) {
+		return random(randomSupplier, 0, upperBound);
 	}
 
 	/**
@@ -499,8 +544,8 @@ public interface LongSequence extends LongCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static LongSequence random(long lower, long upper) {
-		return random(Random::new, lower, upper);
+	static LongSequence random(long lowerBound, long upperBound) {
+		return random(Random::new, lowerBound, upperBound);
 	}
 
 	/**
@@ -512,11 +557,16 @@ public interface LongSequence extends LongCollection {
 	 * @see Random#nextDouble()
 	 * @since 1.2
 	 */
-	static LongSequence random(Supplier<? extends Random> randomSupplier, long lower, long upper) {
+	static LongSequence random(Supplier<? extends Random> randomSupplier, long lowerBound, long upperBound) {
+		requireNonNull(randomSupplier, "randomSupplier");
+		requireAtLeastZero(lowerBound, "lowerBound");
+		requireAtLeastZero(upperBound, "upperBound");
+		requireAtMost(upperBound, "upperBound", lowerBound, "lowerBound");
+
 		return multiGenerate(() -> {
-			Random random = randomSupplier.get();
-			long bound = upper - lower;
-			return () -> (long) (random.nextDouble() * bound) + lower;
+			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
+			long bound = upperBound - lowerBound;
+			return () -> (long) (random.nextDouble() * bound) + lowerBound;
 		});
 	}
 
@@ -557,8 +607,10 @@ public interface LongSequence extends LongCollection {
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
-	default LongSequence until(LongPredicate terminal) {
-		return () -> new ExclusiveTerminalLongIterator(iterator(), terminal);
+	default LongSequence until(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new ExclusiveTerminalLongIterator(iterator(), predicate);
 	}
 
 	/**
@@ -570,8 +622,10 @@ public interface LongSequence extends LongCollection {
 	 * @see #generate(LongSupplier)
 	 * @see #recurse(long, LongUnaryOperator)
 	 */
-	default LongSequence endingAt(LongPredicate terminal) {
-		return () -> new InclusiveTerminalLongIterator(iterator(), terminal);
+	default LongSequence endingAt(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return () -> new InclusiveTerminalLongIterator(iterator(), predicate);
 	}
 
 	/**
@@ -608,6 +662,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	default LongSequence startingAfter(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ExclusiveStartingLongIterator(iterator(), predicate);
 	}
 
@@ -620,6 +676,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	default LongSequence startingFrom(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new InclusiveStartingLongIterator(iterator(), predicate);
 	}
 
@@ -628,6 +686,8 @@ public interface LongSequence extends LongCollection {
 	 * {@code mapper} function.
 	 */
 	default LongSequence map(LongUnaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryLongIterator(iterator()) {
 			@Override
 			public long nextLong() {
@@ -643,6 +703,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default LongSequence mapIndexed(LongIntToLongFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new DelegatingUnaryLongIterator(iterator()) {
 			private int index;
 
@@ -662,6 +724,8 @@ public interface LongSequence extends LongCollection {
 	 * the first previous value.
 	 */
 	default LongSequence mapBack(long firstPrevious, LongBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new BackPeekingMappingLongIterator(iterator(), firstPrevious, mapper);
 	}
 
@@ -674,6 +738,8 @@ public interface LongSequence extends LongCollection {
 	 * the last next value.
 	 */
 	default LongSequence mapForward(long lastNext, LongBinaryOperator mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> new ForwardPeekingMappingLongIterator(iterator(), lastNext, mapper);
 	}
 
@@ -688,6 +754,8 @@ public interface LongSequence extends LongCollection {
 	 * Map the {@code longs} in this {@code LongSequence} to a {@link Sequence} of values.
 	 */
 	default <T> Sequence<T> toSequence(LongFunction<T> mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> Iterators.from(iterator(), mapper);
 	}
 
@@ -695,6 +763,8 @@ public interface LongSequence extends LongCollection {
 	 * Skip a set number of {@code longs} in this {@code LongSequence}.
 	 */
 	default LongSequence skip(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -707,6 +777,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	default LongSequence skipTail(int skip) {
+		requireAtLeastZero(skip, "skip");
+
 		if (skip == 0)
 			return this;
 
@@ -717,6 +789,8 @@ public interface LongSequence extends LongCollection {
 	 * Limit the maximum number of {@code longs} returned by this {@code LongSequence}.
 	 */
 	default LongSequence limit(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -729,6 +803,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 2.3
 	 */
 	default LongSequence limitTail(int limit) {
+		requireAtLeastZero(limit, "limit");
+
 		if (limit == 0)
 			return empty();
 
@@ -738,14 +814,18 @@ public interface LongSequence extends LongCollection {
 	/**
 	 * Append the given {@code longs} to the end of this {@code LongSequence}.
 	 */
-	default LongSequence append(long... longs) {
-		return append(LongIterable.of(longs));
+	default LongSequence append(long... array) {
+		requireNonNull(array, "array");
+
+		return append(LongIterable.of(array));
 	}
 
 	/**
 	 * Append the {@code longs} in the given {@link LongIterable} to the end of this {@code LongSequence}.
 	 */
 	default LongSequence append(LongIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return new ChainingLongIterable(this, iterable)::iterator;
 	}
 
@@ -753,6 +833,8 @@ public interface LongSequence extends LongCollection {
 	 * Append the {@link Long}s in the given {@link Iterable} to the end of this {@code LongSequence}.
 	 */
 	default LongSequence append(Iterable<Long> iterable) {
+		requireNonNull(iterable, "iterable");
+
 		return append(LongIterable.from(iterable));
 	}
 
@@ -762,6 +844,8 @@ public interface LongSequence extends LongCollection {
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(PrimitiveIterator.OfLong iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(LongIterable.once(iterator));
 	}
 
@@ -771,6 +855,8 @@ public interface LongSequence extends LongCollection {
 	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(Iterator<Long> iterator) {
+		requireNonNull(iterator, "iterator");
+
 		return append(LongIterator.from(iterator));
 	}
 
@@ -780,6 +866,8 @@ public interface LongSequence extends LongCollection {
 	 * The appended {@code longs} will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(LongStream stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -789,6 +877,8 @@ public interface LongSequence extends LongCollection {
 	 * The appended {@link Long}s will only be available on the first traversal of the resulting {@code LongSequence}.
 	 */
 	default LongSequence append(Stream<Long> stream) {
+		requireNonNull(stream, "stream");
+
 		return append(stream.iterator());
 	}
 
@@ -797,6 +887,8 @@ public interface LongSequence extends LongCollection {
 	 * {@link LongPredicate}.
 	 */
 	default LongSequence filter(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new FilteringLongIterator(iterator(), predicate);
 	}
 
@@ -807,6 +899,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default LongSequence filterIndexed(LongIntPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new IndexedFilteringLongIterator(iterator(), predicate);
 	}
 
@@ -819,6 +913,8 @@ public interface LongSequence extends LongCollection {
 	 * the first previous value.
 	 */
 	default LongSequence filterBack(long firstPrevious, LongBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new BackPeekingFilteringLongIterator(iterator(), firstPrevious, predicate);
 	}
 
@@ -830,6 +926,8 @@ public interface LongSequence extends LongCollection {
 	 * the last next value.
 	 */
 	default LongSequence filterForward(long lastNext, LongBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new ForwardPeekingFilteringLongIterator(iterator(), lastNext, predicate);
 	}
 
@@ -838,8 +936,10 @@ public interface LongSequence extends LongCollection {
 	 *
 	 * @since 1.2
 	 */
-	default LongSequence including(long... elements) {
-		return filter(e -> Arrayz.contains(elements, e));
+	default LongSequence including(long... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> Arrayz.contains(array, e));
 	}
 
 	/**
@@ -847,8 +947,10 @@ public interface LongSequence extends LongCollection {
 	 *
 	 * @since 1.2
 	 */
-	default LongSequence excluding(long... elements) {
-		return filter(e -> !Arrayz.contains(elements, e));
+	default LongSequence excluding(long... array) {
+		requireNonNull(array, "array");
+
+		return filter(e -> !Arrayz.contains(array, e));
 	}
 
 	/**
@@ -863,6 +965,8 @@ public interface LongSequence extends LongCollection {
 	 * constructor.
 	 */
 	default LongList toList(Supplier<? extends LongList> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -880,6 +984,8 @@ public interface LongSequence extends LongCollection {
 	 * constructor.
 	 */
 	default <S extends LongSet> S toSet(Supplier<? extends S> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return toCollection(constructor);
 	}
 
@@ -895,6 +1001,8 @@ public interface LongSequence extends LongCollection {
 	 * constructor.
 	 */
 	default <U extends LongCollection> U toCollection(Supplier<? extends U> constructor) {
+		requireNonNull(constructor, "constructor");
+
 		return collectInto(constructor.get());
 	}
 
@@ -902,6 +1010,9 @@ public interface LongSequence extends LongCollection {
 	 * Collect this {@code LongSequence} into an arbitrary container using the given constructor and adder.
 	 */
 	default <C> C collect(Supplier<? extends C> constructor, ObjLongConsumer<? super C> adder) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(adder, "adder");
+
 		return collectInto(constructor.get(), adder);
 	}
 
@@ -909,6 +1020,8 @@ public interface LongSequence extends LongCollection {
 	 * Collect this {@code LongSequence} into the given {@link LongCollection}.
 	 */
 	default <U extends LongCollection> U collectInto(U collection) {
+		requireNonNull(collection, "collection");
+
 		collection.addAllLongs(this);
 		return collection;
 	}
@@ -917,6 +1030,9 @@ public interface LongSequence extends LongCollection {
 	 * Collect this {@code LongSequence} into the given container using the given adder.
 	 */
 	default <C> C collectInto(C result, ObjLongConsumer<? super C> adder) {
+		requireNonNull(result, "result");
+		requireNonNull(adder, "adder");
+
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			adder.accept(result, iterator.nextLong());
 		return result;
@@ -926,6 +1042,8 @@ public interface LongSequence extends LongCollection {
 	 * Join this {@code LongSequence} into a string separated by the given delimiter.
 	 */
 	default String join(String delimiter) {
+		requireNonNull(delimiter, "delimiter");
+
 		return join("", delimiter, "");
 	}
 
@@ -933,6 +1051,10 @@ public interface LongSequence extends LongCollection {
 	 * Join this {@code LongSequence} into a string separated by the given delimiter, with the given prefix and suffix.
 	 */
 	default String join(String prefix, String delimiter, String suffix) {
+		requireNonNull(prefix, "prefix");
+		requireNonNull(delimiter, "delimiter");
+		requireNonNull(suffix, "suffix");
+
 		StringBuilder result = new StringBuilder(prefix);
 
 		boolean started = false;
@@ -951,6 +1073,8 @@ public interface LongSequence extends LongCollection {
 	 * the current result and each {@code long} in the sequence.
 	 */
 	default OptionalLong reduce(LongBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		LongIterator iterator = iterator();
 		if (!iterator.hasNext())
 			return OptionalLong.empty();
@@ -965,6 +1089,8 @@ public interface LongSequence extends LongCollection {
 	 * result.
 	 */
 	default long reduce(long identity, LongBinaryOperator operator) {
+		requireNonNull(operator, "operator");
+
 		return iterator().reduce(identity, operator);
 	}
 
@@ -999,6 +1125,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default OptionalLong at(int index) {
+		requireAtLeastZero(index, "index");
+
 		LongIterator iterator = iterator();
 		iterator.skip(index);
 
@@ -1017,6 +1145,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default OptionalLong first(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return at(0, predicate);
 	}
 
@@ -1029,6 +1159,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default OptionalLong last(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).last();
 	}
 
@@ -1040,6 +1172,9 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default OptionalLong at(int index, LongPredicate predicate) {
+		requireAtLeastZero(index, "index");
+		requireNonNull(predicate, "predicate");
+
 		return filter(predicate).at(index);
 	}
 
@@ -1047,6 +1182,8 @@ public interface LongSequence extends LongCollection {
 	 * Skip x number of steps in between each invocation of the iterator of this {@code LongSequence}.
 	 */
 	default LongSequence step(int step) {
+		requireAtLeastOne(step, "step");
+
 		return () -> new SteppingLongIterator(iterator(), step);
 	}
 
@@ -1117,6 +1254,8 @@ public interface LongSequence extends LongCollection {
 	 * @return true if all longs in this {@code LongSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean all(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			if (!predicate.test(iterator.nextLong()))
 				return false;
@@ -1127,6 +1266,8 @@ public interface LongSequence extends LongCollection {
 	 * @return true if no longs in this {@code LongSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean none(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return !any(predicate);
 	}
 
@@ -1134,6 +1275,8 @@ public interface LongSequence extends LongCollection {
 	 * @return true if any long in this {@code LongSequence} satisfy the given predicate, false otherwise.
 	 */
 	default boolean any(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			if (predicate.test(iterator.nextLong()))
 				return true;
@@ -1144,6 +1287,8 @@ public interface LongSequence extends LongCollection {
 	 * Allow the given {@link LongConsumer} to see each element in this {@code LongSequence} as it is traversed.
 	 */
 	default LongSequence peek(LongConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryLongIterator(iterator()) {
 			@Override
 			public long nextLong() {
@@ -1161,6 +1306,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2.2
 	 */
 	default LongSequence peekIndexed(LongIntConsumer action) {
+		requireNonNull(action, "action");
+
 		return () -> new DelegatingUnaryLongIterator(iterator()) {
 			private int index;
 
@@ -1189,23 +1336,29 @@ public interface LongSequence extends LongCollection {
 	/**
 	 * Prefix the longs in this {@code LongSequence} with the given longs.
 	 */
-	default LongSequence prefix(long... cs) {
-		return () -> new ChainingLongIterator(LongIterable.of(cs), this);
+	default LongSequence prefix(long... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingLongIterator(LongIterable.of(array), this);
 	}
 
 	/**
 	 * Suffix the longs in this {@code LongSequence} with the given longs.
 	 */
-	default LongSequence suffix(long... cs) {
-		return () -> new ChainingLongIterator(this, LongIterable.of(cs));
+	default LongSequence suffix(long... array) {
+		requireNonNull(array, "array");
+
+		return () -> new ChainingLongIterator(this, LongIterable.of(array));
 	}
 
 	/**
 	 * Interleave the elements in this {@code LongSequence} with those of the given {@code LongIterable}, stopping when
 	 * either sequence finishes.
 	 */
-	default LongSequence interleave(LongIterable that) {
-		return () -> new InterleavingLongIterator(this, that);
+	default LongSequence interleave(LongIterable iterable) {
+		requireNonNull(iterable, "iterable");
+
+		return () -> new InterleavingLongIterator(this, iterable);
 	}
 
 	/**
@@ -1242,6 +1395,8 @@ public interface LongSequence extends LongCollection {
 	 * Convert this sequence of longs to a sequence of chars using the given converter function.
 	 */
 	default CharSeq toChars(LongToCharFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> CharIterator.from(iterator(), mapper);
 	}
 
@@ -1249,6 +1404,8 @@ public interface LongSequence extends LongCollection {
 	 * Convert this sequence of longs to a sequence of ints using the given converter function.
 	 */
 	default IntSequence toInts(LongToIntFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> IntIterator.from(iterator(), mapper);
 	}
 
@@ -1256,6 +1413,8 @@ public interface LongSequence extends LongCollection {
 	 * Convert this sequence of longs to a sequence of doubles using the given converter function.
 	 */
 	default DoubleSequence toDoubles(LongToDoubleFunction mapper) {
+		requireNonNull(mapper, "mapper");
+
 		return () -> DoubleIterator.from(iterator(), mapper);
 	}
 
@@ -1272,6 +1431,8 @@ public interface LongSequence extends LongCollection {
 	 * Repeat this sequence of longs x times, looping back to the beginning when the iterator runs out of longs.
 	 */
 	default LongSequence repeat(int times) {
+		requireAtLeastZero(times, "times");
+
 		return () -> new RepeatingLongIterator(this, times);
 	}
 
@@ -1281,6 +1442,8 @@ public interface LongSequence extends LongCollection {
 	 * {@code LongSequence} may be shorter than the window. This is equivalent to {@code window(window, 1)}.
 	 */
 	default Sequence<LongSequence> window(int window) {
+		requireAtLeastOne(window, "window");
+
 		return window(window, 1);
 	}
 
@@ -1290,6 +1453,9 @@ public interface LongSequence extends LongCollection {
 	 * the window size, the windows will overlap each other.
 	 */
 	default Sequence<LongSequence> window(int window, int step) {
+		requireAtLeastOne(window, "window");
+		requireAtLeastOne(step, "step");
+
 		return () -> new WindowingLongIterator(iterator(), window, step);
 	}
 
@@ -1298,6 +1464,8 @@ public interface LongSequence extends LongCollection {
 	 * each with the given batch size. This is equivalent to {@code window(size, size)}.
 	 */
 	default Sequence<LongSequence> batch(int size) {
+		requireAtLeastOne(size, "size");
+
 		return window(size, size);
 	}
 
@@ -1307,6 +1475,8 @@ public interface LongSequence extends LongCollection {
 	 * the current and next item in the iteration, and if it returns true a partition is created between the elements.
 	 */
 	default Sequence<LongSequence> batch(LongBiPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new PredicatePartitioningLongIterator(iterator(), predicate);
 	}
 
@@ -1328,6 +1498,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.1
 	 */
 	default Sequence<LongSequence> split(LongPredicate predicate) {
+		requireNonNull(predicate, "predicate");
+
 		return () -> new SplittingLongIterator(iterator(), predicate);
 	}
 
@@ -1347,6 +1519,8 @@ public interface LongSequence extends LongCollection {
 	 * @since 1.2
 	 */
 	default void forEachLongIndexed(LongIntConsumer action) {
+		requireNonNull(action, "action");
+
 		int index = 0;
 		for (LongIterator iterator = iterator(); iterator.hasNext(); )
 			action.accept(iterator.nextLong(), index++);
