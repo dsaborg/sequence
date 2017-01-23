@@ -42,8 +42,8 @@ public class ArrayLongIterator implements LongIterator {
 
 	public ArrayLongIterator(long[] array, int offset, int size) {
 		requireNonNull(array, "array");
-		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
-		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
+		requireSizeWithinBounds(offset, "offset", array.length, "array.length");
+		requireSizeWithinBounds(size, "size", array.length - offset, "array.length - offset");
 
 		this.values = array;
 		this.offset = offset;

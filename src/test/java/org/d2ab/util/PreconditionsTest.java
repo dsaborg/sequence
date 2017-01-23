@@ -41,68 +41,150 @@ public class PreconditionsTest {
 	}
 
 	@Test
-	public void requireNotEqual() {
-		Preconditions.requireNotEqual(17, 16, "sixteen");
-		Preconditions.requireNotEqual(17, 18, "sixteen");
-		Preconditions.requireNotEqual(17, 0, "zero");
-		Preconditions.requireNotEqual(17, Integer.MIN_VALUE, "min");
-		Preconditions.requireNotEqual(17, Integer.MAX_VALUE, "max");
+	public void requireAtLeast() {
+		Preconditions.requireAtLeast(17, "seventeen", 17);
+		Preconditions.requireAtLeast(18, "seventeen", 17);
+		Preconditions.requireAtLeast(Integer.MAX_VALUE, "max", 17);
 
-		expecting(IllegalArgumentException.class, () -> Preconditions.requireNotEqual(17, 17, "seventeen"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(16, "sixteen", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(15, "fifteen", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(0, "zero", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(-1, "minus one", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(Integer.MIN_VALUE, "max", 17));
+	}
+
+	@Test
+	public void requireAtLeastWithName() {
+		Preconditions.requireAtLeast(17, "seventeen", 17, "seventeen");
+		Preconditions.requireAtLeast(18, "seventeen", 17, "seventeen");
+		Preconditions.requireAtLeast(Integer.MAX_VALUE, "max", 17, "seventeen");
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(16, "sixteen", 17, "seventeen"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(15, "fifteen", 17, "seventeen"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(0, "zero", 17, "seventeen"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(-1, "minus one", 17, "seventeen"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtLeast(Integer.MIN_VALUE, "max", 17, "seventeen"));
+	}
+
+	@Test
+	public void requireNotEqual() {
+		Preconditions.requireNotEqual(16, "sixteen", 17);
+		Preconditions.requireNotEqual(18, "sixteen", 17);
+		Preconditions.requireNotEqual(0, "zero", 17);
+		Preconditions.requireNotEqual(Integer.MIN_VALUE, "min", 17);
+		Preconditions.requireNotEqual(Integer.MAX_VALUE, "max", 17);
+
+		expecting(IllegalArgumentException.class, () -> Preconditions.requireNotEqual(17, "seventeen", 17));
+	}
+
+	@Test
+	public void requireNotEqualWithName() {
+		Preconditions.requireNotEqual(16, "sixteen", 17, "seventeen");
+		Preconditions.requireNotEqual(18, "sixteen", 17, "seventeen");
+		Preconditions.requireNotEqual(0, "zero", 17, "seventeen");
+		Preconditions.requireNotEqual(Integer.MIN_VALUE, "min", 17, "seventeen");
+		Preconditions.requireNotEqual(Integer.MAX_VALUE, "max", 17, "seventeen");
+
+		expecting(IllegalArgumentException.class,
+		          () -> Preconditions.requireNotEqual(17, "seventeen", 17, "seventeen"));
 	}
 
 	@Test
 	public void requireAtMost() {
-		Preconditions.requireAtMost(17, "threshold", 16, "sixteen");
-		Preconditions.requireAtMost(17, "threshold", 17, "seventeen");
-		Preconditions.requireAtMost(17, "threshold", 0, "zero");
-		Preconditions.requireAtMost(17, "threshold", -1, "minus one");
-		Preconditions.requireAtMost(17, "threshold", Integer.MIN_VALUE, "min");
+		Preconditions.requireAtMost(16, "sixteen", 17);
+		Preconditions.requireAtMost(17, "seventeen", 17);
+		Preconditions.requireAtMost(0, "zero", 17);
+		Preconditions.requireAtMost(-1, "minus one", 17);
+		Preconditions.requireAtMost(Integer.MIN_VALUE, "min", 17);
 
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireAtMost(17, "threshold", 18, "eighteen"));
+				Preconditions.requireAtMost(18, "eighteen", 17));
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireAtMost(17, "threshold", 19, "nineteen"));
+				Preconditions.requireAtMost(19, "nineteen", 17));
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireAtMost(17, "threshold", Integer.MAX_VALUE, "max"));
+				Preconditions.requireAtMost(Integer.MAX_VALUE, "max", 17));
+	}
+
+	@Test
+	public void requireAtMostWithName() {
+		Preconditions.requireAtMost(16, "sixteen", 17, "threshold");
+		Preconditions.requireAtMost(17, "seventeen", 17, "threshold");
+		Preconditions.requireAtMost(0, "zero", 17, "threshold");
+		Preconditions.requireAtMost(-1, "minus one", 17, "threshold");
+		Preconditions.requireAtMost(Integer.MIN_VALUE, "min", 17, "threshold");
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtMost(18, "eighteen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtMost(19, "nineteen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAtMost(Integer.MAX_VALUE, "max", 17, "threshold"));
 	}
 
 	@Test
 	public void requireBelow() {
-		Preconditions.requireBelow(17, "threshold", 15, "sixteen");
-		Preconditions.requireBelow(17, "threshold", 16, "sixteen");
-		Preconditions.requireBelow(17, "threshold", 0, "zero");
-		Preconditions.requireBelow(17, "threshold", -1, "minus one");
-		Preconditions.requireBelow(17, "threshold", Integer.MIN_VALUE, "min");
+		Preconditions.requireBelow(15, "sixteen", 17);
+		Preconditions.requireBelow(16, "sixteen", 17);
+		Preconditions.requireBelow(0, "zero", 17);
+		Preconditions.requireBelow(-1, "minus one", 17);
+		Preconditions.requireBelow(Integer.MIN_VALUE, "min", 17);
 
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireBelow(17, "threshold", 17, "seventeen"));
+				Preconditions.requireBelow(17, "seventeen", 17));
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireBelow(17, "threshold", 18, "eighteen"));
+				Preconditions.requireBelow(18, "eighteen", 17));
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireBelow(17, "threshold", 19, "nineteen"));
+				Preconditions.requireBelow(19, "nineteen", 17));
 		expecting(IllegalArgumentException.class, () ->
-				Preconditions.requireBelow(17, "threshold", Integer.MAX_VALUE, "max"));
+				Preconditions.requireBelow(Integer.MAX_VALUE, "max", 17));
+	}
+
+	@Test
+	public void requireBelowWithName() {
+		Preconditions.requireBelow(15, "sixteen", 17, "threshold");
+		Preconditions.requireBelow(16, "sixteen", 17, "threshold");
+		Preconditions.requireBelow(0, "zero", 17, "threshold");
+		Preconditions.requireBelow(-1, "minus one", 17, "threshold");
+		Preconditions.requireBelow(Integer.MIN_VALUE, "min", 17, "threshold");
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireBelow(17, "seventeen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireBelow(18, "eighteen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireBelow(19, "nineteen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireBelow(Integer.MAX_VALUE, "max", 17, "threshold"));
 	}
 
 	@Test
 	public void requireSizeWithinBounds() {
-		Preconditions.requireSizeWithinBounds(17, "size", 0, "zero");
-		Preconditions.requireSizeWithinBounds(17, "size", 1, "zero");
-		Preconditions.requireSizeWithinBounds(17, "size", 16, "sixteen");
-		Preconditions.requireSizeWithinBounds(17, "size", 17, "seventeen");
+		Preconditions.requireSizeWithinBounds(0, "zero", 17, "size");
+		Preconditions.requireSizeWithinBounds(1, "zero", 17, "size");
+		Preconditions.requireSizeWithinBounds(16, "sixteen", 17, "size");
+		Preconditions.requireSizeWithinBounds(17, "seventeen", 17, "size");
 
 		expecting(IndexOutOfBoundsException.class, () ->
-				Preconditions.requireSizeWithinBounds(17, "size", -1, "minus one"));
+				Preconditions.requireSizeWithinBounds(-1, "minus one", 17, "size"));
 		expecting(IndexOutOfBoundsException.class, () ->
-				Preconditions.requireSizeWithinBounds(17, "size", -2, "minus two"));
+				Preconditions.requireSizeWithinBounds(-2, "minus two", 17, "size"));
 		expecting(IndexOutOfBoundsException.class, () ->
-				Preconditions.requireSizeWithinBounds(17, "size", 18, "eighteen"));
+				Preconditions.requireSizeWithinBounds(18, "eighteen", 17, "size"));
 		expecting(IndexOutOfBoundsException.class, () ->
-				Preconditions.requireSizeWithinBounds(17, "size", 19, "nineteen"));
+				Preconditions.requireSizeWithinBounds(19, "nineteen", 17, "size"));
 		expecting(IndexOutOfBoundsException.class, () ->
-				Preconditions.requireSizeWithinBounds(17, "size", Integer.MIN_VALUE, "min"));
+				Preconditions.requireSizeWithinBounds(Integer.MIN_VALUE, "min", 17, "size"));
 		expecting(IndexOutOfBoundsException.class, () ->
-				Preconditions.requireSizeWithinBounds(17, "size", Integer.MAX_VALUE, "max"));
+				Preconditions.requireSizeWithinBounds(Integer.MAX_VALUE, "max", 17, "size"));
 	}
 }

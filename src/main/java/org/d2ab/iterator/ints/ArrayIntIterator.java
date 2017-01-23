@@ -41,8 +41,8 @@ public class ArrayIntIterator implements IntIterator {
 
 	public ArrayIntIterator(int[] array, int offset, int size) {
 		requireNonNull(array, "array");
-		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
-		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
+		requireSizeWithinBounds(offset, "offset", array.length, "array.length");
+		requireSizeWithinBounds(size, "size", array.length - offset, "array.length - offset");
 
 		this.array = array;
 		this.offset = offset;

@@ -60,7 +60,7 @@ public interface LongSequence extends LongCollection {
 	 */
 	static LongSequence from(long[] array, int size) {
 		requireNonNull(array, "array");
-		requireSizeWithinBounds(array.length, "array.length", size, "size");
+		requireSizeWithinBounds(size, "size", array.length, "array.length");
 
 		return () -> LongIterator.from(array, size);
 	}
@@ -71,8 +71,8 @@ public interface LongSequence extends LongCollection {
 	 */
 	static LongSequence from(long[] array, int offset, int size) {
 		requireNonNull(array, "array");
-		requireSizeWithinBounds(array.length, "array.length", offset, "offset");
-		requireSizeWithinBounds(array.length - offset, "array.length - offset", size, "size");
+		requireSizeWithinBounds(offset, "offset", array.length, "array.length");
+		requireSizeWithinBounds(size, "size", array.length - offset, "array.length - offset");
 
 		return () -> LongIterator.from(array, offset, size);
 	}
@@ -376,7 +376,7 @@ public interface LongSequence extends LongCollection {
 	 * @see #negativeFromZero()
 	 */
 	static LongSequence steppingFrom(long start, long step) {
-		requireNotEqual(0, step, "step");
+		requireNotEqual(step, "step", 0);
 
 		return recurse(start, x -> x + step);
 	}
@@ -561,7 +561,7 @@ public interface LongSequence extends LongCollection {
 		requireNonNull(randomSupplier, "randomSupplier");
 		requireAtLeastZero(lowerBound, "lowerBound");
 		requireAtLeastZero(upperBound, "upperBound");
-		requireAtMost(upperBound, "upperBound", lowerBound, "lowerBound");
+		requireAtMost(lowerBound, "lowerBound", upperBound, "upperBound");
 
 		return multiGenerate(() -> {
 			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
