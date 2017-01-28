@@ -22,6 +22,8 @@ import org.d2ab.iterator.MappingIterator;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
+
 public class ChainingIterable<T> implements SizedIterable<T> {
 	private final Iterable<Iterable<T>> iterables;
 
@@ -61,6 +63,15 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 			throw new IllegalStateException("size > Integer.MAX_VALUE: " + size);
 
 		return (int) size;
+	}
+
+	@Override
+	public SizeType sizeType() {
+		SizeType sizeType = KNOWN;
+		for (Iterable<T> iterable : iterables)
+			sizeType = sizeType.concat(Iterables.sizeType(iterable));
+
+		return sizeType;
 	}
 
 	public boolean isEmpty() {

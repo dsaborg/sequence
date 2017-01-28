@@ -29,6 +29,11 @@ public class EquivalentSizeSequence<T, U> implements Sequence<U> {
 	}
 
 	@Override
+	public SizeType sizeType() {
+		return original.sizeType();
+	}
+
+	@Override
 	public boolean isEmpty() {
 		return original.isEmpty();
 	}

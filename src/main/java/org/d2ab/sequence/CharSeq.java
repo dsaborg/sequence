@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.collection.chars.*;
 import org.d2ab.function.*;
 import org.d2ab.iterator.IterationException;
@@ -40,7 +41,7 @@ import static org.d2ab.util.Preconditions.*;
  * transforming and collating the list of characters.
  */
 @FunctionalInterface
-public interface CharSeq extends CharCollection {
+public interface CharSeq extends CharCollection, SizedIterable<Character> {
 	/**
 	 * Create an empty {@code CharSeq} with no characters.
 	 */

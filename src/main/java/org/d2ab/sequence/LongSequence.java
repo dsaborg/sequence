@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.collection.longs.*;
 import org.d2ab.function.*;
 import org.d2ab.iterator.Iterators;
@@ -38,7 +39,7 @@ import static org.d2ab.util.Preconditions.*;
  * transforming and collating the list of longs.
  */
 @FunctionalInterface
-public interface LongSequence extends LongCollection {
+public interface LongSequence extends LongCollection, SizedIterable<Long> {
 	/**
 	 * Create empty {@code LongSequence} with no contents.
 	 */

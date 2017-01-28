@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
 
+import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
 import static org.d2ab.iterator.Iterators.skip;
 
 /**
@@ -32,7 +33,7 @@ import static org.d2ab.iterator.Iterators.skip;
  *
  * @since 1.2
  */
-public class FilteredList<T> extends AbstractSequentialList<T> {
+public class FilteredList<T> extends AbstractSequentialList<T> implements SizedIterable<T> {
 	private final List<T> list;
 	private final Predicate<? super T> predicate;
 
@@ -53,6 +54,11 @@ public class FilteredList<T> extends AbstractSequentialList<T> {
 			throw new IndexOutOfBoundsException("index: " + index + " size: " + skipped);
 
 		return listIterator;
+	}
+
+	@Override
+	public SizeType sizeType() {
+		return UNKNOWN;
 	}
 
 	@Override

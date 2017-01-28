@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.collection.doubles.*;
 import org.d2ab.function.DoubleBiPredicate;
 import org.d2ab.function.DoubleIntConsumer;
@@ -41,7 +42,7 @@ import static org.d2ab.util.Preconditions.*;
  * transforming and collating the list of doubles.
  */
 @FunctionalInterface
-public interface DoubleSequence extends DoubleCollection {
+public interface DoubleSequence extends DoubleCollection, SizedIterable<Double> {
 	/**
 	 * Create empty {@code DoubleSequence} with no contents.
 	 */

@@ -38,8 +38,8 @@ import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
 import static java.util.stream.Collector.Characteristics.IDENTITY_FINISH;
-import static org.d2ab.util.Preconditions.requireAtLeastOne;
-import static org.d2ab.util.Preconditions.requireAtLeastZero;
+import static org.d2ab.collection.SizedIterable.SizeType.*;
+import static org.d2ab.util.Preconditions.*;
 
 /**
  * An {@link Iterable} sequence of elements with {@link Stream}-like operations for refining, transforming and collating
@@ -62,13 +62,13 @@ public interface Sequence<T> extends IterableCollection<T> {
 		}
 
 		@Override
-		public int size() {
-			return 0;
+		public SizeType sizeType() {
+			return KNOWN;
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return true;
+		public int size() {
+			return 0;
 		}
 	};
 
@@ -121,11 +121,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (iterable instanceof List)
 			return ListSequence.from((List<T>) iterable);
 
-		if (iterable instanceof Collection)
-			return CollectionSequence.from((Collection<T>) iterable);
-
 		if (iterable instanceof SizedIterable)
 			return from((SizedIterable<T>) iterable);
+
+		if (iterable instanceof Collection)
+			return CollectionSequence.from((Collection<T>) iterable);
 
 		return iterable::iterator;
 	}
@@ -152,6 +152,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return sizedIterable.size();
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return sizedIterable.sizeType();
 			}
 
 			@Override
@@ -558,13 +563,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
-			public int size() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
+			public SizeType sizeType() {
+				return INFINITE;
 			}
 		};
 	}
@@ -589,13 +589,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
-			public int size() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
+			public SizeType sizeType() {
+				return INFINITE;
 			}
 		};
 	}
@@ -622,13 +617,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
-			public int size() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
+			public SizeType sizeType() {
+				return INFINITE;
 			}
 		};
 	}
@@ -970,6 +960,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Math.max(0, Sequence.this.size() - skip);
 			}
@@ -987,10 +982,18 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (skip == 0)
 			return this;
 
+		if (sizeType() == INFINITE)
+			throw new IllegalStateException("skipTail on infinite Sequence");
+
 		return new Sequence<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new TailSkippingIterator<>(Sequence.this.iterator(), skip);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -1016,6 +1019,16 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public int size() {
+				return Sequence.this.sizeType().limitedSize(Sequence.this, this, limit);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType().limited(limit);
+			}
+
+			@Override
 			public boolean isEmpty() {
 				return Sequence.this.isEmpty();
 			}
@@ -1033,10 +1046,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (limit == 0)
 			return empty();
 
+		requireFinite(this, "Infinite Sequence");
+
 		return new Sequence<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new TailLimitingIterator<>(Sequence.this.iterator(), limit);
+			}
+
+			@Override
+			public int size() {
+				return Sequence.this.sizeType().limitedSize(Sequence.this, this, limit);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType().limited(limit);
 			}
 
 			@Override
@@ -1511,6 +1536,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 		requireNonNull(result, "result");
 		requireNonNull(adder, "adder");
 
+		requireFinite(this, "Infinite Sequence");
+
 		for (T t : this)
 			adder.accept(result, t);
 		return result;
@@ -1554,6 +1581,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 		requireNonNull(delimiter, "delimiter");
 		requireNonNull(suffix, "suffix");
 
+		requireFinite(this, "Infinite Sequence");
+
 		StringBuilder result = new StringBuilder();
 		result.append(prefix);
 		boolean started = false;
@@ -1575,6 +1604,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Optional<T> reduce(BinaryOperator<T> operator) {
 		requireNonNull(operator, "operator");
 
+		requireFinite(this, "Infinite Sequence");
+
 		return Iterators.reduce(iterator(), operator);
 	}
 
@@ -1584,6 +1615,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default T reduce(T identity, BinaryOperator<T> operator) {
 		requireNonNull(operator, "operator");
+
+		requireFinite(this, "Infinite Sequence");
 
 		return Iterators.reduce(iterator(), identity, operator);
 	}
@@ -1601,6 +1634,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * {@code Sequence}.
 	 */
 	default Optional<T> last() {
+		requireFinite(this, "Infinite Sequence");
+
 		return Iterators.last(iterator());
 	}
 
@@ -1637,6 +1672,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default Optional<T> last(Predicate<? super T> predicate) {
 		requireNonNull(predicate, "predicate");
+
+		requireFinite(this, "Infinite Sequence");
 
 		return filter(predicate).last();
 	}
@@ -1675,6 +1712,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	@SuppressWarnings("unchecked")
 	default <U> Optional<U> last(Class<? extends U> target) {
 		requireNonNull(target, "target");
+
+		requireFinite(this, "Infinite Sequence");
 
 		return (Optional<U>) last(target::isInstance);
 	}
@@ -1717,6 +1756,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public boolean isEmpty() {
 				return Sequence.this.isEmpty();
 			}
@@ -1744,6 +1788,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public int size() {
 				int originalSize = Sequence.this.size();
 				return originalSize == 0 ? 0 : Math.max(1, originalSize - 1);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -1776,6 +1825,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public boolean isEmpty() {
 				return Sequence.this.isEmpty();
 			}
@@ -1805,6 +1859,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public boolean isEmpty() {
 				return Sequence.this.isEmpty();
 			}
@@ -1830,6 +1889,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return pairSequence.sizeType();
+			}
+
+			@Override
 			public boolean isEmpty() {
 				return pairSequence.isEmpty();
 			}
@@ -1852,6 +1916,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public int size() {
 				return entrySequence.size();
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return entrySequence.sizeType();
 			}
 
 			@Override
@@ -1902,8 +1971,16 @@ public interface Sequence<T> extends IterableCollection<T> {
 					return (Sequence.this.size() + step - 1) / step;
 				} else {
 					// TODO: Add size pass-through
-					return Iterators.size(iterator());
+					return SizedIterable.size(this);
 				}
+			}
+
+			@Override
+			public SizeType sizeType() {
+				if (step == 1 || step == window)
+					return Sequence.this.sizeType();
+				else
+					return UNKNOWN;
 			}
 
 			@Override
@@ -2015,6 +2092,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return (Sequence.this.size() + step - 1) / step;
 			}
@@ -2062,6 +2144,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public Iterator<T> iterator() {
 				return Iterators.unmodifiable(Lists.sort(Sequence.this.toList(), comparator));
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -2276,6 +2363,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Math.max(0, Sequence.this.size() * 2 - 1);
 			}
@@ -2298,6 +2390,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 				return new DelimitingIterator<>((Iterator<U>) Sequence.this.iterator(), Optional.of(prefix),
 				                                Optional.of(delimiter),
 				                                Optional.of(suffix));
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -2326,6 +2423,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Sequence.this.size() + 1;
 			}
@@ -2348,6 +2450,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 				return new DelimitingIterator<>((Iterator<U>) Sequence.this.iterator(), Optional.empty(),
 				                                Optional.empty(),
 				                                Optional.of(suffix));
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -2374,6 +2481,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public Iterator<Pair<T, U>> iterator() {
 				return new InterleavingPairingIterator<>(Sequence.this.iterator(), targetIterable.iterator());
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType().concat(Iterables.sizeType(targetIterable));
 			}
 
 			@Override
@@ -2408,6 +2520,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Sequence.this.size();
 			}
@@ -2430,6 +2547,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public Iterator<T> iterator() {
 				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList(), random));
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -2459,6 +2581,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			public Iterator<T> iterator() {
 				Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
 				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList(), random));
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -2494,6 +2621,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Sequence.this.size();
 			}
@@ -2523,6 +2655,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public IntIterator iterator() {
 				return IntIterator.from(Sequence.this.iterator(), mapper);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override
@@ -2558,6 +2695,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Sequence.this.size();
 			}
@@ -2590,6 +2732,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
 			public int size() {
 				return Sequence.this.size();
 			}
@@ -2603,13 +2750,43 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * Repeat this {@code Sequence} forever, producing a sequence that never terminates unless the original sequence is
-	 * empty in which case the resulting sequence is also empty.
+	 * empty in which case the resulting sequence is also empty, or the original sequence at some point returns an
+	 * empty {@link Iterator} in which case the repeated sequence terminates.
 	 */
 	default Sequence<T> repeat() {
+		requireFinite(this, "Infinite Sequence");
+
+		if (sizeType() == KNOWN && isEmpty())
+			return empty();
+
 		return new Sequence<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new RepeatingIterator<>(Sequence.this, -1);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				switch (Sequence.this.sizeType()) {
+					case KNOWN:
+						return Sequence.this.isEmpty() ? KNOWN : INFINITE;
+					case INFINITE:
+						return INFINITE;
+					case UNKNOWN:
+					default:
+						return UNKNOWN;
+				}
+			}
+
+			@Override
+			public int size() {
+				switch (Sequence.this.sizeType()) {
+					case KNOWN:
+						if (Sequence.this.isEmpty())
+							return 0;
+					default:
+						return SizedIterable.size(this);
+				}
 			}
 
 			@Override
@@ -2624,14 +2801,33 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default Sequence<T> repeat(int times) {
 		requireAtLeastZero(times, "times");
+		requireFinite(this, "Infinite Sequence");
 
 		if (times == 0)
+			return empty();
+
+		if (sizeType() == KNOWN && isEmpty())
 			return empty();
 
 		return new Sequence<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new RepeatingIterator<>(Sequence.this, times);
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
+			}
+
+			@Override
+			public int size() {
+				switch (Sequence.this.sizeType()) {
+					case KNOWN:
+						return Sequence.this.size() * times;
+					default:
+						return SizedIterable.size(this);
+				}
 			}
 
 			@Override
@@ -2666,6 +2862,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 						return Pair.of(index++, iterator.next());
 					}
 				};
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType();
 			}
 
 			@Override

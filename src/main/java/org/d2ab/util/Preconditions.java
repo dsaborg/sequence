@@ -1,5 +1,9 @@
 package org.d2ab.util;
 
+import org.d2ab.collection.SizedIterable;
+
+import static org.d2ab.collection.SizedIterable.SizeType.INFINITE;
+
 /**
  * Utilities for checking preconditions.
  */
@@ -87,5 +91,10 @@ public abstract class Preconditions {
 		if (size < 0 || size > maxSize)
 			throw new IndexOutOfBoundsException("Expected " + name + " to be >= " + 0 + " and <= " +
 			                                    maxSizeName + " (" + maxSize + "): " + size);
+	}
+
+	public static void requireFinite(SizedIterable<?> iterable, String message) {
+		if (iterable.sizeType() == INFINITE)
+			throw new IllegalStateException(message);
 	}
 }

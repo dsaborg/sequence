@@ -24,13 +24,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+
 /**
  * A {@link Collection} that provides a filtered view of another {@link Collection}. All operations are supported
  * except variations of {@link Collection#add}.
  *
  * @since 2.1
  */
-public class FilteredCollection<T> extends AbstractCollection<T> {
+public class FilteredCollection<T> extends AbstractCollection<T> implements SizedIterable<T> {
 	private final Collection<T> collection;
 	private final Predicate<? super T> predicate;
 
@@ -46,6 +48,11 @@ public class FilteredCollection<T> extends AbstractCollection<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return new FilteringIterator<>(collection.iterator(), predicate);
+	}
+
+	@Override
+	public SizeType sizeType() {
+		return UNKNOWN;
 	}
 
 	@Override

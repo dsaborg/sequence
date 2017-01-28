@@ -16,6 +16,8 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.collection.SizedIterable.KnownSizedIterable;
+import org.d2ab.collection.SizedIterable.SizeType;
 import org.d2ab.iterator.ArrayIterator;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.util.Pair;
@@ -25,11 +27,14 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+
 /**
  * Utility methods for {@link Iterable} instances.
  */
 public abstract class Iterables {
-	private static final SizedIterable EMPTY = new SizedIterable() {
+	private static final SizedIterable EMPTY = new KnownSizedIterable() {
 		@SuppressWarnings("unchecked")
 		@Override
 		public Iterator iterator() {
@@ -39,11 +44,6 @@ public abstract class Iterables {
 		@Override
 		public int size() {
 			return 0;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
 		}
 	};
 
@@ -62,7 +62,7 @@ public abstract class Iterables {
 	 * @return an unmodifiable singleton {@link Iterable} containing the given object.
 	 */
 	public static <T> SizedIterable<T> of(T object) {
-		return new SizedIterable<T>() {
+		return new KnownSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new SingletonIterator<>(object);
@@ -72,11 +72,6 @@ public abstract class Iterables {
 			public int size() {
 				return 1;
 			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
 		};
 	}
 
@@ -85,7 +80,7 @@ public abstract class Iterables {
 	 */
 	@SafeVarargs
 	public static <T> SizedIterable<T> of(T... objects) {
-		return new SizedIterable<T>() {
+		return new KnownSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new ArrayIterator<>(objects);
@@ -94,11 +89,6 @@ public abstract class Iterables {
 			@Override
 			public int size() {
 				return objects.length;
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return objects.length == 0;
 			}
 		};
 	}
@@ -145,7 +135,7 @@ public abstract class Iterables {
 	}
 
 	public static <T> SizedIterable<T> fromPair(final Pair<? extends T, ? extends T> pair) {
-		return new SizedIterable<T>() {
+		return new KnownSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return pair.iterator();
@@ -155,16 +145,11 @@ public abstract class Iterables {
 			public int size() {
 				return 2;
 			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
 		};
 	}
 
 	public static <T> SizedIterable<T> fromEntry(final Entry<? extends T, ? extends T> entry) {
-		return new SizedIterable<T>() {
+		return new KnownSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return Maps.iterator(entry);
@@ -173,11 +158,6 @@ public abstract class Iterables {
 			@Override
 			public int size() {
 				return 2;
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
 			}
 		};
 	}
@@ -360,20 +340,29 @@ public abstract class Iterables {
 		return false;
 	}
 
-	public static int size(Iterable<?> iterable) {
+	public static <T> SizeType sizeType(Iterable<T> iterable) {
+		if (iterable instanceof SizedIterable)
+			return ((SizedIterable<?>) iterable).sizeType();
 		if (iterable instanceof Collection)
-			return ((Collection<?>) iterable).size();
+			return KNOWN;
+
+		return UNKNOWN;
+	}
+
+	public static int size(Iterable<?> iterable) {
 		if (iterable instanceof SizedIterable)
 			return ((SizedIterable<?>) iterable).size();
+		if (iterable instanceof Collection)
+			return ((Collection<?>) iterable).size();
 
 		return Iterators.size(iterable.iterator());
 	}
 
 	public static <T> boolean isEmpty(Iterable<T> iterable) {
-		if (iterable instanceof Collection)
-			return ((Collection<?>) iterable).isEmpty();
 		if (iterable instanceof SizedIterable)
 			return ((SizedIterable<?>) iterable).isEmpty();
+		if (iterable instanceof Collection)
+			return ((Collection<?>) iterable).isEmpty();
 
 		return !iterable.iterator().hasNext();
 	}

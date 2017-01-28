@@ -21,6 +21,8 @@ import org.d2ab.iterator.Iterators;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
+
 /**
  * A {@link Collection} view of an {@link Iterable}, requiring only {@link Iterable#iterator()} to be implemented in
  * order to present a full {@link Collection}. This interface is thus a functional interface of {@link Iterable}'s
@@ -45,21 +47,32 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 	static <T> IterableCollection<T> from(Iterable<T> iterable) {
 		if (iterable instanceof SizedIterable)
 			return from((SizedIterable<T>) iterable);
+		if (iterable instanceof Collection)
+			return from((Collection<T>) iterable);
 
+		return iterable::iterator;
+	}
+
+	static <T> IterableCollection<T> from(Collection<T> collection) {
 		return new IterableCollection<T>() {
 			@Override
 			public Iterator<T> iterator() {
-				return iterable.iterator();
+				return collection.iterator();
 			}
 
 			@Override
 			public int size() {
-				return Iterables.size(iterable);
+				return collection.size();
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return KNOWN;
 			}
 
 			@Override
 			public boolean isEmpty() {
-				return Iterables.isEmpty(iterable);
+				return collection.isEmpty();
 			}
 		};
 	}
@@ -77,6 +90,11 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 			}
 
 			@Override
+			public SizeType sizeType() {
+				return iterable.sizeType();
+			}
+
+			@Override
 			public boolean isEmpty() {
 				return iterable.isEmpty();
 			}
@@ -85,12 +103,12 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 
 	@Override
 	default int size() {
-		return Iterators.size(iterator());
+		return SizedIterable.size(this);
 	}
 
 	@Override
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return SizedIterable.isEmpty(this);
 	}
 
 	@Override

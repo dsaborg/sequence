@@ -17,6 +17,7 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.SizedIterable;
 import org.d2ab.collection.ints.*;
 import org.d2ab.function.IntBiConsumer;
 import org.d2ab.function.IntBiPredicate;
@@ -43,7 +44,7 @@ import static org.d2ab.util.Preconditions.*;
  * transforming and collating the list of ints.
  */
 @FunctionalInterface
-public interface IntSequence extends IntCollection {
+public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 	/**
 	 * Create empty {@code IntSequence} with no contents.
 	 */

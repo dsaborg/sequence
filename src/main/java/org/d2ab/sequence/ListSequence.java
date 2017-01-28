@@ -156,6 +156,21 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public SizeType sizeType() {
+		return Iterables.sizeType(list);
+	}
+
+	@Override
+	public int size() {
+		return Iterables.size(list);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return Iterables.isEmpty(list);
+	}
+
+	@Override
 	public List<T> asList() {
 		return list;
 	}
@@ -174,16 +189,6 @@ public class ListSequence<T> implements Sequence<T> {
 	@Override
 	public void clear() {
 		list.clear();
-	}
-
-	@Override
-	public int size() {
-		return list.size();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return list.isEmpty();
 	}
 
 	@Override

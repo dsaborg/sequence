@@ -67,6 +67,21 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public SizeType sizeType() {
+		return Iterables.sizeType(collection);
+	}
+
+	@Override
+	public int size() {
+		return Iterables.size(collection);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return Iterables.isEmpty(collection);
+	}
+
+	@Override
 	public List<T> toList() {
 		return new ArrayList<>(collection);
 	}
@@ -83,11 +98,6 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public int size() {
-		return collection.size();
-	}
-
-	@Override
 	public Stream<T> stream() {
 		return collection.stream();
 	}
@@ -100,11 +110,6 @@ public class CollectionSequence<T> implements Sequence<T> {
 	@Override
 	public Spliterator<T> spliterator() {
 		return collection.spliterator();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return collection.isEmpty();
 	}
 
 	@Override
