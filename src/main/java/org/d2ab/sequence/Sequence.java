@@ -2497,7 +2497,36 @@ public interface Sequence<T> extends IterableCollection<T> {
 		};
 	}
 
-	// TODO: Add interleaveShortest
+	/**
+	 * Interleave the elements in this {@code Sequence} with those of the given {@link Iterable}, stopping when either
+	 * stream of items finishes. The result is a {@code Sequence} of pairs of items, the left entry coming from this
+	 * sequence and the right entry from the given target {@link Iterable}.
+	 */
+	default <U> Sequence<Pair<T, U>> interleaveShort(Iterable<U> targetIterable) {
+		requireNonNull(targetIterable, "targetIterable");
+
+		return new Sequence<Pair<T, U>>() {
+			@Override
+			public Iterator<Pair<T, U>> iterator() {
+				return new ShortInterleavingPairingIterator<>(Sequence.this.iterator(), targetIterable.iterator());
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return Sequence.this.sizeType().intersect(Iterables.sizeType(targetIterable));
+			}
+
+			@Override
+			public int size() {
+				return Math.min(Sequence.this.size(), Iterables.size(targetIterable));
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return Sequence.this.isEmpty() || Iterables.isEmpty(targetIterable);
+			}
+		};
+	}
 
 	/**
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.

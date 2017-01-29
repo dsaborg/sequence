@@ -94,6 +94,11 @@ public interface SizedIterable<T> extends Iterable<T> {
 			}
 
 			@Override
+			public SizeType intersect(SizeType sizeType) {
+				return UNKNOWN;
+			}
+
+			@Override
 			public SizeType limited(int limit) {
 				return UNKNOWN;
 			}
@@ -107,6 +112,11 @@ public interface SizedIterable<T> extends Iterable<T> {
 			@Override
 			public SizeType concat(SizeType sizeType) {
 				return sizeType;
+			}
+
+			@Override
+			public SizeType intersect(SizeType sizeType) {
+				return sizeType == UNKNOWN ? UNKNOWN : KNOWN;
 			}
 
 			@Override
@@ -126,6 +136,11 @@ public interface SizedIterable<T> extends Iterable<T> {
 			}
 
 			@Override
+			public SizeType intersect(SizeType sizeType) {
+				return sizeType;
+			}
+
+			@Override
 			public SizeType limited(int limit) {
 				return KNOWN;
 			}
@@ -137,6 +152,8 @@ public interface SizedIterable<T> extends Iterable<T> {
 		};
 
 		public abstract SizeType concat(SizeType sizeType);
+
+		public abstract SizeType intersect(SizeType sizeType);
 
 		public abstract SizeType limited(int limit);
 

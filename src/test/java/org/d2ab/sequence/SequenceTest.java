@@ -3468,6 +3468,77 @@ public class SequenceTest {
 		twice(() -> assertThat(interleavedEmptySizePassThrough.isEmpty(), is(false)));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void interleaveShortWithSequence() {
+		Sequence<Pair<Integer, Integer>> emptyInterleaved = empty.interleaveShort(empty);
+		twice(() -> assertThat(emptyInterleaved, is(emptySizedIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInterleaved.iterator().next());
+
+		Sequence<Pair<Integer, Integer>> interleavedShortFirst = _123.interleaveShort(_12345);
+		twice(() -> assertThat(interleavedShortFirst,
+		                       containsSized(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
+
+		Sequence<Pair<Integer, Integer>> interleavedShortLast = _12345.interleaveShort(_123);
+		twice(() -> assertThat(interleavedShortLast,
+		                       containsSized(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(interleavedShortFirst));
+		twice(() -> assertThat(interleavedShortLast,
+		                       containsSized(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
+
+		Sequence<Pair<Integer, Integer>> interleavedSizePassThroughShorter = sizePassThrough.interleaveShort(_123);
+		twice(() -> assertThat(interleavedSizePassThroughShorter.size(), is(3)));
+		twice(() -> assertThat(interleavedSizePassThroughShorter.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedSizePassThroughLonger = _123.interleaveShort(sizePassThrough);
+		twice(() -> assertThat(interleavedSizePassThroughLonger.size(), is(3)));
+		twice(() -> assertThat(interleavedSizePassThroughLonger.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedEmptySizePassThrough1 = emptySizePassThrough.interleaveShort(_123);
+		twice(() -> assertThat(interleavedEmptySizePassThrough1.size(), is(0)));
+		twice(() -> assertThat(interleavedEmptySizePassThrough1.isEmpty(), is(true)));
+
+		Sequence<Pair<Integer, Integer>> interleavedEmptySizePassThrough2 = _123.interleaveShort(emptySizePassThrough);
+		twice(() -> assertThat(interleavedEmptySizePassThrough2.size(), is(0)));
+		twice(() -> assertThat(interleavedEmptySizePassThrough2.isEmpty(), is(true)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void interleaveShortWithIterable() {
+		Sequence<Pair<Integer, Integer>> emptyInterleaved = empty.interleaveShort(empty);
+		twice(() -> assertThat(emptyInterleaved, is(emptySizedIterable())));
+		expecting(NoSuchElementException.class, () -> emptyInterleaved.iterator().next());
+
+		Sequence<Pair<Integer, Integer>> interleavedShortFirst = _123.interleaveShort(Iterables.of(1, 2, 3, 4, 5));
+		twice(() -> assertThat(interleavedShortFirst,
+		                       containsSized(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
+
+		Sequence<Pair<Integer, Integer>> interleavedShortLast = _12345.interleaveShort(Iterables.of(1, 2, 3));
+		twice(() -> assertThat(interleavedShortLast,
+		                       containsSized(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(interleavedShortFirst));
+		twice(() -> assertThat(interleavedShortLast,
+		                       containsSized(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
+
+		Sequence<Pair<Integer, Integer>> interleavedSizePassThroughShorter = sizePassThrough.interleaveShort(
+				Iterables.of(1, 2, 3));
+		twice(() -> assertThat(interleavedSizePassThroughShorter.size(), is(3)));
+		twice(() -> assertThat(interleavedSizePassThroughShorter.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedSizePassThroughLonger = sizePassThrough.interleaveShort(
+				Iterables.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+		twice(() -> assertThat(interleavedSizePassThroughLonger.size(), is(10)));
+		twice(() -> assertThat(interleavedSizePassThroughLonger.isEmpty(), is(false)));
+
+		Sequence<Pair<Integer, Integer>> interleavedEmptySizePassThrough = emptySizePassThrough.interleaveShort(
+				Iterables.of(1, 2, 3));
+		twice(() -> assertThat(interleavedEmptySizePassThrough.size(), is(0)));
+		twice(() -> assertThat(interleavedEmptySizePassThrough.isEmpty(), is(true)));
+	}
+
 	@Test
 	public void reverse() {
 		Sequence<Integer> emptyReversed = empty.reverse();
