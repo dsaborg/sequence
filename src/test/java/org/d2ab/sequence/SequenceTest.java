@@ -754,6 +754,9 @@ public class SequenceTest {
 		assertThat(removeFirst(threeSkipOne), is(2));
 		twice(() -> assertThat(threeSkipOne, containsSized(3)));
 		twice(() -> assertThat(_123, containsSized(1, 3)));
+
+		Sequence<Integer> infiniteSkipFive = Sequence.recurse(1, x -> x + 1).skip(5);
+		twice(() -> assertThat(infiniteSkipFive, infiniteBeginningWith(6, 7, 8, 9, 10)));
 	}
 
 	@Test
@@ -794,6 +797,9 @@ public class SequenceTest {
 
 		Sequence<Integer> nineSkipTailFour = _123456789.skipTail(4);
 		twice(() -> assertThat(nineSkipTailFour, containsSized(1, 2, 3, 4, 5)));
+
+		Sequence<Integer> infiniteSkipTailFive = Sequence.recurse(1, x -> x + 1).skipTail(5);
+		twice(() -> assertThat(infiniteSkipTailFive, infiniteBeginningWith(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -3769,20 +3775,28 @@ public class SequenceTest {
 	@Test
 	public void repeat() {
 		Sequence<Integer> emptyRepeated = empty.repeat();
-		twice(() -> assertThat(emptyRepeated, is(emptySizedIterable())));
+		twice(() -> assertThat(emptyRepeated, is(emptyUnsizedIterable())));
 		expecting(NoSuchElementException.class, () -> emptyRepeated.iterator().next());
 
 		Sequence<Integer> oneRepeated = _1.repeat();
-		twice(() -> assertThat(oneRepeated, infiniteBeginningWith(1, 1, 1)));
+		twice(() -> assertThat(oneRepeated, beginsWith(1, 1, 1)));
+		twice(() -> assertThat(oneRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(oneRepeated.isEmpty(), is(false)));
 
 		Sequence<Integer> twoRepeated = _12.repeat();
-		twice(() -> assertThat(twoRepeated, infiniteBeginningWith(1, 2, 1, 2, 1)));
+		twice(() -> assertThat(twoRepeated, beginsWith(1, 2, 1, 2, 1)));
+		twice(() -> assertThat(twoRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(twoRepeated.isEmpty(), is(false)));
 
 		Sequence<Integer> threeRepeated = _123.repeat();
-		twice(() -> assertThat(threeRepeated, infiniteBeginningWith(1, 2, 3, 1, 2, 3, 1, 2)));
+		twice(() -> assertThat(threeRepeated, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
+		twice(() -> assertThat(threeRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(threeRepeated.isEmpty(), is(false)));
 
 		assertThat(removeFirst(threeRepeated), is(1));
-		twice(() -> assertThat(threeRepeated, infiniteBeginningWith(2, 3, 2, 3, 2, 3)));
+		twice(() -> assertThat(threeRepeated, beginsWith(2, 3, 2, 3, 2, 3)));
+		twice(() -> assertThat(threeRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(threeRepeated.isEmpty(), is(false)));
 		twice(() -> assertThat(_123, containsSized(2, 3)));
 
 		Sequence<Integer> varyingLengthRepeated = Sequence.from(new Iterable<Integer>() {
@@ -3802,20 +3816,20 @@ public class SequenceTest {
 	@Test
 	public void repeatTwice() {
 		Sequence<Integer> emptyRepeatedTwice = empty.repeat(2);
-		twice(() -> assertThat(emptyRepeatedTwice, is(emptySizedIterable())));
+		twice(() -> assertThat(emptyRepeatedTwice, is(emptyUnsizedIterable())));
 		expecting(NoSuchElementException.class, () -> emptyRepeatedTwice.iterator().next());
 
 		Sequence<Integer> oneRepeatedTwice = _1.repeat(2);
-		twice(() -> assertThat(oneRepeatedTwice, containsSized(1, 1)));
+		twice(() -> assertThat(oneRepeatedTwice, containsUnsized(1, 1)));
 
 		Sequence<Integer> twoRepeatedTwice = _12.repeat(2);
-		twice(() -> assertThat(twoRepeatedTwice, containsSized(1, 2, 1, 2)));
+		twice(() -> assertThat(twoRepeatedTwice, containsUnsized(1, 2, 1, 2)));
 
 		Sequence<Integer> threeRepeatedTwice = _123.repeat(2);
-		twice(() -> assertThat(threeRepeatedTwice, containsSized(1, 2, 3, 1, 2, 3)));
+		twice(() -> assertThat(threeRepeatedTwice, containsUnsized(1, 2, 3, 1, 2, 3)));
 
 		assertThat(removeFirst(threeRepeatedTwice), is(1));
-		twice(() -> assertThat(threeRepeatedTwice, containsSized(2, 3, 2, 3)));
+		twice(() -> assertThat(threeRepeatedTwice, containsUnsized(2, 3, 2, 3)));
 		twice(() -> assertThat(_123, containsSized(2, 3)));
 
 		Sequence<Integer> varyingLengthRepeatedTwice = Sequence.from(new Iterable<Integer>() {

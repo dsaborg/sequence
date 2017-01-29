@@ -982,9 +982,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 		if (skip == 0)
 			return this;
 
-		if (sizeType() == INFINITE)
-			throw new IllegalStateException("skipTail on infinite Sequence");
-
 		return new Sequence<T>() {
 			@Override
 			public Iterator<T> iterator() {
@@ -2754,11 +2751,6 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * empty {@link Iterator} in which case the repeated sequence terminates.
 	 */
 	default Sequence<T> repeat() {
-		requireFinite(this, "Infinite Sequence");
-
-		if (sizeType() == KNOWN && isEmpty())
-			return empty();
-
 		return new Sequence<T>() {
 			@Override
 			public Iterator<T> iterator() {
@@ -2768,24 +2760,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 			@Override
 			public SizeType sizeType() {
 				switch (Sequence.this.sizeType()) {
-					case KNOWN:
-						return Sequence.this.isEmpty() ? KNOWN : INFINITE;
 					case INFINITE:
 						return INFINITE;
-					case UNKNOWN:
 					default:
 						return UNKNOWN;
-				}
-			}
-
-			@Override
-			public int size() {
-				switch (Sequence.this.sizeType()) {
-					case KNOWN:
-						if (Sequence.this.isEmpty())
-							return 0;
-					default:
-						return SizedIterable.size(this);
 				}
 			}
 
@@ -2801,12 +2779,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default Sequence<T> repeat(int times) {
 		requireAtLeastZero(times, "times");
-		requireFinite(this, "Infinite Sequence");
 
 		if (times == 0)
-			return empty();
-
-		if (sizeType() == KNOWN && isEmpty())
 			return empty();
 
 		return new Sequence<T>() {
@@ -2817,16 +2791,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 			@Override
 			public SizeType sizeType() {
-				return Sequence.this.sizeType();
-			}
-
-			@Override
-			public int size() {
 				switch (Sequence.this.sizeType()) {
-					case KNOWN:
-						return Sequence.this.size() * times;
+					case INFINITE:
+						return INFINITE;
 					default:
-						return SizedIterable.size(this);
+						return UNKNOWN;
 				}
 			}
 
