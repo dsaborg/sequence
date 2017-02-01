@@ -978,6 +978,32 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void mapKeys() {
+		EntrySequence<String, Integer> emptyMapped = empty.mapKeys(s -> "k" + s);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
+		EntrySequence<String, Integer> mapped = _123.mapKeys(s -> "k" + s);
+		twice(() -> assertThat(mapped, contains(Maps.entry("k1", 1), Maps.entry("k2", 2), Maps.entry("k3", 3))));
+
+		assertThat(removeFirst(mapped), is(Maps.entry("k1", 1)));
+		twice(() -> assertThat(mapped, contains(Maps.entry("k2", 2), Maps.entry("k3", 3))));
+	}
+
+	@Test
+	public void mapValues() {
+		EntrySequence<String, Integer> emptyMapped = empty.mapValues(i -> i + 1);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
+		EntrySequence<String, Integer> mapped = _123.mapValues(i -> i + 1);
+		twice(() -> assertThat(mapped, contains(Maps.entry("1", 2), Maps.entry("2", 3), Maps.entry("3", 4))));
+
+		assertThat(removeFirst(mapped), is(Maps.entry("1", 2)));
+		twice(() -> assertThat(mapped, contains(Maps.entry("2", 3), Maps.entry("3", 4))));
+	}
+
+	@Test
 	public void recurse() {
 		EntrySequence<String, Integer> sequence =
 				EntrySequence.recurse("1", 1, (k, v) -> Maps.entry(String.valueOf(v + 1), v + 1));

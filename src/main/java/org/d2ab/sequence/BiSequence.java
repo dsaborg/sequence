@@ -44,7 +44,6 @@ import static org.d2ab.util.Preconditions.requireAtLeastZero;
 @FunctionalInterface
 public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	// TODO: Add toMap with custom value merger
-	// TODO: Add mapLeft and mapRight
 
 	/**
 	 * Create an empty {@code BiSequence} with no items.
@@ -457,6 +456,32 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 		requireNonNull(mapper, "mapper");
 
 		return mapIndexed((p, i) -> mapper.apply(p.getLeft(), p.getRight(), i));
+	}
+
+	/**
+	 * Map the left values of the pairs in this {@code BiSequence} to another set of left values specified by the given
+	 * {@code mapper} function.
+	 *
+	 * @see #map(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function, Function)
+	 * @see #flatten(Function)
+	 */
+	default <LL> BiSequence<LL, R> mapLeft(Function<? super L, ? extends LL> mapper) {
+		return map((l, r) -> Pair.of(mapper.apply(l), r));
+	}
+
+	/**
+	 * Map the right values of the pairs in this {@code BiSequence} to another set of right values specified by the
+	 * given {@code mapper} function.
+	 *
+	 * @see #map(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function, Function)
+	 * @see #flatten(Function)
+	 */
+	default <RR> BiSequence<L, RR> mapRight(Function<? super R, ? extends RR> mapper) {
+		return map((l, r) -> Pair.of(l, mapper.apply(r)));
 	}
 
 	/**

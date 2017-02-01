@@ -45,7 +45,6 @@ import static org.d2ab.util.Preconditions.requireAtLeastZero;
 @FunctionalInterface
 public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	// TODO: Add toMap with custom value merger
-	// TODO: Add mapKeys and mapValues
 
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
@@ -450,6 +449,32 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 		requireNonNull(mapper, "mapper");
 
 		return mapIndexed((e, i) -> mapper.apply(e.getKey(), e.getValue(), i));
+	}
+
+	/**
+	 * Map the keys of the entries in this {@code EntrySequence} to another set of keys specified by the given
+	 * {@code mapper} function.
+	 *
+	 * @see #map(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function, Function)
+	 * @see #flatten(Function)
+	 */
+	default <KK> EntrySequence<KK, V> mapKeys(Function<? super K, ? extends KK> mapper) {
+		return map((k, v) -> Maps.entry(mapper.apply(k), v));
+	}
+
+	/**
+	 * Map the keys of the entries in this {@code EntrySequence} to another set of keys specified by the given
+	 * {@code mapper} function.
+	 *
+	 * @see #map(Function)
+	 * @see #map(BiFunction)
+	 * @see #map(Function, Function)
+	 * @see #flatten(Function)
+	 */
+	default <VV> EntrySequence<K, VV> mapValues(Function<? super V, ? extends VV> mapper) {
+		return map((k, v) -> Maps.entry(k, mapper.apply(v)));
 	}
 
 	/**

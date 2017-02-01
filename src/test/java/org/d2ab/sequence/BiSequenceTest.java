@@ -942,6 +942,32 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void mapLeft() {
+		BiSequence<String, Integer> emptyMapped = empty.mapLeft(s -> "l" + s);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
+		BiSequence<String, Integer> mapped = _123.mapLeft(s -> "l" + s);
+		twice(() -> assertThat(mapped, contains(Pair.of("l1", 1), Pair.of("l2", 2), Pair.of("l3", 3))));
+
+		assertThat(removeFirst(mapped), is(Pair.of("l1", 1)));
+		twice(() -> assertThat(mapped, contains(Pair.of("l2", 2), Pair.of("l3", 3))));
+	}
+
+	@Test
+	public void mapRight() {
+		BiSequence<String, Integer> emptyMapped = empty.mapRight(i -> i + 1);
+		twice(() -> assertThat(emptyMapped, is(emptyIterable())));
+		expecting(NoSuchElementException.class, () -> emptyMapped.iterator().next());
+
+		BiSequence<String, Integer> mapped = _123.mapRight(i -> i + 1);
+		twice(() -> assertThat(mapped, contains(Pair.of("1", 2), Pair.of("2", 3), Pair.of("3", 4))));
+
+		assertThat(removeFirst(mapped), is(Pair.of("1", 2)));
+		twice(() -> assertThat(mapped, contains(Pair.of("2", 3), Pair.of("3", 4))));
+	}
+
+	@Test
 	public void recurse() {
 		BiSequence<String, Integer> sequence =
 				BiSequence.recurse("1", 1, (k, v) -> Pair.of(String.valueOf(v + 1), v + 1));
