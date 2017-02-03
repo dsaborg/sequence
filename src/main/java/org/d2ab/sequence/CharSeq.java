@@ -352,6 +352,7 @@ public interface CharSeq extends CharCollection, SizedIterable<Character> {
 	/**
 	 * A {@code CharSeq} of all the {@link Character} values between the given start and end positions, inclusive.
 	 *
+	 * @see #rangeOpen(char, char)
 	 * @see #all()
 	 * @see #startingFrom(char)
 	 * @see #until(char)
@@ -362,7 +363,20 @@ public interface CharSeq extends CharCollection, SizedIterable<Character> {
 		return recurse(start, next).endingAt(end);
 	}
 
-	// TODO: Add open ranges
+	/**
+	 * A {@code CharSeq} of all the {@link Character} values between the given start position, inclusive and end
+	 * position, exclusive.
+	 *
+	 * @see #range(char, char)
+	 * @see #all()
+	 * @see #startingFrom(char)
+	 * @see #until(char)
+	 * @see #endingAt(char)
+	 */
+	static CharSeq rangeOpen(char start, char end) {
+		CharUnaryOperator next = (end > start) ? c -> (char) ++c : c -> (char) --c;
+		return recurse(start, next).until(end);
+	}
 
 	/**
 	 * Returns a {@code CharSeq} sequence produced by recursively applying the given operation to the given seed, which

@@ -280,17 +280,33 @@ public interface DoubleSequence extends DoubleCollection, SizedIterable<Double> 
 	 * the given step between iterations and the given accuracy to check whether the end value has occurred.
 	 *
 	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #rangeOpen(double, double, double, double)
 	 * @see #steppingFrom(double, double)
 	 */
 	static DoubleSequence range(double start, double end, double step, double accuracy) {
 		requireAbove(step, "step", 0);
 
 		return end > start ?
-		       recurse(start, d -> d + step).until(d -> d - accuracy >= end) :
-		       recurse(start, d -> d - step).until(d -> d + accuracy <= end);
+		       recurse(start, d -> d + step).endingAt(d -> d + accuracy >= end) :
+		       recurse(start, d -> d - step).endingAt(d -> d - accuracy <= end);
 	}
 
-	// TODO: Add open ranges
+	/**
+	 * A {@code DoubleSequence} of all the {@link Double} values between the given start position, inclusive, and end
+	 * position, exclusive, using the given step between iterations and the given accuracy to check whether the end
+	 * value has occurred.
+	 *
+	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #range(double, double, double, double)
+	 * @see #steppingFrom(double, double)
+	 */
+	static DoubleSequence rangeOpen(double start, double end, double step, double accuracy) {
+		requireAbove(step, "step", 0);
+
+		return end > start ?
+		       recurse(start, d -> d + step).until(d -> d + accuracy >= end) :
+		       recurse(start, d -> d - step).until(d -> d - accuracy <= end);
+	}
 
 	static DoubleSequence recurse(double seed, DoubleUnaryOperator operator) {
 		requireNonNull(operator, "operator");

@@ -1364,14 +1364,14 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void chars() {
+	public void allChars() {
 		assertThat(CharSeq.all().limit(5), containsChars('\u0000', '\u0001', '\u0002', '\u0003', '\u0004'));
 		assertThat(CharSeq.all().limit(0xC0).last(), is(OptionalChar.of('¿')));
 		assertThat(CharSeq.all().size(), is(65536));
 	}
 
 	@Test
-	public void charsStartingAt() {
+	public void startingAt() {
 		assertThat(CharSeq.startingAt('A').limit(5), containsChars('A', 'B', 'C', 'D', 'E'));
 		assertThat(CharSeq.startingAt('\u1400').limit(3).last(), is(OptionalChar.of('\u1402')));
 		assertThat(CharSeq.startingAt(Character.MAX_VALUE), containsChars(Character.MAX_VALUE));
@@ -1379,10 +1379,17 @@ public class CharSeqTest {
 	}
 
 	@Test
-	public void charRange() {
+	public void range() {
 		assertThat(CharSeq.range('A', 'F'), containsChars('A', 'B', 'C', 'D', 'E', 'F'));
 		assertThat(CharSeq.range('F', 'A'), containsChars('F', 'E', 'D', 'C', 'B', 'A'));
 		assertThat(CharSeq.range('A', 'F').size(), is(6));
+	}
+
+	@Test
+	public void rangeOpen() {
+		assertThat(CharSeq.rangeOpen('A', 'F'), containsChars('A', 'B', 'C', 'D', 'E'));
+		assertThat(CharSeq.rangeOpen('F', 'A'), containsChars('F', 'E', 'D', 'C', 'B'));
+		assertThat(CharSeq.rangeOpen('A', 'F').size(), is(5));
 	}
 
 	@Test

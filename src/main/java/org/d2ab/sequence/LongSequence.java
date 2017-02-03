@@ -386,6 +386,7 @@ public interface LongSequence extends LongCollection, SizedIterable<Long> {
 	 * A {@code LongSequence} of all the {@code long} values between the given start and end positions, inclusive.
 	 *
 	 * @see #range(long, long, long)
+	 * @see #rangeOpen(long, long)
 	 * @see #steppingFrom(long, long)
 	 * @see #increasingFrom(long)
 	 * @see #decreasingFrom(long)
@@ -405,6 +406,7 @@ public interface LongSequence extends LongCollection, SizedIterable<Long> {
 	 *
 	 * @throws IllegalArgumentException if {@code step < 0}
 	 * @see #range(long, long)
+	 * @see #rangeOpen(long, long, long)
 	 * @see #steppingFrom(long, long)
 	 * @see #increasingFrom(long)
 	 * @see #decreasingFrom(long)
@@ -421,7 +423,44 @@ public interface LongSequence extends LongCollection, SizedIterable<Long> {
 		       recurse(start, x -> x - step).endingAt(x -> x - step < end || x < Long.MIN_VALUE + step);
 	}
 
-	// TODO: Add open ranges
+	/**
+	 * A {@code LongSequence} of all the {@code long} values between the given start and end positions, inclusive.
+	 *
+	 * @see #range(long, long, long)
+	 * @see #steppingFrom(long, long)
+	 * @see #increasingFrom(long)
+	 * @see #decreasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static LongSequence rangeOpen(long start, long end) {
+		LongUnaryOperator next = (end > start) ? x -> ++x : x -> --x;
+		return recurse(start, next).until(end);
+	}
+
+	/**
+	 * A {@code LongSequence} of the {@code long} values between the given start and end positions, stepping with
+	 * the given step. The step must be given as a positive value, even if the range is a decreasing range.
+	 *
+	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #range(long, long)
+	 * @see #steppingFrom(long, long)
+	 * @see #increasingFrom(long)
+	 * @see #decreasingFrom(long)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static LongSequence rangeOpen(long start, long end, long step) {
+		requireAtLeastOne(step, "step");
+
+		return end >= start ?
+		       recurse(start, x -> x + step).until(x -> x + step > end || x > Long.MAX_VALUE - step) :
+		       recurse(start, x -> x - step).until(x -> x - step < end || x < Long.MIN_VALUE + step);
+	}
 
 	/**
 	 * Returns a {@code LongSequence} sequence produced by recursively applying the given operation to the given

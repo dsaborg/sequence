@@ -1509,6 +1509,58 @@ public class LongSequenceTest {
 	}
 
 	@Test
+	public void rangeOpen() {
+		LongSequence rangeOpen1to6 = LongSequence.rangeOpen(1, 6);
+		twice(() -> assertThat(rangeOpen1to6, containsLongs(1, 2, 3, 4, 5)));
+
+		LongSequence rangeOpen6to1 = LongSequence.rangeOpen(6, 1);
+		twice(() -> assertThat(rangeOpen6to1, containsLongs(6, 5, 4, 3, 2)));
+
+		LongSequence rangeOpen_2to2 = LongSequence.rangeOpen(-2, 2);
+		twice(() -> assertThat(rangeOpen_2to2, containsLongs(-2, -1, 0, 1)));
+
+		LongSequence rangeOpen2to_2 = LongSequence.rangeOpen(2, -2);
+		twice(() -> assertThat(rangeOpen2to_2, containsLongs(2, 1, 0, -1)));
+
+		LongSequence maxValue = LongSequence.rangeOpen(Long.MAX_VALUE - 3, Long.MAX_VALUE);
+		twice(() -> assertThat(maxValue, containsLongs(Long.MAX_VALUE - 3, Long.MAX_VALUE - 2,
+		                                               Long.MAX_VALUE - 1)));
+
+		LongSequence minValue = LongSequence.rangeOpen(Long.MIN_VALUE + 3, Long.MIN_VALUE);
+		twice(() -> assertThat(minValue, containsLongs(Long.MIN_VALUE + 3, Long.MIN_VALUE + 2,
+		                                               Long.MIN_VALUE + 1)));
+	}
+
+	@Test
+	public void rangeOpenWithStep() {
+		LongSequence rangeOpen1to6step2 = LongSequence.rangeOpen(1, 6, 2);
+		twice(() -> assertThat(rangeOpen1to6step2, containsLongs(1, 3)));
+
+		LongSequence rangeOpen6to1step2 = LongSequence.rangeOpen(6, 1, 2);
+		twice(() -> assertThat(rangeOpen6to1step2, containsLongs(6, 4)));
+
+		LongSequence rangeOpen_6to6step2 = LongSequence.rangeOpen(-6, 6, 3);
+		twice(() -> assertThat(rangeOpen_6to6step2, containsLongs(-6, -3, 0, 3)));
+
+		LongSequence rangeOpen6to_6step2 = LongSequence.rangeOpen(6, -6, 3);
+		twice(() -> assertThat(rangeOpen6to_6step2, containsLongs(6, 3, 0, -3)));
+
+		LongSequence maxValue = LongSequence.rangeOpen(Long.MAX_VALUE - 2, Long.MAX_VALUE, 2);
+		twice(() -> assertThat(maxValue, containsLongs(Long.MAX_VALUE - 2)));
+
+		LongSequence minValue = LongSequence.rangeOpen(Long.MIN_VALUE + 2, Long.MIN_VALUE, 2);
+		twice(() -> assertThat(minValue, containsLongs(Long.MIN_VALUE + 2)));
+
+		LongSequence crossingMaxValue = LongSequence.rangeOpen(Long.MAX_VALUE - 3, Long.MAX_VALUE, 2);
+		twice(() -> assertThat(crossingMaxValue, containsLongs(Long.MAX_VALUE - 3)));
+
+		LongSequence crossingMinValue = LongSequence.rangeOpen(Long.MIN_VALUE + 3, Long.MIN_VALUE, 2);
+		twice(() -> assertThat(crossingMinValue, containsLongs(Long.MIN_VALUE + 3)));
+
+		expecting(IllegalArgumentException.class, () -> LongSequence.rangeOpen(1, 6, -1));
+	}
+
+	@Test
 	public void toChars() {
 		CharSeq emptyChars = empty.toChars();
 		twice(() -> assertThat(emptyChars, is(emptyIterable())));

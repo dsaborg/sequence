@@ -1467,6 +1467,13 @@ public class DoubleSequenceTest {
 	}
 
 	@Test
+	public void rangeOpen() {
+		assertThat(DoubleSequence.rangeOpen(1, 6, 1, 0.1), containsDoubles(1.0, 2.0, 3.0, 4.0, 5.0));
+		assertThat(DoubleSequence.rangeOpen(6, 1, 1, 0.1), containsDoubles(6.0, 5.0, 4.0, 3.0, 2.0));
+		expecting(IllegalArgumentException.class, () -> DoubleSequence.rangeOpen(1, 6, -1, 0));
+	}
+
+	@Test
 	public void toInts() {
 		IntSequence emptyInts = empty.toInts();
 		twice(() -> assertThat(emptyInts, is(emptyIterable())));

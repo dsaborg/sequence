@@ -407,6 +407,7 @@ public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 	 * A {@code Sequence} of all the {@code int} values between the given start and end positions, inclusive.
 	 *
 	 * @see #range(int, int, int)
+	 * @see #rangeOpen(int, int)
 	 * @see #steppingFrom(int, int)
 	 * @see #increasingFrom(int)
 	 * @see #decreasingFrom(int)
@@ -425,6 +426,7 @@ public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 	 *
 	 * @throws IllegalArgumentException if {@code step < 0}
 	 * @see #range(int, int)
+	 * @see #rangeOpen(int, int, int)
 	 * @see #steppingFrom(int, int)
 	 * @see #increasingFrom(int)
 	 * @see #decreasingFrom(int)
@@ -441,7 +443,47 @@ public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 		       recurse(start, x -> x - step).endingAt(x -> (long) x - step < end);
 	}
 
-	// TODO: Add open ranges
+	/**
+	 * A {@code Sequence} of all the {@code int} values between the given start position, inclusive, and end position,
+	 * exclusive.
+	 *
+	 * @see #rangeOpen(int, int, int)
+	 * @see #range(int, int)
+	 * @see #steppingFrom(int, int)
+	 * @see #increasingFrom(int)
+	 * @see #decreasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static IntSequence rangeOpen(int start, int end) {
+		return rangeOpen(start, end, 1);
+	}
+
+	/**
+	 * A {@code Sequence} of the {@code int} values between the given start position, inclusive, and end position,
+	 * exclusive, stepping with the given step. The step must be given as a positive value, even if the range is a
+	 * decreasing range.
+	 *
+	 * @throws IllegalArgumentException if {@code step < 0}
+	 * @see #rangeOpen(int, int)
+	 * @see #range(int, int, int)
+	 * @see #steppingFrom(int, int)
+	 * @see #increasingFrom(int)
+	 * @see #decreasingFrom(int)
+	 * @see #positive()
+	 * @see #positiveFromZero()
+	 * @see #negative()
+	 * @see #negativeFromZero()
+	 */
+	static IntSequence rangeOpen(int start, int end, int step) {
+		requireAtLeastOne(step, "step");
+
+		return end >= start ?
+		       recurse(start, x -> x + step).until(x -> (long) x + step > end) :
+		       recurse(start, x -> x - step).until(x -> (long) x - step < end);
+	}
 
 	/**
 	 * Returns an {@code IntSequence} sequence produced by recursively applying the given operation to the given
