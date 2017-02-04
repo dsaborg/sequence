@@ -1362,18 +1362,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor) {
 		requireNonNull(constructor, "constructor");
 
-		M result = constructor.get();
 		@SuppressWarnings("unchecked")
 		Sequence<Entry<K, V>> entries = (Sequence<Entry<K, V>>) this;
+
+		M result = constructor.get();
 		for (Entry<K, V> t : entries)
 			result.put(t.getKey(), t.getValue());
+
 		return result;
 	}
 
 	/**
 	 * Convert this {@code Sequence} of into a {@link Map}, using the given key mapper {@link Function} and value
-	 * mapper
-	 * {@link Function} to convert each element into a {@link Map} entry.
+	 * mapper {@link Function} to convert each element into a {@link Map} entry. If the same key occurs more than once,
+	 * the key is remapped in the resulting map to the latter corresponding value.
 	 */
 	default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
 	                               Function<? super T, ? extends V> valueMapper) {
@@ -1386,7 +1388,8 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * Convert this {@code Sequence} of into a {@link Map} of the type determined by the given constructor, using the
 	 * given key mapper {@link Function} and value mapper {@link Function} to convert each element into a {@link Map}
-	 * entry.
+	 * entry. If the same key occurs more than once, the key is remapped in the resulting map to the latter
+	 * corresponding value.
 	 */
 	default <M extends Map<K, V>, K, V> M toMap(Supplier<? extends M> constructor,
 	                                            Function<? super T, ? extends K> keyMapper,
@@ -1397,6 +1400,41 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		return collect(constructor,
 		               (result, element) -> result.put(keyMapper.apply(element), valueMapper.apply(element)));
+	}
+
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map}, using the given key mapper {@link Function} and value
+	 * mapper {@link Function} to convert each element into a {@link Map} entry, and using the given {@code merger}
+	 * {@link BiFunction} to merge values in the map, according to {@link Map#merge(Object, Object, BiFunction)}.
+	 */
+	default <K, V> Map<K, V> toMergedMap(Function<? super T, ? extends K> keyMapper,
+	                                     Function<? super T, ? extends V> valueMapper,
+	                                     BiFunction<? super V, ? super V, ? extends V> merger) {
+		requireNonNull(keyMapper, "keyMapper");
+		requireNonNull(valueMapper, "valueMapper");
+		requireNonNull(merger, "merger");
+
+		return toMergedMap(HashMap::new, keyMapper, valueMapper, merger);
+	}
+
+	/**
+	 * Convert this {@code Sequence} of into a {@link Map} of the type determined by the given constructor, using the
+	 * given key mapper {@link Function} and value mapper {@link Function} to convert each element into a {@link Map}
+	 * entry, and using the given {@code merger} {@link BiFunction} to merge values in the map, according to
+	 * {@link Map#merge(Object, Object, BiFunction)}.
+	 */
+	default <M extends Map<K, V>, K, V> M toMergedMap(Supplier<? extends M> constructor,
+	                                                  Function<? super T, ? extends K> keyMapper,
+	                                                  Function<? super T, ? extends V> valueMapper,
+	                                                  BiFunction<? super V, ? super V, ? extends V> merger) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(keyMapper, "keyMapper");
+		requireNonNull(valueMapper, "valueMapper");
+		requireNonNull(merger, "merger");
+
+		return collect(constructor,
+		               (result, element) -> result.merge(keyMapper.apply(element), valueMapper.apply(element),
+		                                                 merger));
 	}
 
 	/**

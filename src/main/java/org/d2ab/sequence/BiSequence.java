@@ -43,8 +43,6 @@ import static org.d2ab.util.Preconditions.requireAtLeastZero;
  */
 @FunctionalInterface
 public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
-	// TODO: Add toMap with custom value merger
-
 	/**
 	 * Create an empty {@code BiSequence} with no items.
 	 *
@@ -140,7 +138,6 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @see #of(Pair)
 	 * @see #of(Pair...)
 	 * @see #from(Iterable)
-	 *
 	 * @deprecated Use {@link #concat(Iterable[])} instead.
 	 */
 	@SafeVarargs
@@ -975,7 +972,9 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	}
 
 	/**
-	 * Collect the pairs in this {@code BiSequence} into a {@link Map}.
+	 * Collect the pairs in this {@code BiSequence} into a {@link Map}, using left values as keys and right values as
+	 * values. If the same left value occurs more than once in the {@code BiSequence}, the key is remapped in the
+	 * resulting map to the latter corresponding right value.
 	 */
 	default Map<L, R> toMap() {
 		return toMap(HashMap::new);
@@ -983,7 +982,8 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 
 	/**
 	 * Collect the pairs in this {@code BiSequence} into a {@link Map} of the type determined by the given
-	 * constructor.
+	 * constructor, using left values as keys and right values as values. If the same left value occurs more than once
+	 * in the {@code BiSequence}, the key is remapped in the resulting map to the latter corresponding right value.
 	 */
 	default <M extends Map<L, R>> M toMap(Supplier<? extends M> constructor) {
 		requireNonNull(constructor, "constructor");
@@ -991,6 +991,32 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 		M result = constructor.get();
 		for (Pair<L, R> each : this)
 			result.put(each.getLeft(), each.getRight());
+
+		return result;
+	}
+
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link Map}, using the given {@code merger}
+	 * {@link BiFunction} to merge values in the map, according to {@link Map#merge(Object, Object, BiFunction)}.
+	 */
+	default Map<L, R> toMergedMap(BiFunction<? super R, ? super R, ? extends R> merger) {
+		return toMergedMap(HashMap::new, merger);
+	}
+
+	/**
+	 * Collect the pairs in this {@code BiSequence} into a {@link Map} of the type determined by the given
+	 * constructor. The given {@code merger} {@link BiFunction} is used to merge values in the map, according to
+	 * {@link Map#merge(Object, Object, BiFunction)}.
+	 */
+	default <M extends Map<L, R>> M toMergedMap(Supplier<? extends M> constructor,
+	                                            BiFunction<? super R, ? super R, ? extends R> merger) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(merger, "merger");
+
+		M result = constructor.get();
+		for (Pair<L, R> each : this)
+			result.merge(each.getLeft(), each.getRight(), merger);
+
 		return result;
 	}
 

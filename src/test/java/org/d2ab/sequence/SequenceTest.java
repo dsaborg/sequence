@@ -2125,15 +2125,22 @@ public class SequenceTest {
 	@Test
 	public void toMap() {
 		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
-
 		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
 
 		twice(() -> {
 			Map<String, Integer> map = sequence.toMap();
 			assertThat(map, is(instanceOf(HashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
 
-			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
+	@Test
+	public void toMapWithConstructor() {
+		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
+		Sequence<Entry<String, Integer>> sequence = Sequence.from(original);
+
+		twice(() -> {
+			Map<String, Integer> linkedMap = sequence.toMap(LinkedHashMap::new);
 			assertThat(linkedMap, is(instanceOf(HashMap.class)));
 			assertThat(linkedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
 		});
@@ -2150,12 +2157,34 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void toMapWithConstructor() {
+	public void toMapWithMappersAndConstructor() {
 		twice(() -> {
 			Map<String, Integer> map = _123.toMap(LinkedHashMap::new, Object::toString, Function.identity());
 
 			assertThat(map, is(instanceOf(LinkedHashMap.class)));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).build())));
+		});
+	}
+
+	@Test
+	public void toMergedMapWithMappers() {
+		twice(() -> {
+			Map<String, Integer> map = _12345.toMergedMap(x -> String.valueOf(x % 3), Function.identity(),
+			                                              (old, value) -> old);
+
+			assertThat(map, is(instanceOf(HashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("0", 3).build())));
+		});
+	}
+
+	@Test
+	public void toMergedMapWithMappersAndConstructor() {
+		twice(() -> {
+			Map<String, Integer> map = _12345.toMergedMap(x -> String.valueOf(x % 3), Function.identity(),
+			                                              (old, value) -> value);
+
+			assertThat(map, is(instanceOf(HashMap.class)));
+			assertThat(map, is(equalTo(Maps.builder("0", 3).put("1", 4).put("2", 5).build())));
 		});
 	}
 

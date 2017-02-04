@@ -138,12 +138,12 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void fromIterables() {
+	public void concatIterables() {
 		Iterable<Pair<String, Integer>> first = Iterables.of(pairs123);
 		Iterable<Pair<String, Integer>> second = Iterables.of(pairs456);
 		Iterable<Pair<String, Integer>> third = Iterables.of(pairs789);
 
-		BiSequence<String, Integer> sequence = BiSequence.from(first, second, third);
+		BiSequence<String, Integer> sequence = BiSequence.concat(first, second, third);
 
 		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
 		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
@@ -151,8 +151,8 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void fromNoIterables() {
-		BiSequence<String, Integer> sequence = BiSequence.from(new Iterable[0]);
+	public void concatNoIterables() {
+		BiSequence<String, Integer> sequence = BiSequence.concat(new Iterable[0]);
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -1254,19 +1254,58 @@ public class BiSequenceTest {
 	}
 
 	@Test
-	public void toMapFromPairs() {
-		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
-
-		BiSequence<String, Integer> sequence = BiSequence.from(original);
-
+	public void toMap() {
 		twice(() -> {
-			Map<String, Integer> map = sequence.toMap();
+			Map<String, Integer> map = _1234.toMap();
 			assertThat(map, instanceOf(HashMap.class));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
 
-			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
-			assertThat(linkedMap, instanceOf(HashMap.class));
+	@Test
+	public void toMapWithSupplier() {
+		twice(() -> {
+			Map<String, Integer> linkedMap = _1234.toMap(LinkedHashMap::new);
+			assertThat(linkedMap, instanceOf(LinkedHashMap.class));
 			assertThat(linkedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
+
+	@Test
+	public void toMergedMap() {
+		BiSequence<String, Integer> sequence = BiSequence.of(Pair.of("1", 1), Pair.of("1", 2),
+		                                                     Pair.of("2", 2), Pair.of("2", 3),
+		                                                     Pair.of("3", 3), Pair.of("4", 4));
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap((old, value) -> old);
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap((old, value) -> value);
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 2).put("2", 3).put("3", 3).put("4", 4).build())));
+		});
+	}
+
+	@Test
+	public void toMergedMapWithSupplier() {
+		BiSequence<String, Integer> sequence = BiSequence.of(Pair.of("1", 1), Pair.of("1", 2),
+		                                                     Pair.of("2", 2), Pair.of("2", 3),
+		                                                     Pair.of("3", 3), Pair.of("4", 4));
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap(LinkedHashMap::new, (old, value) -> old);
+			assertThat(map, instanceOf(LinkedHashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap(LinkedHashMap::new, (old, value) -> value);
+			assertThat(map, instanceOf(LinkedHashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 2).put("2", 3).put("3", 3).put("4", 4).build())));
 		});
 	}
 
@@ -2386,7 +2425,7 @@ public class BiSequenceTest {
 		BiSequence<String, Integer> varyingLengthRepeatedTwice = BiSequence.from(
 				new Iterable<Pair<String, Integer>>() {
 					private List<Pair<String, Integer>> list = Lists.of(Pair.of("1", 1), Pair.of("2", 2),
-					                                                  Pair.of("3", 3));
+					                                                    Pair.of("3", 3));
 					int end = list.size();
 
 					@Override
@@ -2418,8 +2457,9 @@ public class BiSequenceTest {
 
 	@Test
 	public void generate() {
-		Queue<Pair<String, Integer>> queue = new ArrayDeque<>(Lists.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
-		                                                             Pair.of("4", 4), Pair.of("5", 5)));
+		Queue<Pair<String, Integer>> queue = new ArrayDeque<>(
+				Lists.of(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3),
+				         Pair.of("4", 4), Pair.of("5", 5)));
 		BiSequence<String, Integer> sequence = BiSequence.generate(queue::poll);
 
 		assertThat(sequence,

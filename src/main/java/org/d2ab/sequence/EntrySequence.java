@@ -44,8 +44,6 @@ import static org.d2ab.util.Preconditions.requireAtLeastZero;
  */
 @FunctionalInterface
 public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
-	// TODO: Add toMap with custom value merger
-
 	/**
 	 * Create an empty {@code EntrySequence} with no items.
 	 *
@@ -139,7 +137,6 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @see #of(Entry)
 	 * @see #of(Entry...)
 	 * @see #from(Iterable)
-	 *
 	 * @deprecated Use {@link #concat(Iterable[])} instead.
 	 */
 	@SafeVarargs
@@ -968,7 +965,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * Collect the entries in this {@code EntrySequence} into a {@link Map}.
+	 * Collect the entries in this {@code EntrySequence} into a {@link Map}. If the same key occurs more than once
+	 * in the {@code EntrySequence}, the key is remapped in the resulting map to the latter corresponding value.
 	 */
 	default Map<K, V> toMap() {
 		return toMap(HashMap::new);
@@ -976,7 +974,8 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 
 	/**
 	 * Collect the entries in this {@code EntrySequence} into a {@link Map} of the type determined by the given
-	 * constructor.
+	 * constructor. If the same key occurs more than once in the {@code EntrySequence}, the key is remapped in the
+	 * resulting map to the latter corresponding value.
 	 */
 	default <M extends Map<K, V>> M toMap(Supplier<? extends M> constructor) {
 		requireNonNull(constructor, "constructor");
@@ -984,6 +983,32 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 		M result = constructor.get();
 		for (Entry<K, V> t : this)
 			result.put(t.getKey(), t.getValue());
+
+		return result;
+	}
+
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link Map}, using the given {@code merger}
+	 * {@link BiFunction} to merge values in the map, according to {@link Map#merge(Object, Object, BiFunction)}.
+	 */
+	default Map<K, V> toMergedMap(BiFunction<? super V, ? super V, ? extends V> merger) {
+		return toMergedMap(HashMap::new, merger);
+	}
+
+	/**
+	 * Collect the entries in this {@code EntrySequence} into a {@link Map} of the type determined by the given
+	 * constructor. The given {@code merger} {@link BiFunction} is used to merge values in the map, according to
+	 * {@link Map#merge(Object, Object, BiFunction)}.
+	 */
+	default <M extends Map<K, V>> M toMergedMap(Supplier<? extends M> constructor,
+	                                            BiFunction<? super V, ? super V, ? extends V> merger) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(merger, "merger");
+
+		M result = constructor.get();
+		for (Entry<K, V> each : this)
+			result.merge(each.getKey(), each.getValue(), merger);
+
 		return result;
 	}
 

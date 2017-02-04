@@ -145,12 +145,12 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromIterables() {
+	public void concatIterables() {
 		Iterable<Entry<String, Integer>> first = Iterables.of(entries123);
 		Iterable<Entry<String, Integer>> second = Iterables.of(entries456);
 		Iterable<Entry<String, Integer>> third = Iterables.of(entries789);
 
-		EntrySequence<String, Integer> sequence = EntrySequence.from(first, second, third);
+		EntrySequence<String, Integer> sequence = EntrySequence.concat(first, second, third);
 
 		twice(() -> assertThat(sequence,
 		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
@@ -159,8 +159,8 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void fromNoIterables() {
-		EntrySequence<String, Integer> sequence = EntrySequence.from(new Iterable[0]);
+	public void concatNoIterables() {
+		EntrySequence<String, Integer> sequence = EntrySequence.concat(new Iterable[0]);
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
@@ -1294,19 +1294,58 @@ public class EntrySequenceTest {
 	}
 
 	@Test
-	public void toMapFromEntries() {
-		Map<String, Integer> original = Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build();
-
-		EntrySequence<String, Integer> sequence = EntrySequence.from(original);
-
+	public void toMap() {
 		twice(() -> {
-			Map<String, Integer> map = sequence.toMap();
+			Map<String, Integer> map = _1234.toMap();
 			assertThat(map, instanceOf(HashMap.class));
 			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
 
-			Map<String, Integer> linkedMap = sequence.toMap((Supplier<Map<String, Integer>>) LinkedHashMap::new);
-			assertThat(linkedMap, instanceOf(HashMap.class));
+	@Test
+	public void toMapWithSupplier() {
+		twice(() -> {
+			Map<String, Integer> linkedMap = _1234.toMap(LinkedHashMap::new);
+			assertThat(linkedMap, instanceOf(LinkedHashMap.class));
 			assertThat(linkedMap, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+	}
+
+	@Test
+	public void toMergedMap() {
+		EntrySequence<String, Integer> sequence = EntrySequence.of(Maps.entry("1", 1), Maps.entry("1", 2),
+		                                                           Maps.entry("2", 2), Maps.entry("2", 3),
+		                                                           Maps.entry("3", 3), Maps.entry("4", 4));
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap((old, value) -> old);
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap((old, value) -> value);
+			assertThat(map, instanceOf(HashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 2).put("2", 3).put("3", 3).put("4", 4).build())));
+		});
+	}
+
+	@Test
+	public void toMergedMapWithSupplier() {
+		EntrySequence<String, Integer> sequence = EntrySequence.of(Maps.entry("1", 1), Maps.entry("1", 2),
+		                                                           Maps.entry("2", 2), Maps.entry("2", 3),
+		                                                           Maps.entry("3", 3), Maps.entry("4", 4));
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap(LinkedHashMap::new, (old, value) -> old);
+			assertThat(map, instanceOf(LinkedHashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 1).put("2", 2).put("3", 3).put("4", 4).build())));
+		});
+
+		twice(() -> {
+			Map<String, Integer> map = sequence.toMergedMap(LinkedHashMap::new, (old, value) -> value);
+			assertThat(map, instanceOf(LinkedHashMap.class));
+			assertThat(map, is(equalTo(Maps.builder("1", 2).put("2", 3).put("3", 3).put("4", 4).build())));
 		});
 	}
 
@@ -2480,8 +2519,8 @@ public class EntrySequenceTest {
 	@Test
 	public void generate() {
 		Queue<Entry<String, Integer>> queue = new ArrayDeque<>(Lists.of(Maps.entry("1", 1), Maps.entry("2", 2),
-		                                                              Maps.entry("3", 3), Maps.entry("4", 4),
-		                                                              Maps.entry("5", 5)));
+		                                                                Maps.entry("3", 3), Maps.entry("4", 4),
+		                                                                Maps.entry("5", 5)));
 		EntrySequence<String, Integer> sequence = EntrySequence.generate(queue::poll);
 
 		assertThat(sequence, beginsWith(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
@@ -2493,8 +2532,8 @@ public class EntrySequenceTest {
 	public void multiGenerate() {
 		EntrySequence<String, Integer> sequence = EntrySequence.multiGenerate(() -> {
 			Queue<Entry<String, Integer>> queue = new ArrayDeque<>(Lists.of(Maps.entry("1", 1), Maps.entry("2", 2),
-			                                                              Maps.entry("3", 3), Maps.entry("4", 4),
-			                                                              Maps.entry("5", 5)));
+			                                                                Maps.entry("3", 3), Maps.entry("4", 4),
+			                                                                Maps.entry("5", 5)));
 			return queue::poll;
 		});
 
