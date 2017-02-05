@@ -63,7 +63,7 @@ public interface LongCollection extends Collection<Long>, LongIterable {
 	}
 
 	/**
-	 * Collect the {@code longs} in this {@code LongCollection} into an {@code long}-array.
+	 * Collect the {@code longs} in this {@code LongCollection} into a {@code long}-array.
 	 */
 	default long[] toLongArray() {
 		return new ArrayLongList(this).toLongArray();

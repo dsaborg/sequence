@@ -54,7 +54,7 @@ public interface DoubleCollection extends Collection<Double>, DoubleIterable {
 	}
 
 	/**
-	 * Collect the {@code doubles} in this {@code DoubleCollection} into an {@code double}-array.
+	 * Collect the {@code doubles} in this {@code DoubleCollection} into a {@code double}-array.
 	 */
 	default double[] toDoubleArray() {
 		return new ArrayDoubleList(this).toDoubleArray();

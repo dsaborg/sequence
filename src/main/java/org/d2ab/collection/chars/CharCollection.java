@@ -54,7 +54,7 @@ public interface CharCollection extends Collection<Character>, CharIterable {
 	}
 
 	/**
-	 * Collect the {@code chars} in this {@code CharCollection} into an {@code char}-array.
+	 * Collect the {@code chars} in this {@code CharCollection} into a {@code char}-array.
 	 */
 	default char[] toCharArray() {
 		return new ArrayCharList(this).toCharArray();
