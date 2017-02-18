@@ -52,13 +52,13 @@ public class HasSizeCharacteristics extends BaseMatcher<SizedIterable<?>> {
 	@SafeVarargs
 	public static <T> Matcher<SizedIterable<? extends T>> infiniteBeginningWith(T... items) {
 		return Matchers.<SizedIterable<? extends T>>both(beginsWith(items))
-				.and(HasSizeCharacteristics.hasInfiniteSize());
+				.and(hasInfiniteSize());
 	}
 
 	@SafeVarargs
 	public static <T> Matcher<SizedIterable<? extends T>> infiniteBeginningWith(Matcher<? super T>... itemMatchers) {
 		return Matchers.<SizedIterable<? extends T>>both(beginsWith(itemMatchers))
-				.and(HasSizeCharacteristics.hasInfiniteSize());
+				.and(hasInfiniteSize());
 	}
 
 	public static Matcher<SizedIterable<?>> hasKnownSize(int size) {

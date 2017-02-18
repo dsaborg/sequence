@@ -129,8 +129,86 @@ public class PreconditionsTest {
 	}
 
 	@Test
+	public void requireAboveDouble() {
+		Preconditions.requireAbove(17.00001, "just above seventeen", 17.0);
+		Preconditions.requireAbove(18.0, "eighteen", 17.0);
+		Preconditions.requireAbove(19.0, "nineteen", 17.0);
+		Preconditions.requireAbove(Integer.MAX_VALUE, "max", 17.0);
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(17.0, "seventeen", 17.0));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(16.0, "sixteen", 17.0));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(15.0, "fifteen", 17.0));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(0.0, "zero", 17.0));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(-1.0, "minus one", 17.0));
+	}
+
+	@Test
+	public void requireAboveDoubleWithName() {
+		Preconditions.requireAbove(17.00001, "just above seventeen", 17.0, "threshold");
+		Preconditions.requireAbove(18.0, "eighteen", 17.0, "threshold");
+		Preconditions.requireAbove(19.0, "nineteen", 17.0, "threshold");
+		Preconditions.requireAbove(Integer.MAX_VALUE, "max", 17.0, "threshold");
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(17.0, "seventeen", 17.0, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(16.0, "sixteen", 17.0, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(15.0, "fifteen", 17.0, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(0.0, "zero", 17.0, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(-1.0, "minus one", 17.0, "threshold"));
+	}
+
+	@Test
+	public void requireAboveLong() {
+		Preconditions.requireAbove(18, "eighteen", 17);
+		Preconditions.requireAbove(19, "nineteen", 17);
+		Preconditions.requireAbove(Integer.MAX_VALUE, "max", 17);
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(17, "seventeen", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(16, "sixteen", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(15, "fifteen", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(0, "zero", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(-1, "minus one", 17));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(Integer.MIN_VALUE, "min", 17));
+	}
+
+	@Test
+	public void requireAboveLongWithName() {
+		Preconditions.requireAbove(18, "eighteen", 17, "threshold");
+		Preconditions.requireAbove(19, "nineteen", 17, "threshold");
+		Preconditions.requireAbove(Integer.MAX_VALUE, "max", 17, "threshold");
+
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(17, "seventeen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(16, "sixteen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(15, "fifteen", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(0, "zero", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(-1, "minus one", 17, "threshold"));
+		expecting(IllegalArgumentException.class, () ->
+				Preconditions.requireAbove(Integer.MIN_VALUE, "min", 17, "threshold"));
+	}
+
+	@Test
 	public void requireBelow() {
-		Preconditions.requireBelow(15, "sixteen", 17);
+		Preconditions.requireBelow(15, "fifteen", 17);
 		Preconditions.requireBelow(16, "sixteen", 17);
 		Preconditions.requireBelow(0, "zero", 17);
 		Preconditions.requireBelow(-1, "minus one", 17);
@@ -148,7 +226,7 @@ public class PreconditionsTest {
 
 	@Test
 	public void requireBelowWithName() {
-		Preconditions.requireBelow(15, "sixteen", 17, "threshold");
+		Preconditions.requireBelow(15, "fifteen", 17, "threshold");
 		Preconditions.requireBelow(16, "sixteen", 17, "threshold");
 		Preconditions.requireBelow(0, "zero", 17, "threshold");
 		Preconditions.requireBelow(-1, "minus one", 17, "threshold");

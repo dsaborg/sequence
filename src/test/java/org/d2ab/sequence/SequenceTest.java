@@ -3911,6 +3911,9 @@ public class SequenceTest {
 			}
 		}).repeat();
 		assertThat(varyingLengthRepeated, contains(1, 2, 3, 1, 2, 1));
+
+		Sequence<Integer> infiniteRepeated = Sequence.recurse(1, x -> x + 1).repeat();
+		twice(() -> assertThat(infiniteRepeated, is(infiniteBeginningWith(1, 2, 3, 4, 5, 6))));
 	}
 
 	@Test
@@ -3944,6 +3947,9 @@ public class SequenceTest {
 			}
 		}).repeat(2);
 		assertThat(varyingLengthRepeatedTwice, contains(1, 2, 3, 1, 2));
+
+		Sequence<Integer> infiniteRepeatedTwice = Sequence.recurse(1, x -> x + 1).repeat(2);
+		twice(() -> assertThat(infiniteRepeatedTwice, is(infiniteBeginningWith(1, 2, 3, 4, 5, 6))));
 	}
 
 	@Test

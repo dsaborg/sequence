@@ -138,6 +138,16 @@ public class BiSequenceTest {
 	}
 
 	@Test
+	public void fromMap() {
+		BiSequence<String, Integer> sequence = BiSequence.from(Maps.builder("1", 1)
+		                                                           .put("2", 2)
+		                                                           .put("3", 3)
+		                                                           .build());
+
+		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3))));
+	}
+
+	@Test
 	public void concatIterables() {
 		Iterable<Pair<String, Integer>> first = Iterables.of(pairs123);
 		Iterable<Pair<String, Integer>> second = Iterables.of(pairs456);
@@ -153,6 +163,26 @@ public class BiSequenceTest {
 	@Test
 	public void concatNoIterables() {
 		BiSequence<String, Integer> sequence = BiSequence.concat(new Iterable[0]);
+
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void fromIterables() {
+		Iterable<Pair<String, Integer>> first = Iterables.of(pairs123);
+		Iterable<Pair<String, Integer>> second = Iterables.of(pairs456);
+		Iterable<Pair<String, Integer>> third = Iterables.of(pairs789);
+
+		BiSequence<String, Integer> sequence = BiSequence.from(first, second, third);
+
+		twice(() -> assertThat(sequence, contains(Pair.of("1", 1), Pair.of("2", 2), Pair.of("3", 3), Pair.of("4", 4),
+		                                          Pair.of("5", 5), Pair.of("6", 6), Pair.of("7", 7), Pair.of("8", 8),
+		                                          Pair.of("9", 9))));
+	}
+
+	@Test
+	public void fromNoIterables() {
+		BiSequence<String, Integer> sequence = BiSequence.from(new Iterable[0]);
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}

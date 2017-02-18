@@ -145,6 +145,16 @@ public class EntrySequenceTest {
 	}
 
 	@Test
+	public void fromMap() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(Maps.builder("1", 1)
+		                                                                 .put("2", 2)
+		                                                                 .put("3", 3)
+		                                                                 .build());
+
+		twice(() -> assertThat(sequence, contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3))));
+	}
+
+	@Test
 	public void concatIterables() {
 		Iterable<Entry<String, Integer>> first = Iterables.of(entries123);
 		Iterable<Entry<String, Integer>> second = Iterables.of(entries456);
@@ -161,6 +171,27 @@ public class EntrySequenceTest {
 	@Test
 	public void concatNoIterables() {
 		EntrySequence<String, Integer> sequence = EntrySequence.concat(new Iterable[0]);
+
+		twice(() -> assertThat(sequence, is(emptyIterable())));
+	}
+
+	@Test
+	public void fromIterables() {
+		Iterable<Entry<String, Integer>> first = Iterables.of(entries123);
+		Iterable<Entry<String, Integer>> second = Iterables.of(entries456);
+		Iterable<Entry<String, Integer>> third = Iterables.of(entries789);
+
+		EntrySequence<String, Integer> sequence = EntrySequence.from(first, second, third);
+
+		twice(() -> assertThat(sequence,
+		                       contains(Maps.entry("1", 1), Maps.entry("2", 2), Maps.entry("3", 3), Maps.entry("4", 4),
+		                                Maps.entry("5", 5), Maps.entry("6", 6), Maps.entry("7", 7), Maps.entry("8", 8),
+		                                Maps.entry("9", 9))));
+	}
+
+	@Test
+	public void fromNoIterables() {
+		EntrySequence<String, Integer> sequence = EntrySequence.from(new Iterable[0]);
 
 		twice(() -> assertThat(sequence, is(emptyIterable())));
 	}
