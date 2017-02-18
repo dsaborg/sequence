@@ -58,7 +58,7 @@ public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 	static IntSequence of(int... array) {
 		requireNonNull(array, "array");
 
-		return from(array, 0, array.length);
+		return () -> IntIterator.of(array);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 		requireNonNull(array, "array");
 		requireSizeWithinBounds(size, "size", array.length, "array.length");
 
-		return from(array, 0, size);
+		return () -> IntIterator.from(array, size);
 	}
 
 	/**

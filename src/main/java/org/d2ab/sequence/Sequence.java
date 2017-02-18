@@ -1022,7 +1022,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 			@Override
 			public SizeType sizeType() {
-				return Sequence.this.sizeType().limited(limit);
+				return Sequence.this.sizeType().limited();
 			}
 
 			@Override
@@ -1058,7 +1058,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 			@Override
 			public SizeType sizeType() {
-				return Sequence.this.sizeType().limited(limit);
+				return Sequence.this.sizeType().limited();
 			}
 
 			@Override

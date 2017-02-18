@@ -19,10 +19,13 @@ package org.d2ab.collection;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static java.util.Arrays.asList;
+import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+import static org.d2ab.test.HasSizeCharacteristics.*;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
@@ -38,8 +41,8 @@ public class IterableCollectionTest {
 			Iterables.of(1, 2, 3, 4, 5));
 
 	@Test
-	public void sizedAsIterable() {
-		Collection<Integer> empty = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>() {
+	public void fromSizedIterableAsIterable() {
+		IterableCollection<Integer> empty = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>() {
 			@Override
 			public Iterator<Integer> iterator() {
 				throw new UnsupportedOperationException();
@@ -56,9 +59,11 @@ public class IterableCollectionTest {
 			}
 		});
 		assertThat(empty.size(), is(0));
+		assertThat(empty.sizeType(), is(UNKNOWN));
 		assertThat(empty.isEmpty(), is(true));
 
-		Collection<Integer> regular = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>() {
+		IterableCollection<Integer> regular = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>
+				() {
 			@Override
 			public Iterator<Integer> iterator() {
 				throw new UnsupportedOperationException();
@@ -75,7 +80,27 @@ public class IterableCollectionTest {
 			}
 		});
 		assertThat(regular.size(), is(10));
+		assertThat(regular.sizeType(), is(UNKNOWN));
 		assertThat(regular.isEmpty(), is(false));
+	}
+
+	@Test
+	public void fromCollectionAsIterable() {
+		IterableCollection<Integer> empty = IterableCollection.from(
+				(Iterable<Integer>) Collections.<Integer>emptyList());
+		assertThat(empty, is(emptySizedIterable()));
+
+		IterableCollection<Integer> regular = IterableCollection.from((Iterable<Integer>) asList(1, 2, 3, 4, 5));
+		assertThat(regular, containsSized(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void fromIterable() {
+		IterableCollection<Integer> empty = IterableCollection.from(Iterables.<Integer>empty()::iterator);
+		assertThat(empty, is(emptyUnsizedIterable()));
+
+		IterableCollection<Integer> regular = IterableCollection.from(Iterables.of(1, 2, 3, 4, 5)::iterator);
+		assertThat(regular, containsUnsized(1, 2, 3, 4, 5));
 	}
 
 	@Test

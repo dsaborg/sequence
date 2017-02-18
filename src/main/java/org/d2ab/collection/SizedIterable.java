@@ -1,7 +1,6 @@
 package org.d2ab.collection;
 
 import org.d2ab.iterator.Iterators;
-import org.d2ab.sequence.Sequence;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -89,75 +88,64 @@ public interface SizedIterable<T> extends Iterable<T> {
 	enum SizeType {
 		UNKNOWN {
 			@Override
-			public SizeType concat(SizeType sizeType) {
+			public SizeType limited() {
 				return UNKNOWN;
 			}
 
 			@Override
-			public SizeType intersect(SizeType sizeType) {
-				return UNKNOWN;
-			}
-
-			@Override
-			public SizeType limited(int limit) {
-				return UNKNOWN;
-			}
-
-			@Override
-			public int limitedSize(Sequence<?> parent, Sequence<?> iterable, int limit) {
+			public int limitedSize(SizedIterable<?> parent, SizedIterable<?> iterable, int limit) {
 				return SizedIterable.size(iterable);
 			}
 		},
 		KNOWN {
 			@Override
-			public SizeType concat(SizeType sizeType) {
-				return sizeType;
-			}
-
-			@Override
-			public SizeType intersect(SizeType sizeType) {
-				return sizeType == UNKNOWN ? UNKNOWN : KNOWN;
-			}
-
-			@Override
-			public SizeType limited(int limit) {
+			public SizeType limited() {
 				return KNOWN;
 			}
 
 			@Override
-			public int limitedSize(Sequence<?> parent, Sequence<?> iterable, int limit) {
+			public int limitedSize(SizedIterable<?> parent, SizedIterable<?> iterable, int limit) {
 				return min(parent.size(), limit);
 			}
 		},
 		INFINITE {
 			@Override
-			public SizeType concat(SizeType sizeType) {
-				return INFINITE;
-			}
-
-			@Override
-			public SizeType intersect(SizeType sizeType) {
-				return sizeType;
-			}
-
-			@Override
-			public SizeType limited(int limit) {
+			public SizeType limited() {
 				return KNOWN;
 			}
 
 			@Override
-			public int limitedSize(Sequence<?> parent, Sequence<?> iterable, int limit) {
+			public int limitedSize(SizedIterable<?> parent, SizedIterable<?> iterable, int limit) {
 				return limit;
 			}
 		};
 
-		public abstract SizeType concat(SizeType sizeType);
+		public SizeType concat(SizeType sizeType) {
+			if (this == INFINITE || sizeType == INFINITE)
+				return INFINITE;
 
-		public abstract SizeType intersect(SizeType sizeType);
+			if (this == UNKNOWN || sizeType == UNKNOWN)
+				return UNKNOWN;
 
-		public abstract SizeType limited(int limit);
+			return KNOWN; // both KNOWN
+		}
 
-		public abstract int limitedSize(Sequence<?> parent, Sequence<?> iterable, int limit);
+		public SizeType intersect(SizeType sizeType) {
+			if (this == UNKNOWN || sizeType == UNKNOWN)
+				return UNKNOWN;
+
+			if (this == INFINITE)
+				return sizeType;
+
+			if (sizeType == INFINITE)
+				return this;
+
+			return KNOWN; // both KNOWN
+		}
+
+		public abstract SizeType limited();
+
+		public abstract int limitedSize(SizedIterable<?> parent, SizedIterable<?> iterable, int limit);
 	}
 
 	abstract class KnownSizedIterable<T> implements SizedIterable<T> {
