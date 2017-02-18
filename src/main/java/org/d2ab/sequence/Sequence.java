@@ -63,7 +63,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		@Override
 		public SizeType sizeType() {
-			return KNOWN;
+			return AVAILABLE;
 		}
 
 		@Override
@@ -2015,7 +2015,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 				if (step == 1 || step == window)
 					return Sequence.this.sizeType();
 				else
-					return UNKNOWN;
+					return UNAVAILABLE;
 			}
 
 			@Override
@@ -2830,7 +2830,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 					case INFINITE:
 						return INFINITE;
 					default:
-						return UNKNOWN;
+						return UNAVAILABLE;
 				}
 			}
 
@@ -2862,7 +2862,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 					case INFINITE:
 						return INFINITE;
 					default:
-						return UNKNOWN;
+						return UNAVAILABLE;
 				}
 			}
 

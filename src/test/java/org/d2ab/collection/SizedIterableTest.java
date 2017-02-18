@@ -75,7 +75,7 @@ public class SizedIterableTest {
 	}
 
 	@Test
-	public void defaultSizeKnown() {
+	public void defaultSizeAvailableSize() {
 		SizedIterable<Integer> iterable = new SizedIterable<Integer>() {
 			@Override
 			public Iterator<Integer> iterator() {
@@ -84,7 +84,7 @@ public class SizedIterableTest {
 
 			@Override
 			public SizeType sizeType() {
-				return KNOWN;
+				return AVAILABLE;
 			}
 		};
 
@@ -92,7 +92,7 @@ public class SizedIterableTest {
 	}
 
 	@Test
-	public void defaultSizeUnknown() {
+	public void defaultSizeUnavailableSize() {
 		SizedIterable<Integer> iterable = new SizedIterable<Integer>() {
 			@Override
 			public Iterator<Integer> iterator() {
@@ -101,7 +101,7 @@ public class SizedIterableTest {
 
 			@Override
 			public SizeType sizeType() {
-				return UNKNOWN;
+				return UNAVAILABLE;
 			}
 		};
 
@@ -109,7 +109,7 @@ public class SizedIterableTest {
 	}
 
 	@Test
-	public void defaultSizeInfinite() {
+	public void defaultSizeInfiniteSize() {
 		SizedIterable<Integer> iterable = new SizedIterable<Integer>() {
 			@Override
 			public Iterator<Integer> iterator() {

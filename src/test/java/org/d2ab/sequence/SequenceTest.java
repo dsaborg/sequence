@@ -42,8 +42,8 @@ import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.Comparator.reverseOrder;
-import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
-import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
+import static org.d2ab.collection.SizedIterable.SizeType.UNAVAILABLE;
 import static org.d2ab.test.HasSizeCharacteristics.*;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
 import static org.d2ab.test.IsDoubleIterableContainingInOrder.containsDoubles;
@@ -180,7 +180,7 @@ public class SequenceTest {
 		Sequence<Integer> empty = Sequence.empty();
 		twice(() -> assertThat(empty, is(emptySizedIterable())));
 		twice(() -> assertThat(empty.size(), is(0)));
-		twice(() -> assertThat(empty.sizeType(), is(KNOWN)));
+		twice(() -> assertThat(empty.sizeType(), is(AVAILABLE)));
 		twice(() -> assertThat(empty.isEmpty(), is(true)));
 	}
 
@@ -290,7 +290,7 @@ public class SequenceTest {
 	@Test
 	public void onceIteratorSizeType() {
 		Sequence<Integer> sequence = Sequence.once(Iterators.of(1, 2, 3));
-		twice(() -> assertThat(sequence.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(sequence.sizeType(), is(UNAVAILABLE)));
 	}
 
 	@Test
@@ -316,7 +316,7 @@ public class SequenceTest {
 	@Test
 	public void onceStreamSizeType() {
 		Sequence<Integer> sequence = Sequence.once(Stream.of(1, 2, 3));
-		twice(() -> assertThat(sequence.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(sequence.sizeType(), is(UNAVAILABLE)));
 	}
 
 	@Test
@@ -3880,22 +3880,22 @@ public class SequenceTest {
 
 		Sequence<Integer> oneRepeated = _1.repeat();
 		twice(() -> assertThat(oneRepeated, beginsWith(1, 1, 1)));
-		twice(() -> assertThat(oneRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(oneRepeated.sizeType(), is(UNAVAILABLE)));
 		twice(() -> assertThat(oneRepeated.isEmpty(), is(false)));
 
 		Sequence<Integer> twoRepeated = _12.repeat();
 		twice(() -> assertThat(twoRepeated, beginsWith(1, 2, 1, 2, 1)));
-		twice(() -> assertThat(twoRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(twoRepeated.sizeType(), is(UNAVAILABLE)));
 		twice(() -> assertThat(twoRepeated.isEmpty(), is(false)));
 
 		Sequence<Integer> threeRepeated = _123.repeat();
 		twice(() -> assertThat(threeRepeated, beginsWith(1, 2, 3, 1, 2, 3, 1, 2)));
-		twice(() -> assertThat(threeRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(threeRepeated.sizeType(), is(UNAVAILABLE)));
 		twice(() -> assertThat(threeRepeated.isEmpty(), is(false)));
 
 		assertThat(removeFirst(threeRepeated), is(1));
 		twice(() -> assertThat(threeRepeated, beginsWith(2, 3, 2, 3, 2, 3)));
-		twice(() -> assertThat(threeRepeated.sizeType(), is(UNKNOWN)));
+		twice(() -> assertThat(threeRepeated.sizeType(), is(UNAVAILABLE)));
 		twice(() -> assertThat(threeRepeated.isEmpty(), is(false)));
 		twice(() -> assertThat(_123, containsSized(2, 3)));
 

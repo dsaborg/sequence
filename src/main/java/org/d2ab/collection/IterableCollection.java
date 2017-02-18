@@ -21,7 +21,7 @@ import org.d2ab.iterator.Iterators;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
 
 /**
  * A {@link Collection} view of an {@link Iterable}, requiring only {@link Iterable#iterator()} to be implemented in
@@ -67,7 +67,7 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 
 			@Override
 			public SizeType sizeType() {
-				return KNOWN;
+				return AVAILABLE;
 			}
 
 			@Override

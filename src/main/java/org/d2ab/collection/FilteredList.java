@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
 
-import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.UNAVAILABLE;
 import static org.d2ab.iterator.Iterators.skip;
 
 /**
@@ -58,7 +58,7 @@ public class FilteredList<T> extends AbstractSequentialList<T> implements SizedI
 
 	@Override
 	public SizeType sizeType() {
-		return UNKNOWN;
+		return UNAVAILABLE;
 	}
 
 	@Override

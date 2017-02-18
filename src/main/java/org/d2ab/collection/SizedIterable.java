@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import static java.lang.Math.min;
-import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
 
 /**
  * An {@link Iterable} which can also report the size of its contents.
@@ -22,7 +22,7 @@ public interface SizedIterable<T> extends Iterable<T> {
 	}
 
 	static <T> SizedIterable<T> from(Collection<T> collection) {
-		return new KnownSizedIterable<T>() {
+		return new AvailableSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return collection.iterator();
@@ -39,9 +39,9 @@ public interface SizedIterable<T> extends Iterable<T> {
 		switch (iterable.sizeType()) {
 			case INFINITE:
 				throw new UnsupportedOperationException();
-			case KNOWN:
-				throw new IllegalStateException("SizeType.KNOWN; must override size()");
-			case UNKNOWN:
+			case AVAILABLE:
+				throw new IllegalStateException("SizeType.AVAILABLE; must override size()");
+			case UNAVAILABLE:
 			default:
 				return Iterators.size(iterable.iterator());
 		}
@@ -50,11 +50,11 @@ public interface SizedIterable<T> extends Iterable<T> {
 	static boolean isEmpty(SizedIterable<?> iterable) {
 		SizeType sizeType = iterable.sizeType();
 		switch (sizeType) {
-			case KNOWN:
+			case AVAILABLE:
 				return iterable.size() == 0;
 			case INFINITE:
 				return false;
-			case UNKNOWN:
+			case UNAVAILABLE:
 			default:
 				return !iterable.iterator().hasNext();
 		}
@@ -64,17 +64,18 @@ public interface SizedIterable<T> extends Iterable<T> {
 	 * The type of size this {@code SizedIterable} has, which provides the guarantees that can be assumed on the
 	 * evaluation of the {@link #size()} and {@link #isEmpty()} methods.
 	 * <p>
-	 * If this method returns {@link SizeType#KNOWN}, {@link #size()} and {@link #isEmpty()} is guaranteed to evaluate
+	 * If this method returns {@link SizeType#AVAILABLE}, {@link #size()} and {@link #isEmpty()} is guaranteed to
+	 * evaluate
 	 * correct results without having to traverse the {@code SizedIterable}.
 	 * <p>
-	 * If this method returns {@link SizeType#UNKNOWN}, {@link #size()} and {@link #isEmpty()} may require traversal
+	 * If this method returns {@link SizeType#UNAVAILABLE}, {@link #size()} and {@link #isEmpty()} may require traversal
 	 * of the {@code SizedIterable} to determine their results.
 	 * <p>
 	 * If this method returns {@link SizeType#INFINITE}, {@link #size()} will always throw
 	 * {@link UnsupportedOperationException} and {@link #isEmpty()} will always return false.
 	 */
 	default SizeType sizeType() {
-		return SizeType.UNKNOWN;
+		return SizeType.UNAVAILABLE;
 	}
 
 	default int size() {
@@ -86,10 +87,10 @@ public interface SizedIterable<T> extends Iterable<T> {
 	}
 
 	enum SizeType {
-		UNKNOWN {
+		UNAVAILABLE {
 			@Override
 			public SizeType limited() {
-				return UNKNOWN;
+				return UNAVAILABLE;
 			}
 
 			@Override
@@ -97,10 +98,10 @@ public interface SizedIterable<T> extends Iterable<T> {
 				return SizedIterable.size(iterable);
 			}
 		},
-		KNOWN {
+		AVAILABLE {
 			@Override
 			public SizeType limited() {
-				return KNOWN;
+				return AVAILABLE;
 			}
 
 			@Override
@@ -111,7 +112,7 @@ public interface SizedIterable<T> extends Iterable<T> {
 		INFINITE {
 			@Override
 			public SizeType limited() {
-				return KNOWN;
+				return AVAILABLE;
 			}
 
 			@Override
@@ -124,15 +125,15 @@ public interface SizedIterable<T> extends Iterable<T> {
 			if (this == INFINITE || sizeType == INFINITE)
 				return INFINITE;
 
-			if (this == UNKNOWN || sizeType == UNKNOWN)
-				return UNKNOWN;
+			if (this == UNAVAILABLE || sizeType == UNAVAILABLE)
+				return UNAVAILABLE;
 
-			return KNOWN; // both KNOWN
+			return AVAILABLE; // both AVAILABLE
 		}
 
 		public SizeType intersect(SizeType sizeType) {
-			if (this == UNKNOWN || sizeType == UNKNOWN)
-				return UNKNOWN;
+			if (this == UNAVAILABLE || sizeType == UNAVAILABLE)
+				return UNAVAILABLE;
 
 			if (this == INFINITE)
 				return sizeType;
@@ -140,7 +141,7 @@ public interface SizedIterable<T> extends Iterable<T> {
 			if (sizeType == INFINITE)
 				return this;
 
-			return KNOWN; // both KNOWN
+			return AVAILABLE; // both AVAILABLE
 		}
 
 		public abstract SizeType limited();
@@ -148,12 +149,12 @@ public interface SizedIterable<T> extends Iterable<T> {
 		public abstract int limitedSize(SizedIterable<?> parent, SizedIterable<?> iterable, int limit);
 	}
 
-	abstract class KnownSizedIterable<T> implements SizedIterable<T> {
+	abstract class AvailableSizedIterable<T> implements SizedIterable<T> {
 		public abstract int size();
 
 		@Override
 		public SizeType sizeType() {
-			return KNOWN;
+			return AVAILABLE;
 		}
 	}
 }

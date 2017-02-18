@@ -22,7 +22,7 @@ import org.d2ab.iterator.MappingIterator;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import static org.d2ab.collection.SizedIterable.SizeType.KNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
 
 public class ChainingIterable<T> implements SizedIterable<T> {
 	private final Iterable<Iterable<T>> iterables;
@@ -67,7 +67,7 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 
 	@Override
 	public SizeType sizeType() {
-		SizeType sizeType = KNOWN;
+		SizeType sizeType = AVAILABLE;
 		for (Iterable<T> iterable : iterables)
 			sizeType = sizeType.concat(Iterables.sizeType(iterable));
 

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.UNAVAILABLE;
 
 /**
  * A {@link Collection} that provides a filtered view of another {@link Collection}. All operations are supported
@@ -52,7 +52,7 @@ public class FilteredCollection<T> extends AbstractCollection<T> implements Size
 
 	@Override
 	public SizeType sizeType() {
-		return UNKNOWN;
+		return UNAVAILABLE;
 	}
 
 	@Override

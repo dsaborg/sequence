@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
-import static org.d2ab.collection.SizedIterable.SizeType.UNKNOWN;
+import static org.d2ab.collection.SizedIterable.SizeType.UNAVAILABLE;
 import static org.d2ab.test.HasSizeCharacteristics.*;
 import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
@@ -59,7 +59,7 @@ public class IterableCollectionTest {
 			}
 		});
 		assertThat(empty.size(), is(0));
-		assertThat(empty.sizeType(), is(UNKNOWN));
+		assertThat(empty.sizeType(), is(UNAVAILABLE));
 		assertThat(empty.isEmpty(), is(true));
 
 		IterableCollection<Integer> regular = IterableCollection.from((Iterable<Integer>) new SizedIterable<Integer>
@@ -80,7 +80,7 @@ public class IterableCollectionTest {
 			}
 		});
 		assertThat(regular.size(), is(10));
-		assertThat(regular.sizeType(), is(UNKNOWN));
+		assertThat(regular.sizeType(), is(UNAVAILABLE));
 		assertThat(regular.isEmpty(), is(false));
 	}
 
