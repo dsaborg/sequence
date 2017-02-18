@@ -96,10 +96,12 @@ public class IterableCollectionTest {
 
 	@Test
 	public void fromIterable() {
-		IterableCollection<Integer> empty = IterableCollection.from(Iterables.<Integer>empty()::iterator);
+		IterableCollection<Integer> empty = IterableCollection.from(
+				(Iterable<Integer>) Iterables.<Integer>empty()::iterator);
 		assertThat(empty, is(emptyUnsizedIterable()));
 
-		IterableCollection<Integer> regular = IterableCollection.from(Iterables.of(1, 2, 3, 4, 5)::iterator);
+		IterableCollection<Integer> regular = IterableCollection.from(
+				(Iterable<Integer>) Iterables.of(1, 2, 3, 4, 5)::iterator);
 		assertThat(regular, containsUnsized(1, 2, 3, 4, 5));
 	}
 
