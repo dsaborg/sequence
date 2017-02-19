@@ -261,6 +261,38 @@ assertThat(evenStrings, contains("2", "4", "6"));
 assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 
+#### Size
+
+Since `Sequence` implements `Collection` it provides a fully functioning `size()` method, however note that this method
+may degrade to `O(n)` performance if the size is not known a-priori and thus needs to be calculated by traversing the
+`Sequence`. In some cases, the size can be calculated in advance and `Sequence` makes full use of this:
+
+```Java
+Sequence<Integer> repeated = Sequence.of(1, 2, 3).repeat().limit(5);
+assertThat(repeated, contains(1, 2, 3, 1, 2));
+assertThat(repeated.size(), is(5)); // immediate return value
+assertThat(repeated.sizeIfKnown(), is(5)); // would return -1 if unknown in advance
+```
+
+While `Sequence` goes to great lengths to be able to detect the size in advance, in many cases the size can not be 
+calculated in advance and so `Sequence` must traverse the list of elements to calculate the size, degrading to `O(n)` 
+performance for the `size()` operation:
+
+```Java
+List<Integer> growingList = new ArrayList<Integer>() {
+    @Override
+    public Iterator<Integer> iterator() {
+        add(size() + 1);
+        return super.iterator();
+    }
+};
+
+Sequence<Integer> repeated = Sequence.from(growingList).repeat().limit(10);
+assertThat(repeated, contains(1, 1, 2, 1, 2, 3, 1, 2, 3, 4));
+assertThat(repeated.size(), is(10)); // O(n) traversal of elements required
+assertThat(repeated.sizeIfKnown(), is(-1)); // cannot determine size in advance as collections can mutate
+```
+
 #### Streams
 
 `Sequences` interoperate beautifully with `Stream`, through the `once(Stream)` and `.stream()` methods.

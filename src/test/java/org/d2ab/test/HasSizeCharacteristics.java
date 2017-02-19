@@ -104,7 +104,8 @@ public class HasSizeCharacteristics extends BaseMatcher<SizedIterable<?>> {
 			throw new IllegalStateException();
 
 		SizedIterable<?> iterable = (SizedIterable<?>) actualValue;
-		if (iterable.sizeType() != sizeType)
+		SizeType sizeType = iterable.sizeType();
+		if (sizeType != this.sizeType)
 			return false;
 
 		if (size == -1) {
@@ -117,6 +118,20 @@ public class HasSizeCharacteristics extends BaseMatcher<SizedIterable<?>> {
 		} else {
 			if (iterable.size() != size)
 				return false;
+		}
+
+		switch (sizeType) {
+			case AVAILABLE:
+			case FIXED:
+				if (iterable.sizeIfKnown() != size)
+					return false;
+				break;
+			case UNAVAILABLE:
+			case INFINITE:
+			default:
+				if (iterable.sizeIfKnown() != -1)
+					return false;
+				break;
 		}
 
 		return iterable.isEmpty() == isEmpty;

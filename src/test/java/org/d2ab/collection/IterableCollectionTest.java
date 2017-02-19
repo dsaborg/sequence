@@ -86,12 +86,22 @@ public class IterableCollectionTest {
 
 	@Test
 	public void fromCollectionAsIterable() {
-		IterableCollection<Integer> empty = IterableCollection.from(
-				(Iterable<Integer>) Collections.<Integer>emptyList());
+		IterableCollection<Integer> empty = IterableCollection.from((Iterable<Integer>) new ArrayList<Integer>());
 		assertThat(empty, is(emptySizedIterable()));
 
-		IterableCollection<Integer> regular = IterableCollection.from((Iterable<Integer>) asList(1, 2, 3, 4, 5));
+		IterableCollection<Integer> regular = IterableCollection.from(
+				(Iterable<Integer>) new ArrayList<>(asList(1, 2, 3, 4, 5)));
 		assertThat(regular, containsSized(1, 2, 3, 4, 5));
+	}
+
+	@Test
+	public void fromFixedCollectionAsIterable() {
+		IterableCollection<Integer> empty = IterableCollection.from(
+				(Iterable<Integer>) Collections.<Integer>emptyList());
+		assertThat(empty, is(emptyFixedIterable()));
+
+		IterableCollection<Integer> regular = IterableCollection.from((Iterable<Integer>) asList(1, 2, 3, 4, 5));
+		assertThat(regular, containsFixed(1, 2, 3, 4, 5));
 	}
 
 	@Test

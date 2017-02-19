@@ -98,6 +98,21 @@ public interface SizedIterable<T> extends Iterable<T> {
 		return size(this);
 	}
 
+	/**
+	 * @return the size of this {@code SizedIterable} if known a-priori, or -1 if the size is not known.
+	 */
+	default int sizeIfKnown() {
+		switch (sizeType()) {
+			case AVAILABLE:
+			case FIXED:
+				return size();
+			case UNAVAILABLE:
+			case INFINITE:
+			default:
+				return -1;
+		}
+	}
+
 	default boolean isEmpty() {
 		return isEmpty(this);
 	}

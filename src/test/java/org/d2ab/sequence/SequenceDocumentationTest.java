@@ -129,6 +129,30 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 		assertThat(list, contains(1, 2, 3, 4, 5, 6));
 	}
 
+	@Test
+	public void knownSize() {
+		Sequence<Integer> repeated = Sequence.of(1, 2, 3).repeat().limit(5);
+		assertThat(repeated, contains(1, 2, 3, 1, 2));
+		assertThat(repeated.size(), is(5)); // immediate return value
+		assertThat(repeated.sizeIfKnown(), is(5)); // would return -1 if unknown
+	}
+
+	@Test
+	public void unknownSize() {
+		List<Integer> growingList = new ArrayList<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				add(size() + 1);
+				return super.iterator();
+			}
+		};
+
+		Sequence<Integer> repeated = Sequence.from(growingList).repeat().limit(10);
+		assertThat(repeated, contains(1, 1, 2, 1, 2, 3, 1, 2, 3, 4));
+		assertThat(repeated.size(), is(10)); // O(n) traversal of elements required
+		assertThat(repeated.sizeIfKnown(), is(-1)); // cannot determine size in advance as collections can mutate
+	}
+
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
 	public void streamToSequenceAndBack() {
