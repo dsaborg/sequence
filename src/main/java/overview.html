@@ -103,8 +103,8 @@
         Iterable#iterator()}</a>
     method to be implemented, it's very easy to create your own full-fledged {@link org.d2ab.sequence.Sequence}
     instances that can be operated on like any other {@link org.d2ab.sequence.Sequence} through the default methods on
-    the interface that carry the bulk of the burden. In fact, this is how `Sequence's` own factory methods work. You
-    could consider all of `Sequence` to be a smarter version of `Iterable`.</p>
+    the interface that carry the bulk of the burden. In fact, this is how {@code Sequence's} own factory methods work.
+    You could consider all of {@code Sequence} to be a smarter version of {@code Iterable}.</p>
 
 <pre>{@code
     List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
@@ -150,9 +150,9 @@
 
 <h2>Updating</h2>
 
-<p>`Sequences` have full support for updating the underlying collection where possible, through `Iterator#remove()`, by
-    modifying the underlying collection directly (in between iterations), and by using `Collection` methods directly on
-    the `Sequence` itself.</p>
+<p>{@code Sequences} have full support for updating the underlying collection where possible, through
+    {@code Iterator#remove()}, by modifying the underlying collection directly (in between iterations), and by using
+    {@code Collection} methods directly on the {@code Sequence} itself.</p>
 
 <pre>{@code
     List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
@@ -181,10 +181,10 @@
 
 #### Size
 
-<p>Since `Sequence` implements `Collection` it provides a fully functioning `size()` method, however note that this
-    method may degrade to `O(n)` performance if the size is not known a-priori and thus needs to be calculated by
-    traversing the `Sequence`. In some cases, the size can be calculated in advance and `Sequence` makes full use of
-    this:</p>
+<p>Since {@code Sequence} implements {@code Collection} it provides a fully functioning {@code size()} method, however
+    note that this method may degrade to {@code O(n)} performance if the size is not known a-priori and thus needs to
+    be calculated by traversing the {@code Sequence}. In some cases, the size can be calculated in advance and
+    {@code Sequence} makes full use of this:</p>
 
 <pre>{@code
     Sequence<Integer> repeated = Sequence.of(1, 2, 3).repeat().limit(5);
@@ -193,9 +193,9 @@
     assertThat(repeated.sizeIfKnown(), is(5)); // would return -1 if unknown in advance
 }</pre>
 
-<p>While `Sequence` goes to great lengths to be able to detect the size in advance, in many cases the size can not be
-    calculated in advance and so `Sequence` must traverse the list of elements to calculate the size, degrading to
-    `O(n)` performance for the `size()` operation:</p>
+<p>While {@code Sequence} goes to great lengths to be able to detect the size in advance, in many cases the size can
+    not be calculated in advance and so {@code Sequence} must traverse the list of elements to calculate the size,
+    degrading to {@code O(n)} performance for the {@code size()} operation:</p>
 
 <pre>{@code
     List<Integer> growingList = new ArrayList<Integer>() {
@@ -214,7 +214,8 @@
 
 <h2>Streams</h2>
 
-<p>Sequences interoperate beautifully with Stream, through the once(Stream) and .stream() methods.</p>
+<p>{@code Sequences} interoperate beautifully with {@code Stream}, through the {@code once(Stream)} and
+    {@code .stream()} methods.</p>
 
 <pre>{@code
     Sequence<String> paired = Sequence.once(Stream.of("a", "b", "c", "d")).pairs().flatten();
@@ -462,9 +463,9 @@
 
 <h2>Reading</h2>
 
-<p>Primitive sequences can be read from `Readers` or `InputStreams` into a `CharSeq` or `IntSequence` respective. These
-    can also be converted back to `Readers` and `InputStreams` respectively, allowing for filtering or transformation of
-    these streams.</p>
+<p>Primitive sequences can be read from {@code Readers} or {@code InputStreams} into a {@code CharSeq} or
+    {@code IntSequence} respective. These can also be converted back to {@code Readers} and {@code InputStreams}
+    respectively, allowing for filtering or transformation of these streams.</p>
 
 <pre>{@code
     Reader reader = new StringReader("hello world\ngoodbye world\n");
