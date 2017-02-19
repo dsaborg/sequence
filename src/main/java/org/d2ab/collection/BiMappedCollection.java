@@ -22,7 +22,7 @@ import java.util.function.Function;
 /**
  * A {@link Collection} that presents a mapped view of another {@link Collection}.
  */
-public class BiMappedCollection<T, U> extends MappedCollection<T, U> {
+public class BiMappedCollection<T, U> extends MappedCollection<T, U> implements SizedIterable<U> {
 	private final Function<? super U, ? extends T> backMapper;
 
 	public static <T, U> Collection<U> from(Collection<T> collection, Function<? super T, ? extends U> mapper,

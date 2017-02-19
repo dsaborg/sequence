@@ -31,6 +31,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -42,7 +43,6 @@ import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.Comparator.reverseOrder;
-import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
 import static org.d2ab.collection.SizedIterable.SizeType.UNAVAILABLE;
 import static org.d2ab.test.HasSizeCharacteristics.*;
 import static org.d2ab.test.IsCharIterableContainingInOrder.containsChars;
@@ -57,7 +57,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class SequenceTest {
-	private final Function<Object[], Sequence<?>> generator;
+	private final BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>> generator;
 
 	private final Sequence<Integer> empty;
 	private final Sequence<Integer> _1;
@@ -71,6 +71,8 @@ public class SequenceTest {
 	private final Sequence<Integer> threeRandom;
 	private final Sequence<Integer> nineRandom;
 	private final Sequence<?> mixed;
+	private final Sequence<Integer> fixed12345;
+	private final Sequence<Integer> fixedEmpty;
 
 	private final Sequence<Integer> sizePassThrough = new Sequence<Integer>() {
 		@Override
@@ -107,7 +109,8 @@ public class SequenceTest {
 	};
 
 	@SuppressWarnings("UnusedParameters")
-	public SequenceTest(String description, Function<Object[], Sequence<?>> generator) {
+	public SequenceTest(String description,
+	                    BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>> generator) {
 		this.generator = generator;
 
 		empty = newSequence();
@@ -122,6 +125,8 @@ public class SequenceTest {
 		threeRandom = newSequence(2, 3, 1);
 		nineRandom = newSequence(67, 5, 43, 3, 5, 7, 24, 5, 67);
 		mixed = newSequence("1", 1, 'x', 1.0, "2", 2, 'y', 2.0, "3", 3, 'z', 3.0);
+		fixed12345 = newFixedSequence(1, 2, 3, 4, 5);
+		fixedEmpty = newFixedSequence();
 	}
 
 	@SuppressWarnings("Convert2MethodRef")
@@ -129,59 +134,68 @@ public class SequenceTest {
 	public static Object[][] parameters() {
 		return new Object[][]{
 				{"Sequence",
-				 (Function<Object[], Sequence<?>>) is -> newStandardSequence(is)},
+				 (BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>>) (lm, xs) ->
+						 newStandardSequence(lm, xs)},
 				{"ListSequence",
-				 (Function<Object[], Sequence<?>>) is -> newListSequence(is)},
+				 (BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>>) (lm, xs) ->
+						 newListSequence(lm, xs)},
 				{"ChainedListSequence",
-				 (Function<Object[], Sequence<?>>) is -> newChainedListSequence(is)},
+				 (BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>>) (lm, xs) ->
+						 newChainedListSequence(lm, xs)},
 				{"CollectionSequence",
-				 (Function<Object[], Sequence<?>>) is -> newCollectionSequence(is)},
+				 (BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>>) (lm, xs) ->
+						 newCollectionSequence(lm, xs)},
 				};
 	}
 
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	private final <T> Sequence<T> newSequence(T... ts) {
-		return (Sequence<T>) generator.apply(ts);
+		Function<Object[], List<Object>> mutableListMaker = xs -> new ArrayList<>(Lists.of(xs));
+		return (Sequence<T>) generator.apply(mutableListMaker, ts);
 	}
 
+	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	public static <T> Sequence<T> newChainedListSequence(T... is) {
+	private final <T> Sequence<T> newFixedSequence(T... ts) {
+		Function<Object[], List<Object>> fixedListMaker = Lists::of;
+		return (Sequence<T>) generator.apply(fixedListMaker, ts);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Sequence<T> newChainedListSequence(Function<T[], List<T>> listMaker, T[] xs) {
 		List<List<T>> lists = new ArrayList<>();
 		List<T> current = new ArrayList<>();
-		for (int i = 0; i < is.length; i++) {
-			current.add(is[i]);
+		for (int i = 0; i < xs.length; i++) {
+			current.add(xs[i]);
 			if (i % 3 == 0) {
-				lists.add(current);
+				lists.add(listMaker.apply((T[]) current.toArray()));
 				current = new ArrayList<>();
 			}
 		}
-		lists.add(current);
-		return ListSequence.concat(lists);
+		lists.add(listMaker.apply((T[]) current.toArray()));
+		return ListSequence.concat(lists.toArray(new List[lists.size()]));
 	}
 
-	@SafeVarargs
-	public static <T> Sequence<T> newListSequence(T... is) {
-		return ListSequence.from(new ArrayList<>(Lists.of(is)));
+	@SuppressWarnings("unchecked")
+	public static <T> Sequence<T> newListSequence(Function<T[], List<T>> listMaker, T[] xs) {
+		return ListSequence.from(listMaker.apply(xs));
 	}
 
-	@SafeVarargs
-	public static <T> Sequence<T> newCollectionSequence(T... is) {
-		return CollectionSequence.from(new ArrayDeque<>(Lists.of(is)));
+	@SuppressWarnings("unchecked")
+	public static <T> Sequence<T> newCollectionSequence(Function<T[], List<T>> listMaker, T[] xs) {
+		return CollectionSequence.from(listMaker.apply(xs));
 	}
 
-	@SafeVarargs
-	public static <T> Sequence<T> newStandardSequence(T... is) {
-		return Sequence.from(SizedIterable.from(new ArrayDeque<>(Lists.of(is))));
+	@SuppressWarnings("unchecked")
+	public static <T> Sequence<T> newStandardSequence(Function<T[], List<T>> listMaker, T[] xs) {
+		return Sequence.from(SizedIterable.from(listMaker.apply(xs)));
 	}
 
 	@Test
 	public void empty() {
 		Sequence<Integer> empty = Sequence.empty();
-		twice(() -> assertThat(empty, is(emptySizedIterable())));
-		twice(() -> assertThat(empty.size(), is(0)));
-		twice(() -> assertThat(empty.sizeType(), is(AVAILABLE)));
-		twice(() -> assertThat(empty.isEmpty(), is(true)));
+		twice(() -> assertThat(empty, is(emptyFixedIterable())));
 	}
 
 	@Test
@@ -197,7 +211,7 @@ public class SequenceTest {
 	@Test
 	public void ofNone() {
 		Sequence<Integer> sequence = Sequence.of();
-		twice(() -> assertThat(sequence, is(emptySizedIterable())));
+		twice(() -> assertThat(sequence, is(emptyFixedIterable())));
 	}
 
 	@Test
@@ -213,7 +227,7 @@ public class SequenceTest {
 	@Test
 	public void ofOne() {
 		Sequence<Integer> sequence = Sequence.of(1);
-		twice(() -> assertThat(sequence, containsSized(1)));
+		twice(() -> assertThat(sequence, containsFixed(1)));
 	}
 
 	@Test
@@ -230,7 +244,7 @@ public class SequenceTest {
 	@Test
 	public void ofMany() {
 		Sequence<Integer> sequence = Sequence.of(1, 2, 3, 4, 5);
-		twice(() -> assertThat(sequence, containsSized(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(sequence, containsFixed(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -247,7 +261,7 @@ public class SequenceTest {
 	@Test
 	public void ofNulls() {
 		Sequence<Integer> sequence = Sequence.of(1, null, 2, 3, null);
-		twice(() -> assertThat(sequence, containsSized(1, null, 2, 3, null)));
+		twice(() -> assertThat(sequence, containsFixed(1, null, 2, 3, null)));
 	}
 
 	@Test
@@ -264,13 +278,13 @@ public class SequenceTest {
 	@Test
 	public void fromSizedIterable() {
 		Sequence<Integer> sequence = Sequence.from(Iterables.of(1, 2, 3));
-		twice(() -> assertThat(sequence, containsSized(1, 2, 3)));
+		twice(() -> assertThat(sequence, containsFixed(1, 2, 3)));
 	}
 
 	@Test
 	public void fromSizedIterableAsIterable() {
 		Sequence<Integer> sequence = Sequence.from((Iterable<Integer>) Iterables.of(1, 2, 3));
-		twice(() -> assertThat(sequence, containsSized(1, 2, 3)));
+		twice(() -> assertThat(sequence, containsFixed(1, 2, 3)));
 	}
 
 	@Test
@@ -380,9 +394,21 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void concatArrayOfFixedLists() {
+		Sequence<Integer> sequence = Sequence.concat(Lists.of(1, 2, 3), Lists.of(4, 5, 6), Lists.of(7, 8, 9));
+		twice(() -> assertThat(sequence, containsFixed(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		expecting(UnsupportedOperationException.class, () -> sequence.add(17));
+		twice(() -> assertThat(sequence, containsFixed(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+
+		expecting(UnsupportedOperationException.class, () -> sequence.remove(1));
+		twice(() -> assertThat(sequence, containsFixed(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+	}
+
+	@Test
 	public void concatArrayOfNoIterables() {
 		Sequence<Integer> sequence = Sequence.concat();
-		twice(() -> assertThat(sequence, is(emptySizedIterable())));
+		twice(() -> assertThat(sequence, is(emptyFixedIterable())));
 	}
 
 	@Test
@@ -805,7 +831,7 @@ public class SequenceTest {
 	@Test
 	public void limit() {
 		Sequence<Integer> threeLimitedToNone = _123.limit(0);
-		twice(() -> assertThat(threeLimitedToNone, is(emptySizedIterable())));
+		twice(() -> assertThat(threeLimitedToNone, is(emptyFixedIterable())));
 		expecting(NoSuchElementException.class, () -> threeLimitedToNone.iterator().next());
 
 		Sequence<Integer> threeLimitedToOne = _123.limit(1);
@@ -834,7 +860,7 @@ public class SequenceTest {
 	@Test
 	public void limitTail() {
 		Sequence<Integer> threeLimitTailToNone = _123.limitTail(0);
-		twice(() -> assertThat(threeLimitTailToNone, is(emptySizedIterable())));
+		twice(() -> assertThat(threeLimitTailToNone, is(emptyFixedIterable())));
 		expecting(NoSuchElementException.class, () -> threeLimitTailToNone.iterator().next());
 
 		Sequence<Integer> threeLimitTailToOne = _123.limitTail(1);
@@ -857,7 +883,7 @@ public class SequenceTest {
 		twice(() -> assertThat(_123, containsSized(1, 2, 3)));
 
 		Sequence<Integer> nineLimitTailToNone = _123456789.limitTail(0);
-		twice(() -> assertThat(nineLimitTailToNone, is(emptySizedIterable())));
+		twice(() -> assertThat(nineLimitTailToNone, is(emptyFixedIterable())));
 
 		Sequence<Integer> nineLimitTailToOne = _123456789.limitTail(1);
 		twice(() -> assertThat(nineLimitTailToOne, containsSized(9)));
@@ -1911,7 +1937,7 @@ public class SequenceTest {
 		twice(() -> assertThat(emptyUntilNull, is(emptyUnsizedIterable())));
 		expecting(NoSuchElementException.class, () -> emptyUntilNull.iterator().next());
 
-		Sequence<Integer> nineUntilNull = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).untilNull();
+		Sequence<Integer> nineUntilNull = newSequence(1, 2, 3, 4, 5, null, 7, 8, 9).untilNull();
 		twice(() -> assertThat(nineUntilNull, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> fiveUntilNull = _12345.untilNull();
@@ -1961,7 +1987,7 @@ public class SequenceTest {
 		twice(() -> assertThat(emptyEndingAtNull, is(emptyUnsizedIterable())));
 		expecting(NoSuchElementException.class, () -> emptyEndingAtNull.iterator().next());
 
-		Sequence<Integer> nineEndingAtNull = Sequence.of(1, 2, 3, 4, 5, null, 7, 8, 9).endingAtNull();
+		Sequence<Integer> nineEndingAtNull = newSequence(1, 2, 3, 4, 5, null, 7, 8, 9).endingAtNull();
 		twice(() -> assertThat(nineEndingAtNull, containsUnsized(1, 2, 3, 4, 5, null)));
 
 		Sequence<Integer> fiveEndingAtNull = _12345.endingAtNull();
@@ -3236,8 +3262,7 @@ public class SequenceTest {
 
 	@Test
 	public void parallelStream() {
-		twice(() -> assertThat(empty.parallelStream().collect(Collectors.toList()), is(
-				emptyIterable())));
+		twice(() -> assertThat(empty.parallelStream().collect(Collectors.toList()), is(emptyIterable())));
 		twice(() -> assertThat(empty, is(emptySizedIterable())));
 
 		twice(() -> assertThat(_12345.parallelStream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5)));
@@ -3917,6 +3942,19 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void repeatFixed() {
+		Sequence<Integer> emptyRepeated = fixedEmpty.repeat();
+		twice(() -> assertThat(emptyRepeated, is(emptyFixedIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeated.iterator().next());
+
+		Sequence<Integer> fiveRepeated = fixed12345.repeat();
+		twice(() -> assertThat(fiveRepeated, is(infiniteBeginningWith(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1))));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(fiveRepeated));
+		twice(() -> assertThat(fiveRepeated, is(infiniteBeginningWith(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1))));
+	}
+
+	@Test
 	public void repeatTwice() {
 		Sequence<Integer> emptyRepeatedTwice = empty.repeat(2);
 		twice(() -> assertThat(emptyRepeatedTwice, is(emptyUnsizedIterable())));
@@ -3953,19 +3991,32 @@ public class SequenceTest {
 	}
 
 	@Test
+	public void repeatFixedTwice() {
+		Sequence<Integer> emptyRepeatedTwice = fixedEmpty.repeat(2);
+		twice(() -> assertThat(emptyRepeatedTwice, is(emptyFixedIterable())));
+		expecting(NoSuchElementException.class, () -> emptyRepeatedTwice.iterator().next());
+
+		Sequence<Integer> fiveRepeatedTwice = fixed12345.repeat(2);
+		twice(() -> assertThat(fiveRepeatedTwice, containsFixed(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+
+		expecting(UnsupportedOperationException.class, () -> removeFirst(fiveRepeatedTwice));
+		twice(() -> assertThat(fiveRepeatedTwice, containsFixed(1, 2, 3, 4, 5, 1, 2, 3, 4, 5)));
+	}
+
+	@Test
 	public void repeatZero() {
 		Sequence<Integer> emptyRepeatedZero = empty.repeat(0);
-		twice(() -> assertThat(emptyRepeatedZero, is(emptySizedIterable())));
+		twice(() -> assertThat(emptyRepeatedZero, is(emptyFixedIterable())));
 		expecting(NoSuchElementException.class, () -> emptyRepeatedZero.iterator().next());
 
 		Sequence<Integer> oneRepeatedZero = _1.repeat(0);
-		twice(() -> assertThat(oneRepeatedZero, is(emptySizedIterable())));
+		twice(() -> assertThat(oneRepeatedZero, is(emptyFixedIterable())));
 
 		Sequence<Integer> twoRepeatedZero = _12.repeat(0);
-		twice(() -> assertThat(twoRepeatedZero, is(emptySizedIterable())));
+		twice(() -> assertThat(twoRepeatedZero, is(emptyFixedIterable())));
 
 		Sequence<Integer> threeRepeatedZero = _123.repeat(0);
-		twice(() -> assertThat(threeRepeatedZero, is(emptySizedIterable())));
+		twice(() -> assertThat(threeRepeatedZero, is(emptyFixedIterable())));
 	}
 
 	@Test

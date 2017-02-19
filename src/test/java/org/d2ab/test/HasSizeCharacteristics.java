@@ -23,6 +23,10 @@ public class HasSizeCharacteristics extends BaseMatcher<SizedIterable<?>> {
 		return Matchers.<SizedIterable<?>>both(emptyIterable()).and(hasKnownSize(0));
 	}
 
+	public static Matcher<SizedIterable<?>> emptyFixedIterable() {
+		return Matchers.<SizedIterable<?>>both(emptyIterable()).and(hasFixedSize(0));
+	}
+
 	public static Matcher<SizedIterable<?>> emptyUnsizedIterable() {
 		return Matchers.<SizedIterable<?>>both(emptyIterable()).and(hasComputedSize(0));
 	}
@@ -36,6 +40,17 @@ public class HasSizeCharacteristics extends BaseMatcher<SizedIterable<?>> {
 	public static <T> Matcher<SizedIterable<? extends T>> containsSized(Matcher<? super T>... itemMatchers) {
 		return Matchers.<SizedIterable<? extends T>>both(contains(itemMatchers))
 				.and(hasKnownSize(itemMatchers.length));
+	}
+
+	@SafeVarargs
+	public static <T> Matcher<SizedIterable<? extends T>> containsFixed(T... items) {
+		return Matchers.<SizedIterable<? extends T>>both(contains(items)).and(hasFixedSize(items.length));
+	}
+
+	@SafeVarargs
+	public static <T> Matcher<SizedIterable<? extends T>> containsFixed(Matcher<? super T>... itemMatchers) {
+		return Matchers.<SizedIterable<? extends T>>both(contains(itemMatchers))
+				.and(hasFixedSize(itemMatchers.length));
 	}
 
 	@SafeVarargs
@@ -63,6 +78,10 @@ public class HasSizeCharacteristics extends BaseMatcher<SizedIterable<?>> {
 
 	public static Matcher<SizedIterable<?>> hasKnownSize(int size) {
 		return new HasSizeCharacteristics(AVAILABLE, size, size == 0);
+	}
+
+	public static Matcher<SizedIterable<?>> hasFixedSize(int size) {
+		return new HasSizeCharacteristics(FIXED, size, size == 0);
 	}
 
 	public static Matcher<SizedIterable<?>> hasComputedSize(int size) {

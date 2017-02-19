@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import static org.d2ab.collection.SizedIterable.SizeType.*;
+
 /**
  * A {@link Collection} of multiple {@link Collection}s strung together in a chain.
  */
-public class ChainedCollection<T> extends AbstractCollection<T> {
+public class ChainedCollection<T> extends AbstractCollection<T> implements SizedIterable<T> {
 	private final Collection<Collection<T>> collections;
+	private final SizeType sizeType;
 
 	@SuppressWarnings("unchecked")
 	public static <T> Collection<T> concat(Collection<T>... collections) {
@@ -40,6 +43,7 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 
 	private ChainedCollection(Collection<Collection<T>> collections) {
 		this.collections = collections;
+		this.sizeType = Iterables.sizeType(collections);
 	}
 
 	@Override
@@ -49,6 +53,9 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 
 	@Override
 	public int size() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		int size = 0;
 		for (Collection<T> collection : collections)
 			size += collection.size();
@@ -56,13 +63,32 @@ public class ChainedCollection<T> extends AbstractCollection<T> {
 	}
 
 	@Override
+	public SizeType sizeType() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
+		SizeType sizeType = this.sizeType != FIXED ? AVAILABLE : FIXED;
+
+		for (Collection<T> collection : collections)
+			sizeType = sizeType.concat(Iterables.sizeType(collection));
+
+		return sizeType;
+	}
+
+	@Override
 	public void clear() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		for (Collection<T> c : collections)
 			c.clear();
 	}
 
 	@Override
 	public boolean isEmpty() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		for (Collection<T> collection : collections)
 			if (!collection.isEmpty())
 				return false;

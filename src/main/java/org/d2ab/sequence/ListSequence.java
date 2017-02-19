@@ -33,6 +33,7 @@ public class ListSequence<T> implements Sequence<T> {
 	private static final Sequence<?> EMPTY = from(Lists.of());
 
 	private final List<T> list;
+	private final SizeType sizeType;
 
 	/**
 	 * @return an immutable empty {@code ListSequence}.
@@ -148,6 +149,7 @@ public class ListSequence<T> implements Sequence<T> {
 
 	private ListSequence(List<T> list) {
 		this.list = list;
+		this.sizeType = Iterables.sizeType(list);
 	}
 
 	@Override
@@ -157,7 +159,7 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public SizeType sizeType() {
-		return Iterables.sizeType(list);
+		return sizeType;
 	}
 
 	@Override

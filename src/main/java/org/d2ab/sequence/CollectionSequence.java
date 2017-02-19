@@ -30,6 +30,7 @@ import java.util.stream.Stream;
  */
 public class CollectionSequence<T> implements Sequence<T> {
 	private final Collection<T> collection;
+	private final SizeType sizeType;
 
 	/**
 	 * @return a {@code CollectionSequence} backed by the given {@link Collection}. Updates to the backing
@@ -59,6 +60,7 @@ public class CollectionSequence<T> implements Sequence<T> {
 
 	private CollectionSequence(Collection<T> collection) {
 		this.collection = collection;
+		this.sizeType = Iterables.sizeType(collection);
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class CollectionSequence<T> implements Sequence<T> {
 
 	@Override
 	public SizeType sizeType() {
-		return Iterables.sizeType(collection);
+		return sizeType;
 	}
 
 	@Override

@@ -30,12 +30,14 @@ public interface MappedList {
 			return new SequentialList<>(list, mapper);
 	}
 
-	class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess {
+	class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess, SizedIterable<U> {
 		private final List<T> list;
+		private final SizeType sizeType;
 		private final Function<? super T, ? extends U> mapper;
 
 		public RandomAccessList(List<T> list, Function<? super T, ? extends U> mapper) {
 			this.list = list;
+			this.sizeType = Iterables.sizeType(list);
 			this.mapper = mapper;
 		}
 
@@ -53,14 +55,21 @@ public interface MappedList {
 		public int size() {
 			return list.size();
 		}
+
+		@Override
+		public SizeType sizeType() {
+			return sizeType;
+		}
 	}
 
-	class SequentialList<T, U> extends AbstractSequentialList<U> {
+	class SequentialList<T, U> extends AbstractSequentialList<U> implements SizedIterable<U> {
 		private final List<T> list;
+		private final SizeType sizeType;
 		private final Function<? super T, ? extends U> mapper;
 
 		public SequentialList(List<T> list, Function<? super T, ? extends U> mapper) {
 			this.list = list;
+			this.sizeType = Iterables.sizeType(list);
 			this.mapper = mapper;
 		}
 
@@ -118,6 +127,11 @@ public interface MappedList {
 		@Override
 		public int size() {
 			return list.size();
+		}
+
+		@Override
+		public SizeType sizeType() {
+			return sizeType;
 		}
 	}
 }

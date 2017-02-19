@@ -22,10 +22,11 @@ import org.d2ab.iterator.MappingIterator;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
+import static org.d2ab.collection.SizedIterable.SizeType.*;
 
 public class ChainingIterable<T> implements SizedIterable<T> {
 	private final Iterable<Iterable<T>> iterables;
+	private final SizeType sizeType;
 
 	public static <T> SizedIterable<T> empty() {
 		return new ChainingIterable<>(Iterables.empty());
@@ -47,6 +48,7 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 
 	private ChainingIterable(Iterable<Iterable<T>> iterables) {
 		this.iterables = iterables;
+		this.sizeType = Iterables.sizeType(iterables);
 	}
 
 	@Override
@@ -55,6 +57,9 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 	}
 
 	public int size() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		long size = 0;
 		for (Iterable<T> iterable : iterables)
 			size += Iterables.size(iterable);
@@ -67,7 +72,11 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 
 	@Override
 	public SizeType sizeType() {
-		SizeType sizeType = AVAILABLE;
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
+		SizeType sizeType = this.sizeType != FIXED ? AVAILABLE : FIXED;
+
 		for (Iterable<T> iterable : iterables)
 			sizeType = sizeType.concat(Iterables.sizeType(iterable));
 
@@ -75,6 +84,9 @@ public class ChainingIterable<T> implements SizedIterable<T> {
 	}
 
 	public boolean isEmpty() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		for (Iterable<T> iterable : iterables)
 			if (!Iterables.isEmpty(iterable))
 				return false;

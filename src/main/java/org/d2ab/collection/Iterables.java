@@ -16,7 +16,7 @@
 
 package org.d2ab.collection;
 
-import org.d2ab.collection.SizedIterable.AvailableSizedIterable;
+import org.d2ab.collection.SizedIterable.FixedSizedIterable;
 import org.d2ab.collection.SizedIterable.SizeType;
 import org.d2ab.iterator.ArrayIterator;
 import org.d2ab.iterator.Iterators;
@@ -27,14 +27,13 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
 import static org.d2ab.collection.SizedIterable.SizeType.UNAVAILABLE;
 
 /**
  * Utility methods for {@link Iterable} instances.
  */
 public abstract class Iterables {
-	private static final SizedIterable EMPTY = new AvailableSizedIterable() {
+	private static final SizedIterable EMPTY = new FixedSizedIterable() {
 		@SuppressWarnings("unchecked")
 		@Override
 		public Iterator iterator() {
@@ -62,7 +61,7 @@ public abstract class Iterables {
 	 * @return an unmodifiable singleton {@link Iterable} containing the given object.
 	 */
 	public static <T> SizedIterable<T> of(T object) {
-		return new AvailableSizedIterable<T>() {
+		return new FixedSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new SingletonIterator<>(object);
@@ -80,7 +79,7 @@ public abstract class Iterables {
 	 */
 	@SafeVarargs
 	public static <T> SizedIterable<T> of(T... objects) {
-		return new AvailableSizedIterable<T>() {
+		return new FixedSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new ArrayIterator<>(objects);
@@ -135,7 +134,7 @@ public abstract class Iterables {
 	}
 
 	public static <T> SizedIterable<T> fromPair(final Pair<? extends T, ? extends T> pair) {
-		return new AvailableSizedIterable<T>() {
+		return new FixedSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return pair.iterator();
@@ -149,7 +148,7 @@ public abstract class Iterables {
 	}
 
 	public static <T> SizedIterable<T> fromEntry(final Entry<? extends T, ? extends T> entry) {
-		return new AvailableSizedIterable<T>() {
+		return new FixedSizedIterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return Maps.iterator(entry);
@@ -340,11 +339,12 @@ public abstract class Iterables {
 		return false;
 	}
 
-	public static <T> SizeType sizeType(Iterable<T> iterable) {
+	public static SizeType sizeType(Iterable<?> iterable) {
 		if (iterable instanceof SizedIterable)
 			return ((SizedIterable<?>) iterable).sizeType();
+
 		if (iterable instanceof Collection)
-			return AVAILABLE;
+			return Collectionz.sizeType((Collection<?>) iterable);
 
 		return UNAVAILABLE;
 	}
@@ -352,15 +352,17 @@ public abstract class Iterables {
 	public static int size(Iterable<?> iterable) {
 		if (iterable instanceof SizedIterable)
 			return ((SizedIterable<?>) iterable).size();
+
 		if (iterable instanceof Collection)
 			return ((Collection<?>) iterable).size();
 
 		return Iterators.size(iterable.iterator());
 	}
 
-	public static <T> boolean isEmpty(Iterable<T> iterable) {
+	public static boolean isEmpty(Iterable<?> iterable) {
 		if (iterable instanceof SizedIterable)
 			return ((SizedIterable<?>) iterable).isEmpty();
+
 		if (iterable instanceof Collection)
 			return ((Collection<?>) iterable).isEmpty();
 

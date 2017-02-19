@@ -16,14 +16,30 @@
 
 package org.d2ab.collection;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.RandomAccess;
+import java.lang.reflect.Field;
+import java.util.*;
+
+import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
+import static org.d2ab.collection.SizedIterable.SizeType.FIXED;
 
 /**
  * Utility methods for {@link Collection} instances.
  */
 public abstract class Collectionz {
+	private static final Set<String> FIXED_SIZE_COLLECTION_CLASS_NAMES = new HashSet<>(Lists.of(
+			"java.util.Arrays$ArrayList",
+			"java.util.Collections$EmptyList",
+			"java.util.Collections$EmptySet",
+			"java.util.Collections$SingletonList",
+			"java.util.Collections$SingletonSet"));
+
+	@SuppressWarnings("unchecked")
+	private static final Optional<Class<? extends Collection>> UNMODIFIABLE_COLLECTION_CLASS =
+			classByName("java.util.Collections$UnmodifiableCollection");
+
+	private static final Optional<Field> UNMODIFIABLE_COLLECTION_FIELD = UNMODIFIABLE_COLLECTION_CLASS
+			.flatMap(cls -> accessibleField(cls, "c"));
+
 	Collectionz() {
 	}
 
@@ -37,5 +53,46 @@ public abstract class Collectionz {
 			return (List<T>) collection;
 
 		return new CollectionList<>(collection);
+	}
+
+	public static SizedIterable.SizeType sizeType(Collection<?> collection) {
+		return unwrap(collection).map(Collectionz::sizeType).orElseGet(
+				() -> FIXED_SIZE_COLLECTION_CLASS_NAMES.contains(collection.getClass().getName()) ? FIXED : AVAILABLE);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Optional<Collection<?>> unwrap(Collection<?> collection) {
+		if (UNMODIFIABLE_COLLECTION_CLASS.map(cls -> cls.isInstance(collection)).orElse(false))
+			return UNMODIFIABLE_COLLECTION_FIELD.flatMap(fld -> getValue(fld, collection));
+
+		return Optional.empty();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <C extends Class<?>> Optional<C> classByName(String className) {
+		try {
+			return Optional.of((C) Class.forName(className));
+		} catch (ClassNotFoundException | RuntimeException e) {
+			return Optional.empty();
+		}
+	}
+
+	private static Optional<Field> accessibleField(Class<?> cls, String fieldName) {
+		try {
+			Field f = cls.getDeclaredField(fieldName);
+			f.setAccessible(true);
+			return Optional.of(f);
+		} catch (NoSuchFieldException | RuntimeException e) {
+			return Optional.empty();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Optional<T> getValue(Field field, Object object) {
+		try {
+			return Optional.of((T) field.get(object));
+		} catch (IllegalAccessException | RuntimeException e) {
+			return Optional.empty();
+		}
 	}
 }

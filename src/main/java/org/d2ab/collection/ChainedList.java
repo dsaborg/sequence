@@ -21,11 +21,14 @@ import org.d2ab.iterator.ChainingIterator;
 
 import java.util.*;
 
+import static org.d2ab.collection.SizedIterable.SizeType.*;
+
 /**
  * A {@link List} of multiple {@link List}s strung together in a chain.
  */
-public class ChainedList<T> extends AbstractList<T> {
+public class ChainedList<T> extends AbstractList<T> implements SizedIterable<T> {
 	private final List<List<T>> lists;
+	private final SizeType sizeType;
 
 	@SafeVarargs
 	public static <T> List<T> concat(List<T>... lists) {
@@ -38,6 +41,7 @@ public class ChainedList<T> extends AbstractList<T> {
 
 	private ChainedList(List<List<T>> lists) {
 		this.lists = lists;
+		this.sizeType = Iterables.sizeType(lists);
 	}
 
 	@Override
@@ -113,6 +117,9 @@ public class ChainedList<T> extends AbstractList<T> {
 
 	@Override
 	public int size() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		int size = 0;
 		for (List<T> list : lists)
 			size += list.size();
@@ -120,16 +127,36 @@ public class ChainedList<T> extends AbstractList<T> {
 	}
 
 	@Override
+	public SizeType sizeType() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
+		SizeType sizeType = this.sizeType != FIXED ? AVAILABLE : FIXED;
+
+		for (List<T> list : lists)
+			sizeType = sizeType.concat(Iterables.sizeType(list));
+
+		return sizeType;
+	}
+
+	@Override
 	public void clear() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		for (List<T> l : lists)
 			l.clear();
 	}
 
 	@Override
 	public boolean isEmpty() {
+		if (sizeType == INFINITE)
+			throw new UnsupportedOperationException();
+
 		for (List<T> list : lists)
 			if (!list.isEmpty())
 				return false;
+
 		return true;
 	}
 }

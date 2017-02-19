@@ -63,7 +63,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		@Override
 		public SizeType sizeType() {
-			return AVAILABLE;
+			return FIXED;
 		}
 
 		@Override
@@ -2825,8 +2825,22 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public int size() {
+				switch (Sequence.this.sizeType()) {
+					case FIXED:
+						if (Sequence.this.isEmpty())
+							return 0;
+					default:
+						return SizedIterable.size(this);
+				}
+			}
+
+			@Override
 			public SizeType sizeType() {
 				switch (Sequence.this.sizeType()) {
+					case FIXED:
+						if (Sequence.this.isEmpty())
+							return FIXED;
 					case INFINITE:
 						return INFINITE;
 					default:
@@ -2857,8 +2871,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 			}
 
 			@Override
+			public int size() {
+				switch (Sequence.this.sizeType()) {
+					case FIXED:
+						return Sequence.this.size() * times;
+					default:
+						return SizedIterable.size(this);
+				}
+			}
+
+			@Override
 			public SizeType sizeType() {
 				switch (Sequence.this.sizeType()) {
+					case FIXED:
+						return FIXED;
 					case INFINITE:
 						return INFINITE;
 					default:

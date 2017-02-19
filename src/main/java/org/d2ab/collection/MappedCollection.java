@@ -26,8 +26,9 @@ import java.util.function.Function;
 /**
  * A {@link Collection} that presents a mapped view of another {@link Collection}.
  */
-public class MappedCollection<T, U> extends AbstractCollection<U> {
+public class MappedCollection<T, U> extends AbstractCollection<U> implements SizedIterable<U> {
 	protected final Collection<T> collection;
+	private final SizeType sizeType;
 	private final Function<? super T, ? extends U> mapper;
 
 	public static <T, U> Collection<U> from(Collection<T> collection, Function<? super T, ? extends U> mapper) {
@@ -36,6 +37,7 @@ public class MappedCollection<T, U> extends AbstractCollection<U> {
 
 	protected MappedCollection(Collection<T> collection, Function<? super T, ? extends U> mapper) {
 		this.collection = collection;
+		this.sizeType = Iterables.sizeType(collection);
 		this.mapper = mapper;
 	}
 
@@ -47,5 +49,10 @@ public class MappedCollection<T, U> extends AbstractCollection<U> {
 	@Override
 	public int size() {
 		return collection.size();
+	}
+
+	@Override
+	public SizeType sizeType() {
+		return sizeType;
 	}
 }

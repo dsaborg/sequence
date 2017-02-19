@@ -21,8 +21,9 @@ import java.util.*;
 /**
  * A {@link List} that presents a reverse view over a backing {@link List}.
  */
-public class ReverseList<T> extends AbstractList<T> {
+public class ReverseList<T> extends AbstractList<T> implements SizedIterable<T> {
 	private final List<T> original;
+	private final SizeType sizeType;
 
 	public static <T> List<T> from(List<T> original) {
 		return new ReverseList<>(original);
@@ -30,11 +31,17 @@ public class ReverseList<T> extends AbstractList<T> {
 
 	private ReverseList(List<T> original) {
 		this.original = original;
+		this.sizeType = Iterables.sizeType(original);
 	}
 
 	@Override
 	public int size() {
 		return original.size();
+	}
+
+	@Override
+	public SizeType sizeType() {
+		return sizeType;
 	}
 
 	@Override

@@ -31,14 +31,16 @@ public interface BiMappedList {
 			return new SequentialList<>(list, mapper, backMapper);
 	}
 
-	class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess {
+	class RandomAccessList<T, U> extends AbstractList<U> implements RandomAccess, SizedIterable<U> {
 		private final List<T> list;
+		private final SizeType sizeType;
 		private final Function<? super T, ? extends U> mapper;
 		private final Function<? super U, ? extends T> backMapper;
 
 		public RandomAccessList(List<T> list, Function<? super T, ? extends U> mapper,
 		                        Function<? super U, ? extends T> backMapper) {
 			this.list = list;
+			this.sizeType = Iterables.sizeType(list);
 			this.mapper = mapper;
 			this.backMapper = backMapper;
 		}
@@ -69,19 +71,26 @@ public interface BiMappedList {
 		}
 
 		@Override
+		public SizeType sizeType() {
+			return sizeType;
+		}
+
+		@Override
 		public boolean add(U element) {
 			return list.add(backMapper.apply(element));
 		}
 	}
 
-	class SequentialList<T, U> extends AbstractSequentialList<U> {
+	class SequentialList<T, U> extends AbstractSequentialList<U> implements SizedIterable<U> {
 		private final List<T> list;
+		private final SizeType sizeType;
 		private final Function<? super T, ? extends U> mapper;
 		private final Function<? super U, ? extends T> backMapper;
 
 		public SequentialList(List<T> list, Function<? super T, ? extends U> mapper,
 		                      Function<? super U, ? extends T> backMapper) {
 			this.list = list;
+			this.sizeType = Iterables.sizeType(list);
 			this.mapper = mapper;
 			this.backMapper = backMapper;
 		}
@@ -143,9 +152,13 @@ public interface BiMappedList {
 		}
 
 		@Override
+		public SizeType sizeType() {
+			return sizeType;
+		}
+
+		@Override
 		public boolean add(U element) {
 			return list.add(backMapper.apply(element));
 		}
-
 	}
 }

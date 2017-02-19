@@ -21,8 +21,6 @@ import org.d2ab.iterator.Iterators;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
-
 /**
  * A {@link Collection} view of an {@link Iterable}, requiring only {@link Iterable#iterator()} to be implemented in
  * order to present a full {@link Collection}. This interface is thus a functional interface of {@link Iterable}'s
@@ -54,6 +52,7 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 	}
 
 	static <T> IterableCollection<T> from(Collection<T> collection) {
+		SizeType sizeType = Iterables.sizeType(collection);
 		return new IterableCollection<T>() {
 			@Override
 			public Iterator<T> iterator() {
@@ -67,7 +66,7 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 
 			@Override
 			public SizeType sizeType() {
-				return AVAILABLE;
+				return sizeType;
 			}
 
 			@Override
