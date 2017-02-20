@@ -159,4 +159,12 @@ public class ChainedList<T> extends AbstractList<T> implements SizedIterable<T> 
 
 		return true;
 	}
+
+	@Override
+	public Spliterator<T> spliterator() {
+		if (sizeType == INFINITE || sizeType() == INFINITE)
+			return Spliterators.spliteratorUnknownSize(iterator(), 0);
+
+		return Spliterators.spliterator(this, 0);
+	}
 }

@@ -28,10 +28,10 @@ import static org.junit.Assert.assertThat;
 
 public class IterableListTest {
 	private final Deque<Integer> originalEmpty = new ArrayDeque<>();
-	private final List<Integer> listEmpty = new IterableList<>(originalEmpty);
+	private final IterableList<Integer> listEmpty = IterableList.from(originalEmpty);
 
 	private final Deque<Integer> original = new ArrayDeque<>(Lists.of(1, 2, 3, 4, 5));
-	private final List<Integer> list = new IterableList<>(original);
+	private final IterableList<Integer> list = IterableList.from(original);
 
 	@Test
 	public void size() {

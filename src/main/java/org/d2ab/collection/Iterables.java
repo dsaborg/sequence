@@ -278,7 +278,7 @@ public abstract class Iterables {
 	 * @since 1.2
 	 */
 	public static <T> List<T> asList(Iterable<T> iterable) {
-		return new IterableList<>(iterable);
+		return IterableList.from(iterable);
 	}
 
 	/**

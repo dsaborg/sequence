@@ -31,11 +31,17 @@ import java.util.function.Consumer;
  *
  * @since 1.2
  */
-public class IterableList<T> extends AbstractSequentialList<T> {
+public class IterableList<T> extends AbstractSequentialList<T> implements SizedIterable<T> {
 	private final Iterable<T> iterable;
+	private final SizeType sizeType;
 
-	public IterableList(Iterable<T> iterable) {
+	public static <T> IterableList<T> from(Iterable<T> iterable) {
+		return new IterableList<>(iterable);
+	}
+
+	private IterableList(Iterable<T> iterable) {
 		this.iterable = iterable;
+		this.sizeType = Iterables.sizeType(iterable);
 	}
 
 	@Override
@@ -46,6 +52,11 @@ public class IterableList<T> extends AbstractSequentialList<T> {
 	@Override
 	public int size() {
 		return Iterables.size(iterable);
+	}
+
+	@Override
+	public SizeType sizeType() {
+		return sizeType;
 	}
 
 	@Override

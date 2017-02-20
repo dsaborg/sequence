@@ -31,8 +31,8 @@ public class ChainedListIterator<T> implements ListIterator<T> {
 	public ChainedListIterator(List<List<T>> lists, int index) {
 		this.lists = lists;
 
-		for (int i = 0; i < lists.size(); i++) {
-			List<T> list = lists.get(i);
+		int i = 0;
+		for (List<T> list : lists) {
 			if (index <= list.size()) {
 				listIterator = list.listIterator(index);
 				cursor = i;
@@ -40,6 +40,7 @@ public class ChainedListIterator<T> implements ListIterator<T> {
 			}
 			offset += list.size();
 			index -= list.size();
+			i++;
 		}
 		if (listIterator == null)
 			listIterator = Lists.<T>of().listIterator();

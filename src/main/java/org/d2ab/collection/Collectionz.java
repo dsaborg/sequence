@@ -16,6 +16,8 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.util.Classes;
+
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -35,10 +37,10 @@ public abstract class Collectionz {
 
 	@SuppressWarnings("unchecked")
 	private static final Optional<Class<? extends Collection>> UNMODIFIABLE_COLLECTION_CLASS =
-			classByName("java.util.Collections$UnmodifiableCollection");
+			Classes.classByName("java.util.Collections$UnmodifiableCollection");
 
 	private static final Optional<Field> UNMODIFIABLE_COLLECTION_FIELD = UNMODIFIABLE_COLLECTION_CLASS
-			.flatMap(cls -> accessibleField(cls, "c"));
+			.flatMap(cls -> Classes.accessibleField(cls, "c"));
 
 	Collectionz() {
 	}
@@ -63,36 +65,8 @@ public abstract class Collectionz {
 	@SuppressWarnings("unchecked")
 	private static Optional<Collection<?>> unwrap(Collection<?> collection) {
 		if (UNMODIFIABLE_COLLECTION_CLASS.map(cls -> cls.isInstance(collection)).orElse(false))
-			return UNMODIFIABLE_COLLECTION_FIELD.flatMap(fld -> getValue(fld, collection));
+			return UNMODIFIABLE_COLLECTION_FIELD.flatMap(fld -> Classes.getValue(fld, collection));
 
 		return Optional.empty();
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <C extends Class<?>> Optional<C> classByName(String className) {
-		try {
-			return Optional.of((C) Class.forName(className));
-		} catch (ClassNotFoundException | RuntimeException e) {
-			return Optional.empty();
-		}
-	}
-
-	private static Optional<Field> accessibleField(Class<?> cls, String fieldName) {
-		try {
-			Field f = cls.getDeclaredField(fieldName);
-			f.setAccessible(true);
-			return Optional.of(f);
-		} catch (NoSuchFieldException | RuntimeException e) {
-			return Optional.empty();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> Optional<T> getValue(Field field, Object object) {
-		try {
-			return Optional.of((T) field.get(object));
-		} catch (IllegalAccessException | RuntimeException e) {
-			return Optional.empty();
-		}
 	}
 }

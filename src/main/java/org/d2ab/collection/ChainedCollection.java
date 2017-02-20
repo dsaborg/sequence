@@ -18,10 +18,7 @@ package org.d2ab.collection;
 
 import org.d2ab.iterator.ChainingIterator;
 
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import static org.d2ab.collection.SizedIterable.SizeType.*;
 
@@ -109,5 +106,13 @@ public class ChainedCollection<T> extends AbstractCollection<T> implements Sized
 
 		//noinspection ConstantConditions
 		return target.add(t);
+	}
+
+	@Override
+	public Spliterator<T> spliterator() {
+		if (sizeType == INFINITE || sizeType() == INFINITE)
+			return Spliterators.spliteratorUnknownSize(iterator(), 0);
+
+		return Spliterators.spliterator(this, 0);
 	}
 }

@@ -476,7 +476,7 @@ public class SequenceTest {
 	@Test
 	public void concatIterableOfNoIterables() {
 		Sequence<Integer> sequence = Sequence.concat(Iterables.empty());
-		twice(() -> assertThat(sequence, is(emptySizedIterable())));
+		twice(() -> assertThat(sequence, is(emptyFixedIterable())));
 	}
 
 	@Test

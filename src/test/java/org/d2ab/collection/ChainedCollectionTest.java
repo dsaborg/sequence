@@ -16,6 +16,7 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.sequence.Sequence;
 import org.junit.Test;
 
 import java.util.ArrayDeque;
@@ -25,6 +26,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
+import static org.d2ab.collection.SizedIterable.SizeType.FIXED;
+import static org.d2ab.test.IsIterableBeginningWith.beginsWith;
 import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -44,11 +48,29 @@ public class ChainedCollectionTest {
 	@SuppressWarnings("unchecked")
 	private Collection<Integer> chained = ChainedCollection.concat(first, second, third);
 
+	@SuppressWarnings("unchecked")
+	private Collection<Integer> fixed = ChainedCollection.concat(Lists.of(1, 2, 3), Lists.of(4, 5, 6),
+	                                                             Lists.of(7, 8, 9, 10));
+
+	private Collection<Integer> infinite = ChainedCollection.concat(
+			Sequence.generate(() -> (Collection<Integer>) Lists.of(17)));
+
 	@Test
 	public void size() {
 		assertThat(chainedTotallyEmpty.size(), is(0));
 		assertThat(chainedEmpty.size(), is(0));
 		assertThat(chained.size(), is(10));
+		assertThat(fixed.size(), is(10));
+		expecting(UnsupportedOperationException.class, infinite::size);
+	}
+
+	@Test
+	public void sizeType() {
+		assertThat(Iterables.sizeType(chainedTotallyEmpty), is(AVAILABLE));
+		assertThat(Iterables.sizeType(chainedEmpty), is(AVAILABLE));
+		assertThat(Iterables.sizeType(chained), is(AVAILABLE));
+		assertThat(Iterables.sizeType(fixed), is(FIXED));
+		expecting(UnsupportedOperationException.class, () -> Iterables.sizeType(infinite));
 	}
 
 	@Test
@@ -56,6 +78,8 @@ public class ChainedCollectionTest {
 		assertThat(chainedTotallyEmpty.isEmpty(), is(true));
 		assertThat(chainedEmpty.isEmpty(), is(true));
 		assertThat(chained.isEmpty(), is(false));
+		assertThat(fixed.isEmpty(), is(false));
+		expecting(UnsupportedOperationException.class, infinite::isEmpty);
 	}
 
 	@Test
@@ -66,8 +90,13 @@ public class ChainedCollectionTest {
 
 		for (int i = 1; i <= 10; i++)
 			assertThat(chained.contains(i), is(true));
-
 		assertThat(chained.contains(17), is(false));
+
+		for (int i = 1; i <= 10; i++)
+			assertThat(fixed.contains(i), is(true));
+		assertThat(fixed.contains(17), is(false));
+
+		assertThat(infinite.contains(17), is(true));
 	}
 
 	@Test
@@ -79,6 +108,10 @@ public class ChainedCollectionTest {
 		expecting(NoSuchElementException.class, () -> chainedEmpty.iterator().next());
 
 		assertThat(chained, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(fixed, contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(infinite, beginsWith(17, 17, 17, 17));
 	}
 
 	@Test
@@ -104,6 +137,8 @@ public class ChainedCollectionTest {
 		assertThat(chainedEmpty.toArray(), is(emptyArray()));
 
 		assertThat(chained.toArray(), is(arrayContaining(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(fixed.toArray(), is(arrayContaining(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
 	@Test
@@ -113,6 +148,8 @@ public class ChainedCollectionTest {
 		assertThat(chainedEmpty.toArray(new Integer[0]), is(emptyArray()));
 
 		assertThat(chained.toArray(new Integer[10]), is(arrayContaining(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
+
+		assertThat(fixed.toArray(new Integer[10]), is(arrayContaining(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)));
 	}
 
 	@Test
@@ -131,6 +168,8 @@ public class ChainedCollectionTest {
 		assertThat(first, contains(1, 2, 3));
 		assertThat(second, contains(4, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10, 17));
+
+		expecting(UnsupportedOperationException.class, () -> fixed.add(17));
 	}
 
 	@Test
@@ -155,6 +194,8 @@ public class ChainedCollectionTest {
 		assertThat(first, contains(1, 2, 3));
 		assertThat(second, contains(4, 6));
 		assertThat(third, contains(7, 8, 9, 10));
+
+		expecting(UnsupportedOperationException.class, () -> fixed.remove(5));
 	}
 
 	@Test
@@ -165,6 +206,11 @@ public class ChainedCollectionTest {
 
 		assertThat(chained.containsAll(Lists.of(2, 3, 4)), is(true));
 		assertThat(chained.containsAll(Lists.of(2, 3, 17)), is(false));
+
+		assertThat(fixed.containsAll(Lists.of(2, 3, 4)), is(true));
+		assertThat(fixed.containsAll(Lists.of(2, 3, 17)), is(false));
+
+		assertThat(infinite.containsAll(Lists.of(17)), is(true));
 	}
 
 	@Test
@@ -183,6 +229,8 @@ public class ChainedCollectionTest {
 		assertThat(first, contains(1, 2, 3));
 		assertThat(second, contains(4, 5, 6));
 		assertThat(third, contains(7, 8, 9, 10, 17, 18));
+
+		expecting(UnsupportedOperationException.class, () -> fixed.addAll(Lists.of(17, 18)));
 	}
 
 	@Test
@@ -207,6 +255,8 @@ public class ChainedCollectionTest {
 		assertThat(first, contains(1, 2));
 		assertThat(second, contains(6));
 		assertThat(third, contains(7, 8, 9, 10));
+
+		expecting(UnsupportedOperationException.class, () -> fixed.removeAll(Lists.of(3, 4, 5)));
 	}
 
 	@Test
@@ -225,6 +275,8 @@ public class ChainedCollectionTest {
 		assertThat(first, contains(2, 3));
 		assertThat(second, contains(4));
 		assertThat(third, is(emptyIterable()));
+
+		expecting(UnsupportedOperationException.class, () -> fixed.retainAll(Lists.of(2, 3, 4)));
 	}
 
 	@Test
@@ -243,6 +295,9 @@ public class ChainedCollectionTest {
 		assertThat(first, is(emptyIterable()));
 		assertThat(second, is(emptyIterable()));
 		assertThat(third, is(emptyIterable()));
+
+		expecting(UnsupportedOperationException.class, fixed::clear);
+		expecting(UnsupportedOperationException.class, infinite::clear);
 	}
 
 	@Test
@@ -270,6 +325,10 @@ public class ChainedCollectionTest {
 		assertThat(chainedEmpty.stream().collect(Collectors.toList()), is(emptyIterable()));
 
 		assertThat(chained.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(fixed.stream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(infinite.stream().limit(4).collect(Collectors.toList()), contains(17, 17, 17, 17));
 	}
 
 	@Test
@@ -279,6 +338,10 @@ public class ChainedCollectionTest {
 		assertThat(chainedEmpty.parallelStream().collect(Collectors.toList()), is(emptyIterable()));
 
 		assertThat(chained.parallelStream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(fixed.parallelStream().collect(Collectors.toList()), contains(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+		assertThat(infinite.parallelStream().limit(4).collect(Collectors.toList()), contains(17, 17, 17, 17));
 	}
 
 	@Test
@@ -297,6 +360,8 @@ public class ChainedCollectionTest {
 		assertThat(first, contains(1, 3));
 		assertThat(second, contains(4, 6));
 		assertThat(third, contains(7, 8, 9, 10));
+
+		expecting(UnsupportedOperationException.class, () -> fixed.removeIf(x -> x.equals(2) || x.equals(5)));
 	}
 
 	@Test
@@ -311,6 +376,10 @@ public class ChainedCollectionTest {
 
 		AtomicInteger value = new AtomicInteger(1);
 		chained.forEach(x -> assertThat(x, is(value.getAndIncrement())));
+		assertThat(value.get(), is(11));
+
+		value.set(1);
+		fixed.forEach(x -> assertThat(x, is(value.getAndIncrement())));
 		assertThat(value.get(), is(11));
 	}
 }
