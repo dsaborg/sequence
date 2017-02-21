@@ -15,10 +15,13 @@
 
 ### News
 
-**2017-01-07 - Sequence v2.2** which focuses on correctness under error conditions and code coverage. Brings overall
-code coverage of the entire project to 98% line coverage. Fixes minor bugs and inconsistencies under error conditions,
-such as correct exceptions being thrown for index out of bounds in primitive collections, as well as several cases of
-unnecessary boxing in primitive collections and sequences.
+**2017-02-21 - Sequence v2.3** is released, with optimizations to `size` and the ability to tell whether a sequence
+has a defined size or is infinite or unsized. Adds `mapLeft`/`mapRight` to `BiSequence` and `mapKeys`/`mapValues` to 
+`EntrySequence`. Adds argument checking for fail-fast behaviour under incorrect `Sequence` usage. Brings test 
+coverage of the entire project up to 100% on [codecov.io](https://codecov.io/gh/d2aborg/sequence). Adds limitTail to
+all sequences. Adds groupBy operations to `Sequence`, and `toGroupedMap` to `EntrySequence` and `BiSequence`. Adds
+`sum`, `average` and `statistics` to `LongSequence`, `DoubleSequence` and `IntSequence`. Performance optimizations, 
+improved strictness checks, and improved error condition behaviour in primitive collections.
 
 * See the [Sequence wiki](https://github.com/d2aborg/sequence/wiki) for older news.
 * Follow [@SequenceLibrary](http://twitter.com/SequenceLibrary) on Twitter to receive updates.
