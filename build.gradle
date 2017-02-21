@@ -21,7 +21,7 @@ apply plugin: 'signing'
 apply plugin: 'distribution'
 apply plugin: 'jacoco'
 
-version = '2.3.0'
+version = '2.4.0-SNAPSHOT'
 group = 'org.d2ab'
 archivesBaseName = project.name
 
