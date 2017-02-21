@@ -19,7 +19,7 @@
 has a defined size or is infinite or unsized. Adds `mapLeft`/`mapRight` to `BiSequence` and `mapKeys`/`mapValues` to 
 `EntrySequence`. Adds argument checking for fail-fast behaviour under incorrect `Sequence` usage. Brings test 
 coverage of the entire project up to 100% on [codecov.io](https://codecov.io/gh/d2aborg/sequence). Adds limitTail to
-all sequences. Adds groupBy operations to `Sequence`, and `toGroupedMap` to `EntrySequence` and `BiSequence`. Adds
+all sequences. Adds `groupBy` operations to `Sequence`, and `toGroupedMap` to `EntrySequence` and `BiSequence`. Adds
 `sum`, `average` and `statistics` to `LongSequence`, `DoubleSequence` and `IntSequence`. Performance optimizations, 
 improved strictness checks, and improved error condition behaviour in primitive collections.
 
