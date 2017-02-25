@@ -28,7 +28,7 @@ archivesBaseName = project.name
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

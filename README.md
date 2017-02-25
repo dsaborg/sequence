@@ -98,7 +98,7 @@ To install in gradle, use the maven central dependency:
 
 ```Gradle
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
