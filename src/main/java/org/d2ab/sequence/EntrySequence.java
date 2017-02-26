@@ -462,7 +462,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	}
 
 	/**
-	 * Map the keys of the entries in this {@code EntrySequence} to another set of keys specified by the given
+	 * Map the values of the entries in this {@code EntrySequence} to another set of values specified by the given
 	 * {@code mapper} function.
 	 *
 	 * @see #map(Function)
