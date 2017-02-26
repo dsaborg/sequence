@@ -69,7 +69,7 @@ It aims to be roughly feature complete with sequential `Streams`, with additiona
 traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
 better handling of `Maps` with `Pairs` and `Map.Entry` as first-class citizens, tighter integration with the rest of
 Java by being implemented in terms of `Iterable`, and advanced partitioning, mapping and filtering methods, for example
-allowing you to peek at previous or next elements to make decisions during traversal. `Sequences` go to great lengths
+allowing peek at previous or next elements to make decisions during traversal. `Sequences` go to great lengths
 to be as lazy and late-evaluating as possible, with minimal overhead.
 
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables`
