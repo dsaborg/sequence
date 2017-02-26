@@ -31,7 +31,7 @@ to
 and
 [`mapKeys`](http://static.javadoc.io/org.d2ab/sequence/2.3.0/org/d2ab/sequence/EntrySequence.html#mapKeys-java.util.function.Function-)
 /
-[`mapValues`](http://static.javadoc.io/org.d2ab/sequence/2.3.0/org/d2ab/sequence/BiSequence.html#mapValues-java.util.function.Function-)
+[`mapValues`](http://static.javadoc.io/org.d2ab/sequence/2.3.0/org/d2ab/sequence/EntrySequence.html#mapValues-java.util.function.Function-)
 to
 [`EntrySequence`](http://static.javadoc.io/org.d2ab/sequence/2.3.0/org/d2ab/sequence/EntrySequence.html).
 Adds argument checking for fail-fast behaviour under incorrect
