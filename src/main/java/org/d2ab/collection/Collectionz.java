@@ -57,6 +57,22 @@ public abstract class Collectionz {
 		return new CollectionList<>(collection);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T[] toArray(Collection<?> collection, T[] a) {
+		int size = collection.size();
+		if (a.length < size)
+			a = Arrays.copyOf(a, size);
+
+		int index = 0;
+		for (Object t : collection)
+			a[index++] = (T) t;
+
+		if (a.length > size)
+			a[size] = null;
+
+		return a;
+	}
+
 	public static SizedIterable.SizeType sizeType(Collection<?> collection) {
 		return unwrap(collection).map(Collectionz::sizeType).orElseGet(
 				() -> FIXED_SIZE_COLLECTION_CLASS_NAMES.contains(collection.getClass().getName()) ? FIXED : AVAILABLE);

@@ -183,12 +183,6 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public <U extends Collection<T>> U collectInto(U collection) {
-		collection.addAll(list);
-		return collection;
-	}
-
-	@Override
 	public void clear() {
 		list.clear();
 	}

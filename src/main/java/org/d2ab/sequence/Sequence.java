@@ -1307,7 +1307,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect the elements in this {@code Sequence} into a {@link List}.
 	 */
 	default List<T> toList() {
-		return toList(ArrayList::new);
+		if (sizeType().known())
+			return new ArrayList<>(this);
+		else
+			return toList(ArrayList::new);
 	}
 
 	/**
@@ -1324,7 +1327,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect the elements in this {@code Sequence} into a {@link Set}.
 	 */
 	default Set<T> toSet() {
-		return toSet(HashSet::new);
+		if (sizeType().known())
+			return new HashSet<>(this);
+		else
+			return toSet(HashSet::new);
 	}
 
 	/**
@@ -1341,7 +1347,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect the elements in this {@code Sequence} into a {@link SortedSet}.
 	 */
 	default SortedSet<T> toSortedSet() {
-		return toSet(TreeSet::new);
+		if (sizeType().known())
+			return new TreeSet<>(this);
+		else
+			return toSet(TreeSet::new);
 	}
 
 	/**
@@ -1526,22 +1535,12 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * Collect this {@code Sequence} into a {@link Collection} of the type determined by the given constructor.
+	 * Collect this {@code Sequence} into a {@link Collection} instance created by the given constructor.
 	 */
 	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
 		requireNonNull(constructor, "constructor");
 
-		return collectInto(constructor.get());
-	}
-
-	/**
-	 * Collect this {@code Sequence} into an arbitrary container using the given constructor and adder.
-	 */
-	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
-		requireNonNull(constructor, "constructor");
-		requireNonNull(adder, "adder");
-
-		return collectInto(constructor.get(), adder);
+		return collectInto(requireNonNull(constructor.get(), "constructor.get()"));
 	}
 
 	/**
@@ -1555,12 +1554,29 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Collect this {@code Sequence} into an arbitrary container using the given constructor and adder.
+	 */
+	default <C> C collect(Supplier<? extends C> constructor, BiConsumer<? super C, ? super T> adder) {
+		requireNonNull(constructor, "constructor");
+		requireNonNull(adder, "adder");
+
+		return collectInto(constructor.get(), adder);
+	}
+
+	/**
 	 * Collect this {@code Sequence} into the given {@link Collection}.
 	 */
 	default <U extends Collection<T>> U collectInto(U collection) {
 		requireNonNull(collection, "collection");
 
-		collection.addAll(this);
+		requireFinite(this, "Infinite Sequence");
+
+		if (sizeType().known())
+			collection.addAll(this);
+		else
+			for (T t : this)
+				collection.add(t);
+
 		return collection;
 	}
 
@@ -1575,6 +1591,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		for (T t : this)
 			adder.accept(result, t);
+
 		return result;
 	}
 

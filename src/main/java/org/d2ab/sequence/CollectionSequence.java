@@ -89,12 +89,6 @@ public class CollectionSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public <U extends Collection<T>> U collectInto(U collection) {
-		collection.addAll(this.collection);
-		return collection;
-	}
-
-	@Override
 	public void clear() {
 		collection.clear();
 	}

@@ -113,6 +113,11 @@ public interface SizedIterable<T> extends Iterable<T> {
 		}
 	}
 
+	default int sizeOrDefault(int defaultSize) {
+		int sizeIfKnown = sizeIfKnown();
+		return sizeIfKnown == -1 ? defaultSize : sizeIfKnown;
+	}
+
 	default boolean isEmpty() {
 		return isEmpty(this);
 	}
@@ -195,6 +200,10 @@ public interface SizedIterable<T> extends Iterable<T> {
 		public abstract SizeType limited();
 
 		public abstract int limitedSize(SizedIterable<?> parent, SizedIterable<?> iterable, int limit);
+
+		public boolean known() {
+			return this == AVAILABLE || this == FIXED;
+		}
 	}
 
 	abstract class FixedSizedIterable<T> implements SizedIterable<T> {
