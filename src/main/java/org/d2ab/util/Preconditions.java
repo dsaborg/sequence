@@ -93,8 +93,10 @@ public abstract class Preconditions {
 			                                    maxSizeName + " (" + maxSize + "): " + size);
 	}
 
-	public static void requireFinite(SizedIterable<?> iterable, String message) {
+	public static <S extends SizedIterable<T>, T> S requireFinite(S iterable, String message) {
 		if (iterable.sizeType() == INFINITE)
 			throw new IllegalStateException(message);
+
+		return iterable;
 	}
 }

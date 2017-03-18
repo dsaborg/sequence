@@ -1117,6 +1117,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * Filter the elements in this {@code Sequence}, keeping only the elements that match the given {@link Predicate}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
 	 */
 	default Sequence<T> filter(Predicate<? super T> predicate) {
 		requireNonNull(predicate, "predicate");
@@ -1139,11 +1142,14 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * Filter the elements in this {@code Sequence}, keeping only the elements are instances of the given
 	 * {@link Class}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
 	 *
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
-	default <U> Sequence<U> filter(Class<? extends U> targetClass) {
+	default <U> Sequence<U> filter(Class<U> targetClass) {
 		requireNonNull(targetClass, "targetClass");
 
 		return (Sequence<U>) filter(targetClass::isInstance);
@@ -1354,6 +1360,14 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Collect the elements in this {@code Sequence} into a {@link SortedSet} ordered by the given {@code comparator},
+	 * which may be null to indicate natural ordering.
+	 */
+	default SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
+		return collectInto(new TreeSet<>(comparator));
+	}
+
+	/**
 	 * Convert this {@code Sequence} of {@link Map.Entry} values into a {@link Map}.
 	 *
 	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
@@ -1535,6 +1549,29 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Convert this {@code Sequence} of {@link Map.Entry} into a {@link SortedMap} ordered by the given comparator.
+	 *
+	 * @throws ClassCastException if this {@code Sequence} is not of {@link Map.Entry}.
+	 */
+	default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator) {
+		return toMap(() -> new TreeMap<K, V>(comparator));
+	}
+
+	/**
+	 * Convert this {@code Sequence} into a {@link SortedMap} ordered by the given comparator, using the given key
+	 * mapper {@link Function} and value mapper {@link Function} to convert each element into a {@link SortedMap}
+	 * entry.
+	 */
+	default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator,
+	                                           Function<? super T, ? extends K> keyMapper,
+	                                           Function<? super T, ? extends V> valueMapper) {
+		requireNonNull(keyMapper, "keyMapper");
+		requireNonNull(valueMapper, "valueMapper");
+
+		return toMap(() -> new TreeMap<K, V>(comparator), keyMapper, valueMapper);
+	}
+
+	/**
 	 * Collect this {@code Sequence} into a {@link Collection} instance created by the given constructor.
 	 */
 	default <U extends Collection<T>> U toCollection(Supplier<? extends U> constructor) {
@@ -1674,7 +1711,29 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return the first element of this {@code Sequence} or an empty {@link Optional} if there are no elements in the
+	 * Fold this {@code Sequence} into a single result by iteratively applying the given binary operator to the current
+	 * result and each element in this sequence, starting with the given identity as the initial result.
+	 */
+	default <U> U fold(U identity, BiFunction<? super U, ? super T, ? extends U> operator) {
+		requireNonNull(operator, "operator");
+
+		requireFinite(this, "Infinite Sequence");
+
+		return Iterators.fold(iterator(), identity, operator);
+	}
+
+	/**
+	 * @return an arbitrary element in this {@code Sequence}, or an empty {@link Optional} if there are no elements in
+	 * the {@code Sequence}.
+	 *
+	 * @since 2.4
+	 */
+	default Optional<T> arbitrary() {
+		return first();
+	}
+
+	/**
+	 * @return the first element of this {@code Sequence}, or an empty {@link Optional} if there are no elements in the
 	 * {@code Sequence}.
 	 */
 	default Optional<T> first() {
@@ -1682,7 +1741,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return the last element of this {@code Sequence} or an empty {@link Optional} if there are no elements in the
+	 * @return the last element of this {@code Sequence}, or an empty {@link Optional} if there are no elements in the
 	 * {@code Sequence}.
 	 */
 	default Optional<T> last() {
@@ -1704,9 +1763,24 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * @return an arbitrary element in this {@code Sequence} matching the given {@link Predicate}, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 2.4
+	 */
+	default Optional<T> arbitrary(Predicate<? super T> predicate) {
+		return first(predicate);
+	}
+
+	/**
 	 * @return the first element of this {@code Sequence} that matches the given predicate, or an empty
-	 * {@link Optional}
-	 * if there are no matching elements in the {@code Sequence}.
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
 	 *
 	 * @since 1.2
 	 */
@@ -1719,6 +1793,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * @return the last element of this {@code Sequence} the matches the given predicate, or an empty {@link Optional}
 	 * if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
 	 *
 	 * @since 1.2
 	 */
@@ -1744,12 +1821,28 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * @return an arbitrary element in this {@code Sequence} that is an instance of the given {@link Class}, or an
+	 * empty {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 2.4
+	 */
+	default <U> Optional<U> arbitrary(Class<U> targetClass) {
+		return first(targetClass);
+	}
+
+	/**
 	 * @return the first element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
 	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
 	 *
 	 * @since 1.2
 	 */
-	default <U> Optional<U> first(Class<? extends U> targetClass) {
+	default <U> Optional<U> first(Class<U> targetClass) {
 		requireNonNull(targetClass, "targetClass");
 
 		return at(0, targetClass);
@@ -1758,16 +1851,19 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * @return the last element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
 	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
 	 *
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
-	default <U> Optional<U> last(Class<? extends U> target) {
-		requireNonNull(target, "target");
+	default <U> Optional<U> last(Class<U> targetClass) {
+		requireNonNull(targetClass, "targetClass");
 
 		requireFinite(this, "Infinite Sequence");
 
-		return (Optional<U>) last(target::isInstance);
+		return (Optional<U>) last(targetClass::isInstance);
 	}
 
 	/**
@@ -1777,11 +1873,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
-	default <U> Optional<U> at(int index, Class<? extends U> target) {
+	default <U> Optional<U> at(int index, Class<? extends U> targetClass) {
 		requireAtLeastZero(index, "index");
-		requireNonNull(target, "target");
+		requireNonNull(targetClass, "targetClass");
 
-		return (Optional<U>) at(index, target::isInstance);
+		return (Optional<U>) at(index, targetClass::isInstance);
 	}
 
 	/**
@@ -2192,27 +2288,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * comparator is {@code null}.
 	 */
 	default Sequence<T> sorted(Comparator<? super T> comparator) {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return Iterators.unmodifiable(Lists.sort(Sequence.this.toList(), comparator));
-			}
-
-			@Override
-			public SizeType sizeType() {
-				return Sequence.this.sizeType();
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return Sequence.this.isEmpty();
-			}
-		};
+		return new SortedSequence<>(this, comparator);
 	}
 
 	/**

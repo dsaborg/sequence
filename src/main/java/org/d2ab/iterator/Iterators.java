@@ -167,6 +167,18 @@ public abstract class Iterators {
 	}
 
 	/**
+	 * Fold the given iterator into a single result by iteratively applying the given binary operator to
+	 * the current result and each element in this sequence, starting with the given identity as the initial result.
+	 */
+	public static <T, U> U fold(Iterator<? extends T> iterator, U identity,
+	                            BiFunction<? super U, ? super T, ? extends U> operator) {
+		U result = identity;
+		while (iterator.hasNext())
+			result = operator.apply(result, iterator.next());
+		return result;
+	}
+
+	/**
 	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
 	 * items
 	 * than the index.
