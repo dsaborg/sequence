@@ -192,6 +192,22 @@ public abstract class Iterators {
 	}
 
 	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
+	 * items
+	 * than the index.
+	 */
+	public static <T> Optional<T> removeAt(Iterator<? extends T> iterator, int index) {
+		skip(iterator, index);
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T next = iterator.next();
+		iterator.remove();
+
+		return Optional.of(next);
+	}
+
+	/**
 	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no elements in
 	 * the {@link Iterator}.
 	 */
@@ -201,7 +217,26 @@ public abstract class Iterators {
 
 		T last;
 		do
-			last = iterator.next(); while (iterator.hasNext());
+			last = iterator.next();
+		while (iterator.hasNext());
+
+		return Optional.of(last);
+	}
+
+	/**
+	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no elements in
+	 * the {@link Iterator}.
+	 */
+	public static <T> Optional<T> removeLast(Iterator<? extends T> iterator) {
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T last;
+		do
+			last = iterator.next();
+		while (iterator.hasNext());
+
+		iterator.remove();
 
 		return Optional.of(last);
 	}

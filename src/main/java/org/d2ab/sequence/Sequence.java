@@ -1881,6 +1881,164 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * @return an arbitrary element in this {@code Sequence}, or an empty {@link Optional} if there are no elements in
+	 * the {@code Sequence}.
+	 *
+	 * @since 2.4
+	 */
+	default Optional<T> removeArbitrary() {
+		return removeFirst();
+	}
+
+	/**
+	 * @return the first element of this {@code Sequence}, or an empty {@link Optional} if there are no elements in the
+	 * {@code Sequence}.
+	 */
+	default Optional<T> removeFirst() {
+		return removeAt(0);
+	}
+
+	/**
+	 * @return the last element of this {@code Sequence}, or an empty {@link Optional} if there are no elements in the
+	 * {@code Sequence}.
+	 */
+	default Optional<T> removeLast() {
+		requireFinite(this, "Infinite Sequence");
+
+		return Iterators.removeLast(iterator());
+	}
+
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@code Sequence} is smaller than the
+	 * index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> removeAt(int index) {
+		requireAtLeastZero(index, "index");
+
+		return Iterators.removeAt(iterator(), index);
+	}
+
+	/**
+	 * @return an arbitrary element in this {@code Sequence} matching the given {@link Predicate}, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 2.4
+	 */
+	default Optional<T> removeArbitrary(Predicate<? super T> predicate) {
+		return removeFirst(predicate);
+	}
+
+	/**
+	 * @return the first element of this {@code Sequence} that matches the given predicate, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> removeFirst(Predicate<? super T> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		return removeAt(0, predicate);
+	}
+
+	/**
+	 * @return the last element of this {@code Sequence} the matches the given predicate, or an empty {@link Optional}
+	 * if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the predicate, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> removeLast(Predicate<? super T> predicate) {
+		requireNonNull(predicate, "predicate");
+
+		requireFinite(this, "Infinite Sequence");
+
+		return filter(predicate).removeLast();
+	}
+
+	/**
+	 * @return the element at the given index out of the elements matching the given predicate, or an empty {@link
+	 * Optional} if the {@code Sequence} of matching elements is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	default Optional<T> removeAt(int index, Predicate<? super T> predicate) {
+		requireAtLeastZero(index, "index");
+		requireNonNull(predicate, "predicate");
+
+		return filter(predicate).removeAt(index);
+	}
+
+	/**
+	 * @return an arbitrary element in this {@code Sequence} that is an instance of the given {@link Class}, or an
+	 * empty {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 2.4
+	 */
+	default <U> Optional<U> removeArbitrary(Class<U> targetClass) {
+		return removeFirst(targetClass);
+	}
+
+	/**
+	 * @return the first element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 1.2
+	 */
+	default <U> Optional<U> removeFirst(Class<U> targetClass) {
+		requireNonNull(targetClass, "targetClass");
+
+		return removeAt(0, targetClass);
+	}
+
+	/**
+	 * @return the last element of this {@code Sequence} that is an instance of the given {@link Class}, or an empty
+	 * {@link Optional} if there are no matching elements in the {@code Sequence}.
+	 * <p>
+	 * This method does not guarantee the order in which items are tested against the class, items may be tested in
+	 * arbitrary order rather tha iteration order.
+	 *
+	 * @since 1.2
+	 */
+	@SuppressWarnings("unchecked")
+	default <U> Optional<U> removeLast(Class<U> targetClass) {
+		requireNonNull(targetClass, "targetClass");
+
+		requireFinite(this, "Infinite Sequence");
+
+		return (Optional<U>) removeLast(targetClass::isInstance);
+	}
+
+	/**
+	 * @return the element at the given index out of the elements that are instances of the given {@link Class}, or an
+	 * empty {@link Optional} if the {@code Sequence} of matching elements is smaller than the index.
+	 *
+	 * @since 1.2
+	 */
+	@SuppressWarnings("unchecked")
+	default <U> Optional<U> removeAt(int index, Class<? extends U> targetClass) {
+		requireAtLeastZero(index, "index");
+		requireNonNull(targetClass, "targetClass");
+
+		return (Optional<U>) removeAt(index, targetClass::isInstance);
+	}
+
+	/**
 	 * Pair the elements of this {@code Sequence} into a sequence of overlapping {@link Entry} elements. Each entry
 	 * overlaps the value item with the key item of the next entry. If there is only one item in the sequence, the
 	 * first entry returned has that item as a key and null as the value.
@@ -2663,34 +2821,14 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in reverse order.
 	 */
 	default Sequence<T> reverse() {
-		return new EquivalentSizeSequence<>(this, ReverseIterator::new);
+		return new ReverseSequence<>(this);
 	}
 
 	/**
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order.
 	 */
 	default Sequence<T> shuffle() {
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList()));
-			}
-
-			@Override
-			public SizeType sizeType() {
-				return Sequence.this.sizeType();
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return Sequence.this.isEmpty();
-			}
-		};
+		return shuffle(new Random());
 	}
 
 	/**
@@ -2700,27 +2838,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Sequence<T> shuffle(Random random) {
 		requireNonNull(random, "random");
 
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList(), random));
-			}
-
-			@Override
-			public SizeType sizeType() {
-				return Sequence.this.sizeType();
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return Sequence.this.isEmpty();
-			}
-		};
+		return shuffle(() -> random);
 	}
 
 	/**
@@ -2733,28 +2851,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Sequence<T> shuffle(Supplier<? extends Random> randomSupplier) {
 		requireNonNull(randomSupplier, "randomSupplier");
 
-		return new Sequence<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
-				return Iterators.unmodifiable(Lists.shuffle(Sequence.this.toList(), random));
-			}
-
-			@Override
-			public SizeType sizeType() {
-				return Sequence.this.sizeType();
-			}
-
-			@Override
-			public int size() {
-				return Sequence.this.size();
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return Sequence.this.isEmpty();
-			}
-		};
+		return new ShuffledSequence<T>(this, randomSupplier);
 	}
 
 	/**

@@ -204,6 +204,10 @@ public interface SizedIterable<T> extends Iterable<T> {
 		public boolean known() {
 			return this == AVAILABLE || this == FIXED;
 		}
+
+		public boolean unknown() {
+			return !known();
+		}
 	}
 
 	abstract class FixedSizedIterable<T> implements SizedIterable<T> {

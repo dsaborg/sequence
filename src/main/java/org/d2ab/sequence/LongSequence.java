@@ -1153,7 +1153,8 @@ public interface LongSequence extends LongCollection, SizedIterable<Long> {
 
 		long last;
 		do
-			last = iterator.nextLong(); while (iterator.hasNext());
+			last = iterator.nextLong();
+		while (iterator.hasNext());
 
 		return OptionalLong.of(last);
 	}

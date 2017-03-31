@@ -1154,7 +1154,8 @@ public interface IntSequence extends IntCollection, SizedIterable<Integer> {
 
 		int last;
 		do
-			last = iterator.nextInt(); while (iterator.hasNext());
+			last = iterator.nextInt();
+		while (iterator.hasNext());
 
 		return OptionalInt.of(last);
 	}

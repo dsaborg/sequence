@@ -22,6 +22,7 @@ import org.d2ab.collection.Maps;
 import org.d2ab.collection.SizedIterable;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.test.SequentialCollector;
+import org.d2ab.test.Tests;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -147,6 +148,9 @@ public class SequenceTest {
 				{"SortedSequence",
 				 (BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>>) (lm, xs) ->
 						 newSortedSequence(lm, xs)},
+				{"ReverseSequence",
+				 (BiFunction<Function<Object[], List<Object>>, Object[], Sequence<?>>) (lm, xs) ->
+						 newReverseSequence(lm, xs)},
 				};
 	}
 
@@ -206,6 +210,17 @@ public class SequenceTest {
 		}
 
 		return Sequence.from(SizedIterable.from(list));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Sequence<T> newReverseSequence(Function<T[], List<T>> listMaker, T[] xs) {
+		List<T> list = listMaker.apply(xs);
+		if (list instanceof ArrayList) {
+			return Sequence.from(SizedIterable.from(list));
+		}
+
+		List<T> copy = Lists.reverse(new ArrayList<>(list));
+		return Sequence.from(listMaker.apply((T[]) copy.toArray())).reverse();
 	}
 
 	@Test
@@ -796,7 +811,7 @@ public class SequenceTest {
 		Sequence<Integer> mutableSkipOne = mutableFive.skip(1);
 		twice(() -> assertThat(mutableSkipOne, containsSized(2, 3, 4, 5)));
 
-		assertThat(removeFirst(mutableSkipOne), is(2));
+		assertThat(Tests.removeFirst(mutableSkipOne), is(2));
 		twice(() -> assertThat(mutableSkipOne, containsSized(3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 3, 4, 5)));
 
@@ -827,7 +842,7 @@ public class SequenceTest {
 		Sequence<Integer> mutableSkipTailOne = mutableFive.skipTail(1);
 		twice(() -> assertThat(mutableSkipTailOne, containsSized(1, 2, 3, 4)));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSkipTailOne));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSkipTailOne));
 		twice(() -> assertThat(mutableSkipTailOne, containsSized(1, 2, 3, 4)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -872,7 +887,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeLimitedToFour, containsFixed(1, 2, 3)));
 
 		Sequence<Integer> mutableLimitedToThree = mutableFive.limit(3);
-		assertThat(removeFirst(mutableLimitedToThree), is(1));
+		assertThat(Tests.removeFirst(mutableLimitedToThree), is(1));
 		twice(() -> assertThat(mutableLimitedToThree, containsSized(2, 3, 4)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -917,7 +932,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineLimitTailToFour, containsFixed(6, 7, 8, 9)));
 
 		Sequence<Integer> mutableLimitTailToFour = mutableFive.limitTail(4);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableLimitTailToFour));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableLimitTailToFour));
 		twice(() -> assertThat(mutableLimitTailToFour, containsSized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -938,7 +953,7 @@ public class SequenceTest {
 		twice(() -> assertThat(appended, containsFixed(1, 2, 3, 4, 5, 6, 7, 8)));
 
 		Sequence<Integer> mutableAppended = mutableFive.append(Iterables.of(6, 7)).append(Iterables.of(8, 9));
-		assertThat(removeFirst(mutableAppended), is(1));
+		assertThat(Tests.removeFirst(mutableAppended), is(1));
 		twice(() -> assertThat(mutableAppended, containsSized(2, 3, 4, 5, 6, 7, 8, 9)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -957,7 +972,7 @@ public class SequenceTest {
 
 		Sequence<Integer> mutableAppended = mutableFive.append(new ArrayList<>(Lists.of(6, 7)))
 		                                               .append(new ArrayList<>(Lists.of(8, 9)));
-		assertThat(removeFirst(mutableAppended), is(1));
+		assertThat(Tests.removeFirst(mutableAppended), is(1));
 		twice(() -> assertThat(mutableAppended, containsSized(2, 3, 4, 5, 6, 7, 8, 9)));
 	}
 
@@ -1105,7 +1120,7 @@ public class SequenceTest {
 		twice(() -> assertThat(twoFiltered, containsUnsized(2)));
 
 		Sequence<Integer> mutableFiltered = mutableFive.filter(x -> (x % 2) == 0);
-		assertThat(removeFirst(mutableFiltered), is(2));
+		assertThat(Tests.removeFirst(mutableFiltered), is(2));
 		twice(() -> assertThat(mutableFiltered, containsUnsized(4)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 3, 4, 5)));
 
@@ -1126,7 +1141,7 @@ public class SequenceTest {
 		twice(() -> assertThat(twoFiltered, containsUnsized(2)));
 
 		Sequence<Integer> mutableFiltered = mutableFive.filterIndexed((x, i) -> i > 0);
-		assertThat(removeFirst(mutableFiltered), is(2));
+		assertThat(Tests.removeFirst(mutableFiltered), is(2));
 		twice(() -> assertThat(mutableFiltered, containsUnsized(3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 3, 4, 5)));
 
@@ -1152,7 +1167,7 @@ public class SequenceTest {
 		twice(() -> assertThat(chars, containsUnsized('x', 'y', 'z')));
 
 		Sequence<Integer> mutable = mutableFive.filter(Integer.class);
-		assertThat(removeFirst(mutable), is(1));
+		assertThat(Tests.removeFirst(mutable), is(1));
 		twice(() -> assertThat(mutable, containsUnsized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -1170,7 +1185,7 @@ public class SequenceTest {
 		twice(() -> assertThat(filteredGreater, containsUnsized(67, 5, 3, 5)));
 
 		Sequence<Integer> filteredMutable = mutableFive.filterBack((p, x) -> p == null || p < x);
-		assertThat(removeFirst(filteredMutable), is(1));
+		assertThat(Tests.removeFirst(filteredMutable), is(1));
 		twice(() -> assertThat(filteredMutable, containsUnsized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -1188,7 +1203,7 @@ public class SequenceTest {
 		twice(() -> assertThat(filteredGreater, containsUnsized(67, 5, 3, 5)));
 
 		Sequence<Integer> filteredMutable = mutableFive.filterBack(0, (p, x) -> p < x);
-		assertThat(removeFirst(filteredMutable), is(1));
+		assertThat(Tests.removeFirst(filteredMutable), is(1));
 		twice(() -> assertThat(filteredMutable, containsUnsized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -1206,7 +1221,7 @@ public class SequenceTest {
 		twice(() -> assertThat(filteredGreater, containsUnsized(5, 3, 5, 7, 5, 67)));
 
 		Sequence<Integer> filteredMutable = mutableFive.filterForward((x, n) -> n == null || x < n);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(filteredMutable));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(filteredMutable));
 		twice(() -> assertThat(filteredMutable, containsUnsized(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 	}
@@ -1224,7 +1239,7 @@ public class SequenceTest {
 		twice(() -> assertThat(filteredGreater, containsUnsized(5, 3, 5, 7, 5, 67)));
 
 		Sequence<Integer> filteredMutable = mutableFive.filterForward(117, (x, n) -> x < n);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(filteredMutable));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(filteredMutable));
 		twice(() -> assertThat(filteredMutable, containsUnsized(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 	}
@@ -1245,7 +1260,7 @@ public class SequenceTest {
 		twice(() -> assertThat(includingNone, is(emptyUnsizedIterable())));
 
 		Sequence<Integer> mutableIncludingSome = mutableFive.including(1, 3, 5, 17);
-		assertThat(removeFirst(mutableIncludingSome), is(1));
+		assertThat(Tests.removeFirst(mutableIncludingSome), is(1));
 		twice(() -> assertThat(mutableIncludingSome, containsUnsized(3, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -1266,7 +1281,7 @@ public class SequenceTest {
 		twice(() -> assertThat(includingNone, is(emptyUnsizedIterable())));
 
 		Sequence<Integer> includingMutable = mutableFive.including(Iterables.of(1, 3, 5, 17));
-		assertThat(removeFirst(includingMutable), is(1));
+		assertThat(Tests.removeFirst(includingMutable), is(1));
 		twice(() -> assertThat(includingMutable, containsUnsized(3, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -1287,7 +1302,7 @@ public class SequenceTest {
 		twice(() -> assertThat(excludingNone, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> excludingMutable = mutableFive.excluding(1, 3, 5, 17);
-		assertThat(removeFirst(excludingMutable), is(2));
+		assertThat(Tests.removeFirst(excludingMutable), is(2));
 		twice(() -> assertThat(excludingMutable, containsUnsized(4)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 3, 4, 5)));
 	}
@@ -1308,7 +1323,7 @@ public class SequenceTest {
 		twice(() -> assertThat(excludingNone, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> excludingMutable = mutableFive.excluding(Iterables.of(1, 3, 5, 17));
-		assertThat(removeFirst(excludingMutable), is(2));
+		assertThat(Tests.removeFirst(excludingMutable), is(2));
 		twice(() -> assertThat(excludingMutable, containsUnsized(4)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 3, 4, 5)));
 	}
@@ -1325,7 +1340,7 @@ public class SequenceTest {
 		Sequence<Integer> fiveFlatMapped = _12345.flatten(appendZero);
 		twice(() -> assertThat(fiveFlatMapped, containsSized(1, 0, 2, 0, 3, 0, 4, 0, 5, 0)));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(fiveFlatMapped));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(fiveFlatMapped));
 		twice(() -> assertThat(fiveFlatMapped, containsSized(1, 0, 2, 0, 3, 0, 4, 0, 5, 0)));
 	}
 
@@ -1341,7 +1356,7 @@ public class SequenceTest {
 		Sequence<Integer> fiveFlatMapped = _12345.flatten(appendZero);
 		twice(() -> assertThat(fiveFlatMapped, containsSized(1, 0, 2, 0, 3, 0, 4, 0, 5, 0)));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(fiveFlatMapped));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(fiveFlatMapped));
 		twice(() -> assertThat(fiveFlatMapped, containsSized(1, 0, 2, 0, 3, 0, 4, 0, 5, 0)));
 	}
 
@@ -1392,7 +1407,7 @@ public class SequenceTest {
 				.flatten();
 		twice(() -> assertThat(flattened, containsSized(1, 2, 3, 4, 5, 6)));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(flattened));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(flattened));
 		twice(() -> assertThat(flattened, containsSized(1, 2, 3, 4, 5, 6)));
 	}
 
@@ -1520,7 +1535,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveMapped, containsFixed("1", "2", "3", "4", "5")));
 
 		Sequence<String> mutableMapped = mutableFive.map(Object::toString);
-		assertThat(removeFirst(mutableMapped), is("1"));
+		assertThat(Tests.removeFirst(mutableMapped), is("1"));
 		twice(() -> assertThat(mutableMapped, containsSized("2", "3", "4", "5")));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -1545,7 +1560,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveMapped, containsFixed("1", "2", "3", "4", "5")));
 
 		Sequence<String> mutableMapped = mutableFive.biMap(Object::toString, Integer::parseInt);
-		assertThat(removeFirst(mutableMapped), is("1"));
+		assertThat(Tests.removeFirst(mutableMapped), is("1"));
 		twice(() -> assertThat(mutableMapped, containsSized("2", "3", "4", "5")));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -1593,7 +1608,7 @@ public class SequenceTest {
 			return String.valueOf(x);
 		});
 		index.set(0);
-		assertThat(removeFirst(mutableMapped), is("1"));
+		assertThat(Tests.removeFirst(mutableMapped), is("1"));
 		twice(() -> {
 			index.set(0);
 			assertThat(mutableMapped, containsSized("2", "3", "4", "5"));
@@ -1635,7 +1650,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveMappedBackToCurrent, containsFixed(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutableMappedBackToCurrent = mutableFive.mapBack((p, c) -> c);
-		assertThat(removeFirst(mutableMappedBackToCurrent), is(1));
+		assertThat(Tests.removeFirst(mutableMappedBackToCurrent), is(1));
 		twice(() -> assertThat(mutableMappedBackToCurrent, containsSized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -1659,7 +1674,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveMappedForwardToNext, containsFixed(2, 3, 4, 5, null)));
 
 		Sequence<Integer> mutableMappedForwardToCurrent = mutableFive.mapForward((c, n) -> c);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableMappedForwardToCurrent));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableMappedForwardToCurrent));
 		twice(() -> assertThat(mutableMappedForwardToCurrent, containsSized(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -1683,7 +1698,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveMappedBackToCurrent, containsFixed(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutableMappedBackToCurrent = mutableFive.mapBack(117, (p, n) -> n);
-		assertThat(removeFirst(mutableMappedBackToCurrent), is(1));
+		assertThat(Tests.removeFirst(mutableMappedBackToCurrent), is(1));
 		twice(() -> assertThat(mutableMappedBackToCurrent, containsSized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -1707,7 +1722,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveMappedForwardToNext, containsFixed(2, 3, 4, 5, 117)));
 
 		Sequence<Integer> mutableMappedForwardToCurrent = mutableFive.mapForward(117, (c, n) -> c);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableMappedForwardToCurrent));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableMappedForwardToCurrent));
 		twice(() -> assertThat(mutableMappedForwardToCurrent, containsSized(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -1732,7 +1747,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveCast, containsFixed(1, 2, 3, 4, 5)));
 
 		Sequence<Number> mutableCast = mutableFive.cast(Number.class);
-		assertThat(removeFirst(mutableCast), is(1));
+		assertThat(Tests.removeFirst(mutableCast), is(1));
 		twice(() -> assertThat(mutableCast, containsSized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -1760,7 +1775,7 @@ public class SequenceTest {
 		twiceIndexed(value, 5, () -> assertThat(fivePeeked, containsFixed(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutablePeeked = mutableFive.peek(x -> assertThat(x, is(value.getAndIncrement())));
-		assertThat(removeFirst(mutablePeeked), is(1));
+		assertThat(Tests.removeFirst(mutablePeeked), is(1));
 		twiceIndexed(value, 4, () -> assertThat(mutablePeeked, containsSized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -1822,7 +1837,7 @@ public class SequenceTest {
 			assertThat(x, is(value.getAndIncrement()));
 			assertThat(i, is(index.getAndIncrement()));
 		});
-		assertThat(removeFirst(mutablePeeked), is(1));
+		assertThat(Tests.removeFirst(mutablePeeked), is(1));
 		index.set(0);
 		value.set(2);
 
@@ -1864,7 +1879,7 @@ public class SequenceTest {
 			assertThat(n, is(value.getAndIncrement()));
 			assertThat(p, is(index.getAndIncrement() == 0 ? null : n - 1));
 		});
-		assertThat(removeFirst(mutablePeekingBack), is(1));
+		assertThat(Tests.removeFirst(mutablePeekingBack), is(1));
 		assertThat(mutablePeekingBack.size(), is(4));
 		twice(() -> {
 			index.set(0);
@@ -1899,7 +1914,7 @@ public class SequenceTest {
 			assertThat(current, is(value.getAndIncrement()));
 			assertThat(next, is(current == 5 ? null : current + 1));
 		});
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutablePeekingForward));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutablePeekingForward));
 		twice(() -> {
 			value.set(1);
 			assertThat(mutablePeekingForward, containsSized(1, 2, 3, 4, 5));
@@ -1935,7 +1950,7 @@ public class SequenceTest {
 			assertThat(n, is(value.getAndIncrement()));
 			assertThat(p, is(index.getAndIncrement() == 0 ? 117 : n - 1));
 		});
-		assertThat(removeFirst(mutablePeekingBack), is(1));
+		assertThat(Tests.removeFirst(mutablePeekingBack), is(1));
 		assertThat(mutablePeekingBack.size(), is(4));
 		twice(() -> {
 			index.set(0);
@@ -1971,7 +1986,7 @@ public class SequenceTest {
 			assertThat(current, is(value.getAndIncrement()));
 			assertThat(next, is(current == 5 ? 117 : current + 1));
 		});
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutablePeekingForward));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutablePeekingForward));
 		twice(() -> {
 			value.set(1);
 			assertThat(mutablePeekingForward, containsSized(1, 2, 3, 4, 5));
@@ -2009,7 +2024,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineUntil5, containsUnsized(1, 2, 3, 4)));
 
 		Sequence<Integer> mutableUntil3 = mutableFive.until(3);
-		assertThat(removeFirst(mutableUntil3), is(1));
+		assertThat(Tests.removeFirst(mutableUntil3), is(1));
 		twice(() -> assertThat(mutableUntil3, containsUnsized(2)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -2030,7 +2045,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveUntilNull, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutableUntilNull = mutableFive.untilNull();
-		assertThat(removeFirst(mutableUntilNull), is(1));
+		assertThat(Tests.removeFirst(mutableUntilNull), is(1));
 		twice(() -> assertThat(mutableUntilNull, containsUnsized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -2045,7 +2060,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineUntilEqual5, containsUnsized(1, 2, 3, 4)));
 
 		Sequence<Integer> mutableUntilEqual3 = mutableFive.until(i -> i == 3);
-		assertThat(removeFirst(mutableUntilEqual3), is(1));
+		assertThat(Tests.removeFirst(mutableUntilEqual3), is(1));
 		twice(() -> assertThat(mutableUntilEqual3, containsUnsized(2)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -2066,7 +2081,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveEndingAt10, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutableEndingAt3 = mutableFive.endingAt(3);
-		assertThat(removeFirst(mutableEndingAt3), is(1));
+		assertThat(Tests.removeFirst(mutableEndingAt3), is(1));
 		twice(() -> assertThat(mutableEndingAt3, containsUnsized(2, 3)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -2084,7 +2099,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fiveEndingAtNull, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutableEndingAtNull = mutableFive.endingAtNull();
-		assertThat(removeFirst(mutableEndingAtNull), is(1));
+		assertThat(Tests.removeFirst(mutableEndingAtNull), is(1));
 		twice(() -> assertThat(mutableEndingAtNull, containsUnsized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 	}
@@ -2099,7 +2114,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineEndingAtEqual5, containsUnsized(1, 2, 3, 4, 5)));
 
 		Sequence<Integer> mutableEndingAtEqual3 = mutableFive.endingAt(i -> i == 3);
-		assertThat(removeFirst(mutableEndingAtEqual3), is(1));
+		assertThat(Tests.removeFirst(mutableEndingAtEqual3), is(1));
 		twice(() -> assertThat(mutableEndingAtEqual3, containsUnsized(2, 3)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -2117,7 +2132,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineStartingAfter5, containsUnsized(6, 7, 8, 9)));
 
 		Sequence<Integer> mutableStartingAfter3 = mutableFive.startingAfter(3);
-		assertThat(removeFirst(mutableStartingAfter3), is(4));
+		assertThat(Tests.removeFirst(mutableStartingAfter3), is(4));
 		twice(() -> assertThat(mutableStartingAfter3, containsUnsized(5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 5)));
 
@@ -2135,7 +2150,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineStartingAfterEqual5, containsUnsized(6, 7, 8, 9)));
 
 		Sequence<Integer> mutableStartingAfterEqual3 = mutableFive.startingAfter(i -> i == 3);
-		assertThat(removeFirst(mutableStartingAfterEqual3), is(4));
+		assertThat(Tests.removeFirst(mutableStartingAfterEqual3), is(4));
 		twice(() -> assertThat(mutableStartingAfterEqual3, containsUnsized(5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 5)));
 
@@ -2153,7 +2168,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineStartingFrom5, containsUnsized(5, 6, 7, 8, 9)));
 
 		Sequence<Integer> mutableStartingFrom3 = mutableFive.startingFrom(3);
-		assertThat(removeFirst(mutableStartingFrom3), is(3));
+		assertThat(Tests.removeFirst(mutableStartingFrom3), is(3));
 		twice(() -> assertThat(mutableStartingFrom3, is(emptyUnsizedIterable())));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 4, 5)));
 
@@ -2171,7 +2186,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineStartingFromEqual5, containsUnsized(5, 6, 7, 8, 9)));
 
 		Sequence<Integer> mutableStartingFromEqual3 = mutableFive.startingFrom(i -> i == 3);
-		assertThat(removeFirst(mutableStartingFromEqual3), is(3));
+		assertThat(Tests.removeFirst(mutableStartingFromEqual3), is(3));
 		twice(() -> assertThat(mutableStartingFromEqual3, is(emptyUnsizedIterable())));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 4, 5)));
 
@@ -2865,6 +2880,156 @@ public class SequenceTest {
 		});
 	}
 
+	@Test
+	public void removeArbitrary() {
+		assertThat(mutableFive.removeArbitrary().get(),
+		           is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(5))));
+		assertThat(mutableFive.size(), is(4));
+
+		assertThat(mutableFive.removeArbitrary().get(),
+		           is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(5))));
+		assertThat(mutableFive.size(), is(3));
+	}
+
+	@Test
+	public void removeFirst() {
+		assertThat(mutableFive.removeFirst(Integer.class), is(Optional.of(1)));
+		assertThat(mutableFive, contains(2, 3, 4, 5));
+
+		assertThat(mutableFive.removeFirst(Integer.class), is(Optional.of(2)));
+		assertThat(mutableFive, contains(3, 4, 5));
+	}
+
+	@Test
+	public void removeLast() {
+		assertThat(mutableFive.removeLast(), is(Optional.of(5)));
+		assertThat(mutableFive, contains(1, 2, 3, 4));
+
+		assertThat(mutableFive.removeLast(), is(Optional.of(4)));
+		assertThat(mutableFive, contains(1, 2, 3));
+	}
+
+	@Test
+	public void removeAt() {
+		assertThat(mutableFive.removeAt(0), is(Optional.of(1)));
+		assertThat(mutableFive, contains(2, 3, 4, 5));
+
+		assertThat(mutableFive.removeAt(1), is(Optional.of(3)));
+		assertThat(mutableFive, contains(2, 4, 5));
+
+		assertThat(mutableFive.removeAt(2), is(Optional.of(5)));
+		assertThat(mutableFive, contains(2, 4));
+
+		assertThat(mutableFive.removeAt(3), is(Optional.empty()));
+		assertThat(mutableFive, contains(2, 4));
+	}
+
+	@Test
+	public void removeArbitraryByPredicate() {
+		assertThat(mutableFive.removeArbitrary(x -> x > 5), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeArbitrary(x -> x > 1).get(),
+		           is(both(greaterThanOrEqualTo(2)).and(lessThanOrEqualTo(5))));
+		assertThat(mutableFive.size(), is(4));
+
+		assertThat(mutableFive.removeArbitrary(x -> x > 1).get(),
+		           is(both(greaterThanOrEqualTo(2)).and(lessThanOrEqualTo(5))));
+		assertThat(mutableFive.size(), is(3));
+	}
+
+	@Test
+	public void removeFirstByPredicate() {
+		assertThat(mutableFive.removeFirst(Double.class), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeFirst(Integer.class), is(Optional.of(1)));
+		assertThat(mutableFive, contains(2, 3, 4, 5));
+
+		assertThat(mutableFive.removeFirst(Integer.class), is(Optional.of(2)));
+		assertThat(mutableFive, contains(3, 4, 5));
+	}
+
+	@Test
+	public void removeLastByPredicate() {
+		assertThat(mutableFive.removeLast(Double.class), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeLast(Integer.class), is(Optional.of(5)));
+		assertThat(mutableFive, contains(1, 2, 3, 4));
+
+		assertThat(mutableFive.removeLast(Integer.class), is(Optional.of(4)));
+		assertThat(mutableFive, contains(1, 2, 3));
+	}
+
+	@Test
+	public void removeAtByPredicate() {
+		assertThat(mutableFive.removeAt(0, x -> x > 5), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeAt(0, x -> x > 1), is(Optional.of(2)));
+		assertThat(mutableFive, contains(1, 3, 4, 5));
+
+		assertThat(mutableFive.removeAt(1, x -> x > 1), is(Optional.of(4)));
+		assertThat(mutableFive, contains(1, 3, 5));
+
+		assertThat(mutableFive.removeAt(2, x -> x > 1), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 3, 5));
+	}
+
+	@Test
+	public void removeArbitraryByClass() {
+		assertThat(mutableFive.removeArbitrary(Double.class), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeArbitrary(Integer.class).get(),
+		           is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(5))));
+		assertThat(mutableFive.size(), is(4));
+
+		assertThat(mutableFive.removeArbitrary(Integer.class).get(),
+		           is(both(greaterThanOrEqualTo(1)).and(lessThanOrEqualTo(5))));
+		assertThat(mutableFive.size(), is(3));
+	}
+
+	@Test
+	public void removeFirstByClass() {
+		assertThat(mutableFive.removeFirst(Double.class), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeFirst(Integer.class), is(Optional.of(1)));
+		assertThat(mutableFive, contains(2, 3, 4, 5));
+
+		assertThat(mutableFive.removeFirst(Integer.class), is(Optional.of(2)));
+		assertThat(mutableFive, contains(3, 4, 5));
+	}
+
+	@Test
+	public void removeLastByClass() {
+		assertThat(mutableFive.removeLast(Double.class), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeLast(Integer.class), is(Optional.of(5)));
+		assertThat(mutableFive, contains(1, 2, 3, 4));
+
+		assertThat(mutableFive.removeLast(Integer.class), is(Optional.of(4)));
+		assertThat(mutableFive, contains(1, 2, 3));
+	}
+
+	@Test
+	public void removeAtByClass() {
+		assertThat(mutableFive.removeAt(0, Double.class), is(Optional.empty()));
+		assertThat(mutableFive, contains(1, 2, 3, 4, 5));
+
+		assertThat(mutableFive.removeAt(0, Integer.class), is(Optional.of(1)));
+		assertThat(mutableFive, contains(2, 3, 4, 5));
+
+		assertThat(mutableFive.removeAt(1, Integer.class), is(Optional.of(3)));
+		assertThat(mutableFive, contains(2, 4, 5));
+
+		assertThat(mutableFive.removeAt(2, Integer.class), is(Optional.of(5)));
+		assertThat(mutableFive, contains(2, 4));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void entries() {
@@ -2875,7 +3040,7 @@ public class SequenceTest {
 		Sequence<Entry<Integer, Integer>> oneEntries = _1.entries();
 		twice(() -> assertThat(oneEntries, containsFixed(Maps.entry(1, null))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneEntries));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneEntries));
 		twice(() -> assertThat(oneEntries, containsFixed(Maps.entry(1, null))));
 
 		Sequence<Entry<Integer, Integer>> twoEntries = _12.entries();
@@ -2903,7 +3068,7 @@ public class SequenceTest {
 		Sequence<Pair<Integer, Integer>> onePaired = _1.pairs();
 		twice(() -> assertThat(onePaired, containsFixed(Pair.of(1, null))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(onePaired));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(onePaired));
 		twice(() -> assertThat(onePaired, containsFixed(Pair.of(1, null))));
 
 		Sequence<Pair<Integer, Integer>> twoPaired = _12.pairs();
@@ -2930,7 +3095,7 @@ public class SequenceTest {
 		Sequence<Entry<Integer, Integer>> oneEntries = _1.adjacentEntries();
 		twice(() -> assertThat(oneEntries, containsFixed(Maps.entry(1, null))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneEntries));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneEntries));
 		twice(() -> assertThat(oneEntries, containsFixed(Maps.entry(1, null))));
 
 		Sequence<Entry<Integer, Integer>> twoEntries = _12.adjacentEntries();
@@ -2960,7 +3125,7 @@ public class SequenceTest {
 		Sequence<Pair<Integer, Integer>> onePaired = _1.adjacentPairs();
 		twice(() -> assertThat(onePaired, containsFixed(Pair.of(1, null))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(onePaired));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(onePaired));
 		twice(() -> assertThat(onePaired, containsFixed(Pair.of(1, null))));
 
 		Sequence<Pair<Integer, Integer>> twoPaired = _12.adjacentPairs();
@@ -2998,7 +3163,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeBiSequence, containsFixed(Pair.of(1, "1"), Pair.of(2, "2"), Pair.of(3, "3"))));
 
 		BiSequence<Integer, String> mutableBiSequence = newMutableSequence(Pair.of(1, "1")).toBiSequence();
-		assertThat(removeFirst(mutableBiSequence), is(Pair.of(1, "1")));
+		assertThat(Tests.removeFirst(mutableBiSequence), is(Pair.of(1, "1")));
 		twice(() -> assertThat(mutableBiSequence, is(emptySizedIterable())));
 
 		BiSequence<Integer, Integer> sizePassThroughBiSequence = sizePassThrough.toBiSequence();
@@ -3026,7 +3191,7 @@ public class SequenceTest {
 		                       containsFixed(Maps.entry(1, "1"), Maps.entry(2, "2"), Maps.entry(3, "3"))));
 
 		EntrySequence<Integer, String> mutableEntrySequence = newMutableSequence(Maps.entry(1, "1")).toEntrySequence();
-		assertThat(removeFirst(mutableEntrySequence), is(Maps.entry(1, "1")));
+		assertThat(Tests.removeFirst(mutableEntrySequence), is(Maps.entry(1, "1")));
 		twice(() -> assertThat(mutableEntrySequence, is(emptySizedIterable())));
 
 		EntrySequence<Integer, Integer> sizePassThroughEntrySequence = sizePassThrough.toEntrySequence();
@@ -3044,7 +3209,7 @@ public class SequenceTest {
 		Sequence<Sequence<Integer>> oneWindowed = _1.window(3);
 		twice(() -> assertThat(oneWindowed, containsFixed(containsSized(1))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneWindowed));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneWindowed));
 		twice(() -> assertThat(oneWindowed, containsFixed(containsSized(1))));
 
 		Sequence<Sequence<Integer>> twoWindowed = _12.window(3);
@@ -3075,7 +3240,7 @@ public class SequenceTest {
 		Sequence<Sequence<Integer>> oneWindowed = _1.window(3, 2);
 		twice(() -> assertThat(oneWindowed, containsUnsized(containsSized(1))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneWindowed));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneWindowed));
 		twice(() -> assertThat(oneWindowed, containsUnsized(containsSized(1))));
 
 		Sequence<Sequence<Integer>> twoWindowed = _12.window(3, 2);
@@ -3106,7 +3271,7 @@ public class SequenceTest {
 		Sequence<Sequence<Integer>> oneWindowed = _1.window(3, 4);
 		twice(() -> assertThat(oneWindowed, containsUnsized(containsSized(1))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneWindowed));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneWindowed));
 		twice(() -> assertThat(oneWindowed, containsUnsized(containsSized(1))));
 
 		Sequence<Sequence<Integer>> twoWindowed = _12.window(3, 4);
@@ -3136,7 +3301,7 @@ public class SequenceTest {
 		Sequence<Sequence<Integer>> oneBatched = _1.batch(3);
 		twice(() -> assertThat(oneBatched, containsFixed(containsSized(1))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneBatched));
 		twice(() -> assertThat(oneBatched, containsFixed(containsSized(1))));
 
 		Sequence<Sequence<Integer>> twoBatched = _12.batch(3);
@@ -3174,7 +3339,7 @@ public class SequenceTest {
 		Sequence<Sequence<Integer>> oneBatched = _1.batch((a, b) -> a > b);
 		twice(() -> assertThat(oneBatched, containsUnsized(containsSized(1))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(oneBatched));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(oneBatched));
 		twice(() -> assertThat(oneBatched, containsUnsized(containsSized(1))));
 
 		Sequence<Sequence<Integer>> twoBatched = _12.batch((a, b) -> a > b);
@@ -3231,7 +3396,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineSplit, containsUnsized(containsSized(1, 2), containsSized(4, 5, 6, 7, 8, 9))));
 
 		Sequence<Sequence<Integer>> mutableSplit = mutableFive.split(3);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSplit));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSplit));
 		twice(() -> assertThat(mutableSplit, containsUnsized(containsSized(1, 2), containsSized(4, 5))));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 	}
@@ -3270,7 +3435,7 @@ public class SequenceTest {
 		                       containsUnsized(containsSized(1, 2), containsSized(4, 5), containsSized(7, 8))));
 
 		Sequence<Sequence<Integer>> mutableSplit = mutableFive.split(x -> x % 3 == 0);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSplit));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSplit));
 		twice(() -> assertThat(mutableSplit, containsUnsized(containsSized(1, 2), containsSized(4, 5))));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 	}
@@ -3326,7 +3491,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineDistinct, containsUnsized(67, 5, 43, 3, 7, 24)));
 
 		Sequence<Integer> mutableDistinct = mutableFive.distinct();
-		assertThat(removeFirst(mutableDistinct), is(1));
+		assertThat(Tests.removeFirst(mutableDistinct), is(1));
 		twice(() -> assertThat(mutableDistinct, containsUnsized(2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -3353,7 +3518,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineSorted, containsFixed(3, 5, 5, 5, 7, 24, 43, 67, 67)));
 
 		Sequence<Integer> mutableSorted = mutableFive.sorted();
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSorted));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSorted));
 		twice(() -> assertThat(mutableSorted, containsSized(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -3378,7 +3543,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineSorted, containsFixed(67, 67, 43, 24, 7, 5, 5, 5, 3)));
 
 		Sequence<Integer> mutableSorted = mutableFive.sorted(reverseOrder());
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSorted));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSorted));
 		twice(() -> assertThat(mutableSorted, containsSized(5, 4, 3, 2, 1)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -3548,7 +3713,7 @@ public class SequenceTest {
 		twice(() -> assertThat(fourDelimited, containsFixed(1, ", ", 2, ", ", 3, ", ", 4)));
 
 		Sequence<?> mutableDelimited = mutableFive.delimit(", ");
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableDelimited));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableDelimited));
 		twice(() -> assertThat(mutableDelimited, containsSized(1, ", ", 2, ", ", 3, ", ", 4, ", ", 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -3573,7 +3738,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threePrefixed, containsFixed("[", 1, 2, 3)));
 
 		Sequence<?> mutablePrefixed = mutableFive.prefix("[");
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutablePrefixed));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutablePrefixed));
 		twice(() -> assertThat(mutablePrefixed, containsSized("[", 1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -3602,7 +3767,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeSuffixed, containsFixed(1, 2, 3, "]")));
 
 		Sequence<?> mutableSuffixed = mutableFive.suffix("]");
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSuffixed));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSuffixed));
 		twice(() -> assertThat(mutableSuffixed, containsSized(1, 2, 3, 4, 5, "]")));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -3717,7 +3882,7 @@ public class SequenceTest {
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null),
 		                                     Pair.of(5, null))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(interleavedShortFirst));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(interleavedShortFirst));
 		twice(() -> assertThat(interleavedShortLast,
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null),
 		                                     Pair.of(5, null))));
@@ -3756,7 +3921,7 @@ public class SequenceTest {
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null),
 		                                     Pair.of(5, null))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(interleavedShortFirst));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(interleavedShortFirst));
 		twice(() -> assertThat(interleavedShortLast,
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3), Pair.of(4, null),
 		                                     Pair.of(5, null))));
@@ -3792,7 +3957,7 @@ public class SequenceTest {
 		twice(() -> assertThat(interleavedShortLast,
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(interleavedShortFirst));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(interleavedShortFirst));
 		twice(() -> assertThat(interleavedShortLast,
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
 
@@ -3828,7 +3993,7 @@ public class SequenceTest {
 		twice(() -> assertThat(interleavedShortLast,
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
 
-		expecting(UnsupportedOperationException.class, () -> removeFirst(interleavedShortFirst));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(interleavedShortFirst));
 		twice(() -> assertThat(interleavedShortLast,
 		                       containsFixed(Pair.of(1, 1), Pair.of(2, 2), Pair.of(3, 3))));
 
@@ -3877,7 +4042,7 @@ public class SequenceTest {
 		if (reversed instanceof ListSequence) {
 			// covered by ListSequenceTest
 		} else {
-			expecting(UnsupportedOperationException.class, () -> removeFirst(reversed));
+			expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(reversed));
 			twice(() -> assertThat(reversed, containsSized(5, 4, 3, 2, 1)));
 			twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 		}
@@ -3911,7 +4076,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> mutableShuffled = mutableFive.shuffle();
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableShuffled));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableShuffled));
 		twice(() -> assertThat(mutableShuffled, containsInAnyOrder(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -3948,7 +4113,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> mutableShuffled = mutableFive.shuffle(new Random(17));
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableShuffled));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableShuffled));
 		twice(() -> assertThat(mutableShuffled, containsInAnyOrder(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableShuffled.sizeType(), is(AVAILABLE)));
 		twice(() -> assertThat(mutableShuffled.size(), is(5)));
@@ -3987,7 +4152,7 @@ public class SequenceTest {
 		twice(() -> assertThat(nineShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> mutableShuffled = mutableFive.shuffle(() -> new Random(17));
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableShuffled));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableShuffled));
 		twice(() -> assertThat(mutableShuffled, containsInAnyOrder(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableShuffled.sizeType(), is(AVAILABLE)));
 		twice(() -> assertThat(mutableShuffled.size(), is(5)));
@@ -4121,7 +4286,7 @@ public class SequenceTest {
 		twice(() -> assertThat(charSeq.isEmpty(), is(false)));
 
 		CharSeq mutableCharSeq = mutableFive.toChars(x -> (char) (x + 'a' - 1));
-		assertThat(removeFirst(mutableCharSeq), is('a'));
+		assertThat(Tests.removeFirst(mutableCharSeq), is('a'));
 		twice(() -> assertThat(mutableCharSeq, containsChars('b', 'c', 'd', 'e')));
 		twice(() -> assertThat(mutableCharSeq.size(), is(4)));
 		twice(() -> assertThat(mutableCharSeq.isEmpty(), is(false)));
@@ -4139,7 +4304,7 @@ public class SequenceTest {
 		twice(() -> assertThat(intSequence.isEmpty(), is(false)));
 
 		IntSequence mutableIntSequence = mutableFive.toInts(x -> x + 1);
-		assertThat(removeFirst(mutableIntSequence), is(2));
+		assertThat(Tests.removeFirst(mutableIntSequence), is(2));
 		twice(() -> assertThat(mutableIntSequence, containsInts(3, 4, 5, 6)));
 		twice(() -> assertThat(mutableIntSequence.size(), is(4)));
 		twice(() -> assertThat(mutableIntSequence.isEmpty(), is(false)));
@@ -4157,7 +4322,7 @@ public class SequenceTest {
 		twice(() -> assertThat(longSequence.isEmpty(), is(false)));
 
 		LongSequence mutableLongSequence = mutableFive.toLongs(x -> x + 1);
-		assertThat(removeFirst(mutableLongSequence), is(2L));
+		assertThat(Tests.removeFirst(mutableLongSequence), is(2L));
 		twice(() -> assertThat(mutableLongSequence, containsLongs(3, 4, 5, 6)));
 		twice(() -> assertThat(mutableLongSequence.size(), is(4)));
 		twice(() -> assertThat(mutableLongSequence.isEmpty(), is(false)));
@@ -4175,7 +4340,7 @@ public class SequenceTest {
 		twice(() -> assertThat(doubleSequence.isEmpty(), is(false)));
 
 		DoubleSequence mutableDoubleSequence = mutableFive.toDoubles(x -> x + 1);
-		assertThat(removeFirst(mutableDoubleSequence), is(2.0));
+		assertThat(Tests.removeFirst(mutableDoubleSequence), is(2.0));
 		twice(() -> assertThat(mutableDoubleSequence, containsDoubles(3, 4, 5, 6)));
 		twice(() -> assertThat(mutableDoubleSequence.size(), is(4)));
 		twice(() -> assertThat(mutableDoubleSequence.isEmpty(), is(false)));
@@ -4197,7 +4362,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeRepeated, is(infiniteBeginningWith(1, 2, 3, 1, 2, 3, 1, 2))));
 
 		Sequence<Integer> mutableRepeated = mutableFive.repeat();
-		assertThat(removeFirst(mutableRepeated), is(1));
+		assertThat(Tests.removeFirst(mutableRepeated), is(1));
 		twice(() -> assertThat(mutableRepeated, beginsWith(2, 3, 4, 5, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableRepeated.sizeType(), is(UNAVAILABLE)));
 		twice(() -> assertThat(mutableRepeated.isEmpty(), is(false)));
@@ -4236,7 +4401,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeRepeatedTwice, containsFixed(1, 2, 3, 1, 2, 3)));
 
 		Sequence<Integer> mutableRepeatedTwice = mutableFive.repeat(2);
-		assertThat(removeFirst(mutableRepeatedTwice), is(1));
+		assertThat(Tests.removeFirst(mutableRepeatedTwice), is(1));
 		twice(() -> assertThat(mutableRepeatedTwice, containsUnsized(2, 3, 4, 5, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));
 
@@ -4303,7 +4468,7 @@ public class SequenceTest {
 		twice(() -> assertThat(swapTwoWithEverything, containsFixed(1, 3, 4, 5, 2)));
 
 		Sequence<Integer> mutableSwapTwoWithEverything = mutableFive.swap((a, b) -> a == 2);
-		expecting(UnsupportedOperationException.class, () -> removeFirst(mutableSwapTwoWithEverything));
+		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableSwapTwoWithEverything));
 		twice(() -> assertThat(mutableSwapTwoWithEverything, containsSized(1, 3, 4, 5, 2)));
 		twice(() -> assertThat(mutableFive, containsSized(1, 2, 3, 4, 5)));
 
@@ -4324,7 +4489,7 @@ public class SequenceTest {
 		                                                  Pair.of(4, 5))));
 
 		BiSequence<Integer, Integer> mutableIndexed = mutableFive.index();
-		assertThat(removeFirst(mutableIndexed), is(Pair.of(0, 1)));
+		assertThat(Tests.removeFirst(mutableIndexed), is(Pair.of(0, 1)));
 		twice(() -> assertThat(mutableIndexed, containsSized(Pair.of(0, 2), Pair.of(1, 3), Pair.of(2, 4),
 		                                                     Pair.of(3, 5))));
 		twice(() -> assertThat(mutableFive, containsSized(2, 3, 4, 5)));

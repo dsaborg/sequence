@@ -258,6 +258,22 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Optional<T> first() {
+		if (list.isEmpty())
+			return Optional.empty();
+
+		return Optional.of(list.get(0));
+	}
+
+	@Override
+	public Optional<T> last() {
+		if (list.isEmpty())
+			return Optional.empty();
+
+		return Optional.of(list.get(list.size() - 1));
+	}
+
+	@Override
 	public Optional<T> at(int index) {
 		if (index >= list.size())
 			return Optional.empty();
@@ -266,11 +282,27 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> last() {
-		if (list.size() < 1)
+	public Optional<T> removeFirst() {
+		if (list.isEmpty())
 			return Optional.empty();
 
-		return Optional.of(list.get(list.size() - 1));
+		return Optional.of(list.remove(0));
+	}
+
+	@Override
+	public Optional<T> removeLast() {
+		if (list.isEmpty())
+			return Optional.empty();
+
+		return Optional.of(list.remove(list.size() - 1));
+	}
+
+	@Override
+	public Optional<T> removeAt(int index) {
+		if (index >= list.size())
+			return Optional.empty();
+
+		return Optional.of(list.remove(index));
 	}
 
 	@Override

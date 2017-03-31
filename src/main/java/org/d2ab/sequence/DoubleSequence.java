@@ -993,7 +993,8 @@ public interface DoubleSequence extends DoubleCollection, SizedIterable<Double> 
 
 		double last;
 		do
-			last = iterator.nextDouble(); while (iterator.hasNext());
+			last = iterator.nextDouble();
+		while (iterator.hasNext());
 
 		return OptionalDouble.of(last);
 	}

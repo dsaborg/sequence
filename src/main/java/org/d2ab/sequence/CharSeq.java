@@ -1065,7 +1065,8 @@ public interface CharSeq extends CharCollection, SizedIterable<Character> {
 
 		char last;
 		do
-			last = iterator.nextChar(); while (iterator.hasNext());
+			last = iterator.nextChar();
+		while (iterator.hasNext());
 
 		return OptionalChar.of(last);
 	}
