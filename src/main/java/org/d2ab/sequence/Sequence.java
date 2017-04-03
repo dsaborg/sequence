@@ -34,6 +34,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.naturalOrder;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
@@ -1299,14 +1300,24 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
+	 * Collect the elements in this {@code Sequence} into an {@code Object}-array.
+	 */
+	default Object[] toArray() {
+		return toArray(Object[]::new);
+	}
+
+	/**
 	 * Collect the elements in this {@code Sequence} into an array of the type determined by the given array
 	 * constructor.
 	 */
-	default <A> A[] toArray(IntFunction<? extends A[]> constructor) {
+	default <A> A[] toArray(IntFunction<A[]> constructor) {
 		requireNonNull(constructor, "constructor");
 
-		List<T> list = toList();
-		return list.toArray(constructor.apply(list.size()));
+		int size = sizeIfKnown();
+		if (size != -1)
+			return Iterators.toArray(iterator(), constructor.apply(size));
+		else
+			return Iterators.toArray(iterator(), constructor);
 	}
 
 	/**
@@ -1737,7 +1748,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * {@code Sequence}.
 	 */
 	default Optional<T> first() {
-		return at(0);
+		requireAtLeastZero(0, "index");
+
+		return Iterators.first(iterator());
 	}
 
 	/**
@@ -1758,6 +1771,13 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 */
 	default Optional<T> at(int index) {
 		requireAtLeastZero(index, "index");
+
+		if (index == 0)
+			return first();
+
+		int size = sizeIfKnown();
+		if (size != -1 && index == size - 1)
+			return last();
 
 		return Iterators.get(iterator(), index);
 	}
@@ -1787,7 +1807,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Optional<T> first(Predicate<? super T> predicate) {
 		requireNonNull(predicate, "predicate");
 
-		return at(0, predicate);
+		return filter(predicate).first();
 	}
 
 	/**
@@ -1842,10 +1862,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @since 1.2
 	 */
+	@SuppressWarnings("unchecked")
 	default <U> Optional<U> first(Class<U> targetClass) {
 		requireNonNull(targetClass, "targetClass");
 
-		return at(0, targetClass);
+		return (Optional<U>) filter(targetClass::isInstance).first();
 	}
 
 	/**
@@ -1863,7 +1884,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		requireFinite(this, "Infinite Sequence");
 
-		return (Optional<U>) last(targetClass::isInstance);
+		return (Optional<U>) filter(targetClass::isInstance).last();
 	}
 
 	/**
@@ -1877,7 +1898,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 		requireAtLeastZero(index, "index");
 		requireNonNull(targetClass, "targetClass");
 
-		return (Optional<U>) at(index, targetClass::isInstance);
+		return (Optional<U>) filter(targetClass::isInstance).at(index);
 	}
 
 	/**
@@ -1895,7 +1916,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * {@code Sequence}.
 	 */
 	default Optional<T> removeFirst() {
-		return removeAt(0);
+		return Iterators.removeFirst(iterator());
 	}
 
 	/**
@@ -1945,7 +1966,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Optional<T> removeFirst(Predicate<? super T> predicate) {
 		requireNonNull(predicate, "predicate");
 
-		return removeAt(0, predicate);
+		return filter(predicate).removeFirst();
 	}
 
 	/**
@@ -2000,10 +2021,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @since 1.2
 	 */
+	@SuppressWarnings("unchecked")
 	default <U> Optional<U> removeFirst(Class<U> targetClass) {
 		requireNonNull(targetClass, "targetClass");
 
-		return removeAt(0, targetClass);
+		return (Optional<U>) filter(targetClass::isInstance).removeFirst();
 	}
 
 	/**
@@ -2021,7 +2043,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		requireFinite(this, "Infinite Sequence");
 
-		return (Optional<U>) removeLast(targetClass::isInstance);
+		return (Optional<U>) filter(targetClass::isInstance).removeLast();
 	}
 
 	/**
@@ -2035,7 +2057,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 		requireAtLeastZero(index, "index");
 		requireNonNull(targetClass, "targetClass");
 
-		return (Optional<U>) removeAt(index, targetClass::isInstance);
+		return (Optional<U>) filter(targetClass::isInstance).removeAt(index);
 	}
 
 	/**
@@ -2452,27 +2474,36 @@ public interface Sequence<T> extends IterableCollection<T> {
 	/**
 	 * @return the minimal element in this {@code Sequence} according to their natural order. Elements in the sequence
 	 * must all implement {@link Comparable} or a {@link ClassCastException} will be thrown at traversal.
+	 * <p>
+	 * If more than one element compare as the minimum according to the natural comparator, an arbitrary choice will
+	 * be returned out of the possible minimums.
 	 *
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default Optional<T> min() {
-		return min((Comparator) Comparator.naturalOrder());
+		return min((Comparator) naturalOrder());
 	}
 
 	/**
 	 * @return the maximum element in this {@code Sequence} according to their natural order. Elements in the sequence
 	 * must all implement {@link Comparable} or a {@link ClassCastException} will be thrown at traversal.
+	 * <p>
+	 * If more than one element compare as the maximum according to the natural comparator, an arbitrary choice will
+	 * be returned out of the possible maximums.
 	 *
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	default Optional<T> max() {
-		return max((Comparator) Comparator.naturalOrder());
+		return max((Comparator) naturalOrder());
 	}
 
 	/**
 	 * @return the minimal element in this {@code Sequence} according to the given {@link Comparator}.
+	 * <p>
+	 * If more than one element compare as the minimum according to the given {@code comparator}, an arbitrary choice
+	 * will be returned out of the possible minimums.
 	 */
 	default Optional<T> min(Comparator<? super T> comparator) {
 		requireNonNull(comparator, "comparator");
@@ -2482,6 +2513,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 	/**
 	 * @return the maximum element in this {@code Sequence} according to the given {@link Comparator}.
+	 * <p>
+	 * If more than one element compare as the maximum according to the given {@code comparator}, an arbitrary choice
+	 * will be returned out of the possible maximums.
 	 */
 	default Optional<T> max(Comparator<? super T> comparator) {
 		requireNonNull(comparator, "comparator");

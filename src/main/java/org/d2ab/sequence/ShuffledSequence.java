@@ -1,11 +1,8 @@
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Lists;
-import org.d2ab.iterator.Iterators;
+import org.d2ab.iterator.ShufflingArrayIterator;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -23,85 +20,14 @@ class ShuffledSequence<T> extends ReorderedSequence<T> {
 		this.randomSupplier = requireNonNull(randomSupplier);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<T> iterator() {
-		return Iterators.unmodifiable(Lists.shuffle(original.toList(), randomSupplier.get()));
+		return new ShufflingArrayIterator<>((T[]) parent.toArray(), randomSupplier.get());
 	}
 
 	@Override
-	public Optional<T> first() {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.first();
-
-		return original.at(randomIndex);
-	}
-
-	@Override
-	public Optional<T> last() {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.last();
-
-		return original.at(randomIndex);
-	}
-
-	@Override
-	public Optional<T> at(int index) {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.at(index);
-
-		return original.at(randomIndex);
-	}
-
-	@Override
-	public Optional<T> removeFirst() {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.removeFirst();
-
-		return original.removeAt(randomIndex);
-	}
-
-	@Override
-	public Optional<T> removeLast() {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.removeLast();
-
-		return original.removeAt(randomIndex);
-	}
-
-	@Override
-	public Optional<T> removeAt(int index) {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.removeAt(index);
-
-		return original.removeAt(randomIndex);
-	}
-
-	private int randomIndexIfKnown() {
-		int size = sizeIfKnown();
-		if (size == -1)
-			return -1;
-
-		return randomSupplier.get().nextInt(size);
-	}
-
-	@Override
-	protected Sequence<T> newInstance(Sequence<T> sequence) {
-		return new ShuffledSequence<>(sequence, randomSupplier);
-	}
-
-	@Override
-	public Sequence<T> sorted() {
-		return original.sorted();
-	}
-
-	@Override
-	public Sequence<T> sorted(Comparator<? super T> comparator) {
-		return original.sorted(comparator);
+	protected Sequence<T> withParent(Sequence<T> parent) {
+		return new ShuffledSequence<>(parent, randomSupplier);
 	}
 }

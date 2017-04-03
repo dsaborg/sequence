@@ -3,175 +3,159 @@ package org.d2ab.sequence;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 import static org.d2ab.util.Preconditions.requireFinite;
 
 abstract class ReorderedSequence<T> implements Sequence<T> {
-	protected final Sequence<T> original;
+	protected final Sequence<T> parent;
 
-	protected ReorderedSequence(Sequence<T> original) {
-		this.original = requireFinite(requireNonNull(original), "Infinite Sequence");
+	protected ReorderedSequence(Sequence<T> parent) {
+		this.parent = requireFinite(requireNonNull(parent), "Infinite Sequence");
 	}
 
 	@Override
 	public abstract Iterator<T> iterator();
 
-	protected abstract Sequence<T> newInstance(Sequence<T> original);
+	protected abstract Sequence<T> withParent(Sequence<T> parent);
 
 	@Override
 	public SizeType sizeType() {
-		return original.sizeType();
+		return parent.sizeType();
 	}
 
 	@Override
 	public int size() {
-		return original.size();
+		return parent.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return original.isEmpty();
+		return parent.isEmpty();
 	}
 
 	@Override
 	public Sequence<T> filter(Predicate<? super T> predicate) {
-		return newInstance(original.filter(predicate));
+		return withParent(parent.filter(predicate));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> Sequence<U> filter(Class<U> targetClass) {
-		return newInstance((Sequence) original.filter(targetClass));
+		return withParent((Sequence) parent.filter(targetClass));
 	}
 
 	@Override
 	public Optional<T> arbitrary() {
-		return original.arbitrary();
+		return parent.arbitrary();
 	}
 
 	@Override
 	public Optional<T> arbitrary(Predicate<? super T> predicate) {
-		return original.arbitrary(predicate);
+		return parent.arbitrary(predicate);
 	}
 
 	@Override
 	public <U> Optional<U> arbitrary(Class<U> targetClass) {
-		return original.arbitrary(targetClass);
+		return parent.arbitrary(targetClass);
 	}
 
 	@Override
 	public Set<T> toSet() {
-		return original.toSet();
+		return parent.toSet();
 	}
 
 	@Override
 	public SortedSet<T> toSortedSet() {
-		return original.toSortedSet();
+		return parent.toSortedSet();
 	}
 
 	@Override
 	public SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
-		return original.toSortedSet(comparator);
+		return parent.toSortedSet(comparator);
 	}
 
 	@Override
 	public <K, V> Map<K, V> toMap() {
-		return original.toMap();
+		return parent.toMap();
 	}
 
 	@Override
 	public <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper,
 	                              Function<? super T, ? extends V> valueMapper) {
-		return original.toMap(keyMapper, valueMapper);
+		return parent.toMap(keyMapper, valueMapper);
 	}
 
 	@Override
 	public <K, V> SortedMap<K, V> toSortedMap() {
-		return original.toSortedMap();
+		return parent.toSortedMap();
 	}
 
 	@Override
 	public <K, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper,
 	                                          Function<? super T, ? extends V> valueMapper) {
-		return original.toSortedMap(keyMapper, valueMapper);
+		return parent.toSortedMap(keyMapper, valueMapper);
 	}
 
 	@Override
 	public <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator) {
-		return original.toSortedMap(comparator);
+		return parent.toSortedMap(comparator);
 	}
 
 	@Override
 	public <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator,
 	                                          Function<? super T, ? extends K> keyMapper,
 	                                          Function<? super T, ? extends V> valueMapper) {
-		return original.toSortedMap(comparator, keyMapper, valueMapper);
+		return parent.toSortedMap(comparator, keyMapper, valueMapper);
 	}
 
 	@Override
 	public Optional<T> min() {
-		return original.min();
+		return parent.min();
 	}
 
 	@Override
 	public Optional<T> max() {
-		return original.max();
+		return parent.max();
 	}
 
 	@Override
 	public Optional<T> min(Comparator<? super T> comparator) {
-		return original.min(comparator);
+		return parent.min(comparator);
 	}
 
 	@Override
 	public Optional<T> max(Comparator<? super T> comparator) {
-		return original.max(comparator);
+		return parent.max(comparator);
 	}
 
 	@Override
 	public boolean all(Predicate<? super T> predicate) {
-		return original.all(predicate);
+		return parent.all(predicate);
 	}
 
 	@Override
 	public boolean none(Predicate<? super T> predicate) {
-		return original.none(predicate);
+		return parent.none(predicate);
 	}
 
 	@Override
 	public boolean any(Predicate<? super T> predicate) {
-		return original.any(predicate);
+		return parent.any(predicate);
 	}
 
 	@Override
 	public boolean all(Class<?> target) {
-		return original.all(target);
+		return parent.all(target);
 	}
 
 	@Override
 	public boolean none(Class<?> targetClass) {
-		return original.none(targetClass);
+		return parent.none(targetClass);
 	}
 
 	@Override
 	public boolean any(Class<?> target) {
-		return original.any(target);
-	}
-
-	@Override
-	public Sequence<T> shuffle() {
-		return original.shuffle();
-	}
-
-	@Override
-	public Sequence<T> shuffle(Random random) {
-		return original.shuffle(random);
-	}
-
-	@Override
-	public Sequence<T> shuffle(Supplier<? extends Random> randomSupplier) {
-		return original.shuffle(randomSupplier);
+		return parent.any(target);
 	}
 }

@@ -4070,6 +4070,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> nineShuffled = _123456789.shuffle();
+		assertThat(nineShuffled.toList(), is(not(equalTo(nineShuffled.toList()))));
 		twice(() -> assertThat(nineShuffled, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 		twice(() -> assertThat(nineShuffled.sizeType(), is(FIXED)));
 		twice(() -> assertThat(nineShuffled.size(), is(9)));
@@ -4107,6 +4108,7 @@ public class SequenceTest {
 		twice(() -> assertThat(threeShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> nineShuffled = _123456789.shuffle(new Random(17));
+		assertThat(nineShuffled.toList(), is(not(equalTo(nineShuffled.toList()))));
 		twice(() -> assertThat(nineShuffled, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 		twice(() -> assertThat(nineShuffled.sizeType(), is(FIXED)));
 		twice(() -> assertThat(nineShuffled.size(), is(9)));
@@ -4126,7 +4128,7 @@ public class SequenceTest {
 	}
 
 	@Test
-	public void shuffleWithRandomSupplier() {
+	public void shuffleWithFixedRandomSupplier() {
 		Sequence<Integer> emptyShuffled = empty.shuffle(() -> new Random(17));
 		twice(() -> assertThat(emptyShuffled, is(emptyFixedIterable())));
 
@@ -4134,18 +4136,21 @@ public class SequenceTest {
 		twice(() -> assertThat(oneShuffled, containsFixed(1)));
 
 		Sequence<Integer> twoShuffled = _12.shuffle(() -> new Random(17));
+		assertThat(twoShuffled.toList(), is(equalTo(twoShuffled.toList())));
 		twice(() -> assertThat(twoShuffled, containsInAnyOrder(1, 2)));
 		twice(() -> assertThat(twoShuffled.sizeType(), is(FIXED)));
 		twice(() -> assertThat(twoShuffled.size(), is(2)));
 		twice(() -> assertThat(twoShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> threeShuffled = _123.shuffle(() -> new Random(17));
+		assertThat(threeShuffled.toList(), is(equalTo(threeShuffled.toList())));
 		twice(() -> assertThat(threeShuffled, containsInAnyOrder(1, 2, 3)));
 		twice(() -> assertThat(threeShuffled.sizeType(), is(FIXED)));
 		twice(() -> assertThat(threeShuffled.size(), is(3)));
 		twice(() -> assertThat(threeShuffled.isEmpty(), is(false)));
 
 		Sequence<Integer> nineShuffled = _123456789.shuffle(() -> new Random(17));
+		assertThat(nineShuffled.toList(), is(equalTo(nineShuffled.toList())));
 		twice(() -> assertThat(nineShuffled, containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9)));
 		twice(() -> assertThat(nineShuffled.sizeType(), is(FIXED)));
 		twice(() -> assertThat(nineShuffled.size(), is(9)));
@@ -4153,6 +4158,7 @@ public class SequenceTest {
 
 		Sequence<Integer> mutableShuffled = mutableFive.shuffle(() -> new Random(17));
 		expecting(UnsupportedOperationException.class, () -> Tests.removeFirst(mutableShuffled));
+		assertThat(mutableShuffled.toList(), is(equalTo(mutableShuffled.toList())));
 		twice(() -> assertThat(mutableShuffled, containsInAnyOrder(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(mutableShuffled.sizeType(), is(AVAILABLE)));
 		twice(() -> assertThat(mutableShuffled.size(), is(5)));

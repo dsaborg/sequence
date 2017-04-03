@@ -32,59 +32,77 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 		else if (comparator == reverseOrder())
 			return Sequence.generate(toReverseOrderPriorityQueue()::poll).untilNull().iterator();
 		else
-			return Iterators.unmodifiable(sort(original.toList(), comparator));
+			return Iterators.unmodifiable(sort(parent.toList(), comparator));
 	}
 
 	protected PriorityQueue<T> toNaturalOrderPriorityQueue() {
 		if (sizeType().known())
-			return new PriorityQueue<>(original);
+			return new PriorityQueue<>(parent);
 		else
-			return original.toCollection(PriorityQueue::new);
+			return parent.toCollection(PriorityQueue::new);
 	}
 
 	protected PriorityQueue<T> toReverseOrderPriorityQueue() {
-		return original.collectInto(new PriorityQueue<>(comparator));
+		return parent.collectInto(new PriorityQueue<>(comparator));
 	}
 
-	@SuppressWarnings("RedundantCast")
-	protected Comparator<? super T> mandatoryComparator() {
-		return comparator == null ? (Comparator) Comparator.naturalOrder() : comparator;
+	protected Sequence<T> withParent(Sequence<T> parent) {
+		return new SortedSequence<>(parent, comparator);
 	}
 
-	protected Sequence<T> newInstance(Sequence<T> sequence) {
-		return new SortedSequence<>(sequence, comparator);
+	@SuppressWarnings("unchecked")
+	private <U extends Comparable<U>> Sequence<U> comparable(Sequence<?> sequence) {
+		return (Sequence<U>) sequence;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Optional<T> firstMin(Sequence<T> sequence) {
+		if (comparator == null) {
+			return (Optional<T>) comparable(sequence).reduce((a, b) -> a.compareTo(b) <= 0 ? a : b);
+		} else {
+			return sequence.reduce((a, b) -> comparator.compare(a, b) <= 0 ? a : b);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Optional<T> lastMax(Sequence<T> sequence) {
+		if (comparator == null) {
+			return (Optional<T>) comparable(sequence).reduce((a, b) -> a.compareTo(b) > 0 ? a : b);
+		} else {
+			return sequence.reduce((a, b) -> comparator.compare(a, b) > 0 ? a : b);
+		}
 	}
 
 	@Override
 	public Optional<T> first() {
-		return original.min(mandatoryComparator());
+		return firstMin(parent);
 	}
 
 	@Override
 	public Optional<T> last() {
-		return original.max(mandatoryComparator());
+		return lastMax(parent);
 	}
 
 	@Override
 	public Optional<T> first(Predicate<? super T> predicate) {
-		return original.filter(predicate).min(mandatoryComparator());
+		return firstMin(parent.filter(predicate));
 	}
 
 	@Override
 	public Optional<T> last(Predicate<? super T> predicate) {
-		return original.filter(predicate).max(mandatoryComparator());
+		return lastMax(parent.filter(predicate));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> Optional<U> first(Class<U> targetClass) {
-		return original.filter(targetClass).min((Comparator<? super U>) mandatoryComparator());
+		return (Optional<U>) firstMin((Sequence<T>) parent.filter(targetClass));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> Optional<U> last(Class<U> targetClass) {
-		return original.filter(targetClass).max((Comparator<? super U>) mandatoryComparator());
+		return (Optional<U>) lastMax((Sequence<T>) parent.filter(targetClass));
 	}
 
 	@Override
@@ -92,7 +110,7 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 		if (comparator == null || comparator == naturalOrder())
 			return this;
 		else
-			return original.sorted();
+			return parent.sorted();
 	}
 
 	@Override
@@ -102,11 +120,11 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 		    (comparator == null || comparator == naturalOrder()))
 			return this;
 		else
-			return original.sorted(comparator);
+			return parent.sorted(comparator);
 	}
 
 	@Override
 	public Sequence<T> reverse() {
-		return original.sorted(reverseOrder(comparator));
+		return parent.reverse().sorted(reverseOrder(comparator));
 	}
 }

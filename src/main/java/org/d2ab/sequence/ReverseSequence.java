@@ -1,6 +1,6 @@
 package org.d2ab.sequence;
 
-import org.d2ab.iterator.ReverseIterator;
+import org.d2ab.iterator.ReverseArrayIterator;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -15,46 +15,25 @@ class ReverseSequence<T> extends ReorderedSequence<T> {
 		super(original);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<T> iterator() {
-		return new ReverseIterator<>(original.iterator());
+		return (Iterator<T>) new ReverseArrayIterator<>(parent.toArray());
 	}
 
 	@Override
-	protected Sequence<T> newInstance(Sequence<T> sequence) {
-		return new ReverseSequence<>(sequence);
+	protected Sequence<T> withParent(Sequence<T> parent) {
+		return new ReverseSequence<>(parent);
 	}
 
 	@Override
 	public Optional<T> first() {
-		return original.last();
+		return parent.last();
 	}
 
 	@Override
 	public Optional<T> last() {
-		return original.first();
-	}
-
-	@Override
-	public Optional<T> first(Predicate<? super T> predicate) {
-		return original.filter(predicate).last();
-	}
-
-	@Override
-	public Optional<T> last(Predicate<? super T> predicate) {
-		return original.filter(predicate).first();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <U> Optional<U> first(Class<U> targetClass) {
-		return original.filter(targetClass).last();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <U> Optional<U> last(Class<U> targetClass) {
-		return original.filter(targetClass).first();
+		return parent.first();
 	}
 
 	@Override
@@ -63,17 +42,39 @@ class ReverseSequence<T> extends ReorderedSequence<T> {
 		if (size == -1)
 			return super.at(index);
 
-		return index >= size ? Optional.empty() : original.at(size - index - 1);
+		return index >= size ? Optional.empty() : parent.at(size - index - 1);
+	}
+
+	@Override
+	public Optional<T> first(Predicate<? super T> predicate) {
+		return parent.filter(predicate).last();
+	}
+
+	@Override
+	public Optional<T> last(Predicate<? super T> predicate) {
+		return parent.filter(predicate).first();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <U> Optional<U> first(Class<U> targetClass) {
+		return parent.filter(targetClass).last();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <U> Optional<U> last(Class<U> targetClass) {
+		return parent.filter(targetClass).first();
 	}
 
 	@Override
 	public Optional<T> removeFirst() {
-		return original.removeLast();
+		return parent.removeLast();
 	}
 
 	@Override
 	public Optional<T> removeLast() {
-		return original.removeFirst();
+		return parent.removeFirst();
 	}
 
 	@Override
@@ -82,33 +83,33 @@ class ReverseSequence<T> extends ReorderedSequence<T> {
 		if (size == -1)
 			return super.removeAt(index);
 
-		return index >= size ? Optional.empty() : original.removeAt(size - index - 1);
+		return index >= size ? Optional.empty() : parent.removeAt(size - index - 1);
 	}
 
 	@Override
 	public Optional<T> removeFirst(Predicate<? super T> predicate) {
-		return original.filter(predicate).removeLast();
+		return parent.filter(predicate).removeLast();
 	}
 
 	@Override
 	public Optional<T> removeLast(Predicate<? super T> predicate) {
-		return original.filter(predicate).removeFirst();
+		return parent.filter(predicate).removeFirst();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> Optional<U> removeFirst(Class<U> targetClass) {
-		return original.filter(targetClass).removeLast();
+		return parent.filter(targetClass).removeLast();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> Optional<U> removeLast(Class<U> targetClass) {
-		return original.filter(targetClass).removeFirst();
+		return parent.filter(targetClass).removeFirst();
 	}
 
 	@Override
 	public Sequence<T> reverse() {
-		return original;
+		return parent;
 	}
 }

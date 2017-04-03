@@ -20,27 +20,28 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * An {@link Iterator} over an array of items.
+ * An {@link Iterator} over an array of items iterating in reverse order.
  */
-public class ArrayIterator<T> implements Iterator<T> {
+public class ReverseArrayIterator<T> implements Iterator<T> {
 	private final T[] items;
 	private int index;
 
 	@SafeVarargs
-	public ArrayIterator(T... items) {
+	public ReverseArrayIterator(T... items) {
 		this.items = items;
+		this.index = items.length - 1;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return index < items.length;
+		return index >= 0;
 	}
 
 	@Override
 	public T next() {
-		if (index >= items.length)
+		if (index < 0)
 			throw new NoSuchElementException();
 
-		return items[index++];
+		return items[index--];
 	}
 }

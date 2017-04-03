@@ -20,6 +20,7 @@ import org.d2ab.util.Doubles;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -218,5 +219,9 @@ public abstract class Arrayz {
 				return false;
 
 		return true;
+	}
+
+	public static <T> T[] shuffle(T[] contents, Random random) {
+		return contents;
 	}
 }

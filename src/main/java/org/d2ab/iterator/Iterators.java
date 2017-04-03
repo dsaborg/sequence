@@ -179,32 +179,14 @@ public abstract class Iterators {
 	}
 
 	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
-	 * items
-	 * than the index.
+	 * @return the first element in the given {@link Iterator} or an empty {@link Optional} if there are no elements in
+	 * the {@link Iterator}.
 	 */
-	public static <T> Optional<T> get(Iterator<? extends T> iterator, int index) {
-		skip(iterator, index);
+	public static <T> Optional<T> first(Iterator<? extends T> iterator) {
 		if (!iterator.hasNext())
 			return Optional.empty();
 
 		return Optional.of(iterator.next());
-	}
-
-	/**
-	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
-	 * items
-	 * than the index.
-	 */
-	public static <T> Optional<T> removeAt(Iterator<? extends T> iterator, int index) {
-		skip(iterator, index);
-		if (!iterator.hasNext())
-			return Optional.empty();
-
-		T next = iterator.next();
-		iterator.remove();
-
-		return Optional.of(next);
 	}
 
 	/**
@@ -224,8 +206,34 @@ public abstract class Iterators {
 	}
 
 	/**
-	 * @return the last element in the given {@link Iterator} or an empty {@link Optional} if there are no elements in
-	 * the {@link Iterator}.
+	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
+	 * items
+	 * than the index.
+	 */
+	public static <T> Optional<T> get(Iterator<? extends T> iterator, int index) {
+		skip(iterator, index);
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		return Optional.of(iterator.next());
+	}
+
+	/**
+	 * Removes and returns the first element in the given {@link Iterator} or an empty {@link Optional} if there are no
+	 * elements in the {@link Iterator}.
+	 */
+	public static <T> Optional<T> removeFirst(Iterator<? extends T> iterator) {
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T next = iterator.next();
+		iterator.remove();
+		return Optional.of(next);
+	}
+
+	/**
+	 * Removes and returns the last element in the given {@link Iterator} or an empty {@link Optional} if there are no
+	 * elements in the {@link Iterator}.
 	 */
 	public static <T> Optional<T> removeLast(Iterator<? extends T> iterator) {
 		if (!iterator.hasNext())
@@ -239,6 +247,22 @@ public abstract class Iterators {
 		iterator.remove();
 
 		return Optional.of(last);
+	}
+
+	/**
+	 * @return the element at the given index, or an empty {@link Optional} if the {@link Iterator} contains fewer
+	 * items
+	 * than the index.
+	 */
+	public static <T> Optional<T> removeAt(Iterator<? extends T> iterator, int index) {
+		skip(iterator, index);
+		if (!iterator.hasNext())
+			return Optional.empty();
+
+		T next = iterator.next();
+		iterator.remove();
+
+		return Optional.of(next);
 	}
 
 	/**
@@ -310,5 +334,31 @@ public abstract class Iterators {
 				return true;
 
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <A> A[] toArray(Iterator<?> iterator, A[] array) {
+		int cursor = 0;
+		while (iterator.hasNext())
+			array[cursor++] = (A) iterator.next();
+		return array;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <A> A[] toArray(Iterator<?> iterator, IntFunction<A[]> constructor) {
+		A[] array = constructor.apply(10);
+
+		int cursor = 0;
+		while (iterator.hasNext()) {
+			if (cursor == array.length)
+				array = Arrays.copyOf(array, array.length + (array.length >> 1));
+
+			array[cursor++] = (A) iterator.next();
+		}
+
+		if (array.length < cursor)
+			array = Arrays.copyOf(array, cursor);
+
+		return array;
 	}
 }
