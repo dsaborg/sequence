@@ -209,14 +209,14 @@ public abstract class Arrayz {
 	}
 
 	public static <T> T[] shuffle(T[] array, Random random) {
-		for (int i = array.length - 1; i >= 1; i--) {
-			int randomIndex = random.nextInt(i + 1);
-			if (randomIndex == i)
-				continue;
-
-			T temp = array[randomIndex];
-			array[randomIndex] = array[i];
-			array[i] = temp;
+		int length = array.length;
+		for (int i = 0, j = length; i < length - 1; i++, j--) {
+			int randomIndex = random.nextInt(j) + i;
+			if (randomIndex != i) {
+				T temp = array[randomIndex];
+				array[randomIndex] = array[i];
+				array[i] = temp;
+			}
 		}
 		return array;
 	}

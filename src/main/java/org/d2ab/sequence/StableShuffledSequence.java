@@ -17,7 +17,7 @@ import static java.util.Objects.requireNonNull;
  * {@link Random} instance supplied by a supplier, which is accessed on each iteration of the resulting
  * {@link Sequence}. Provides optimizations for certain operations.
  */
-class StableShuffledSequence<T> extends ReorderedSequence<T> {
+class StableShuffledSequence<T> extends StableReorderedSequence<T> {
 	private final Supplier<? extends Random> randomSupplier;
 
 	StableShuffledSequence(Sequence<T> parent, Supplier<? extends Random> randomSupplier) {
@@ -28,7 +28,7 @@ class StableShuffledSequence<T> extends ReorderedSequence<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<T> iterator() {
-		return (Iterator<T>) new ShufflingArrayIterator<>(toArray(), randomSupplier.get());
+		return (Iterator<T>) new ShufflingArrayIterator<>(parent.toArray(), randomSupplier.get());
 	}
 
 	@Override

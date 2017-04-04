@@ -17,7 +17,6 @@
 package org.d2ab.collection;
 
 import java.util.*;
-import java.util.Collections;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
@@ -26,6 +25,8 @@ import static java.util.Collections.*;
  * Utility methods for {@link List}s.
  */
 public abstract class Lists {
+	private static final int SHUFFLE_THRESHOLD = 5;
+
 	Lists() {
 	}
 
@@ -63,7 +64,29 @@ public abstract class Lists {
 	 * @return the given list shuffled using {@link Collections#shuffle(List, Random)}.
 	 */
 	public static <T> List<T> shuffle(List<T> list, Random random) {
-		Collections.shuffle(list, random);
+		int size = list.size();
+
+		if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
+			for (int i = 0, j = size; i < size - 1; i++, j--) {
+				int randomIndex = random.nextInt(j) + i;
+				if (randomIndex != i) {
+					T temp = list.get(randomIndex);
+					list.set(randomIndex, list.get(i));
+					list.set(i, temp);
+				}
+			}
+		} else {
+			Object[] array = list.toArray();
+
+			Arrayz.shuffle(array, random);
+
+			ListIterator it = list.listIterator();
+			for (int i = 0; i < size; i++) {
+				it.next();
+				it.set(array[i]);
+			}
+		}
+
 		return list;
 	}
 
@@ -79,22 +102,12 @@ public abstract class Lists {
 	}
 
 	/**
-	 * Swap the given items in the given {@link List}.
-	 */
-	public static <T> void swap(List<T> list, int i, int j) {
-		T temp = list.get(i);
-		list.set(i, list.get(j));
-		list.set(j, temp);
-	}
-
-	/**
 	 * Reverse the given {@link List} in place.
 	 *
 	 * @return the given {@link List}, reversed.
 	 */
 	public static <T> List<T> reverse(List<T> list) {
-		for (int i = 0; i < list.size() / 2; i++)
-			swap(list, i, list.size() - i - 1);
+		Collections.reverse(list);
 		return list;
 	}
 }

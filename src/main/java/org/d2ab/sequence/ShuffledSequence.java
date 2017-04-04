@@ -1,7 +1,14 @@
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
+import org.d2ab.iterator.ShufflingArrayIterator;
+
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 /**
@@ -10,21 +17,49 @@ import java.util.function.Supplier;
  * {@link Sequence} except that each iteration will yield a new order and the ordering is as random as allowed by
  * {@link Random}.
  */
-class ShuffledSequence<T> extends StableShuffledSequence<T> {
-	private static final Random random = new Random();
-	private static final Supplier<Random> RANDOM_SUPPLIER = () -> random;
+class ShuffledSequence<T> extends ReorderedSequence<T> {
+	private static final Random SHARED_RANDOM = new Random();
+
+	private final Random random;
 
 	ShuffledSequence(Sequence<T> parent) {
-		super(parent, RANDOM_SUPPLIER);
+		this(parent, SHARED_RANDOM);
 	}
 
 	public ShuffledSequence(Sequence<T> parent, Random random) {
-		super(parent, () -> random);
+		super(parent);
+		this.random = random;
 	}
 
 	@Override
 	protected Sequence<T> withParent(Sequence<T> parent) {
-		return new ShuffledSequence<>(parent);
+		return new ShuffledSequence<>(parent, random);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<T> iterator() {
+		return (Iterator<T>) new ShufflingArrayIterator<>(parent.toArray(), random);
+	}
+
+	@Override
+	public Object[] toArray() {
+		return Arrayz.shuffle(parent.toArray(), random);
+	}
+
+	@Override
+	public <A> A[] toArray(IntFunction<A[]> constructor) {
+		return Arrayz.shuffle(parent.toArray(constructor), random);
+	}
+
+	@Override
+	public List<T> toList() {
+		return Lists.shuffle(parent.toList(), random);
+	}
+
+	@Override
+	public List<T> toList(Supplier<? extends List<T>> constructor) {
+		return Lists.shuffle(parent.toList(constructor), random);
 	}
 
 	@Override
