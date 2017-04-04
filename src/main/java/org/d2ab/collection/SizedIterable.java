@@ -113,11 +113,6 @@ public interface SizedIterable<T> extends Iterable<T> {
 		}
 	}
 
-	default int sizeOrDefault(int defaultSize) {
-		int sizeIfKnown = sizeIfKnown();
-		return sizeIfKnown == -1 ? defaultSize : sizeIfKnown;
-	}
-
 	default boolean isEmpty() {
 		return isEmpty(this);
 	}

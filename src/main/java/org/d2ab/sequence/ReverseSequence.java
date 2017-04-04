@@ -1,18 +1,23 @@
 package org.d2ab.sequence;
 
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
 import org.d2ab.iterator.ReverseArrayIterator;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * An implementation of {@link Sequence} which provides a reverse view of another {@link Sequence}. Provides
  * optimizations for certain operations.
  */
 class ReverseSequence<T> extends ReorderedSequence<T> {
-	ReverseSequence(Sequence<T> original) {
-		super(original);
+	ReverseSequence(Sequence<T> parent) {
+		super(parent);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -24,6 +29,26 @@ class ReverseSequence<T> extends ReorderedSequence<T> {
 	@Override
 	protected Sequence<T> withParent(Sequence<T> parent) {
 		return new ReverseSequence<>(parent);
+	}
+
+	@Override
+	public Object[] toArray() {
+		return Arrayz.reverse(parent.toArray());
+	}
+
+	@Override
+	public <A> A[] toArray(IntFunction<A[]> constructor) {
+		return Arrayz.reverse(parent.toArray(constructor));
+	}
+
+	@Override
+	public List<T> toList() {
+		return Lists.reverse(parent.toList());
+	}
+
+	@Override
+	public List<T> toList(Supplier<? extends List<T>> constructor) {
+		return Lists.reverse(parent.toList(constructor));
 	}
 
 	@Override

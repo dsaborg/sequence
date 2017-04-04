@@ -2859,20 +2859,31 @@ public interface Sequence<T> extends IterableCollection<T> {
 	}
 
 	/**
-	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order.
+	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order. No guarantees are made as
+	 * to the predictability of the resulting order of elements other than that it will be as random as allowed by
+	 * {@link Random}. If stable random order is required, use {@link #shuffle(Supplier)} with a fixed seed
+	 * {@link Random} instance supplied.
+	 *
+	 * @see #shuffle(Random)
+	 * @see #shuffle(Supplier)
 	 */
 	default Sequence<T> shuffle() {
-		return shuffle(new Random());
+		return new ShuffledSequence<T>(this);
 	}
 
 	/**
 	 * @return a {@code Sequence} which iterates over this {@code Sequence} in random order as determined by the given
-	 * random generator.
+	 * {@link Random} generator. No guarantees are made as to the predictability of the resulting order of elements
+	 * other than that it will be as random as allowed by the given {@link Random} generator. If stable random order is
+	 * required, use {@link #shuffle(Supplier)} with a fixed seed {@link Random} instance supplied.
+	 *
+	 * @see #shuffle()
+	 * @see #shuffle(Supplier)
 	 */
 	default Sequence<T> shuffle(Random random) {
 		requireNonNull(random, "random");
 
-		return shuffle(() -> random);
+		return new ShuffledSequence<T>(this, random);
 	}
 
 	/**
@@ -2880,12 +2891,15 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * random generator. A new instance of {@link Random} is created by the given supplier at the start of each
 	 * iteration.
 	 *
+	 * @see #shuffle()
+	 * @see #shuffle(Random)
+	 *
 	 * @since 1.2
 	 */
 	default Sequence<T> shuffle(Supplier<? extends Random> randomSupplier) {
 		requireNonNull(randomSupplier, "randomSupplier");
 
-		return new ShuffledSequence<T>(this, randomSupplier);
+		return new StableShuffledSequence<T>(this, randomSupplier);
 	}
 
 	/**

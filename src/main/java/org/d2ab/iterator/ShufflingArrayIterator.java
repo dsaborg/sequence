@@ -24,16 +24,19 @@ public class ShufflingArrayIterator<T> implements Iterator<T> {
 
 	@Override
 	public T next() {
-		if (cursor >= array.length)
+		int length = array.length;
+		if (cursor >= length)
 			throw new NoSuchElementException();
 
-		int randomIndex = random.nextInt(array.length - cursor) + cursor;
-		if (randomIndex != cursor) {
-			T temp = array[cursor];
-			array[cursor] = array[randomIndex];
-			array[randomIndex] = temp;
-		}
+		if (cursor == length - 1)
+			return array[cursor++];
 
-		return array[cursor++];
+		int randomIndex = random.nextInt(length - cursor) + cursor;
+		if (randomIndex == cursor)
+			return array[cursor++];
+
+		T result = array[randomIndex];
+		array[randomIndex] = array[cursor++];
+		return result;
 	}
 }

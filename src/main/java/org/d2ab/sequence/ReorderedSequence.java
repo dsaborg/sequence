@@ -2,7 +2,9 @@ package org.d2ab.sequence;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 import static org.d2ab.util.Preconditions.requireFinite;
@@ -18,6 +20,18 @@ abstract class ReorderedSequence<T> implements Sequence<T> {
 	public abstract Iterator<T> iterator();
 
 	protected abstract Sequence<T> withParent(Sequence<T> parent);
+
+	@Override
+	public abstract Object[] toArray();
+
+	@Override
+	public abstract <A> A[] toArray(IntFunction<A[]> constructor);
+
+	@Override
+	public abstract List<T> toList();
+
+	@Override
+	public abstract List<T> toList(Supplier<? extends List<T>> constructor);
 
 	@Override
 	public SizeType sizeType() {
@@ -157,5 +171,15 @@ abstract class ReorderedSequence<T> implements Sequence<T> {
 	@Override
 	public boolean any(Class<?> target) {
 		return parent.any(target);
+	}
+
+	@Override
+	public Sequence<T> shuffle() {
+		return parent.shuffle();
+	}
+
+	@Override
+	public Sequence<T> shuffle(Random random) {
+		return parent.shuffle(random);
 	}
 }

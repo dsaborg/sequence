@@ -19,6 +19,7 @@ package org.d2ab.collection;
 import org.d2ab.util.Doubles;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -40,58 +41,19 @@ public abstract class Arrayz {
 	}
 
 	/**
-	 * Swap the given items in the given array.
-	 */
-	public static void swap(long[] array, int i, int j) {
-		long temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	/**
-	 * Swap the given items in the given array.
-	 */
-	public static void swap(int[] array, int i, int j) {
-		int temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	/**
-	 * Swap the given items in the given array.
-	 */
-	public static void swap(char[] array, int i, int j) {
-		char temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	/**
-	 * Swap the given items in the given array.
-	 */
-	public static void swap(double[] array, int i, int j) {
-		double temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	/**
-	 * Swap the given items in the given array.
-	 */
-	public static void swap(Object[] array, int i, int j) {
-		Object temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	/**
 	 * Reverse the given array in place.
 	 *
 	 * @return the given array, reversed.
 	 */
-	public static Object[] reverse(Object... array) {
-		for (int i = 0; i < array.length / 2; i++)
-			swap(array, i, array.length - i - 1);
+	@SafeVarargs
+	public static <T> T[] reverse(T... array) {
+		int length = array.length;
+		int half = length / 2;
+		for (int i = 0, j = length - 1; i < half; i++, j--) {
+			T temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
 		return array;
 	}
 
@@ -101,8 +63,13 @@ public abstract class Arrayz {
 	 * @return the given array, reversed.
 	 */
 	public static double[] reverse(double... array) {
-		for (int i = 0; i < array.length / 2; i++)
-			swap(array, i, array.length - 1 - i);
+		int length = array.length;
+		int half = length / 2;
+		for (int i = 0, j = length - 1; i < half; i++, j--) {
+			double temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
 		return array;
 	}
 
@@ -112,8 +79,13 @@ public abstract class Arrayz {
 	 * @return the given array, reversed.
 	 */
 	public static int[] reverse(int... array) {
-		for (int i = 0; i < array.length / 2; i++)
-			swap(array, i, array.length - 1 - i);
+		int length = array.length;
+		int half = length / 2;
+		for (int i = 0, j = length - 1; i < half; i++, j--) {
+			int temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
 		return array;
 	}
 
@@ -123,8 +95,13 @@ public abstract class Arrayz {
 	 * @return the given array, reversed.
 	 */
 	public static long[] reverse(long... array) {
-		for (int i = 0; i < array.length / 2; i++)
-			swap(array, i, array.length - 1 - i);
+		int length = array.length;
+		int half = length / 2;
+		for (int i = 0, j = length - 1; i < half; i++, j--) {
+			long temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
 		return array;
 	}
 
@@ -134,8 +111,13 @@ public abstract class Arrayz {
 	 * @return the given array, reversed.
 	 */
 	public static char[] reverse(char... array) {
-		for (int i = 0; i < array.length / 2; i++)
-			swap(array, i, array.length - 1 - i);
+		int length = array.length;
+		int half = length / 2;
+		for (int i = 0, j = length - 1; i < half; i++, j--) {
+			char temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
 		return array;
 	}
 
@@ -221,7 +203,21 @@ public abstract class Arrayz {
 		return true;
 	}
 
-	public static <T> T[] shuffle(T[] contents, Random random) {
-		return contents;
+	public static <T> T[] sort(T[] array, Comparator<? super T> comparator) {
+		Arrays.sort(array, comparator);
+		return array;
+	}
+
+	public static <T> T[] shuffle(T[] array, Random random) {
+		for (int i = array.length - 1; i >= 1; i--) {
+			int randomIndex = random.nextInt(i + 1);
+			if (randomIndex == i)
+				continue;
+
+			T temp = array[randomIndex];
+			array[randomIndex] = array[i];
+			array[i] = temp;
+		}
+		return array;
 	}
 }

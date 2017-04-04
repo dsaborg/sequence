@@ -1,16 +1,16 @@
 package org.d2ab.sequence;
 
-import org.d2ab.iterator.Iterators;
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
+import org.d2ab.iterator.ArrayIterator;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.PriorityQueue;
+import java.util.*;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.naturalOrder;
-import static org.d2ab.collection.Lists.sort;
 
 /**
  * An implementation of {@link Sequence} which provides a sorted view of another {@link Sequence} based on a given
@@ -20,11 +20,12 @@ import static org.d2ab.collection.Lists.sort;
 class SortedSequence<T> extends ReorderedSequence<T> {
 	private final Comparator<? super T> comparator;
 
-	SortedSequence(Sequence<T> original, Comparator<? super T> comparator) {
-		super(original);
+	SortedSequence(Sequence<T> parent, Comparator<? super T> comparator) {
+		super(parent);
 		this.comparator = comparator;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<T> iterator() {
 		if (comparator == null || comparator == naturalOrder())
@@ -32,7 +33,7 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 		else if (comparator == reverseOrder())
 			return Sequence.generate(toReverseOrderPriorityQueue()::poll).untilNull().iterator();
 		else
-			return Iterators.unmodifiable(sort(parent.toList(), comparator));
+			return new ArrayIterator<>(Arrayz.sort((T[]) parent.toArray(), comparator));
 	}
 
 	protected PriorityQueue<T> toNaturalOrderPriorityQueue() {
@@ -48,6 +49,28 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 
 	protected Sequence<T> withParent(Sequence<T> parent) {
 		return new SortedSequence<>(parent, comparator);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object[] toArray() {
+		return Arrayz.sort(parent.toArray(), (Comparator) comparator);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <A> A[] toArray(IntFunction<A[]> constructor) {
+		return (A[]) Arrayz.sort(parent.toArray(constructor), (Comparator) comparator);
+	}
+
+	@Override
+	public List<T> toList() {
+		return Lists.sort(parent.toList(), comparator);
+	}
+
+	@Override
+	public List<T> toList(Supplier<? extends List<T>> constructor) {
+		return Lists.sort(parent.toList(constructor), comparator);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -24,41 +24,6 @@ public class ArrayzTest {
 	}
 
 	@Test
-	public void swap() throws Exception {
-		Integer[] xs = {1, 2, 3, 4, 5};
-		Arrayz.swap(xs, 1, 2);
-		assertThat(xs, is(arrayContaining(1, 3, 2, 4, 5)));
-	}
-
-	@Test
-	public void swapLongs() throws Exception {
-		long[] xs = {1, 2, 3, 4, 5};
-		Arrayz.swap(xs, 1, 2);
-		assertArrayEquals(new long[]{1, 3, 2, 4, 5}, xs);
-	}
-
-	@Test
-	public void swapInts() throws Exception {
-		int[] xs = {1, 2, 3, 4, 5};
-		Arrayz.swap(xs, 1, 2);
-		assertArrayEquals(new int[]{1, 3, 2, 4, 5}, xs);
-	}
-
-	@Test
-	public void swapDoubles() throws Exception {
-		double[] xs = {1, 2, 3, 4, 5};
-		Arrayz.swap(xs, 1, 2);
-		assertArrayEquals(new double[]{1, 3, 2, 4, 5}, xs, 0);
-	}
-
-	@Test
-	public void swapChars() throws Exception {
-		char[] xs = {'a', 'b', 'c', 'd', 'e'};
-		Arrayz.swap(xs, 1, 2);
-		assertArrayEquals(new char[]{'a', 'c', 'b', 'd', 'e'}, xs);
-	}
-
-	@Test
 	public void reverse() throws Exception {
 		Integer[] xs = {1, 2, 3, 4, 5};
 		assertThat(Arrayz.reverse((Object[]) xs), is(sameInstance(xs)));
