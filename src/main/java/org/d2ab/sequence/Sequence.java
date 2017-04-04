@@ -1951,7 +1951,9 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 2.4
 	 */
 	default Optional<T> removeArbitrary(Predicate<? super T> predicate) {
-		return removeFirst(predicate);
+		requireNonNull(predicate, "predicate");
+
+		return filter(predicate).removeArbitrary();
 	}
 
 	/**
@@ -2008,8 +2010,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 *
 	 * @since 2.4
 	 */
+	@SuppressWarnings("unchecked")
 	default <U> Optional<U> removeArbitrary(Class<U> targetClass) {
-		return removeFirst(targetClass);
+		requireNonNull(targetClass, "targetClass");
+
+		return filter(targetClass).removeArbitrary();
 	}
 
 	/**
@@ -2025,7 +2030,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default <U> Optional<U> removeFirst(Class<U> targetClass) {
 		requireNonNull(targetClass, "targetClass");
 
-		return (Optional<U>) filter(targetClass::isInstance).removeFirst();
+		return filter(targetClass).removeFirst();
 	}
 
 	/**
@@ -2043,7 +2048,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		requireFinite(this, "Infinite Sequence");
 
-		return (Optional<U>) filter(targetClass::isInstance).removeLast();
+		return filter(targetClass).removeLast();
 	}
 
 	/**
@@ -2053,11 +2058,11 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * @since 1.2
 	 */
 	@SuppressWarnings("unchecked")
-	default <U> Optional<U> removeAt(int index, Class<? extends U> targetClass) {
+	default <U> Optional<U> removeAt(int index, Class<U> targetClass) {
 		requireAtLeastZero(index, "index");
 		requireNonNull(targetClass, "targetClass");
 
-		return (Optional<U>) filter(targetClass::isInstance).removeAt(index);
+		return filter(targetClass).removeAt(index);
 	}
 
 	/**

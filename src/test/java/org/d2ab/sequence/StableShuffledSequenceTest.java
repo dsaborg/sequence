@@ -15,32 +15,33 @@ import static org.junit.Assert.assertThat;
 public class StableShuffledSequenceTest {
 	private static final Supplier<Random> RANDOM_SUPPLIER = () -> new Random(17);
 
-	private final Sequence<Number> _12345 = new StableShuffledSequence<>(Sequence.createOf(1.0, 2.0, 3, 4, 5),
-	                                                                     RANDOM_SUPPLIER);
+	private final Sequence<Number> backing = Sequence.createOf(1.0, 2.0, 3, 4, 5);
+	private final Sequence<Number> _12345 = new StableShuffledSequence<>(backing, RANDOM_SUPPLIER);
+	private final Number[] expectedItemOrder = {2.0, 5, 4, 1.0, 3};
 
 	@Test
 	public void iteration() {
-		twice(() -> assertThat(_12345, containsSized(2.0, 5, 4, 1.0, 3)));
+		twice(() -> assertThat(_12345, containsSized(expectedItemOrder)));
 	}
 
 	@Test
 	public void toArray() {
-		twice(() -> assertThat(_12345.toArray(), is(arrayContaining(2.0, 5, 4, 1.0, 3))));
+		twice(() -> assertThat(_12345.toArray(), is(arrayContaining(expectedItemOrder))));
 	}
 
 	@Test
 	public void toArrayWithConstructor() {
-		twice(() -> assertThat(_12345.toArray(Number[]::new), is(arrayContaining(2.0, 5, 4, 1.0, 3))));
+		twice(() -> assertThat(_12345.toArray(Number[]::new), is(arrayContaining(expectedItemOrder))));
 	}
 
 	@Test
 	public void toList() {
-		twice(() -> assertThat(_12345.toList(), contains(2.0, 5, 4, 1.0, 3)));
+		twice(() -> assertThat(_12345.toList(), contains(expectedItemOrder)));
 	}
 
 	@Test
 	public void toListWithConstructor() {
-		twice(() -> assertThat(_12345.toList(LinkedList::new), contains(2.0, 5, 4, 1.0, 3)));
+		twice(() -> assertThat(_12345.toList(LinkedList::new), contains(expectedItemOrder)));
 	}
 
 	@Test
@@ -50,19 +51,19 @@ public class StableShuffledSequenceTest {
 
 	@Test
 	public void first() {
-		assertThat(_12345.first(), is(Optional.of(2.0)));
+		twice(() -> assertThat(_12345.first(), is(Optional.of(expectedItemOrder[0]))));
 	}
 
 	@Test
 	public void last() {
-		assertThat(_12345.last(), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.last(), is(Optional.of(expectedItemOrder[4]))));
 	}
 
 	@Test
 	public void at() {
-		assertThat(_12345.at(0), is(Optional.of(2.0)));
-		assertThat(_12345.at(2), is(Optional.of(4)));
-		assertThat(_12345.at(4), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.at(0), is(Optional.of(expectedItemOrder[0]))));
+		twice(() -> assertThat(_12345.at(2), is(Optional.of(expectedItemOrder[2]))));
+		twice(() -> assertThat(_12345.at(4), is(Optional.of(expectedItemOrder[4]))));
 	}
 
 	@Test
@@ -72,19 +73,19 @@ public class StableShuffledSequenceTest {
 
 	@Test
 	public void firstByPredicate() {
-		assertThat(_12345.first(x -> x.intValue() > 2), is(Optional.of(5)));
+		twice(() -> assertThat(_12345.first(x -> x.intValue() > 2), is(Optional.of(5))));
 	}
 
 	@Test
 	public void lastByPredicate() {
-		assertThat(_12345.last(x -> x.intValue() > 2), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.last(x -> x.intValue() > 2), is(Optional.of(3))));
 	}
 
 	@Test
 	public void atByPredicate() {
-		assertThat(_12345.at(0, x -> x.intValue() > 2), is(Optional.of(5)));
-		assertThat(_12345.at(1, x -> x.intValue() > 2), is(Optional.of(4)));
-		assertThat(_12345.at(2, x -> x.intValue() > 2), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.at(0, x -> x.intValue() > 2), is(Optional.of(5))));
+		twice(() -> assertThat(_12345.at(1, x -> x.intValue() > 2), is(Optional.of(4))));
+		twice(() -> assertThat(_12345.at(2, x -> x.intValue() > 2), is(Optional.of(3))));
 	}
 
 	@Test
@@ -94,18 +95,18 @@ public class StableShuffledSequenceTest {
 
 	@Test
 	public void firstByClass() {
-		assertThat(_12345.first(Integer.class), is(Optional.of(5)));
+		twice(() -> assertThat(_12345.first(Integer.class), is(Optional.of(5))));
 	}
 
 	@Test
 	public void lastByClass() {
-		assertThat(_12345.last(Integer.class), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.last(Integer.class), is(Optional.of(3))));
 	}
 
 	@Test
 	public void atByClass() {
-		assertThat(_12345.at(0, Integer.class), is(Optional.of(5)));
-		assertThat(_12345.at(1, Integer.class), is(Optional.of(4)));
-		assertThat(_12345.at(2, Integer.class), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.at(0, Integer.class), is(Optional.of(5))));
+		twice(() -> assertThat(_12345.at(1, Integer.class), is(Optional.of(4))));
+		twice(() -> assertThat(_12345.at(2, Integer.class), is(Optional.of(3))));
 	}
 }

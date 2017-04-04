@@ -64,6 +64,21 @@ abstract class StableReorderedSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Optional<T> removeArbitrary() {
+		return parent.removeArbitrary();
+	}
+
+	@Override
+	public Optional<T> removeArbitrary(Predicate<? super T> predicate) {
+		return parent.removeArbitrary(predicate);
+	}
+
+	@Override
+	public <U> Optional<U> removeArbitrary(Class<U> targetClass) {
+		return parent.removeArbitrary(targetClass);
+	}
+
+	@Override
 	public Set<T> toSet() {
 		return parent.toSet();
 	}

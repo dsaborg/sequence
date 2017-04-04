@@ -11,7 +11,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ReverseSequenceTest {
-	private final Sequence<Number> _12345 = new ReverseSequence<>(Sequence.createOf(1.0, 2.0, 3, 4, 5));
+	private final Sequence<Number> backing = Sequence.createOf(1.0, 2.0, 3, 4, 5);
+	private final Sequence<Number> _12345 = new ReverseSequence<>(backing);
 
 	@Test
 	public void iteration() {
@@ -45,19 +46,19 @@ public class ReverseSequenceTest {
 
 	@Test
 	public void first() {
-		assertThat(_12345.first(), is(Optional.of(5)));
+		twice(() -> assertThat(_12345.first(), is(Optional.of(5))));
 	}
 
 	@Test
 	public void last() {
-		assertThat(_12345.last(), is(Optional.of(1.0)));
+		twice(() -> assertThat(_12345.last(), is(Optional.of(1.0))));
 	}
 
 	@Test
 	public void at() {
-		assertThat(_12345.at(0), is(Optional.of(5)));
-		assertThat(_12345.at(2), is(Optional.of(3)));
-		assertThat(_12345.at(4), is(Optional.of(1.0)));
+		twice(() -> assertThat(_12345.at(0), is(Optional.of(5))));
+		twice(() -> assertThat(_12345.at(2), is(Optional.of(3))));
+		twice(() -> assertThat(_12345.at(4), is(Optional.of(1.0))));
 	}
 
 	@Test
@@ -67,19 +68,19 @@ public class ReverseSequenceTest {
 
 	@Test
 	public void firstByPredicate() {
-		assertThat(_12345.first(x -> x.intValue() > 2), is(Optional.of(5)));
+		twice(() -> assertThat(_12345.first(x -> x.intValue() > 2), is(Optional.of(5))));
 	}
 
 	@Test
 	public void lastByPredicate() {
-		assertThat(_12345.last(x -> x.intValue() > 2), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.last(x -> x.intValue() > 2), is(Optional.of(3))));
 	}
 
 	@Test
 	public void atByPredicate() {
-		assertThat(_12345.at(0, x -> x.intValue() > 2), is(Optional.of(5)));
-		assertThat(_12345.at(1, x -> x.intValue() > 2), is(Optional.of(4)));
-		assertThat(_12345.at(2, x -> x.intValue() > 2), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.at(0, x -> x.intValue() > 2), is(Optional.of(5))));
+		twice(() -> assertThat(_12345.at(1, x -> x.intValue() > 2), is(Optional.of(4))));
+		twice(() -> assertThat(_12345.at(2, x -> x.intValue() > 2), is(Optional.of(3))));
 	}
 
 	@Test
@@ -89,18 +90,80 @@ public class ReverseSequenceTest {
 
 	@Test
 	public void firstByClass() {
-		assertThat(_12345.first(Integer.class), is(Optional.of(5)));
+		twice(() -> assertThat(_12345.first(Integer.class), is(Optional.of(5))));
 	}
 
 	@Test
 	public void lastByClass() {
-		assertThat(_12345.last(Integer.class), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.last(Integer.class), is(Optional.of(3))));
 	}
 
 	@Test
 	public void atByClass() {
-		assertThat(_12345.at(0, Integer.class), is(Optional.of(5)));
-		assertThat(_12345.at(1, Integer.class), is(Optional.of(4)));
-		assertThat(_12345.at(2, Integer.class), is(Optional.of(3)));
+		twice(() -> assertThat(_12345.at(0, Integer.class), is(Optional.of(5))));
+		twice(() -> assertThat(_12345.at(1, Integer.class), is(Optional.of(4))));
+		twice(() -> assertThat(_12345.at(2, Integer.class), is(Optional.of(3))));
+	}
+
+	@Test
+	public void removeArbitrary() {
+		assertThat(_12345.removeArbitrary(), is(Optional.of(1.0)));
+		twice(() -> assertThat(backing, containsSized(2.0, 3, 4, 5)));
+	}
+
+	@Test
+	public void removeFirst() {
+		assertThat(_12345.removeFirst(), is(Optional.of(5)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 3, 4)));
+	}
+
+	@Test
+	public void removeLast() {
+		assertThat(_12345.removeLast(), is(Optional.of(1.0)));
+		twice(() -> assertThat(backing, containsSized(2.0, 3, 4, 5)));
+	}
+
+	@Test
+	public void removeAt() {
+		assertThat(_12345.removeAt(0), is(Optional.of(5)));
+		assertThat(_12345.removeAt(1), is(Optional.of(3)));
+		assertThat(_12345.removeAt(2), is(Optional.of(1.0)));
+		twice(() -> assertThat(backing, containsSized(2.0, 4)));
+	}
+
+	@Test
+	public void removeArbitraryByPredicate() {
+		assertThat(_12345.removeArbitrary(x -> x.intValue() > 2), is(Optional.of(3)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 4, 5)));
+	}
+
+	@Test
+	public void removeFirstByPredicate() {
+		assertThat(_12345.removeFirst(x -> x.intValue() > 2), is(Optional.of(5)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 3, 4)));
+	}
+
+	@Test
+	public void removeLastByPredicate() {
+		assertThat(_12345.removeLast(x -> x.intValue() > 2), is(Optional.of(3)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 4, 5)));
+	}
+
+	@Test
+	public void removeArbitraryByClass() {
+		assertThat(_12345.removeArbitrary(Integer.class), is(Optional.of(3)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 4, 5)));
+	}
+
+	@Test
+	public void removeFirstByClass() {
+		assertThat(_12345.removeFirst(Integer.class), is(Optional.of(5)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 3, 4)));
+	}
+
+	@Test
+	public void removeLastByClass() {
+		assertThat(_12345.removeLast(Integer.class), is(Optional.of(3)));
+		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 4, 5)));
 	}
 }
