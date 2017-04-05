@@ -8,9 +8,15 @@ import java.util.Random;
  * An array iterator that returns the contents of an array in random order by rearranging it in place.
  */
 public class ShufflingArrayIterator<T> implements Iterator<T> {
+	private static final Random SHARED_RANDOM = new Random();
+
 	private final T[] array;
 	private final Random random;
 	private int cursor;
+
+	public ShufflingArrayIterator(T[] array) {
+		this(array, SHARED_RANDOM);
+	}
 
 	public ShufflingArrayIterator(T[] array, Random random) {
 		this.array = array;

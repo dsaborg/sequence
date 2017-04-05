@@ -926,8 +926,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	default Pair<L, R>[] toArray(IntFunction<Pair<L, R>[]> constructor) {
 		requireNonNull(constructor, "constructor");
 
-		List<Pair<L, R>> list = toList();
-		return list.toArray(constructor.apply(list.size()));
+		return Iterators.toArray(iterator(), constructor);
 	}
 
 	/**
@@ -1472,7 +1471,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @return this {@code BiSequence} sorted according to the given {@link Comparator}.
 	 */
 	default BiSequence<L, R> sorted(Comparator<? super Pair<? extends L, ? extends R>> comparator) {
-		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
+		return () -> new ArrayIterator<>(Arrayz.sort(toArray(), comparator));
 	}
 
 	/**
@@ -1838,14 +1837,14 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in reverse order.
 	 */
 	default BiSequence<L, R> reverse() {
-		return () -> new ReverseIterator<>(iterator());
+		return () -> new ReverseArrayIterator<>(toArray());
 	}
 
 	/**
 	 * @return a {@code BiSequence} which iterates over this {@code BiSequence} in random order.
 	 */
 	default BiSequence<L, R> shuffle() {
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList()));
+		return () -> new ShufflingArrayIterator<>(toArray());
 	}
 
 	/**
@@ -1855,7 +1854,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 	default BiSequence<L, R> shuffle(Random random) {
 		requireNonNull(random, "random");
 
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
+		return () -> new ShufflingArrayIterator<>(toArray(), random);
 	}
 
 	/**
@@ -1870,7 +1869,7 @@ public interface BiSequence<L, R> extends IterableCollection<Pair<L, R>> {
 
 		return () -> {
 			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
-			return Iterators.unmodifiable(Lists.shuffle(toList(), random));
+			return new ShufflingArrayIterator<>(toArray(), random);
 		};
 	}
 

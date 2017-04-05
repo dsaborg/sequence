@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.BinaryOperator.maxBy;
 import static java.util.function.BinaryOperator.minBy;
+import static org.d2ab.collection.Maps.entryComparator;
 import static org.d2ab.util.Preconditions.requireAtLeastOne;
 import static org.d2ab.util.Preconditions.requireAtLeastZero;
 
@@ -919,8 +920,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	default Entry<K, V>[] toArray(IntFunction<Entry<K, V>[]> constructor) {
 		requireNonNull(constructor, "constructor");
 
-		List<Entry<K, V>> list = toList();
-		return list.toArray(constructor.apply(list.size()));
+		return Iterators.toArray(iterator(), constructor);
 	}
 
 	/**
@@ -1462,7 +1462,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 *                            Comparable}.
 	 */
 	default EntrySequence<K, V> sorted() {
-		return sorted(Maps.entryComparator());
+		return sorted(entryComparator());
 	}
 
 	/**
@@ -1471,7 +1471,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	default EntrySequence<K, V> sorted(Comparator<? super Entry<? extends K, ? extends V>> comparator) {
 		requireNonNull(comparator, "comparator");
 
-		return () -> Iterators.unmodifiable(Lists.sort(toList(), comparator));
+		return () -> new ArrayIterator<>(Arrayz.sort(toArray(), comparator));
 	}
 
 	/**
@@ -1840,14 +1840,14 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in reverse order.
 	 */
 	default EntrySequence<K, V> reverse() {
-		return () -> new ReverseIterator<>(iterator());
+		return () -> new ReverseArrayIterator<>(toArray());
 	}
 
 	/**
 	 * @return an {@code EntrySequence} which iterates over this {@code EntrySequence} in random order.
 	 */
 	default EntrySequence<K, V> shuffle() {
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList()));
+		return () -> new ShufflingArrayIterator<>(toArray());
 	}
 
 	/**
@@ -1857,7 +1857,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 	default EntrySequence<K, V> shuffle(Random random) {
 		requireNonNull(random, "random");
 
-		return () -> Iterators.unmodifiable(Lists.shuffle(toList(), random));
+		return () -> new ShufflingArrayIterator<>(toArray(), random);
 	}
 
 	/**
@@ -1872,7 +1872,7 @@ public interface EntrySequence<K, V> extends IterableCollection<Entry<K, V>> {
 
 		return () -> {
 			Random random = requireNonNull(randomSupplier.get(), "randomSupplier.get()");
-			return Iterators.unmodifiable(Lists.shuffle(toList(), random));
+			return new ShufflingArrayIterator<>(toArray(), random);
 		};
 	}
 
