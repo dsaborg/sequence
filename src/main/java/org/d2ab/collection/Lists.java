@@ -73,7 +73,7 @@ public abstract class Lists {
 				}
 			}
 		} else {
-			Object[] array = list.toArray();
+			Object[] array = list.toArray(new Object[size]);
 
 			Arrayz.shuffle(array, random);
 
