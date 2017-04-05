@@ -2573,26 +2573,26 @@ public class BiSequenceTest {
 		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> twoShuffled = _12.shuffle(new Random(17));
-		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
-		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
-		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
-		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
+		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
 		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
 		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
 		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
 		assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2)));
+		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
+		assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1)));
 
 		BiSequence<String, Integer> threeShuffled = _123.shuffle(new Random(17));
-		assertThat(threeShuffled, contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1)));
 		assertThat(threeShuffled, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("2", 2)));
+		assertThat(threeShuffled, contains(Pair.of("2", 2), Pair.of("3", 3), Pair.of("1", 1)));
 
 		BiSequence<String, Integer> nineShuffled = _123456789.shuffle(new Random(17));
 		assertThat(nineShuffled,
-		           contains(Pair.of("1", 1), Pair.of("8", 8), Pair.of("4", 4), Pair.of("2", 2), Pair.of("6", 6),
-		                    Pair.of("3", 3), Pair.of("5", 5), Pair.of("9", 9), Pair.of("7", 7)));
+		           contains(Pair.of("7", 7), Pair.of("8", 8), Pair.of("1", 1), Pair.of("6", 6), Pair.of("3", 3),
+		                    Pair.of("5", 5), Pair.of("2", 2), Pair.of("9", 9), Pair.of("4", 4)));
 		assertThat(nineShuffled,
-		           contains(Pair.of("6", 6), Pair.of("3", 3), Pair.of("5", 5), Pair.of("2", 2), Pair.of("9", 9),
-		                    Pair.of("4", 4), Pair.of("1", 1), Pair.of("7", 7), Pair.of("8", 8)));
+		           contains(Pair.of("8", 8), Pair.of("1", 1), Pair.of("3", 3), Pair.of("7", 7), Pair.of("5", 5),
+		                    Pair.of("4", 4), Pair.of("6", 6), Pair.of("2", 2), Pair.of("9", 9)));
 	}
 
 	@Test
@@ -2608,16 +2608,16 @@ public class BiSequenceTest {
 		twice(() -> assertThat(oneShuffled, contains(Pair.of("1", 1))));
 
 		BiSequence<String, Integer> twoShuffled = _12.shuffle(() -> new Random(17));
-		twice(() -> assertThat(twoShuffled, contains(Pair.of("1", 1), Pair.of("2", 2))));
+		twice(() -> assertThat(twoShuffled, contains(Pair.of("2", 2), Pair.of("1", 1))));
 
 		BiSequence<String, Integer> threeShuffled = _123.shuffle(() -> new Random(17));
-		twice(() -> assertThat(threeShuffled, contains(Pair.of("3", 3), Pair.of("2", 2), Pair.of("1", 1))));
+		twice(() -> assertThat(threeShuffled, contains(Pair.of("1", 1), Pair.of("3", 3), Pair.of("2", 2))));
 
 		BiSequence<String, Integer> nineShuffled = _123456789.shuffle(() -> new Random(17));
 		twice(() -> assertThat(nineShuffled,
-		                       contains(Pair.of("1", 1), Pair.of("8", 8), Pair.of("4", 4), Pair.of("2", 2),
-		                                Pair.of("6", 6), Pair.of("3", 3), Pair.of("5", 5), Pair.of("9", 9),
-		                                Pair.of("7", 7))));
+		                       contains(Pair.of("7", 7), Pair.of("8", 8), Pair.of("1", 1), Pair.of("6", 6),
+		                                Pair.of("3", 3), Pair.of("5", 5), Pair.of("2", 2), Pair.of("9", 9),
+		                                Pair.of("4", 4))));
 	}
 
 	@Test

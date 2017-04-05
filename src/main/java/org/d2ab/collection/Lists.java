@@ -63,6 +63,7 @@ public abstract class Lists {
 	 *
 	 * @return the given list shuffled using {@link Collections#shuffle(List, Random)}.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> List<T> shuffle(List<T> list, Random random) {
 		int size = list.size();
 
@@ -80,10 +81,10 @@ public abstract class Lists {
 
 			Arrayz.shuffle(array, random);
 
-			ListIterator it = list.listIterator();
+			ListIterator<T> it = list.listIterator();
 			for (int i = 0; i < size; i++) {
 				it.next();
-				it.set(array[i]);
+				it.set((T) array[i]);
 			}
 		}
 
