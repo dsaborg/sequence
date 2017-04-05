@@ -1,11 +1,19 @@
 package org.d2ab.iterator;
 
+import org.d2ab.collection.Arrayz;
+import org.d2ab.collection.Lists;
+
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**
- * An array iterator that returns the contents of an array in random order by rearranging it in place.
+ * An array iterator that returns the contents of an array in random order by rearranging it in place. Produces
+ * elements in the same order as {@link Arrayz#shuffle(Object[], Random) and {@link Lists#shuffle(List, Random)}}.
+ *
+ * @see Arrayz#shuffle(Object[], Random)
+ * @see Lists#shuffle(List, Random)
  */
 public class ShufflingArrayIterator<T> implements Iterator<T> {
 	private static final Random SHARED_RANDOM = new Random();

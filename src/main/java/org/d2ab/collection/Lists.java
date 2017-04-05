@@ -16,6 +16,8 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.ShufflingArrayIterator;
+
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -49,19 +51,13 @@ public abstract class Lists {
 	}
 
 	/**
-	 * A pass-through version of {@link Collections#shuffle(List)}.
+	 * Shuffle the items in the {@link List} according to the given {@link Random} generator. Produces elements in the
+	 * same order as {@link ShufflingArrayIterator} and {@link Arrayz#shuffle(Object[], Random)}}.
 	 *
-	 * @return the given list shuffled using {@link Collections#shuffle(List)}.
-	 */
-	public static <T> List<T> shuffle(List<T> list) {
-		Collections.shuffle(list);
-		return list;
-	}
-
-	/**
-	 * A pass-through version of {@link Collections#shuffle(List, Random)}.
+	 * @see ShufflingArrayIterator
+	 * @see Arrayz#shuffle(Object[], Random)
 	 *
-	 * @return the given list shuffled using {@link Collections#shuffle(List, Random)}.
+	 * @return the given {@link List}, shuffled.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> shuffle(List<T> list, Random random) {

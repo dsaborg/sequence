@@ -16,12 +16,10 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.ShufflingArrayIterator;
 import org.d2ab.util.Doubles;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -208,6 +206,15 @@ public abstract class Arrayz {
 		return array;
 	}
 
+	/**
+	 * Shuffle the items in the array according to the given {@link Random} generator. Produces elements in the same
+	 * order as {@link ShufflingArrayIterator} and {@link Lists#shuffle(List, Random)}}.
+	 *
+	 * @return the given array, shuffled.
+	 *
+	 * @see ShufflingArrayIterator
+	 * @see Lists#shuffle(List, Random)
+	 */
 	public static <T> T[] shuffle(T[] array, Random random) {
 		int length = array.length;
 		for (int i = 0, j = length; i < length - 1; i++, j--) {
