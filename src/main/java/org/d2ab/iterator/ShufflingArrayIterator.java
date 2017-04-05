@@ -45,12 +45,12 @@ public class ShufflingArrayIterator<T> implements Iterator<T> {
 		if (cursor == length - 1)
 			return array[cursor++];
 
-		int randomIndex = random.nextInt(length - cursor) + cursor;
-		if (randomIndex == cursor)
+		int i = random.nextInt(length - cursor) + cursor;
+		if (i == cursor)
 			return array[cursor++];
 
-		T result = array[randomIndex];
-		array[randomIndex] = array[cursor++];
+		T result = array[i];
+		array[i] = array[cursor++];
 		return result;
 	}
 }

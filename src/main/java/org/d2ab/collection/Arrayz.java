@@ -218,10 +218,10 @@ public abstract class Arrayz {
 	public static <T> T[] shuffle(T[] array, Random random) {
 		int length = array.length;
 		for (int i = 0, j = length; i < length - 1; i++, j--) {
-			int randomIndex = random.nextInt(j) + i;
-			if (randomIndex != i) {
-				T temp = array[randomIndex];
-				array[randomIndex] = array[i];
+			int k = random.nextInt(j) + i;
+			if (k != i) {
+				T temp = array[k];
+				array[k] = array[i];
 				array[i] = temp;
 			}
 		}

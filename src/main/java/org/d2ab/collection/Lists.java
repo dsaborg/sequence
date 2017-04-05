@@ -65,10 +65,10 @@ public abstract class Lists {
 
 		if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
 			for (int i = 0, j = size; i < size - 1; i++, j--) {
-				int randomIndex = random.nextInt(j) + i;
-				if (randomIndex != i) {
-					T temp = list.get(randomIndex);
-					list.set(randomIndex, list.get(i));
+				int k = random.nextInt(j) + i;
+				if (k != i) {
+					T temp = list.get(k);
+					list.set(k, list.get(i));
 					list.set(i, temp);
 				}
 			}
