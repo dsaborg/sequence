@@ -300,30 +300,6 @@ public abstract class Iterators {
 	}
 
 	/**
-	 * @return an unmodifiable view of an {@link Iterator} retrieved from the given {@link Iterable}.
-	 */
-	public static <T> Iterator<T> unmodifiable(Iterable<? extends T> iterable) {
-		return unmodifiable(iterable.iterator());
-	}
-
-	/**
-	 * @return an unmodifiable view of the given {@link Iterator}.
-	 */
-	public static <T> Iterator<T> unmodifiable(Iterator<? extends T> iterator) {
-		return new Iterator<T>() {
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public T next() {
-				return iterator.next();
-			}
-		};
-	}
-
-	/**
 	 * @return true if any object in the given {@link Iterator} is equal to the given object, false otherwise.
 	 *
 	 * @since 2.0
