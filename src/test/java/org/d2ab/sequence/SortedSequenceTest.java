@@ -5,31 +5,68 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
 import static org.d2ab.test.HasSizeCharacteristics.containsSized;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class SortedSequenceTest {
-	private final SortedSequence<Pair<Integer, String>> duplicates = new SortedSequence<>(
-			Sequence.createOf(Pair.of(1, "a"), Pair.of(2, "a"), Pair.of(3, "a"),
-			                  Pair.of(1, "b"), Pair.of(3, "b"), Pair.of(1, "c")),
-			comparing(Pair::getLeft));
+	private final Sequence<Pair<Integer, String>> backingDuplicates = Sequence.createOf(Pair.of(1, "a"), Pair.of(2, "a"), Pair.of(3, "a"),
+	                                                                                    Pair.of(1, "b"), Pair.of(3, "b"), Pair.of(1, "c"));
+	private final SortedSequence<Pair<Integer, String>> duplicatesLeftNatural = new SortedSequence<>(backingDuplicates, comparing(Pair::getLeft));
+	private final SortedSequence<Pair<Integer, String>> duplicatesLeftReverse = new SortedSequence<>(backingDuplicates, reverseOrder(comparing(Pair::getLeft)));
+
+	private final SortedSequence<Pair<Integer, String>> duplicatesNatural = new SortedSequence<>(backingDuplicates, naturalOrder());
+	private final SortedSequence<Pair<Integer, String>> duplicatesReverse = new SortedSequence<>(backingDuplicates, reverseOrder());
+
+	@Test
+	public void minNormal() {
+		assertThat(duplicatesLeftNatural.min(), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesLeftReverse.min(), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesNatural.min(), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesReverse.min(), is(Optional.of(Pair.of(1, "a"))));
+	}
+
+	@Test
+	public void maxNormal() {
+		assertThat(duplicatesLeftNatural.max(), is(Optional.of(Pair.of(3, "b"))));
+		assertThat(duplicatesLeftReverse.max(), is(Optional.of(Pair.of(3, "b"))));
+		assertThat(duplicatesNatural.max(), is(Optional.of(Pair.of(3, "b"))));
+		assertThat(duplicatesReverse.max(), is(Optional.of(Pair.of(3, "b"))));
+	}
+
+	@Test
+	public void minLeft() {
+		assertThat(duplicatesLeftNatural.min(comparing(Pair::getLeft)), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesLeftReverse.min(comparing(Pair::getLeft)), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesNatural.min(comparing(Pair::getLeft)), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesReverse.min(comparing(Pair::getLeft)), is(Optional.of(Pair.of(1, "c"))));
+	}
+
+	@Test
+	public void maxLeft() {
+		assertThat(duplicatesLeftNatural.max(comparing(Pair::getLeft)), is(Optional.of(Pair.of(3, "a"))));
+		assertThat(duplicatesLeftReverse.max(comparing(Pair::getLeft)), is(Optional.of(Pair.of(3, "a"))));
+		assertThat(duplicatesNatural.max(comparing(Pair::getLeft)), is(Optional.of(Pair.of(3, "b"))));
+		assertThat(duplicatesReverse.max(comparing(Pair::getLeft)), is(Optional.of(Pair.of(3, "a"))));
+	}
 
 	@Test
 	public void firstStableSort() {
-		assertThat(duplicates.first(), is(Optional.of(Pair.of(1, "a"))));
+		assertThat(duplicatesLeftNatural.first(), is(Optional.of(Pair.of(1, "a"))));
 	}
 
 	@Test
 	public void lastStableSort() {
-		assertThat(duplicates.last(), is(Optional.of(Pair.of(3, "b"))));
+		assertThat(duplicatesLeftNatural.last(), is(Optional.of(Pair.of(3, "b"))));
 	}
 
 	@Test
 	public void reversed() {
-		assertThat(duplicates.reverse(), containsSized(Pair.of(3, "b"), Pair.of(3, "a"),
-		                                               Pair.of(2, "a"), Pair.of(1, "c"),
-		                                               Pair.of(1, "b"), Pair.of(1, "a")));
+		assertThat(duplicatesLeftNatural.reverse(), containsSized(Pair.of(3, "b"), Pair.of(3, "a"),
+		                                                          Pair.of(2, "a"), Pair.of(1, "c"),
+		                                                          Pair.of(1, "b"), Pair.of(1, "a")));
 	}
 }

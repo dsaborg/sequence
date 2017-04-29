@@ -1,16 +1,23 @@
 package org.d2ab.sequence;
 
+import org.d2ab.util.Pair;
 import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
+import static java.util.Comparator.comparing;
 import static org.d2ab.test.HasSizeCharacteristics.containsSized;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ReverseSequenceTest {
+	private final Sequence<Pair<Integer, String>> backingDuplicates = Sequence.createOf(Pair.of(1, "a"), Pair.of(2, "a"), Pair.of(3, "a"),
+	                                                                                    Pair.of(1, "b"), Pair.of(3, "b"), Pair.of(1, "c"));
+
+	private final ReverseSequence<Pair<Integer, String>> duplicates = new ReverseSequence<>(backingDuplicates);
+
 	private final Sequence<Number> backing = Sequence.createOf(1.0, 2.0, 3, 4, 5);
 	private final Sequence<Number> _12345 = new ReverseSequence<>(backing);
 
@@ -37,6 +44,26 @@ public class ReverseSequenceTest {
 	@Test
 	public void toListWithConstructor() {
 		twice(() -> assertThat(_12345.toList(LinkedList::new), contains(5, 4, 3, 2.0, 1.0)));
+	}
+
+	@Test
+	public void min() {
+		assertThat(duplicates.min(), is(Optional.of(Pair.of(1, "a"))));
+	}
+
+	@Test
+	public void max() {
+		assertThat(duplicates.max(), is(Optional.of(Pair.of(3, "b"))));
+	}
+
+	@Test
+	public void minComparingLeft() {
+		assertThat(duplicates.min(comparing(Pair::getLeft)), is(Optional.of(Pair.of(1, "c"))));
+	}
+
+	@Test
+	public void maxComparingLeft() {
+		assertThat(duplicates.max(comparing(Pair::getLeft)), is(Optional.of(Pair.of(3, "b"))));
 	}
 
 	@Test

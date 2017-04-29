@@ -4,10 +4,7 @@ import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.Lists;
 import org.d2ab.iterator.ShufflingArrayIterator;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
@@ -63,56 +60,114 @@ class ShuffledSequence<T> extends ReorderedSequence<T> {
 	}
 
 	@Override
+	public Optional<T> min(Comparator<? super T> comparator) {
+		List<T> mins = mins(parent, comparator);
+		return Optional.of(mins.get(random.nextInt(mins.size())));
+	}
+
+	private List<T> mins(Sequence<T> sequence, Comparator<? super T> comparator) {
+		List<T> mins = new ArrayList<>();
+		sequence.reduce((r, x) -> {
+			int compare = comparator.compare(r, x);
+
+			if (compare <= 0 && mins.isEmpty())
+				mins.add(r);
+
+			if (compare > 0)
+				mins.clear();
+
+			if (compare >= 0)
+				mins.add(x);
+
+			return compare <= 0 ? r : x;
+		});
+		return mins;
+	}
+
+	@Override
+	public Optional<T> max(Comparator<? super T> comparator) {
+		List<T> maxes = maxes(parent, comparator);
+		return Optional.of(maxes.get(random.nextInt(maxes.size())));
+	}
+
+	private List<T> maxes(Sequence<T> sequence, Comparator<? super T> comparator) {
+		List<T> maxes = new ArrayList<>();
+		sequence.reduce((r, x) -> {
+			int compare = comparator.compare(r, x);
+
+			if (compare >= 0 && maxes.isEmpty())
+				maxes.add(r);
+
+			if (compare < 0)
+				maxes.clear();
+
+			if (compare <= 0)
+				maxes.add(x);
+
+			return compare >= 0 ? r : x;
+		});
+		return maxes;
+	}
+
+	@Override
 	public Optional<T> first() {
 		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.first();
+		if (randomIndex != -1)
+			return parent.at(randomIndex);
 
-		return parent.at(randomIndex);
+		return super.first();
 	}
 
 	@Override
 	public Optional<T> last() {
 		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.last();
+		if (randomIndex != -1)
+			return parent.at(randomIndex);
 
-		return parent.at(randomIndex);
+		return super.last();
 	}
 
 	@Override
 	public Optional<T> at(int index) {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
+		int size = sizeIfKnown();
+		if (size == -1)
 			return super.at(index);
 
+		if (index >= size)
+			return Optional.empty();
+
+		int randomIndex = random.nextInt(size);
 		return parent.at(randomIndex);
 	}
 
 	@Override
 	public Optional<T> removeFirst() {
 		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.removeFirst();
+		if (randomIndex != -1)
+			return parent.removeAt(randomIndex);
 
-		return parent.removeAt(randomIndex);
+		return super.removeFirst();
 	}
 
 	@Override
 	public Optional<T> removeLast() {
 		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
-			return super.removeLast();
+		if (randomIndex != -1)
+			return parent.removeAt(randomIndex);
 
-		return parent.removeAt(randomIndex);
+		return super.removeLast();
 	}
 
 	@Override
 	public Optional<T> removeAt(int index) {
-		int randomIndex = randomIndexIfKnown();
-		if (randomIndex == -1)
+		int size = sizeIfKnown();
+		if (size == -1)
 			return super.removeAt(index);
 
+		if (index >= size)
+			return Optional.empty();
+
+		int randomIndex = random.nextInt(size);
 		return parent.removeAt(randomIndex);
 	}
 

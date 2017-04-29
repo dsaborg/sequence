@@ -128,26 +128,6 @@ abstract class StableReorderedSequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> min() {
-		return parent.min();
-	}
-
-	@Override
-	public Optional<T> max() {
-		return parent.max();
-	}
-
-	@Override
-	public Optional<T> min(Comparator<? super T> comparator) {
-		return parent.min(comparator);
-	}
-
-	@Override
-	public Optional<T> max(Comparator<? super T> comparator) {
-		return parent.max(comparator);
-	}
-
-	@Override
 	public boolean all(Predicate<? super T> predicate) {
 		return parent.all(predicate);
 	}

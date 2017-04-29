@@ -36,10 +36,10 @@ import java.util.stream.Stream;
 
 import static java.util.Comparator.naturalOrder;
 import static java.util.Objects.requireNonNull;
-import static java.util.function.BinaryOperator.maxBy;
-import static java.util.function.BinaryOperator.minBy;
 import static java.util.stream.Collector.Characteristics.IDENTITY_FINISH;
 import static org.d2ab.collection.SizedIterable.SizeType.*;
+import static org.d2ab.function.BinaryOperators.firstMaxBy;
+import static org.d2ab.function.BinaryOperators.firstMinBy;
 import static org.d2ab.util.Preconditions.*;
 
 /**
@@ -2513,7 +2513,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Optional<T> min(Comparator<? super T> comparator) {
 		requireNonNull(comparator, "comparator");
 
-		return reduce(minBy(comparator));
+		return reduce(firstMinBy(comparator));
 	}
 
 	/**
@@ -2525,7 +2525,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 	default Optional<T> max(Comparator<? super T> comparator) {
 		requireNonNull(comparator, "comparator");
 
-		return reduce(maxBy(comparator));
+		return reduce(firstMaxBy(comparator));
 	}
 
 	/**

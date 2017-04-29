@@ -11,6 +11,9 @@ import java.util.function.Supplier;
 
 import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.naturalOrder;
+import static java.util.Objects.requireNonNull;
+import static org.d2ab.function.BinaryOperators.firstMinBy;
+import static org.d2ab.function.BinaryOperators.lastMaxBy;
 
 /**
  * An implementation of {@link Sequence} which provides a sorted view of another {@link Sequence} based on a given
@@ -74,26 +77,22 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <U extends Comparable<U>> Sequence<U> comparable(Sequence<?> sequence) {
-		return (Sequence<U>) sequence;
+	@Override
+	public Optional<T> min(Comparator<? super T> comparator) {
+		requireNonNull(comparator, "comparator");
+		return parent.min(comparator.thenComparing((Comparator) mandatoryComparator()));
 	}
 
 	@SuppressWarnings("unchecked")
-	private Optional<T> firstMin(Sequence<T> sequence) {
-		if (comparator == null) {
-			return (Optional<T>) comparable(sequence).reduce((a, b) -> a.compareTo(b) <= 0 ? a : b);
-		} else {
-			return sequence.reduce((a, b) -> comparator.compare(a, b) <= 0 ? a : b);
-		}
+	@Override
+	public Optional<T> max(Comparator<? super T> comparator) {
+		requireNonNull(comparator, "comparator");
+		return parent.max(comparator.thenComparing((Comparator) mandatoryComparator()));
 	}
 
 	@SuppressWarnings("unchecked")
-	private Optional<T> lastMax(Sequence<T> sequence) {
-		if (comparator == null) {
-			return (Optional<T>) comparable(sequence).reduce((a, b) -> a.compareTo(b) > 0 ? a : b);
-		} else {
-			return sequence.reduce((a, b) -> comparator.compare(a, b) > 0 ? a : b);
-		}
+	private Comparator<? super T> mandatoryComparator() {
+		return (Comparator<? super T>) (comparator == null ? naturalOrder() : comparator);
 	}
 
 	@Override
@@ -126,6 +125,16 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 	@Override
 	public <U> Optional<U> last(Class<U> targetClass) {
 		return (Optional<U>) lastMax((Sequence<T>) parent.filter(targetClass));
+	}
+
+	@SuppressWarnings("unchecked")
+	private Optional<T> firstMin(Sequence<T> sequence) {
+		return sequence.reduce(firstMinBy(comparator));
+	}
+
+	@SuppressWarnings("unchecked")
+	private Optional<T> lastMax(Sequence<T> sequence) {
+		return sequence.reduce(lastMaxBy(comparator));
 	}
 
 	@Override
