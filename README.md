@@ -65,24 +65,20 @@ Performance optimizations, improved strictness checks, and improved error condit
 The Sequence library is a leaner alternative to sequential Java 8 Streams, used in similar ways but with a lighter step,
 and with better integration with the rest of Java. It has no external dependencies and will not slow down your build.
 
-It aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for advanced
-traversal and transformation. In particular it allows easier collecting into common `Collections` without `Collectors`,
-better handling of `Maps` with `Pairs` and `Map.Entry` as first-class citizens, tighter integration with the rest of
-Java by being implemented in terms of `Iterable`, and advanced partitioning, mapping and filtering methods, for example
-allowing peek at previous or next elements to make decisions during traversal. `Sequences` go to great lengths
-to be as lazy and late-evaluating as possible, with minimal overhead.
-
 `Sequences` use Java 8 lambdas in much the same way as `Streams` do, but is based on readily available `Iterables`
 instead of a black box pipeline, and is built for convenience and compatibility with the rest of Java. It's
-for programmers wanting to perform every day data processing tasks on moderately sized collections. Not being parallel
-in nature allows more advanced operations on the sequence which rely on traversing elements in `Iterator` order. If you
-need parallel iteration or are processing over 1 million or so entries, you might benefit from using a parallel
-`Stream` instead.
+for programmers wanting to perform every day data processing tasks on moderately sized collections. `Sequences` go to
+great lengths to be as lazy and late-evaluating as possible, with minimal overhead.
 
-Unlike `Stream`, `Sequences` are directly backed by the underlying storage, allowing direct manipulation of the
-`Collection` the sequence is based on to the extend permitted by the combination of operations applied on the sequence,
-as well as directly reflecting outside changes to the underlying collection. See [Updating](#updating) for more
-information.
+`Sequence` aims to be roughly feature complete with sequential `Streams`, with additional convenience methods for
+advanced traversal and transformation. In particular it allows easier collecting into common `Collections` without
+`Collectors`, better handling of `Maps` with `Pairs` and `Map.Entry` as first-class citizens, tighter integration with
+the rest of Java by being implemented in terms of `Iterable`, and advanced partitioning, mapping and filtering methods,
+for example peeking at previous or next elements during traversal.
+
+Not being parallel in nature allows more advanced operations on the sequence which rely on traversing elements in
+`Iterator` order. If you need parallel iteration or are processing over 1 million or so entries, you might benefit from
+using a parallel `Stream` instead.
 
 ```Java
 List<String> evens = Sequence.of(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -100,9 +96,21 @@ See also:
 [Sequence#map(Function)](http://static.javadoc.io/org.d2ab/sequence/2.3.0/org/d2ab/sequence/Sequence.html#map-java.util.function.Function-),
 [Sequence#toList()](http://static.javadoc.io/org.d2ab/sequence/2.3.0/org/d2ab/sequence/Sequence.html#toList--)
 
-The `Sequence` library is protected by over 5000 tests providing 100% line coverage of all classes in the project.
+Unlike `Stream`, `Sequences` are directly backed by the underlying storage, allowing direct manipulation of the
+`Collection` the sequence is based on to the extent permitted by the combination of operations applied on the sequence,
+as well as directly reflecting outside changes to the underlying collection. See [Updating](#updating) for more
+information.
 
-Javadoc for the entire project is available at the
+```Java
+List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+
+Sequence.from(list).filter(x -> x % 2 != 0).clear();
+
+assertThat(list, contains(2, 4));
+```
+
+The `Sequence` library is protected by over 5000 tests providing 100% branch and line coverage of all classes in the
+project. Javadoc for the entire project is available at the
 [Sequence javadoc.io Page](http://www.javadoc.io/doc/org.d2ab/sequence).
 
 ### Install
@@ -285,16 +293,17 @@ assertThat(list, contains(2, 4));
 ```
 
 ```Java
-List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-Sequence<String> evenStrings = Sequence.from(list)
+List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
+Sequence<String> evens = Sequence.from(list)
                                        .filter(x -> x % 2 == 0)
-                                       // biMap allows adding back to underlying collection
                                        .biMap(Object::toString, Integer::parseInt);
-assertThat(evenStrings, contains("2", "4"));
 
-evenStrings.add("6");
+assertThat(evens, contains("2", "4"));
 
-assertThat(evenStrings, contains("2", "4", "6"));
+evens.add("6"); // biMap allows adding back to underlying collection
+expecting(IllegalArgumentException.class, () -> evens.add("7")); // cannot add filtered out item
+
+assertThat(evens, contains("2", "4", "6"));
 assertThat(list, contains(1, 2, 3, 4, 5, 6));
 ```
 

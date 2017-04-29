@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import static java.lang.Character.isWhitespace;
 import static java.lang.Character.toUpperCase;
 import static java.lang.Math.sqrt;
+import static org.d2ab.test.Tests.expecting;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -117,15 +118,16 @@ public class SequenceDocumentationTest extends BaseBoxingTest {
 	@Test
 	public void updatingCollection() {
 		List<Integer> list = new ArrayList<>(Lists.of(1, 2, 3, 4, 5));
-		Sequence<String> evenStrings = Sequence.from(list)
-		                                       .filter(x -> x % 2 == 0)
-		                                       // biMap allows adding back to underlying collection
-		                                       .biMap(Object::toString, Integer::parseInt);
-		assertThat(evenStrings, contains("2", "4"));
+		Sequence<String> evens = Sequence.from(list)
+		                                 .filter(x -> x % 2 == 0)
+		                                 .biMap(Object::toString, Integer::parseInt);
 
-		evenStrings.add("6");
+		assertThat(evens, contains("2", "4"));
 
-		assertThat(evenStrings, contains("2", "4", "6"));
+		evens.add("6"); // biMap allows adding back to underlying collection
+		expecting(IllegalArgumentException.class, () -> evens.add("7")); // cannot add filtered out item
+
+		assertThat(evens, contains("2", "4", "6"));
 		assertThat(list, contains(1, 2, 3, 4, 5, 6));
 	}
 
