@@ -19,6 +19,18 @@ public class ShuffledSequenceTest {
 	private final Sequence<Number> duplicates = new ShuffledSequence<>(Sequence.createOf(duplicateElements), new Random(17));
 
 	@Test
+	public void filter() {
+		assertThat(duplicates.filter(x -> x.intValue() > 1), containsInAnyOrder(2.0, 3f, 4f, 5f, 2, 3, 4, 5, 5L));
+		assertThat(small.filter(x -> x.intValue() > 1), containsInAnyOrder(2f, 3, 4L));
+	}
+
+	@Test
+	public void filterByClass() {
+		assertThat(small.filter(Integer.class), contains(3));
+		assertThat(small.filter(Double.class), contains(1.0));
+	}
+
+	@Test
 	public void iteration() {
 		for (int i = 0; i < 10; i++) {
 			assertThat(small, containsInAnyOrder(smallElements));

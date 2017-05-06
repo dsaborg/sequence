@@ -9,6 +9,7 @@ import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static org.d2ab.test.HasSizeCharacteristics.containsSized;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -20,6 +21,22 @@ public class SortedSequenceTest {
 
 	private final SortedSequence<Pair<Integer, String>> duplicatesNatural = new SortedSequence<>(backingDuplicates, naturalOrder());
 	private final SortedSequence<Pair<Integer, String>> duplicatesReverse = new SortedSequence<>(backingDuplicates, reverseOrder());
+
+	private final SortedSequence<Number> mixed = new SortedSequence<>(Sequence.of(3, 2, 1, 3.0, 2.0, 1.0), comparing(Number::intValue));
+
+	@Test
+	public void filter() {
+		assertThat(duplicatesLeftNatural.filter(p -> p.getLeft() > 1), contains(Pair.of(2, "a"), Pair.of(3, "a"), Pair.of(3, "b")));
+		assertThat(duplicatesLeftReverse.filter(p -> p.getLeft() > 1), contains(Pair.of(3, "a"), Pair.of(3, "b"), Pair.of(2, "a")));
+		assertThat(duplicatesNatural.filter(p -> p.getLeft() > 1), contains(Pair.of(2, "a"), Pair.of(3, "a"), Pair.of(3, "b")));
+		assertThat(duplicatesReverse.filter(p -> p.getLeft() > 1), contains(Pair.of(3, "b"), Pair.of(3, "a"), Pair.of(2, "a")));
+	}
+
+	@Test
+	public void filterByClass() {
+		assertThat(mixed.filter(Integer.class), contains(1, 2, 3));
+		assertThat(mixed.filter(Double.class), contains(1.0, 2.0, 3.0));
+	}
 
 	@Test
 	public void minNormal() {
