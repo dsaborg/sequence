@@ -16,6 +16,7 @@
 
 package org.d2ab.collection;
 
+import org.d2ab.iterator.Iterators;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -208,6 +209,8 @@ public class IterableCollectionTest {
 		assertThat(mutable.toArray(new Integer[3]), is(arrayContaining(1, 2, 3, 4, 5)));
 		assertThat(sized.toArray(new Integer[3]), is(arrayContaining(1, 2, 3, 4, 5)));
 		assertThat(unsized.toArray(new Integer[3]), is(arrayContaining(1, 2, 3, 4, 5)));
+		assertThat(fixedOfSize(3, 1, 2, 3, 4, 5).toArray(new Integer[3]), is(arrayContaining(1, 2, 3, 4, 5)));
+		assertThat(fixedOfSize(10, 1, 2, 3, 4, 5).toArray(new Integer[3]), is(arrayContaining(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -218,6 +221,32 @@ public class IterableCollectionTest {
 		assertThat(mutable.toArray(Arrayz.fill(new Integer[7], 17)), is(arrayContaining(1, 2, 3, 4, 5, null, 17)));
 		assertThat(sized.toArray(Arrayz.fill(new Integer[7], 17)), is(arrayContaining(1, 2, 3, 4, 5, null, 17)));
 		assertThat(unsized.toArray(Arrayz.fill(new Integer[7], 17)), is(arrayContaining(1, 2, 3, 4, 5, null, 17)));
+		assertThat(fixedOfSize(3, 1, 2, 3, 4, 5).toArray(Arrayz.fill(new Integer[7], 17)), is(arrayContaining(1, 2, 3, 4, 5, null, 17)));
+		assertThat(fixedOfSize(10, 1, 2, 3, 4, 5).toArray(Arrayz.fill(new Integer[7], 17)), is(arrayContaining(1, 2, 3, 4, 5, null, 17)));
+	}
+
+	public static IterableCollection<Integer> fixedOfSize(int size, Integer... items) {
+		return new IterableCollection<Integer>() {
+			@Override
+			public Iterator<Integer> iterator() {
+				return Iterators.of(items);
+			}
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@Override
+			public SizeType sizeType() {
+				return SizeType.FIXED;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+		};
 	}
 
 	@Test

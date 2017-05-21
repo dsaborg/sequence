@@ -21,6 +21,7 @@ import org.d2ab.util.Classes;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
 
 import static org.d2ab.collection.SizedIterable.SizeType.AVAILABLE;
 import static org.d2ab.collection.SizedIterable.SizeType.FIXED;
@@ -59,36 +60,42 @@ public abstract class Collectionz {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Collection<?> collection, T[] a) {
+	public static <T> T[] toArray(Collection<?> collection, T[] array) {
 		int size = collection.size();
-		T[] array = a.length >= size ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), size);
-		return toArray(collection.iterator(), array);
+		Function<T[], T[]> allocator = a -> a.length >= size ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+		return toArray(collection.iterator(), array, allocator);
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] toArray(Iterator<?> iterator, T[] array) {
+		return toArray(iterator, array, Function.identity());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Iterator<?> iterator, T[] a) {
-		T[] array = a;
+	public static <T> T[] toArray(Iterator<?> iterator, T[] array, Function<T[], T[]> allocator) {
+		T[] a = allocator.apply(array);
 
 		int cursor = 0;
 		while (iterator.hasNext()) {
-			if (cursor == array.length)
-				array = Arrays.copyOf(array, array.length + (array.length >> 1) + 1);
+			if (cursor == a.length)
+				a = Arrays.copyOf(a, a.length + (a.length >> 1) + 1);
 
-			array[cursor++] = (T) iterator.next();
+			a[cursor++] = (T) iterator.next();
 		}
 
-		// original array fits actual size?
-		if (a.length >= cursor && a != array)
-			System.arraycopy(array, 0, array = a, 0, cursor);
+		// size overreported and original array fits actual size?
+		if (a != array && array.length >= cursor)
+			System.arraycopy(a, 0, a = array, 0, cursor);
 
 		// actual size less than expected
-		if (array.length > cursor)
-			if (array == a)
-				array[cursor] = null;
+		if (a.length > cursor)
+			if (a == array)
+				a[cursor] = null;
 			else
-				array = Arrays.copyOf(array, cursor);
+				a = Arrays.copyOf(a, cursor);
 
-		return array;
+		return a;
 	}
 
 	public static SizedIterable.SizeType sizeType(Collection<?> collection) {
