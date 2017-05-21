@@ -191,10 +191,10 @@ public class ListSequence<T> implements Sequence<T> {
 		requireNonNull(constructor, "constructor");
 
 		int size = sizeIfKnown();
-		if (size != -1)
-			return list.toArray(constructor.apply(size));
-		else
+		if (size == -1)
 			return Iterators.toArray(iterator(), constructor);
+
+		return list.toArray(constructor.apply(size));
 	}
 
 	@Override
@@ -204,10 +204,10 @@ public class ListSequence<T> implements Sequence<T> {
 
 	@Override
 	public <A> A[] toArray(A[] a) {
-		if (sizeType().known())
-			return list.toArray(a);
-		else
+		if (!sizeType().known())
 			return Collectionz.toArray(iterator(), a);
+
+		return list.toArray(a);
 	}
 
 	@Override

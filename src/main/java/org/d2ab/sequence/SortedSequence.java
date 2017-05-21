@@ -40,10 +40,10 @@ class SortedSequence<T> extends ReorderedSequence<T> {
 	}
 
 	protected PriorityQueue<T> toNaturalOrderPriorityQueue() {
-		if (sizeType().known())
-			return new PriorityQueue<>(parent);
-		else
+		if (!sizeType().known())
 			return parent.toCollection(PriorityQueue::new);
+
+		return new PriorityQueue<>(parent);
 	}
 
 	protected PriorityQueue<T> toReverseOrderPriorityQueue() {

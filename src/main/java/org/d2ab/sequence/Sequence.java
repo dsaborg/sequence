@@ -1314,20 +1314,20 @@ public interface Sequence<T> extends IterableCollection<T> {
 		requireNonNull(constructor, "constructor");
 
 		int size = sizeIfKnown();
-		if (size != -1)
-			return Iterators.toArray(iterator(), constructor, size);
-		else
+		if (size == -1)
 			return Iterators.toArray(iterator(), constructor);
+
+		return Iterators.toArray(iterator(), constructor, size);
 	}
 
 	/**
 	 * Collect the elements in this {@code Sequence} into a {@link List}.
 	 */
 	default List<T> toList() {
-		if (sizeType().known())
-			return new ArrayList<>(this);
-		else
+		if (!sizeType().known())
 			return toList(ArrayList::new);
+
+		return new ArrayList<>(this);
 	}
 
 	/**
@@ -1344,10 +1344,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect the elements in this {@code Sequence} into a {@link Set}.
 	 */
 	default Set<T> toSet() {
-		if (sizeType().known())
-			return new HashSet<>(this);
-		else
+		if (!sizeType().known())
 			return toSet(HashSet::new);
+
+		return new HashSet<>(this);
 	}
 
 	/**
@@ -1364,10 +1364,10 @@ public interface Sequence<T> extends IterableCollection<T> {
 	 * Collect the elements in this {@code Sequence} into a {@link SortedSet}.
 	 */
 	default SortedSet<T> toSortedSet() {
-		if (sizeType().known())
-			return new TreeSet<>(this);
-		else
+		if (!sizeType().known())
 			return toSet(TreeSet::new);
+
+		return new TreeSet<>(this);
 	}
 
 	/**
@@ -1623,6 +1623,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 			collection.addAll(this);
 		else
 			for (T t : this)
+				//noinspection UseBulkOperation
 				collection.add(t);
 
 		return collection;

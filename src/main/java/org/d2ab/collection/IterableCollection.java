@@ -118,18 +118,18 @@ public interface IterableCollection<T> extends Collection<T>, SizedIterable<T> {
 	@Override
 	default Object[] toArray() {
 		int size = sizeIfKnown();
-		if (size != -1)
-			return Iterators.toArray(iterator(), Object[]::new, size);
-		else
+		if (size == -1)
 			return Iterators.toArray(iterator(), Object[]::new);
+
+		return Iterators.toArray(iterator(), Object[]::new, size);
 	}
 
 	@Override
 	default <A> A[] toArray(A[] a) {
-		if (sizeType().known())
-			return Collectionz.toArray(this, a);
-		else
+		if (!sizeType().known())
 			return Collectionz.toArray(iterator(), a);
+
+		return Collectionz.toArray(this, a);
 	}
 
 	@Override
