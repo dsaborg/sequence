@@ -17,12 +17,16 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.*;
+import org.d2ab.iterator.Iterators;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A {@link Sequence} backed by a {@link List}. Implements certain operations on {@link Sequence} in a more performant
@@ -183,6 +187,30 @@ public class ListSequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public <A> A[] toArray(IntFunction<A[]> constructor) {
+		requireNonNull(constructor, "constructor");
+
+		int size = sizeIfKnown();
+		if (size != -1)
+			return list.toArray(constructor.apply(size));
+		else
+			return Iterators.toArray(iterator(), constructor);
+	}
+
+	@Override
+	public Object[] toArray() {
+		return toArray(Object[]::new);
+	}
+
+	@Override
+	public <A> A[] toArray(A[] a) {
+		if (sizeType().known())
+			return list.toArray(a);
+		else
+			return Collectionz.toArray(iterator(), a);
+	}
+
+	@Override
 	public void clear() {
 		list.clear();
 	}
@@ -205,16 +233,6 @@ public class ListSequence<T> implements Sequence<T> {
 	@Override
 	public boolean removeIf(Predicate<? super T> filter) {
 		return list.removeIf(filter);
-	}
-
-	@Override
-	public Object[] toArray() {
-		return list.toArray();
-	}
-
-	@Override
-	public <T1> T1[] toArray(T1[] a) {
-		return list.toArray(a);
 	}
 
 	@Override

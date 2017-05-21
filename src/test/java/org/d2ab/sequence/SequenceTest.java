@@ -2645,6 +2645,7 @@ public class SequenceTest {
 	@Test
 	public void toArray() {
 		twice(() -> assertThat(_12345.toArray(), is(arrayContaining(1, 2, 3, 4, 5))));
+		twice(() -> assertThat(mutableFive.toArray(), is(arrayContaining(1, 2, 3, 4, 5))));
 	}
 
 	@Test

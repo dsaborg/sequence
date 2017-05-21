@@ -303,8 +303,8 @@ public class SparseBitSet extends LongSet.Base implements LongSortedSet {
 
 	private void insert(long x, int insertionPoint) {
 		if (words.length == size) {
-			words = Arrays.copyOf(words, words.length + (words.length >> 1));
-			indices = Arrays.copyOf(indices, indices.length + (words.length >> 1));
+			words = Arrays.copyOf(words, words.length + (words.length >> 1) + 1);
+			indices = Arrays.copyOf(indices, indices.length + (words.length >> 1) + 1);
 		}
 		System.arraycopy(words, insertionPoint, words, insertionPoint + 1, size - insertionPoint);
 		System.arraycopy(indices, insertionPoint, indices, insertionPoint + 1, size - insertionPoint);

@@ -18,6 +18,7 @@ package org.d2ab.collection;
 
 import org.d2ab.util.Classes;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -60,17 +61,34 @@ public abstract class Collectionz {
 	@SuppressWarnings("unchecked")
 	public static <T> T[] toArray(Collection<?> collection, T[] a) {
 		int size = collection.size();
-		if (a.length < size)
-			a = Arrays.copyOf(a, size);
+		T[] array = a.length >= size ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+		return toArray(collection.iterator(), array);
+	}
 
-		int index = 0;
-		for (Object t : collection)
-			a[index++] = (T) t;
+	@SuppressWarnings("unchecked")
+	public static <T> T[] toArray(Iterator<?> iterator, T[] a) {
+		T[] array = a;
 
-		if (a.length > size)
-			a[size] = null;
+		int cursor = 0;
+		while (iterator.hasNext()) {
+			if (cursor == array.length)
+				array = Arrays.copyOf(array, array.length + (array.length >> 1) + 1);
 
-		return a;
+			array[cursor++] = (T) iterator.next();
+		}
+
+		// original array fits actual size?
+		if (a.length >= cursor && a != array)
+			System.arraycopy(array, 0, array = a, 0, cursor);
+
+		// actual size less than expected
+		if (array.length > cursor)
+			if (array == a)
+				array[cursor] = null;
+			else
+				array = Arrays.copyOf(array, cursor);
+
+		return array;
 	}
 
 	public static SizedIterable.SizeType sizeType(Collection<?> collection) {

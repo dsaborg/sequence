@@ -17,11 +17,15 @@
 package org.d2ab.sequence;
 
 import org.d2ab.collection.*;
+import org.d2ab.iterator.Iterators;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A {@link Sequence} backed by a {@link Collection}. Implements certain operations on {@link Sequence} in a more
@@ -86,6 +90,30 @@ public class CollectionSequence<T> implements Sequence<T> {
 	@Override
 	public List<T> toList() {
 		return new ArrayList<>(collection);
+	}
+
+	@Override
+	public <A> A[] toArray(IntFunction<A[]> constructor) {
+		requireNonNull(constructor, "constructor");
+
+		int size = sizeIfKnown();
+		if (size != -1)
+			return collection.toArray(constructor.apply(size));
+		else
+			return Iterators.toArray(iterator(), constructor);
+	}
+
+	@Override
+	public Object[] toArray() {
+		return toArray(Object[]::new);
+	}
+
+	@Override
+	public <A> A[] toArray(A[] a) {
+		if (sizeType().known())
+			return collection.toArray(a);
+		else
+			return Collectionz.toArray(iterator(), a);
 	}
 
 	@Override

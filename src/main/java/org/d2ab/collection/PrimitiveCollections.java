@@ -4,9 +4,6 @@ import org.d2ab.util.Strict;
 
 import java.util.Collection;
 
-/**
- * Created by Daniel on 2017-01-08.
- */
 public abstract class PrimitiveCollections {
 	PrimitiveCollections() {
 	}

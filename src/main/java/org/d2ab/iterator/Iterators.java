@@ -313,26 +313,23 @@ public abstract class Iterators {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <A> A[] toArray(Iterator<?> iterator, A[] array) {
-		int cursor = 0;
-		while (iterator.hasNext())
-			array[cursor++] = (A) iterator.next();
-		return array;
+	public static <A> A[] toArray(Iterator<?> iterator, IntFunction<A[]> constructor) {
+		return toArray(iterator, constructor, 10);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <A> A[] toArray(Iterator<?> iterator, IntFunction<A[]> constructor) {
-		A[] array = constructor.apply(10);
+	public static <A> A[] toArray(Iterator<?> iterator, IntFunction<A[]> constructor, int sizeEstimate) {
+		A[] array = constructor.apply(sizeEstimate);
 
 		int cursor = 0;
 		while (iterator.hasNext()) {
 			if (cursor == array.length)
-				array = Arrays.copyOf(array, array.length + (array.length >> 1));
+				array = Arrays.copyOf(array, array.length + (array.length >> 1) + 1);
 
 			array[cursor++] = (A) iterator.next();
 		}
 
-		if (array.length > cursor)
+		if (array.length != cursor)
 			array = Arrays.copyOf(array, cursor);
 
 		return array;

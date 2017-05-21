@@ -1315,7 +1315,7 @@ public interface Sequence<T> extends IterableCollection<T> {
 
 		int size = sizeIfKnown();
 		if (size != -1)
-			return Iterators.toArray(iterator(), constructor.apply(size));
+			return Iterators.toArray(iterator(), constructor, size);
 		else
 			return Iterators.toArray(iterator(), constructor);
 	}

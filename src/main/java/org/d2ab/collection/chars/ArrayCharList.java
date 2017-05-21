@@ -354,7 +354,7 @@ public class ArrayCharList extends CharList.Base implements RandomAccess {
 	private void growIfNecessaryBy(int grow) {
 		int newSize = size + grow;
 		if (newSize > contents.length) {
-			int newCapacity = newSize + (newSize >> 1);
+			int newCapacity = newSize + (newSize >> 1) + 1;
 			char[] copy = new char[newCapacity];
 			System.arraycopy(contents, 0, copy, 0, size);
 			contents = copy;
