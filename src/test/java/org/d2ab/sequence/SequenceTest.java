@@ -16,10 +16,7 @@
 
 package org.d2ab.sequence;
 
-import org.d2ab.collection.Iterables;
-import org.d2ab.collection.Lists;
-import org.d2ab.collection.Maps;
-import org.d2ab.collection.SizedIterable;
+import org.d2ab.collection.*;
 import org.d2ab.iterator.Iterators;
 import org.d2ab.test.SequentialCollector;
 import org.d2ab.test.Tests;
@@ -74,6 +71,7 @@ public class SequenceTest {
 	private final Sequence<Integer> nineRandom;
 	private final Sequence<?> mixed;
 	private final Sequence<Integer> mutableFive;
+	private final Sequence<Integer> unsizedFive;
 
 	private final Sequence<Integer> sizePassThrough = new Sequence<Integer>() {
 		@Override
@@ -127,6 +125,7 @@ public class SequenceTest {
 		nineRandom = newSequence(67, 5, 43, 3, 5, 7, 24, 5, 67);
 		mixed = newSequence("1", 1, 'x', 1.0, "2", 2, 'y', 2.0, "3", 3, 'z', 3.0);
 		mutableFive = newMutableSequence(1, 2, 3, 4, 5);
+		unsizedFive = newUnsizedSequence(1, 2, 3, 4, 5);
 	}
 
 	@SuppressWarnings("Convert2MethodRef")
@@ -164,6 +163,12 @@ public class SequenceTest {
 	@SafeVarargs
 	private final <T> Sequence<T> newMutableSequence(T... ts) {
 		return (Sequence<T>) generator.apply(xs -> new ArrayList<>(Lists.of(xs)), ts);
+	}
+
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	private final <T> Sequence<T> newUnsizedSequence(T... ts) {
+		return (Sequence<T>) generator.apply(xs -> new FilteredList<>(Lists.of(xs), x -> true), ts);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2644,19 +2649,37 @@ public class SequenceTest {
 
 	@Test
 	public void toArray() {
+		twice(() -> assertThat(empty.toArray(), is(emptyArray())));
 		twice(() -> assertThat(_12345.toArray(), is(arrayContaining(1, 2, 3, 4, 5))));
 		twice(() -> assertThat(mutableFive.toArray(), is(arrayContaining(1, 2, 3, 4, 5))));
+		twice(() -> assertThat(unsizedFive.toArray(), is(arrayContaining(1, 2, 3, 4, 5))));
 	}
 
 	@Test
 	public void toArrayWithType() {
+		twice(() -> assertThat(empty.toArray(Integer[]::new), emptyArray()));
 		twice(() -> assertThat(_12345.toArray(Integer[]::new), arrayContaining(1, 2, 3, 4, 5)));
 		twice(() -> assertThat(_12345.toArray(Number[]::new), arrayContaining(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(mutableFive.toArray(Integer[]::new), is(arrayContaining(1, 2, 3, 4, 5))));
+		twice(() -> assertThat(mutableFive.toArray(Number[]::new), is(arrayContaining(1, 2, 3, 4, 5))));
+		twice(() -> assertThat(unsizedFive.toArray(Integer[]::new), is(arrayContaining(1, 2, 3, 4, 5))));
+		twice(() -> assertThat(unsizedFive.toArray(Number[]::new), is(arrayContaining(1, 2, 3, 4, 5))));
 	}
 
 	@Test
-	public void toArrayWithExistingArray() {
+	public void toArrayWithSmallArray() {
+		twice(() -> assertThat(empty.toArray(new Integer[0]), emptyArray()));
 		twice(() -> assertThat(_12345.toArray(new Integer[0]), arrayContaining(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(mutableFive.toArray(new Integer[0]), arrayContaining(1, 2, 3, 4, 5)));
+		twice(() -> assertThat(unsizedFive.toArray(new Integer[0]), arrayContaining(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toArrayWithLargeArray() {
+		twice(() -> assertThat(empty.toArray(Arrayz.fill(new Integer[2], 17)), arrayContaining(null, 17)));
+		twice(() -> assertThat(_12345.toArray(Arrayz.fill(new Integer[7], 17)), arrayContaining(1, 2, 3, 4, 5, null, 17)));
+		twice(() -> assertThat(mutableFive.toArray(Arrayz.fill(new Integer[7], 17)), arrayContaining(1, 2, 3, 4, 5, null, 17)));
+		twice(() -> assertThat(unsizedFive.toArray(Arrayz.fill(new Integer[7], 17)), arrayContaining(1, 2, 3, 4, 5, null, 17)));
 	}
 
 	@Test
