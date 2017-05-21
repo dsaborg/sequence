@@ -9,6 +9,7 @@ import java.util.Optional;
 import static java.util.Comparator.comparing;
 import static org.d2ab.test.HasSizeCharacteristics.containsSized;
 import static org.d2ab.test.HasSizeCharacteristics.containsUnsized;
+import static org.d2ab.test.Tests.expecting;
 import static org.d2ab.test.Tests.twice;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -21,6 +22,8 @@ public class ReverseSequenceTest {
 
 	private final Sequence<Number> backing = Sequence.createOf(1.0, 2.0, 3, 4, 5);
 	private final Sequence<Number> _12345 = new ReverseSequence<>(backing);
+	private final Sequence<Integer> unsizedBacking = Sequence.createOf(1, 2, 3, 4, 5).filter(x -> true);
+	private final Sequence<Integer> unsized = new ReverseSequence<>(unsizedBacking);
 
 	@Test
 	public void filter() {
@@ -98,6 +101,12 @@ public class ReverseSequenceTest {
 		twice(() -> assertThat(_12345.at(0), is(Optional.of(5))));
 		twice(() -> assertThat(_12345.at(2), is(Optional.of(3))));
 		twice(() -> assertThat(_12345.at(4), is(Optional.of(1.0))));
+		twice(() -> assertThat(_12345.at(5), is(Optional.empty())));
+
+		twice(() -> assertThat(unsized.at(0), is(Optional.of(5))));
+		twice(() -> assertThat(unsized.at(2), is(Optional.of(3))));
+		twice(() -> assertThat(unsized.at(4), is(Optional.of(1))));
+		twice(() -> assertThat(unsized.at(5), is(Optional.empty())));
 	}
 
 	@Test
@@ -167,7 +176,11 @@ public class ReverseSequenceTest {
 		assertThat(_12345.removeAt(0), is(Optional.of(5)));
 		assertThat(_12345.removeAt(1), is(Optional.of(3)));
 		assertThat(_12345.removeAt(2), is(Optional.of(1.0)));
+		assertThat(_12345.removeAt(2), is(Optional.empty()));
 		twice(() -> assertThat(backing, containsSized(2.0, 4)));
+
+		expecting(UnsupportedOperationException.class, () -> unsized.removeAt(0));
+		twice(() -> assertThat(unsizedBacking, containsUnsized(1, 2, 3, 4, 5)));
 	}
 
 	@Test
@@ -204,5 +217,11 @@ public class ReverseSequenceTest {
 	public void removeLastByClass() {
 		assertThat(_12345.removeLast(Integer.class), is(Optional.of(3)));
 		twice(() -> assertThat(backing, containsSized(1.0, 2.0, 4, 5)));
+	}
+
+	@Test
+	public void reverse() {
+		assertThat(_12345.reverse(), is(sameInstance(backing)));
+		assertThat(unsized.reverse(), is(sameInstance(unsizedBacking)));
 	}
 }
