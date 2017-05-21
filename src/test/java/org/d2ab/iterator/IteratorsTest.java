@@ -99,4 +99,24 @@ public class IteratorsTest {
 	public void toList() {
 		assertThat(Iterators.toList(iterator), contains(1, 2, 3, 4, 5));
 	}
+
+	@Test
+	public void toArrayWithConstructor() {
+		assertThat(Iterators.toArray(iterator, Integer[]::new), is(arrayContaining(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toArrayWithConstructorAndSmallerSizeEstimate() {
+		assertThat(Iterators.toArray(iterator, Integer[]::new, 0), is(arrayContaining(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toArrayWithConstructorAndExactSizeEstimate() {
+		assertThat(Iterators.toArray(iterator, Integer[]::new, 5), is(arrayContaining(1, 2, 3, 4, 5)));
+	}
+
+	@Test
+	public void toArrayWithConstructorAndLargerSizeEstimate() {
+		assertThat(Iterators.toArray(iterator, Integer[]::new, 10), is(arrayContaining(1, 2, 3, 4, 5)));
+	}
 }

@@ -329,7 +329,7 @@ public abstract class Iterators {
 			array[cursor++] = (A) iterator.next();
 		}
 
-		if (array.length != cursor)
+		if (array.length > cursor)
 			array = Arrays.copyOf(array, cursor);
 
 		return array;
