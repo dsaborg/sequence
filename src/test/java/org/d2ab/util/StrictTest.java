@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class StrictTest {
 	@Test
@@ -48,15 +49,11 @@ public class StrictTest {
 
 		@Test
 		public void check() {
-			boolean failed;
 			try {
 				Strict.check();
-				failed = false;
-			} catch (UnsupportedOperationException expected) {
-				failed = true;
+				fail("Expected UnsupportedOperationException");
+			} catch (UnsupportedOperationException ignored) {
 			}
-
-			assertThat(failed, is(true));
 
 			Strict.unset();
 			Strict.check();
