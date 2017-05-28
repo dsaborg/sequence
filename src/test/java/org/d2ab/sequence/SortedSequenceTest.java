@@ -3,6 +3,7 @@ package org.d2ab.sequence;
 import org.d2ab.util.Pair;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 import static java.util.Collections.reverseOrder;
@@ -11,6 +12,7 @@ import static java.util.Comparator.naturalOrder;
 import static org.d2ab.test.HasSizeCharacteristics.containsSized;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 public class SortedSequenceTest {
@@ -81,9 +83,41 @@ public class SortedSequenceTest {
 	}
 
 	@Test
+	public void firstByClassStableSort() {
+		assertThat(duplicatesLeftNatural.first(Pair.class), is(Optional.of(Pair.of(1, "a"))));
+	}
+
+	@Test
+	public void lastByClassStableSort() {
+		assertThat(duplicatesLeftNatural.last(Pair.class), is(Optional.of(Pair.of(3, "b"))));
+	}
+
+	@Test
 	public void reversed() {
 		assertThat(duplicatesLeftNatural.reverse(), containsSized(Pair.of(3, "b"), Pair.of(3, "a"),
 		                                                          Pair.of(2, "a"), Pair.of(1, "c"),
 		                                                          Pair.of(1, "b"), Pair.of(1, "a")));
+	}
+
+	@Test
+	public void sorted() {
+		assertThat(duplicatesLeftNatural.sorted(), contains(Pair.of(1, "a"), Pair.of(1, "b"), Pair.of(1, "c"),
+		                                                    Pair.of(2, "a"), Pair.of(3, "a"), Pair.of(3, "b")));
+		assertThat(duplicatesLeftReverse.sorted(), contains(Pair.of(1, "a"), Pair.of(1, "b"), Pair.of(1, "c"),
+		                                                    Pair.of(2, "a"), Pair.of(3, "a"), Pair.of(3, "b")));
+		assertThat(duplicatesNatural.sorted(), is(sameInstance(duplicatesNatural)));
+		assertThat(duplicatesReverse.sorted(), contains(Pair.of(1, "a"), Pair.of(1, "b"), Pair.of(1, "c"),
+		                                                Pair.of(2, "a"), Pair.of(3, "a"), Pair.of(3, "b")));
+	}
+
+	@Test
+	public void sortedWithComparator() {
+		assertThat(duplicatesLeftNatural.sorted(Comparator.reverseOrder()), contains(Pair.of(3, "b"), Pair.of(3, "a"), Pair.of(2, "a"),
+		                                                                             Pair.of(1, "c"), Pair.of(1, "b"), Pair.of(1, "a")));
+		assertThat(duplicatesLeftReverse.sorted(Comparator.reverseOrder()), contains(Pair.of(3, "b"), Pair.of(3, "a"), Pair.of(2, "a"),
+		                                                                             Pair.of(1, "c"), Pair.of(1, "b"), Pair.of(1, "a")));
+		assertThat(duplicatesNatural.sorted(Comparator.reverseOrder()), contains(Pair.of(3, "b"), Pair.of(3, "a"), Pair.of(2, "a"),
+		                                                                         Pair.of(1, "c"), Pair.of(1, "b"), Pair.of(1, "a")));
+		assertThat(duplicatesReverse.sorted(Comparator.reverseOrder()), is(sameInstance(duplicatesReverse)));
 	}
 }
