@@ -2,11 +2,14 @@ package org.d2ab.sequence;
 
 import org.d2ab.collection.Arrayz;
 import org.d2ab.collection.Lists;
+import org.d2ab.iterator.Iterators;
 import org.d2ab.iterator.ShufflingArrayIterator;
 
 import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
+
+import static java.util.Collections.emptyList;
 
 /**
  * An implementation of {@link Sequence} which provides a randomly shuffled of another {@link Sequence}. Provides
@@ -62,50 +65,74 @@ class ShuffledSequence<T> extends ReorderedSequence<T> {
 	@Override
 	public Optional<T> min(Comparator<? super T> comparator) {
 		List<T> mins = mins(parent, comparator);
+		if (mins.isEmpty())
+			return Optional.empty();
+
 		return Optional.of(mins.get(random.nextInt(mins.size())));
 	}
 
 	private List<T> mins(Sequence<T> sequence, Comparator<? super T> comparator) {
+		Iterator<T> iterator = sequence.iterator();
+		if (!iterator.hasNext())
+			return emptyList();
+
+		T first = iterator.next();
+
 		List<T> mins = new ArrayList<>();
-		sequence.reduce((r, x) -> {
+		mins.add(first);
+
+		Iterators.reduce(iterator, first, (r, x) -> {
 			int compare = comparator.compare(r, x);
 
-			if (compare <= 0 && mins.isEmpty())
-				mins.add(r);
+			if (compare >= 0) {
+				if (compare > 0)
+					mins.clear();
 
-			if (compare > 0)
-				mins.clear();
-
-			if (compare >= 0)
 				mins.add(x);
+				return x;
+			}
 
-			return compare <= 0 ? r : x;
+			// compare < 0
+			return r;
 		});
+
 		return mins;
 	}
 
 	@Override
 	public Optional<T> max(Comparator<? super T> comparator) {
 		List<T> maxes = maxes(parent, comparator);
+		if (maxes.isEmpty())
+			return Optional.empty();
+
 		return Optional.of(maxes.get(random.nextInt(maxes.size())));
 	}
 
 	private List<T> maxes(Sequence<T> sequence, Comparator<? super T> comparator) {
+		Iterator<T> iterator = sequence.iterator();
+		if (!iterator.hasNext())
+			return emptyList();
+
+		T first = iterator.next();
+
 		List<T> maxes = new ArrayList<>();
-		sequence.reduce((r, x) -> {
+		maxes.add(first);
+
+		Iterators.reduce(iterator, first, (r, x) -> {
 			int compare = comparator.compare(r, x);
 
-			if (compare >= 0 && maxes.isEmpty())
-				maxes.add(r);
+			if (compare <= 0) {
+				if (compare < 0)
+					maxes.clear();
 
-			if (compare < 0)
-				maxes.clear();
-
-			if (compare <= 0)
 				maxes.add(x);
+				return x;
+			}
 
-			return compare >= 0 ? r : x;
+			// compare > 0
+			return r;
 		});
+
 		return maxes;
 	}
 

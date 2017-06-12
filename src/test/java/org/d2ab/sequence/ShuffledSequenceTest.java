@@ -12,6 +12,12 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ShuffledSequenceTest {
+	private final Sequence<Number> empty = new ShuffledSequence<>(Sequence.createOf(), new Random(17));
+
+	private final Sequence<Number> singleton = new ShuffledSequence<>(Sequence.createOf(1.0), new Random(17));
+
+	private final Sequence<Number> two = new ShuffledSequence<>(Sequence.createOf(1.0, 2.0), new Random(17));
+
 	private final Number[] smallElements = {1.0, 2f, 3, 4L};
 	private final Sequence<Number> small = new ShuffledSequence<>(Sequence.createOf(smallElements), new Random(17));
 
@@ -128,6 +134,10 @@ public class ShuffledSequenceTest {
 			mins.add(duplicates.min(comparing(Number::intValue)).get());
 
 		assertThat(mins, containsInAnyOrder(1.0, 1, 1L));
+
+		assertThat(empty.min(comparing(Number::intValue)), is(Optional.empty()));
+		assertThat(singleton.min(comparing(Number::intValue)), is(Optional.of(1.0)));
+		assertThat(two.min(comparing(Number::intValue)), is(Optional.of(1.0)));
 	}
 
 	@Test
@@ -138,6 +148,10 @@ public class ShuffledSequenceTest {
 			maxes.add(duplicates.max(comparing(Number::intValue)).get());
 
 		assertThat(maxes, containsInAnyOrder(5f, 5, 5L));
+
+		assertThat(empty.max(comparing(Number::intValue)), is(Optional.empty()));
+		assertThat(singleton.max(comparing(Number::intValue)), is(Optional.of(1.0)));
+		assertThat(two.max(comparing(Number::intValue)), is(Optional.of(2.0)));
 	}
 
 	@Test
