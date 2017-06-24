@@ -18,6 +18,8 @@ public class ShuffledSequenceTest {
 
 	private final Sequence<Number> two = new ShuffledSequence<>(Sequence.createOf(1.0, 2.0), new Random(17));
 
+	private final Sequence<Number> three = new ShuffledSequence<>(Sequence.createOf(1.0, 2.0, 3.0), new Random(17));
+
 	private final Number[] smallElements = {1.0, 2f, 3, 4L};
 	private final Sequence<Number> small = new ShuffledSequence<>(Sequence.createOf(smallElements), new Random(17));
 
@@ -138,6 +140,7 @@ public class ShuffledSequenceTest {
 		assertThat(empty.min(comparing(Number::intValue)), is(Optional.empty()));
 		assertThat(singleton.min(comparing(Number::intValue)), is(Optional.of(1.0)));
 		assertThat(two.min(comparing(Number::intValue)), is(Optional.of(1.0)));
+		assertThat(three.min(comparing(Number::intValue)), is(Optional.of(1.0)));
 	}
 
 	@Test
@@ -152,6 +155,7 @@ public class ShuffledSequenceTest {
 		assertThat(empty.max(comparing(Number::intValue)), is(Optional.empty()));
 		assertThat(singleton.max(comparing(Number::intValue)), is(Optional.of(1.0)));
 		assertThat(two.max(comparing(Number::intValue)), is(Optional.of(2.0)));
+		assertThat(three.max(comparing(Number::intValue)), is(Optional.of(3.0)));
 	}
 
 	@Test
